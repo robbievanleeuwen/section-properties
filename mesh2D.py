@@ -7,7 +7,7 @@ class triMesh:
     '''
 
     def __init__(self, genMesh, elementType):
-        triElements = []
+        triElements = [] # list holding all element objects
 
         if elementType == 'tri3':
             for tri in genMesh['triangles']:
@@ -18,12 +18,12 @@ class triMesh:
                 x3 = genMesh['vertices'][tri[2]][0]
                 y3 = genMesh['vertices'][tri[2]][1]
                 vertices = np.array([[x1,y1], [x2,y2], [x3,y3]])
-                triElements.append(elementDefinitions.tri3(vertices, tri))
+                triElements.append(elementDefinitions.tri3(vertices, tri)) # add triangle to element list
         else:
             print 'Element type not programmed'
 
-        self.elements = triElements
-        self.noNodes = len((genMesh)['vertices'])
+        self.elements = triElements # store element list in triMesh object
+        self.noNodes = len((genMesh)['vertices']) # total number of nodes in mesh
         self.initialise(genMesh)
 
     def initialise(self, mesh):
@@ -43,8 +43,8 @@ class triMesh:
 
             # assemble torsion stiffness matrix and load vector
             indxs = np.ix_(el.nodes, el.nodes)
-            torsionK[indxs] = el.torsionKe
-            torsionF[el.nodes] = el.torsionFe
+            torsionK[indxs] += el.torsionKe
+            torsionF[el.nodes] += el.torsionFe
 
         self.area = totalArea
         self.Qx = totalQx
@@ -59,6 +59,6 @@ class triMesh:
         self.ixy_c = totalIxy_g - totalQx * totalQy / totalArea
         self.rx = (self.ixx_c / totalArea) ** 0.5
         self.ry = (self.iyy_c / totalArea) ** 0.5
-        self.tf = torsionF
         self.w = np.linalg.solve(torsionK, torsionF)
+        self.tf = torsionF
         self.J = self.ixx_g + self.iyy_g - self.w.dot(torsionK).dot(np.transpose(self.w))
