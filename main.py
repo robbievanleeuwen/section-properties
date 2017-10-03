@@ -1,9 +1,6 @@
 import triangle
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np
 import mesh2D
-import time
 
 crossSection = {}
 crossSection['vertices'] = np.array([[0,0], [50,0], [50,100], [0,100], [6,6], [44, 6], [44, 94], [6, 94]])
@@ -13,18 +10,8 @@ crossSection['holes'] = np.array([[25,50]])
 mesh1 = triangle.triangulate(crossSection, 'pa1q30') # generate triangular mesh
 mesh = mesh2D.triMesh(mesh1, 'tri3') # create mesh object
 
-# plot results
-plt.figure()
-plt.gca().set_aspect('equal')
-plt.triplot(mesh1['vertices'][:,0], mesh1['vertices'][:,1], mesh1['triangles'], lw=0.5, color='black')
-cmap = cm.get_cmap(name='jet')
-v = np.linspace(-300, 300, 11, endpoint=True)
-trictr = plt.tricontourf(mesh1['vertices'][:,0], mesh1['vertices'][:,1], mesh1['triangles'], mesh.w, cmap=cmap)
-cbar = plt.colorbar(trictr)
-d = 50
-plt.plot([mesh.cx - d * np.cos(mesh.phi * np.pi / 180), mesh.cx + d * np.cos(mesh.phi * np.pi / 180)], [mesh.cy - d * np.sin(mesh.phi * np.pi / 180), mesh.cy + d * np.sin(mesh.phi * np.pi / 180)])
-plt.plot([mesh.cx - d * np.cos(mesh.phi * np.pi / 180 + np.pi / 2), mesh.cx + d * np.cos(mesh.phi * np.pi / 180 + np.pi / 2)], [mesh.cy - d * np.sin(mesh.phi * np.pi / 180 + np.pi / 2), mesh.cy + d * np.sin(mesh.phi * np.pi / 180 + np.pi / 2)])
-plt.show()
+# mesh.contourPlot(True, mesh.tau)
+mesh.quiverPlot(mesh.tau_zx, mesh.tau_zy)
 
 print "-------------------------"
 print "Global xy Axis Properties"

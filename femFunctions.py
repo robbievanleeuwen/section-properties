@@ -5,7 +5,7 @@ def gaussPoints(n):
     Returns an [3 x n] matrix consisting of the weight, x-location and y-location for each Gauss point
     '''
     if n == 1:
-        return np.transpose(np.array([0.5, 1.0/3, 1.0/3]))
+        return np.transpose(np.array([[0.5], [1.0/3], [1.0/3]]))
     elif n == 3:
         return np.array([[1.0/6, 1.0/6, 1.0/6], [0, 0.5, 0.5], [0.5, 0, 0.5]])
     else:

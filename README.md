@@ -7,5 +7,5 @@ Cross section analysis
 3) Shear Centre (shear functions)
 4) Warping Constant (Iw)
 5) Radius Area Integral (?)
-6) Stress visualisation (bending, torsion, shear)
+6) Stress visualisation (bending, shear)
 7) Improve meshing
