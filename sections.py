@@ -4,7 +4,7 @@ crossSection['segments'] = np.array([[0,1], [1,2], [2,3], [3,0]])
 
 # rectangular hollow section
 crossSection['vertices'] = np.array([[0,0], [50,0], [50,100], [0,100], [6,6], [44, 6], [44, 94], [6, 94]])
-crossSection['segments'] = np.array([[0,1], [1,2], [2,3], [3,0], [4,5], [5,6], [6,7], [7,0]])
+crossSection['segments'] = np.array([[0,1], [1,2], [2,3], [3,0], [4,5], [5,6], [6,7], [7,4]])
 crossSection['holes'] = np.array([[25,50]])
 
 # asymmetric I-section

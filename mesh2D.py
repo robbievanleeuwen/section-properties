@@ -1,5 +1,7 @@
 import numpy as np
 import elementDefinitions
+import time
+import matplotlib.pyplot as plt
 
 class triMesh:
     '''
@@ -25,9 +27,9 @@ class triMesh:
         self.elements = triElements # store element list in triMesh object
         self.triangulation = genMesh # store the generated mesh
         self.noNodes = len((genMesh)['vertices']) # total number of nodes in mesh
-        self.initialise(genMesh)
+        self.initialise()
 
-    def initialise(self, mesh):
+    def initialise(self):
         # initialise variables
         totalArea = totalQx = totalQy = totalIxx_g = totalIyy_g = totalIxy_g = 0
         torsionK = np.zeros((self.noNodes, self.noNodes))
@@ -80,14 +82,7 @@ class triMesh:
         self.ixy_c = totalIxy_g - totalQx * totalQy / totalArea
 
         # calculate section modulii about the centroidal xy axis
-        xmax = self.triangulation['vertices'][:, 0].max()
-        xmin = self.triangulation['vertices'][:, 0].min()
-        ymax = self.triangulation['vertices'][:, 1].max()
-        ymin = self.triangulation['vertices'][:, 1].min()
-        self.zxx_plus = self.ixx_c / (ymax - self.cy)
-        self.zxx_minus = self.ixx_c / (self.cy - ymin)
-        self.zyy_plus = self.iyy_c / (xmax - self.cx)
-        self.zyy_minus = self.iyy_c / (self.cx - xmin)
+        self.centroidalSectionModulii()
 
         # calculate radii of gyration about centroidal xy axis
         self.rx_c = (self.ixx_c / totalArea) ** 0.5
@@ -98,15 +93,18 @@ class triMesh:
         # ----------------------------------------------------------------------
         # calculate prinicpal second moments of area about the centroidal xy axis
         delta = (((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c ** 2) ** 0.5
-        self.i1_c = (self.ixx_c + self.iyy_c) / 2 + delta
-        self.i2_c = (self.ixx_c + self.iyy_c) / 2 - delta
+        self.i11_c = (self.ixx_c + self.iyy_c) / 2 + delta
+        self.i22_c = (self.ixx_c + self.iyy_c) / 2 - delta
 
         # calculate initial principal axis angle
-        self.phi = np.arctan2(self.ixx_c - self.i1_c, self.ixy_c) * 180 / np.pi
+        self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
+
+        # calculate section modulii about the principal axis
+        self.principalSectionModulii()
 
         # calculate radii of gyration about centroidal principal axis
-        self.r1_c = (self.i1_c / totalArea) ** 0.5
-        self.r2_c = (self.i2_c / totalArea) ** 0.5
+        self.r1_c = (self.i11_c / totalArea) ** 0.5
+        self.r2_c = (self.i22_c / totalArea) ** 0.5
 
         # ----------------------------------------------------------------------
         # TORSION PROPERTIES:
@@ -114,3 +112,46 @@ class triMesh:
         # calculate warping constant and torsion constant
         self.w = np.linalg.solve(torsionK, torsionF)
         self.J = self.ixx_g + self.iyy_g - self.w.dot(torsionK).dot(np.transpose(self.w))
+
+    def centroidalSectionModulii(self):
+        xmax = self.triangulation['vertices'][:, 0].max()
+        xmin = self.triangulation['vertices'][:, 0].min()
+        ymax = self.triangulation['vertices'][:, 1].max()
+        ymin = self.triangulation['vertices'][:, 1].min()
+        self.zxx_plus = self.ixx_c / (ymax - self.cy)
+        self.zxx_minus = self.ixx_c / (self.cy - ymin)
+        self.zyy_plus = self.iyy_c / (xmax - self.cx)
+        self.zyy_minus = self.iyy_c / (self.cx - xmin)
+
+    def principalSectionModulii(self):
+        u1 = np.array([np.cos(self.phi * np.pi / 180), np.sin(self.phi * np.pi / 180)]) # unit vector in direction of 1 axis
+        u2 = np.array([-np.sin(self.phi * np.pi / 180), np.cos(self.phi * np.pi / 180)]) # unit vector in direction of 1 axis
+        d1max = 0 # max distance perpendicular to the 1 axis
+        d1min = 0 # min distance perpendicular to the 1 axis
+        d2max = 0 # max distance perpendicular to the 2 axis
+        d2min = 0 # min distance perpendicular to the 2 axis
+        isAbove = []
+
+        for vertex in self.triangulation['vertices']:
+            PQ = np.array([self.cx - vertex[0], self.cy - vertex[1]]) # vector from point to centroid
+            d1 = np.linalg.norm(np.cross(PQ, u1)) # perpendicular distance from point to 1 axis
+            d2 = np.linalg.norm(np.cross(PQ, u2)) # perpendicular distance from point to 2 axis
+
+            if np.cross(-PQ, u1) < 0: # point is above 1 axis
+                d1max = max(d1max, d1)
+            else: # point is below 1 axis
+                d1min = min(d1min, -d1)
+            if np.cross(-PQ, u2) < 0: # point is above 2 axis
+                d2max = max(d2max, d2)
+            else: # point is below 2 axis
+                d2min = min(d2min, -d2)
+
+        self.z11_plus = self.i11_c / d1max
+        self.z11_minus = self.i11_c / -d1min
+        self.z22_plus = self.i22_c / d2max
+        self.z22_minus = self.i22_c / -d2min
+
+def functionTimer(function):
+    start_time = time.clock()
+    function()
+    print("--- %s completed in %s seconds ---" % (function.__name__, time.clock() - start_time))

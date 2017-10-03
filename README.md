@@ -2,12 +2,10 @@
 Cross section analysis
 
 # To do
-1) Section Modulus (Z)
-2) Plastic Modulus (S)
-3) Shear Area
-4) Shear Centre (shear functions)
-5) Torsion Constant (J)
-6) Warping Constant (Iw)
-7) Radius Area Integral (?)
-8) Stress visualisation (bending, torsion, shear)
-9) Improve meshing
+1) Plastic Modulus (S) - how to calculate plastic neutral axis?
+2) Shear Area
+3) Shear Centre (shear functions)
+4) Warping Constant (Iw)
+5) Radius Area Integral (?)
+6) Stress visualisation (bending, torsion, shear)
+7) Improve meshing
