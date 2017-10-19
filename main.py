@@ -2,16 +2,23 @@ import triangle
 import numpy as np
 import mesh2D
 
+import triangle.plot as plot
+import matplotlib.pyplot as plt
+
 crossSection = {}
 crossSection['vertices'] = np.array([[0,0], [50,0], [50,100], [0,100], [6,6], [44, 6], [44, 94], [6, 94]])
 crossSection['segments'] = np.array([[0,1], [1,2], [2,3], [3,0], [4,5], [5,6], [6,7], [7,4]])
 crossSection['holes'] = np.array([[25,50]])
+# elementType = 'tri6'
 
-mesh1 = triangle.triangulate(crossSection, 'pa1q30') # generate triangular mesh
-mesh = mesh2D.triMesh(mesh1, 'tri3') # create mesh object
+mesh1 = triangle.triangulate(crossSection, 'pa20q30') # generate triangular mesh
 
-# mesh.contourPlot(True, mesh.tau)
-mesh.quiverPlot(mesh.tau_zx, mesh.tau_zy)
+mesh = mesh2D.triMesh(mesh1, 'tri3', 0.2) # create mesh object
+
+mesh.contourPlot(False, mesh.Psi)
+mesh.contourPlot(False, mesh.tau_zy_shear)
+mesh.contourPlot(False, mesh.tau_shear)
+mesh.quiverPlot(mesh.tau_zx_torsion, mesh.tau_zy_torsion)
 
 print "-------------------------"
 print "Global xy Axis Properties"

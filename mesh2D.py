@@ -3,13 +3,14 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import elementDefinitions
 import time
+import femFunctions
 
 class triMesh:
     '''
     Contains elements within the triangular mesh and computes and stores section properties
     '''
 
-    def __init__(self, genMesh, elementType):
+    def __init__(self, genMesh, elementType, nu):
         triElements = [] # list holding all element objects
 
         if elementType == 'tri3':
@@ -21,23 +22,27 @@ class triMesh:
                 x3 = genMesh['vertices'][tri[2]][0]
                 y3 = genMesh['vertices'][tri[2]][1]
                 vertices = np.array([[x1,y1], [x2,y2], [x3,y3]])
-                triElements.append(elementDefinitions.tri3(vertices, tri)) # add triangle to element list
+                # create tri3 elements
+                triElements.append(elementDefinitions.tri3(vertices, tri, nu))
         else:
             print 'Element type not programmed'
 
         self.elements = triElements # store element list in triMesh object
         self.triangulation = genMesh # store the generated mesh
+        self.nu = nu # poissons ratio of material
         self.noNodes = len((genMesh)['vertices']) # total number of nodes in mesh
         self.initialise()
 
     def initialise(self):
         # initialise variables
         totalArea = totalQx = totalQy = totalIxx_g = totalIyy_g = totalIxy_g = 0
-        torsionK = np.zeros((self.noNodes, self.noNodes))
-        torsionF = np.transpose(np.zeros(self.noNodes))
+        shearK = np.zeros((self.noNodes, self.noNodes))
+        torsionF = np.zeros(self.noNodes)
+        shearFPsi = np.zeros(self.noNodes)
+        shearFPhi = np.zeros(self.noNodes)
 
         # loop through all elements
-        for i, el in enumerate(self.elements):
+        for el in self.elements:
             # calculate total area
             totalArea += el.area
 
@@ -52,7 +57,7 @@ class triMesh:
 
             # assemble stiffness matrix and load vector for warping constant
             indxs = np.ix_(el.nodes, el.nodes)
-            torsionK[indxs] += el.torsionKe
+            shearK[indxs] += el.shearKe
             torsionF[el.nodes] += el.torsionFe
 
         # ----------------------------------------------------------------------
@@ -93,9 +98,9 @@ class triMesh:
         # PRCINCIPAL AXIS PROPERTIES:
         # ----------------------------------------------------------------------
         # calculate prinicpal second moments of area about the centroidal xy axis
-        delta = (((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c ** 2) ** 0.5
-        self.i11_c = (self.ixx_c + self.iyy_c) / 2 + delta
-        self.i22_c = (self.ixx_c + self.iyy_c) / 2 - delta
+        Delta = (((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c ** 2) ** 0.5
+        self.i11_c = (self.ixx_c + self.iyy_c) / 2 + Delta
+        self.i22_c = (self.ixx_c + self.iyy_c) / 2 - Delta
 
         # calculate initial principal axis angle
         self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
@@ -111,14 +116,25 @@ class triMesh:
         # TORSION PROPERTIES:
         # ----------------------------------------------------------------------
         # calculate warping constant and torsion constant
-        self.w = np.linalg.solve(torsionK, torsionF)
-        self.J = self.ixx_g + self.iyy_g - self.w.dot(torsionK).dot(np.transpose(self.w))
+        self.omega = np.linalg.solve(shearK, torsionF)
+        self.J = self.ixx_g + self.iyy_g - self.omega.dot(shearK).dot(np.transpose(self.omega))
+
+        # ----------------------------------------------------------------------
+        # SHEAR PROPERTIES:
+        # ----------------------------------------------------------------------
+        for el in self.elements:
+            shearFPsi[el.nodes] += el.shearFePsi(self.ixx_c, self.ixy_c)
+            shearFPhi[el.nodes] += el.shearFePhi(self.iyy_c, self.ixy_c)
+
+        self.Psi = np.linalg.solve(shearK, shearFPsi)
+        self.Phi = np.linalg.solve(shearK, shearFPhi)
 
         # ----------------------------------------------------------------------
         # STRESS CALCULATION:
         # ----------------------------------------------------------------------
         # calculate torsion stress
         self.torsionStress()
+        self.shearStress()
 
     def centroidalSectionModulii(self):
         xmax = self.triangulation['vertices'][:, 0].max()
@@ -159,17 +175,34 @@ class triMesh:
         self.z22_minus = self.i22_c / abs(self.d2min)
 
     def torsionStress(self):
-        self.tau_zx = np.transpose(np.zeros(self.noNodes))
-        self.tau_zy = np.transpose(np.zeros(self.noNodes))
-        node_count = np.transpose(np.zeros(self.noNodes))
+        self.tau_zx_torsion = np.zeros(self.noNodes)
+        self.tau_zy_torsion = np.zeros(self.noNodes)
+        node_count = np.zeros(self.noNodes)
+
         for el in self.elements:
-            self.tau_zx[el.nodes] += el.torsionStress(self.w[el.nodes], self.J)[:,0]
-            self.tau_zy[el.nodes] += el.torsionStress(self.w[el.nodes], self.J)[:,1]
+            tau_torsion = el.torsionStress(1000, self.omega[el.nodes], self.J)
+            self.tau_zx_torsion[el.nodes] += tau_torsion[:,0]
+            self.tau_zy_torsion[el.nodes] += tau_torsion[:,1]
             node_count[el.nodes] += 1
 
-        self.tau_zx *= 1 / node_count
-        self.tau_zy *= 1 / node_count
-        self.tau = (self.tau_zx ** 2 + self.tau_zy ** 2) ** 0.5
+        self.tau_zx_torsion *= 1 / node_count
+        self.tau_zy_torsion *= 1 / node_count
+        self.tau_torsion = (self.tau_zx_torsion ** 2 + self.tau_zy_torsion ** 2) ** 0.5
+
+    def shearStress(self):
+        self.tau_zx_shear = np.zeros(self.noNodes)
+        self.tau_zy_shear = np.zeros(self.noNodes)
+        node_count = np.zeros(self.noNodes)
+
+        for el in self.elements:
+            tau_shear = el.shearStress(0, 0.001, self.Psi[el.nodes], self.Phi[el.nodes], self.ixx_c, self.iyy_c, self.ixy_c)
+            self.tau_zx_shear[el.nodes] += tau_shear[:,0]
+            self.tau_zy_shear[el.nodes] += tau_shear[:,1]
+            node_count[el.nodes] += 1
+
+        self.tau_zx_shear *= 1 / node_count
+        self.tau_zy_shear *= 1 / node_count
+        self.tau_shear = (self.tau_zx_shear ** 2 + self.tau_zy_shear ** 2) ** 0.5
 
     def contourPlot(self, principalAxis = False, z = False):
         plt.figure()
@@ -177,8 +210,8 @@ class triMesh:
         plt.triplot(self.triangulation['vertices'][:,0], self.triangulation['vertices'][:,1], self.triangulation['triangles'], lw=0.5, color='black')
 
         if principalAxis:
-            d1 = max(abs(self.d1max), abs(self.d1min))
-            d2 = max(abs(self.d2max), abs(self.d2min))
+            d1 = max(abs(self.d2max), abs(self.d2min))
+            d2 = max(abs(self.d1max), abs(self.d1min))
             plt.plot([self.cx - d1 * np.cos(self.phi * np.pi / 180), self.cx + d1 * np.cos(self.phi * np.pi / 180)], [self.cy - d1 * np.sin(self.phi * np.pi / 180), self.cy + d1 * np.sin(self.phi * np.pi / 180)])
             plt.plot([self.cx - d2 * np.cos(self.phi * np.pi / 180 + np.pi / 2), self.cx + d2 * np.cos(self.phi * np.pi / 180 + np.pi / 2)], [self.cy - d2 * np.sin(self.phi * np.pi / 180 + np.pi / 2), self.cy + d2 * np.sin(self.phi * np.pi / 180 + np.pi / 2)])
 

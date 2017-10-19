@@ -41,3 +41,16 @@ def shapeFunction(xy, gaussPoint, type):
         print 'Element not yet programmed'
 
     return (N, dN, j)
+
+def extrapolateToNodes(w, elementType, noGp):
+    '''
+    Extrapolate reults (w) at Gauss points to nodal points
+    '''
+    if elementType == 'tri3':
+        if noGp == 1:
+            return np.array([w, w, w])
+        elif noGp == 3:
+            H = np.array([[1, 1, -1], [1, -1, 1], [-1, 1, 1]])
+            return H.dot(w)
+    else:
+        print 'Element type not yet programmed'
