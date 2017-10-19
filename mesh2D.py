@@ -14,13 +14,13 @@ class triMesh:
         triElements = [] # list holding all element objects
 
         if elementType == 'tri3':
-            for tri in genMesh['triangles']:
-                x1 = genMesh['vertices'][tri[0]][0]
-                y1 = genMesh['vertices'][tri[0]][1]
-                x2 = genMesh['vertices'][tri[1]][0]
-                y2 = genMesh['vertices'][tri[1]][1]
-                x3 = genMesh['vertices'][tri[2]][0]
-                y3 = genMesh['vertices'][tri[2]][1]
+            for tri in genMesh.elements:
+                x1 = genMesh.points[tri[0]][0]
+                y1 = genMesh.points[tri[0]][1]
+                x2 = genMesh.points[tri[1]][0]
+                y2 = genMesh.points[tri[1]][1]
+                x3 = genMesh.points[tri[2]][0]
+                y3 = genMesh.points[tri[2]][1]
                 vertices = np.array([[x1,y1], [x2,y2], [x3,y3]])
                 # create tri3 elements
                 triElements.append(elementDefinitions.tri3(vertices, tri, nu))
@@ -30,7 +30,7 @@ class triMesh:
         self.elements = triElements # store element list in triMesh object
         self.triangulation = genMesh # store the generated mesh
         self.nu = nu # poissons ratio of material
-        self.noNodes = len((genMesh)['vertices']) # total number of nodes in mesh
+        self.noNodes = len(genMesh.points) # total number of nodes in mesh
         self.initialise()
 
     def initialise(self):
@@ -137,10 +137,10 @@ class triMesh:
         self.shearStress()
 
     def centroidalSectionModulii(self):
-        xmax = self.triangulation['vertices'][:, 0].max()
-        xmin = self.triangulation['vertices'][:, 0].min()
-        ymax = self.triangulation['vertices'][:, 1].max()
-        ymin = self.triangulation['vertices'][:, 1].min()
+        xmax = np.array(self.triangulation.points)[:, 1].max()
+        xmin = np.array(self.triangulation.points)[:, 0].min()
+        ymax = np.array(self.triangulation.points)[:, 1].max()
+        ymin = np.array(self.triangulation.points)[:, 1].min()
         self.zxx_plus = self.ixx_c / (ymax - self.cy)
         self.zxx_minus = self.ixx_c / (self.cy - ymin)
         self.zyy_plus = self.iyy_c / (xmax - self.cx)
@@ -155,7 +155,7 @@ class triMesh:
         self.d2min = 0 # min distance perpendicular to the 2 axis
         isAbove = []
 
-        for vertex in self.triangulation['vertices']:
+        for vertex in self.triangulation.points:
             PQ = np.array([self.cx - vertex[0], self.cy - vertex[1]]) # vector from point to centroid
             d1 = np.linalg.norm(np.cross(PQ, u1)) # perpendicular distance from point to 1 axis
             d2 = np.linalg.norm(np.cross(PQ, u2)) # perpendicular distance from point to 2 axis
@@ -204,10 +204,10 @@ class triMesh:
         self.tau_zy_shear *= 1 / node_count
         self.tau_shear = (self.tau_zx_shear ** 2 + self.tau_zy_shear ** 2) ** 0.5
 
-    def contourPlot(self, principalAxis = False, z = False):
+    def contourPlot(self, principalAxis = False, z = False, nodes = False):
         plt.figure()
         plt.gca().set_aspect('equal')
-        plt.triplot(self.triangulation['vertices'][:,0], self.triangulation['vertices'][:,1], self.triangulation['triangles'], lw=0.5, color='black')
+        plt.triplot(np.array(self.triangulation.points)[:,0], np.array(self.triangulation.points)[:,1], self.triangulation.elements, lw=0.5, color='black')
 
         if principalAxis:
             d1 = max(abs(self.d2max), abs(self.d2min))
@@ -216,19 +216,22 @@ class triMesh:
             plt.plot([self.cx - d2 * np.cos(self.phi * np.pi / 180 + np.pi / 2), self.cx + d2 * np.cos(self.phi * np.pi / 180 + np.pi / 2)], [self.cy - d2 * np.sin(self.phi * np.pi / 180 + np.pi / 2), self.cy + d2 * np.sin(self.phi * np.pi / 180 + np.pi / 2)])
 
         if z.any():
-            cmap = cm.get_cmap(name='jet')
-            trictr = plt.tricontourf(self.triangulation['vertices'][:,0], self.triangulation['vertices'][:,1], self.triangulation['triangles'], z, cmap=cmap)
+            cmap = cm.get_cmap(name = 'jet')
+            trictr = plt.tricontourf(np.array(self.triangulation.points)[:,0], np.array(self.triangulation.points)[:,1], self.triangulation.elements, z, cmap=cmap)
             cbar = plt.colorbar(trictr)
+
+        if nodes:
+            plt.plot(np.array(self.triangulation.points)[:,0], np.array(self.triangulation.points)[:,1], 'ko', markersize = 2)
 
         plt.show()
 
     def quiverPlot(self, u, v):
         plt.figure()
         plt.gca().set_aspect('equal')
-        plt.triplot(self.triangulation['vertices'][:,0], self.triangulation['vertices'][:,1], self.triangulation['triangles'], lw=0.5, color='black')
+        plt.triplot(np.array(self.triangulation.points)[:,0], np.array(self.triangulation.points)[:,1], self.triangulation.elements, lw=0.5, color='black')
         c = np.hypot(u, v)
         cmap = cm.get_cmap(name='jet')
-        quiv = plt.quiver(self.triangulation['vertices'][:,0], self.triangulation['vertices'][:,1], u, v, c, cmap=cmap)
+        quiv = plt.quiver(np.array(self.triangulation.points)[:,0], np.array(self.triangulation.points)[:,1], u, v, c, cmap=cmap)
         cbar = plt.colorbar(quiv)
         plt.show()
 

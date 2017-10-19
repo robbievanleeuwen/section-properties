@@ -1,24 +1,25 @@
-import triangle
+import meshpy.triangle as triangle
 import numpy as np
 import mesh2D
-
-import triangle.plot as plot
 import matplotlib.pyplot as plt
 
-crossSection = {}
-crossSection['vertices'] = np.array([[0,0], [50,0], [50,100], [0,100], [6,6], [44, 6], [44, 94], [6, 94]])
-crossSection['segments'] = np.array([[0,1], [1,2], [2,3], [3,0], [4,5], [5,6], [6,7], [7,4]])
-crossSection['holes'] = np.array([[25,50]])
-# elementType = 'tri6'
+# rectangular hollow section
+points = [(0,0), (50,0), (50,100), (0,100), (6,6), (44, 6), (44, 94), (6, 94)]
+facets = [(0,1), (1,2), (2,3), (3,0), (4,5), (5,6), (6,7), (7,4)]
+info = triangle.MeshInfo()
+info.set_points(points)
+info.set_holes([(25, 50)])
+info.set_facets(facets)
 
-mesh1 = triangle.triangulate(crossSection, 'pa20q30') # generate triangular mesh
+triangularMesh = triangle.build(info, max_volume = 2.5, min_angle = 30) # generate triangular mesh
 
-mesh = mesh2D.triMesh(mesh1, 'tri3', 0.2) # create mesh object
+mesh = mesh2D.triMesh(triangularMesh, 'tri3', 0.2) # create mesh object
 
-mesh.contourPlot(False, mesh.Psi)
-mesh.contourPlot(False, mesh.tau_zy_shear)
-mesh.contourPlot(False, mesh.tau_shear)
-mesh.quiverPlot(mesh.tau_zx_torsion, mesh.tau_zy_torsion)
+mesh.contourPlot(principalAxis = True, z = mesh.tau_torsion, nodes = True)
+# mesh.quiverPlot(mesh.tau_zx_torsion, mesh.tau_zy_torsion)
+# mesh.contourPlot(False, mesh.Psi)
+# mesh.contourPlot(False, mesh.tau_zy_shear)
+# mesh.contourPlot(False, mesh.tau_shear)
 
 print "-------------------------"
 print "Global xy Axis Properties"
