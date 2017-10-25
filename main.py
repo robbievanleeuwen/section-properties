@@ -1,21 +1,26 @@
 import meshpy.triangle as triangle
-import numpy as np
 import mesh2D
 import matplotlib.pyplot as plt
 
-# rectangular hollow section
-points = [(0,0), (50,0), (50,100), (0,100), (6,6), (44, 6), (44, 94), (6, 94)]
-facets = [(0,1), (1,2), (2,3), (3,0), (4,5), (5,6), (6,7), (7,4)]
+# asymmetric I-section
+points = ([(-10,0), (110,0), (100,10), (55,10), (55,90), (100,90), (110,100),
+            (110,110), (-10,110), (-10,100), (0, 90), (45, 90), (45,10), (-10,10)])
+facets = ([(0,1), (1,2), (2,3), (3,4), (4,5), (5,6), (6,7), (7,8), (8,9),
+            (9,10), (10,11), (11,12), (12,13), (13,0)])
 info = triangle.MeshInfo()
 info.set_points(points)
-info.set_holes([(25, 50)])
 info.set_facets(facets)
 
-triangularMesh = triangle.build(info, max_volume = 2.5, min_angle = 30) # generate triangular mesh
 
-mesh = mesh2D.triMesh(triangularMesh, 'tri3', 0.2) # create mesh object
+# generate triangular mesh
+triangularMesh = triangle.build(info, max_volume = 5, min_angle = 30, mesh_order = 2)
+ # create mesh2D object
+mesh = mesh2D.triMesh(triangularMesh, 0.2)
 
-mesh.contourPlot(principalAxis = True, z = mesh.tau_torsion, nodes = True)
+# plot mesh
+mesh.contourPlot(principalAxis = False, z = False, nodes = True)
+
+# mesh.contourPlot(principalAxis = True, z = mesh.tau_torsion, nodes = True)
 # mesh.quiverPlot(mesh.tau_zx_torsion, mesh.tau_zy_torsion)
 # mesh.contourPlot(False, mesh.Psi)
 # mesh.contourPlot(False, mesh.tau_zy_shear)
@@ -62,4 +67,4 @@ print ""
 print "-----------------------------"
 print "Torsional Properties"
 print "-----------------------------"
-print "J = {}".format(mesh.J)
+# print "J = {}".format(mesh.J)
