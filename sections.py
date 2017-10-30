@@ -1,5 +1,5 @@
 # rectangular bar
-points = [(0,0), (10,0), (10,100), (0,100)]
+points = [(-5,-50), (5,-50), (5,50), (-5,50)]
 facets = [(0,1), (1,2), (2,3), (3,0)]
 info = triangle.MeshInfo()
 info.set_points(points)

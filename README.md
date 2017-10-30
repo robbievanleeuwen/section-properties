@@ -2,7 +2,6 @@
 Cross section analysis
 
 # To do
-0) tri6 elements
 1) Plastic Modulus (S) - how to calculate plastic neutral axis?
 2) Shear Area
 3) Shear Centre (shear functions)

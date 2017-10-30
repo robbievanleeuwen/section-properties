@@ -21,8 +21,8 @@ class tri6:
         self.ixx = self._ixx()
         self.iyy = self._iyy()
         self.ixy = self._ixy()
-        # self.shearKe = self._shearKe()
-        # self.torsionFe = self._torsionFe()
+        self.shearKe = self._shearKe()
+        self.torsionFe = self._torsionFe()
 
     def _area(self):
         '''
@@ -119,28 +119,41 @@ class tri6:
 
         return total
 
-    # def _shearKe(self):
-    #     '''
-    #     Element stiffness matrix for solving for shear functions and torsional warping constant
-    #         - integral of [B' * B * det(J)] over element
-    #     '''
-    #     # B' * B * det(J) is constant in 2D over a tri3 element, therefore use 1 point Gaussian integration
-    #     gp = femFunctions.gaussPoints(1)[0] # Gauss point for 1 point Gaussian integration
-    #     (N, dN, j) = femFunctions.shapeFunction(np.transpose(self.xy), gp, 'tri3')
-    #     return gp[0] * np.dot(dN, np.transpose(dN)) * j
-    #
-    # def _torsionFe(self):
-    #     '''
-    #     Element load vector for solving for torsional warping constant
-    #         - integral of [B' * [N * y; -N * x] * det(J)] over element
-    #     '''
-    #     # B' * [Ny; -Nx] * det(J) is linear in 2D over a tri3 element, therefore use 1 point Gaussian integration
-    #     gp = femFunctions.gaussPoints(1)[0] # Gauss point for 1 point Gaussian integration
-    #     (N, dN, j) = femFunctions.shapeFunction(np.transpose(self.xy), gp, 'tri3')
-    #     Nx = np.dot(np.transpose(N), self.xy[:,0])
-    #     Ny = np.dot(np.transpose(N), self.xy[:,1])
-    #     return gp[0] * np.dot(dN, np.transpose(np.array([Ny, -Nx]))) * j
-    #
+    def _shearKe(self):
+        '''
+        Element stiffness matrix for solving for shear functions and
+        torsional warping constant
+            - integral of [B' * B * det(J)] over element
+        '''
+        # B' * B * det(J) is quadratic in 2D over a tri6 element,
+        # therefore use 3 point Gaussian integration
+        gps = femFunctions.gaussPoints(3) # Gauss points for 3 point Gaussian integration
+        total = 0
+        for gp in gps:
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            total += gp[0] * np.dot(np.transpose(B), B) * j
+
+        return total
+
+    def _torsionFe(self):
+        '''
+        Element load vector for solving for the torsional warping constant
+            - integral of [B' * [N * y; -N * x] * det(J)] over element
+        '''
+        # B' * [Ny; -Nx] * det(J) is cubic in 2D over a tri6 element,
+        # therefore use 6 point Gaussian integration
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        total = 0
+        for gp in gps:
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nx = np.dot(N, np.transpose(self.xy[0,:]))
+            Ny = np.dot(N, np.transpose(self.xy[1,:]))
+
+            total += (gp[0] * np.dot(np.transpose(B),
+                    np.transpose(np.array([Ny, -Nx]))) * j)
+
+        return total
+
     # def shearFePsi(self, ixx, ixy):
     #     '''
     #     Element load vector for solving for shear function (Psi) for x-direction

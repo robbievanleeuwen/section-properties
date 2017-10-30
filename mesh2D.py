@@ -13,25 +13,33 @@ class triMesh:
 
     def __init__(self, genMesh, nu):
         triElements = [] # list holding all element objects
+        pointArray = np.array(genMesh.points) # save points to numpy array
+        elementArray = np.array(genMesh.elements) # save elements to numpy array
+        # swap mid-node order to retain node ordering consistency
+        elementArray[:,[3,4,5]] = elementArray[:,[5,3,4]]
 
-        for tri in genMesh.elements:
-            x1 = genMesh.points[tri[0]][0]
-            y1 = genMesh.points[tri[0]][1]
-            x2 = genMesh.points[tri[1]][0]
-            y2 = genMesh.points[tri[1]][1]
-            x3 = genMesh.points[tri[2]][0]
-            y3 = genMesh.points[tri[2]][1]
-            x4 = genMesh.points[tri[5]][0]
-            y4 = genMesh.points[tri[5]][1]
-            x5 = genMesh.points[tri[3]][0]
-            y5 = genMesh.points[tri[3]][1]
-            x6 = genMesh.points[tri[4]][0]
-            y6 = genMesh.points[tri[4]][1]
+        for tri in elementArray:
+            x1 = pointArray[tri[0]][0]
+            y1 = pointArray[tri[0]][1]
+            x2 = pointArray[tri[1]][0]
+            y2 = pointArray[tri[1]][1]
+            x3 = pointArray[tri[2]][0]
+            y3 = pointArray[tri[2]][1]
+            x4 = pointArray[tri[3]][0]
+            y4 = pointArray[tri[3]][1]
+            x5 = pointArray[tri[4]][0]
+            y5 = pointArray[tri[4]][1]
+            x6 = pointArray[tri[5]][0]
+            y6 = pointArray[tri[5]][1]
             vertices = np.array([[x1, x2, x3, x4, x5, x6], [y1, y2, y3, y4, y5, y6]])
             triElements.append(elementDefinitions.tri6(vertices, tri, nu))
 
-        self.elements = triElements # store element list in triMesh object
-        self.triangulation = genMesh # store the generated mesh
+        self.elements = triElements # store element list in mesh2D object
+
+        # store the mesh arrays
+        self.pointArray = pointArray
+        self.elementArray = elementArray
+
         self.nu = nu # poissons ratio of material
         self.noNodes = len(genMesh.points) # total number of nodes in mesh
         self.initialise()
@@ -40,9 +48,7 @@ class triMesh:
         # initialise variables
         totalArea = totalQx = totalQy = totalIxx_g = totalIyy_g = totalIxy_g = 0
         shearK = np.zeros((self.noNodes, self.noNodes))
-        torsionF = np.zeros(self.noNodes)
-        shearFPsi = np.zeros(self.noNodes)
-        shearFPhi = np.zeros(self.noNodes)
+        torsionF = shearFPsi = shearFPhi = np.zeros(self.noNodes)
 
         # loop through all elements where summing over all elements is required
         for el in self.elements:
@@ -58,10 +64,10 @@ class triMesh:
             totalIyy_g += el.iyy
             totalIxy_g += el.ixy
 
-            # # assemble stiffness matrix and load vector for warping constant
-            # indxs = np.ix_(el.nodes, el.nodes)
-            # shearK[indxs] += el.shearKe
-            # torsionF[el.nodes] += el.torsionFe
+            # assemble stiffness matrix and load vector for warping constant
+            indxs = np.ix_(el.nodes, el.nodes)
+            shearK[indxs] += el.shearKe
+            torsionF[el.nodes] += el.torsionFe
 
         # ----------------------------------------------------------------------
         # GLOBAL xy AXIS PROPERTIES:
@@ -115,13 +121,14 @@ class triMesh:
         self.r1_c = (self.i11_c / totalArea) ** 0.5
         self.r2_c = (self.i22_c / totalArea) ** 0.5
 
-        # # ----------------------------------------------------------------------
-        # # TORSION PROPERTIES:
-        # # ----------------------------------------------------------------------
-        # # calculate warping constant and torsion constant
-        # self.omega = np.linalg.solve(shearK, torsionF)
-        # self.J = self.ixx_g + self.iyy_g - self.omega.dot(shearK).dot(np.transpose(self.omega))
-        #
+        # ----------------------------------------------------------------------
+        # TORSION PROPERTIES:
+        # ----------------------------------------------------------------------
+        # calculate warping constant and torsion constant
+        self.omega = np.linalg.solve(shearK, torsionF)
+        self.J = (self.ixx_g + self.iyy_g -
+                self.omega.dot(shearK).dot(np.transpose(self.omega)))
+
         # # ----------------------------------------------------------------------
         # # SHEAR PROPERTIES:
         # # ----------------------------------------------------------------------
@@ -141,10 +148,10 @@ class triMesh:
 
     def centroidalSectionModulii(self):
         # determine extreme values of the cartesian co-ordinates
-        xmax = np.array(self.triangulation.points)[:,0].max()
-        xmin = np.array(self.triangulation.points)[:,0].min()
-        ymax = np.array(self.triangulation.points)[:,1].max()
-        ymin = np.array(self.triangulation.points)[:,1].min()
+        xmax = self.pointArray[:,0].max()
+        xmin = self.pointArray[:,0].min()
+        ymax = self.pointArray[:,1].max()
+        ymin = self.pointArray[:,1].min()
 
         # evaluate section modulii
         self.zxx_plus = self.ixx_c / (ymax - self.cy)
@@ -162,7 +169,7 @@ class triMesh:
 
         # loop through all co-ordinates to determine extreme values
         # in the principal directions
-        for vertex in self.triangulation.points:
+        for vertex in self.pointArray:
             # vector from point to centroid
             PQ = np.array([self.cx - vertex[0], self.cy - vertex[1]])
             # perpendicular distance from point to 1 and 2 axes
@@ -218,7 +225,7 @@ class triMesh:
     def contourPlot(self, principalAxis = False, z = False, nodes = False):
         plt.figure()
         plt.gca().set_aspect('equal')
-        plt.triplot(np.array(self.triangulation.points)[:,0], np.array(self.triangulation.points)[:,1], np.array(self.triangulation.elements)[:,0:3], lw=0.5, color='black')
+        plt.triplot(self.pointArray[:,0], self.pointArray[:,1], self.elementArray[:,0:3], lw=0.5, color='black')
 
         if principalAxis:
             d1 = max(abs(self.d2max), abs(self.d2min))
@@ -226,23 +233,24 @@ class triMesh:
             plt.plot([self.cx - d1 * np.cos(self.phi * np.pi / 180), self.cx + d1 * np.cos(self.phi * np.pi / 180)], [self.cy - d1 * np.sin(self.phi * np.pi / 180), self.cy + d1 * np.sin(self.phi * np.pi / 180)])
             plt.plot([self.cx - d2 * np.cos(self.phi * np.pi / 180 + np.pi / 2), self.cx + d2 * np.cos(self.phi * np.pi / 180 + np.pi / 2)], [self.cy - d2 * np.sin(self.phi * np.pi / 180 + np.pi / 2), self.cy + d2 * np.sin(self.phi * np.pi / 180 + np.pi / 2)])
 
-        if z:
+        if z.any():
             cmap = cm.get_cmap(name = 'jet')
-            trictr = plt.tricontourf(np.array(self.triangulation.points)[:,0], np.array(self.triangulation.points)[:,1], self.triangulation.elements, z, cmap=cmap)
+            # v = np.linspace(-10, 10, 15, endpoint=True)
+            trictr = plt.tricontourf(self.pointArray[:,0], self.pointArray[:,1], self.elementArray[:,0:3], z, cmap=cmap)
             cbar = plt.colorbar(trictr)
 
         if nodes:
-            plt.plot(np.array(self.triangulation.points)[:,0], np.array(self.triangulation.points)[:,1], 'ko', markersize = 2)
+            plt.plot(self.pointArray[:,0], self.pointArray[:,1], 'ko', markersize = 2)
 
         plt.show()
 
     def quiverPlot(self, u, v):
         plt.figure()
         plt.gca().set_aspect('equal')
-        plt.triplot(np.array(self.triangulation.points)[:,0], np.array(self.triangulation.points)[:,1], self.triangulation.elements, lw=0.5, color='black')
+        plt.triplot(self.pointArray[:,0], self.pointArray[:,1], self.elementArray, lw=0.5, color='black')
         c = np.hypot(u, v)
         cmap = cm.get_cmap(name='jet')
-        quiv = plt.quiver(np.array(self.triangulation.points)[:,0], np.array(self.triangulation.points)[:,1], u, v, c, cmap=cmap)
+        quiv = plt.quiver(self.pointArray[:,0], self.pointArray[:,1], u, v, c, cmap=cmap)
         cbar = plt.colorbar(quiv)
         plt.show()
 

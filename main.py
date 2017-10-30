@@ -11,14 +11,13 @@ info = triangle.MeshInfo()
 info.set_points(points)
 info.set_facets(facets)
 
-
 # generate triangular mesh
 triangularMesh = triangle.build(info, max_volume = 5, min_angle = 30, mesh_order = 2)
  # create mesh2D object
 mesh = mesh2D.triMesh(triangularMesh, 0.2)
 
 # plot mesh
-mesh.contourPlot(principalAxis = False, z = False, nodes = True)
+mesh.contourPlot(principalAxis = False, z = mesh.omega, nodes = False)
 
 # mesh.contourPlot(principalAxis = True, z = mesh.tau_torsion, nodes = True)
 # mesh.quiverPlot(mesh.tau_zx_torsion, mesh.tau_zy_torsion)
@@ -67,4 +66,4 @@ print ""
 print "-----------------------------"
 print "Torsional Properties"
 print "-----------------------------"
-# print "J = {}".format(mesh.J)
+print "J = {}".format(mesh.J)
