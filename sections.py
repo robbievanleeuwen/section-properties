@@ -1,30 +1,44 @@
 # rectangular bar
 points = [(-5,-50), (5,-50), (5,50), (-5,50)]
 facets = [(0,1), (1,2), (2,3), (3,0)]
-info = triangle.MeshInfo()
-info.set_points(points)
-info.set_facets(facets)
+holes = []
+maxSize = 2.5
 
-# L section (inches are used for validation)
+# L section 1
 points = [(0,0), (0.1, 0), (0.1, 1.95), (1.05, 1.95), (1.05, 2.05), (0, 2.05)]
 facets = [(0,1), (1,2), (2,3), (3,4), (4,5), (5,0)]
-info = triangle.MeshInfo()
-info.set_points(points)
-info.set_facets(facets)
+holes = []
+maxSize = 0.0005
 
-# rectangular hollow section
+# L section 2
+points = [(0,0), (0, 0.1), (1.95, 0.1), (1.95, 1.05), (2.05, 1.05), (2.05, 0)]
+facets = [(0,1), (1,2), (2,3), (3,4), (4,5), (5,0)]
+holes = []
+maxSize = 0.0005
+
+# rectangular hollow section 1
 points = [(0,0), (50,0), (50,100), (0,100), (6,6), (44, 6), (44, 94), (6, 94)]
 facets = [(0,1), (1,2), (2,3), (3,0), (4,5), (5,6), (6,7), (7,4)]
-info = triangle.MeshInfo()
-info.set_points(points)
-info.set_holes([(25, 50)])
-info.set_facets(facets)
+holes = [(25,50)]
+maxSize = 2.5
+
+# rectangular hollow section 2
+points = [(0,0), (100,0), (100,50), (0,50), (6,6), (6, 44), (94, 44), (94, 6)]
+facets = [(0,1), (1,2), (2,3), (3,0), (4,5), (5,6), (6,7), (7,4)]
+holes = [(50,25)]
+maxSize = 2.5
 
 # asymmetric I-section
 points = ([(-10,0), (110,0), (100,10), (55,10), (55,90), (100,90), (110,100),
-            (110,110), (-10,110), (-10,100), (0, 90), (45, 90), (45,10), (-10,10)])
+    (110,110), (-10,110), (-10,100), (0, 90), (45, 90), (45,10), (-10,10)])
 facets = ([(0,1), (1,2), (2,3), (3,4), (4,5), (5,6), (6,7), (7,8), (8,9),
-            (9,10), (10,11), (11,12), (12,13), (13,0)])
-info = triangle.MeshInfo()
-info.set_points(points)
-info.set_facets(facets)
+    (9,10), (10,11), (11,12), (12,13), (13,0)])
+holes = []
+maxSize = 5
+
+# channel section
+points = ([(-0.05,-0.05), (1,-0.05), (1,0.05), (0.05,0.05), (0.05, 1.95), (1, 1.95),
+    (1, 2.05), (-0.05, 2.05)])
+facets = [(0,1), (1,2), (2,3), (3,4), (4,5), (5,6), (6,7), (7,0)]
+holes = []
+maxSize = 0.001

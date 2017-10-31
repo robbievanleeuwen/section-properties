@@ -1,5 +1,5 @@
-import femFunctions
 import numpy as np
+import femFunctions
 
 class tri6:
     '''
@@ -10,28 +10,14 @@ class tri6:
         self.xy = vertices # triangle vertex co-ordinates [2 x 6]
         self.nodes = nodes # array of node numbers [1 x 6]
         self.nu = nu # poissons ratio of material
-        self.initialise()
 
-    def initialise(self):
-        # compute properties of element
-        self.area = self._area()
-        self.Qx = self._Qx()
-        self.Qy = self._Qy()
-        self.centroid = self._centroid()
-        self.ixx = self._ixx()
-        self.iyy = self._iyy()
-        self.ixy = self._ixy()
-        self.shearKe = self._shearKe()
-        self.torsionFe = self._torsionFe()
-
-    def _area(self):
+    def area(self):
         '''
         Area of element: integral of the determinant of the jacobian over the element
         '''
         # jacobian is constant for a superparametric tri6 element,
         # therefore use 1 point Gaussian integration
         gps = femFunctions.gaussPoints(1) # Gauss point for 1 point Gaussian integration
-        # loop through each gauss point to evaluate the integral at each gauss point
         total = 0
         for gp in gps:
             (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
@@ -39,7 +25,7 @@ class tri6:
 
         return total
 
-    def _Qx(self):
+    def Qx(self):
         '''
         First moment of area about the global x-axis:
             - integral of [N * y * det(J)] over element
@@ -54,7 +40,7 @@ class tri6:
 
         return total
 
-    def _Qy(self):
+    def Qy(self):
         '''
         First moment of area about the global y-axis:
             - integral of [N * x * det(J)] over element
@@ -69,11 +55,11 @@ class tri6:
 
         return total
 
-    def _centroid(self):
+    def centroid(self):
         ''' Centroid of element '''
         return np.array([self.Qy / self.area, self.Qx / self.area])
 
-    def _ixx(self):
+    def ixx(self):
         '''
         Second moment of area about the global x-axis:
             - integral of [(N * y)^2 * det(J)] over element
@@ -88,7 +74,7 @@ class tri6:
 
         return total
 
-    def _iyy(self):
+    def iyy(self):
         '''
         Second moment of area about the global y-axis:
             - integral of [(N * x)^2 * det(J)] over element
@@ -103,7 +89,7 @@ class tri6:
 
         return total
 
-    def _ixy(self):
+    def ixy(self):
         '''
         Product of inertia about the global xy-axis:
             - integral of [N * y * N * x * det(J)] over element
@@ -119,10 +105,10 @@ class tri6:
 
         return total
 
-    def _shearKe(self):
+    def shearKe(self):
         '''
         Element stiffness matrix for solving for shear functions and
-        torsional warping constant
+        torsional warping function
             - integral of [B' * B * det(J)] over element
         '''
         # B' * B * det(J) is quadratic in 2D over a tri6 element,
@@ -135,9 +121,9 @@ class tri6:
 
         return total
 
-    def _torsionFe(self):
+    def torsionFe(self):
         '''
-        Element load vector for solving for the torsional warping constant
+        Element load vector for solving for the torsional warping function
             - integral of [B' * [N * y; -N * x] * det(J)] over element
         '''
         # B' * [Ny; -Nx] * det(J) is cubic in 2D over a tri6 element,
@@ -154,63 +140,174 @@ class tri6:
 
         return total
 
-    # def shearFePsi(self, ixx, ixy):
-    #     '''
-    #     Element load vector for solving for shear function (Psi) for x-direction
-    #         - integral of [nu/2 * B' * [d1; d2] + 2 * (1 + nu) * N' * (Ix * N * x - Ixy * N * y)] * det(J) over element
-    #         where:
-    #             - d1 = Ix * r - Ixy * q
-    #             - d2 = Ixy * r + Ix * q
-    #             - r = (N * x) ^ 2 - (N * y)^2
-    #             - q = 2 * N * x * N * y
-    #     '''
-    #     # Function is quadratic in 2D over a tri3 element, therefore use 3 point Gaussian integration
-    #     gps = femFunctions.gaussPoints(3) # Gauss points for 3 point Gaussian integration
-    #     shearFePsi = np.zeros(3) # allocate shear function load vector
-    #
-    #     # loop through each gauss point to evaluate the integral at each gauss point
-    #     for gp in gps:
-    #         (N, dN, j) = femFunctions.shapeFunction(np.transpose(self.xy), gp, 'tri3')
-    #         Nx = np.dot(np.transpose(N), self.xy[:,0])
-    #         Ny = np.dot(np.transpose(N), self.xy[:,1])
-    #         r = Nx ** 2 - Ny ** 2
-    #         q = 2 * Nx * Ny
-    #         d1 = ixx * r - ixy * q
-    #         d2 = ixy * r + ixx * q
-    #
-    #         shearFePsi += gp[0] * (self.nu / 2 * dN.dot(np.array([d1, d2])) + 2 * (1 + self.nu) * N * (ixx * Nx - ixy * Ny)) * j
-    #
-    #     self._shearFePsi = shearFePsi
-    #     return shearFePsi
-    #
-    # def shearFePhi(self, iyy, ixy):
-    #     '''
-    #     Element load vector for solving for shear function (Phi) for y-direction
-    #         - integral of [nu/2 * B' * [h1; h2] + 2 * (1 + nu) * N' * (Iy * N * y - Ixy * N * x)] * det(J) over element
-    #         where:
-    #             - h1 = -Ixy * r + Iy * q
-    #             - h2 = -Iy * r - Ixy * q
-    #             - r = (N * x) ^ 2 - (N * y)^2
-    #             - q = 2 * N * x * N * y
-    #     '''
-    #     # Function is quadratic in 2D over a tri3 element, therefore use 3 point Gaussian integration
-    #     gps = femFunctions.gaussPoints(3) # Gauss points for 3 point Gaussian integration
-    #     shearFePhi = np.zeros(3) # allocate shear load vector
-    #
-    #     # loop through each gauss point to evaluate the integral at each gauss point
-    #     for gp in gps:
-    #         (N, dN, j) = femFunctions.shapeFunction(np.transpose(self.xy), gp, 'tri3')
-    #         Nx = np.dot(np.transpose(N), self.xy[:,0])
-    #         Ny = np.dot(np.transpose(N), self.xy[:,1])
-    #         r = Nx ** 2 - Ny ** 2
-    #         q = 2 * Nx * Ny
-    #         h1 = -ixy * r + iyy * q
-    #         h2 = -iyy * r - ixy * q
-    #
-    #         shearFePhi += gp[0] * (self.nu / 2 * dN.dot(np.array([h1, h2])) + 2 * (1 + self.nu) * N * (iyy * Ny - ixy * Nx)) * j
-    #
-    #     self._shearFePhi = shearFePhi
-    #     return shearFePhi
+    def shearFePsi(self, ixx, ixy):
+        '''
+        Element load vector for solving for shear function (Psi) for x-direction
+            - integral of [nu/2 * B' * [d1; d2] + 2 * (1 + nu) *
+                N' * (Ixx * N * x - Ixy * N * y)] * det(J) over element
+            where:
+                - d1 = Ixx * r - Ixy * q
+                - d2 = Ixy * r + Ixx * q
+                - r = (N * x) ^ 2 - (N * y)^2
+                - q = 2 * N * x * N * y
+        '''
+        # Function is quartic in 2D over a tri6 element,
+        # therefore use 6 point Gaussian integration
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        total = 0
+        for gp in gps:
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nx = np.dot(N, np.transpose(self.xy[0,:]))
+            Ny = np.dot(N, np.transpose(self.xy[1,:]))
+            r = Nx ** 2 - Ny ** 2
+            q = 2 * Nx * Ny
+            d1 = ixx * r - ixy * q
+            d2 = ixy * r + ixx * q
+
+            total += (gp[0] * (self.nu / 2 * np.transpose(np.transpose(B).dot(
+                np.array([[d1], [d2]])))[0] + 2 * (1 + self.nu) *
+                np.transpose(N) * (ixx * Nx - ixy * Ny)) * j)
+
+        return total
+
+    def shearFePhi(self, iyy, ixy):
+        '''
+        Element load vector for solving for shear function (Phi) for y-direction
+            - integral of [nu/2 * B' * [h1; h2] + 2 * (1 + nu) *
+                N' * (Iyy * N * y - Ixy * N * x)] * det(J) over element
+            where:
+                - h1 = -Ixy * r + Iyy * q
+                - h2 = -Iyy * r - Ixy * q
+                - r = (N * x) ^ 2 - (N * y)^2
+                - q = 2 * N * x * N * y
+        '''
+        # Function is quartic in 2D over a tri6 element,
+        # therefore use 6 point Gaussian integration
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        total = 0
+        for gp in gps:
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nx = np.dot(N, np.transpose(self.xy[0,:]))
+            Ny = np.dot(N, np.transpose(self.xy[1,:]))
+            r = Nx ** 2 - Ny ** 2
+            q = 2 * Nx * Ny
+            h1 = -ixy * r + iyy * q
+            h2 = -iyy * r - ixy * q
+
+            total += (gp[0] * (self.nu / 2 * np.transpose(np.transpose(B).dot(
+                np.array([[h1], [h2]])))[0] + 2 * (1 + self.nu) *
+                np.transpose(N) * (iyy * Ny - ixy * Nx)) * j)
+
+        return total
+
+    def shearCentreXInt(self, iyy, ixy):
+        '''
+        First integral in the determination of the x shear centre
+            - integral of [(Iyy * N * x + Ixy * N * y) *
+            ((N * x)^2 +(N * y)^2) * det(J)] over element
+        '''
+        # Function is quartic in 2D over a tri6 element,
+        # therefore use 6 point Gaussian integration
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        total = 0
+        for gp in gps:
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nx = np.dot(N, np.transpose(self.xy[0,:]))
+            Ny = np.dot(N, np.transpose(self.xy[1,:]))
+
+            total += gp[0] * (iyy * Nx + ixy * Ny) * (Nx ** 2 + Ny ** 2) * j
+
+        return total
+
+    def shearCentreYInt(self, ixx, ixy):
+        '''
+        First integral in the determination of the y shear centre
+            - integral of [(Ixx * N * y + Ixy * N * x) *
+            ((N * x)^2 +(N * y)^2) * det(J)] over element
+        '''
+        # Function is quartic in 2D over a tri6 element,
+        # therefore use 6 point Gaussian integration
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        total = 0
+        for gp in gps:
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nx = np.dot(N, np.transpose(self.xy[0,:]))
+            Ny = np.dot(N, np.transpose(self.xy[1,:]))
+
+            total += gp[0] * (ixx * Ny + ixy * Nx) * (Nx ** 2 + Ny ** 2) * j
+
+        return total
+
+    def Q_omega(self, omega):
+        '''
+        First moment of warping
+            - integral of [wi * N * omega * det(J)] over element
+        '''
+        # Function is quadratic in 2D over a tri6 element,
+        # therefore use 3 point Gaussian integration
+        gps = femFunctions.gaussPoints(3) # Gauss points for 3 point Gaussian integration
+        total = 0
+        for gp in gps:
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nomega = np.dot(N, np.transpose(omega))
+
+            total += gp[0] * Nomega * j
+
+        return total
+
+    def i_omega(self, omega):
+        '''
+        Second moment of warping
+            - integral of [wi * (N * omega)^2 * det(J)] over element
+        '''
+        # Function is quartic in 2D over a tri6 element,
+        # therefore use 6 point Gaussian integration
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        total = 0
+        for gp in gps:
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nomega = np.dot(N, np.transpose(omega))
+
+            total += gp[0] * Nomega ** 2 * j
+
+        return total
+
+    def i_xomega(self, omega):
+        '''
+        Sectorial product of area about the x-axis
+            - integral of [wi * N * x * N * omega * det(J)] over element
+        '''
+        # Function is quartic in 2D over a tri6 element,
+        # therefore use 6 point Gaussian integration
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        total = 0
+        for gp in gps:
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nx = np.dot(N, np.transpose(self.xy[0,:]))
+            Nomega = np.dot(N, np.transpose(omega))
+
+            total += gp[0] * Nx * Nomega * j
+
+        return total
+
+    def i_yomega(self, omega):
+        '''
+        Sectorial product of area about the y-axis
+            - integral of [wi * N * y * N * omega * det(J)] over element
+        '''
+        # Function is quartic in 2D over a tri6 element,
+        # therefore use 6 point Gaussian integration
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        total = 0
+        for gp in gps:
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Ny = np.dot(N, np.transpose(self.xy[1,:]))
+            Nomega = np.dot(N, np.transpose(omega))
+
+            total += gp[0] * Ny * Nomega * j
+
+        return total
+
     #
     # def torsionStress(self, Mz, omega, J):
     #     '''
