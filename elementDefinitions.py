@@ -308,48 +308,104 @@ class tri6:
 
         return total
 
-    #
-    # def torsionStress(self, Mz, omega, J):
-    #     '''
-    #     Stress due to a unit twisting moment
-    #         - tau = Mz / J [B * w - h] at integration points
-    #     '''
-    #     # B is constant over the 2D tri3 element, therefore evaluate at one integration point only
-    #     gp = femFunctions.gaussPoints(1)[0] # Gauss point for 1 point Gaussian integration
-    #     (N, dN, j) = femFunctions.shapeFunction(np.transpose(self.xy), gp, 'tri3')
-    #     Nx = np.dot(np.transpose(N), self.xy[:,0])
-    #     Ny = np.dot(np.transpose(N), self.xy[:,1])
-    #
-    #     tau_torsion = Mz / J * (np.transpose(dN).dot(omega) - np.transpose(np.array([Ny, -Nx])))
-    #
-    #     # extrapolate results to nodes
-    #     return femFunctions.extrapolateToNodes(tau_torsion, 'tri3', 1)
-    #
-    # def shearStress(self, Vx, Vy, Psi, Phi, ixx, iyy, ixy):
-    #     '''
-    #     Stress due to a shear force Vx and Vy
-    #         - tau = Vx / delta * (B * Psi - nu / 2 * [d1; d2]) + Vy / delta * (B * Phi - nu / 2 * [h1; h2]) at integration points
-    #     '''
-    #     # 3 integration points used to compute stress functions, therefore compute at each integration point
-    #     gps = femFunctions.gaussPoints(3) # Gauss points for 3 point Gaussian integration
-    #     tau_shear = np.zeros((3,2))
-    #
-    #     # loop through integration points
-    #     for i, gp in enumerate(gps):
-    #         (N, dN, j) = femFunctions.shapeFunction(np.transpose(self.xy), gp, 'tri3')
-    #         Nx = np.dot(np.transpose(N), self.xy[:,0])
-    #         Ny = np.dot(np.transpose(N), self.xy[:,1])
-    #         r = Nx ** 2 - Ny ** 2
-    #         q = 2 * Nx * Ny
-    #         d1 = ixx * r - ixy * q
-    #         d2 = ixy * r + ixx * q
-    #         h1 = -ixy * r + iyy * q
-    #         h2 = -iyy * r - ixy * q
-    #         Delta = 2 * (1 + self.nu) * (ixx * iyy - ixy ** 2)
-    #
-    #         tau_shear[i,:] = Vx / Delta * (np.transpose(dN).dot(Psi) - self.nu / 2 * np.array([d1, d2])) + Vy / Delta * (np.transpose(dN).dot(Phi) - self.nu / 2 * np.array([h1, h2]))
-    #
-    #     # extrapolation to nodes results in the nodes taking the values at the gauss points
-    #     tau_shear_zx = femFunctions.extrapolateToNodes(tau_shear[:,0], 'tri3', 3)
-    #     tau_shear_zy = femFunctions.extrapolateToNodes(tau_shear[:,1], 'tri3', 3)
-    #     return np.transpose(np.array([tau_shear_zx, tau_shear_zy]))
+    def axialStress(self, Nzz, area):
+        '''
+        Stress due to an axial force Nzz
+            - sigma_zz = Nzz / area at integration points
+        '''
+        return np.ones((6,1)) * Nzz / area
+
+    def bendingGlobalStress(self, Mxx, Myy, ixx, iyy, ixy):
+        '''
+        Stress due to an bending moments Mxx and Myy
+            - sigma_zz = -(ixy * Mxx + ixx * Myy) / (ixx * ixy - ixy ** 2) * Nx +
+            (iyy * Mxx + ixy * Myy) / (ixx * ixy - ixy ** 2) * Ny at integration points
+        '''
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        sigma_zz_bending_gp = np.zeros((6,1)) # allocate bending stress vector
+
+        # loop through integration points
+        for (i, gp) in enumerate(gps):
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nx = np.dot(N, np.transpose(self.xy[0,:]))
+            Ny = np.dot(N, np.transpose(self.xy[1,:]))
+
+            sigma_zz_bending_gp[i,:] = (-(ixy * Mxx + ixx * Myy) /
+                (ixx * iyy - ixy ** 2) * Nx + (iyy * Mxx + ixy * Myy) /
+                (ixx * iyy - ixy ** 2) * Ny)
+
+        # extrapolate results to nodes
+        return femFunctions.extrapolateToNodes(sigma_zz_bending_gp[:,0])
+
+    def bendingPrincipalStress(self, M11, M22, i11, i22, u1, u2):
+        '''
+        Stress due to an bending moments M11 and M22
+            - sigma_zz = -M22 / i22 * Nx_1 + M11 / i11 * Ny_2 at integration points
+        '''
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        sigma_zz_bending_gp = np.zeros((6,1)) # allocate bending stress vector
+
+        # loop through integration points
+        for (i, gp) in enumerate(gps):
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nx = np.dot(N, np.transpose(self.xy[0,:]))
+            Ny = np.dot(N, np.transpose(self.xy[1,:]))
+            (Ny_2, Nx_1) = femFunctions.principalCoordinate(u1, u2, 0, 0, Nx, Ny)
+
+            sigma_zz_bending_gp[i,:] = -M22 / i22 * Nx_1 + M11 / i11 * Ny_2
+
+        # extrapolate results to nodes
+        return femFunctions.extrapolateToNodes(sigma_zz_bending_gp[:,0])
+
+    def torsionStress(self, Mzz, omega, J):
+        '''
+        Stress due to a twisting moment Mzz
+            - tau = Mzz / J [B * omega - [Ny; -Nx]] at integration points
+        '''
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        tau_torsion_gp = np.zeros((6,2)) # allocate torsion stress vector
+
+        # loop through integration points
+        for (i, gp) in enumerate(gps):
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nx = np.dot(N, np.transpose(self.xy[0,:]))
+            Ny = np.dot(N, np.transpose(self.xy[1,:]))
+
+            tau_torsion_gp[i,:] = (Mzz / J * (B.dot(omega) -
+                np.array([Ny, -Nx])))
+
+        # extrapolate results to nodes
+        tau_zx_torsion = femFunctions.extrapolateToNodes(tau_torsion_gp[:,0])
+        tau_zy_torsion = femFunctions.extrapolateToNodes(tau_torsion_gp[:,1])
+        return np.transpose(np.array([tau_zx_torsion, tau_zy_torsion]))
+
+    def shearStress(self, Vxx, Vyy, Psi, Phi, ixx, iyy, ixy, Delta_s):
+        '''
+        Stress due to a shear force Vx and Vy
+            - tau = Vxx / Delta_s * (B * Psi - nu / 2 * [d1; d2]) +
+            Vyy / Delta_s * (B * Phi - nu / 2 * [h1; h2]) at integration points
+        '''
+        gps = femFunctions.gaussPoints(6) # Gauss points for 6 point Gaussian integration
+        tau_shear_gp = np.zeros((6,2)) # allocate shear stress vector
+
+        # loop through integration points
+        for (i, gp) in enumerate(gps):
+            (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
+            Nx = np.dot(N, np.transpose(self.xy[0,:]))
+            Ny = np.dot(N, np.transpose(self.xy[1,:]))
+
+            r = Nx ** 2 - Ny ** 2
+            q = 2 * Nx * Ny
+            d1 = ixx * r - ixy * q
+            d2 = ixy * r + ixx * q
+            h1 = -ixy * r + iyy * q
+            h2 = -iyy * r - ixy * q
+
+            tau_shear_gp[i,:] = (Vxx / Delta_s * (B.dot(Psi) -
+                self.nu / 2 * np.array([d1, d2])) + Vyy / Delta_s * (B.dot(Phi) -
+                self.nu / 2 * np.array([h1, h2])))
+
+        # extrapolate results to nodes
+        tau_shear_zx = femFunctions.extrapolateToNodes(tau_shear_gp[:,0])
+        tau_shear_zy = femFunctions.extrapolateToNodes(tau_shear_gp[:,1])
+        return np.transpose(np.array([tau_shear_zx, tau_shear_zy]))

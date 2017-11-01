@@ -1,4 +1,5 @@
 import numpy as np
+import meshpy.triangle as triangle
 
 def gaussPoints(n):
     '''
@@ -16,12 +17,12 @@ def gaussPoints(n):
         g2 = 1.0 / 18 * (8 - np.sqrt(10) - np.sqrt(38 - 44 * np.sqrt(2.0 / 5)))
         w1 = (620 + np.sqrt(213125 - 53320 * np.sqrt(10))) / 3720
         w2 = (620 - np.sqrt(213125 - 53320 * np.sqrt(10))) / 3720
-        return (np.array([[w1, 1 - 2 * g1, g1, g1],
-                          [w1, g1, 1 - 2 * g1, g1],
-                          [w1, g1, g1, 1 - 2 * g1],
-                          [w2, 1 - 2 * g2, g2, g2],
+        return (np.array([[w2, 1 - 2 * g2, g2, g2],
                           [w2, g2, 1 - 2 * g2, g2],
-                          [w2, g2, g2, 1 - 2 * g2]]))
+                          [w2, g2, g2, 1 - 2 * g2],
+                          [w1, g1, g1, 1 - 2 * g1],
+                          [w1, 1 - 2 * g1, g1, g1],
+                          [w1, g1, 1 - 2 * g1, g1]]))
 
 def shapeFunction(xy, gaussPoint):
     '''
@@ -67,16 +68,73 @@ def shapeFunction(xy, gaussPoint):
 
     return (N, B, j)
 
-# TODO:
-def extrapolateToNodes(w, elementType, noGp):
+def extrapolateToNodes(w):
     '''
-    Extrapolate reults (w) at Gauss points to nodal points
+    Extrapolate results (w) at 6 Gauss points to 6 nodal points
     '''
-    if elementType == 'tri3':
-        if noGp == 1:
-            return np.array([w, w, w])
-        elif noGp == 3:
-            H = np.array([[1, 1, -1], [1, -1, 1], [-1, 1, 1]])
-            return H.dot(w)
-    else:
-        print 'Element type not yet programmed'
+    H_inv = (np.array([[1.87365927351160,	0.138559587411935,	0.138559587411935,	-0.638559587411936,	0.126340726488397,	-0.638559587411935],
+                       [0.138559587411935,	1.87365927351160,	0.138559587411935,	-0.638559587411935,	-0.638559587411935,	0.126340726488397],
+                       [0.138559587411935,	0.138559587411935,	1.87365927351160,	0.126340726488396,	-0.638559587411935,	-0.638559587411935],
+                       [0.0749010751157440,	0.0749010751157440,	0.180053080734478,	1.36051633430762,	-0.345185782636792,	-0.345185782636792],
+                       [0.180053080734478,	0.0749010751157440,	0.0749010751157440,	-0.345185782636792,	1.36051633430762,	-0.345185782636792],
+                       [0.0749010751157440,	0.180053080734478,	0.0749010751157440,	-0.345185782636792,	-0.345185782636792,	1.36051633430762]]))
+
+    return H_inv.dot(w)
+
+def createMesh(points, facets, holes=[], maxArea=[], minAngle=30, meshOrder=2):
+    info = triangle.MeshInfo()
+    info.set_points(points)
+    info.set_holes(holes)
+    info.set_facets(facets)
+
+    return triangle.build(info, max_volume = maxArea, min_angle = minAngle, mesh_order = meshOrder)
+
+def shiftGeometry(points, facets, holes, cx, cy):
+    # initialise shifted points and holes lists
+    shiftedPoints = []
+    shiftedHoles =[]
+
+    # shift points by centroid
+    for point in points:
+        shiftedPoints.append((point[0] - cx, point[1] - cy))
+
+    for hole in holes:
+        shiftedHoles.append((hole[0] - cx, hole[1] - cy))
+
+    return (shiftedPoints, shiftedHoles)
+
+def lgMultSolve(K, f):
+    Nvec1 = np.ones((K.shape[0], 1))
+    Nvec2 = np.ones((1, K.shape[0] + 1))
+    Nvec2[:,-1] = 0
+
+    K = np.concatenate((K, Nvec1), axis=1)
+    K = np.concatenate((K, Nvec2), axis=0)
+    f = np.append(f, 0)
+
+    u = np.linalg.solve(K, f)
+    return (u[:-1], u[-1])
+
+def principalCoordinate(u1, u2, cx, cy, x, y):
+    '''
+    Determines the coordinates of the point (x,y) in the principal axis system
+    given unit vectors (u1,u2) defining the prinicpal axis and centroid (cx,cy)
+    '''
+    # vector from point to centroid
+    PQ = np.array([cx - x, cy - y])
+    # perpendicular distance from point to 1 and 2 axes
+    d1 = np.linalg.norm(np.cross(PQ, u1))
+    d2 = np.linalg.norm(np.cross(PQ, u2))
+
+    # check to see if point is below axes
+    if np.cross(-PQ, u1) > 0: # point is below 1 axis
+        d1 = -d1
+    if np.cross(-PQ, u2) < 0: # point is below 2 axis
+        d2 = -d2
+
+    return (d1, d2)
+
+def functionTimer(function):
+    start_time = time.clock()
+    function()
+    print("--- %s completed in %s seconds ---" % (function.__name__, time.clock() - start_time))
