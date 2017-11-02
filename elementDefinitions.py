@@ -55,10 +55,6 @@ class tri6:
 
         return total
 
-    def centroid(self):
-        ''' Centroid of element '''
-        return np.array([self.Qy / self.area, self.Qx / self.area])
-
     def ixx(self):
         '''
         Second moment of area about the global x-axis:
@@ -350,9 +346,10 @@ class tri6:
             (N, B, j) = femFunctions.shapeFunction(self.xy, gp)
             Nx = np.dot(N, np.transpose(self.xy[0,:]))
             Ny = np.dot(N, np.transpose(self.xy[1,:]))
+            # determine principal co-ordinates, note Nx_1 = -Nx_1
             (Ny_2, Nx_1) = femFunctions.principalCoordinate(u1, u2, 0, 0, Nx, Ny)
 
-            sigma_zz_bending_gp[i,:] = -M22 / i22 * Nx_1 + M11 / i11 * Ny_2
+            sigma_zz_bending_gp[i,:] = -M22 / i22 * -Nx_1 + M11 / i11 * Ny_2
 
         # extrapolate results to nodes
         return femFunctions.extrapolateToNodes(sigma_zz_bending_gp[:,0])

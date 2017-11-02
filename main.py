@@ -4,11 +4,12 @@ import femFunctions
 # ------------------------------------------------------------------------------
 # INPUT GEOMETRY:
 # ------------------------------------------------------------------------------
-# rectangular hollow section 2
-points = [(0,0), (100,0), (100,50), (0,50), (6,6), (6, 44), (94, 44), (94, 6)]
-facets = [(0,1), (1,2), (2,3), (3,0), (4,5), (5,6), (6,7), (7,4)]
-holes = [(50,25)]
-maxSize = 2.5
+# channel section
+points = ([(-0.05,-0.05), (1,-0.05), (1,0.05), (0.05,0.05), (0.05, 1.95), (1, 1.95),
+    (1, 2.05), (-0.05, 2.05)])
+facets = [(0,1), (1,2), (2,3), (3,4), (4,5), (5,6), (6,7), (7,0)]
+holes = []
+maxSize = 0.0005
 
 # ------------------------------------------------------------------------------
 # GEOMTRIC SECTION PROPERTIES:
@@ -26,12 +27,16 @@ meshGeometric.contourPlot(nodes=True, plotTitle='Mesh for Geometric Properties')
 meshGeometric.computeGeometricProperties()
 meshGeometric.printGeometricResults()
 
-# shift input co-ordinates
-(shiftedPoints, shiftedHoles) = femFunctions.shiftGeometry(points, facets, holes, meshGeometric.cx, meshGeometric.cy)
+# compute plastic section properties and print
+meshGeometric.computeGlobalPlasticProperties(points, facets, holes)
+meshGeometric.printPlasticResults()
 
 # ------------------------------------------------------------------------------
 # WARPING DEPENDENT SECTION PROPERTIES:
 # ------------------------------------------------------------------------------
+# shift input co-ordinates
+(shiftedPoints, shiftedHoles) = femFunctions.shiftGeometry(points, holes, meshGeometric.cx, meshGeometric.cy)
+
 # genereate refined triangular mesh for warping independent properties
 refinedMesh = femFunctions.createMesh(shiftedPoints, facets, shiftedHoles, maxArea=maxSize)
 
@@ -39,7 +44,7 @@ refinedMesh = femFunctions.createMesh(shiftedPoints, facets, shiftedHoles, maxAr
 meshWarping = mesh2D.triMesh(refinedMesh, nu=0, geometricMesh=meshGeometric)
 
 # plot mesh
-meshWarping.contourPlot(plotTitle='Mesh for Warping Properties')
+meshWarping.contourPlot(plotTitle='Mesh for Warping Properties', principalAxis=True)
 
 # compute section properties
 meshWarping.computeWarpingProperties()
@@ -57,8 +62,8 @@ meshWarping.bendingGlobalStress(1e6, 1e6)
 meshWarping.contourPlot(z=meshWarping.sigma_zz_bending, plotTitle='Bending Global Stress')
 
 # 2a. Bending (Principal)
-# meshWarping.bendingPrincipalStress(1e6, 1e6)
-# meshWarping.contourPlot(z=meshWarping.sigma_zz_bending, plotTitle='Bending Principal Stress', principalAxis=True)
+meshWarping.bendingPrincipalStress(1e6, 1e6)
+meshWarping.contourPlot(z=meshWarping.sigma_zz_bending, plotTitle='Bending Principal Stress', principalAxis=True)
 
 # 3. Torsion
 meshWarping.torsionStress(1e6)

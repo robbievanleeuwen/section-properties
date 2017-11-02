@@ -58,7 +58,6 @@ class triMesh:
         totalIyy_g = 0
         totalIxy_g = 0
 
-        # loop through all elements where summing over all elements is required
         for el in self.elements:
             # calculate total area
             totalArea += el.area()
@@ -123,6 +122,32 @@ class triMesh:
         # calculate radii of gyration about centroidal principal axis
         self.r1_c = (self.i11_c / totalArea) ** 0.5
         self.r2_c = (self.i22_c / totalArea) ** 0.5
+
+    def computeGlobalPlasticProperties(self, points, facets, holes):
+        tol = 1e-5
+        ux = np.array([1, 0])
+        uy = np.array([0, 1])
+        cx = self.cx
+        cy = self.cy
+        dmin_x = self.xmin
+        dmax_x = self.xmax
+        dmin_y = self.ymin
+        dmax_y = self.ymax
+
+        # compute plastic centroids and plastic section modulii
+        (x_pc, topArea, botArea, topCentroid, botCentroid) = (plasticCentroidAlgorithm('x',
+            tol, 100, uy, cx, dmin_x, dmax_x, points, facets, holes,
+            self.pointArray, self.elementArray))
+        Syy = topArea * abs(topCentroid[0] - cx) + botArea * abs(botCentroid[0] - cx)
+        (y_pc, topArea, botArea, topCentroid, botCentroid) = (plasticCentroidAlgorithm('y',
+            tol, 100, ux, cy, dmin_y, dmax_y, points, facets, holes,
+            self.pointArray, self.elementArray))
+        Sxx = topArea * abs(topCentroid[1] - cy) + botArea * abs(botCentroid[1] - cy)
+
+        self.x_pc = x_pc
+        self.y_pc = y_pc
+        self.Sxx = Sxx
+        self.Syy = Syy
 
     def computeWarpingProperties(self):
         # load areas and second moments of area
@@ -189,18 +214,57 @@ class triMesh:
         self.Gamma = (i_omega - Q_omega ** 2 / A - self.y_se * i_xomega +
             self.x_se * i_yomega)
 
+    def computeAreaSegments(self, u, px, py):
+        '''
+        Computes the area above and below a line defined by unit vector u and
+        point (px,py)
+        '''
+        # allocate area variables
+        topArea = 0
+        botArea = 0
+        topQx = 0
+        topQy = 0
+        botQx = 0
+        botQy = 0
+        topCentroid = 0
+        botCentroid = 0
+
+        for el in self.elements:
+            # calculate area of element and centroid
+            elArea = el.area()
+            Qx = el.Qx()
+            Qy = el.Qy()
+            elCentroid = [Qy / elArea, Qx / elArea]
+
+            # determine location of element and allocate element areas and
+            # first moments of area accordingly
+            if (femFunctions.pointAboveLine(u, px, py, elCentroid[0], elCentroid[1])):
+                topArea += elArea
+                topQx += Qx
+                topQy += Qy
+            else:
+                botArea += elArea
+                botQx += Qx
+                botQy += Qy
+
+        if topArea != 0 and botArea != 0:
+            topCentroid = np.array([topQy / topArea, topQx / topArea])
+            botCentroid = np.array([botQy / botArea, botQx / botArea])
+
+        return (topArea, botArea, topCentroid, botCentroid)
+
     def centroidalSectionModulii(self):
         # determine extreme values of the cartesian co-ordinates
-        xmax = self.pointArray[:,0].max()
-        xmin = self.pointArray[:,0].min()
-        ymax = self.pointArray[:,1].max()
-        ymin = self.pointArray[:,1].min()
+        self.xmax = self.pointArray[:,0].max()
+        self.xmin = self.pointArray[:,0].min()
+        self.ymax = self.pointArray[:,1].max()
+        self.ymin = self.pointArray[:,1].min()
 
         # evaluate section modulii
-        self.zxx_plus = self.ixx_c / (ymax - self.cy)
-        self.zxx_minus = self.ixx_c / (self.cy - ymin)
-        self.zyy_plus = self.iyy_c / (xmax - self.cx)
-        self.zyy_minus = self.iyy_c / (self.cx - xmin)
+        self.zxx_plus = self.ixx_c / (self.ymax - self.cy)
+        self.zxx_minus = self.ixx_c / (self.cy - self.ymin)
+        self.zyy_plus = self.iyy_c / (self.xmax - self.cx)
+        self.zyy_minus = self.iyy_c / (self.cx - self.xmin)
 
     def principalSectionModulii(self):
         # unit vectors in the direction of the principal axes
@@ -457,6 +521,16 @@ class triMesh:
         print "r2_c = {}".format(self.r2_c)
         print ""
 
+    def printPlasticResults(self):
+        print "-----------------------------"
+        print "Plastic Properties"
+        print "-----------------------------"
+        print "x_pc = {}".format(self.x_pc)
+        print "y_pc = {}".format(self.y_pc)
+        print "Sxx = {}".format(self.Sxx)
+        print "Syy = {}".format(self.Syy)
+        print ""
+
     def printWarpingResults(self):
         print "-----------------------------"
         print "Torsional Properties"
@@ -471,3 +545,51 @@ class triMesh:
         print "y_s,e = {}".format(self.y_se)
         print "x_s,t = {}".format(self.x_st)
         print "y_s,t = {}".format(self.y_st)
+
+def plasticCentroidAlgorithm(dir, tol, maxIt, u, start, dmin, dmax, points, facets, holes, pointArray, elementArray):
+    '''
+    Algorithm to find plastic centroid (point at which top area = bot area)
+    '''
+     # initialise iteration variables
+    areaConvergence_n = 0.1
+    a_n1 = start
+    iterationCount = 0 # initialise iterationCount
+
+    # algorithm
+    while ((abs(areaConvergence_n) > tol) and (iterationCount < maxIt)):
+        if iterationCount < 3:
+            a_n = a_n1 + areaConvergence_n * (dmax - dmin) / 5 * abs(areaConvergence_n) # compute new trial axis
+        else:
+            # secant method
+            a_n = (a_n2 * areaConvergence_n - a_n1 * areaConvergence_n1) / (areaConvergence_n - areaConvergence_n1)
+
+        # ensure trial axis is within section depth
+        if a_n > dmax:
+            a_n = dmax - abs(0.01 * dmax)
+        elif a_n < dmin:
+            a_n = dmin + abs(0.01 * dmin)
+
+        # remesh with new trial axis included
+        if dir == 'x':
+            (points_new, facets_new) = (femFunctions.divideMesh(points[:],
+                facets[:], pointArray, elementArray, a_n, 0, a_n, 1))
+        elif dir == 'y':
+            (points_new, facets_new) = (femFunctions.divideMesh(points[:],
+                facets[:], pointArray, elementArray, 0, a_n, 1, a_n))
+        newMesh = femFunctions.createMesh(points_new, facets_new, holes, minAngle=1)
+
+        # create triMesh object with new trial mesh
+        meshTrial = triMesh(newMesh)
+        # calculate area above and below axis
+        if dir == 'x':
+            (botArea, topArea, botCentroid, topCentroid) = meshTrial.computeAreaSegments(u, a_n, 0)
+        elif dir == 'y':
+            (topArea, botArea, topCentroid, botCentroid) = meshTrial.computeAreaSegments(u, 0, a_n)
+
+        areaConvergence_n1 = areaConvergence_n
+        areaConvergence_n = topArea / botArea - 1 # recalculate convergence
+        a_n2 = a_n1
+        a_n1 = a_n
+        iterationCount += 1 # increment iterations
+
+    return (a_n, topArea, botArea, topCentroid, botCentroid)
