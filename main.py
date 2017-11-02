@@ -4,12 +4,11 @@ import femFunctions
 # ------------------------------------------------------------------------------
 # INPUT GEOMETRY:
 # ------------------------------------------------------------------------------
-# channel section
-points = ([(-0.05,-0.05), (1,-0.05), (1,0.05), (0.05,0.05), (0.05, 1.95), (1, 1.95),
-    (1, 2.05), (-0.05, 2.05)])
-facets = [(0,1), (1,2), (2,3), (3,4), (4,5), (5,6), (6,7), (7,0)]
-holes = []
-maxSize = 0.0005
+# rectangular hollow section 1
+points = [(0,0), (50,0), (50,100), (0,100), (6,6), (44, 6), (44, 94), (6, 94)]
+facets = [(0,1), (1,2), (2,3), (3,0), (4,5), (5,6), (6,7), (7,4)]
+holes = [(25,50)]
+maxSize = 2.5
 
 # ------------------------------------------------------------------------------
 # GEOMTRIC SECTION PROPERTIES:
@@ -28,8 +27,12 @@ meshGeometric.computeGeometricProperties()
 meshGeometric.printGeometricResults()
 
 # compute plastic section properties and print
-meshGeometric.computeGlobalPlasticProperties(points, facets, holes)
-meshGeometric.printPlasticResults()
+# meshGeometric.computeGlobalPlasticProperties(points, facets, holes)
+meshGeometric.computePrincipalPlasticProperties(points, facets, holes)
+# meshGeometric.printPlasticResults()
+
+# plot mesh
+meshGeometric.contourPlot(nodes=True, plotTitle='Mesh for Geometric Properties')
 
 # ------------------------------------------------------------------------------
 # WARPING DEPENDENT SECTION PROPERTIES:
@@ -41,7 +44,7 @@ meshGeometric.printPlasticResults()
 refinedMesh = femFunctions.createMesh(shiftedPoints, facets, shiftedHoles, maxArea=maxSize)
 
  # create mesh2D object for warping properties
-meshWarping = mesh2D.triMesh(refinedMesh, nu=0, geometricMesh=meshGeometric)
+meshWarping = mesh2D.triMesh(refinedMesh, nu=0.3, geometricMesh=meshGeometric)
 
 # plot mesh
 meshWarping.contourPlot(plotTitle='Mesh for Warping Properties', principalAxis=True)
@@ -63,7 +66,7 @@ meshWarping.contourPlot(z=meshWarping.sigma_zz_bending, plotTitle='Bending Globa
 
 # 2a. Bending (Principal)
 meshWarping.bendingPrincipalStress(1e6, 1e6)
-meshWarping.contourPlot(z=meshWarping.sigma_zz_bending, plotTitle='Bending Principal Stress', principalAxis=True)
+meshWarping.contourPlot(z=meshWarping.sigma_zz_bending, plotTitle='Bending Principal Stress')
 
 # 3. Torsion
 meshWarping.torsionStress(1e6)

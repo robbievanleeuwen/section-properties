@@ -37,6 +37,7 @@ def shapeFunction(xy, gaussPoint):
         co-ordinate system [2 x 6]
         j       = determinant of the Jacobian matrix [1 x 1]
     '''
+    B = np.zeros((2,6)) # allocate B matrix
     # location of isoparametric co-ordinates for each Gauss point
     eta  = gaussPoint[1]
     xi = gaussPoint[2]
@@ -58,13 +59,11 @@ def shapeFunction(xy, gaussPoint):
     # calculate the jacobian
     j = 0.5 * np.linalg.det(J)
 
-    if j < 0:
-        print "Warning: negative Jacobian"
-
     # cacluate the P matrix
-    P = np.dot(np.linalg.inv(J), np.array([[0, 0], [1, 0], [0, 1]]))
-    # calculate the B matrix in terms of cartesian co-ordinates
-    B = np.transpose(np.dot(np.transpose(B_iso), P))
+    if j != 0:
+        P = np.dot(np.linalg.inv(J), np.array([[0, 0], [1, 0], [0, 1]]))
+        # calculate the B matrix in terms of cartesian co-ordinates
+        B = np.transpose(np.dot(np.transpose(B_iso), P))
 
     return (N, B, j)
 
@@ -125,7 +124,7 @@ def divideMesh(points, facets, pointArray, elementArray, x1, y1, x2, y2):
         y3 = points[line[0]][1]
         x4 = points[line[1]][0]
         y4 = points[line[1]][1]
-        tol = 1e-6
+        tol = 1e-6 * max(abs(x4 - x3), abs(y4 - y3))
 
         # calculate denominator
         den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)

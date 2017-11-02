@@ -124,30 +124,44 @@ class triMesh:
         self.r2_c = (self.i22_c / totalArea) ** 0.5
 
     def computeGlobalPlasticProperties(self, points, facets, holes):
-        tol = 1e-5
+        tol = 1e-6
         ux = np.array([1, 0])
         uy = np.array([0, 1])
-        cx = self.cx
-        cy = self.cy
-        dmin_x = self.xmin
-        dmax_x = self.xmax
-        dmin_y = self.ymin
-        dmax_y = self.ymax
 
         # compute plastic centroids and plastic section modulii
         (x_pc, topArea, botArea, topCentroid, botCentroid) = (plasticCentroidAlgorithm('x',
-            tol, 100, uy, cx, dmin_x, dmax_x, points, facets, holes,
+            tol, 100, uy, self.cx, self.xmin, self.xmax, points, facets, holes,
             self.pointArray, self.elementArray))
-        Syy = topArea * abs(topCentroid[0] - cx) + botArea * abs(botCentroid[0] - cx)
+        Syy = self.area / 2 * abs(topCentroid[0] - botCentroid[0])
         (y_pc, topArea, botArea, topCentroid, botCentroid) = (plasticCentroidAlgorithm('y',
-            tol, 100, ux, cy, dmin_y, dmax_y, points, facets, holes,
+            tol, 100, ux, self.cy, self.ymin, self.ymax, points, facets, holes,
             self.pointArray, self.elementArray))
-        Sxx = topArea * abs(topCentroid[1] - cy) + botArea * abs(botCentroid[1] - cy)
+        Sxx = self.area / 2 * abs(topCentroid[1] - botCentroid[1])
 
         self.x_pc = x_pc
         self.y_pc = y_pc
         self.Sxx = Sxx
         self.Syy = Syy
+
+    def computePrincipalPlasticProperties(self, points, facets, holes):
+        tol = 1e-6
+        u1 = np.array([np.cos(self.phi * np.pi / 180), np.sin(self.phi * np.pi / 180)])
+        u2 = np.array([-np.sin(self.phi * np.pi / 180), np.cos(self.phi * np.pi / 180)])
+
+        # compute plastic centroids and plastic section modulii
+        # (x_1_pc, topArea, botArea, topCentroid, botCentroid) = (plasticCentroidAlgorithm('x',
+        #     tol, 100, u2, self.cx, self.d2min, self.d2max, points, facets, holes,
+        #     self.pointArray, self.elementArray))
+        # S22 = self.area / 2 * abs(topCentroid[0] - botCentroid[0])
+        (y_2_pc, topArea, botArea, topCentroid, botCentroid) = (plasticCentroidAlgorithm('y',
+            tol, 100, u1, self.cy, self.d1min, self.d1max, points, facets, holes,
+            self.pointArray, self.elementArray))
+        S11 = self.area / 2 * abs(topCentroid[1] - botCentroid[1])
+
+        self.x_1_pc = x_1_pc
+        self.y_1_pc = y_2_pc
+        self.S11 = S11
+        self.S22 = S22
 
     def computeWarpingProperties(self):
         # load areas and second moments of area
@@ -529,6 +543,10 @@ class triMesh:
         print "y_pc = {}".format(self.y_pc)
         print "Sxx = {}".format(self.Sxx)
         print "Syy = {}".format(self.Syy)
+        print "x_1_pc = {}".format(self.x_1_pc)
+        print "y_2_pc = {}".format(self.y_2_pc)
+        print "S11 = {}".format(self.S11)
+        print "S22 = {}".format(self.S22)
         print ""
 
     def printWarpingResults(self):
@@ -551,23 +569,32 @@ def plasticCentroidAlgorithm(dir, tol, maxIt, u, start, dmin, dmax, points, face
     Algorithm to find plastic centroid (point at which top area = bot area)
     '''
      # initialise iteration variables
-    areaConvergence_n = 0.1
-    a_n1 = start
-    iterationCount = 0 # initialise iterationCount
+    areaConvergence_n = 0
+    a_n1 = start # first guess for plastic centroid
+    iterationCount = 0
 
     # algorithm
-    while ((abs(areaConvergence_n) > tol) and (iterationCount < maxIt)):
+    while ((abs(areaConvergence_n) > tol or iterationCount < 3) and (iterationCount < maxIt)):
         if iterationCount < 3:
+            # first two iterations uses a stepping approach
             a_n = a_n1 + areaConvergence_n * (dmax - dmin) / 5 * abs(areaConvergence_n) # compute new trial axis
         else:
             # secant method
             a_n = (a_n2 * areaConvergence_n - a_n1 * areaConvergence_n1) / (areaConvergence_n - areaConvergence_n1)
 
+        print a_n
+
         # ensure trial axis is within section depth
         if a_n > dmax:
-            a_n = dmax - abs(0.01 * dmax)
+            if dmax == 0:
+                a_n = -0.05 * (dmax - dmin)
+            else:
+                a_n = dmax - 0.05 * (dmax - dmin)
         elif a_n < dmin:
-            a_n = dmin + abs(0.01 * dmin)
+            if dmin == 0:
+                a_n = 0.05 * (dmax - dmin)
+            else:
+                a_n = dmin + 0.05 * (dmax - dmin)
 
         # remesh with new trial axis included
         if dir == 'x':
@@ -576,20 +603,28 @@ def plasticCentroidAlgorithm(dir, tol, maxIt, u, start, dmin, dmax, points, face
         elif dir == 'y':
             (points_new, facets_new) = (femFunctions.divideMesh(points[:],
                 facets[:], pointArray, elementArray, 0, a_n, 1, a_n))
-        newMesh = femFunctions.createMesh(points_new, facets_new, holes, minAngle=1)
+
+        newMesh = femFunctions.createMesh(points_new, facets_new, holes, minAngle=None, qualityMeshing=False)
 
         # create triMesh object with new trial mesh
         meshTrial = triMesh(newMesh)
+        meshTrial.contourPlot()
+
         # calculate area above and below axis
         if dir == 'x':
             (botArea, topArea, botCentroid, topCentroid) = meshTrial.computeAreaSegments(u, a_n, 0)
         elif dir == 'y':
             (topArea, botArea, topCentroid, botCentroid) = meshTrial.computeAreaSegments(u, 0, a_n)
 
+        print botArea
+        print topArea
+
+        # update convergence and solution data
         areaConvergence_n1 = areaConvergence_n
         areaConvergence_n = topArea / botArea - 1 # recalculate convergence
         a_n2 = a_n1
         a_n1 = a_n
         iterationCount += 1 # increment iterations
+        print areaConvergence_n
 
     return (a_n, topArea, botArea, topCentroid, botCentroid)
