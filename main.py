@@ -1,13 +1,12 @@
 import mesh2D
 import femFunctions
+import sectionGenerator
 
 # ------------------------------------------------------------------------------
 # INPUT GEOMETRY:
 # ------------------------------------------------------------------------------
-# rectangular hollow section 1
-points = [(0,0), (50,0), (50,100), (0,100), (6,6), (44, 6), (44, 94), (6, 94)]
-facets = [(0,1), (1,2), (2,3), (3,0), (4,5), (5,6), (6,7), (7,4)]
-holes = [(25,50)]
+# doubly symmetric I-section
+(points, facets, holes) = sectionGenerator.ISection(200, 200, 16, 8, 16, 8)
 maxSize = 2.5
 
 # ------------------------------------------------------------------------------
@@ -27,9 +26,9 @@ meshGeometric.computeGeometricProperties()
 meshGeometric.printGeometricResults()
 
 # compute plastic section properties and print
-# meshGeometric.computeGlobalPlasticProperties(points, facets, holes)
+meshGeometric.computeGlobalPlasticProperties(points, facets, holes)
 meshGeometric.computePrincipalPlasticProperties(points, facets, holes)
-# meshGeometric.printPlasticResults()
+meshGeometric.printPlasticResults()
 
 # plot mesh
 meshGeometric.contourPlot(nodes=True, plotTitle='Mesh for Geometric Properties')
@@ -44,10 +43,10 @@ meshGeometric.contourPlot(nodes=True, plotTitle='Mesh for Geometric Properties')
 refinedMesh = femFunctions.createMesh(shiftedPoints, facets, shiftedHoles, maxArea=maxSize)
 
  # create mesh2D object for warping properties
-meshWarping = mesh2D.triMesh(refinedMesh, nu=0.3, geometricMesh=meshGeometric)
+meshWarping = mesh2D.triMesh(refinedMesh, nu=0, geometricMesh=meshGeometric)
 
 # plot mesh
-meshWarping.contourPlot(plotTitle='Mesh for Warping Properties', principalAxis=True)
+meshWarping.contourPlot(plotTitle='Mesh for Warping Properties')
 
 # compute section properties
 meshWarping.computeWarpingProperties()
@@ -56,38 +55,37 @@ meshWarping.printWarpingResults()
 # ------------------------------------------------------------------------------
 # CROSS-SECTION STRESSES:
 # ------------------------------------------------------------------------------
+# determine stresses due to unit forces/moments
+meshWarping.unitStress()
+
+# plot mesh
+meshWarping.contourPlot(plotTitle='Centroids', principalAxis=True, centroids=True)
+
+# apply forces/moments
+meshWarping.evaluateSectionStress(Nzz=0, Mxx=10e6, Myy=0, M11=0, M22=0, Mzz=1e6, Vx=0, Vy=50e3)
+
 # 1. Axial
-meshWarping.axialStress(1e3)
-meshWarping.contourPlot(z=meshWarping.sigma_zz_axial, plotTitle='Axial Stress')
+meshWarping.contourPlot(z=meshWarping.axialStress, plotTitle='Axial Stress')
 
-# 2a. Bending (Global)
-meshWarping.bendingGlobalStress(1e6, 1e6)
-meshWarping.contourPlot(z=meshWarping.sigma_zz_bending, plotTitle='Bending Global Stress')
-
-# 2a. Bending (Principal)
-meshWarping.bendingPrincipalStress(1e6, 1e6)
-meshWarping.contourPlot(z=meshWarping.sigma_zz_bending, plotTitle='Bending Principal Stress')
+# 2. Bending
+meshWarping.contourPlot(z=meshWarping.bendingStress, plotTitle='Bending Stress')
 
 # 3. Torsion
-meshWarping.torsionStress(1e6)
-meshWarping.contourPlot(z=meshWarping.tau_torsion, plotTitle='Torsion Stress')
-meshWarping.quiverPlot(meshWarping.tau_zx_torsion, meshWarping.tau_zy_torsion, plotTitle='Torsion Stress Vectors')
+meshWarping.contourPlot(z=meshWarping.torsionStress, plotTitle='Torsion Stress')
+meshWarping.quiverPlot(meshWarping.torsionStress_zx, meshWarping.torsionStress_zy, plotTitle='Torsion Stress Vectors')
 
 # 4. Shear
-meshWarping.shearStress(1e3, 1e3)
-meshWarping.contourPlot(z=meshWarping.tau_zx_shear, plotTitle='Transverse Shear (zx) Stress')
-meshWarping.contourPlot(z=meshWarping.tau_zy_shear, plotTitle='Transverse Shear (zy) Stress')
-meshWarping.contourPlot(z=meshWarping.tau_shear, plotTitle='Transverse Shear Stress')
-meshWarping.quiverPlot(meshWarping.tau_zx_shear, meshWarping.tau_zy_shear, plotTitle='Transverse Shear Stress Vectors')
+meshWarping.contourPlot(z=meshWarping.shearStress_zx, plotTitle='Transverse Shear (zx) Stress')
+meshWarping.contourPlot(z=meshWarping.shearStress_zy, plotTitle='Transverse Shear (zy) Stress')
+meshWarping.contourPlot(z=meshWarping.shearStress, plotTitle='Transverse Shear Stress')
+meshWarping.quiverPlot(meshWarping.shearStress_zx, meshWarping.shearStress_zy, plotTitle='Transverse Shear Stress Vectors')
 
 # 5a. Combined Normal Stress
-meshWarping.combinedNormalStress()
 meshWarping.contourPlot(z=meshWarping.sigma_zz, plotTitle='Combined Normal Stress')
 
 # 5b. Combined Shear Stress
-meshWarping.combinedShearStress()
+meshWarping.quiverPlot(meshWarping.tau_zx, meshWarping.tau_zy, plotTitle='Combined Shear Stress Vectors')
 meshWarping.contourPlot(z=meshWarping.tau, plotTitle='Combined Shear Stress')
 
 # 6. von Mises
-meshWarping.vonMisesStress()
 meshWarping.contourPlot(z=meshWarping.vonMises, plotTitle='von Mises Stress')

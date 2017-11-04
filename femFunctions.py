@@ -1,5 +1,6 @@
 import numpy as np
 import meshpy.triangle as triangle
+import time
 
 def gaussPoints(n):
     '''
@@ -56,7 +57,7 @@ def shapeFunction(xy, gaussPoint):
     J_lower = np.dot(xy, np.transpose(B_iso))
     J = np.vstack((J_upper, J_lower))
 
-    # calculate the jacobian
+    # calculate the jacobian - TODO: may get warning when area is zero during plastic centroid algorithm
     j = 0.5 * np.linalg.det(J)
 
     # cacluate the P matrix
@@ -124,7 +125,7 @@ def divideMesh(points, facets, pointArray, elementArray, x1, y1, x2, y2):
         y3 = points[line[0]][1]
         x4 = points[line[1]][0]
         y4 = points[line[1]][1]
-        tol = 1e-6 * max(abs(x4 - x3), abs(y4 - y3))
+        tol = 1e-12 * max(abs(x4 - x3), abs(y4 - y3))
 
         # calculate denominator
         den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
@@ -196,36 +197,27 @@ def divideMesh(points, facets, pointArray, elementArray, x1, y1, x2, y2):
 
     return (points, newFacets)
 
-def lgMultSolve(K, f):
-    Nvec1 = np.ones((K.shape[0], 1))
-    Nvec2 = np.ones((1, K.shape[0] + 1))
-    Nvec2[:,-1] = 0
-
-    K = np.concatenate((K, Nvec1), axis=1)
-    K = np.concatenate((K, Nvec2), axis=0)
-    f = np.append(f, 0)
-
-    u = np.linalg.solve(K, f)
-    return (u[:-1], u[-1])
-
-def principalCoordinate(u1, u2, cx, cy, x, y):
+def principalCoordinate(phi, x, y):
     '''
     Determines the coordinates of the point (x,y) in the principal axis system
-    given unit vectors (u1,u2) defining the prinicpal axis and centroid (cx,cy).
+    given rotation phi.
     '''
-    # vector from point to centroid
-    PQ = np.array([cx - x, cy - y])
-    # perpendicular distance from point to 1 and 2 axes
-    d1 = np.linalg.norm(np.cross(PQ, u1))
-    d2 = np.linalg.norm(np.cross(PQ, u2))
+    phi_rad = phi * np.pi / 180
+    R = np.array([[np.cos(phi_rad), np.sin(phi_rad)], [-np.sin(phi_rad), np.cos(phi_rad)]])
+    x_rotated = R.dot(np.array([x,y]))
 
-    # check to see if point is first quadrant
-    if not (pointAboveLine(u1, cx, cy, x, y)): # point is below 1 axis
-        d1 = -d1
-    if not (pointAboveLine(u2, cx, cy, x, y)): # point is below 2 axis
-        d2 = -d2
+    return (x_rotated[0], x_rotated[1])
 
-    return (d1, d2)
+def globalCoordinate(phi, x_1, y_2):
+    '''
+    Determines the coordinates of the point (x_1,y_2) in the global axis system
+    given rotation phi.
+    '''
+    phi_rad = phi * np.pi / 180
+    R = np.array([[np.cos(phi_rad), -np.sin(phi_rad)], [np.sin(phi_rad), np.cos(phi_rad)]])
+    x_rotated = R.dot(np.array([x_1,y_2]))
+
+    return (x_rotated[0], x_rotated[1])
 
 def pointAboveLine(u, px, py, x, y):
     '''
@@ -236,7 +228,10 @@ def pointAboveLine(u, px, py, x, y):
     PQ = np.array([px - x, py - y])
     return np.cross(PQ, u) > 0
 
-def functionTimer(function):
-    start_time = time.clock()
-    function()
-    print("--- %s completed in %s seconds ---" % (function.__name__, time.clock() - start_time))
+def functionTimer(text, function, *args):
+    start_time = time.time()
+    print text
+    x = function(*args)
+    print("--- %s completed in %s seconds ---" % (function.__name__, time.time() - start_time))
+    print ''
+    return x

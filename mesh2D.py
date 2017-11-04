@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import time
 import elementDefinitions
 import femFunctions
 
@@ -49,6 +48,9 @@ class triMesh:
         else:
             self.geometricMesh = None
 
+    # --------------------------------------------------------------------------
+    # SECTION PROPERTY COMPUTATION:
+    # --------------------------------------------------------------------------
     def computeGeometricProperties(self):
         # initialise variables
         totalArea = 0
@@ -60,16 +62,14 @@ class triMesh:
 
         for el in self.elements:
             # calculate total area
-            totalArea += el.area()
+            (elArea, elQx, elQy, elIxx_g, elIyy_g, elIxy_g) = el.geometricProperties()
 
-            # calculate first moments of area about global axis
-            totalQx += el.Qx()
-            totalQy += el.Qy()
-
-            # calculate second moments of area about global axis
-            totalIxx_g += el.ixx()
-            totalIyy_g += el.iyy()
-            totalIxy_g += el.ixy()
+            totalArea += elArea
+            totalQx += elQx
+            totalQy += elQy
+            totalIxx_g += elIxx_g
+            totalIyy_g += elIyy_g
+            totalIxy_g += elIxy_g
 
         # ----------------------------------------------------------------------
         # GLOBAL xy AXIS PROPERTIES:
@@ -114,7 +114,11 @@ class triMesh:
         self.i22_c = (self.ixx_c + self.iyy_c) / 2 - Delta
 
         # calculate initial principal axis angle
-        self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
+        tol = 1e-9
+        if abs(self.ixx_c - self.i11_c) < tol * self.i11_c:
+            self.phi = 0
+        else:
+            self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
 
         # calculate section modulii about the principal axis
         self.principalSectionModulii()
@@ -129,19 +133,17 @@ class triMesh:
         uy = np.array([0, 1])
 
         # compute plastic centroids and plastic section modulii
-        (x_pc, topArea, botArea, topCentroid, botCentroid) = (plasticCentroidAlgorithm('x',
-            tol, 100, uy, self.cx, self.xmin, self.xmax, points, facets, holes,
-            self.pointArray, self.elementArray))
-        Syy = self.area / 2 * abs(topCentroid[0] - botCentroid[0])
-        (y_pc, topArea, botArea, topCentroid, botCentroid) = (plasticCentroidAlgorithm('y',
-            tol, 100, ux, self.cy, self.ymin, self.ymax, points, facets, holes,
-            self.pointArray, self.elementArray))
-        Sxx = self.area / 2 * abs(topCentroid[1] - botCentroid[1])
+        (x_a_n, topArea, botArea, topCentroidx, botCentroidx) = (plasticCentroidAlgorithm(tol,
+            100, uy, self.cx, self.cy, self.xmin - self.cx, self.xmax - self.cx,
+            points, facets, holes, self.pointArray, self.elementArray))
+        (y_a_n, topArea, botArea, topCentroidy, botCentroidy) = (plasticCentroidAlgorithm(tol,
+            100, ux, self.cx, self.cy, self.ymin - self.cy, self.ymax - self.cy,
+            points, facets, holes, self.pointArray, self.elementArray))
 
-        self.x_pc = x_pc
-        self.y_pc = y_pc
-        self.Sxx = Sxx
-        self.Syy = Syy
+        self.x_pc = self.cx + x_a_n
+        self.y_pc = self.cy + y_a_n
+        self.Sxx = self.area / 2 * abs(topCentroidy[1] - botCentroidy[1])
+        self.Syy = self.area / 2 * abs(topCentroidx[0] - botCentroidx[0])
 
     def computePrincipalPlasticProperties(self, points, facets, holes):
         tol = 1e-6
@@ -149,19 +151,22 @@ class triMesh:
         u2 = np.array([-np.sin(self.phi * np.pi / 180), np.cos(self.phi * np.pi / 180)])
 
         # compute plastic centroids and plastic section modulii
-        # (x_1_pc, topArea, botArea, topCentroid, botCentroid) = (plasticCentroidAlgorithm('x',
-        #     tol, 100, u2, self.cx, self.d2min, self.d2max, points, facets, holes,
-        #     self.pointArray, self.elementArray))
-        # S22 = self.area / 2 * abs(topCentroid[0] - botCentroid[0])
-        (y_2_pc, topArea, botArea, topCentroid, botCentroid) = (plasticCentroidAlgorithm('y',
-            tol, 100, u1, self.cy, self.d1min, self.d1max, points, facets, holes,
-            self.pointArray, self.elementArray))
-        S11 = self.area / 2 * abs(topCentroid[1] - botCentroid[1])
+        (x_1_a_n, topArea, botArea, topCentroid1, botCentroid1) = (plasticCentroidAlgorithm(tol,
+            100, u1, self.cx, self.cy, self.x_1min, self.x_1max, points, facets,
+            holes, self.pointArray, self.elementArray))
+        (y_2_a_n, topArea, botArea, topCentroid2, botCentroid2) = (plasticCentroidAlgorithm(tol,
+            100, u2, self.cx, self.cy, self.y_2min, self.y_2max, points, facets,
+            holes, self.pointArray, self.elementArray))
 
-        self.x_1_pc = x_1_pc
-        self.y_1_pc = y_2_pc
-        self.S11 = S11
-        self.S22 = S22
+        (tc1_1, tc1_2) = femFunctions.principalCoordinate(self.phi, topCentroid1[0] - self.cx, topCentroid1[1] - self.cy)
+        (bc1_1, bc1_2) = femFunctions.principalCoordinate(self.phi, botCentroid1[0] - self.cx, botCentroid1[1] - self.cy)
+        (tc2_1, tc2_2) = femFunctions.principalCoordinate(self.phi, topCentroid2[0] - self.cx, topCentroid2[1] - self.cy)
+        (bc2_1, bc2_2) = femFunctions.principalCoordinate(self.phi, botCentroid2[0] - self.cx, botCentroid2[1] - self.cy)
+
+        self.x_1_pc = self.cx + x_1_a_n * u2[0] + y_2_a_n * u1[0]
+        self.y_2_pc = self.cy + x_1_a_n * u2[1] + y_2_a_n * u1[1]
+        self.S11 = self.area / 2 * abs(tc1_2 - bc1_2)
+        self.S22 = self.area / 2 * abs(tc2_1 - bc2_1)
 
     def computeWarpingProperties(self):
         # load areas and second moments of area
@@ -169,10 +174,103 @@ class triMesh:
         ixx = self.geometricMesh.ixx_c
         iyy = self.geometricMesh.iyy_c
         ixy = self.geometricMesh.ixy_c
+        phi = self.geometricMesh.phi
 
+        # calculate stiffness matrix and load vector for warping function
+        processText = 'Assembling stiffness matrix and torsion load vector...'
+        (shearK, torsionF) = (femFunctions.functionTimer(processText,
+            self.assembleTorsionMatrices))
+
+        # invert stiffness matrix
+        processText = 'Inverting {} by {} stiffness matrix...'.format(shearK.shape[0], shearK.shape[0])
+        invShearK = (femFunctions.functionTimer(processText,
+            self.invertStiffnessMatrix, shearK))
+
+        # ----------------------------------------------------------------------
+        # TORSION PROPERTIES:
+        # ----------------------------------------------------------------------
+        # calculate warping constant and torsion constant
+        self.omega = invShearK.dot(np.append(torsionF, 0))[:-1]
+        self.J = ixx + iyy - self.omega.dot(shearK).dot(np.transpose(self.omega))
+
+        # ----------------------------------------------------------------------
+        # SHEAR PROPERTIES:
+        # ----------------------------------------------------------------------
+        # calculate shear vectors, shear centre integrals and warping moments
+        processText = 'Assembling shear vectors and integrals...'
+        ((shearFPsi, shearFPhi, shearCentreXInt, shearCentreYInt, Q_omega,
+            i_omega, i_xomega, i_yomega)) = (femFunctions.functionTimer(processText,
+            self.assembleShearVectors, ixx, iyy, ixy))
+
+        # solve for shear functions
+        self.Psi = invShearK.dot(np.append(shearFPsi, 0))[:-1]
+        self.Phi = invShearK.dot(np.append(shearFPhi, 0))[:-1]
+
+        # calculate shear centres (elasticity)
+        self.Delta_s = 2 * (1 + self.nu) * (ixx * iyy - ixy ** 2)
+        self.x_se = ((1 / self.Delta_s) * ((self.nu / 2 * shearCentreXInt) -
+            torsionF.dot(self.Phi)))
+        self.y_se = ((1 / self.Delta_s) * ((self.nu / 2 * shearCentreYInt) +
+            torsionF.dot(self.Psi)))
+        (self.x_1_se, self.y_2_se) = femFunctions.principalCoordinate(phi, self.x_se, self.y_se)
+
+        # calculate shear centres (Trefftz's)
+        self.x_st = (ixy * i_xomega - iyy * i_yomega) / (ixx * iyy - ixy ** 2)
+        self.y_st = (ixx * i_xomega - ixy * i_yomega) / (ixx * iyy - ixy ** 2)
+
+        # calculate shear deformation coefficients
+        processText = 'Assembling shear deformation coefficients...'
+        (kappa_x, kappa_y, kappa_xy) = (femFunctions.functionTimer(processText,
+            self.assembleShearCoefficients, ixx, iyy, ixy))
+
+        # calculate shear areas wrt global axis
+        self.A_sx = self.Delta_s ** 2 / kappa_x
+        self.A_sy = self.Delta_s ** 2 / kappa_y
+        self.A_sxy = self.Delta_s ** 2 / kappa_xy
+
+        # calculate shear areas wrt principal bending axis
+        alpha_xx = kappa_x * self.geometricMesh.area / self.Delta_s ** 2
+        alpha_yy = kappa_y * self.geometricMesh.area / self.Delta_s ** 2
+        alpha_xy = kappa_xy * self.geometricMesh.area / self.Delta_s ** 2
+        phi_rad = self.geometricMesh.phi * np.pi / 180
+        R = np.array([[np.cos(phi_rad), np.sin(phi_rad)], [-np.sin(phi_rad), np.cos(phi_rad)]])
+        rotatedAlpha = R.dot(np.array([[alpha_xx, alpha_xy],[alpha_xy,alpha_yy]])).dot(np.transpose(R))
+        self.A_s11 = self.geometricMesh.area / rotatedAlpha[0,0]
+        self.A_s22 = self.geometricMesh.area / rotatedAlpha[1,1]
+
+        # calculate warping constant
+        self.Gamma = (i_omega - Q_omega ** 2 / A - self.y_se * i_xomega +
+            self.x_se * i_yomega)
+
+    # --------------------------------------------------------------------------
+    # SECTION PROPERTY METHODS:
+    # --------------------------------------------------------------------------
+    def invertStiffnessMatrix(self, K):
+        Nvec1 = np.ones((K.shape[0], 1))
+        Nvec2 = np.ones((1, K.shape[0] + 1))
+        Nvec2[:,-1] = 0
+
+        K = np.concatenate((K, Nvec1), axis=1)
+        K = np.concatenate((K, Nvec2), axis=0)
+
+        Kinv = np.linalg.inv(K)
+        return Kinv
+
+    def assembleTorsionMatrices(self):
         # initialise variables
         shearK = np.zeros((self.noNodes, self.noNodes))
         torsionF = np.zeros(self.noNodes)
+
+        for el in self.elements:
+            indxs = np.ix_(el.nodes, el.nodes)
+            (elK, elF) = el.torsionProperties()
+            shearK[indxs] += elK
+            torsionF[el.nodes] += elF
+
+        return (shearK, torsionF)
+
+    def assembleShearVectors(self, ixx, iyy, ixy):
+        # initialise variables
         shearFPsi = np.zeros(self.noNodes)
         shearFPhi = np.zeros(self.noNodes)
         shearCentreXInt = 0
@@ -182,51 +280,38 @@ class triMesh:
         i_xomega = 0
         i_yomega = 0
 
-        # calculate stiffness matrix and load vector for warping function
         for el in self.elements:
-            indxs = np.ix_(el.nodes, el.nodes)
-            shearK[indxs] += el.shearKe()
-            torsionF[el.nodes] += el.torsionFe()
+            ((elShearFPsi, elShearFPhi, elShearCentreXInt, elShearCentreYInt, elQ_omega,
+                elI_omega, elI_xomega, elI_yomega)) = (el.shearProperties(ixx, iyy,
+                ixy, self.omega[el.nodes]))
 
-        # ----------------------------------------------------------------------
-        # TORSION PROPERTIES:
-        # ----------------------------------------------------------------------
-        # calculate warping constant and torsion constant
-        (self.omega, error) = femFunctions.lgMultSolve(shearK, torsionF)
-        self.J = ixx + iyy - self.omega.dot(shearK).dot(np.transpose(self.omega))
+            shearFPsi[el.nodes] += elShearFPsi
+            shearFPhi[el.nodes] += elShearFPhi
+            shearCentreXInt += elShearCentreXInt
+            shearCentreYInt += elShearCentreYInt
+            Q_omega += elQ_omega
+            i_omega += elI_omega
+            i_xomega += elI_xomega
+            i_yomega += elI_yomega
 
-        # ----------------------------------------------------------------------
-        # SHEAR PROPERTIES:
-        # ----------------------------------------------------------------------
-        # calculate shear functions, shear centre integrals and warping moments
+        return ((shearFPsi, shearFPhi, shearCentreXInt, shearCentreYInt, Q_omega,
+            i_omega, i_xomega, i_yomega))
+
+    def assembleShearCoefficients(self, ixx, iyy, ixy):
+        # initialise variables
+        kappa_x = 0
+        kappa_y = 0
+        kappa_xy = 0
+
         for el in self.elements:
-            shearFPsi[el.nodes] += el.shearFePsi(ixx, ixy)
-            shearFPhi[el.nodes] += el.shearFePhi(iyy, ixy)
-            shearCentreXInt += el.shearCentreXInt(iyy, ixy)
-            shearCentreYInt += el.shearCentreYInt(ixx, ixy)
-            Q_omega += el.Q_omega(self.omega[el.nodes])
-            i_omega += el.i_omega(self.omega[el.nodes])
-            i_xomega += el.i_xomega(self.omega[el.nodes])
-            i_yomega += el.i_yomega(self.omega[el.nodes])
+            (elKappa_x, elKappa_y, elKappa_xy) = (el.shearCoefficients(ixx,
+                iyy, ixy, self.Psi[el.nodes], self.Phi[el.nodes]))
 
-        # solve for shear functions
-        (self.Psi, error) = femFunctions.lgMultSolve(shearK, shearFPsi)
-        (self.Phi, error) = femFunctions.lgMultSolve(shearK, shearFPhi)
+            kappa_x += elKappa_x
+            kappa_y += elKappa_y
+            kappa_xy += elKappa_xy
 
-        # calculate shear centres (elasticity)
-        self.Delta_s = 2 * (1 + self.nu) * (ixx * iyy - ixy ** 2)
-        self.x_se = ((1 / self.Delta_s) * ((self.nu / 2 * shearCentreXInt) -
-            torsionF.dot(self.Phi)))
-        self.y_se = ((1 / self.Delta_s) * ((self.nu / 2 * shearCentreYInt) +
-            torsionF.dot(self.Psi)))
-
-        # calculate shear centres (Trefftz's)
-        self.x_st = (ixy * i_xomega - iyy * i_yomega) / (ixx * iyy - ixy ** 2)
-        self.y_st = (ixx * i_xomega - ixy * i_yomega) / (ixx * iyy - ixy ** 2)
-
-        # calculate warping constant
-        self.Gamma = (i_omega - Q_omega ** 2 / A - self.y_se * i_xomega +
-            self.x_se * i_yomega)
+        return (kappa_x, kappa_y, kappa_xy)
 
     def computeAreaSegments(self, u, px, py):
         '''
@@ -245,10 +330,12 @@ class triMesh:
 
         for el in self.elements:
             # calculate area of element and centroid
-            elArea = el.area()
-            Qx = el.Qx()
-            Qy = el.Qy()
-            elCentroid = [Qy / elArea, Qx / elArea]
+            (elArea, Qx, Qy) = el.areaProperties()
+
+            if elArea != 0:
+                elCentroid = [Qy / elArea, Qx / elArea]
+            else:
+                elCentroid = [0, 0]
 
             # determine location of element and allocate element areas and
             # first moments of area accordingly
@@ -281,207 +368,158 @@ class triMesh:
         self.zyy_minus = self.iyy_c / (self.cx - self.xmin)
 
     def principalSectionModulii(self):
-        # unit vectors in the direction of the principal axes
-        u1 = np.array([np.cos(self.phi * np.pi / 180), np.sin(self.phi * np.pi / 180)])
-        u2 = np.array([-np.sin(self.phi * np.pi / 180), np.cos(self.phi * np.pi / 180)])
-
-        # initialise min/max distance variables
-        self.d1max = 0
-        self.d1min = 0
-        self.d2max = 0
-        self.d2min = 0
-
         # loop through all co-ordinates to determine extreme values
-        for vertex in self.pointArray:
-            (d1, d2) = (femFunctions.principalCoordinate(u1, u2, self.cx, self.cy,
-                vertex[0], vertex[1]))
+        for (i, vertex) in enumerate(self.pointArray):
+            (x_1, y_2) = femFunctions.principalCoordinate(self.phi, vertex[0] - self.cx, vertex[1] - self.cy)
 
-            if d1 > 0:
-                self.d1max = max(self.d1max, d1)
-            else:
-                self.d1min = min(self.d1min, d1)
-            if d2 > 0:
-                self.d2max = max(self.d2max, d2)
-            else:
-                self.d2min = min(self.d2min, d2)
+            if i == 0: # initialise min, max variables
+                self.x_1max = x_1
+                self.x_1min = x_1
+                self.y_2max = y_2
+                self.y_2min = y_2
+
+            self.x_1max = max(self.x_1max, x_1)
+            self.x_1min = min(self.x_1min, x_1)
+            self.y_2max = max(self.y_2max, y_2)
+            self.y_2min = min(self.y_2min, y_2)
 
         # evaluate principal section modulii
-        self.z11_plus = self.i11_c / abs(self.d1max)
-        self.z11_minus = self.i11_c / abs(self.d1min)
-        self.z22_plus = self.i22_c / abs(self.d2max)
-        self.z22_minus = self.i22_c / abs(self.d2min)
+        self.z11_plus = self.i11_c / abs(self.y_2max)
+        self.z11_minus = self.i11_c / abs(self.y_2min)
+        self.z22_plus = self.i22_c / abs(self.x_1max)
+        self.z22_minus = self.i22_c / abs(self.x_1min)
 
-    def axialStress(self, Nzz):
-        # load area
+    # --------------------------------------------------------------------------
+    # STRESS CALCULATION:
+    # --------------------------------------------------------------------------
+    def unitStress(self):
+        # calculate stresses due to unit loading
+        processText = 'Calculating cross-section stresses...'
+        femFunctions.functionTimer(processText, self.calculateStress)
+
+    def calculateStress(self):
+        # load geometric propeties
         area = self.geometricMesh.area
+        ixx = self.geometricMesh.ixx_c
+        iyy = self.geometricMesh.iyy_c
+        ixy = self.geometricMesh.ixy_c
+        i11 = self.geometricMesh.i11_c
+        i22 = self.geometricMesh.i22_c
+        phi = self.geometricMesh.phi
 
         # allocate stress vectors
         self.sigma_zz_axial = np.zeros(self.noNodes)
+        self.sigma_zz_bending_xx = np.zeros(self.noNodes)
+        self.sigma_zz_bending_yy = np.zeros(self.noNodes)
+        self.sigma_zz_bending_11 = np.zeros(self.noNodes)
+        self.sigma_zz_bending_22 = np.zeros(self.noNodes)
+        self.tau_zx_torsion = np.zeros(self.noNodes)
+        self.tau_zy_torsion = np.zeros(self.noNodes)
+        self.tau_zx_shear_x = np.zeros(self.noNodes)
+        self.tau_zy_shear_x = np.zeros(self.noNodes)
+        self.tau_zx_shear_y = np.zeros(self.noNodes)
+        self.tau_zy_shear_y = np.zeros(self.noNodes)
+
         # allocate nodal count vector for nodal averaging
         node_count = np.zeros(self.noNodes)
 
         for el in self.elements:
-            # evaluate axial stress at nodes
-            sigma_zz_axial = el.axialStress(Nzz, area)
-            # add axial stresses to global vectors
-            self.sigma_zz_axial[el.nodes] += sigma_zz_axial[:,0]
+            # evaluate stresses at nodes
+            ((elSigma_zz_axial, elSigma_zz_bending_xx, elSigma_zz_bending_yy,
+                elSigma_zz_bending_11, elSigma_zz_bending_22, elTau_zx_torsion,
+                elTau_zy_torsion, elTau_shear_zx_x, elTau_shear_zy_x,
+                elTau_shear_zx_y, elTau_shear_zy_y)) = (el.calculateStress(area,
+                ixx, iyy, ixy, i11, i22, phi, self.omega[el.nodes], self.J,
+                self.Psi[el.nodes], self.Phi[el.nodes], self.Delta_s))
+
+            # add stresses to global vectors
+            self.sigma_zz_axial[el.nodes] += elSigma_zz_axial[:,0]
+            self.sigma_zz_bending_xx[el.nodes] += elSigma_zz_bending_xx
+            self.sigma_zz_bending_yy[el.nodes] += elSigma_zz_bending_yy
+            self.sigma_zz_bending_11[el.nodes] += elSigma_zz_bending_11
+            self.sigma_zz_bending_22[el.nodes] += elSigma_zz_bending_22
+            self.tau_zx_torsion[el.nodes] += elTau_zx_torsion
+            self.tau_zy_torsion[el.nodes] += elTau_zy_torsion
+            self.tau_zx_shear_x[el.nodes] += elTau_shear_zx_x
+            self.tau_zy_shear_x[el.nodes] += elTau_shear_zy_x
+            self.tau_zx_shear_y[el.nodes] += elTau_shear_zx_y
+            self.tau_zy_shear_y[el.nodes] += elTau_shear_zy_y
+
             # increment the nodal count vector
             node_count[el.nodes] += 1
 
         # nodal averaging
         self.sigma_zz_axial *= 1 / node_count
-
-    def bendingGlobalStress(self, Mxx, Myy):
-        # load second moments of area
-        ixx = self.geometricMesh.ixx_c
-        iyy = self.geometricMesh.iyy_c
-        ixy = self.geometricMesh.ixy_c
-
-        # allocate stress vectors
-        self.sigma_zz_bending = np.zeros(self.noNodes)
-        # allocate nodal count vector for nodal averaging
-        node_count = np.zeros(self.noNodes)
-
-        for el in self.elements:
-            # evaluate bending stress at nodes
-            sigma_zz_bending = el.bendingGlobalStress(Mxx, Myy, ixx, iyy, ixy)
-            # add bending stresses to global vectors
-            self.sigma_zz_bending[el.nodes] += sigma_zz_bending
-            # increment the nodal count vector
-            node_count[el.nodes] += 1
-
-        # nodal averaging
-        self.sigma_zz_bending *= 1 / node_count
-
-    def bendingPrincipalStress(self, M11, M22):
-        # load second moments of area and principal axis unit vector
-        i11 = self.geometricMesh.i11_c
-        i22 = self.geometricMesh.i22_c
-        u1 = (np.array([np.cos(self.geometricMesh.phi * np.pi / 180),
-            np.sin(self.geometricMesh.phi * np.pi / 180)]))
-        u2 = (np.array([-np.sin(self.geometricMesh.phi * np.pi / 180),
-            np.cos(self.geometricMesh.phi * np.pi / 180)]))
-
-        # allocate stress vectors
-        self.sigma_zz_bending = np.zeros(self.noNodes)
-        # allocate nodal count vector for nodal averaging
-        node_count = np.zeros(self.noNodes)
-
-        for el in self.elements:
-            # evaluate bending stress at nodes
-            sigma_zz_bending = el.bendingPrincipalStress(M11, M22, i11, i22, u1, u2)
-            # add bending stresses to global vectors
-            self.sigma_zz_bending[el.nodes] += sigma_zz_bending
-            # increment the nodal count vector
-            node_count[el.nodes] += 1
-
-        # nodal averaging
-        self.sigma_zz_bending *= 1 / node_count
-
-    def torsionStress(self, Mzz):
-        # allocate stress vectors
-        self.tau_zx_torsion = np.zeros(self.noNodes)
-        self.tau_zy_torsion = np.zeros(self.noNodes)
-        # allocate nodal count vector for nodal averaging
-        node_count = np.zeros(self.noNodes)
-
-        for el in self.elements:
-            # evaluate torsion stress at nodes
-            tau_torsion = el.torsionStress(Mzz, self.omega[el.nodes], self.J)
-            # add torsion stresses to global vectors
-            self.tau_zx_torsion[el.nodes] += tau_torsion[:,0]
-            self.tau_zy_torsion[el.nodes] += tau_torsion[:,1]
-            # increment the nodal count vector
-            node_count[el.nodes] += 1
-
-        # nodal averaging
+        self.sigma_zz_bending_xx *= 1 / node_count
+        self.sigma_zz_bending_yy *= 1 / node_count
+        self.sigma_zz_bending_11 *= 1 / node_count
+        self.sigma_zz_bending_22 *= 1 / node_count
         self.tau_zx_torsion *= 1 / node_count
         self.tau_zy_torsion *= 1 / node_count
-        # evaluate resultant torsion stress
-        self.tau_torsion = ((self.tau_zx_torsion ** 2 +
-            self.tau_zy_torsion ** 2) ** 0.5)
+        self.tau_zx_shear_x *= 1 / node_count
+        self.tau_zy_shear_x *= 1 / node_count
+        self.tau_zx_shear_y *= 1 / node_count
+        self.tau_zy_shear_y *= 1 / node_count
 
-    def shearStress(self, Vxx, Vyy):
-        # load second moments of area
-        ixx = self.geometricMesh.ixx_c
-        iyy = self.geometricMesh.iyy_c
-        ixy = self.geometricMesh.ixy_c
+    def evaluateSectionStress(self, Nzz, Mxx, Myy, M11, M22, Mzz, Vx, Vy):
+        # scale unit stresses by design actions
+        self.axialStress = self.sigma_zz_axial * Nzz
+        self.bendingStress = (self.sigma_zz_bending_xx * Mxx +
+            self.sigma_zz_bending_yy * Myy + self.sigma_zz_bending_11 * M11 +
+            self.sigma_zz_bending_xx * M22)
+        self.torsionStress_zx = self.tau_zx_torsion * Mzz
+        self.torsionStress_zy = self.tau_zy_torsion * Mzz
+        self.torsionStress = ((self.torsionStress_zx ** 2 +
+            self.torsionStress_zy ** 2) ** 0.5)
+        self.shearStress_zx = self.tau_zx_shear_x * Vx + self.tau_zx_shear_y * Vy
+        self.shearStress_zy = self.tau_zy_shear_x * Vx + self.tau_zy_shear_y * Vy
+        self.shearStress = ((self.shearStress_zx ** 2 +
+            self.shearStress_zy ** 2) ** 0.5)
 
-        # allocate stress vectors
-        self.tau_zx_shear = np.zeros(self.noNodes)
-        self.tau_zy_shear = np.zeros(self.noNodes)
-        # allocate nodal count vector for nodal averaging
-        node_count = np.zeros(self.noNodes)
+        # compute combined stresses
+        self.sigma_zz = self.axialStress + self.bendingStress
+        self.tau_zx = self.torsionStress_zx + self.shearStress_zx
+        self.tau_zy = self.torsionStress_zy + self.shearStress_zy
+        self.tau =  (self.tau_zx ** 2 + self.tau_zy ** 2) ** 0.5
+        self.vonMises = ((self.sigma_zz ** 2 + 3 * (self.tau ** 2)) ** 0.5)
 
-        for el in self.elements:
-            # evaluate shear stress at nodes
-            tau_shear = (el.shearStress(Vxx, Vyy, self.Psi[el.nodes],
-                self.Phi[el.nodes], ixx, iyy, ixy, self.Delta_s))
-            # add shear stresses to global vectors
-            self.tau_zx_shear[el.nodes] += tau_shear[:,0]
-            self.tau_zy_shear[el.nodes] += tau_shear[:,1]
-            # increment the nodal count vector
-            node_count[el.nodes] += 1
-
-        # nodal averaging
-        self.tau_zx_shear *= 1 / node_count
-        self.tau_zy_shear *= 1 / node_count
-        # evaluate resultant torsion stress
-        self.tau_shear = (self.tau_zx_shear ** 2 + self.tau_zy_shear ** 2) ** 0.5
-
-    def combinedNormalStress(self):
-        self.sigma_zz = self.sigma_zz_axial + self.sigma_zz_bending
-
-    def combinedShearStress(self):
-        self.tau_zx = self.tau_zx_shear + self.tau_zx_torsion
-        self.tau_zy = self.tau_zy_shear + self.tau_zy_torsion
-        self.tau = (self.tau_zx ** 2 + self.tau_zy ** 2) ** 0.5
-
-    def vonMisesStress(self):
-        self.vonMises = ((self.sigma_zz ** 2 + 3 * (self.tau_zx ** 2 +
-            self.tau_zy ** 2)) ** 0.5)
-
-    def contourPlot(self, principalAxis=False, z=None, nodes=False, plotTitle=''):
-        plt.figure()
+    # --------------------------------------------------------------------------
+    # POST METHODS:
+    # --------------------------------------------------------------------------
+    def contourPlot(self, principalAxis=False, z=None, nodes=False, plotTitle='', centroids=False):
         plt.gca().set_aspect('equal')
+        # ax = plt.subplot(111)
         plt.triplot(self.pointArray[:,0], self.pointArray[:,1], self.elementArray[:,0:3], lw=0.5, color='black')
         plt.title(plotTitle)
+        plt.xlabel('x')
+        plt.ylabel('y')
 
         if principalAxis:
-            if self.geometricMesh is not None:
-                d1 = max(abs(self.geometricMesh.d2max), abs(self.geometricMesh.d2min))
-                d2 = max(abs(self.geometricMesh.d1max), abs(self.geometricMesh.d1min))
+            start_11 = femFunctions.globalCoordinate(self.geometricMesh.phi, self.geometricMesh.x_1min, 0)
+            end_11 = femFunctions.globalCoordinate(self.geometricMesh.phi, self.geometricMesh.x_1max, 0)
+            start_22 = femFunctions.globalCoordinate(self.geometricMesh.phi, 0, self.geometricMesh.y_2min)
+            end_22 = femFunctions.globalCoordinate(self.geometricMesh.phi, 0, self.geometricMesh.y_2max)
 
-                (plt.plot([-d1 * np.cos(self.geometricMesh.phi * np.pi / 180),
-                d1 * np.cos(self.geometricMesh.phi * np.pi / 180)],
-                [-d1 * np.sin(self.geometricMesh.phi * np.pi / 180),
-                d1 * np.sin(self.geometricMesh.phi * np.pi / 180)]))
+            (plt.plot([start_11[0], end_11[0]], [start_11[1], end_11[1]], label='11 axis'))
+            (plt.plot([start_22[0], end_22[0]], [start_22[1], end_22[1]], label='22 axis'))
 
-                (plt.plot([-d2 * np.cos(self.geometricMesh.phi * np.pi / 180 + np.pi / 2),
-                    d2 * np.cos(self.geometricMesh.phi * np.pi / 180 + np.pi / 2)],
-                    [-d2 * np.sin(self.geometricMesh.phi * np.pi / 180 + np.pi / 2),
-                    d2 * np.sin(self.geometricMesh.phi * np.pi / 180 + np.pi / 2)]))
-            else:
-                d1 = max(abs(self.d2max), abs(self.d2min))
-                d2 = max(abs(self.d1max), abs(self.d1min))
-                (plt.plot([self.cx - d1 * np.cos(self.phi * np.pi / 180), self.cx +
-                    d1 * np.cos(self.phi * np.pi / 180)], [self.cy - d1 *
-                    np.sin(self.phi * np.pi / 180), self.cy + d1 *
-                    np.sin(self.phi * np.pi / 180)]))
-                (plt.plot([self.cx - d2 * np.cos(self.phi * np.pi / 180 + np.pi / 2),
-                    self.cx + d2 * np.cos(self.phi * np.pi / 180 + np.pi / 2)],
-                    [self.cy - d2 * np.sin(self.phi * np.pi / 180 + np.pi / 2),
-                    self.cy + d2 * np.sin(self.phi * np.pi / 180 + np.pi / 2)]))
+        if centroids:
+            plt.scatter(0, 0, facecolors='None', edgecolors='k', marker='o', s=100, label='Elastic Centroid')
+            plt.scatter(self.geometricMesh.x_pc - self.geometricMesh.cx, self.geometricMesh.y_pc - self.geometricMesh.cy, c='k', marker='x', s=100, label='Global Plastic Centroid')
+            plt.scatter(self.geometricMesh.x_1_pc - self.geometricMesh.cx, self.geometricMesh.y_2_pc - self.geometricMesh.cy, facecolors='None', edgecolors='k', marker='s', s=100, label='Principal Plastic Centroid')
+            plt.scatter(self.x_se, self.y_se, c='k', marker='+', s=100, label='Shear Centre')
+            plt.legend()
 
         if z is not None:
             cmap = cm.get_cmap(name = 'jet')
             # v = np.linspace(-10, 10, 15, endpoint=True)
             trictr = plt.tricontourf(self.pointArray[:,0], self.pointArray[:,1], self.elementArray[:,0:3], z, cmap=cmap)
-            cbar = plt.colorbar(trictr)
+            cbar = plt.colorbar(trictr, label='Stress')
 
         if nodes:
             plt.plot(self.pointArray[:,0], self.pointArray[:,1], 'ko', markersize = 1)
 
+        plt.grid(True)
         plt.show()
 
     def quiverPlot(self, u, v, plotTitle=''):
@@ -563,15 +601,36 @@ class triMesh:
         print "y_s,e = {}".format(self.y_se)
         print "x_s,t = {}".format(self.x_st)
         print "y_s,t = {}".format(self.y_st)
+        print "x_1_s,e = {}".format(self.x_1_se)
+        print "y_2_s,e = {}".format(self.y_2_se)
+        print "A_s,x = {}".format(self.A_sx)
+        print "A_s,y = {}".format(self.A_sy)
+        print "A_s,11 = {}".format(self.A_s11)
+        print "A_s,22 = {}".format(self.A_s22)
+        print ""
 
-def plasticCentroidAlgorithm(dir, tol, maxIt, u, start, dmin, dmax, points, facets, holes, pointArray, elementArray):
+def plasticCentroidAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, holes, pointArray, elementArray):
     '''
-    Algorithm to find plastic centroid (point at which top area = bot area)
+    Algorithm to find plastic centroid (point at which top area = bot area):
+        tol = convergence tolerance
+        maxIt = maximum iterations
+        u = unit vector in direction of axis
+        (cx,cy) = centroid of section
+        start = initial guess of the plastic axis location
+        (dmin,dmax) = distance from centroid to extreme fibre of section
+        points = input points list
+        facets = input facets list
+        holes = input holes list
+        pointArray = np array containing mesh points
+        elementArray = np array containing element vertices
+
+        a_n = perpendicular distance from centroid to p.c.
     '''
      # initialise iteration variables
-    areaConvergence_n = 0
-    a_n1 = start # first guess for plastic centroid
+    areaConvergence_n = np.random.rand() * 0.01
+    a_n1 = 0
     iterationCount = 0
+    u_perp = np.array([u[1], u[0]]) # u vector rotated  90 degrees
 
     # algorithm
     while ((abs(areaConvergence_n) > tol or iterationCount < 3) and (iterationCount < maxIt)):
@@ -582,42 +641,28 @@ def plasticCentroidAlgorithm(dir, tol, maxIt, u, start, dmin, dmax, points, face
             # secant method
             a_n = (a_n2 * areaConvergence_n - a_n1 * areaConvergence_n1) / (areaConvergence_n - areaConvergence_n1)
 
-        print a_n
-
         # ensure trial axis is within section depth
         if a_n > dmax:
-            if dmax == 0:
-                a_n = -0.05 * (dmax - dmin)
-            else:
-                a_n = dmax - 0.05 * (dmax - dmin)
+            a_n = 0.95 * dmax
         elif a_n < dmin:
-            if dmin == 0:
-                a_n = 0.05 * (dmax - dmin)
-            else:
-                a_n = dmin + 0.05 * (dmax - dmin)
+            a_n = 0.95 * dmin
+
+        # determine points (p1,p2) on trial axis
+        p1 = np.array([cx + a_n * u_perp[0], cy + a_n * u_perp[1]])
+        p2 = np.array([p1[0] + u[0], p1[1] + u[1]])
 
         # remesh with new trial axis included
-        if dir == 'x':
-            (points_new, facets_new) = (femFunctions.divideMesh(points[:],
-                facets[:], pointArray, elementArray, a_n, 0, a_n, 1))
-        elif dir == 'y':
-            (points_new, facets_new) = (femFunctions.divideMesh(points[:],
-                facets[:], pointArray, elementArray, 0, a_n, 1, a_n))
+        (points_new, facets_new) = (femFunctions.divideMesh(points[:],
+            facets[:], pointArray, elementArray, p1[0], p1[1], p2[0], p2[1]))
 
         newMesh = femFunctions.createMesh(points_new, facets_new, holes, minAngle=None, qualityMeshing=False)
 
         # create triMesh object with new trial mesh
         meshTrial = triMesh(newMesh)
-        meshTrial.contourPlot()
+        # meshTrial.contourPlot(nodes=True)
 
         # calculate area above and below axis
-        if dir == 'x':
-            (botArea, topArea, botCentroid, topCentroid) = meshTrial.computeAreaSegments(u, a_n, 0)
-        elif dir == 'y':
-            (topArea, botArea, topCentroid, botCentroid) = meshTrial.computeAreaSegments(u, 0, a_n)
-
-        print botArea
-        print topArea
+        (topArea, botArea, topCentroid, botCentroid) = meshTrial.computeAreaSegments(u, p1[0], p1[1])
 
         # update convergence and solution data
         areaConvergence_n1 = areaConvergence_n
@@ -625,6 +670,5 @@ def plasticCentroidAlgorithm(dir, tol, maxIt, u, start, dmin, dmax, points, face
         a_n2 = a_n1
         a_n1 = a_n
         iterationCount += 1 # increment iterations
-        print areaConvergence_n
 
     return (a_n, topArea, botArea, topCentroid, botCentroid)
