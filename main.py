@@ -5,8 +5,8 @@ import sectionGenerator
 # ------------------------------------------------------------------------------
 # INPUT GEOMETRY:
 # ------------------------------------------------------------------------------
-# doubly symmetric I-section
-(points, facets, holes) = sectionGenerator.ISection(200, 200, 16, 8, 16, 8)
+# Angle section
+(points, facets, holes) = sectionGenerator.Angle(100, 100, 6, 12, 8)
 maxSize = 2.5
 
 # ------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ meshGeometric.computeGlobalPlasticProperties(points, facets, holes)
 meshGeometric.computePrincipalPlasticProperties(points, facets, holes)
 meshGeometric.printPlasticResults()
 
-# plot mesh
+# plot mesh again
 meshGeometric.contourPlot(nodes=True, plotTitle='Mesh for Geometric Properties')
 
 # ------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ refinedMesh = femFunctions.createMesh(shiftedPoints, facets, shiftedHoles, maxAr
  # create mesh2D object for warping properties
 meshWarping = mesh2D.triMesh(refinedMesh, nu=0, geometricMesh=meshGeometric)
 
-# plot mesh
+# plot warping mesh
 meshWarping.contourPlot(plotTitle='Mesh for Warping Properties')
 
 # compute section properties
@@ -58,7 +58,7 @@ meshWarping.printWarpingResults()
 # determine stresses due to unit forces/moments
 meshWarping.unitStress()
 
-# plot mesh
+# plot mesh centroids
 meshWarping.contourPlot(plotTitle='Centroids', principalAxis=True, centroids=True)
 
 # apply forces/moments

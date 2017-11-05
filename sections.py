@@ -1,55 +1,29 @@
-# CHS
+# CHS section
 (points, facets, holes) = sectionGenerator.CHS(100, 9, 100)
 maxSize = 5
 
-# doubly symmetric I-section
-(points, facets, holes) = sectionGenerator.ISection(200, 200, 16, 8, 16, 8)
+# I-section
+(points, facets, holes) = sectionGenerator.ISection(200, 100, 12, 8, 16, 8)
 maxSize = 5
+
+# PFC section
+(points, facets, holes) = sectionGenerator.PFC(150, 75, 8, 5, 12, 8)
+maxSize = 2.5
+
+# Angle section
+(points, facets, holes) = sectionGenerator.Angle(100, 100, 6, 12, 8)
+maxSize = 2.5
 
 # RHS section
 (points, facets, holes) = sectionGenerator.RHS(200, 100, 6, 15, 8)
+maxSize = 2.5
+
+# Flat section
+(points, facets, holes) = sectionGenerator.Flat(100, 12)
 maxSize = 1.5
 
-# rectangular bar 1
-points = [(0,0), (10,0), (10,100), (0,100)]
-facets = [(0,1), (1,2), (2,3), (3,0)]
-holes = []
-maxSize = 2.5
-
-# rectangular bar 2
-points = [(0,0), (50,0), (50,100), (0,100)]
-facets = [(0,1), (1,2), (2,3), (3,0)]
-holes = []
-maxSize = 5
-
-# square bar
-points = [(0,0), (50,0), (50,50), (0,50)]
-facets = [(0,1), (1,2), (2,3), (3,0)]
-holes = []
-maxSize = 5
-
-# L section 1
-points = [(0,0), (0.1, 0), (0.1, 1.95), (1.05, 1.95), (1.05, 2.05), (0, 2.05)]
-facets = [(0,1), (1,2), (2,3), (3,4), (4,5), (5,0)]
-holes = []
-maxSize = 0.0005
-
-# L section 2
-points = [(0,0), (0, 0.1), (1.95, 0.1), (1.95, 1.05), (2.05, 1.05), (2.05, 0)]
-facets = [(0,1), (1,2), (2,3), (3,4), (4,5), (5,0)]
-holes = []
-maxSize = 0.0005
-
-# rectangular hollow section 1
-points = [(0,0), (50,0), (50,100), (0,100), (6,6), (44, 6), (44, 94), (6, 94)]
-facets = [(0,1), (1,2), (2,3), (3,0), (4,5), (5,6), (6,7), (7,4)]
-holes = [(25,50)]
-maxSize = 2.5
-
-# rectangular hollow section 2
-points = [(0,0), (100,0), (100,50), (0,50), (6,6), (6, 44), (94, 44), (94, 6)]
-facets = [(0,1), (1,2), (2,3), (3,0), (4,5), (5,6), (6,7), (7,4)]
-holes = [(50,25)]
+# Round section
+(points, facets, holes) = sectionGenerator.Round(25, 100)
 maxSize = 2.5
 
 # asymmetric I-section
@@ -59,13 +33,6 @@ facets = ([(0,1), (1,2), (2,3), (3,4), (4,5), (5,6), (6,7), (7,8), (8,9),
     (9,10), (10,11), (11,12), (12,13), (13,0)])
 holes = []
 maxSize = 2.5
-
-# channel section
-points = ([(-0.05,-0.05), (1,-0.05), (1,0.05), (0.05,0.05), (0.05, 1.95), (1, 1.95),
-    (1, 2.05), (-0.05, 2.05)])
-facets = [(0,1), (1,2), (2,3), (3,4), (4,5), (5,6), (6,7), (7,0)]
-holes = []
-maxSize = 0.0005
 
 # triangle section
 points = [(0,0), (50,0), (25,43.40127019)]
@@ -80,14 +47,6 @@ facets = ([(0,1), (1,2), (2,3), (3,0), (4,5), (5,6), (6,7), (7,4), (8,9), (9,10)
     (10,11), (11,8)])
 holes = [(26,26), (276, 26)]
 maxSize = 50
-
-# doubly symmetric I-section
-points = ([(0,0), (100,0), (100,10), (52.5,10), (52.5,190), (100,190), (100,200),
-    (0,200), (0,190), (47.5,190), (47.5,10), (0,10)])
-facets = ([(0,1), (1,2), (2,3), (3,4), (4,5), (5,6), (6,7), (7,8), (8,9),
-    (9,10), (10,11), (11,0)])
-holes = []
-maxSize = 1.5
 
 # asymmetric box section
 points = ([(0.0, 0.0), (0.0, 300.0), (225.0, 50.0), (275.0, 50.0), (50.0, 50.0), (50.0, 250.0), #0-5

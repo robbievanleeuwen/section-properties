@@ -145,17 +145,25 @@ class triMesh:
         self.Sxx = self.area / 2 * abs(topCentroidy[1] - botCentroidy[1])
         self.Syy = self.area / 2 * abs(topCentroidx[0] - botCentroidx[0])
 
+        # compute shape factors
+        self.shapeFactor_xx_plus = self.Sxx / self.zxx_plus
+        self.shapeFactor_xx_minus =  self.Sxx / self.zxx_minus
+        self.shapeFactor_yy_plus = self.Syy / self.zyy_plus
+        self.shapeFactor_yy_minus =  self.Syy / self.zyy_minus
+
     def computePrincipalPlasticProperties(self, points, facets, holes):
         tol = 1e-6
         u1 = np.array([np.cos(self.phi * np.pi / 180), np.sin(self.phi * np.pi / 180)])
         u2 = np.array([-np.sin(self.phi * np.pi / 180), np.cos(self.phi * np.pi / 180)])
 
         # compute plastic centroids and plastic section modulii
+        # compute location of 11 axis
         (x_1_a_n, topArea, botArea, topCentroid1, botCentroid1) = (plasticCentroidAlgorithm(tol,
-            100, u1, self.cx, self.cy, self.x_1min, self.x_1max, points, facets,
+            100, u1, self.cx, self.cy, self.y_2min, self.y_2max, points, facets,
             holes, self.pointArray, self.elementArray))
+        # compute location of 22 axis
         (y_2_a_n, topArea, botArea, topCentroid2, botCentroid2) = (plasticCentroidAlgorithm(tol,
-            100, u2, self.cx, self.cy, self.y_2min, self.y_2max, points, facets,
+            100, u2, self.cx, self.cy, self.x_1min, self.x_1max, points, facets,
             holes, self.pointArray, self.elementArray))
 
         (tc1_1, tc1_2) = femFunctions.principalCoordinate(self.phi, topCentroid1[0] - self.cx, topCentroid1[1] - self.cy)
@@ -167,6 +175,12 @@ class triMesh:
         self.y_2_pc = self.cy + x_1_a_n * u2[1] + y_2_a_n * u1[1]
         self.S11 = self.area / 2 * abs(tc1_2 - bc1_2)
         self.S22 = self.area / 2 * abs(tc2_1 - bc2_1)
+
+        # compute shape factors
+        self.shapeFactor_11_plus = self.S11 / self.z11_plus
+        self.shapeFactor_11_minus = self.S11 / self.z11_minus
+        self.shapeFactor_22_plus = self.S22 / self.z22_plus
+        self.shapeFactor_22_minus = self.S22 / self.z22_minus
 
     def computeWarpingProperties(self):
         # load areas and second moments of area
@@ -253,8 +267,7 @@ class triMesh:
         K = np.concatenate((K, Nvec1), axis=1)
         K = np.concatenate((K, Nvec2), axis=0)
 
-        Kinv = np.linalg.inv(K)
-        return Kinv
+        return np.linalg.inv(K)
 
     def assembleTorsionMatrices(self):
         # initialise variables
@@ -552,10 +565,10 @@ class triMesh:
         print "Ixx_c = {}".format(self.ixx_c)
         print "Iyy_c = {}".format(self.iyy_c)
         print "Ixy_c = {}".format(self.ixy_c)
-        print "Zxx_plus = {}".format(self.zxx_plus)
-        print "Zxx_minus = {}".format(self.zxx_minus)
-        print "Zyy_plus = {}".format(self.zyy_plus)
-        print "Zyy_minus = {}".format(self.zyy_minus)
+        print "Zxx+ = {}".format(self.zxx_plus)
+        print "Zxx- = {}".format(self.zxx_minus)
+        print "Zyy+ = {}".format(self.zyy_plus)
+        print "Zyy- = {}".format(self.zyy_minus)
         print "rx_c = {}".format(self.rx_c)
         print "ry_c = {}".format(self.ry_c)
         print ""
@@ -565,10 +578,10 @@ class triMesh:
         print "phi = {}".format(self.phi)
         print "I11_c = {}".format(self.i11_c)
         print "I22_c = {}".format(self.i22_c)
-        print "Z11_plus = {}".format(self.z11_plus)
-        print "Z11_minus = {}".format(self.z11_minus)
-        print "Z22_plus = {}".format(self.z22_plus)
-        print "Z22_minus = {}".format(self.z22_minus)
+        print "Z11+ = {}".format(self.z11_plus)
+        print "Z11- = {}".format(self.z11_minus)
+        print "Z22+ = {}".format(self.z22_plus)
+        print "Z22- = {}".format(self.z22_minus)
         print "r1_c = {}".format(self.r1_c)
         print "r2_c = {}".format(self.r2_c)
         print ""
@@ -581,10 +594,18 @@ class triMesh:
         print "y_pc = {}".format(self.y_pc)
         print "Sxx = {}".format(self.Sxx)
         print "Syy = {}".format(self.Syy)
+        print "SF_xx+ = {}".format(self.shapeFactor_xx_plus)
+        print "SF_xx- = {}".format(self.shapeFactor_xx_minus)
+        print "SF_yy+ = {}".format(self.shapeFactor_yy_plus)
+        print "SF_yy- = {}".format(self.shapeFactor_yy_minus)
         print "x_1_pc = {}".format(self.x_1_pc)
         print "y_2_pc = {}".format(self.y_2_pc)
         print "S11 = {}".format(self.S11)
         print "S22 = {}".format(self.S22)
+        print "SF_11+ = {}".format(self.shapeFactor_11_plus)
+        print "SF_11- = {}".format(self.shapeFactor_11_minus)
+        print "SF_22+ = {}".format(self.shapeFactor_22_plus)
+        print "SF_22- = {}".format(self.shapeFactor_22_minus)
         print ""
 
     def printWarpingResults(self):
@@ -627,19 +648,23 @@ def plasticCentroidAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, 
         a_n = perpendicular distance from centroid to p.c.
     '''
      # initialise iteration variables
-    areaConvergence_n = np.random.rand() * 0.01
+    areaConvergence_n = 0
     a_n1 = 0
     iterationCount = 0
-    u_perp = np.array([u[1], u[0]]) # u vector rotated  90 degrees
+    u_perp = np.array([-u[1], u[0]]) # u vector rotated  90 degrees
 
     # algorithm
     while ((abs(areaConvergence_n) > tol or iterationCount < 3) and (iterationCount < maxIt)):
         if iterationCount < 3:
-            # first two iterations uses a stepping approach
-            a_n = a_n1 + areaConvergence_n * (dmax - dmin) / 5 * abs(areaConvergence_n) # compute new trial axis
+            # first two to setup secant method
+            a_n = (np.random.rand() - 1) * 0.05 * (dmax - dmin)
         else:
             # secant method
             a_n = (a_n2 * areaConvergence_n - a_n1 * areaConvergence_n1) / (areaConvergence_n - areaConvergence_n1)
+
+        # print 'a_n = {}'.format(a_n)
+        # print 'dmin = {}'.format(dmin)
+        # print 'dmax = {}'.format(dmax)
 
         # ensure trial axis is within section depth
         if a_n > dmax:
@@ -667,8 +692,12 @@ def plasticCentroidAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, 
         # update convergence and solution data
         areaConvergence_n1 = areaConvergence_n
         areaConvergence_n = topArea / botArea - 1 # recalculate convergence
+        # print 'convergence = {}'.format(areaConvergence_n)
+        # print '---'
         a_n2 = a_n1
         a_n1 = a_n
         iterationCount += 1 # increment iterations
 
+    # print 'Converged!'
+    # print '---'
     return (a_n, topArea, botArea, topCentroid, botCentroid)

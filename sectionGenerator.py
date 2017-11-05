@@ -34,7 +34,7 @@ def RHS(d, b, t, r_out, n_r):
 
     # bottom left radius
     for i in range(n_r):
-        theta = np.pi + i * 1.0 / (n_r - 1) * np.pi * 0.5
+        theta = np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
 
         x_out = r_out + r_out * np.cos(theta)
         y_out = r_out + r_out * np.sin(theta)
@@ -46,7 +46,7 @@ def RHS(d, b, t, r_out, n_r):
 
     # bottom right radius
     for i in range(n_r):
-        theta = 3.0 / 2 * np.pi + i * 1.0 / (n_r - 1) * np.pi * 0.5
+        theta = 3.0 / 2 * np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
 
         x_out = b - r_out + r_out * np.cos(theta)
         y_out = r_out + r_out * np.sin(theta)
@@ -58,7 +58,7 @@ def RHS(d, b, t, r_out, n_r):
 
     # top right radius
     for i in range(n_r):
-        theta = i * 1.0 / (n_r - 1) * np.pi * 0.5
+        theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
 
         x_out = b - r_out + r_out * np.cos(theta)
         y_out = d - r_out + r_out * np.sin(theta)
@@ -70,7 +70,7 @@ def RHS(d, b, t, r_out, n_r):
 
     # top left radius
     for i in range(n_r):
-        theta = np.pi * 0.5 + i * 1.0 / (n_r - 1) * np.pi * 0.5
+        theta = np.pi * 0.5 + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
 
         x_out = r_out + r_out * np.cos(theta)
         y_out = d - r_out + r_out * np.sin(theta)
@@ -101,7 +101,7 @@ def ISection(d, b, tf, tw, r, n_r):
 
     # bottom right radius
     for i in range(n_r):
-        theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / (n_r - 1) * 1.0 / 3)
+        theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 1.0 / 3)
 
         x = b * 0.5 + tw * 0.5 + r + r * np.cos(theta)
         y = tf + r + r * np.sin(theta)
@@ -110,7 +110,7 @@ def ISection(d, b, tf, tw, r, n_r):
 
     # top right radius
     for i in range(n_r):
-        theta = np.pi * (1 - i * 1.0 / (n_r - 1) * 0.5)
+        theta = np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 0.5)
 
         x = b * 0.5 + tw * 0.5 + r + r * np.cos(theta)
         y = d - tf - r + r * np.sin(theta)
@@ -124,7 +124,7 @@ def ISection(d, b, tf, tw, r, n_r):
 
     # top left radius
     for i in range(n_r):
-        theta = np.pi * 0.5 * (1 - i * 1.0 / (n_r - 1))
+        theta = np.pi * 0.5 * (1 - i * 1.0 / max(1, n_r - 1))
 
         x = b * 0.5 - tw * 0.5 - r + r * np.cos(theta)
         y = d - tf - r + r * np.sin(theta)
@@ -133,7 +133,7 @@ def ISection(d, b, tf, tw, r, n_r):
 
     # bottom left radius
     for i in range(n_r):
-        theta = -np.pi * i * 1.0 / (n_r - 1) * 0.5
+        theta = -np.pi * i * 1.0 / max(1, n_r - 1) * 0.5
 
         x = b * 0.5 - tw * 0.5 - r + r * np.cos(theta)
         y = tf + r + r * np.sin(theta)
@@ -147,5 +147,100 @@ def ISection(d, b, tf, tw, r, n_r):
             facets.append((i, i + 1))
         else:
             facets.append((len(points) - 1, 0))
+
+    return (points, facets, holes)
+
+def PFC(d, b, tf, tw, r, n_r):
+    points = []
+    facets = []
+    holes = []
+
+    points.append((0, 0))
+    points.append((b, 0))
+    points.append((b, tf))
+
+    # bottom right radius
+    for i in range(n_r):
+        theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 1.0 / 3)
+
+        x = tw + r + r * np.cos(theta)
+        y = tf + r + r * np.sin(theta)
+
+        points.append((x, y))
+
+    # top right radius
+    for i in range(n_r):
+        theta = np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 0.5)
+
+        x = tw + r + r * np.cos(theta)
+        y = d - tf - r + r * np.sin(theta)
+
+        points.append((x, y))
+
+    points.append((b, d - tf))
+    points.append((b, d))
+    points.append((0, d))
+
+    for i in range(len(points)):
+        if i != len(points) - 1:
+            facets.append((i, i + 1))
+        else:
+            facets.append((len(points) - 1, 0))
+
+    return (points, facets, holes)
+
+def Angle(d, b, t, r, n_r):
+    points = []
+    facets = []
+    holes = []
+
+    points.append((0, 0))
+    points.append((b, 0))
+    points.append((b, t))
+
+    # bottom right radius
+    for i in range(n_r):
+        theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 1.0 / 3)
+
+        x = t + r + r * np.cos(theta)
+        y = t + r + r * np.sin(theta)
+
+        points.append((x, y))
+
+    points.append((t, d))
+    points.append((0, d))
+
+    for i in range(len(points)):
+        if i != len(points) - 1:
+            facets.append((i, i + 1))
+        else:
+            facets.append((len(points) - 1, 0))
+
+    return (points, facets, holes)
+
+def Flat(d, b):
+    points = [(0,0), (b, 0), (b, d), (0, d)]
+    facets = [(0,1), (1,2), (2,3), (3,0)]
+    holes = []
+
+    return (points, facets, holes)
+
+def Round(r, n):
+    points = []
+    facets = []
+    holes = []
+
+    for i in range(n):
+        theta = i * 2 * np.pi * 1.0 / n
+
+        x = r * np.cos(theta)
+        y = r * np.sin(theta)
+
+        points.append((x, y))
+
+        if i != n - 1:
+            facets.append((i, i + 1))
+        else:
+            facets.append((i, 0))
 
     return (points, facets, holes)
