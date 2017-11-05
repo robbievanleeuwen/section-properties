@@ -244,3 +244,287 @@ def Round(r, n):
             facets.append((i, 0))
 
     return (points, facets, holes)
+
+def Tee(d, b, tf, tw, r, n_r):
+    points = []
+    facets = []
+    holes = []
+
+    points.append((b * 0.5 - tw * 0.5, 0))
+    points.append((b * 0.5 + tw * 0.5, 0))
+
+    # top right radius
+    for i in range(n_r):
+        theta = np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 0.5)
+
+        x = b * 0.5 + tw * 0.5 + r + r * np.cos(theta)
+        y = d - tf - r + r * np.sin(theta)
+
+        points.append((x, y))
+
+    points.append((b, d - tf))
+    points.append((b, d))
+    points.append((0, d))
+    points.append((0, d - tf))
+
+    # top left radius
+    for i in range(n_r):
+        theta = np.pi * 0.5 * (1 - i * 1.0 / max(1, n_r - 1))
+
+        x = b * 0.5 - tw * 0.5 - r + r * np.cos(theta)
+        y = d - tf - r + r * np.sin(theta)
+
+        points.append((x, y))
+
+    for i in range(len(points)):
+        if i != len(points) - 1:
+            facets.append((i, i + 1))
+        else:
+            facets.append((len(points) - 1, 0))
+
+    return (points, facets, holes)
+
+def Cee(d, b, l, t, r_out, n_r):
+    points = []
+    facets = []
+    holes = []
+    r_in = r_out - t
+
+    # bottom left radius out
+    for i in range(n_r):
+        theta = np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_out = r_out + r_out * np.cos(theta)
+        y_out = r_out + r_out * np.sin(theta)
+
+        points.append((x_out, y_out))
+
+    # bottom right radius out
+    for i in range(n_r):
+        theta = 3.0 / 2 * np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_out = b - r_out + r_out * np.cos(theta)
+        y_out = r_out + r_out * np.sin(theta)
+
+        points.append((x_out, y_out))
+
+    points.append((b, l))
+    points.append((b - t, l))
+
+    # bottom right radius in
+    for i in range(n_r):
+        theta = 2 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_in = b - r_out + r_in * np.cos(theta)
+        y_in = r_out + r_in * np.sin(theta)
+
+        points.append((x_in, y_in))
+
+    # bottom left radius in
+    for i in range(n_r):
+        theta = 3.0 / 2 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_in = r_out + r_in * np.cos(theta)
+        y_in = r_out + r_in * np.sin(theta)
+
+        points.append((x_in, y_in))
+
+    # top left radius in
+    for i in range(n_r):
+        theta = np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_in = r_out + r_in * np.cos(theta)
+        y_in = d - r_out + r_in * np.sin(theta)
+
+        points.append((x_in, y_in))
+
+    # top right radius in
+    for i in range(n_r):
+        theta = np.pi * 0.5 - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_in = b - r_out + r_in * np.cos(theta)
+        y_in = d - r_out + r_in * np.sin(theta)
+
+        points.append((x_in, y_in))
+
+    points.append((b - t, d - l))
+    points.append((b, d - l))
+
+    # top right radius out
+    for i in range(n_r):
+        theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_out = b - r_out + r_out * np.cos(theta)
+        y_out = d - r_out + r_out * np.sin(theta)
+
+        points.append((x_out, y_out))
+
+    # top left radius out
+    for i in range(n_r):
+        theta = 0.5 * np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_out = r_out + r_out * np.cos(theta)
+        y_out = d - r_out + r_out * np.sin(theta)
+
+        points.append((x_out, y_out))
+
+    for i in range(len(points)):
+        if i != len(points) - 1:
+            facets.append((i, i + 1))
+        else:
+            facets.append((len(points) - 1, 0))
+
+    return (points, facets, holes)
+
+def Zed(d, b1, b2, l, t, r_out, n_r):
+    points = []
+    facets = []
+    holes = []
+    r_in = r_out - t
+
+    # bottom left radius out
+    for i in range(n_r):
+        theta = np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_out = r_out + r_out * np.cos(theta)
+        y_out = r_out + r_out * np.sin(theta)
+
+        points.append((x_out, y_out))
+
+    # bottom right radius out
+    for i in range(n_r):
+        theta = 3.0 / 2 * np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_out = b1 - r_out + r_out * np.cos(theta)
+        y_out = r_out + r_out * np.sin(theta)
+
+        points.append((x_out, y_out))
+
+    points.append((b1, l))
+    points.append((b1 - t, l))
+
+    # bottom right radius in
+    for i in range(n_r):
+        theta = 2 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_in = b1 - r_out + r_in * np.cos(theta)
+        y_in = r_out + r_in * np.sin(theta)
+
+        points.append((x_in, y_in))
+
+    # bottom left radius in
+    for i in range(n_r):
+        theta = 3.0 / 2 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_in = r_out + r_in * np.cos(theta)
+        y_in = r_out + r_in * np.sin(theta)
+
+        points.append((x_in, y_in))
+
+    # top right radius out
+    for i in range(n_r):
+        theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_out = t - r_out + r_out * np.cos(theta)
+        y_out = d - r_out + r_out * np.sin(theta)
+
+        points.append((x_out, y_out))
+
+    # top left radius out
+    for i in range(n_r):
+        theta = np.pi * 0.5 + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_out = t - b2 + r_out + r_out * np.cos(theta)
+        y_out = d - r_out + r_out * np.sin(theta)
+
+        points.append((x_out, y_out))
+
+    points.append((t - b2, d - l))
+    points.append((t - b2 + t, d - l))
+
+    # top left radius in
+    for i in range(n_r):
+        theta = np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_in = t - b2 + r_out + r_in * np.cos(theta)
+        y_in = d - r_out + r_in * np.sin(theta)
+
+        points.append((x_in, y_in))
+
+    # top right radius in
+    for i in range(n_r):
+        theta = 0.5 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x_in = t - r_out + r_in * np.cos(theta)
+        y_in = d - r_out + r_in * np.sin(theta)
+
+        points.append((x_in, y_in))
+
+    for i in range(len(points)):
+        if i != len(points) - 1:
+            facets.append((i, i + 1))
+        else:
+            facets.append((len(points) - 1, 0))
+
+    return (points, facets, holes)
+
+def Cruciform(d, b, t, r, n_r):
+    points = []
+    facets = []
+    holes = []
+
+    points.append((-t * 0.5, -d * 0.5))
+    points.append((t * 0.5, -d * 0.5))
+
+    # bottom right radius
+    for i in range(n_r):
+        theta = np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = 0.5 * t + r + r * np.cos(theta)
+        y = -0.5 * t - r + r * np.sin(theta)
+
+        points.append((x, y))
+
+    points.append((0.5 * b, -t * 0.5))
+    points.append((0.5 * b, t * 0.5))
+
+    # top right radius
+    for i in range(n_r):
+        theta = 1.5 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = 0.5 * t + r + r * np.cos(theta)
+        y = 0.5 * t + r + r * np.sin(theta)
+
+        points.append((x, y))
+
+    points.append((t * 0.5, 0.5 * d))
+    points.append((-t * 0.5, 0.5 * d))
+
+    # top left radius
+    for i in range(n_r):
+        theta = -i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = -0.5 * t - r + r * np.cos(theta)
+        y = 0.5 * t + r + r * np.sin(theta)
+
+        points.append((x, y))
+
+    points.append((-0.5 * b, t * 0.5))
+    points.append((-0.5 * b, -t * 0.5))
+
+    # bottom left radius
+    for i in range(n_r):
+        theta = np.pi * 0.5 - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = -0.5 * t - r + r * np.cos(theta)
+        y = -0.5 * t - r + r * np.sin(theta)
+
+        points.append((x, y))
+
+    for i in range(len(points)):
+        if i != len(points) - 1:
+            facets.append((i, i + 1))
+        else:
+            facets.append((len(points) - 1, 0))
+
+    return (points, facets, holes)

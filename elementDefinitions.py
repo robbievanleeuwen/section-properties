@@ -3,7 +3,8 @@ import femFunctions
 
 class tri6:
     '''
-    Six noded triangle, input a 2 x 6 array containing the co-ordinates of the vertices
+    Six noded triangle, input a 2 x 6 array containing the
+    co-ordinates of the vertices
     '''
 
     def __init__(self, vertices, nodes, nu):
@@ -121,21 +122,23 @@ class tri6:
             h2 = -iyy * r - ixy * q
             Nomega = np.dot(N, np.transpose(omega))
 
-            shearFPsi += (gp[0] * (self.nu / 2 * np.transpose(np.transpose(B).dot(
-                np.array([[d1], [d2]])))[0] + 2 * (1 + self.nu) *
-                np.transpose(N) * (ixx * Nx - ixy * Ny)) * j)
-            shearFPhi += (gp[0] * (self.nu / 2 * np.transpose(np.transpose(B).dot(
-                np.array([[h1], [h2]])))[0] + 2 * (1 + self.nu) *
-                np.transpose(N) * (iyy * Ny - ixy * Nx)) * j)
-            shearCentreXInt += gp[0] * (iyy * Nx + ixy * Ny) * (Nx ** 2 + Ny ** 2) * j
-            shearCentreYInt += gp[0] * (ixx * Ny + ixy * Nx) * (Nx ** 2 + Ny ** 2) * j
+            shearFPsi += (gp[0] * (self.nu / 2 * np.transpose(
+                np.transpose(B).dot(np.array([[d1], [d2]])))[0] + 2 * (1 +
+                self.nu) *np.transpose(N) * (ixx * Nx - ixy * Ny)) * j)
+            shearFPhi += (gp[0] * (self.nu / 2 * np.transpose(
+                np.transpose(B).dot(np.array([[h1], [h2]])))[0] + 2 * (1 +
+                self.nu) *np.transpose(N) * (iyy * Ny - ixy * Nx)) * j)
+            shearCentreXInt += (gp[0] * (iyy * Nx + ixy * Ny) * (Nx ** 2 +
+                Ny ** 2) * j)
+            shearCentreYInt += (gp[0] * (ixx * Ny + ixy * Nx) * (Nx ** 2 +
+                Ny ** 2) * j)
             Q_omega += gp[0] * Nomega * j
             i_omega += gp[0] * Nomega ** 2 * j
             i_xomega += gp[0] * Nx * Nomega * j
             i_yomega += gp[0] * Ny * Nomega * j
 
-        return ((shearFPsi, shearFPhi, shearCentreXInt, shearCentreYInt, Q_omega,
-            i_omega, i_xomega, i_yomega))
+        return ((shearFPsi, shearFPhi, shearCentreXInt, shearCentreYInt,
+            Q_omega, i_omega, i_xomega, i_yomega))
 
     def shearCoefficients(self, ixx, iyy, ixy, Psi, Phi):
         '''
@@ -177,7 +180,8 @@ class tri6:
 
         return (kappa_x, kappa_y, kappa_xy)
 
-    def calculateStress(self, area, ixx, iyy, ixy, i11, i22, phi, omega, J, Psi, Phi, Delta_s):
+    def calculateStress(self, area, ixx, iyy, ixy, i11, i22, phi, omega, J, Psi,
+        Phi, Delta_s):
         '''
         Calculates stress due to unit loading
         '''
@@ -213,10 +217,10 @@ class tri6:
             h1 = -ixy * r + iyy * q
             h2 = -iyy * r - ixy * q
 
-            sigma_zz_bending_xx_gp[i,:] = (-(ixy * 1) / (ixx * iyy - ixy ** 2) * Nx +
-                (iyy * 1) / (ixx * iyy - ixy ** 2) * Ny)
-            sigma_zz_bending_yy_gp[i,:] = (-(ixx * 1) / (ixx * iyy - ixy ** 2) * Nx +
-                (ixy * 1) / (ixx * iyy - ixy ** 2) * Ny)
+            sigma_zz_bending_xx_gp[i,:] = (-(ixy * 1) / (ixx * iyy - ixy ** 2) *
+                Nx + (iyy * 1) / (ixx * iyy - ixy ** 2) * Ny)
+            sigma_zz_bending_yy_gp[i,:] = (-(ixx * 1) / (ixx * iyy - ixy ** 2) *
+                Nx + (ixy * 1) / (ixx * iyy - ixy ** 2) * Ny)
             sigma_zz_bending_11_gp[i,:] = 1 / i11 * Ny_2
             sigma_zz_bending_22_gp[i,:] = -1 / i22 * Nx_1
             tau_torsion_gp[i,:] = (1 / J * (B.dot(omega) - np.array([Ny, -Nx])))
@@ -226,10 +230,14 @@ class tri6:
                 np.array([h1, h2])))
 
         # extrapolate results to nodes
-        sigma_zz_bending_xx = femFunctions.extrapolateToNodes(sigma_zz_bending_xx_gp[:,0])
-        sigma_zz_bending_yy = femFunctions.extrapolateToNodes(sigma_zz_bending_yy_gp[:,0])
-        sigma_zz_bending_11 = femFunctions.extrapolateToNodes(sigma_zz_bending_11_gp[:,0])
-        sigma_zz_bending_22 = femFunctions.extrapolateToNodes(sigma_zz_bending_22_gp[:,0])
+        sigma_zz_bending_xx = (femFunctions.extrapolateToNodes(
+            sigma_zz_bending_xx_gp[:,0]))
+        sigma_zz_bending_yy = (femFunctions.extrapolateToNodes(
+            sigma_zz_bending_yy_gp[:,0]))
+        sigma_zz_bending_11 = (femFunctions.extrapolateToNodes(
+            sigma_zz_bending_11_gp[:,0]))
+        sigma_zz_bending_22 = (femFunctions.extrapolateToNodes(
+            sigma_zz_bending_22_gp[:,0]))
         tau_zx_torsion = femFunctions.extrapolateToNodes(tau_torsion_gp[:,0])
         tau_zy_torsion = femFunctions.extrapolateToNodes(tau_torsion_gp[:,1])
         tau_shear_zx_x = femFunctions.extrapolateToNodes(tau_shear_x_gp[:,0])

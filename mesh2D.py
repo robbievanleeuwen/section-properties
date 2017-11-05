@@ -30,7 +30,8 @@ class triMesh:
             y5 = pointArray[tri[4]][1]
             x6 = pointArray[tri[5]][0]
             y6 = pointArray[tri[5]][1]
-            vertices = np.array([[x1, x2, x3, x4, x5, x6], [y1, y2, y3, y4, y5, y6]])
+            vertices = (np.array([[x1, x2, x3, x4, x5, x6],
+                [y1, y2, y3, y4, y5, y6]]))
             triElements.append(elementDefinitions.tri6(vertices, tri, nu))
 
         self.elements = triElements # store element list in mesh2D object
@@ -62,7 +63,8 @@ class triMesh:
 
         for el in self.elements:
             # calculate total area
-            (elArea, elQx, elQy, elIxx_g, elIyy_g, elIxy_g) = el.geometricProperties()
+            ((elArea, elQx, elQy, elIxx_g, elIyy_g,
+                elIxy_g)) = el.geometricProperties()
 
             totalArea += elArea
             totalQx += elQx
@@ -108,7 +110,7 @@ class triMesh:
         # ----------------------------------------------------------------------
         # PRCINCIPAL AXIS PROPERTIES:
         # ----------------------------------------------------------------------
-        # calculate prinicpal second moments of area about the centroidal xy axis
+        # calculate prinicpal 2nd moments of area about the centroidal xy axis
         Delta = (((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c ** 2) ** 0.5
         self.i11_c = (self.ixx_c + self.iyy_c) / 2 + Delta
         self.i22_c = (self.ixx_c + self.iyy_c) / 2 - Delta
@@ -118,7 +120,8 @@ class triMesh:
         if abs(self.ixx_c - self.i11_c) < tol * self.i11_c:
             self.phi = 0
         else:
-            self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
+            self.phi = (np.arctan2(self.ixx_c - self.i11_c, self.ixy_c)
+                * 180 / np.pi)
 
         # calculate section modulii about the principal axis
         self.principalSectionModulii()
@@ -133,12 +136,12 @@ class triMesh:
         uy = np.array([0, 1])
 
         # compute plastic centroids and plastic section modulii
-        (x_a_n, topArea, botArea, topCentroidx, botCentroidx) = (plasticCentroidAlgorithm(tol,
-            100, uy, self.cx, self.cy, self.xmin - self.cx, self.xmax - self.cx,
-            points, facets, holes, self.pointArray, self.elementArray))
-        (y_a_n, topArea, botArea, topCentroidy, botCentroidy) = (plasticCentroidAlgorithm(tol,
-            100, ux, self.cx, self.cy, self.ymin - self.cy, self.ymax - self.cy,
-            points, facets, holes, self.pointArray, self.elementArray))
+        (x_a_n, topArea, botArea, topCentroidx, botCentroidx) = (pcAlgorithm(
+            tol, 100, uy, self.cx, self.cy, self.xmin - self.cx, self.xmax -
+            self.cx, points, facets, holes, self.pointArray, self.elementArray))
+        (y_a_n, topArea, botArea, topCentroidy, botCentroidy) = (pcAlgorithm(
+            tol, 100, ux, self.cx, self.cy, self.ymin - self.cy, self.ymax -
+            self.cy, points, facets, holes, self.pointArray, self.elementArray))
 
         self.x_pc = self.cx + x_a_n
         self.y_pc = self.cy + y_a_n
@@ -153,23 +156,29 @@ class triMesh:
 
     def computePrincipalPlasticProperties(self, points, facets, holes):
         tol = 1e-6
-        u1 = np.array([np.cos(self.phi * np.pi / 180), np.sin(self.phi * np.pi / 180)])
-        u2 = np.array([-np.sin(self.phi * np.pi / 180), np.cos(self.phi * np.pi / 180)])
+        u1 = (np.array([np.cos(self.phi * np.pi / 180), np.sin(self.phi *
+            np.pi / 180)]))
+        u2 = (np.array([-np.sin(self.phi * np.pi / 180), np.cos(self.phi *
+            np.pi / 180)]))
 
         # compute plastic centroids and plastic section modulii
         # compute location of 11 axis
-        (x_1_a_n, topArea, botArea, topCentroid1, botCentroid1) = (plasticCentroidAlgorithm(tol,
-            100, u1, self.cx, self.cy, self.y_2min, self.y_2max, points, facets,
-            holes, self.pointArray, self.elementArray))
+        (x_1_a_n, topArea, botArea, topCentroid1, botCentroid1) = (pcAlgorithm(
+            tol, 100, u1, self.cx, self.cy, self.y_2min, self.y_2max, points,
+            facets, holes, self.pointArray, self.elementArray))
         # compute location of 22 axis
-        (y_2_a_n, topArea, botArea, topCentroid2, botCentroid2) = (plasticCentroidAlgorithm(tol,
-            100, u2, self.cx, self.cy, self.x_1min, self.x_1max, points, facets,
-            holes, self.pointArray, self.elementArray))
+        (y_2_a_n, topArea, botArea, topCentroid2, botCentroid2) = (pcAlgorithm(
+            tol, 100, u2, self.cx, self.cy, self.x_1min, self.x_1max, points,
+            facets, holes, self.pointArray, self.elementArray))
 
-        (tc1_1, tc1_2) = femFunctions.principalCoordinate(self.phi, topCentroid1[0] - self.cx, topCentroid1[1] - self.cy)
-        (bc1_1, bc1_2) = femFunctions.principalCoordinate(self.phi, botCentroid1[0] - self.cx, botCentroid1[1] - self.cy)
-        (tc2_1, tc2_2) = femFunctions.principalCoordinate(self.phi, topCentroid2[0] - self.cx, topCentroid2[1] - self.cy)
-        (bc2_1, bc2_2) = femFunctions.principalCoordinate(self.phi, botCentroid2[0] - self.cx, botCentroid2[1] - self.cy)
+        (tc1_1, tc1_2) = (femFunctions.principalCoordinate(self.phi,
+            topCentroid1[0] - self.cx, topCentroid1[1] - self.cy))
+        (bc1_1, bc1_2) = (femFunctions.principalCoordinate(self.phi,
+            botCentroid1[0] - self.cx, botCentroid1[1] - self.cy))
+        (tc2_1, tc2_2) = (femFunctions.principalCoordinate(self.phi,
+            topCentroid2[0] - self.cx, topCentroid2[1] - self.cy))
+        (bc2_1, bc2_2) = (femFunctions.principalCoordinate(self.phi,
+            botCentroid2[0] - self.cx, botCentroid2[1] - self.cy))
 
         self.x_1_pc = self.cx + x_1_a_n * u2[0] + y_2_a_n * u1[0]
         self.y_2_pc = self.cy + x_1_a_n * u2[1] + y_2_a_n * u1[1]
@@ -196,7 +205,8 @@ class triMesh:
             self.assembleTorsionMatrices))
 
         # invert stiffness matrix
-        processText = 'Inverting {} by {} stiffness matrix...'.format(shearK.shape[0], shearK.shape[0])
+        processText = ('Inverting {} by {} stiffness matrix...'.format(
+            shearK.shape[0], shearK.shape[0]))
         invShearK = (femFunctions.functionTimer(processText,
             self.invertStiffnessMatrix, shearK))
 
@@ -205,7 +215,8 @@ class triMesh:
         # ----------------------------------------------------------------------
         # calculate warping constant and torsion constant
         self.omega = invShearK.dot(np.append(torsionF, 0))[:-1]
-        self.J = ixx + iyy - self.omega.dot(shearK).dot(np.transpose(self.omega))
+        self.J = (ixx + iyy - self.omega.dot(shearK).dot(np.transpose(
+            self.omega)))
 
         # ----------------------------------------------------------------------
         # SHEAR PROPERTIES:
@@ -213,8 +224,8 @@ class triMesh:
         # calculate shear vectors, shear centre integrals and warping moments
         processText = 'Assembling shear vectors and integrals...'
         ((shearFPsi, shearFPhi, shearCentreXInt, shearCentreYInt, Q_omega,
-            i_omega, i_xomega, i_yomega)) = (femFunctions.functionTimer(processText,
-            self.assembleShearVectors, ixx, iyy, ixy))
+            i_omega, i_xomega, i_yomega)) = (femFunctions.functionTimer(
+            processText, self.assembleShearVectors, ixx, iyy, ixy))
 
         # solve for shear functions
         self.Psi = invShearK.dot(np.append(shearFPsi, 0))[:-1]
@@ -226,7 +237,8 @@ class triMesh:
             torsionF.dot(self.Phi)))
         self.y_se = ((1 / self.Delta_s) * ((self.nu / 2 * shearCentreYInt) +
             torsionF.dot(self.Psi)))
-        (self.x_1_se, self.y_2_se) = femFunctions.principalCoordinate(phi, self.x_se, self.y_se)
+        (self.x_1_se, self.y_2_se) = (femFunctions.principalCoordinate(phi,
+            self.x_se, self.y_se))
 
         # calculate shear centres (Trefftz's)
         self.x_st = (ixy * i_xomega - iyy * i_yomega) / (ixx * iyy - ixy ** 2)
@@ -247,8 +259,10 @@ class triMesh:
         alpha_yy = kappa_y * self.geometricMesh.area / self.Delta_s ** 2
         alpha_xy = kappa_xy * self.geometricMesh.area / self.Delta_s ** 2
         phi_rad = self.geometricMesh.phi * np.pi / 180
-        R = np.array([[np.cos(phi_rad), np.sin(phi_rad)], [-np.sin(phi_rad), np.cos(phi_rad)]])
-        rotatedAlpha = R.dot(np.array([[alpha_xx, alpha_xy],[alpha_xy,alpha_yy]])).dot(np.transpose(R))
+        R = (np.array([[np.cos(phi_rad),  np.sin(phi_rad)],
+                       [-np.sin(phi_rad), np.cos(phi_rad)]]))
+        rotatedAlpha = (R.dot(np.array([[alpha_xx, alpha_xy],
+            [alpha_xy, alpha_yy]])).dot(np.transpose(R)))
         self.A_s11 = self.geometricMesh.area / rotatedAlpha[0,0]
         self.A_s22 = self.geometricMesh.area / rotatedAlpha[1,1]
 
@@ -294,9 +308,10 @@ class triMesh:
         i_yomega = 0
 
         for el in self.elements:
-            ((elShearFPsi, elShearFPhi, elShearCentreXInt, elShearCentreYInt, elQ_omega,
-                elI_omega, elI_xomega, elI_yomega)) = (el.shearProperties(ixx, iyy,
-                ixy, self.omega[el.nodes]))
+            ((elShearFPsi, elShearFPhi, elShearCentreXInt, elShearCentreYInt,
+                elQ_omega, elI_omega, elI_xomega,
+                elI_yomega)) = (el.shearProperties(ixx, iyy, ixy,
+                self.omega[el.nodes]))
 
             shearFPsi[el.nodes] += elShearFPsi
             shearFPhi[el.nodes] += elShearFPhi
@@ -307,8 +322,8 @@ class triMesh:
             i_xomega += elI_xomega
             i_yomega += elI_yomega
 
-        return ((shearFPsi, shearFPhi, shearCentreXInt, shearCentreYInt, Q_omega,
-            i_omega, i_xomega, i_yomega))
+        return ((shearFPsi, shearFPhi, shearCentreXInt, shearCentreYInt,
+            Q_omega, i_omega, i_xomega, i_yomega))
 
     def assembleShearCoefficients(self, ixx, iyy, ixy):
         # initialise variables
@@ -352,7 +367,8 @@ class triMesh:
 
             # determine location of element and allocate element areas and
             # first moments of area accordingly
-            if (femFunctions.pointAboveLine(u, px, py, elCentroid[0], elCentroid[1])):
+            if (femFunctions.pointAboveLine(u, px, py, elCentroid[0],
+                elCentroid[1])):
                 topArea += elArea
                 topQx += Qx
                 topQy += Qy
@@ -383,7 +399,8 @@ class triMesh:
     def principalSectionModulii(self):
         # loop through all co-ordinates to determine extreme values
         for (i, vertex) in enumerate(self.pointArray):
-            (x_1, y_2) = femFunctions.principalCoordinate(self.phi, vertex[0] - self.cx, vertex[1] - self.cy)
+            (x_1, y_2) = (femFunctions.principalCoordinate(self.phi, vertex[0] -
+                self.cx, vertex[1] - self.cy))
 
             if i == 0: # initialise min, max variables
                 self.x_1max = x_1
@@ -484,8 +501,10 @@ class triMesh:
         self.torsionStress_zy = self.tau_zy_torsion * Mzz
         self.torsionStress = ((self.torsionStress_zx ** 2 +
             self.torsionStress_zy ** 2) ** 0.5)
-        self.shearStress_zx = self.tau_zx_shear_x * Vx + self.tau_zx_shear_y * Vy
-        self.shearStress_zy = self.tau_zy_shear_x * Vx + self.tau_zy_shear_y * Vy
+        self.shearStress_zx = (self.tau_zx_shear_x * Vx +
+            self.tau_zx_shear_y * Vy)
+        self.shearStress_zy = (self.tau_zy_shear_x * Vx +
+            self.tau_zy_shear_y * Vy)
         self.shearStress = ((self.shearStress_zx ** 2 +
             self.shearStress_zy ** 2) ** 0.5)
 
@@ -499,38 +518,54 @@ class triMesh:
     # --------------------------------------------------------------------------
     # POST METHODS:
     # --------------------------------------------------------------------------
-    def contourPlot(self, principalAxis=False, z=None, nodes=False, plotTitle='', centroids=False):
+    def contourPlot(self, principalAxis=False, z=None, nodes=False,
+        plotTitle='', centroids=False):
         plt.gca().set_aspect('equal')
-        # ax = plt.subplot(111)
-        plt.triplot(self.pointArray[:,0], self.pointArray[:,1], self.elementArray[:,0:3], lw=0.5, color='black')
+        (plt.triplot(self.pointArray[:,0], self.pointArray[:,1],
+            self.elementArray[:,0:3], lw=0.5, color='black'))
         plt.title(plotTitle)
         plt.xlabel('x')
         plt.ylabel('y')
 
         if principalAxis:
-            start_11 = femFunctions.globalCoordinate(self.geometricMesh.phi, self.geometricMesh.x_1min, 0)
-            end_11 = femFunctions.globalCoordinate(self.geometricMesh.phi, self.geometricMesh.x_1max, 0)
-            start_22 = femFunctions.globalCoordinate(self.geometricMesh.phi, 0, self.geometricMesh.y_2min)
-            end_22 = femFunctions.globalCoordinate(self.geometricMesh.phi, 0, self.geometricMesh.y_2max)
+            start_11 = (femFunctions.globalCoordinate(self.geometricMesh.phi,
+                self.geometricMesh.x_1min, 0))
+            end_11 = (femFunctions.globalCoordinate(self.geometricMesh.phi,
+                self.geometricMesh.x_1max, 0))
+            start_22 = (femFunctions.globalCoordinate(self.geometricMesh.phi,
+                0, self.geometricMesh.y_2min))
+            end_22 = (femFunctions.globalCoordinate(self.geometricMesh.phi, 0,
+                self.geometricMesh.y_2max))
 
-            (plt.plot([start_11[0], end_11[0]], [start_11[1], end_11[1]], label='11 axis'))
-            (plt.plot([start_22[0], end_22[0]], [start_22[1], end_22[1]], label='22 axis'))
+            (plt.plot([start_11[0], end_11[0]], [start_11[1], end_11[1]],
+                label='11 axis'))
+            (plt.plot([start_22[0], end_22[0]], [start_22[1], end_22[1]],
+                label='22 axis'))
 
         if centroids:
-            plt.scatter(0, 0, facecolors='None', edgecolors='k', marker='o', s=100, label='Elastic Centroid')
-            plt.scatter(self.geometricMesh.x_pc - self.geometricMesh.cx, self.geometricMesh.y_pc - self.geometricMesh.cy, c='k', marker='x', s=100, label='Global Plastic Centroid')
-            plt.scatter(self.geometricMesh.x_1_pc - self.geometricMesh.cx, self.geometricMesh.y_2_pc - self.geometricMesh.cy, facecolors='None', edgecolors='k', marker='s', s=100, label='Principal Plastic Centroid')
-            plt.scatter(self.x_se, self.y_se, c='k', marker='+', s=100, label='Shear Centre')
+            (plt.scatter(0, 0, facecolors='None', edgecolors='k', marker='o',
+                s=100, label='Elastic Centroid'))
+            (plt.scatter(self.geometricMesh.x_pc - self.geometricMesh.cx,
+                self.geometricMesh.y_pc - self.geometricMesh.cy, c='k',
+                marker='x', s=100, label='Global Plastic Centroid'))
+            (plt.scatter(self.geometricMesh.x_1_pc - self.geometricMesh.cx,
+                self.geometricMesh.y_2_pc - self.geometricMesh.cy,
+                facecolors='None', edgecolors='k', marker='s', s=100,
+                label='Principal Plastic Centroid'))
+            (plt.scatter(self.x_se, self.y_se, c='k', marker='+', s=100,
+                label='Shear Centre'))
             plt.legend()
 
         if z is not None:
             cmap = cm.get_cmap(name = 'jet')
             # v = np.linspace(-10, 10, 15, endpoint=True)
-            trictr = plt.tricontourf(self.pointArray[:,0], self.pointArray[:,1], self.elementArray[:,0:3], z, cmap=cmap)
+            trictr = (plt.tricontourf(self.pointArray[:,0],
+                self.pointArray[:,1], self.elementArray[:,0:3], z, cmap=cmap))
             cbar = plt.colorbar(trictr, label='Stress')
 
         if nodes:
-            plt.plot(self.pointArray[:,0], self.pointArray[:,1], 'ko', markersize = 1)
+            (plt.plot(self.pointArray[:,0], self.pointArray[:,1], 'ko',
+                markersize = 1))
 
         plt.grid(True)
         plt.show()
@@ -538,12 +573,15 @@ class triMesh:
     def quiverPlot(self, u, v, plotTitle=''):
         plt.figure()
         plt.gca().set_aspect('equal')
-        plt.triplot(self.pointArray[:,0], self.pointArray[:,1], self.elementArray[:,0:3], lw=0.5, color='black')
+        (plt.triplot(self.pointArray[:,0], self.pointArray[:,1],
+            self.elementArray[:,0:3], lw=0.5, color='black'))
         plt.title(plotTitle)
         c = np.hypot(u, v)
         cmap = cm.get_cmap(name='jet')
-        quiv = plt.quiver(self.pointArray[:,0], self.pointArray[:,1], u, v, c, cmap=cmap)
+        quiv = (plt.quiver(self.pointArray[:,0], self.pointArray[:,1], u, v, c,
+            cmap=cmap))
         cbar = plt.colorbar(quiv)
+        plt.grid(True)
         plt.show()
 
     def printGeometricResults(self):
@@ -630,7 +668,12 @@ class triMesh:
         print "A_s,22 = {}".format(self.A_s22)
         print ""
 
-def plasticCentroidAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, holes, pointArray, elementArray):
+# ------------------------------------------------------------------------------
+# GENERAL METHODS:
+# ------------------------------------------------------------------------------
+
+def pcAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, holes,
+    pointArray, elementArray):
     '''
     Algorithm to find plastic centroid (point at which top area = bot area):
         tol = convergence tolerance
@@ -654,13 +697,15 @@ def plasticCentroidAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, 
     u_perp = np.array([-u[1], u[0]]) # u vector rotated  90 degrees
 
     # algorithm
-    while ((abs(areaConvergence_n) > tol or iterationCount < 3) and (iterationCount < maxIt)):
+    while ((abs(areaConvergence_n) > tol or iterationCount < 3) and
+        (iterationCount < maxIt)):
         if iterationCount < 3:
             # first two to setup secant method
             a_n = (np.random.rand() - 1) * 0.05 * (dmax - dmin)
         else:
             # secant method
-            a_n = (a_n2 * areaConvergence_n - a_n1 * areaConvergence_n1) / (areaConvergence_n - areaConvergence_n1)
+            a_n = ((a_n2 * areaConvergence_n - a_n1 * areaConvergence_n1) /
+                (areaConvergence_n - areaConvergence_n1))
 
         # print 'a_n = {}'.format(a_n)
         # print 'dmin = {}'.format(dmin)
@@ -680,14 +725,16 @@ def plasticCentroidAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, 
         (points_new, facets_new) = (femFunctions.divideMesh(points[:],
             facets[:], pointArray, elementArray, p1[0], p1[1], p2[0], p2[1]))
 
-        newMesh = femFunctions.createMesh(points_new, facets_new, holes, minAngle=None, qualityMeshing=False)
+        newMesh = (femFunctions.createMesh(points_new, facets_new, holes,
+            minAngle=None, qualityMeshing=False))
 
         # create triMesh object with new trial mesh
         meshTrial = triMesh(newMesh)
         # meshTrial.contourPlot(nodes=True)
 
         # calculate area above and below axis
-        (topArea, botArea, topCentroid, botCentroid) = meshTrial.computeAreaSegments(u, p1[0], p1[1])
+        (topArea, botArea, topCentroid, botCentroid) = \
+            meshTrial.computeAreaSegments(u, p1[0], p1[1])
 
         # update convergence and solution data
         areaConvergence_n1 = areaConvergence_n

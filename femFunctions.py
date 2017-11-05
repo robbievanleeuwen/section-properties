@@ -46,8 +46,9 @@ def shapeFunction(xy, gaussPoint):
 
     # value of the shape functions
     N = (np.array([eta * (2 * eta - 1), xi * (2 * xi - 1),
-            zeta * (2 * zeta - 1), 4 * eta * xi, 4 * xi * zeta, 4 * eta * zeta]))
-    # derivatives of the shape functions with respect to the isoparametric co-ordinates
+            zeta * (2 * zeta - 1), 4 * eta * xi, 4 * xi * zeta,
+            4 * eta * zeta]))
+    # derivatives of the shape functions wrt the isoparametric co-ordinates
     B_iso = (np.array([[4 * eta - 1, 0, 0, 4 * xi, 0, 4 * zeta],
                        [0, 4 * xi - 1, 0, 4 * eta, 4 * zeta, 0],
                        [0, 0, 4 * zeta - 1, 0, 4 * xi, 4 * eta]]))
@@ -57,7 +58,8 @@ def shapeFunction(xy, gaussPoint):
     J_lower = np.dot(xy, np.transpose(B_iso))
     J = np.vstack((J_upper, J_lower))
 
-    # calculate the jacobian - TODO: may get warning when area is zero during plastic centroid algorithm
+    # calculate the jacobian -
+    # TODO: may get warning when area is zero during plastic centroid algorithm
     j = 0.5 * np.linalg.det(J)
 
     # cacluate the P matrix
@@ -72,22 +74,31 @@ def extrapolateToNodes(w):
     '''
     Extrapolate results (w) at 6 Gauss points to 6 nodal points
     '''
-    H_inv = (np.array([[1.87365927351160,	0.138559587411935,	0.138559587411935,	-0.638559587411936,	0.126340726488397,	-0.638559587411935],
-                       [0.138559587411935,	1.87365927351160,	0.138559587411935,	-0.638559587411935,	-0.638559587411935,	0.126340726488397],
-                       [0.138559587411935,	0.138559587411935,	1.87365927351160,	0.126340726488396,	-0.638559587411935,	-0.638559587411935],
-                       [0.0749010751157440,	0.0749010751157440,	0.180053080734478,	1.36051633430762,	-0.345185782636792,	-0.345185782636792],
-                       [0.180053080734478,	0.0749010751157440,	0.0749010751157440,	-0.345185782636792,	1.36051633430762,	-0.345185782636792],
-                       [0.0749010751157440,	0.180053080734478,	0.0749010751157440,	-0.345185782636792,	-0.345185782636792,	1.36051633430762]]))
+    H_inv = (np.array([[1.87365927351160,	0.138559587411935,
+        0.138559587411935,	-0.638559587411936,	0.126340726488397,
+        -0.638559587411935], [0.138559587411935,	1.87365927351160,
+        0.138559587411935,	-0.638559587411935,	-0.638559587411935,
+        0.126340726488397], [0.138559587411935,	0.138559587411935,
+        1.87365927351160,	0.126340726488396,	-0.638559587411935,
+        -0.638559587411935], [0.0749010751157440,	0.0749010751157440,
+        0.180053080734478,	1.36051633430762,	-0.345185782636792,
+        -0.345185782636792], [0.180053080734478,	0.0749010751157440,
+        0.0749010751157440,	-0.345185782636792,	1.36051633430762,
+        -0.345185782636792], [0.0749010751157440,	0.180053080734478,
+        0.0749010751157440,	-0.345185782636792,	-0.345185782636792,
+        1.36051633430762]]))
 
     return H_inv.dot(w)
 
-def createMesh(points, facets, holes=[], maxArea=[], minAngle=30, meshOrder=2, qualityMeshing=True):
+def createMesh(points, facets, holes=[], maxArea=[], minAngle=30, meshOrder=2,
+    qualityMeshing=True):
     info = triangle.MeshInfo()
     info.set_points(points)
     info.set_holes(holes)
     info.set_facets(facets)
 
-    return triangle.build(info, max_volume = maxArea, min_angle = minAngle, mesh_order = meshOrder, quality_meshing= qualityMeshing)
+    return (triangle.build(info, max_volume = maxArea, min_angle = minAngle,
+        mesh_order = meshOrder, quality_meshing= qualityMeshing))
 
 def shiftGeometry(points, holes, cx, cy):
     # initialise shifted points and holes lists
@@ -105,9 +116,9 @@ def shiftGeometry(points, holes, cx, cy):
 
 def divideMesh(points, facets, pointArray, elementArray, x1, y1, x2, y2):
     '''
-    Loops through each facet to check for an intersection point with the line defined
-    by (x1,y1) and (x2,y2). If so, adds a point to the mesh and then adds facets
-    between the added points.
+    Loops through each facet to check for an intersection point with the line
+    defined by (x1,y1) and (x2,y2). If so, adds a point to the mesh and then
+    adds facets between the added points.
     '''
     # allocate lists for intersection points
     xIntPoints = []
@@ -148,7 +159,8 @@ def divideMesh(points, facets, pointArray, elementArray, x1, y1, x2, y2):
 
     # sort intersection points based on x value
     if len(xIntPoints) > 0:
-        xIntPoints, yIntPoints, facetIndices = (list(t) for t in zip(*sorted(zip(xIntPoints, yIntPoints, facetIndices))))
+        (xIntPoints, yIntPoints, facetIndices) = (list(t) for t in
+            zip(*sorted(zip(xIntPoints, yIntPoints, facetIndices))))
 
 
     for (i, pt) in enumerate(xIntPoints):
@@ -188,8 +200,10 @@ def divideMesh(points, facets, pointArray, elementArray, x1, y1, x2, y2):
         facetOriginal = True
         for (counter, j) in enumerate(facetIndices):
             if i == j:
-                newFacets.append((facet[0], numPoints + facetIntersections[counter]))
-                newFacets.append((numPoints + facetIntersections[counter], facet[1]))
+                (newFacets.append((facet[0], numPoints +
+                    facetIntersections[counter])))
+                (newFacets.append((numPoints + facetIntersections[counter],
+                    facet[1])))
                 facetOriginal = False
 
         if facetOriginal:
@@ -203,7 +217,8 @@ def principalCoordinate(phi, x, y):
     given rotation phi.
     '''
     phi_rad = phi * np.pi / 180
-    R = np.array([[np.cos(phi_rad), np.sin(phi_rad)], [-np.sin(phi_rad), np.cos(phi_rad)]])
+    R = (np.array([[np.cos(phi_rad), np.sin(phi_rad)], [-np.sin(phi_rad),
+        np.cos(phi_rad)]]))
     x_rotated = R.dot(np.array([x,y]))
 
     return (x_rotated[0], x_rotated[1])
@@ -214,7 +229,8 @@ def globalCoordinate(phi, x_1, y_2):
     given rotation phi.
     '''
     phi_rad = phi * np.pi / 180
-    R = np.array([[np.cos(phi_rad), -np.sin(phi_rad)], [np.sin(phi_rad), np.cos(phi_rad)]])
+    R = (np.array([[np.cos(phi_rad), -np.sin(phi_rad)], [np.sin(phi_rad),
+        np.cos(phi_rad)]]))
     x_rotated = R.dot(np.array([x_1,y_2]))
 
     return (x_rotated[0], x_rotated[1])
@@ -232,6 +248,7 @@ def functionTimer(text, function, *args):
     start_time = time.time()
     print text
     x = function(*args)
-    print("--- %s completed in %s seconds ---" % (function.__name__, time.time() - start_time))
+    print("--- %s completed in %s seconds ---" % (function.__name__,
+        time.time() - start_time))
     print ''
     return x
