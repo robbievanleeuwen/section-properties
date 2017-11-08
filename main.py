@@ -1,103 +1,130 @@
+'''
+The main module contains a function for analysing the cross-section
+(crossSectionAnalysis), and a function for applying loads and generating the
+resulting stress diagrams (stressAnalysis)
+'''
+
+import sys
 import mesh2D
 import femFunctions
-import sectionGenerator
 
-# ------------------------------------------------------------------------------
-# INPUT GEOMETRY:
-# ------------------------------------------------------------------------------
-# RHS section
-(points, facets, holes) = sectionGenerator.RHS(200, 100, 9, 15, 8)
-maxSize = 2.5
+def crossSectionAnalysis(points, facets, holes, meshSize, nu):
+    '''
+    This function takes mesh data as input and executes a cross-section
+    analaysis, printing both warping independent and warpring dependent
+    properties to the console. A triMesh object is returned with unit stresses
+    evaluated and stored to facilitate quick visualisation of design stresses.
+    '''
+    # plot input geometry
+    mesh2D.plotGeometry(points, facets, holes)
 
-# ------------------------------------------------------------------------------
-# GEOMTRIC SECTION PROPERTIES:
-# ------------------------------------------------------------------------------
-# genereate coarse triangular mesh for geometric properties
-coarseMesh = femFunctions.createMesh(points, facets, holes)
+    # --------------------------------------------------------------------------
+    # GEOMTRIC SECTION PROPERTIES:
+    # --------------------------------------------------------------------------
 
- # create mesh2D object for geometric properties
-meshGeometric = mesh2D.triMesh(coarseMesh)
+    # genereate a coarse triangular mesh to caclulate geometric properties
+    coarseMesh = femFunctions.createMesh(points, facets, holes)
 
-# plot mesh
-meshGeometric.contourPlot(nodes=True, plotTitle='Mesh for Geometric Properties')
+     # create triMesh object from the coarse mesh
+    meshGeometric = mesh2D.triMesh(coarseMesh)
 
-# compute geometric section properties and print
-meshGeometric.computeGeometricProperties()
-meshGeometric.printGeometricResults()
+    # plot the coarse mesh
+    (meshGeometric.contourPlot(nodes=True,
+        plotTitle='Mesh for Geometric Properties'))
 
-# compute plastic section properties and print
-meshGeometric.computeGlobalPlasticProperties(points, facets, holes)
-meshGeometric.computePrincipalPlasticProperties(points, facets, holes)
-meshGeometric.printPlasticResults()
+    # compute geometric section properties and print to the console
+    meshGeometric.computeGeometricProperties()
+    meshGeometric.printGeometricResults()
 
-# plot mesh again
-meshGeometric.contourPlot(nodes=True, plotTitle='Mesh for Geometric Properties')
+    # compute plastic section properties and print to the console
+    meshGeometric.computeGlobalPlasticProperties(points, facets, holes)
+    meshGeometric.computePrincipalPlasticProperties(points, facets, holes)
+    meshGeometric.printPlasticResults()
 
-# ------------------------------------------------------------------------------
-# WARPING DEPENDENT SECTION PROPERTIES:
-# ------------------------------------------------------------------------------
-# shift input co-ordinates such that centroid lies at (0,0)
-(shiftedPoints, shiftedHoles) = (femFunctions.shiftGeometry(points, holes,
-    meshGeometric.cx, meshGeometric.cy))
+    # plot mesh again to allow the printed results to be interpreted with
+    # reference to the coarse mesh
+    (meshGeometric.contourPlot(nodes=True,
+        plotTitle='Mesh for Geometric Properties'))
 
-# genereate refined triangular mesh for warping independent properties
-refinedMesh = (femFunctions.createMesh(shiftedPoints, facets, shiftedHoles,
-    maxArea=maxSize))
+    # --------------------------------------------------------------------------
+    # WARPING DEPENDENT SECTION PROPERTIES:
+    # --------------------------------------------------------------------------
 
- # create mesh2D object for warping properties (load mesh with geom. properties)
-meshWarping = mesh2D.triMesh(refinedMesh, nu=0.0, geometricMesh=meshGeometric)
+    # shift input co-ordinates such that centroid lies at (0,0)
+    (shiftedPoints, shiftedHoles) = (mesh2D.shiftGeometry(points, holes,
+        meshGeometric.cx, meshGeometric.cy))
 
-# plot warping mesh
-meshWarping.contourPlot(plotTitle='Mesh for Warping Properties')
+    # genereate a triangular mesh to calculate warping dependent properties
+    refinedMesh = (femFunctions.createMesh(shiftedPoints, facets, shiftedHoles,
+        maxArea=meshSize))
 
-# compute section properties
-meshWarping.computeWarpingProperties()
-meshWarping.printWarpingResults()
+     # create triMesh object from the refined mesh
+    meshWarping = mesh2D.triMesh(refinedMesh, nu, geometricMesh=meshGeometric)
 
-# ------------------------------------------------------------------------------
-# CROSS-SECTION STRESSES:
-# ------------------------------------------------------------------------------
-# determine stresses due to unit forces/moments
-meshWarping.unitStress()
+    # plot the refined mesh
+    meshWarping.contourPlot(plotTitle='Mesh for Warping Properties')
 
-# plot mesh centroids
-(meshWarping.contourPlot(plotTitle='Centroids', principalAxis=True,
-    centroids=True))
+    # compute warping dependent section properties and print to the console
+    meshWarping.computeWarpingProperties()
+    meshWarping.printWarpingResults()
 
-if False:
-    # apply forces/moments
-    (meshWarping.evaluateSectionStress(Nzz=50e3, Mxx=40e6, Myy=12.5e6,
-        M11=0, M22=0, Mzz=10e6, Vx=20e3, Vy=50e3))
+    # --------------------------------------------------------------------------
+    # UNIT CROSS-SECTION STRESSES:
+    # --------------------------------------------------------------------------
+    # determine stresses due to unit forces/moments/shears
+    meshWarping.unitStress()
+
+    # finally plot the refined mesh with the centroids indicated
+    (meshWarping.contourPlot(plotTitle='Centroids', principalAxis=True,
+        centroids=True))
+
+    # return the triMesh object to allow stress post-processing
+    return meshWarping
+
+def stressAnalysis(warpingMesh, Nzz=0, Mxx=0, Myy=0, M11=0, M22=0, Mzz=0,
+    Vx=0, Vy=0):
+    '''
+    This function generates plots for all stress componenets and combinations
+    as a result of the input design actions.
+    '''
+
+    # apply forces/moments/shears
+    warpingMesh.evaluateSectionStress(Nzz, Mxx, Myy, M11, M22, Mzz, Vx, Vy)
 
     # 1. Axial
-    meshWarping.contourPlot(z=meshWarping.axialStress, plotTitle='Axial Stress')
+    warpingMesh.contourPlot(z=warpingMesh.axialStress, plotTitle='Axial Stress')
 
     # 2. Bending
-    meshWarping.contourPlot(z=meshWarping.bendingStress, plotTitle='Bending Stress')
+    (warpingMesh.contourPlot(z=warpingMesh.bendingStress,
+        plotTitle='Bending Stress'))
 
     # 3. Torsion
-    meshWarping.contourPlot(z=meshWarping.torsionStress, plotTitle='Torsion Stress')
-    (meshWarping.quiverPlot(meshWarping.torsionStress_zx,
-        meshWarping.torsionStress_zy, plotTitle='Torsion Stress Vectors'))
+    (warpingMesh.contourPlot(z=warpingMesh.torsionStress,
+        plotTitle='Torsion Stress'))
+    (warpingMesh.quiverPlot(warpingMesh.torsionStress_zx,
+        warpingMesh.torsionStress_zy, plotTitle='Torsion Stress Vectors'))
 
     # 4. Shear
-    (meshWarping.contourPlot(z=meshWarping.shearStress_zx,
+    (warpingMesh.contourPlot(z=warpingMesh.shearStress_zx,
         plotTitle='Transverse Shear (zx) Stress'))
-    (meshWarping.contourPlot(z=meshWarping.shearStress_zy,
+    (warpingMesh.contourPlot(z=warpingMesh.shearStress_zy,
         plotTitle='Transverse Shear (zy) Stress'))
-    (meshWarping.contourPlot(z=meshWarping.shearStress,
+    (warpingMesh.contourPlot(z=warpingMesh.shearStress,
         plotTitle='Transverse Shear Stress'))
-    (meshWarping.quiverPlot(meshWarping.shearStress_zx, meshWarping.shearStress_zy,
+    (warpingMesh.quiverPlot(warpingMesh.shearStress_zx,
+        warpingMesh.shearStress_zy,
         plotTitle='Transverse Shear Stress Vectors'))
 
     # 5a. Combined Normal Stress
-    (meshWarping.contourPlot(z=meshWarping.sigma_zz,
+    (warpingMesh.contourPlot(z=warpingMesh.sigma_zz,
         plotTitle='Combined Normal Stress'))
 
     # 5b. Combined Shear Stress
-    (meshWarping.quiverPlot(meshWarping.tau_zx, meshWarping.tau_zy,
+    (warpingMesh.quiverPlot(warpingMesh.tau_zx, warpingMesh.tau_zy,
         plotTitle='Combined Shear Stress Vectors'))
-    meshWarping.contourPlot(z=meshWarping.tau, plotTitle='Combined Shear Stress')
+    (warpingMesh.contourPlot(z=warpingMesh.tau,
+        plotTitle='Combined Shear Stress'))
 
     # 6. von Mises
-    meshWarping.contourPlot(z=meshWarping.vonMises, plotTitle='von Mises Stress')
+    (warpingMesh.contourPlot(z=warpingMesh.vonMises,
+        plotTitle='von Mises Stress'))

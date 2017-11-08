@@ -1,10 +1,16 @@
+'''
+This module contains the definition of the tri6 element class and includes the
+initialisation of the tri6 element and provides functions used at element level.
+'''
+
 import numpy as np
 import femFunctions
 
 class tri6:
     '''
-    Six noded triangle, input a 2 x 6 array containing the
-    co-ordinates of the vertices
+    Six noded quadratic triangular element class, input a 2 x 6 array containing
+    the coordinates of the vertices, the node numbers of the vertices and the
+    poissons ratio.
     '''
 
     def __init__(self, vertices, nodes, nu):
@@ -14,7 +20,7 @@ class tri6:
 
     def areaProperties(self):
         '''
-        Calculates area propeties of element
+        This function calculates the simple area propeties of element.
         '''
         # initialise properties
         area = 0
@@ -36,7 +42,7 @@ class tri6:
 
     def geometricProperties(self):
         '''
-        Calculates geometric propeties of element
+        This function calculates the geometric propeties of the element.
         '''
         # initialise properties
         area = 0
@@ -65,7 +71,8 @@ class tri6:
 
     def torsionProperties(self):
         '''
-        Calculates torsion matrices
+        The function calculates the element stiffness matrix used for warping
+        analysis and the torsion load vector.
         '''
         # initialise properties
         shearKe = 0
@@ -90,7 +97,8 @@ class tri6:
 
     def shearProperties(self, ixx, iyy, ixy, omega):
         '''
-        Calculates shear vectors
+        This function calculates the shear load vectors and also integrals used
+        for shear analysis.
         '''
         # initialise properties
         shearFPsi = 0
@@ -142,7 +150,8 @@ class tri6:
 
     def shearCoefficients(self, ixx, iyy, ixy, Psi, Phi):
         '''
-        Calculates shear deformation coefficients
+        This functions calculates the variables used to determine the shear
+        deformation coefficients.
         '''
         # initialise properties
         kappa_x = 0
@@ -183,7 +192,8 @@ class tri6:
     def calculateStress(self, area, ixx, iyy, ixy, i11, i22, phi, omega, J, Psi,
         Phi, Delta_s):
         '''
-        Calculates stress due to unit loading
+        This function calculates stresses within ana element as a result of unit
+        loading.
         '''
         # initialise stress vectors
         sigma_zz_axial = np.ones((6,1)) * 1 / area
@@ -207,7 +217,7 @@ class tri6:
             Ny = np.dot(N, np.transpose(self.xy[1,:]))
 
             # determine 11 and 22 position at Gauss point
-            (Nx_1, Ny_2) = femFunctions.principalCoordinate(phi, Nx, Ny)
+            (Nx_1, Ny_2) = principalCoordinate(phi, Nx, Ny)
 
             # determine shear parameters
             r = Nx ** 2 - Ny ** 2
@@ -248,3 +258,22 @@ class tri6:
         return ((sigma_zz_axial, sigma_zz_bending_xx, sigma_zz_bending_yy,
             sigma_zz_bending_11, sigma_zz_bending_22, tau_zx_torsion, tau_zy_torsion,
             tau_shear_zx_x, tau_shear_zy_x, tau_shear_zx_y, tau_shear_zy_y))
+
+# ------------------------------------------------------------------------------
+# GENERAL METHODS:
+# ------------------------------------------------------------------------------
+
+def principalCoordinate(phi, x, y):
+    '''
+    This function determines the coordinates of the point (x,y) in the principal
+    axis system given rotation phi.
+    '''
+    # convert principal axis angle to radians
+    phi_rad = phi * np.pi / 180
+    # form rotation matrix
+    R = (np.array([[np.cos(phi_rad), np.sin(phi_rad)], [-np.sin(phi_rad),
+        np.cos(phi_rad)]]))
+    # calculate rotated x and y coordinates
+    x_rotated = R.dot(np.array([x,y]))
+
+    return (x_rotated[0], x_rotated[1])

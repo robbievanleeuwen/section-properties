@@ -1,6 +1,15 @@
+'''
+This module provides several helper functions to construct the geometry for
+simple and typical structural sections.
+'''
+
 import numpy as np
 
-def CHS(r, t, n):
+def CHS(d, t, n):
+    '''
+    Constructs a circular hollow section with diameter d, thickness t and uses
+    n points to construct the inner and outer circles.
+    '''
     points = []
     facets = []
     holes = [(0,0)]
@@ -8,11 +17,11 @@ def CHS(r, t, n):
     for i in range(n):
         theta = i * 2 * np.pi * 1.0 / n
 
-        x_out = r * np.cos(theta)
-        y_out = r * np.sin(theta)
+        x_out = 0.5 * d * np.cos(theta)
+        y_out = 0.5 * d * np.sin(theta)
 
-        x_in = (r - t) * np.cos(theta)
-        y_in = (r - t) * np.sin(theta)
+        x_in = (0.5 * d - t) * np.cos(theta)
+        y_in = (0.5 * d - t) * np.sin(theta)
 
         points.append((x_out, y_out))
         points.append((x_in, y_in))
@@ -27,6 +36,10 @@ def CHS(r, t, n):
     return (points, facets, holes)
 
 def RHS(d, b, t, r_out, n_r):
+    '''
+    Constructs a rectangular hollow section with depth d, width b, thickness t,
+    outer radius r_out, using n_r points to construct the inner and outer radii.
+    '''
     points = []
     facets = []
     holes = [(b * 0.5, d * 0.5)]
@@ -91,6 +104,10 @@ def RHS(d, b, t, r_out, n_r):
     return (points, facets, holes)
 
 def ISection(d, b, tf, tw, r, n_r):
+    '''
+    Constructs an I-section with depth d, width b, flange thickness tf, web
+    thickness tw, root radius r, using n_r points to construct the root radius.
+    '''
     points = []
     facets = []
     holes = []
@@ -151,6 +168,10 @@ def ISection(d, b, tf, tw, r, n_r):
     return (points, facets, holes)
 
 def PFC(d, b, tf, tw, r, n_r):
+    '''
+    Constructs a PFC section with depth d, width b, flange thickness tf, web
+    thickness tw, root radius r, using n_r points to construct the root radius.
+    '''
     points = []
     facets = []
     holes = []
@@ -190,6 +211,10 @@ def PFC(d, b, tf, tw, r, n_r):
     return (points, facets, holes)
 
 def Angle(d, b, t, r, n_r):
+    '''
+    Constructs an angle section with depth d, width b, thickness t, root radius
+    r, using n_r points to construct the root radius.
+    '''
     points = []
     facets = []
     holes = []
@@ -219,13 +244,20 @@ def Angle(d, b, t, r, n_r):
     return (points, facets, holes)
 
 def Flat(d, b):
+    '''
+    Constructs a rectangular section with depth d and width b.
+    '''
     points = [(0,0), (b, 0), (b, d), (0, d)]
     facets = [(0,1), (1,2), (2,3), (3,0)]
     holes = []
 
     return (points, facets, holes)
 
-def Round(r, n):
+def Round(d, n):
+    '''
+    Constructs a solid cicular bar with diameter d, using n points to construct
+    the circle.
+    '''
     points = []
     facets = []
     holes = []
@@ -233,8 +265,8 @@ def Round(r, n):
     for i in range(n):
         theta = i * 2 * np.pi * 1.0 / n
 
-        x = r * np.cos(theta)
-        y = r * np.sin(theta)
+        x = 0.5 * d * np.cos(theta)
+        y = 0.5 * d * np.sin(theta)
 
         points.append((x, y))
 
@@ -246,6 +278,10 @@ def Round(r, n):
     return (points, facets, holes)
 
 def Tee(d, b, tf, tw, r, n_r):
+    '''
+    Constructs a Tee section with depth d, width b, flange thickness tf, web
+    thickness tw, root radius r, using n_r points to construct the root radius.
+    '''
     points = []
     facets = []
     holes = []
@@ -285,6 +321,10 @@ def Tee(d, b, tf, tw, r, n_r):
     return (points, facets, holes)
 
 def Cee(d, b, l, t, r_out, n_r):
+    '''
+    Constructs a Cee section with depth d, width b, lip l, thickness t, outer
+    radius r_out, using n_r points to construct the root radius.
+    '''
     points = []
     facets = []
     holes = []
@@ -377,6 +417,11 @@ def Cee(d, b, l, t, r_out, n_r):
     return (points, facets, holes)
 
 def Zed(d, b1, b2, l, t, r_out, n_r):
+    '''
+    Constructs a Zed section with depth d, left flange width b1, right flange
+    width b2, lip l, thickness t, outer radius r_out, using n_r points to
+    construct the root radius.
+    '''
     points = []
     facets = []
     holes = []
@@ -469,6 +514,10 @@ def Zed(d, b1, b2, l, t, r_out, n_r):
     return (points, facets, holes)
 
 def Cruciform(d, b, t, r, n_r):
+    '''
+    Constructs a cruciform section with depth d, width b, thickness t, root
+    radius r, using n_r points to construct the root radius.
+    '''
     points = []
     facets = []
     holes = []
