@@ -116,7 +116,7 @@ Note that multiple stress analyses can be run on the same mesh object.
 
 * **Robbie van Leeuwen** - [GitHub](https://github.com/robbievanleeuwen)
 
-⋅⋅⋅If you have any issues with the analysis or find any bugs, feel free to raise an issue or drop me an [email](mailto:robbie.vanleeuwen@gmail.com).
+If you have any issues with the analysis or find any bugs, feel free to raise an issue or drop me an [email](mailto:robbie.vanleeuwen@gmail.com).
 
 ## License
 
