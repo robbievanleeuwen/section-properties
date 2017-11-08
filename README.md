@@ -93,11 +93,11 @@ mesh = main.crossSectionAnalysis(points, facets, holes, meshSize=2.5, nu=0)
 
 Here's an example of the mesh produced by the above lines of code:
 
-!["Mesh for the warping analysis"](assets/images/exampleMesh.png)
+<img width="800px" alt="Mesh for the warping analysis" src="assets/images/exampleMesh.png">
 
 And here's a plot showing the principal axes and centroids resulting from the above lines of code, no surprises here:
 
-!["Centroids and principal axes"](assets/images/exampleCentroids.png)
+<img width="800px" alt="Centroids and principal axes" src="assets/images/exampleCentroids.png">
 
 #### 4) Visualise the cross-section stress:
 
@@ -122,15 +122,15 @@ Here are a selection of some plots from the above analysis:
 
 ##### Torsion Stress:
 
-!["Torsion Stress"](assets/images/exampleTorsionStress.png)
+<img width="800px" alt="Torsion Stress" src="assets/images/exampleTorsionStress.png">
 
 ##### Transverse Shear Stress Vectors:
 
-!["Transverse Shear Stress Vectors"](assets/images/exampleShearVectors.png)
+<img width="800px" alt="Transverse Shear Stress Vectors" src="assets/images/exampleShearVectors.png">
 
 ##### Von Mises Stress:
 
-!["Von Mises Stress"](assets/images/exampleVonMises.png)
+<img width="800px" alt="Von Mises Stress" src="assets/images/exampleVonMises.png">
 
 Note that multiple stress analyses can be run on the same mesh object.
 
