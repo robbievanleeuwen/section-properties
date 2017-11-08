@@ -120,10 +120,10 @@ def stressAnalysis(warpingMesh, Nzz=0, Mxx=0, Myy=0, M11=0, M22=0, Mzz=0,
         plotTitle='Combined Normal Stress'))
 
     # 5b. Combined Shear Stress
-    (warpingMesh.quiverPlot(warpingMesh.tau_zx, warpingMesh.tau_zy,
-        plotTitle='Combined Shear Stress Vectors'))
     (warpingMesh.contourPlot(z=warpingMesh.tau,
         plotTitle='Combined Shear Stress'))
+    (warpingMesh.quiverPlot(warpingMesh.tau_zx, warpingMesh.tau_zy,
+        plotTitle='Combined Shear Stress Vectors'))
 
     # 6. von Mises
     (warpingMesh.contourPlot(z=warpingMesh.vonMises,

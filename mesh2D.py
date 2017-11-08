@@ -600,7 +600,7 @@ class triMesh:
         self.axialStress = self.sigma_zz_axial * Nzz
         self.bendingStress = (self.sigma_zz_bending_xx * Mxx +
             self.sigma_zz_bending_yy * Myy + self.sigma_zz_bending_11 * M11 +
-            self.sigma_zz_bending_xx * M22)
+            self.sigma_zz_bending_22 * M22)
         self.torsionStress_zx = self.tau_zx_torsion * Mzz
         self.torsionStress_zy = self.tau_zy_torsion * Mzz
         self.torsionStress = ((self.torsionStress_zx ** 2 +
@@ -675,8 +675,15 @@ class triMesh:
         # plot a contour of results defined by z
         if z is not None:
             cmap = cm.get_cmap(name = 'jet')
+            # if values are not all constant
+            if np.amin(z) != np.amax(z):
+                v = np.linspace(np.amin(z), np.amax(z), 10, endpoint=True)
+            else:
+                # ten contours
+                v = 10
             trictr = (plt.tricontourf(self.pointArray[:,0],
-                self.pointArray[:,1], self.elementArray[:,0:3], z, cmap=cmap))
+                self.pointArray[:,1], self.elementArray[:,0:3], z, v,
+                cmap=cmap))
             cbar = plt.colorbar(trictr, label='Stress')
 
         # show the nodes
@@ -706,9 +713,13 @@ class triMesh:
         c = np.hypot(u, v)
         cmap = cm.get_cmap(name='jet')
         # generate the quiver plot and apply the colourbar
-        quiv = (plt.quiver(self.pointArray[:,0], self.pointArray[:,1], u, v, c,
-            cmap=cmap))
-        cbar = plt.colorbar(quiv, label='Stress')
+        if np.amin(c) != np.amax(c):
+            # only show the quiver plot if there are results
+            quiv = (plt.quiver(self.pointArray[:,0], self.pointArray[:,1], u,
+                v, c, cmap=cmap))
+            v1 = np.linspace(np.amin(c), np.amax(c), 10, endpoint=True)
+            cbar = plt.colorbar(quiv, label='Stress', ticks=v1)
+
         plt.grid(True)
         plt.show()
 
