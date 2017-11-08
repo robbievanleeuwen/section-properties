@@ -708,7 +708,7 @@ class triMesh:
         # generate the quiver plot and apply the colourbar
         quiv = (plt.quiver(self.pointArray[:,0], self.pointArray[:,1], u, v, c,
             cmap=cmap))
-        cbar = plt.colorbar(quiv)
+        cbar = plt.colorbar(quiv, label='Stress')
         plt.grid(True)
         plt.show()
 
