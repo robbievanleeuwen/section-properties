@@ -2,7 +2,7 @@
 
 *section-properties* is a python program that analyses an arbitrary cross-section using the finite element method. It outputs properties that can be used in structural design, such as the second moment of area, elastic and plastic section moduli, torsion constant, warping constant, shear centre, shear areas and many more. The program also calculates normal and shear stresses resulting from an acting axial force, bending moments, torsion moment and/or transverse shear forces.
 
-To read more about the theory behind the program, its implementation and some more examples, check out my blog at [https://robbievanleeuwen.github.io/](https://robbievanleeuwen.github.io/)!
+To read more about the theory behind the program, its implementation and some more examples, check out my blog at [https://robbievanleeuwen.github.io/](https://robbievanleeuwen.github.io/).
 
 ## Getting Started
 
@@ -112,16 +112,16 @@ main.stressAnalysis(mesh, Nzz=10e3, Mxx=50e6, Myy=0, M11=0, M22=0, Mzz=5e6, Vx=0
 
 Note that multiple stress analyses can be run on the same mesh object.
 
-If you have any issues with the analysis or find any bugs, feel free to raise an issue or drop me an [email](mailto:robbie.vanleeuwen@gmail.com).
-
 ## Author
 
 * **Robbie van Leeuwen** - [GitHub](https://github.com/robbievanleeuwen)
 
+⋅⋅⋅If you have any issues with the analysis or find any bugs, feel free to raise an issue or drop me an [email](mailto:robbie.vanleeuwen@gmail.com).
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgments
 
-* This program would not be possible without the [*meshpy*](https://github.com/inducer/meshpy) wrapper, by Andreas Klöckner, which implements the mesh generation software *Triangle*, by Jonathan Richard Shewchuk.
+* This program would not be possible without the [*meshpy*](https://github.com/inducer/meshpy) wrapper, by Andreas Klöckner, which implements the mesh generation software [*Triangle*](http://www.cs.cmu.edu/~quake/triangle.html), by Jonathan Richard Shewchuk.
