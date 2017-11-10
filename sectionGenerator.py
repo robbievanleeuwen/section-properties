@@ -243,6 +243,55 @@ def Angle(d, b, t, r, n_r):
 
     return (points, facets, holes)
 
+def AngleToe(d, b, t, r_root, r_toe, n_r):
+    '''
+    Constructs an angle section with depth d, width b, thickness t, root radius
+    r_root, toe radius r_toe using n_r points to construct the root radius.
+    '''
+    points = []
+    facets = []
+    holes = []
+
+    points.append((0, 0))
+    points.append((b, 0))
+
+    # bottom toe radius
+    for i in range(n_r):
+        theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = b - r_toe + r_toe * np.cos(theta)
+        y = t - r_toe + r_toe * np.sin(theta)
+
+        points.append((x, y))
+
+    # root radius
+    for i in range(n_r):
+        theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 1.0 / 3)
+
+        x = t + r_root + r_root * np.cos(theta)
+        y = t + r_root + r_root * np.sin(theta)
+
+        points.append((x, y))
+
+    # top toe radius
+    for i in range(n_r):
+        theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = t - r_toe + r_toe * np.cos(theta)
+        y = d - r_toe + r_toe * np.sin(theta)
+
+        points.append((x, y))
+
+    points.append((0, d))
+
+    for i in range(len(points)):
+        if i != len(points) - 1:
+            facets.append((i, i + 1))
+        else:
+            facets.append((len(points) - 1, 0))
+
+    return (points, facets, holes)
+
 def Flat(d, b):
     '''
     Constructs a rectangular section with depth d and width b.

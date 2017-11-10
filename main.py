@@ -8,15 +8,19 @@ import sys
 import mesh2D
 import femFunctions
 
-def crossSectionAnalysis(points, facets, holes, meshSize, nu):
+def crossSectionAnalysis(points, facets, holes, meshSize, nu, plots=True,
+    output=True):
     '''
     This function takes mesh data as input and executes a cross-section
     analaysis, printing both warping independent and warpring dependent
     properties to the console. A triMesh object is returned with unit stresses
     evaluated and stored to facilitate quick visualisation of design stresses.
+    Boolean plots configures whether or not plots are drawn and boolean output
+    configures whether or not output is printed to the console.
     '''
     # plot input geometry
-    mesh2D.plotGeometry(points, facets, holes)
+    if plots:
+        mesh2D.plotGeometry(points, facets, holes)
 
     # --------------------------------------------------------------------------
     # GEOMTRIC SECTION PROPERTIES:
@@ -29,22 +33,26 @@ def crossSectionAnalysis(points, facets, holes, meshSize, nu):
     meshGeometric = mesh2D.triMesh(coarseMesh)
 
     # plot the coarse mesh
-    (meshGeometric.contourPlot(nodes=True,
-        plotTitle='Mesh for Geometric Properties'))
+    if plots:
+        (meshGeometric.contourPlot(nodes=True,
+            plotTitle='Mesh for Geometric Properties'))
 
     # compute geometric section properties and print to the console
     meshGeometric.computeGeometricProperties()
-    meshGeometric.printGeometricResults()
+    if output:
+        meshGeometric.printGeometricResults()
 
     # compute plastic section properties and print to the console
     meshGeometric.computeGlobalPlasticProperties(points, facets, holes)
     meshGeometric.computePrincipalPlasticProperties(points, facets, holes)
-    meshGeometric.printPlasticResults()
+    if output:
+        meshGeometric.printPlasticResults()
 
     # plot mesh again to allow the printed results to be interpreted with
     # reference to the coarse mesh
-    (meshGeometric.contourPlot(nodes=True,
-        plotTitle='Mesh for Geometric Properties'))
+    if plots:
+        (meshGeometric.contourPlot(nodes=True,
+            plotTitle='Mesh for Geometric Properties'))
 
     # --------------------------------------------------------------------------
     # WARPING DEPENDENT SECTION PROPERTIES:
@@ -62,21 +70,24 @@ def crossSectionAnalysis(points, facets, holes, meshSize, nu):
     meshWarping = mesh2D.triMesh(refinedMesh, nu, geometricMesh=meshGeometric)
 
     # plot the refined mesh
-    meshWarping.contourPlot(plotTitle='Mesh for Warping Properties')
+    if plots:
+        meshWarping.contourPlot(plotTitle='Mesh for Warping Properties')
 
     # compute warping dependent section properties and print to the console
-    meshWarping.computeWarpingProperties()
-    meshWarping.printWarpingResults()
+    meshWarping.computeWarpingProperties(output=output)
+    if output:
+        meshWarping.printWarpingResults()
 
     # --------------------------------------------------------------------------
     # UNIT CROSS-SECTION STRESSES:
     # --------------------------------------------------------------------------
     # determine stresses due to unit forces/moments/shears
-    meshWarping.unitStress()
+    meshWarping.unitStress(output=output)
 
     # finally plot the refined mesh with the centroids indicated
-    (meshWarping.contourPlot(plotTitle='Centroids', principalAxis=True,
-        centroids=True))
+    if plots:
+        (meshWarping.contourPlot(plotTitle='Centroids', principalAxis=True,
+            centroids=True))
 
     # return the triMesh object to allow stress post-processing
     return meshWarping

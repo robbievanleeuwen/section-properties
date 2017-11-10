@@ -225,10 +225,11 @@ class triMesh:
         self.shapeFactor_22_plus = self.S22 / self.z22_plus
         self.shapeFactor_22_minus = self.S22 / self.z22_minus
 
-    def computeWarpingProperties(self):
+    def computeWarpingProperties(self, output=True):
         '''
         This function computes the the warping dependent section properties for
-        the mesh.
+        the mesh. Boolean output configures whether or not output is printed to
+        the console.
         '''
         # load areas and second moments of area from the geometricMesh
         A = self.geometricMesh.area
@@ -238,13 +239,19 @@ class triMesh:
         phi = self.geometricMesh.phi
 
         # calculate stiffness matrix and load vector for warping function
-        processText = 'Assembling stiffness matrix and torsion load vector...'
+        if output:
+            processText = 'Assembling stiffness matrix and torsion load vector...'
+        else:
+            processText = ''
         (shearK, torsionF) = (functionTimer(processText,
             self.assembleTorsionMatrices))
 
         # invert stiffness matrix using the lagrangian multipler method
-        processText = ('Inverting {} by {} stiffness matrix...'.format(
-            shearK.shape[0], shearK.shape[0]))
+        if output:
+            processText = ('Inverting {} by {} stiffness matrix...'.format(
+                shearK.shape[0], shearK.shape[0]))
+        else:
+            processText = ''
         invShearK = (functionTimer(processText,
             self.invertStiffnessMatrix, shearK))
 
@@ -263,7 +270,10 @@ class triMesh:
 
         # assemble shear force vectors, shear centre integrals and warping
         # moment integrals
-        processText = 'Assembling shear vectors and integrals...'
+        if output:
+            processText = 'Assembling shear vectors and integrals...'
+        else:
+            processText = ''
         ((shearFPsi, shearFPhi, shearCentreXInt, shearCentreYInt, Q_omega,
             i_omega, i_xomega, i_yomega)) = (functionTimer(
             processText, self.assembleShearVectors, ixx, iyy, ixy))
@@ -286,7 +296,10 @@ class triMesh:
         self.y_st = (ixx * i_xomega - ixy * i_yomega) / (ixx * iyy - ixy ** 2)
 
         # calculate shear deformation coefficients
-        processText = 'Assembling shear deformation coefficients...'
+        if output:
+            processText = 'Assembling shear deformation coefficients...'
+        else:
+            processText = ''
         (kappa_x, kappa_y, kappa_xy) = (functionTimer(processText,
             self.assembleShearCoefficients, ixx, iyy, ixy))
 
@@ -428,8 +441,8 @@ class triMesh:
         topQy = 0
         botQx = 0
         botQy = 0
-        topCentroid = 0
-        botCentroid = 0
+        topCentroid = [0, 0]
+        botCentroid = [0, 0]
 
         # loop through all elements in the mesh
         for el in self.elements:
@@ -514,12 +527,17 @@ class triMesh:
     # STRESS CALCULATION:
     # --------------------------------------------------------------------------
 
-    def unitStress(self):
+    def unitStress(self, output=True):
         '''
         Helper function to enable timing of the calculateStress function.
+        Boolean output configures whether or not output is printed to the
+        console.
         '''
         # calculate stresses due to unit loading
-        processText = 'Calculating cross-section stresses...'
+        if output:
+            processText = 'Calculating cross-section stresses...'
+        else:
+            processText = ''
         functionTimer(processText, self.calculateStress)
 
     def calculateStress(self):
@@ -675,12 +693,14 @@ class triMesh:
         # plot a contour of results defined by z
         if z is not None:
             cmap = cm.get_cmap(name = 'jet')
+
             # if values are not all constant
-            if np.amin(z) != np.amax(z):
+            if np.amax(z) - np.amin(z) > 1e-6:
                 v = np.linspace(np.amin(z), np.amax(z), 10, endpoint=True)
             else:
                 # ten contours
                 v = 10
+
             trictr = (plt.tricontourf(self.pointArray[:,0],
                 self.pointArray[:,1], self.elementArray[:,0:3], z, v,
                 cmap=cmap))
@@ -1108,9 +1128,11 @@ def functionTimer(text, function, *args):
     timed function is also returned
     '''
     start_time = time.time()
-    print text
+    if text != '':
+        print text
     result = function(*args)
-    print("--- %s completed in %s seconds ---" % (function.__name__,
-        time.time() - start_time))
-    print ''
+    if text != '':
+        print("--- %s completed in %s seconds ---" % (function.__name__,
+            time.time() - start_time))
+        print ''
     return result
