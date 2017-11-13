@@ -1,4 +1,2 @@
 *.pyc
-analysis.py
-UA_analysis.py
-UA.csv
+analysis/

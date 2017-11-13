@@ -2,7 +2,7 @@
 
 *section-properties* is a python program that analyses an arbitrary cross-section using the finite element method. It outputs properties that can be used in structural design, such as the second moment of area, elastic and plastic section moduli, torsion constant, warping constant, shear centre, shear areas and many more. The program also calculates normal and shear stresses resulting from an acting axial force, bending moments, torsion moment and/or transverse shear forces.
 
-To read more about the theory behind the program, its implementation and some more examples, check out my blog at [https://robbievanleeuwen.github.io/](https://robbievanleeuwen.github.io/) - coming soon...
+To read more about the theory behind the program, its implementation and some more examples, check out my blog at [https://robbievanleeuwen.github.io/](https://robbievanleeuwen.github.io/).
 
 ## Getting Started
 
@@ -42,6 +42,10 @@ Running a cross-section analysis in *section-properties* is as simple as specify
 ```
 $ python example.py
 ```
+
+## Property output
+
+An overview of the printed cross-section property output can be found [here](/output.md).
 
 ### Structure of an analysis script
 

@@ -163,7 +163,7 @@ class triMesh:
         tol = 1e-6 # plastic centroid algorithm convergence tolerance
         # unit vectors in the x & y directions
         ux = np.array([1, 0])
-        uy = np.array([0, 1])
+        uy = np.array([0, -1])
 
         # compute plastic centroids and plastic section modulii
         (x_a_n, topArea, botArea, topCentroidx, botCentroidx) = (pcAlgorithm(
