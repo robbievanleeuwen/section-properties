@@ -210,40 +210,7 @@ def PFC(d, b, tf, tw, r, n_r):
 
     return (points, facets, holes)
 
-def Angle(d, b, t, r, n_r):
-    '''
-    Constructs an angle section with depth d, width b, thickness t, root radius
-    r, using n_r points to construct the root radius.
-    '''
-    points = []
-    facets = []
-    holes = []
-
-    points.append((0, 0))
-    points.append((b, 0))
-    points.append((b, t))
-
-    # bottom right radius
-    for i in range(n_r):
-        theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 1.0 / 3)
-
-        x = t + r + r * np.cos(theta)
-        y = t + r + r * np.sin(theta)
-
-        points.append((x, y))
-
-    points.append((t, d))
-    points.append((0, d))
-
-    for i in range(len(points)):
-        if i != len(points) - 1:
-            facets.append((i, i + 1))
-        else:
-            facets.append((len(points) - 1, 0))
-
-    return (points, facets, holes)
-
-def AngleToe(d, b, t, r_root, r_toe, n_r):
+def Angle(d, b, t, r_root, r_toe, n_r):
     '''
     Constructs an angle section with depth d, width b, thickness t, root radius
     r_root, toe radius r_toe using n_r points to construct the root radius.

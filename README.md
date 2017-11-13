@@ -43,10 +43,6 @@ Running a cross-section analysis in *section-properties* is as simple as specify
 $ python example.py
 ```
 
-## Property output
-
-An overview of the printed cross-section property output can be found [here](/output.md).
-
 ### Structure of an analysis script
 
 If you would like to create your own analysis script, you need to place it in the same folder as the rest of the scripts and follow this basic structure:
@@ -137,6 +133,14 @@ Here are a selection of some plots from the above analysis:
 <img width="800px" alt="Von Mises Stress" src="assets/images/exampleVonMises.png">
 
 Note that multiple stress analyses can be run on the same mesh object.
+
+## Cross section generators
+
+A number of predefined section shapes have helper functions that build a cross-section for you. Find out more [here](/docs/sectionGenerator.md)
+
+## Property output
+
+An overview of the printed cross-section property output can be found [here](/docs/output.md).
 
 ## Author
 
