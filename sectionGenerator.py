@@ -103,6 +103,105 @@ def RHS(d, b, t, r_out, n_r):
 
     return (points, facets, holes)
 
+def RHS_Split(d, b, b_split, t, r_out, n_r):
+    '''
+    Constructs a rectangular hollow section with depth d, width b, split
+    thickness b_split, thickness t, outer radius r_out, using n_r points to
+    construct the inner and outer radii.
+    '''
+    points = []
+    facets = []
+    holes = []
+    r_in = r_out - t
+
+    # bottom left outer radius
+    for i in range(n_r):
+        theta = np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = r_out + r_out * np.cos(theta)
+        y = r_out + r_out * np.sin(theta)
+
+        points.append((x, y))
+
+    # bottom left split
+    points.append((0.5 * (b - b_split), 0))
+    points.append((0.5 * (b - b_split), t))
+
+    # bottom left inner radius
+    for i in range(n_r):
+        theta = 3.0 / 2 *np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = r_out + r_in * np.cos(theta)
+        y = r_out + r_in * np.sin(theta)
+
+        points.append((x, y))
+
+    # top left inner radius
+    for i in range(n_r):
+        theta = np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = r_out + r_in * np.cos(theta)
+        y = d - r_out + r_in * np.sin(theta)
+
+        points.append((x, y))
+
+    # top right inner radius
+    for i in range(n_r):
+        theta = np.pi * 0.5 - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = b - r_out + r_in * np.cos(theta)
+        y = d - r_out + r_in * np.sin(theta)
+
+        points.append((x, y))
+
+    # bottom right inner radius
+    for i in range(n_r):
+        theta = -i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = b - r_out + r_in * np.cos(theta)
+        y = r_out + r_in * np.sin(theta)
+
+        points.append((x, y))
+
+    # bottom right split
+    points.append((0.5 * (b + b_split), t))
+    points.append((0.5 * (b + b_split), 0))
+
+    # bottom right outer radius
+    for i in range(n_r):
+        theta = 3.0 / 2 * np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = b - r_out + r_out * np.cos(theta)
+        y = r_out + r_out * np.sin(theta)
+
+        points.append((x, y))
+
+    # top right outer radius
+    for i in range(n_r):
+        theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = b - r_out + r_out * np.cos(theta)
+        y = d - r_out + r_out * np.sin(theta)
+
+        points.append((x, y))
+
+    # top left outer radius
+    for i in range(n_r):
+        theta = np.pi * 0.5 + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+
+        x = r_out + r_out * np.cos(theta)
+        y = d - r_out + r_out * np.sin(theta)
+
+        points.append((x, y))
+
+    for i in range(len(points)):
+        if i != len(points) - 1:
+            facets.append((i, i + 1))
+        else:
+            facets.append((len(points) - 1, 0))
+
+    return (points, facets, holes)
+
 def ISection(d, b, tf, tw, r, n_r):
     '''
     Constructs an I-section with depth d, width b, flange thickness tf, web

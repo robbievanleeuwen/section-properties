@@ -163,15 +163,17 @@ class triMesh:
         tol = 1e-6 # plastic centroid algorithm convergence tolerance
         # unit vectors in the x & y directions
         ux = np.array([1, 0])
-        uy = np.array([0, -1])
+        uy = np.array([0, 1])
 
         # compute plastic centroids and plastic section modulii
         (x_a_n, topArea, botArea, topCentroidx, botCentroidx) = (pcAlgorithm(
             tol, 100, uy, self.cx, self.cy, self.xmin - self.cx, self.xmax -
-            self.cx, points, facets, holes, self.pointArray, self.elementArray))
+            self.cx, points, facets, holes, self.pointArray,
+            self.elementArray, 1))
         (y_a_n, topArea, botArea, topCentroidy, botCentroidy) = (pcAlgorithm(
             tol, 100, ux, self.cx, self.cy, self.ymin - self.cy, self.ymax -
-            self.cy, points, facets, holes, self.pointArray, self.elementArray))
+            self.cy, points, facets, holes, self.pointArray,
+            self.elementArray, 2))
 
         self.x_pc = self.cx + x_a_n
         self.y_pc = self.cy + y_a_n
@@ -198,11 +200,11 @@ class triMesh:
 
         # compute plastic centroids and plastic section modulii
         (x_1_a_n, topArea, botArea, topCentroid1, botCentroid1) = (pcAlgorithm(
-            tol, 100, u1, self.cx, self.cy, self.y_2min, self.y_2max, points,
-            facets, holes, self.pointArray, self.elementArray))
+            tol, 100, -u1, self.cx, self.cy, self.y_2min, self.y_2max, points,
+            facets, holes, self.pointArray, self.elementArray, 1))
         (y_2_a_n, topArea, botArea, topCentroid2, botCentroid2) = (pcAlgorithm(
-            tol, 100, u2, self.cx, self.cy, self.x_1min, self.x_1max, points,
-            facets, holes, self.pointArray, self.elementArray))
+            tol, 100, -u2, self.cx, self.cy, self.x_1min, self.x_1max, points,
+            facets, holes, self.pointArray, self.elementArray, 2))
 
         # calculate the area centroids in the principal coordinate system
         (tc1_1, tc1_2) = (principalCoordinate(self.phi,
@@ -844,7 +846,7 @@ class triMesh:
 # ------------------------------------------------------------------------------
 
 def pcAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, holes,
-    pointArray, elementArray):
+    pointArray, elementArray, dir):
     '''
     Algorithm to find plastic centroid (point at which top area = bot area):
         INPUT:
@@ -859,6 +861,7 @@ def pcAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, holes,
         holes = input holes list
         pointArray = np array containing mesh points
         elementArray = np array containing element vertices
+        dir = 1 or 2 depending on axis direction (x or y; 11 or 22)
 
         OUTPUT:
         a_n = perpendicular distance from centroid to p.c.
@@ -867,7 +870,10 @@ def pcAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, holes,
     areaConvergence_n = 0
     a_n1 = 0
     iterationCount = 0
-    u_perp = np.array([-u[1], u[0]]) # u vector rotated  90 degrees
+    if (dir == 1):
+        u_perp = np.array([u[1], -u[0]]) # u vector rotated  -90 degrees
+    elif (dir == 2):
+        u_perp = np.array([-u[1], u[0]]) # u vector rotated  90 degrees
 
     # algorithm
     while ((abs(areaConvergence_n) > tol or iterationCount < 3) and
