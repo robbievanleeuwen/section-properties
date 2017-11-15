@@ -134,7 +134,7 @@ Here are a selection of some plots from the above analysis:
 
 Note that multiple stress analyses can be run on the same mesh object.
 
-## Cross section generators
+## Cross-section generators
 
 A number of predefined section shapes have helper functions that build a cross-section for you. Find out more [here](/docs/sectionGenerator.md)
 

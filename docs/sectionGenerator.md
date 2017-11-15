@@ -1,6 +1,22 @@
-# Cross section generators
+# Cross-section generators
 
-The following functions can be used to generate a standard cross-section. N.B. for fillet radii, if a radius of zero is desired, enter a radius of zero and number of points (n_r) equal to one. If you have a request for a helper function to be added, don't hesitate to contact me.
+The following functions can be used to generate a standard cross-section. N.B. for fillet radii, if a radius of zero is desired, enter a radius of zero and number of points (n_r) equal to one. If you have a request for a helper function to be added, don't hesitate to contact me. Refer to the examples on my [blog](https://robbievanleeuwen.github.io) for more information.
+
+### Combined Section Generator
+
+```python
+(points, facets, holes) = sectionGenerator.combineShapes(sections)
+'''
+Combines multiple sections (as long as there is connectivity between all
+elements). Takes a list of dictionaries as an input. Each dictionary defines
+a section and should have the following keys:
+    - section1['points']: list of section nodes
+    - section1['facets']: list of section facets
+    - section1['holes']: list of section holes
+    - section1['x']: x-offset for section
+    - section1['y']: y-offset for section
+'''
+```
 
 ### Circular Hollow Section (CHS)
 
@@ -20,6 +36,17 @@ n points to construct the inner and outer circles.
 Constructs a rectangular hollow section with depth d, width b, thickness t,
 outer radius r_out, using n_r points to construct the inner and outer radii.
 '''
+```
+
+### Rectangular Hollow Section with Split (RHS)
+
+```python
+(points, facets, holes) = sectionGenerator.RHS_Split(d, b, b_split, t, r_out, n_r)
+'''
+  Constructs a rectangular hollow section with depth d, width b, split
+  thickness b_split, thickness t, outer radius r_out, using n_r points to
+  construct the inner and outer radii.
+  '''
 ```
 
 ### I-Section (e.g. UB or UC)

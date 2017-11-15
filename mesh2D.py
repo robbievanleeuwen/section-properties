@@ -990,16 +990,40 @@ def divideMesh(points, facets, pointArray, elementArray, x1, y1, x2, y2):
             # check to see if points lie within extents of facet
             if (min(x3,x4) - tol <= xInt <= max(x3,x4) + tol and
                 min(y3,y4) - tol <= yInt <= max(y3,y4) + tol):
-                # add point to intersection list
-                xIntPoints.append(xInt)
-                yIntPoints.append(yInt)
-                # add facet to intersection list
-                facetIndices.append(i)
 
-    # sort intersection lists and facet list based on x value
+                # check to see if point already added
+                isAdded = False
+                for (j, xloc) in enumerate(xIntPoints):
+                    if xloc == xInt and yIntPoints[j] == yInt:
+                        isAdded = True
+
+                if isAdded == False:
+                    # zip nodes
+                    if abs(xInt - x3) < tol:
+                        xInt = x3
+                    elif abs(xInt - x4) < tol:
+                        xInt = x4
+                    if abs(yInt - y3) < tol:
+                        yInt = y3
+                    elif abs(yInt - y4) < tol:
+                        yInt = y4
+
+                    # add point to intersection list
+                    xIntPoints.append(xInt)
+                    yIntPoints.append(yInt)
+                    # add facet to intersection list
+                    facetIndices.append(i)
+
+    # sort intersection lists and facet list based on x or y value
     if len(xIntPoints) > 0:
-        (xIntPoints, yIntPoints, facetIndices) = (list(t) for t in
-            zip(*sorted(zip(xIntPoints, yIntPoints, facetIndices))))
+          if x1 == x2:
+              # sort by y
+              (yIntPoints, xIntPoints, facetIndices) = (list(t) for t in
+                  zip(*sorted(zip(yIntPoints, xIntPoints, facetIndices))))
+          else:
+              # sort by x
+              (xIntPoints, yIntPoints, facetIndices) = (list(t) for t in
+                  zip(*sorted(zip(xIntPoints, yIntPoints, facetIndices))))
 
     # loop through all found intersection points
     for (i, pt) in enumerate(xIntPoints):
@@ -1064,6 +1088,8 @@ def divideMesh(points, facets, pointArray, elementArray, x1, y1, x2, y2):
         # if it's an original facet, add to new list
         if facetOriginal:
             newFacets.append((facet[0], facet[1]))
+
+    # plotGeometry(points, newFacets, []) # plot for debugging purposes
 
     return (points, newFacets)
 

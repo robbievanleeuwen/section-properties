@@ -3,7 +3,7 @@ This example script shows how to perform a cross-section analysis using two
 different methods for defining the geometry. The typical process for
 cross-section analysis is as follows:
     1) Define geometry to be meshed through a list of points, facets and holes.
-    2) Perform a cross section analysis on the geometry, given a mesh size (max.
+    2) Perform a cross-section analysis on the geometry, given a mesh size (max.
     area) and poissons ratio (nu).
     3) Apply any combination of design actions to generate the resulting stress
     contour/vector plots. Note that this step is optional.
