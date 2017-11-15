@@ -24,14 +24,17 @@ def combineShapes(sections):
 
     for section in sections:
         for facet in section['facets']:
-            combinedFacets.append((facet[0] + pointCount, facet[1] + pointCount))
+            (combinedFacets.append((facet[0] + pointCount,
+                facet[1] + pointCount)))
 
         for point in section['points']:
             pointCount += 1
-            combinedPoints.append((point[0] + section['x'], point[1] + section['y']))
+            (combinedPoints.append((point[0] + section['x'],
+                point[1] + section['y'])))
 
         for hole in section['holes']:
-            combinedHoles.append((hole[0] + section['x'], hole[1] + section['y']))
+            (combinedHoles.append((hole[0] + section['x'],
+                hole[1] + section['y'])))
 
     return (combinedPoints, combinedFacets, combinedHoles)
 
@@ -74,12 +77,7 @@ def RHS(d, b, t, r_out, n_r):
     points = []
     facets = []
     holes = [(b * 0.5, d * 0.5)]
-    if r_out != 0:
-        r_in = r_out - t
-        r_out2 = r_out
-    else:
-        r_in = 0
-        r_out2 = t
+    r_in = r_out - t
 
     # bottom left radius
     for i in range(n_r):
@@ -87,8 +85,8 @@ def RHS(d, b, t, r_out, n_r):
 
         x_out = r_out + r_out * np.cos(theta)
         y_out = r_out + r_out * np.sin(theta)
-        x_in = r_out2 + r_in * np.cos(theta)
-        y_in = r_out2 + r_in * np.sin(theta)
+        x_in = r_out + r_in * np.cos(theta)
+        y_in = r_out + r_in * np.sin(theta)
 
         points.append((x_out, y_out))
         points.append((x_in, y_in))
@@ -99,8 +97,8 @@ def RHS(d, b, t, r_out, n_r):
 
         x_out = b - r_out + r_out * np.cos(theta)
         y_out = r_out + r_out * np.sin(theta)
-        x_in = b - r_out2 + r_in * np.cos(theta)
-        y_in = r_out2 + r_in * np.sin(theta)
+        x_in = b - r_out + r_in * np.cos(theta)
+        y_in = r_out + r_in * np.sin(theta)
 
         points.append((x_out, y_out))
         points.append((x_in, y_in))
@@ -111,8 +109,8 @@ def RHS(d, b, t, r_out, n_r):
 
         x_out = b - r_out + r_out * np.cos(theta)
         y_out = d - r_out + r_out * np.sin(theta)
-        x_in = b - r_out2 + r_in * np.cos(theta)
-        y_in = d - r_out2 + r_in * np.sin(theta)
+        x_in = b - r_out + r_in * np.cos(theta)
+        y_in = d - r_out + r_in * np.sin(theta)
 
         points.append((x_out, y_out))
         points.append((x_in, y_in))
@@ -123,8 +121,8 @@ def RHS(d, b, t, r_out, n_r):
 
         x_out = r_out + r_out * np.cos(theta)
         y_out = d - r_out + r_out * np.sin(theta)
-        x_in = r_out2 + r_in * np.cos(theta)
-        y_in = d - r_out2 + r_in * np.sin(theta)
+        x_in = r_out + r_in * np.cos(theta)
+        y_in = d - r_out + r_in * np.sin(theta)
 
         points.append((x_out, y_out))
         points.append((x_in, y_in))

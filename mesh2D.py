@@ -1144,7 +1144,8 @@ def plotGeometry(points, facets, holes):
 
     for facet in facets:
         # plot the facets
-        plt.plot([points[facet[0]][0], points[facet[1]][0]], [points[facet[0]][1], points[facet[1]][1]], 'ko-', markersize = 2)
+        (plt.plot([points[facet[0]][0], points[facet[1]][0]],
+            [points[facet[0]][1], points[facet[1]][1]], 'ko-', markersize = 2))
 
     for hole in holes:
         # plot the holes
