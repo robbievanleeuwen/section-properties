@@ -16,7 +16,7 @@ purposes only.
 (points, facets, holes) = sectionGenerator.PFC(d=150, b=75, tf=8, tw=5, r=12, n_r=8)
 
 # Angle section
-(points, facets, holes) = sectionGenerator.Angle(d=100, b=100, t=6, r=12, n_r=8)
+(points, facets, holes) = sectionGenerator.Angle(d=100, b=100, t=6, r_root=12, r_toe = 5, n_r=8)
 
 # Tee section
 (points, facets, holes) = sectionGenerator.Tee(d=200, b=100, tf=12, tw=8, r=16, n_r=8)

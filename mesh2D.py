@@ -167,11 +167,11 @@ class triMesh:
 
         # compute plastic centroids and plastic section modulii
         (x_a_n, topArea, botArea, topCentroidx, botCentroidx) = (pcAlgorithm(
-            tol, 100, uy, self.cx, self.cy, self.xmin - self.cx, self.xmax -
+            tol, 1000, uy, self.cx, self.cy, self.xmin - self.cx, self.xmax -
             self.cx, points, facets, holes, self.pointArray,
             self.elementArray, 1))
         (y_a_n, topArea, botArea, topCentroidy, botCentroidy) = (pcAlgorithm(
-            tol, 100, ux, self.cx, self.cy, self.ymin - self.cy, self.ymax -
+            tol, 1000, ux, self.cx, self.cy, self.ymin - self.cy, self.ymax -
             self.cy, points, facets, holes, self.pointArray,
             self.elementArray, 2))
 
@@ -200,10 +200,10 @@ class triMesh:
 
         # compute plastic centroids and plastic section modulii
         (x_1_a_n, topArea, botArea, topCentroid1, botCentroid1) = (pcAlgorithm(
-            tol, 100, -u1, self.cx, self.cy, self.y_2min, self.y_2max, points,
+            tol, 1000, -u1, self.cx, self.cy, self.y_2min, self.y_2max, points,
             facets, holes, self.pointArray, self.elementArray, 1))
         (y_2_a_n, topArea, botArea, topCentroid2, botCentroid2) = (pcAlgorithm(
-            tol, 100, -u2, self.cx, self.cy, self.x_1min, self.x_1max, points,
+            tol, 1000, -u2, self.cx, self.cy, self.x_1min, self.x_1max, points,
             facets, holes, self.pointArray, self.elementArray, 2))
 
         # calculate the area centroids in the principal coordinate system
@@ -869,7 +869,7 @@ def pcAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, holes,
      # initialise iteration variables
     areaConvergence_n = 0
     a_n1 = 0
-    iterationCount = 0
+    iterationCount = 1
     if (dir == 1):
         u_perp = np.array([u[1], -u[0]]) # u vector rotated  -90 degrees
     elif (dir == 2):
@@ -880,7 +880,7 @@ def pcAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, holes,
         (iterationCount < maxIt)):
         if iterationCount < 3:
             # first two to setup secant method
-            a_n = (np.random.rand() - 1) * 0.05 * (dmax - dmin)
+            a_n = (np.random.rand() - 0.5) * 0.2 * (dmax - dmin)
         else:
             # secant method
             a_n = ((a_n2 * areaConvergence_n - a_n1 * areaConvergence_n1) /
@@ -893,9 +893,9 @@ def pcAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, holes,
 
         # ensure trial axis is within section depth
         if a_n > dmax:
-            a_n = 0.95 * dmax
+            a_n = 0.9 * dmax
         elif a_n < dmin:
-            a_n = 0.95 * dmin
+            a_n = 0.9 * dmin
 
         # determine points (p1,p2) on trial axis
         p1 = np.array([cx + a_n * u_perp[0], cy + a_n * u_perp[1]])
@@ -926,6 +926,11 @@ def pcAlgorithm(tol, maxIt, u, cx, cy, dmin, dmax, points, facets, holes,
         a_n2 = a_n1
         a_n1 = a_n
         iterationCount += 1
+
+    if (abs(areaConvergence_n) > tol):
+        text1 = 'WARNING: Plastic centroid algorithm did not converge for the '
+        text2 = 'axis in the direction x:{0:.3f}; y:{1:.3f}'.format(u[0], u[1])
+        print text1 + text2 + '\n'
 
     return (a_n, topArea, botArea, topCentroid, botCentroid)
 

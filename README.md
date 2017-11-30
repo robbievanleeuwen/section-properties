@@ -136,7 +136,7 @@ Note that multiple stress analyses can be run on the same mesh object.
 
 ## Cross-section generators
 
-A number of predefined section shapes have helper functions that build a cross-section for you. Find out more [here](/docs/sectionGenerator.md)
+A number of predefined section shapes have helper functions that build a cross-section for you. Find out more [here](/docs/sectionGenerator.md).
 
 ## Property output
 
