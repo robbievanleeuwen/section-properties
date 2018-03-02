@@ -9,3 +9,4 @@
 8. iterative solver
 9. sparse matrices
 10. paraview
+11. redo nodal averaging (area weighting)
