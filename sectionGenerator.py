@@ -5,11 +5,12 @@ simple and typical structural sections.
 
 import numpy as np
 
+
 def combineShapes(sections):
     '''
     Combines multiple sections (as long as there is connectivity between all
-    elements). Takes a list of dictionaries as an input. Each dictionary defines
-    a section and should have the following keys:
+    elements). Takes a list of dictionaries as an input. Each dictionary
+    defines a section and should have the following keys:
         - section1['points']: list of section nodes
         - section1['facets']: list of section facets
         - section1['holes']: list of section holes
@@ -25,16 +26,16 @@ def combineShapes(sections):
     for section in sections:
         for facet in section['facets']:
             (combinedFacets.append((facet[0] + pointCount,
-                facet[1] + pointCount)))
+                                    facet[1] + pointCount)))
 
         for point in section['points']:
             pointCount += 1
             (combinedPoints.append((point[0] + section['x'],
-                point[1] + section['y'])))
+                                    point[1] + section['y'])))
 
         for hole in section['holes']:
             (combinedHoles.append((hole[0] + section['x'],
-                hole[1] + section['y'])))
+                                   hole[1] + section['y'])))
 
     return (combinedPoints, combinedFacets, combinedHoles)
 
@@ -46,7 +47,7 @@ def CHS(d, t, n):
     '''
     points = []
     facets = []
-    holes = [(0,0)]
+    holes = [(0, 0)]
 
     for i in range(n):
         theta = i * 2 * np.pi * 1.0 / n
@@ -69,10 +70,12 @@ def CHS(d, t, n):
 
     return (points, facets, holes)
 
+
 def RHS(d, b, t, r_out, n_r):
     '''
     Constructs a rectangular hollow section with depth d, width b, thickness t,
-    outer radius r_out, using n_r points to construct the inner and outer radii.
+    outer radius r_out, using n_r points to construct the inner and outer
+    radii.
     '''
     points = []
     facets = []
@@ -137,6 +140,7 @@ def RHS(d, b, t, r_out, n_r):
 
     return (points, facets, holes)
 
+
 def RHS_Split(d, b, b_split, t, r_out, n_r):
     '''
     Constructs a rectangular hollow section with depth d, width b, split
@@ -163,7 +167,7 @@ def RHS_Split(d, b, b_split, t, r_out, n_r):
 
     # bottom left inner radius
     for i in range(n_r):
-        theta = 3.0 / 2 *np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+        theta = 3.0 / 2 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
 
         x = r_out + r_in * np.cos(theta)
         y = r_out + r_in * np.sin(theta)
@@ -236,6 +240,7 @@ def RHS_Split(d, b, b_split, t, r_out, n_r):
 
     return (points, facets, holes)
 
+
 def ISection(d, b, tf, tw, r, n_r):
     '''
     Constructs an I-section with depth d, width b, flange thickness tf, web
@@ -300,6 +305,7 @@ def ISection(d, b, tf, tw, r, n_r):
 
     return (points, facets, holes)
 
+
 def PFC(d, b, tf, tw, r, n_r):
     '''
     Constructs a PFC section with depth d, width b, flange thickness tf, web
@@ -342,6 +348,7 @@ def PFC(d, b, tf, tw, r, n_r):
             facets.append((len(points) - 1, 0))
 
     return (points, facets, holes)
+
 
 def Angle(d, b, t, r_root, r_toe, n_r):
     '''
@@ -392,15 +399,17 @@ def Angle(d, b, t, r_root, r_toe, n_r):
 
     return (points, facets, holes)
 
+
 def Flat(d, b):
     '''
     Constructs a rectangular section with depth d and width b.
     '''
-    points = [(0,0), (b, 0), (b, d), (0, d)]
-    facets = [(0,1), (1,2), (2,3), (3,0)]
+    points = [(0, 0), (b, 0), (b, d), (0, d)]
+    facets = [(0, 1), (1, 2), (2, 3), (3, 0)]
     holes = []
 
     return (points, facets, holes)
+
 
 def Round(d, n):
     '''
@@ -425,6 +434,7 @@ def Round(d, n):
             facets.append((i, 0))
 
     return (points, facets, holes)
+
 
 def Tee(d, b, tf, tw, r, n_r):
     '''
@@ -468,6 +478,7 @@ def Tee(d, b, tf, tw, r, n_r):
             facets.append((len(points) - 1, 0))
 
     return (points, facets, holes)
+
 
 def Cee(d, b, l, t, r_out, n_r):
     '''
@@ -565,6 +576,7 @@ def Cee(d, b, l, t, r_out, n_r):
 
     return (points, facets, holes)
 
+
 def Zed(d, b1, b2, l, t, r_out, n_r):
     '''
     Constructs a Zed section with depth d, left flange width b1, right flange
@@ -661,6 +673,7 @@ def Zed(d, b1, b2, l, t, r_out, n_r):
             facets.append((len(points) - 1, 0))
 
     return (points, facets, holes)
+
 
 def Cruciform(d, b, t, r, n_r):
     '''
