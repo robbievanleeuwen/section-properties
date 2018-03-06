@@ -1,0 +1,72 @@
+{
+  "sections": ["i-section","rhs"],
+  "section-data": [
+    {
+      "d": 203,
+      "b": 133,
+      "tf": 7.8,
+      "tw": 5.8,
+      "r": 8.9,
+      "n_r": 16,
+      "x": -66.5,
+      "y": 0.0
+    },
+    {
+      "d": 100,
+      "b": 150,
+      "t": 9,
+      "r_out": 22.5,
+      "n_r": 16,
+      "x": -75,
+      "y": 203
+    }
+  ],
+  "mesh-sizes": [5.0,2.5],
+  "materials": [
+    {
+      "E": 2e5,
+      "nu": 0.3
+    },
+    {
+      "E": 2e5,
+      "nu": 0.3
+    }
+  ],
+  "loads":
+    {
+      "nzz": 0,
+      "vx": 0,
+      "vy": -25e3,
+      "mxx": 50e6,
+      "myy": 0,
+      "m11": 0,
+      "m22": 0,
+      "mzz": 10e6
+    },
+  "settings":
+  {
+    "general":
+    {
+      "check-geometry": "True",
+      "check-mesh": "True",
+      "output-log": "True",
+      "output-settings": "False",
+      "output-results": "True"
+    },
+    "number-format":
+    {
+      "width": 8,
+      "precision": 6,
+      "type": "e"
+    },
+    "solver":
+    {
+      "type": "cgs",
+      "tol": 1e-9
+    },
+    "plots": [
+      "axial", "bending", "torsion", "torsion-vector", "shear", "shear-zx",
+      "shear-zy", "shear-vector", "combined-normal", "combined-shear",
+      "combined-shear-vector", "von-mises", "centroids", "mesh"]
+  }
+}

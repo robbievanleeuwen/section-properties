@@ -1,2 +1,3 @@
 *.pyc
 analysis/
+__pycache__/
