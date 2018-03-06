@@ -9,7 +9,7 @@ from scipy.sparse import linalg
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-from ElementDefinitions import Tri6
+from ElementDefs import Tri6
 from femUtilities import solveCGS
 from femUtilities import solveCGSLagrange
 import otherUtilities
