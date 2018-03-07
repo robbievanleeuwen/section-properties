@@ -2,8 +2,7 @@
 
 1. implement direct solver
 2. unit testing
-3. add more settings
-4. update docs
+3. update docs
 
 # Wish List:
 

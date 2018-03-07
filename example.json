@@ -51,7 +51,8 @@
       "check-mesh": "True",
       "output-log": "True",
       "output-settings": "False",
-      "output-results": "True"
+      "output-results": "True",
+      "plastic-analysis": "True"
     },
     "number-format":
     {

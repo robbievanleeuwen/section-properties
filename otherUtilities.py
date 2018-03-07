@@ -386,6 +386,8 @@ def plotGeometry(points, facets, holes, controlPoints):
     """
 
     fig, ax = plt.subplots()
+    plt.ion()  # interactive mode enabled
+    plt.show()  # show the plot
     ax.set_aspect("equal")  # set the scale on the x and y axes equal
 
     # plot the title and axis labels
@@ -408,7 +410,8 @@ def plotGeometry(points, facets, holes, controlPoints):
         ax.plot(cp[0], cp[1], 'bo', markerSize=5)
 
     ax.grid(True)
-    fig.show()
+    plt.draw()  # render the figure
+    plt.pause(0.001)
 
     return fig
 
@@ -502,6 +505,7 @@ class CrossSectionSettings:
         self.outputLog = True
         self.outputSettings = True
         self.outputResults = True
+        self.plasticAnalysis = True
         self.numberFormat = ".2f"
         self.solverType = "cgs"
         self.tol = 1e-5
@@ -514,36 +518,43 @@ class CrossSectionSettings:
         # read all valid settings from the dictionary settings
         try:
             testBool = (settings["general"]["check-geometry"].lower() in
-                        ["true", "1"])
+                        ["true"])
             self.checkGeometry = testBool
         except KeyError:
             pass
 
         try:
             testBool = (settings["general"]["check-mesh"].lower() in
-                        ["true", "1"])
+                        ["true"])
             self.checkMesh = testBool
         except KeyError:
             pass
 
         try:
             testBool = (settings["general"]["output-log"].lower() in
-                        ["true", "1"])
+                        ["true"])
             self.outputLog = testBool
         except KeyError:
             pass
 
         try:
             testBool = (settings["general"]["output-settings"].lower() in
-                        ["true", "1"])
+                        ["true"])
             self.outputSettings = testBool
         except KeyError:
             pass
 
         try:
             testBool = (settings["general"]["output-results"].lower() in
-                        ["true", "1"])
+                        ["true"])
             self.outputResults = testBool
+        except KeyError:
+            pass
+
+        try:
+            testBool = (settings["general"]["plastic-analysis"].lower() in
+                        ["true"])
+            self.plasticAnalysis = testBool
         except KeyError:
             pass
 

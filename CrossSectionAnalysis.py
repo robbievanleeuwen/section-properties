@@ -278,17 +278,18 @@ class CrossSectionAnalysis:
         self.Gamma = (i_omega - Q_omega ** 2 / self.area -
                       self.y_se * i_xomega + self.x_se * i_yomega)
 
-        # calculate global plastic properties
-        processText = "-- Calculating global plastic properties..."
-        otherUtilities.functionTimer(
-            processText, self.computeGlobalPlasticProperties, points, facets,
-            holes, controlPoints, materials)
+        if (self.settings.plasticAnalysis):
+            # calculate global plastic properties
+            processText = "-- Calculating global plastic properties..."
+            otherUtilities.functionTimer(
+                processText, self.computeGlobalPlasticProperties, points,
+                facets, holes, controlPoints, materials)
 
-        # calculate principal plastic properties
-        processText = "-- Calculating principal plastic properties..."
-        otherUtilities.functionTimer(
-            processText, self.computePrincipalPlasticProperties, points,
-            facets, holes, controlPoints, materials)
+            # calculate principal plastic properties
+            processText = "-- Calculating principal plastic properties..."
+            otherUtilities.functionTimer(
+                processText, self.computePrincipalPlasticProperties, points,
+                facets, holes, controlPoints, materials)
 
         # calculate section stresses
         processText = "-- Calculating cross-section stresses..."
@@ -800,6 +801,8 @@ class CrossSectionAnalysis:
         """
 
         fig, ax = plt.subplots()
+        plt.ion()  # interactive mode enabled
+        plt.show()  # show the plot
         ax.set_aspect("equal")  # set the scale on the x and y axes equal
 
         # plot the title and axis labels
@@ -854,13 +857,15 @@ class CrossSectionAnalysis:
         if centroids:
             ax.scatter(0, 0, facecolors='None', edgecolors='k', marker='o',
                        s=100, label='Elastic Centroid')
-            ax.scatter(self.x_pc, self.y_pc, c='k', marker='x', s=100,
-                       label='Global Plastic Centroid')
-            ax.scatter(self.x1_pc, self.y2_pc, facecolors='None',
-                       edgecolors='k', marker='s', s=100,
-                       label='Principal Plastic Centroid')
             ax.scatter(self.x_se, self.y_se, c='k', marker='+', s=100,
                        label='Shear Centre')
+
+            if (self.settings.plasticAnalysis):
+                ax.scatter(self.x_pc, self.y_pc, c='k', marker='x', s=100,
+                           label='Global Plastic Centroid')
+                ax.scatter(self.x1_pc, self.y2_pc, facecolors='None',
+                           edgecolors='k', marker='s', s=100,
+                           label='Principal Plastic Centroid')
 
         # plot a contour of results defined by z
         if z is not None:
@@ -887,7 +892,8 @@ class CrossSectionAnalysis:
             ax.legend()
 
         ax.grid(True)
-        fig.show()
+        plt.draw()  # render the figure
+        plt.pause(0.001)
 
         return fig
 
@@ -898,6 +904,8 @@ class CrossSectionAnalysis:
         """
 
         fig, ax = plt.subplots()
+        plt.ion()  # interactive mode enabled
+        plt.show()  # show the plot
         ax.set_aspect("equal")  # set the scale on the x and y axes equal
 
         # plot the title and axis labels
@@ -922,7 +930,8 @@ class CrossSectionAnalysis:
             fig.colorbar(quiv, label='Stress', ticks=v1)
 
         ax.grid(True)
-        fig.show()
+        plt.draw()  # render the figure
+        plt.pause(0.001)
 
         return fig
 
@@ -984,22 +993,24 @@ class CrossSectionAnalysis:
         print("A_s,y\t = {:>{fmt}}".format(self.A_sy, fmt=fmt))
         print("A_s,11\t = {:>{fmt}}".format(self.A_s11, fmt=fmt))
         print("A_s,22\t = {:>{fmt}}\n".format(self.A_s22, fmt=fmt))
-        print("\n-----------------------------")
-        print("Plastic Properties")
-        print("-----------------------------")
-        print("x_pc = {:>{fmt}}".format(self.x_pc, fmt=fmt))
-        print("y_pc = {:>{fmt}}".format(self.y_pc, fmt=fmt))
-        print("Sxx = {:>{fmt}}".format(self.Sxx, fmt=fmt))
-        print("Syy = {:>{fmt}}".format(self.Syy, fmt=fmt))
-        print("SF_xx+ = {:>{fmt}}".format(self.SF_xx_plus, fmt=fmt))
-        print("SF_xx- = {:>{fmt}}".format(self.SF_xx_minus, fmt=fmt))
-        print("SF_yy+ = {:>{fmt}}".format(self.SF_yy_plus, fmt=fmt))
-        print("SF_yy- = {:>{fmt}}".format(self.SF_yy_minus, fmt=fmt))
-        print("x1_pc = {:>{fmt}}".format(self.x1_pc, fmt=fmt))
-        print("y2_pc = {:>{fmt}}".format(self.y2_pc, fmt=fmt))
-        print("S11 = {:>{fmt}}".format(self.S11, fmt=fmt))
-        print("S22 = {:>{fmt}}".format(self.S22, fmt=fmt))
-        print("SF_11+ = {:>{fmt}}".format(self.SF_11_plus, fmt=fmt))
-        print("SF_11- = {:>{fmt}}".format(self.SF_11_minus, fmt=fmt))
-        print("SF_22+ = {:>{fmt}}".format(self.SF_22_plus, fmt=fmt))
-        print("SF_22- = {:>{fmt}}\n".format(self.SF_22_minus, fmt=fmt))
+
+        if (self.settings.plasticAnalysis):
+            print("\n-----------------------------")
+            print("Plastic Properties")
+            print("-----------------------------")
+            print("x_pc\t = {:>{fmt}}".format(self.x_pc, fmt=fmt))
+            print("y_pc\t = {:>{fmt}}".format(self.y_pc, fmt=fmt))
+            print("Sxx\t = {:>{fmt}}".format(self.Sxx, fmt=fmt))
+            print("Syy\t = {:>{fmt}}".format(self.Syy, fmt=fmt))
+            print("SF_xx+\t = {:>{fmt}}".format(self.SF_xx_plus, fmt=fmt))
+            print("SF_xx-\t = {:>{fmt}}".format(self.SF_xx_minus, fmt=fmt))
+            print("SF_yy+\t = {:>{fmt}}".format(self.SF_yy_plus, fmt=fmt))
+            print("SF_yy-\t = {:>{fmt}}".format(self.SF_yy_minus, fmt=fmt))
+            print("x1_pc\t = {:>{fmt}}".format(self.x1_pc, fmt=fmt))
+            print("y2_pc\t = {:>{fmt}}".format(self.y2_pc, fmt=fmt))
+            print("S11\t = {:>{fmt}}".format(self.S11, fmt=fmt))
+            print("S22\t = {:>{fmt}}".format(self.S22, fmt=fmt))
+            print("SF_11+\t = {:>{fmt}}".format(self.SF_11_plus, fmt=fmt))
+            print("SF_11-\t = {:>{fmt}}".format(self.SF_11_minus, fmt=fmt))
+            print("SF_22+\t = {:>{fmt}}".format(self.SF_22_plus, fmt=fmt))
+            print("SF_22-\t = {:>{fmt}}\n".format(self.SF_22_minus, fmt=fmt))
