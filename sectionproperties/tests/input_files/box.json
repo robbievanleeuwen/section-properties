@@ -1,0 +1,45 @@
+{
+  "sections": ["custom"],
+  "section-data": [
+    {
+      "points": [[0,0],[1200,0],[1200,2400],[0,2400],[25,25],[1175,25],[1175,2375],[25,2375]],
+      "facets": [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4]],
+      "holes": [[600,1200]],
+      "x": 0,
+      "y": 0,
+      "control-point": [1,1]
+    }
+  ],
+  "mesh-sizes": [100],
+  "materials": [
+    {
+      "E": 2e5,
+      "nu": 0.25
+    }
+  ],
+  "loads":
+    {},
+  "settings":
+  {
+    "general":
+    {
+      "check-geometry": "True",
+      "check-mesh": "True",
+      "output-log": "True",
+      "output-settings": "False",
+      "output-results": "True",
+      "plastic-analysis": "False"
+    },
+    "solver":
+    {
+      "type": "cgs",
+      "tol": 1e-9
+    },
+    "number-format":
+    {
+      "width": 8,
+      "precision": 6,
+      "type": "e"
+    }
+  }
+}

@@ -1,0 +1,696 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cross_section &mdash; sectionproperties 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sections" href="sections.html" />
+    <link rel="prev" title="Welcome to sectionproperties’s documentation!" href="../index.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> sectionproperties
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">cross_section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections.html">Sections</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">sectionproperties</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>cross_section</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/rst/cross_section.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="cross-section">
+<h1>cross_section<a class="headerlink" href="#cross-section" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><dl class="class">
+<dt id="sectionproperties.analysis.cross_section.CrossSection">
+<em class="property">class </em><code class="descclassname">sectionproperties.analysis.cross_section.</code><code class="descname">CrossSection</code><span class="sig-paren">(</span><em>geometry</em>, <em>mesh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for structural cross-sections.</p>
+<p>Stores the finite element geometry and mesh and provides methods to compute
+the cross-section properties. The element type used in this program is the
+six-noded quadratic triangular element.</p>
+<p>The constructor extracts information from the provided mesh object and
+creates and stores corresponding tri-6 finite element objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>geometry</strong> (<a class="reference internal" href="sections.html#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a>) – Cross-section geometry object used to generate the mesh</li>
+<li><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">meshpy.triangle.MeshInfo</span></code>) – Mesh object returned by meshpy</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates a CrossSection object of a 100D x 50W
+rectangle using a mesh size of 5:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RectangularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>elements</strong> (list[<code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.fea.Tri6</span></code>]) – List of finite element objects describing the cross-section
+mesh</li>
+<li><strong>num_nodes</strong> (<em>int</em>) – Number of nodes in the finite element mesh</li>
+<li><strong>geometry</strong> (<a class="reference internal" href="sections.html#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a>) – Cross-section geometry object used to generate the mesh</li>
+<li><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">meshpy.triangle.MeshInfo</span></code>) – Mesh object returned by meshpy</li>
+<li><strong>mesh_nodes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Array of node coordinates from the mesh</li>
+<li><strong>mesh_elements</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Array of connectivities from the mesh</li>
+<li><strong>mesh_attributes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Array of attributes from the mesh</li>
+<li><strong>section_props</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.cross_section.SectionProperties</span></code>) – Class to store calculated section properties</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties">
+<code class="descname">calculate_geometric_properties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_geometric_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates all the geometric properties of the cross-section and
+stores them in the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.cross_section.SectionProperties</span></code> object
+contained in section_props.</p>
+<ul class="simple">
+<li>Area</li>
+<li>First moments of area</li>
+<li>Second moments of area about the global axis</li>
+<li>Second moments of area about the centroidal axis</li>
+<li>Centroidal section moduli</li>
+<li>Radii of gyration</li>
+<li>Principal axis properties</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.calculate_warping_properties">
+<code class="descname">calculate_warping_properties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_warping_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.calculate_warping_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates all the warping properties of the cross-section and
+stores them in the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.cross_section.SectionProperties</span></code> object
+contained in section_props.</p>
+<ul class="simple">
+<li>Torsion constant</li>
+<li>Shear centre</li>
+<li>Shear area</li>
+<li>Warping constant</li>
+</ul>
+<p>Note that the geometric properties must be calculated first for the
+calculation of the warping properties to be correct:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_As">
+<code class="descname">get_As</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_As"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_As" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Shear areas <em>(A_sx, A_sy, A_sxy)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">A_sx</span><span class="p">,</span> <span class="n">A_sy</span><span class="p">,</span> <span class="n">A_sxy</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_As</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_As_p">
+<code class="descname">get_As_p</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_As_p"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_As_p" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Shear areas about the principal bending axis <em>(A_s11, A_s22)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">A_s11</span><span class="p">,</span> <span class="n">A_s22</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_As_p</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_area">
+<code class="descname">get_area</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_area"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_area" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Cross-section area</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">area</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_area</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_c">
+<code class="descname">get_c</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_c"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_c" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Elastic centroid of the cross-section <em>(cx, cy)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_elastic_centroid</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_gamma">
+<code class="descname">get_gamma</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_gamma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_gamma" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Warping constant</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="n">gamma</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_gamma</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_ic">
+<code class="descname">get_ic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_ic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_ic" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Second moments of area of the cross-section about the
+centroidal axis <em>(ixx_c, iyy_c, ixy_c)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">ixx_c</span><span class="p">,</span> <span class="n">iyy_c</span><span class="p">,</span> <span class="n">ixy_c</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ic</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_ig">
+<code class="descname">get_ig</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_ig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_ig" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Second moments of area of the cross-section about the global
+axis <em>(ixx_g, iyy_g, ixy_g)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">ixx_g</span><span class="p">,</span> <span class="n">iyy_g</span><span class="p">,</span> <span class="n">ixy_g</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ig</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_ip">
+<code class="descname">get_ip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_ip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_ip" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Second moments of area of the cross-section about the
+principal axis <em>(i11_c, i22_c)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">i11_c</span><span class="p">,</span> <span class="n">i22_c</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ipc</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_j">
+<code class="descname">get_j</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_j"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_j" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Torsion constant</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="n">z22_minus</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_J</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_phi">
+<code class="descname">get_phi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_phi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_phi" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Principal bending axis angle</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_phi</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_q">
+<code class="descname">get_q</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_q" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">First moments of area of the cross-section about the global
+axis <em>(qx, qy)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">qx</span><span class="p">,</span> <span class="n">qy</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_q</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_rc">
+<code class="descname">get_rc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_rc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_rc" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Radii of gyration about the centroidal x-axis <em>(rx, ry)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_rc</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_rp">
+<code class="descname">get_rp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_rp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_rp" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Radii of gyration about the principal axis <em>(r11, r22)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">r11</span><span class="p">,</span> <span class="n">r22</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_rp</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_sc_e">
+<code class="descname">get_sc_e</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_sc_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_sc_e" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Shear centre (elasticity approach) <em>(x_se, y_se)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">x_se</span><span class="p">,</span> <span class="n">y_se</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_sc_e</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_sc_p_e">
+<code class="descname">get_sc_p_e</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_sc_p_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_sc_p_e" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Principal axis shear centre (elasticity approach)
+<em>(x1_se, y2_se)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">x1_se</span><span class="p">,</span> <span class="n">y2_se</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_sc_p_e</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_sc_t">
+<code class="descname">get_sc_t</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_sc_t"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_sc_t" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Shear centre (Trefftz’s approach) <em>(x_st, y_st)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">x_st</span><span class="p">,</span> <span class="n">y_st</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_sc_t</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_z">
+<code class="descname">get_z</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_z"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_z" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Section moduli about the centroidal axis <em>(zxx_plus,
+zxx_minus, zyy_plus, zyy_minus)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">zxx_plus</span><span class="p">,</span> <span class="n">zxx_minus</span><span class="p">,</span> <span class="n">zyy_plus</span><span class="p">,</span> <span class="n">zyy_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_z</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_zp">
+<code class="descname">get_zp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_zp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_zp" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Section moduli about the principal axis <em>(z11_plus,
+z11_minus, z22_plus, z22_minus)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">z11_plus</span><span class="p">,</span> <span class="n">z11_minus</span><span class="p">,</span> <span class="n">z22_plus</span><span class="p">,</span> <span class="n">z22_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_zp</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div></blockquote>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sections.html" class="btn btn-neutral float-right" title="Sections" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral" title="Welcome to sectionproperties’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Robbie van Leeuwen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
