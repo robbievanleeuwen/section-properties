@@ -12,7 +12,7 @@ def readme():
 
 
 setup(name='sectionproperties',
-      version='1.0',
+      version='0.0.1',
       description=description_text(),
       long_description=readme(),
       long_description_content_type='text/markdown',
@@ -30,7 +30,7 @@ setup(name='sectionproperties',
       license='MIT',
       packages=['sectionproperties'],
       install_requires=[
-          'numpy', 'scipy', 'matplotlib', 'meshpy'
+          'numpy', 'scipy', 'matplotlib'
       ],
       include_package_data=True,
       zip_safe=False)

@@ -14,9 +14,7 @@
 
 import os
 import sys
-
-sys.path.insert(0, os.path.abspath('.'))
-
+from unittest.mock import MagicMock
 
 # -- Project information -----------------------------------------------------
 
@@ -27,7 +25,7 @@ author = 'Robbie van Leeuwen'
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = '1.0'
+release = '0.0.1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -160,3 +158,16 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
+
+# -- Mock Modules ------------------------------------------------------------
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+
+
+MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'meshpy']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
+sys.path.insert(0, os.path.abspath('.'))
