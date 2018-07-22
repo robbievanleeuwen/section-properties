@@ -1,9 +1,10 @@
 import time
 import numpy as np
 from scipy.sparse import linalg
+from scipy.sparse.linalg import spsolve
 
 
-def solve_cgs(k, f, tol=1e-5, m=None):
+def solve_cgs(k, f, m=None, tol=1e-5):
     """Solves a linear system of equations (Ku = f) using the CGS iterative
     method.
 
@@ -54,6 +55,41 @@ def solve_cgs_lagrange(k_lg, f, tol=1e-5, m=None):
     err = u[-1] / max(np.absolute(u))
 
     if err > tol:
+        pass
+        # TODO: handle error
+
+    return u[:-1]
+
+
+def solve_direct(k, f):
+    """Solves a linear system of equations (Ku = f) using the direct solver
+    method.
+
+    :param k: N x N matrix of the linear system
+    :type k: :class:`scipy.sparse.csc_matrix`
+    :param f: N x 1 right hand side of the linear system
+    :type f: :class:`numpy.ndarray`
+    """
+
+    return spsolve(k, f)
+
+
+def solve_direct_lagrange(k_lg, f):
+    """Solves a linear system of equations (Ku = f) using the direct solver
+    method and the Lagrangian multiplier method.
+
+    :param k: (N+1) x (N+1) Lagrangian multiplier matrix of the linear system
+    :type k: :class:`scipy.sparse.csc_matrix`
+    :param f: N x 1 right hand side of the linear system
+    :type f: :class:`numpy.ndarray`
+    """
+
+    u = spsolve(k_lg, np.append(f, 0))
+
+    # compute error
+    err = u[-1] / max(np.absolute(u))
+
+    if err > 1e-5:
         pass
         # TODO: handle error
 
@@ -181,7 +217,7 @@ def function_timer(text, function, *args):
     result = function(*args)
 
     if text != "":
-        print("---- {0} completed in {1:.6f} seconds ---".format(
-            function.__name__, time.time() - start_time))
+        print("----completed in {0:.6f} seconds---".format(
+            time.time() - start_time))
 
     return result

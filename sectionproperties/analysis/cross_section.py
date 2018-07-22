@@ -175,11 +175,16 @@ class CrossSection:
 
         return(self.section_props.calculate_elastic_centroid())
 
-    def calculate_geometric_properties(self):
+    def calculate_geometric_properties(self, time_info=False):
         """Calculates all the geometric properties of the cross-section and
         stores them in the
         :class:`sectionproperties.cross_section.SectionProperties` object
         contained in section_props.
+
+        :param bool time_info: If set to True, a detailed description of the
+            computation and the time cost is printed to the terminal.
+
+        The following section properties are calculated:
 
         * Area
         * First moments of area
@@ -195,20 +200,38 @@ class CrossSection:
             section.calculate_geometric_properties()
         """
 
-        self.calculate_area()
-        self.calculate_qx()
-        self.calculate_qy()
-        self.calculate_ixx_g()
-        self.calculate_iyy_g()
-        self.calculate_ixy_g()
-        self.section_props.calculate_elastic_centroid()
-        self.section_props.calculate_centroidal_properties(self.mesh)
+        def calculate_geom():
+            self.calculate_area()
+            self.calculate_qx()
+            self.calculate_qy()
+            self.calculate_ixx_g()
+            self.calculate_iyy_g()
+            self.calculate_ixy_g()
+            self.section_props.calculate_elastic_centroid()
+            self.section_props.calculate_centroidal_properties(self.mesh)
 
-    def calculate_warping_properties(self):
+        if time_info:
+            text = "--Calculating geometric section properties..."
+            solver.function_timer(text, calculate_geom)
+        else:
+            calculate_geom()
+
+        print("")
+
+    def calculate_warping_properties(self, time_info=False,
+                                     solver_type='direct'):
         """Calculates all the warping properties of the cross-section and
         stores them in the
         :class:`sectionproperties.cross_section.SectionProperties` object
         contained in section_props.
+
+        :param bool time_info: If set to True, a detailed description of the
+            computation and the time cost is printed to the terminal.
+        :param string solver_type: Solver used for solving systems of linear
+            equations, either useing the 'direct' method or 'cgs' iterative
+            method
+
+        The following section properties are calculated:
 
         * Torsion constant
         * Shear centre
@@ -224,6 +247,10 @@ class CrossSection:
         """
 
         # TODO: if geometric properties are None, raise error
+
+        if solver_type not in ['direct', 'cgs']:
+            pass
+            # TODO: throw error
 
         # create a new CrossSection with the origin shifted to the centroid for
         # calculation of the warping properties such that the Lagrangian
@@ -241,84 +268,175 @@ class CrossSection:
         warping_section.mesh_nodes[:, 1] -= self.section_props.cy
 
         # assemble stiffness matrix and load vector for warping function
-        (k, k_lg, f_torsion) = warping_section.assemble_torsion()
+        if time_info:
+            text = "--Assembing {0}x{0} stiffness".format(self.num_nodes)
+            text += " matrix and load vector..."
+            (k, k_lg, f_torsion) = solver.function_timer(
+                text, warping_section.assemble_torsion)
+        else:
+            (k, k_lg, f_torsion) = warping_section.assemble_torsion()
 
-        # ILU decomposition on regular stiffness matrix
-        k_precond = linalg.LinearOperator(
-            (self.num_nodes, self.num_nodes), linalg.spilu(k).solve)
+        # ILU decomposition of stiffness matrices
+        def ilu_decomp():
+            # ILU decomposition on regular stiffness matrix
+            k_precond = linalg.LinearOperator(
+                (self.num_nodes, self.num_nodes), linalg.spilu(k).solve)
 
-        # ILU decomposition on Lagrangian stiffness matrix
-        k_lg_precond = linalg.LinearOperator(
-            (self.num_nodes + 1, self.num_nodes + 1), linalg.spilu(k_lg).solve)
+            # ILU decomposition on Lagrangian stiffness matrix
+            k_lg_precond = linalg.LinearOperator(
+                (self.num_nodes + 1, self.num_nodes + 1),
+                linalg.spilu(k_lg).solve)
+
+            return (k_precond, k_lg_precond)
+
+        if solver_type == 'cgs':
+            if time_info:
+                text = "--Performing ILU decomposition on stiffness"
+                text += "matrices..."
+                (k_precond, k_lg_precond) = solver.function_timer(
+                    text, ilu_decomp)
+            else:
+                (k_precond, k_lg_precond) = ilu_decomp()
 
         # solve for warping constant
-        omega = solver.solve_cgs(k, f_torsion, m=k_precond)
+        def solve_warping():
+            if solver_type == 'cgs':
+                omega = solver.solve_cgs(k, f_torsion, k_precond)
+            elif solver_type == 'direct':
+                omega = solver.solve_direct(k, f_torsion)
+
+            return omega
+
+        if time_info:
+            text = "--Solving for the warping constant using the "
+            text += "{0} solver...".format(solver_type)
+            omega = solver.function_timer(text, solve_warping)
+        else:
+            omega = solve_warping()
+
         self.section_props.omega = omega
 
         # determine the torsion constant
-        self.section_props.j = (
-            self.section_props.ixx_c + self.section_props.iyy_c - omega.dot(
-                k.dot(np.transpose(omega))))
+        def j_func():
+            return (self.section_props.ixx_c + self.section_props.iyy_c -
+                    omega.dot(k.dot(np.transpose(omega))))
+
+        if time_info:
+            text = "--Computing the torsion constant..."
+            self.section_props.j = solver.function_timer(text, j_func)
+        else:
+            self.section_props.j = j_func()
 
         # assemble shear function load vectors
-        f_psi = np.zeros(self.num_nodes)
-        f_phi = np.zeros(self.num_nodes)
+        def assemble_shear_load():
+            f_psi = np.zeros(self.num_nodes)
+            f_phi = np.zeros(self.num_nodes)
 
-        for el in warping_section.elements:
-            (f_psi_el, f_phi_el) = el.shear_load_vectors(
-                self.section_props.ixx_c, self.section_props.iyy_c,
-                self.section_props.ixy_c)
-            f_psi[el.node_ids] += f_psi_el
-            f_phi[el.node_ids] += f_phi_el
+            for el in warping_section.elements:
+                (f_psi_el, f_phi_el) = el.shear_load_vectors(
+                    self.section_props.ixx_c, self.section_props.iyy_c,
+                    self.section_props.ixy_c)
+                f_psi[el.node_ids] += f_psi_el
+                f_phi[el.node_ids] += f_phi_el
+
+            return (f_psi, f_phi)
+
+        if time_info:
+            text = "--Assembling shear function load vectors..."
+            (f_psi, f_phi) = solver.function_timer(text, assemble_shear_load)
+        else:
+            (f_psi, f_phi) = assemble_shear_load()
 
         # solve for shear functions psi and phi
-        psi_shear = solver.solve_cgs_lagrange(k_lg, f_psi, m=k_lg_precond)
-        phi_shear = solver.solve_cgs_lagrange(k_lg, f_phi, m=k_lg_precond)
+        def solve_shear_functions():
+            if solver_type == 'cgs':
+                psi_shear = solver.solve_cgs_lagrange(k_lg, f_psi,
+                                                      m=k_lg_precond)
+                phi_shear = solver.solve_cgs_lagrange(k_lg, f_phi,
+                                                      m=k_lg_precond)
+            elif solver_type == 'direct':
+                psi_shear = solver.solve_direct_lagrange(k_lg, f_psi)
+                phi_shear = solver.solve_direct_lagrange(k_lg, f_phi)
+
+            return (psi_shear, phi_shear)
+
+        if time_info:
+            text = "--Solving for the shear functions using the "
+            text += "{0} solver...".format(solver_type)
+            (psi_shear, phi_shear) = solver.function_timer(
+                text, solve_shear_functions)
+        else:
+            (psi_shear, phi_shear) = solve_shear_functions()
+
         self.section_props.psi_shear = psi_shear
         self.section_props.phi_shear = psi_shear
 
         # assemble shear centre and warping moment integrals
-        sc_xint = 0
-        sc_yint = 0
-        q_omega = 0
-        i_omega = 0
-        i_xomega = 0
-        i_yomega = 0
+        def assemle_sc_warping_integrals():
+            sc_xint = 0
+            sc_yint = 0
+            q_omega = 0
+            i_omega = 0
+            i_xomega = 0
+            i_yomega = 0
 
-        for el in warping_section.elements:
-            (sc_xint_el, sc_yint_el, q_omega_el, i_omega_el, i_xomega_el,
-             i_yomega_el) = el.shear_warping_integrals(
-                self.section_props.ixx_c, self.section_props.iyy_c,
-                self.section_props.ixy_c, omega[el.node_ids])
+            for el in warping_section.elements:
+                (sc_xint_el, sc_yint_el, q_omega_el, i_omega_el, i_xomega_el,
+                 i_yomega_el) = el.shear_warping_integrals(
+                    self.section_props.ixx_c, self.section_props.iyy_c,
+                    self.section_props.ixy_c, omega[el.node_ids])
 
-            sc_xint += sc_xint_el
-            sc_yint += sc_yint_el
-            q_omega += q_omega_el
-            i_omega += i_omega_el
-            i_xomega += i_xomega_el
-            i_yomega += i_yomega_el
+                sc_xint += sc_xint_el
+                sc_yint += sc_yint_el
+                q_omega += q_omega_el
+                i_omega += i_omega_el
+                i_xomega += i_xomega_el
+                i_yomega += i_yomega_el
+
+            return (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega)
+
+        if time_info:
+            text = "--Assembling shear centre and warping moment integrals..."
+            (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = (
+                solver.function_timer(text, assemle_sc_warping_integrals))
+        else:
+            (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = (
+                assemle_sc_warping_integrals())
 
         # calculate effective Poissons ratio
         nu = 0  # TODO: implement
 
-        # calculate shear centres (elasticity approach)
-        Delta_s = 2 * (1 + nu) * (
-            self.section_props.ixx_c * self.section_props.iyy_c -
-            self.section_props.ixy_c ** 2)
-        x_se = (1 / Delta_s) * ((nu / 2 * sc_xint) - f_torsion.dot(phi_shear))
-        y_se = (1 / Delta_s) * ((nu / 2 * sc_yint) + f_torsion.dot(psi_shear))
-        (x1_se, y2_se) = fea.principal_coordinate(self.section_props.phi, x_se,
-                                                  y_se)
+        # calculate shear centres
+        def shear_centres():
+            # calculate shear centres (elasticity approach)
+            Delta_s = 2 * (1 + nu) * (
+                self.section_props.ixx_c * self.section_props.iyy_c -
+                self.section_props.ixy_c ** 2)
+            x_se = (1 / Delta_s) * ((nu / 2 * sc_xint) - f_torsion.dot(
+                phi_shear))
+            y_se = (1 / Delta_s) * ((nu / 2 * sc_yint) + f_torsion.dot(
+                psi_shear))
+            (x1_se, y2_se) = fea.principal_coordinate(self.section_props.phi,
+                                                      x_se, y_se)
 
-        # calculate shear centres (Trefftz's approach)
-        x_st = (
-            self.section_props.ixy_c * i_xomega - self.section_props.iyy_c *
-            i_yomega) / (self.section_props.ixx_c * self.section_props.iyy_c -
-                         self.section_props.ixy_c ** 2)
-        y_st = (
-            self.section_props.ixx_c * i_xomega - self.section_props.ixy_c *
-            i_yomega) / (self.section_props.ixx_c * self.section_props.iyy_c -
-                         self.section_props.ixy_c ** 2)
+            # calculate shear centres (Trefftz's approach)
+            x_st = (self.section_props.ixy_c *
+                    i_xomega - self.section_props.iyy_c * i_yomega) / (
+                self.section_props.ixx_c * self.section_props.iyy_c -
+                self.section_props.ixy_c ** 2)
+            y_st = (self.section_props.ixx_c *
+                    i_xomega - self.section_props.ixy_c * i_yomega) / (
+                self.section_props.ixx_c * self.section_props.iyy_c -
+                self.section_props.ixy_c ** 2)
+
+            return (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st)
+
+        if time_info:
+            text = "--Calculating shear centres..."
+            (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st) = (
+                solver.function_timer(text, shear_centres))
+        else:
+            (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st) = shear_centres()
 
         # save shear centres
         self.section_props.Delta_s = Delta_s
@@ -334,19 +452,30 @@ class CrossSection:
             i_omega - q_omega ** 2 / self.section_props.area -
             y_se * i_xomega + x_se * i_yomega)
 
-        # assemble shear deformation coefficients
-        kappa_x = 0
-        kappa_y = 0
-        kappa_xy = 0
+        def assemble_shear_deformation():
+            # assemble shear deformation coefficients
+            kappa_x = 0
+            kappa_y = 0
+            kappa_xy = 0
 
-        for el in warping_section.elements:
-            (kappa_x_el, kappa_y_el, kappa_xy_el) = el.shear_coefficients(
-                self.section_props.ixx_c, self.section_props.iyy_c,
-                self.section_props.ixy_c, psi_shear[el.node_ids],
-                phi_shear[el.node_ids])
-            kappa_x += kappa_x_el
-            kappa_y += kappa_y_el
-            kappa_xy += kappa_xy_el
+            for el in warping_section.elements:
+                (kappa_x_el, kappa_y_el, kappa_xy_el) = el.shear_coefficients(
+                    self.section_props.ixx_c, self.section_props.iyy_c,
+                    self.section_props.ixy_c, psi_shear[el.node_ids],
+                    phi_shear[el.node_ids])
+                kappa_x += kappa_x_el
+                kappa_y += kappa_y_el
+                kappa_xy += kappa_xy_el
+
+            return (kappa_x, kappa_y, kappa_xy)
+
+        if time_info:
+            text = "--Assembling shear deformation coefficients..."
+            (kappa_x, kappa_y, kappa_xy) = (
+                solver.function_timer(text, assemble_shear_deformation))
+            print("")
+        else:
+            (kappa_x, kappa_y, kappa_xy) = assemble_shear_deformation()
 
         # calculate shear areas wrt global axis
         self.section_props.A_sx = Delta_s ** 2 / kappa_x
@@ -443,7 +572,7 @@ class CrossSection:
 
         return (csc_matrix(k), csc_matrix(k_lg), f_torsion)
 
-    def plot_mesh(self, ax=None, pause=True):
+    def plot_mesh(self, ax=None, pause=True, alpha=1):
         """Plots the finite element mesh. If no axes object is supplied a new
         figure and axis is created.
 
@@ -452,17 +581,71 @@ class CrossSection:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+        :param float alpha: Transparency of the mesh
         """
 
+        # if no axes object is supplied, create and setup the plot
         if ax is None:
+            ax_supplied = False
             (fig, ax) = plt.subplots()
+            post.setup_plot(ax, pause)
+        else:
+            ax_supplied = True
 
+        # plot all the elements in the mesh
+        ax.triplot(self.mesh_nodes[:, 0], self.mesh_nodes[:, 1],
+                   self.mesh_elements[:, 0:3], lw=0.5, color='black',
+                   alpha=alpha)
+
+        # if no axes object is supplied, finish the plot
+        if not ax_supplied:
+            post.finish_plot(ax, pause, title='Finite Element Mesh')
+
+    def plot_centroids(self, pause=True):
+        """Plots all the centroids and the shear centre, if they have been
+        calculated, on top of the finite element mesh.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        # create plot and setup the plot
+        (fig, ax) = plt.subplots()
         post.setup_plot(ax, pause)
 
-        ax.triplot(self.mesh_nodes[:, 0], self.mesh_nodes[:, 1],
-                   self.mesh_elements[:, 0:3], lw=0.5, color='black')
+        # plot the finite element mesh
+        self.plot_mesh(ax, pause, alpha=0.5)
 
-        post.finish_plot(pause)
+        # if the elastic centroid has been calculated
+        if self.section_props.cx is not None:
+            ax.scatter(self.section_props.cx, self.section_props.cy,
+                       edgecolors='r', facecolors='none', marker='o', s=100,
+                       label='Elastic centroid')
+
+        # if the shear centre has been calculated
+        if self.section_props.x_se is not None:
+            (x_s, y_s) = self.get_sc_e()
+            ax.scatter(x_s, y_s, c='r', marker='+', s=100,
+                       label='Shear centre')
+
+        # if the global plastic centroid has been calculated
+        if self.section_props.x_pc is not None:
+            ax.scatter(self.section_props.x_pc, self.section_props.y_pc,
+                       c='r', marker='x', s=100,
+                       label='Global plastic centroid')
+
+        # if the principal plastic centroid has been calculated
+        if self.section_props.x1_pc is not None:
+            ax.scatter(self.section_props.x1_pc, self.section_props.y2_pc,
+                       edgecolors='r', marker='s', s=100,
+                       label='Principal plastic centroid')
+
+        # display the legend
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        # finish the plot
+        post.finish_plot(ax, pause, title='Centroids')
 
     def display_mesh_info(self):
         """Prints mesh statistics to the command window."""
@@ -480,6 +663,14 @@ class CrossSection:
             text += "s\n"
 
         print(text)
+
+    def display_results(self, fmt='8.6e'):
+        """Prints the results that have been calculated to the terminal.
+
+        :param string fmt: Number format
+        """
+
+        post.print_results(self, fmt)
 
     def get_area(self):
         """
@@ -596,7 +787,7 @@ class CrossSection:
 
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
-            (i11_c, i22_c) = section.get_ipc()
+            (i11_c, i22_c) = section.get_ip()
         """
 
         return (self.section_props.i11_c, self.section_props.i22_c)
@@ -655,7 +846,7 @@ class CrossSection:
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
-            z22_minus = section.get_J()
+            j = section.get_j()
         """
 
         return self.section_props.j
@@ -673,9 +864,12 @@ class CrossSection:
             (x_se, y_se) = section.get_sc_e()
         """
 
-        # add centroid location to move section back to original location
-        x_se = self.section_props.x_se + self.section_props.cx
-        y_se = self.section_props.y_se + self.section_props.cy
+        if self.section_props.x_se is None:
+            return (None, None)
+        else:
+            # add centroid location to move section back to original location
+            x_se = self.section_props.x_se + self.section_props.cx
+            y_se = self.section_props.y_se + self.section_props.cy
 
         return (x_se, y_se)
 
@@ -693,9 +887,12 @@ class CrossSection:
             (x1_se, y2_se) = section.get_sc_p_e()
         """
 
-        # add centroid location to move section back to original location
-        x1_se = self.section_props.x1_se + self.section_props.cx
-        y2_se = self.section_props.y2_se + self.section_props.cy
+        if self.section_props.x1_se is None:
+            return (None, None)
+        else:
+            # add centroid location to move section back to original location
+            x1_se = self.section_props.x1_se + self.section_props.cx
+            y2_se = self.section_props.y2_se + self.section_props.cy
 
         return (x1_se, y2_se)
 
@@ -712,8 +909,12 @@ class CrossSection:
             (x_st, y_st) = section.get_sc_t()
         """
 
-        x_st = self.section_props.x_st + self.section_props.cx
-        y_st = self.section_props.y_st + self.section_props.cy
+        if self.section_props.x_st is None:
+            return (None, None)
+        else:
+            # add centroid location to move section back to original location
+            x_st = self.section_props.x_st + self.section_props.cx
+            y_st = self.section_props.y_st + self.section_props.cy
 
         return (x_st, y_st)
 
@@ -779,6 +980,8 @@ class SectionProperties:
         y-axis
     :cvar float ixy_g: Second moment of area of the element about the global
         xy-axis
+    :cvar float cx: X coordinate of the elastic centroid
+    :cvar float cy: Y coordinate of the elastic centroid
     :cvar float ixx_c: Second moment of area of the element about the
         centroidal x-axis
     :cvar float iyy_c: Second moment of area of the element about the
@@ -826,18 +1029,42 @@ class SectionProperties:
     :cvar phi_shear: Phi shear function
     :vartype phi_shear: :class:`numpy.ndarray`
     :cvar float Delta_s: Shear factor
-    :cvar float x_se: X shear centre (elasticity approach)
-    :cvar float y_se: Y shear centre (elasticity approach)
-    :cvar float x1_se: 11 shear centre (elasticity approach)
-    :cvar float y2_se: 22 shear centre (elasticity approach)
-    :cvar float x_st: X shear centre (Trefftz's approach)
-    :cvar float y_st: Y shear centre (Trefftz's approach)
+    :cvar float x_se: X coordinate of the shear centre (elasticity approach)
+    :cvar float y_se: Y coordinate of the shear centre (elasticity approach)
+    :cvar float x1_se: 11 coordinate of the shear centre (elasticity approach)
+    :cvar float y2_se: 22 coordinate of the shear centre (elasticity approach)
+    :cvar float x_st: X coordinate of the shear centre (Trefftz's approach)
+    :cvar float y_st: Y coordinate of the shear centre (Trefftz's approach)
     :cvar float gamma: Warping constant
     :cvar float A_sx: Shear area about the x-axis
     :cvar float A_sy: Shear area about the y-axis
     :cvar float A_sxy: Shear area about the xy-axis
     :cvar float A_s11: Shear area about the 11 bending axis
     :cvar float A_s22: Shear area about the 22 bending axis
+    :cvar float x_pc: X coordinate of the global plastic centroid
+    :cvar float y_pc: Y coordinate of the global plastic centroid
+    :cvar float x1_pc: 11 coordinate of the principal plastic centroid
+    :cvar float y2_pc: 22 coordinate of the principal plastic centroid
+    :cvar float Sxx: Plastic section modulus about the centroidal x-axis
+    :cvar float Syy: Plastic section modulus about the centroidal y-axis
+    :cvar float SF_xx_plus: Shape factor for bending about the x-axis with
+        respect to the top fibre
+    :cvar float SF_xx_minus: Shape factor for bending about the x-axis with
+        respect to the bottom fibre
+    :cvar float SF_yy_plus: Shape factor for bending about the y-axis with
+        respect to the top fibre
+    :cvar float SF_yy_minus: Shape factor for bending about the y-axis with
+        respect to the bottom fibre
+    :cvar float S11: Plastic section modulus about the 11-axis
+    :cvar float S22: Plastic section modulus about the 22-axis
+    :cvar float SF_11_plus: Shape factor for bending about the 11-axis with
+        respect to the top fibre
+    :cvar float SF_11_minus: Shape factor for bending about the 11-axis with
+        respect to the bottom fibre
+    :cvar float SF_22_plus: Shape factor for bending about the 22-axis with
+        respect to the top fibre
+    :cvar float SF_22_minus: Shape factor for bending about the 22-axis with
+        respect to the bottom fibre
     """
 
     def __init__(self):
@@ -849,6 +1076,8 @@ class SectionProperties:
         self.ixx_g = None
         self.iyy_g = None
         self.ixy_g = None
+        self.cx = None
+        self.cy = None
         self.ixx_c = None
         self.iyy_c = None
         self.ixy_c = None
@@ -884,6 +1113,22 @@ class SectionProperties:
         self.A_sxy = None
         self.A_s11 = None
         self.A_s22 = None
+        self.x_pc = None
+        self.y_pc = None
+        self.x1_pc = None
+        self.y2_pc = None
+        self.Sxx = None
+        self.Syy = None
+        self.SF_xx_plus = None
+        self.SF_xx_minus = None
+        self.SF_yy_plus = None
+        self.SF_yy_minus = None
+        self.S11 = None
+        self.S22 = None
+        self.SF_11_plus = None
+        self.SF_11_minus = None
+        self.SF_22_plus = None
+        self.SF_22_minus = None
 
     def calculate_elastic_centroid(self):
         """Calculates the elastic centroid based on the cross-section area and
@@ -1443,83 +1688,3 @@ class SectionProperties:
 #     plt.pause(0.001)
 #
 #     return fig
-#
-# def printResults(self, fmt):
-#     '''
-#     This function prints the results of the geometric cross-sectional
-#     analaysis to the console.
-#     '''
-#     print("\n-----------------------------")
-#     print("Global xy Axis Properties")
-#     print("-----------------------------")
-#     print("Area\t = {:>{fmt}}".format(self.area, fmt=fmt))
-#     print("Qx\t = {:>{fmt}}".format(self.qx, fmt=fmt))
-#     print("Qy\t = {:>{fmt}}".format(self.qy, fmt=fmt))
-#     print("cx\t = {:>{fmt}}".format(self.cx, fmt=fmt))
-#     print("cy\t = {:>{fmt}}".format(self.cy, fmt=fmt))
-#     print("Ixx_g\t = {:>{fmt}}".format(self.ixx_g, fmt=fmt))
-#     print("Iyy_g\t = {:>{fmt}}".format(self.iyy_g, fmt=fmt))
-#     print("Ixy_g\t = {:>{fmt}}\n".format(self.ixy_g, fmt=fmt))
-#     print("\n-----------------------------")
-#     print("Centroidal xy Axis Properties")
-#     print("-----------------------------")
-#     print("Ixx_c\t = {:>{fmt}}".format(self.ixx_c, fmt=fmt))
-#     print("Iyy_c\t = {:>{fmt}}".format(self.iyy_c, fmt=fmt))
-#     print("Ixy_c\t = {:>{fmt}}".format(self.ixy_c, fmt=fmt))
-#     print("Zxx+\t = {:>{fmt}}".format(self.zxx_plus, fmt=fmt))
-#     print("Zxx-\t = {:>{fmt}}".format(self.zxx_minus, fmt=fmt))
-#     print("Zyy+\t = {:>{fmt}}".format(self.zyy_plus, fmt=fmt))
-#     print("Zyy-\t = {:>{fmt}}".format(self.zyy_minus, fmt=fmt))
-#     print("rx_c\t = {:>{fmt}}".format(self.rx_c, fmt=fmt))
-#     print("ry_c\t = {:>{fmt}}\n".format(self.ry_c, fmt=fmt))
-#     print("\n-----------------------------")
-#     print("Principal Axis Properties")
-#     print("-----------------------------")
-#     print("phi\t = {:>{fmt}}".format(self.phi, fmt=fmt))
-#     print("I11_c\t = {:>{fmt}}".format(self.i11_c, fmt=fmt))
-#     print("I22_c\t = {:>{fmt}}".format(self.i22_c, fmt=fmt))
-#     print("Z11+\t = {:>{fmt}}".format(self.z11_plus, fmt=fmt))
-#     print("Z11-\t = {:>{fmt}}".format(self.z11_minus, fmt=fmt))
-#     print("Z22+\t = {:>{fmt}}".format(self.z22_plus, fmt=fmt))
-#     print("Z22-\t = {:>{fmt}}".format(self.z22_minus, fmt=fmt))
-#     print("r1_c\t = {:>{fmt}}".format(self.r1_c, fmt=fmt))
-#     print("r2_c\t = {:>{fmt}}\n".format(self.r2_c, fmt=fmt))
-#     print("\n-----------------------------")
-#     print("Torsional Properties")
-#     print("-----------------------------")
-#     print("J\t = {:>{fmt}}".format(self.J, fmt=fmt))
-#     print("Iw\t = {:>{fmt}}\n".format(self.Gamma, fmt=fmt))
-#     print("\n-----------------------------")
-#     print("Shear Properties")
-#     print("-----------------------------")
-#     print("x_s,e\t = {:>{fmt}}".format(self.x_se, fmt=fmt))
-#     print("y_s,e\t = {:>{fmt}}".format(self.y_se, fmt=fmt))
-#     print("x_s,t\t = {:>{fmt}}".format(self.x_st, fmt=fmt))
-#     print("y_s,t\t = {:>{fmt}}".format(self.y_st, fmt=fmt))
-#     print("x1_s,e\t = {:>{fmt}}".format(self.x1_se, fmt=fmt))
-#     print("y2_s,e\t = {:>{fmt}}".format(self.y2_se, fmt=fmt))
-#     print("A_s,x\t = {:>{fmt}}".format(self.A_sx, fmt=fmt))
-#     print("A_s,y\t = {:>{fmt}}".format(self.A_sy, fmt=fmt))
-#     print("A_s,11\t = {:>{fmt}}".format(self.A_s11, fmt=fmt))
-#     print("A_s,22\t = {:>{fmt}}\n".format(self.A_s22, fmt=fmt))
-#
-#     if (self.settings.plasticAnalysis):
-#         print("\n-----------------------------")
-#         print("Plastic Properties")
-#         print("-----------------------------")
-#         print("x_pc\t = {:>{fmt}}".format(self.x_pc, fmt=fmt))
-#         print("y_pc\t = {:>{fmt}}".format(self.y_pc, fmt=fmt))
-#         print("Sxx\t = {:>{fmt}}".format(self.Sxx, fmt=fmt))
-#         print("Syy\t = {:>{fmt}}".format(self.Syy, fmt=fmt))
-#         print("SF_xx+\t = {:>{fmt}}".format(self.SF_xx_plus, fmt=fmt))
-#         print("SF_xx-\t = {:>{fmt}}".format(self.SF_xx_minus, fmt=fmt))
-#         print("SF_yy+\t = {:>{fmt}}".format(self.SF_yy_plus, fmt=fmt))
-#         print("SF_yy-\t = {:>{fmt}}".format(self.SF_yy_minus, fmt=fmt))
-#         print("x1_pc\t = {:>{fmt}}".format(self.x1_pc, fmt=fmt))
-#         print("y2_pc\t = {:>{fmt}}".format(self.y2_pc, fmt=fmt))
-#         print("S11\t = {:>{fmt}}".format(self.S11, fmt=fmt))
-#         print("S22\t = {:>{fmt}}".format(self.S22, fmt=fmt))
-#         print("SF_11+\t = {:>{fmt}}".format(self.SF_11_plus, fmt=fmt))
-#         print("SF_11-\t = {:>{fmt}}".format(self.SF_11_minus, fmt=fmt))
-#         print("SF_22+\t = {:>{fmt}}".format(self.SF_22_plus, fmt=fmt))
-#         print("SF_22-\t = {:>{fmt}}\n".format(self.SF_22_minus, fmt=fmt))

@@ -44,14 +44,14 @@ a python package for the analysis of arbitrary cross-sections using the finite e
 - [ ] Cross-section stresses
 
 ### Solver:
-- [ ] Direct solver
+- [x] Direct solver
 - [x] CGS iterative solver
 - [x] Sparse matrices
 
 ### Post-Processor:
 - [x] Plot geometry
 - [x] Plot mesh
-- [ ] Plot centroids
+- [x] Plot centroids
 - [ ] Plot cross-section stresses
 - [ ] Generate cross-section report
 - [ ] Export to Paraview

@@ -1,6 +1,8 @@
 Sections
 ========
 
+blah blah text
+
 Section Input Class
 -------------------
 blah blah text

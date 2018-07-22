@@ -203,11 +203,21 @@ mesh</li>
 </table>
 <dl class="method">
 <dt id="sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties">
-<code class="descname">calculate_geometric_properties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_geometric_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties" title="Permalink to this definition">¶</a></dt>
+<code class="descname">calculate_geometric_properties</code><span class="sig-paren">(</span><em>time_info=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_geometric_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates all the geometric properties of the cross-section and
 stores them in the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.cross_section.SectionProperties</span></code> object
 contained in section_props.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time_info</strong> (<em>bool</em>) – If set to True, a detailed description of the
+computation and the time cost is printed to the terminal.</td>
+</tr>
+</tbody>
+</table>
+<p>The following section properties are calculated:</p>
 <ul class="simple">
 <li>Area</li>
 <li>First moments of area</li>
@@ -225,11 +235,27 @@ contained in section_props.</p>
 
 <dl class="method">
 <dt id="sectionproperties.analysis.cross_section.CrossSection.calculate_warping_properties">
-<code class="descname">calculate_warping_properties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_warping_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.calculate_warping_properties" title="Permalink to this definition">¶</a></dt>
+<code class="descname">calculate_warping_properties</code><span class="sig-paren">(</span><em>time_info=False</em>, <em>solver_type='direct'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_warping_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.calculate_warping_properties" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates all the warping properties of the cross-section and
 stores them in the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.cross_section.SectionProperties</span></code> object
 contained in section_props.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>time_info</strong> (<em>bool</em>) – If set to True, a detailed description of the
+computation and the time cost is printed to the terminal.</li>
+<li><strong>solver_type</strong> (<em>string</em>) – Solver used for solving systems of linear
+equations, either useing the ‘direct’ method or ‘cgs’ iterative
+method</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following section properties are calculated:</p>
 <ul class="simple">
 <li>Torsion constant</li>
 <li>Shear centre</li>
@@ -406,7 +432,7 @@ principal axis <em>(i11_c, i22_c)</em></td>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
-<span class="p">(</span><span class="n">i11_c</span><span class="p">,</span> <span class="n">i22_c</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ipc</span><span class="p">()</span>
+<span class="p">(</span><span class="n">i11_c</span><span class="p">,</span> <span class="n">i22_c</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ip</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -427,7 +453,7 @@ principal axis <em>(i11_c, i22_c)</em></td>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
-<span class="n">z22_minus</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_J</span><span class="p">()</span>
+<span class="n">j</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_j</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>

@@ -80,26 +80,46 @@ class SectionInput:
             immediately after the window is rendered.
         """
 
+        # if no axes object is supplied, create and setup the plot
         if ax is None:
+            ax_supplied = False
             (fig, ax) = plt.subplots()
+            post.setup_plot(ax, pause)
+        else:
+            ax_supplied = True
 
-        post.setup_plot(ax, pause)
+        for (i, f) in enumerate(self.facets):
+            # plot the points and facets
+            if i == 0:
+                ax.plot([self.points[f[0]][0], self.points[f[1]][0]],
+                        [self.points[f[0]][1], self.points[f[1]][1]],
+                        'ko-', markersize=2, label='Points & Facets')
+            else:
+                ax.plot([self.points[f[0]][0], self.points[f[1]][0]],
+                        [self.points[f[0]][1], self.points[f[1]][1]],
+                        'ko-', markersize=2)
 
-        for f in self.facets:
-            # plot the facets
-            ax.plot([self.points[f[0]][0], self.points[f[1]][0]],
-                    [self.points[f[0]][1], self.points[f[1]][1]],
-                    'ko-', markersize=2)
-
-        for h in self.holes:
+        for (i, h) in enumerate(self.holes):
             # plot the holes
-            ax.plot(h[0], h[1], 'rx', markerSize=5)
+            if i == 0:
+                ax.plot(h[0], h[1], 'rx', markerSize=5, label='Holes')
+            else:
+                ax.plot(h[0], h[1], 'rx', markerSize=5)
 
-        for cp in self.control_points:
-            # plot the controlPoitns
-            ax.plot(cp[0], cp[1], 'bo', markerSize=5)
+        for (i, cp) in enumerate(self.control_points):
+            # plot the control points
+            if i == 0:
+                ax.plot(cp[0], cp[1], 'bo', markerSize=5,
+                        label='Control Points')
+            else:
+                ax.plot(cp[0], cp[1], 'bo', markerSize=5)
 
-        post.finish_plot(pause)
+        # display the legend
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        # if no axes object is supplied, finish the plot
+        if not ax_supplied:
+            post.finish_plot(ax, pause, title='Cross-Section Geometry')
 
 
 class CustomSection(SectionInput):

@@ -321,11 +321,16 @@
 
         <span class="k">return</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">calculate_elastic_centroid</span><span class="p">())</span>
 
-<div class="viewcode-block" id="CrossSection.calculate_geometric_properties"><a class="viewcode-back" href="../../../rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_geometric_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.calculate_geometric_properties"><a class="viewcode-back" href="../../../rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_geometric_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_info</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculates all the geometric properties of the cross-section and</span>
 <span class="sd">        stores them in the</span>
 <span class="sd">        :class:`sectionproperties.cross_section.SectionProperties` object</span>
 <span class="sd">        contained in section_props.</span>
+
+<span class="sd">        :param bool time_info: If set to True, a detailed description of the</span>
+<span class="sd">            computation and the time cost is printed to the terminal.</span>
+
+<span class="sd">        The following section properties are calculated:</span>
 
 <span class="sd">        * Area</span>
 <span class="sd">        * First moments of area</span>
@@ -341,20 +346,38 @@
 <span class="sd">            section.calculate_geometric_properties()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_area</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_qx</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_qy</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_ixx_g</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_iyy_g</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_ixy_g</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">calculate_elastic_centroid</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">calculate_centroidal_properties</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span></div>
+        <span class="k">def</span> <span class="nf">calculate_geom</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_area</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_qx</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_qy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_ixx_g</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_iyy_g</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_ixy_g</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">calculate_elastic_centroid</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">calculate_centroidal_properties</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CrossSection.calculate_warping_properties"><a class="viewcode-back" href="../../../rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.calculate_warping_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_warping_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Calculating geometric section properties...&quot;</span>
+            <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">calculate_geom</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">calculate_geom</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CrossSection.calculate_warping_properties"><a class="viewcode-back" href="../../../rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.calculate_warping_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_warping_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_info</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">solver_type</span><span class="o">=</span><span class="s1">&#39;direct&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculates all the warping properties of the cross-section and</span>
 <span class="sd">        stores them in the</span>
 <span class="sd">        :class:`sectionproperties.cross_section.SectionProperties` object</span>
 <span class="sd">        contained in section_props.</span>
+
+<span class="sd">        :param bool time_info: If set to True, a detailed description of the</span>
+<span class="sd">            computation and the time cost is printed to the terminal.</span>
+<span class="sd">        :param string solver_type: Solver used for solving systems of linear</span>
+<span class="sd">            equations, either useing the &#39;direct&#39; method or &#39;cgs&#39; iterative</span>
+<span class="sd">            method</span>
+
+<span class="sd">        The following section properties are calculated:</span>
 
 <span class="sd">        * Torsion constant</span>
 <span class="sd">        * Shear centre</span>
@@ -370,6 +393,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># TODO: if geometric properties are None, raise error</span>
+
+        <span class="k">if</span> <span class="n">solver_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;direct&#39;</span><span class="p">,</span> <span class="s1">&#39;cgs&#39;</span><span class="p">]:</span>
+            <span class="k">pass</span>
+            <span class="c1"># TODO: throw error</span>
 
         <span class="c1"># create a new CrossSection with the origin shifted to the centroid for</span>
         <span class="c1"># calculation of the warping properties such that the Lagrangian</span>
@@ -387,84 +414,175 @@
         <span class="n">warping_section</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span>
 
         <span class="c1"># assemble stiffness matrix and load vector for warping function</span>
-        <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k_lg</span><span class="p">,</span> <span class="n">f_torsion</span><span class="p">)</span> <span class="o">=</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">assemble_torsion</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Assembing </span><span class="si">{0}</span><span class="s2">x</span><span class="si">{0}</span><span class="s2"> stiffness&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; matrix and load vector...&quot;</span>
+            <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k_lg</span><span class="p">,</span> <span class="n">f_torsion</span><span class="p">)</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span>
+                <span class="n">text</span><span class="p">,</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">assemble_torsion</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k_lg</span><span class="p">,</span> <span class="n">f_torsion</span><span class="p">)</span> <span class="o">=</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">assemble_torsion</span><span class="p">()</span>
 
-        <span class="c1"># ILU decomposition on regular stiffness matrix</span>
-        <span class="n">k_precond</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">LinearOperator</span><span class="p">(</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">),</span> <span class="n">linalg</span><span class="o">.</span><span class="n">spilu</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">solve</span><span class="p">)</span>
+        <span class="c1"># ILU decomposition of stiffness matrices</span>
+        <span class="k">def</span> <span class="nf">ilu_decomp</span><span class="p">():</span>
+            <span class="c1"># ILU decomposition on regular stiffness matrix</span>
+            <span class="n">k_precond</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">LinearOperator</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">),</span> <span class="n">linalg</span><span class="o">.</span><span class="n">spilu</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">solve</span><span class="p">)</span>
 
-        <span class="c1"># ILU decomposition on Lagrangian stiffness matrix</span>
-        <span class="n">k_lg_precond</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">LinearOperator</span><span class="p">(</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">linalg</span><span class="o">.</span><span class="n">spilu</span><span class="p">(</span><span class="n">k_lg</span><span class="p">)</span><span class="o">.</span><span class="n">solve</span><span class="p">)</span>
+            <span class="c1"># ILU decomposition on Lagrangian stiffness matrix</span>
+            <span class="n">k_lg_precond</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">LinearOperator</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">linalg</span><span class="o">.</span><span class="n">spilu</span><span class="p">(</span><span class="n">k_lg</span><span class="p">)</span><span class="o">.</span><span class="n">solve</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">k_precond</span><span class="p">,</span> <span class="n">k_lg_precond</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s1">&#39;cgs&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Performing ILU decomposition on stiffness&quot;</span>
+                <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;matrices...&quot;</span>
+                <span class="p">(</span><span class="n">k_precond</span><span class="p">,</span> <span class="n">k_lg_precond</span><span class="p">)</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span>
+                    <span class="n">text</span><span class="p">,</span> <span class="n">ilu_decomp</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">k_precond</span><span class="p">,</span> <span class="n">k_lg_precond</span><span class="p">)</span> <span class="o">=</span> <span class="n">ilu_decomp</span><span class="p">()</span>
 
         <span class="c1"># solve for warping constant</span>
-        <span class="n">omega</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve_cgs</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">f_torsion</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="n">k_precond</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">solve_warping</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s1">&#39;cgs&#39;</span><span class="p">:</span>
+                <span class="n">omega</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve_cgs</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">f_torsion</span><span class="p">,</span> <span class="n">k_precond</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s1">&#39;direct&#39;</span><span class="p">:</span>
+                <span class="n">omega</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve_direct</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">f_torsion</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">omega</span>
+
+        <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Solving for the warping constant using the &quot;</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> solver...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">solver_type</span><span class="p">)</span>
+            <span class="n">omega</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">solve_warping</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">omega</span> <span class="o">=</span> <span class="n">solve_warping</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">omega</span> <span class="o">=</span> <span class="n">omega</span>
 
         <span class="c1"># determine the torsion constant</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">-</span> <span class="n">omega</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
-                <span class="n">k</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">omega</span><span class="p">))))</span>
+        <span class="k">def</span> <span class="nf">j_func</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">-</span>
+                    <span class="n">omega</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">omega</span><span class="p">))))</span>
+
+        <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Computing the torsion constant...&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">j_func</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="n">j_func</span><span class="p">()</span>
 
         <span class="c1"># assemble shear function load vectors</span>
-        <span class="n">f_psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
-        <span class="n">f_phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">assemble_shear_load</span><span class="p">():</span>
+            <span class="n">f_psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
+            <span class="n">f_phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="p">(</span><span class="n">f_psi_el</span><span class="p">,</span> <span class="n">f_phi_el</span><span class="p">)</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">shear_load_vectors</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span><span class="p">)</span>
-            <span class="n">f_psi</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">node_ids</span><span class="p">]</span> <span class="o">+=</span> <span class="n">f_psi_el</span>
-            <span class="n">f_phi</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">node_ids</span><span class="p">]</span> <span class="o">+=</span> <span class="n">f_phi_el</span>
+            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">f_psi_el</span><span class="p">,</span> <span class="n">f_phi_el</span><span class="p">)</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">shear_load_vectors</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span><span class="p">)</span>
+                <span class="n">f_psi</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">node_ids</span><span class="p">]</span> <span class="o">+=</span> <span class="n">f_psi_el</span>
+                <span class="n">f_phi</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">node_ids</span><span class="p">]</span> <span class="o">+=</span> <span class="n">f_phi_el</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">f_psi</span><span class="p">,</span> <span class="n">f_phi</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Assembling shear function load vectors...&quot;</span>
+            <span class="p">(</span><span class="n">f_psi</span><span class="p">,</span> <span class="n">f_phi</span><span class="p">)</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">assemble_shear_load</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">f_psi</span><span class="p">,</span> <span class="n">f_phi</span><span class="p">)</span> <span class="o">=</span> <span class="n">assemble_shear_load</span><span class="p">()</span>
 
         <span class="c1"># solve for shear functions psi and phi</span>
-        <span class="n">psi_shear</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve_cgs_lagrange</span><span class="p">(</span><span class="n">k_lg</span><span class="p">,</span> <span class="n">f_psi</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="n">k_lg_precond</span><span class="p">)</span>
-        <span class="n">phi_shear</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve_cgs_lagrange</span><span class="p">(</span><span class="n">k_lg</span><span class="p">,</span> <span class="n">f_phi</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="n">k_lg_precond</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">solve_shear_functions</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s1">&#39;cgs&#39;</span><span class="p">:</span>
+                <span class="n">psi_shear</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve_cgs_lagrange</span><span class="p">(</span><span class="n">k_lg</span><span class="p">,</span> <span class="n">f_psi</span><span class="p">,</span>
+                                                      <span class="n">m</span><span class="o">=</span><span class="n">k_lg_precond</span><span class="p">)</span>
+                <span class="n">phi_shear</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve_cgs_lagrange</span><span class="p">(</span><span class="n">k_lg</span><span class="p">,</span> <span class="n">f_phi</span><span class="p">,</span>
+                                                      <span class="n">m</span><span class="o">=</span><span class="n">k_lg_precond</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s1">&#39;direct&#39;</span><span class="p">:</span>
+                <span class="n">psi_shear</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve_direct_lagrange</span><span class="p">(</span><span class="n">k_lg</span><span class="p">,</span> <span class="n">f_psi</span><span class="p">)</span>
+                <span class="n">phi_shear</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve_direct_lagrange</span><span class="p">(</span><span class="n">k_lg</span><span class="p">,</span> <span class="n">f_phi</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">psi_shear</span><span class="p">,</span> <span class="n">phi_shear</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Solving for the shear functions using the &quot;</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> solver...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">solver_type</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">psi_shear</span><span class="p">,</span> <span class="n">phi_shear</span><span class="p">)</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span>
+                <span class="n">text</span><span class="p">,</span> <span class="n">solve_shear_functions</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">psi_shear</span><span class="p">,</span> <span class="n">phi_shear</span><span class="p">)</span> <span class="o">=</span> <span class="n">solve_shear_functions</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">psi_shear</span> <span class="o">=</span> <span class="n">psi_shear</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">phi_shear</span> <span class="o">=</span> <span class="n">psi_shear</span>
 
         <span class="c1"># assemble shear centre and warping moment integrals</span>
-        <span class="n">sc_xint</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">sc_yint</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">q_omega</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">i_omega</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">i_xomega</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">i_yomega</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">def</span> <span class="nf">assemle_sc_warping_integrals</span><span class="p">():</span>
+            <span class="n">sc_xint</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">sc_yint</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">q_omega</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">i_omega</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">i_xomega</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">i_yomega</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="p">(</span><span class="n">sc_xint_el</span><span class="p">,</span> <span class="n">sc_yint_el</span><span class="p">,</span> <span class="n">q_omega_el</span><span class="p">,</span> <span class="n">i_omega_el</span><span class="p">,</span> <span class="n">i_xomega_el</span><span class="p">,</span>
-             <span class="n">i_yomega_el</span><span class="p">)</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">shear_warping_integrals</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span><span class="p">,</span> <span class="n">omega</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">node_ids</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">sc_xint_el</span><span class="p">,</span> <span class="n">sc_yint_el</span><span class="p">,</span> <span class="n">q_omega_el</span><span class="p">,</span> <span class="n">i_omega_el</span><span class="p">,</span> <span class="n">i_xomega_el</span><span class="p">,</span>
+                 <span class="n">i_yomega_el</span><span class="p">)</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">shear_warping_integrals</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span><span class="p">,</span> <span class="n">omega</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">node_ids</span><span class="p">])</span>
 
-            <span class="n">sc_xint</span> <span class="o">+=</span> <span class="n">sc_xint_el</span>
-            <span class="n">sc_yint</span> <span class="o">+=</span> <span class="n">sc_yint_el</span>
-            <span class="n">q_omega</span> <span class="o">+=</span> <span class="n">q_omega_el</span>
-            <span class="n">i_omega</span> <span class="o">+=</span> <span class="n">i_omega_el</span>
-            <span class="n">i_xomega</span> <span class="o">+=</span> <span class="n">i_xomega_el</span>
-            <span class="n">i_yomega</span> <span class="o">+=</span> <span class="n">i_yomega_el</span>
+                <span class="n">sc_xint</span> <span class="o">+=</span> <span class="n">sc_xint_el</span>
+                <span class="n">sc_yint</span> <span class="o">+=</span> <span class="n">sc_yint_el</span>
+                <span class="n">q_omega</span> <span class="o">+=</span> <span class="n">q_omega_el</span>
+                <span class="n">i_omega</span> <span class="o">+=</span> <span class="n">i_omega_el</span>
+                <span class="n">i_xomega</span> <span class="o">+=</span> <span class="n">i_xomega_el</span>
+                <span class="n">i_yomega</span> <span class="o">+=</span> <span class="n">i_yomega_el</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">sc_xint</span><span class="p">,</span> <span class="n">sc_yint</span><span class="p">,</span> <span class="n">q_omega</span><span class="p">,</span> <span class="n">i_omega</span><span class="p">,</span> <span class="n">i_xomega</span><span class="p">,</span> <span class="n">i_yomega</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Assembling shear centre and warping moment integrals...&quot;</span>
+            <span class="p">(</span><span class="n">sc_xint</span><span class="p">,</span> <span class="n">sc_yint</span><span class="p">,</span> <span class="n">q_omega</span><span class="p">,</span> <span class="n">i_omega</span><span class="p">,</span> <span class="n">i_xomega</span><span class="p">,</span> <span class="n">i_yomega</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">assemle_sc_warping_integrals</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">sc_xint</span><span class="p">,</span> <span class="n">sc_yint</span><span class="p">,</span> <span class="n">q_omega</span><span class="p">,</span> <span class="n">i_omega</span><span class="p">,</span> <span class="n">i_xomega</span><span class="p">,</span> <span class="n">i_yomega</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">assemle_sc_warping_integrals</span><span class="p">())</span>
 
         <span class="c1"># calculate effective Poissons ratio</span>
         <span class="n">nu</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># TODO: implement</span>
 
-        <span class="c1"># calculate shear centres (elasticity approach)</span>
-        <span class="n">Delta_s</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">-</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">x_se</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">Delta_s</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">sc_xint</span><span class="p">)</span> <span class="o">-</span> <span class="n">f_torsion</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">phi_shear</span><span class="p">))</span>
-        <span class="n">y_se</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">Delta_s</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">sc_yint</span><span class="p">)</span> <span class="o">+</span> <span class="n">f_torsion</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">psi_shear</span><span class="p">))</span>
-        <span class="p">(</span><span class="n">x1_se</span><span class="p">,</span> <span class="n">y2_se</span><span class="p">)</span> <span class="o">=</span> <span class="n">fea</span><span class="o">.</span><span class="n">principal_coordinate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">phi</span><span class="p">,</span> <span class="n">x_se</span><span class="p">,</span>
-                                                  <span class="n">y_se</span><span class="p">)</span>
+        <span class="c1"># calculate shear centres</span>
+        <span class="k">def</span> <span class="nf">shear_centres</span><span class="p">():</span>
+            <span class="c1"># calculate shear centres (elasticity approach)</span>
+            <span class="n">Delta_s</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">-</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">x_se</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">Delta_s</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">sc_xint</span><span class="p">)</span> <span class="o">-</span> <span class="n">f_torsion</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                <span class="n">phi_shear</span><span class="p">))</span>
+            <span class="n">y_se</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">Delta_s</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">sc_yint</span><span class="p">)</span> <span class="o">+</span> <span class="n">f_torsion</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                <span class="n">psi_shear</span><span class="p">))</span>
+            <span class="p">(</span><span class="n">x1_se</span><span class="p">,</span> <span class="n">y2_se</span><span class="p">)</span> <span class="o">=</span> <span class="n">fea</span><span class="o">.</span><span class="n">principal_coordinate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">phi</span><span class="p">,</span>
+                                                      <span class="n">x_se</span><span class="p">,</span> <span class="n">y_se</span><span class="p">)</span>
 
-        <span class="c1"># calculate shear centres (Trefftz&#39;s approach)</span>
-        <span class="n">x_st</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">*</span> <span class="n">i_xomega</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">*</span>
-            <span class="n">i_yomega</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">-</span>
-                         <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">y_st</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">*</span> <span class="n">i_xomega</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">*</span>
-            <span class="n">i_yomega</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">-</span>
-                         <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># calculate shear centres (Trefftz&#39;s approach)</span>
+            <span class="n">x_st</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">*</span>
+                    <span class="n">i_xomega</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">*</span> <span class="n">i_yomega</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">-</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">y_st</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">*</span>
+                    <span class="n">i_xomega</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">*</span> <span class="n">i_yomega</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">-</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">Delta_s</span><span class="p">,</span> <span class="n">x_se</span><span class="p">,</span> <span class="n">y_se</span><span class="p">,</span> <span class="n">x1_se</span><span class="p">,</span> <span class="n">y2_se</span><span class="p">,</span> <span class="n">x_st</span><span class="p">,</span> <span class="n">y_st</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Calculating shear centres...&quot;</span>
+            <span class="p">(</span><span class="n">Delta_s</span><span class="p">,</span> <span class="n">x_se</span><span class="p">,</span> <span class="n">y_se</span><span class="p">,</span> <span class="n">x1_se</span><span class="p">,</span> <span class="n">y2_se</span><span class="p">,</span> <span class="n">x_st</span><span class="p">,</span> <span class="n">y_st</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">shear_centres</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">Delta_s</span><span class="p">,</span> <span class="n">x_se</span><span class="p">,</span> <span class="n">y_se</span><span class="p">,</span> <span class="n">x1_se</span><span class="p">,</span> <span class="n">y2_se</span><span class="p">,</span> <span class="n">x_st</span><span class="p">,</span> <span class="n">y_st</span><span class="p">)</span> <span class="o">=</span> <span class="n">shear_centres</span><span class="p">()</span>
 
         <span class="c1"># save shear centres</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">Delta_s</span> <span class="o">=</span> <span class="n">Delta_s</span>
@@ -480,19 +598,30 @@
             <span class="n">i_omega</span> <span class="o">-</span> <span class="n">q_omega</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">-</span>
             <span class="n">y_se</span> <span class="o">*</span> <span class="n">i_xomega</span> <span class="o">+</span> <span class="n">x_se</span> <span class="o">*</span> <span class="n">i_yomega</span><span class="p">)</span>
 
-        <span class="c1"># assemble shear deformation coefficients</span>
-        <span class="n">kappa_x</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">kappa_y</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">kappa_xy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">def</span> <span class="nf">assemble_shear_deformation</span><span class="p">():</span>
+            <span class="c1"># assemble shear deformation coefficients</span>
+            <span class="n">kappa_x</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">kappa_y</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">kappa_xy</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="p">(</span><span class="n">kappa_x_el</span><span class="p">,</span> <span class="n">kappa_y_el</span><span class="p">,</span> <span class="n">kappa_xy_el</span><span class="p">)</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">shear_coefficients</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span><span class="p">,</span> <span class="n">psi_shear</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">node_ids</span><span class="p">],</span>
-                <span class="n">phi_shear</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">node_ids</span><span class="p">])</span>
-            <span class="n">kappa_x</span> <span class="o">+=</span> <span class="n">kappa_x_el</span>
-            <span class="n">kappa_y</span> <span class="o">+=</span> <span class="n">kappa_y_el</span>
-            <span class="n">kappa_xy</span> <span class="o">+=</span> <span class="n">kappa_xy_el</span>
+            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">kappa_x_el</span><span class="p">,</span> <span class="n">kappa_y_el</span><span class="p">,</span> <span class="n">kappa_xy_el</span><span class="p">)</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">shear_coefficients</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span><span class="p">,</span> <span class="n">psi_shear</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">node_ids</span><span class="p">],</span>
+                    <span class="n">phi_shear</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">node_ids</span><span class="p">])</span>
+                <span class="n">kappa_x</span> <span class="o">+=</span> <span class="n">kappa_x_el</span>
+                <span class="n">kappa_y</span> <span class="o">+=</span> <span class="n">kappa_y_el</span>
+                <span class="n">kappa_xy</span> <span class="o">+=</span> <span class="n">kappa_xy_el</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">kappa_x</span><span class="p">,</span> <span class="n">kappa_y</span><span class="p">,</span> <span class="n">kappa_xy</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Assembling shear deformation coefficients...&quot;</span>
+            <span class="p">(</span><span class="n">kappa_x</span><span class="p">,</span> <span class="n">kappa_y</span><span class="p">,</span> <span class="n">kappa_xy</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">assemble_shear_deformation</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">kappa_x</span><span class="p">,</span> <span class="n">kappa_y</span><span class="p">,</span> <span class="n">kappa_xy</span><span class="p">)</span> <span class="o">=</span> <span class="n">assemble_shear_deformation</span><span class="p">()</span>
 
         <span class="c1"># calculate shear areas wrt global axis</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">A_sx</span> <span class="o">=</span> <span class="n">Delta_s</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">kappa_x</span>
@@ -589,7 +718,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">csc_matrix</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">csc_matrix</span><span class="p">(</span><span class="n">k_lg</span><span class="p">),</span> <span class="n">f_torsion</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">plot_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">plot_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plots the finite element mesh. If no axes object is supplied a new</span>
 <span class="sd">        figure and axis is created.</span>
 
@@ -598,17 +727,71 @@
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
 <span class="sd">            immediately after the window is rendered.</span>
+<span class="sd">        :param float alpha: Transparency of the mesh</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># if no axes object is supplied, create and setup the plot</span>
         <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax_supplied</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+            <span class="n">post</span><span class="o">.</span><span class="n">setup_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax_supplied</span> <span class="o">=</span> <span class="kc">True</span>
 
+        <span class="c1"># plot all the elements in the mesh</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">triplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">mesh_elements</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                   <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="c1"># if no axes object is supplied, finish the plot</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ax_supplied</span><span class="p">:</span>
+            <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Finite Element Mesh&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">plot_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots all the centroids and the shear centre, if they have been</span>
+<span class="sd">        calculated, on top of the finite element mesh.</span>
+
+<span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
+<span class="sd">            the window is closed. If set to false, the script continues</span>
+<span class="sd">            immediately after the window is rendered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># create plot and setup the plot</span>
+        <span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
         <span class="n">post</span><span class="o">.</span><span class="n">setup_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span>
 
-        <span class="n">ax</span><span class="o">.</span><span class="n">triplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-                   <span class="bp">self</span><span class="o">.</span><span class="n">mesh_elements</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+        <span class="c1"># plot the finite element mesh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
-        <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">pause</span><span class="p">)</span>
+        <span class="c1"># if the elastic centroid has been calculated</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span><span class="p">,</span>
+                       <span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                       <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Elastic centroid&#39;</span><span class="p">)</span>
+
+        <span class="c1"># if the shear centre has been calculated</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_se</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">x_s</span><span class="p">,</span> <span class="n">y_s</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sc_e</span><span class="p">()</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_s</span><span class="p">,</span> <span class="n">y_s</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                       <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Shear centre&#39;</span><span class="p">)</span>
+
+        <span class="c1"># if the global plastic centroid has been calculated</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_pc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_pc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y_pc</span><span class="p">,</span>
+                       <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                       <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Global plastic centroid&#39;</span><span class="p">)</span>
+
+        <span class="c1"># if the principal plastic centroid has been calculated</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x1_pc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x1_pc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y2_pc</span><span class="p">,</span>
+                       <span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                       <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Principal plastic centroid&#39;</span><span class="p">)</span>
+
+        <span class="c1"># display the legend</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center left&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+
+        <span class="c1"># finish the plot</span>
+        <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Centroids&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">display_mesh_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Prints mesh statistics to the command window.&quot;&quot;&quot;</span>
@@ -626,6 +809,14 @@
             <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;s</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">display_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;8.6e&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prints the results that have been calculated to the terminal.</span>
+
+<span class="sd">        :param string fmt: Number format</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">post</span><span class="o">.</span><span class="n">print_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CrossSection.get_area"><a class="viewcode-back" href="../../../rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_area">[docs]</a>    <span class="k">def</span> <span class="nf">get_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -742,7 +933,7 @@
 
 <span class="sd">            section = CrossSection(geometry, mesh)</span>
 <span class="sd">            section.calculate_geometric_properties()</span>
-<span class="sd">            (i11_c, i22_c) = section.get_ipc()</span>
+<span class="sd">            (i11_c, i22_c) = section.get_ip()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">i11_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">i22_c</span><span class="p">)</span></div>
@@ -801,7 +992,7 @@
 <span class="sd">            section = CrossSection(geometry, mesh)</span>
 <span class="sd">            section.calculate_geometric_properties()</span>
 <span class="sd">            section.calculate_warping_properties()</span>
-<span class="sd">            z22_minus = section.get_J()</span>
+<span class="sd">            j = section.get_j()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">j</span></div>
@@ -819,9 +1010,12 @@
 <span class="sd">            (x_se, y_se) = section.get_sc_e()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># add centroid location to move section back to original location</span>
-        <span class="n">x_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_se</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span>
-        <span class="n">y_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y_se</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_se</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># add centroid location to move section back to original location</span>
+            <span class="n">x_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_se</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span>
+            <span class="n">y_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y_se</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">x_se</span><span class="p">,</span> <span class="n">y_se</span><span class="p">)</span></div>
 
@@ -839,9 +1033,12 @@
 <span class="sd">            (x1_se, y2_se) = section.get_sc_p_e()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># add centroid location to move section back to original location</span>
-        <span class="n">x1_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x1_se</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span>
-        <span class="n">y2_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y2_se</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x1_se</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># add centroid location to move section back to original location</span>
+            <span class="n">x1_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x1_se</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span>
+            <span class="n">y2_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y2_se</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">x1_se</span><span class="p">,</span> <span class="n">y2_se</span><span class="p">)</span></div>
 
@@ -858,8 +1055,12 @@
 <span class="sd">            (x_st, y_st) = section.get_sc_t()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">x_st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_st</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span>
-        <span class="n">y_st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y_st</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_st</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># add centroid location to move section back to original location</span>
+            <span class="n">x_st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_st</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span>
+            <span class="n">y_st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y_st</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">x_st</span><span class="p">,</span> <span class="n">y_st</span><span class="p">)</span></div>
 
@@ -925,6 +1126,8 @@
 <span class="sd">        y-axis</span>
 <span class="sd">    :cvar float ixy_g: Second moment of area of the element about the global</span>
 <span class="sd">        xy-axis</span>
+<span class="sd">    :cvar float cx: X coordinate of the elastic centroid</span>
+<span class="sd">    :cvar float cy: Y coordinate of the elastic centroid</span>
 <span class="sd">    :cvar float ixx_c: Second moment of area of the element about the</span>
 <span class="sd">        centroidal x-axis</span>
 <span class="sd">    :cvar float iyy_c: Second moment of area of the element about the</span>
@@ -972,18 +1175,42 @@
 <span class="sd">    :cvar phi_shear: Phi shear function</span>
 <span class="sd">    :vartype phi_shear: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar float Delta_s: Shear factor</span>
-<span class="sd">    :cvar float x_se: X shear centre (elasticity approach)</span>
-<span class="sd">    :cvar float y_se: Y shear centre (elasticity approach)</span>
-<span class="sd">    :cvar float x1_se: 11 shear centre (elasticity approach)</span>
-<span class="sd">    :cvar float y2_se: 22 shear centre (elasticity approach)</span>
-<span class="sd">    :cvar float x_st: X shear centre (Trefftz&#39;s approach)</span>
-<span class="sd">    :cvar float y_st: Y shear centre (Trefftz&#39;s approach)</span>
+<span class="sd">    :cvar float x_se: X coordinate of the shear centre (elasticity approach)</span>
+<span class="sd">    :cvar float y_se: Y coordinate of the shear centre (elasticity approach)</span>
+<span class="sd">    :cvar float x1_se: 11 coordinate of the shear centre (elasticity approach)</span>
+<span class="sd">    :cvar float y2_se: 22 coordinate of the shear centre (elasticity approach)</span>
+<span class="sd">    :cvar float x_st: X coordinate of the shear centre (Trefftz&#39;s approach)</span>
+<span class="sd">    :cvar float y_st: Y coordinate of the shear centre (Trefftz&#39;s approach)</span>
 <span class="sd">    :cvar float gamma: Warping constant</span>
 <span class="sd">    :cvar float A_sx: Shear area about the x-axis</span>
 <span class="sd">    :cvar float A_sy: Shear area about the y-axis</span>
 <span class="sd">    :cvar float A_sxy: Shear area about the xy-axis</span>
 <span class="sd">    :cvar float A_s11: Shear area about the 11 bending axis</span>
 <span class="sd">    :cvar float A_s22: Shear area about the 22 bending axis</span>
+<span class="sd">    :cvar float x_pc: X coordinate of the global plastic centroid</span>
+<span class="sd">    :cvar float y_pc: Y coordinate of the global plastic centroid</span>
+<span class="sd">    :cvar float x1_pc: 11 coordinate of the principal plastic centroid</span>
+<span class="sd">    :cvar float y2_pc: 22 coordinate of the principal plastic centroid</span>
+<span class="sd">    :cvar float Sxx: Plastic section modulus about the centroidal x-axis</span>
+<span class="sd">    :cvar float Syy: Plastic section modulus about the centroidal y-axis</span>
+<span class="sd">    :cvar float SF_xx_plus: Shape factor for bending about the x-axis with</span>
+<span class="sd">        respect to the top fibre</span>
+<span class="sd">    :cvar float SF_xx_minus: Shape factor for bending about the x-axis with</span>
+<span class="sd">        respect to the bottom fibre</span>
+<span class="sd">    :cvar float SF_yy_plus: Shape factor for bending about the y-axis with</span>
+<span class="sd">        respect to the top fibre</span>
+<span class="sd">    :cvar float SF_yy_minus: Shape factor for bending about the y-axis with</span>
+<span class="sd">        respect to the bottom fibre</span>
+<span class="sd">    :cvar float S11: Plastic section modulus about the 11-axis</span>
+<span class="sd">    :cvar float S22: Plastic section modulus about the 22-axis</span>
+<span class="sd">    :cvar float SF_11_plus: Shape factor for bending about the 11-axis with</span>
+<span class="sd">        respect to the top fibre</span>
+<span class="sd">    :cvar float SF_11_minus: Shape factor for bending about the 11-axis with</span>
+<span class="sd">        respect to the bottom fibre</span>
+<span class="sd">    :cvar float SF_22_plus: Shape factor for bending about the 22-axis with</span>
+<span class="sd">        respect to the top fibre</span>
+<span class="sd">    :cvar float SF_22_minus: Shape factor for bending about the 22-axis with</span>
+<span class="sd">        respect to the bottom fibre</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -995,6 +1222,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ixx_g</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iyy_g</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ixy_g</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cx</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cy</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1030,6 +1259,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">A_sxy</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">A_s11</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">A_s22</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_pc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_pc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x1_pc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y2_pc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Sxx</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Syy</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SF_xx_plus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SF_xx_minus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SF_yy_plus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SF_yy_minus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">S11</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">S22</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SF_11_plus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SF_11_minus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SF_22_plus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SF_22_minus</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">calculate_elastic_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculates the elastic centroid based on the cross-section area and</span>
@@ -1589,86 +1834,6 @@
 <span class="c1">#     plt.pause(0.001)</span>
 <span class="c1">#</span>
 <span class="c1">#     return fig</span>
-<span class="c1">#</span>
-<span class="c1"># def printResults(self, fmt):</span>
-<span class="c1">#     &#39;&#39;&#39;</span>
-<span class="c1">#     This function prints the results of the geometric cross-sectional</span>
-<span class="c1">#     analaysis to the console.</span>
-<span class="c1">#     &#39;&#39;&#39;</span>
-<span class="c1">#     print(&quot;\n-----------------------------&quot;)</span>
-<span class="c1">#     print(&quot;Global xy Axis Properties&quot;)</span>
-<span class="c1">#     print(&quot;-----------------------------&quot;)</span>
-<span class="c1">#     print(&quot;Area\t = {:&gt;{fmt}}&quot;.format(self.area, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Qx\t = {:&gt;{fmt}}&quot;.format(self.qx, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Qy\t = {:&gt;{fmt}}&quot;.format(self.qy, fmt=fmt))</span>
-<span class="c1">#     print(&quot;cx\t = {:&gt;{fmt}}&quot;.format(self.cx, fmt=fmt))</span>
-<span class="c1">#     print(&quot;cy\t = {:&gt;{fmt}}&quot;.format(self.cy, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Ixx_g\t = {:&gt;{fmt}}&quot;.format(self.ixx_g, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Iyy_g\t = {:&gt;{fmt}}&quot;.format(self.iyy_g, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Ixy_g\t = {:&gt;{fmt}}\n&quot;.format(self.ixy_g, fmt=fmt))</span>
-<span class="c1">#     print(&quot;\n-----------------------------&quot;)</span>
-<span class="c1">#     print(&quot;Centroidal xy Axis Properties&quot;)</span>
-<span class="c1">#     print(&quot;-----------------------------&quot;)</span>
-<span class="c1">#     print(&quot;Ixx_c\t = {:&gt;{fmt}}&quot;.format(self.ixx_c, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Iyy_c\t = {:&gt;{fmt}}&quot;.format(self.iyy_c, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Ixy_c\t = {:&gt;{fmt}}&quot;.format(self.ixy_c, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Zxx+\t = {:&gt;{fmt}}&quot;.format(self.zxx_plus, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Zxx-\t = {:&gt;{fmt}}&quot;.format(self.zxx_minus, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Zyy+\t = {:&gt;{fmt}}&quot;.format(self.zyy_plus, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Zyy-\t = {:&gt;{fmt}}&quot;.format(self.zyy_minus, fmt=fmt))</span>
-<span class="c1">#     print(&quot;rx_c\t = {:&gt;{fmt}}&quot;.format(self.rx_c, fmt=fmt))</span>
-<span class="c1">#     print(&quot;ry_c\t = {:&gt;{fmt}}\n&quot;.format(self.ry_c, fmt=fmt))</span>
-<span class="c1">#     print(&quot;\n-----------------------------&quot;)</span>
-<span class="c1">#     print(&quot;Principal Axis Properties&quot;)</span>
-<span class="c1">#     print(&quot;-----------------------------&quot;)</span>
-<span class="c1">#     print(&quot;phi\t = {:&gt;{fmt}}&quot;.format(self.phi, fmt=fmt))</span>
-<span class="c1">#     print(&quot;I11_c\t = {:&gt;{fmt}}&quot;.format(self.i11_c, fmt=fmt))</span>
-<span class="c1">#     print(&quot;I22_c\t = {:&gt;{fmt}}&quot;.format(self.i22_c, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Z11+\t = {:&gt;{fmt}}&quot;.format(self.z11_plus, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Z11-\t = {:&gt;{fmt}}&quot;.format(self.z11_minus, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Z22+\t = {:&gt;{fmt}}&quot;.format(self.z22_plus, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Z22-\t = {:&gt;{fmt}}&quot;.format(self.z22_minus, fmt=fmt))</span>
-<span class="c1">#     print(&quot;r1_c\t = {:&gt;{fmt}}&quot;.format(self.r1_c, fmt=fmt))</span>
-<span class="c1">#     print(&quot;r2_c\t = {:&gt;{fmt}}\n&quot;.format(self.r2_c, fmt=fmt))</span>
-<span class="c1">#     print(&quot;\n-----------------------------&quot;)</span>
-<span class="c1">#     print(&quot;Torsional Properties&quot;)</span>
-<span class="c1">#     print(&quot;-----------------------------&quot;)</span>
-<span class="c1">#     print(&quot;J\t = {:&gt;{fmt}}&quot;.format(self.J, fmt=fmt))</span>
-<span class="c1">#     print(&quot;Iw\t = {:&gt;{fmt}}\n&quot;.format(self.Gamma, fmt=fmt))</span>
-<span class="c1">#     print(&quot;\n-----------------------------&quot;)</span>
-<span class="c1">#     print(&quot;Shear Properties&quot;)</span>
-<span class="c1">#     print(&quot;-----------------------------&quot;)</span>
-<span class="c1">#     print(&quot;x_s,e\t = {:&gt;{fmt}}&quot;.format(self.x_se, fmt=fmt))</span>
-<span class="c1">#     print(&quot;y_s,e\t = {:&gt;{fmt}}&quot;.format(self.y_se, fmt=fmt))</span>
-<span class="c1">#     print(&quot;x_s,t\t = {:&gt;{fmt}}&quot;.format(self.x_st, fmt=fmt))</span>
-<span class="c1">#     print(&quot;y_s,t\t = {:&gt;{fmt}}&quot;.format(self.y_st, fmt=fmt))</span>
-<span class="c1">#     print(&quot;x1_s,e\t = {:&gt;{fmt}}&quot;.format(self.x1_se, fmt=fmt))</span>
-<span class="c1">#     print(&quot;y2_s,e\t = {:&gt;{fmt}}&quot;.format(self.y2_se, fmt=fmt))</span>
-<span class="c1">#     print(&quot;A_s,x\t = {:&gt;{fmt}}&quot;.format(self.A_sx, fmt=fmt))</span>
-<span class="c1">#     print(&quot;A_s,y\t = {:&gt;{fmt}}&quot;.format(self.A_sy, fmt=fmt))</span>
-<span class="c1">#     print(&quot;A_s,11\t = {:&gt;{fmt}}&quot;.format(self.A_s11, fmt=fmt))</span>
-<span class="c1">#     print(&quot;A_s,22\t = {:&gt;{fmt}}\n&quot;.format(self.A_s22, fmt=fmt))</span>
-<span class="c1">#</span>
-<span class="c1">#     if (self.settings.plasticAnalysis):</span>
-<span class="c1">#         print(&quot;\n-----------------------------&quot;)</span>
-<span class="c1">#         print(&quot;Plastic Properties&quot;)</span>
-<span class="c1">#         print(&quot;-----------------------------&quot;)</span>
-<span class="c1">#         print(&quot;x_pc\t = {:&gt;{fmt}}&quot;.format(self.x_pc, fmt=fmt))</span>
-<span class="c1">#         print(&quot;y_pc\t = {:&gt;{fmt}}&quot;.format(self.y_pc, fmt=fmt))</span>
-<span class="c1">#         print(&quot;Sxx\t = {:&gt;{fmt}}&quot;.format(self.Sxx, fmt=fmt))</span>
-<span class="c1">#         print(&quot;Syy\t = {:&gt;{fmt}}&quot;.format(self.Syy, fmt=fmt))</span>
-<span class="c1">#         print(&quot;SF_xx+\t = {:&gt;{fmt}}&quot;.format(self.SF_xx_plus, fmt=fmt))</span>
-<span class="c1">#         print(&quot;SF_xx-\t = {:&gt;{fmt}}&quot;.format(self.SF_xx_minus, fmt=fmt))</span>
-<span class="c1">#         print(&quot;SF_yy+\t = {:&gt;{fmt}}&quot;.format(self.SF_yy_plus, fmt=fmt))</span>
-<span class="c1">#         print(&quot;SF_yy-\t = {:&gt;{fmt}}&quot;.format(self.SF_yy_minus, fmt=fmt))</span>
-<span class="c1">#         print(&quot;x1_pc\t = {:&gt;{fmt}}&quot;.format(self.x1_pc, fmt=fmt))</span>
-<span class="c1">#         print(&quot;y2_pc\t = {:&gt;{fmt}}&quot;.format(self.y2_pc, fmt=fmt))</span>
-<span class="c1">#         print(&quot;S11\t = {:&gt;{fmt}}&quot;.format(self.S11, fmt=fmt))</span>
-<span class="c1">#         print(&quot;S22\t = {:&gt;{fmt}}&quot;.format(self.S22, fmt=fmt))</span>
-<span class="c1">#         print(&quot;SF_11+\t = {:&gt;{fmt}}&quot;.format(self.SF_11_plus, fmt=fmt))</span>
-<span class="c1">#         print(&quot;SF_11-\t = {:&gt;{fmt}}&quot;.format(self.SF_11_minus, fmt=fmt))</span>
-<span class="c1">#         print(&quot;SF_22+\t = {:&gt;{fmt}}&quot;.format(self.SF_22_plus, fmt=fmt))</span>
-<span class="c1">#         print(&quot;SF_22-\t = {:&gt;{fmt}}\n&quot;.format(self.SF_22_minus, fmt=fmt))</span>
 </pre></div>
 
            </div>

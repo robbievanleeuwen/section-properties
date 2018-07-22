@@ -11,8 +11,9 @@ def create_mesh(points, facets, holes, control_points, mesh_sizes):
     :param facets: List of point index pairs *(p1, p2)* defining the edges of
         the cross-section
     :type points: list[tuple(int, int)]
-    :param holes: List of points *(x, y)* defining the locations of holes within
-        the cross-section. If there are no holes, provide an empty list [].
+    :param holes: List of points *(x, y)* defining the locations of holes
+        within the cross-section. If there are no holes, provide an empty list
+        [].
     :type holes: list[tuple(float, float)]
     :param control_points: A list of points *(x, y)* that define different
         regions of the cross-section. A control point is an arbitrary point
