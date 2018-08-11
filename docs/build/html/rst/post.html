@@ -1,0 +1,1381 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Viewing the Results &mdash; sectionproperties 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Running an Analysis" href="analysis.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> sectionproperties
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure of an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Running an Analysis</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Viewing the Results</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#printing-a-list-of-the-section-properties">Printing a List of the Section Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-specific-section-properties">Getting Specific Section Properties</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cross-section-area">Cross Section Area</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#first-moments-of-area-global-axis">First Moments of Area (Global Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#second-moments-of-area-global-axis">Second Moments of Area (Global Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#elastic-centroid">Elastic Centroid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#second-moments-of-area-centroidal-axis">Second Moments of Area (Centroidal Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#section-moduli-centroidal-axis">Section Moduli (Centroidal Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#radii-of-gyration-centroidal-axis">Radii of Gyration (Centroidal Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#second-moments-of-area-principal-axis">Second Moments of Area (Principal Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#principal-axis-angle">Principal Axis Angle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#section-moduli-principal-axis">Section Moduli (Principal Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#radii-of-gyration-principal-axis">Radii of Gyration (Principal Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#torsion-constant">Torsion Constant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shear-centre-global-axis">Shear Centre (Global Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shear-centre-principal-axis">Shear Centre (Principal Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#trefftz-s-shear-centre-global-axis">Trefftz’s Shear Centre (Global Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warping-constant">Warping Constant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shear-area-global-axis">Shear Area (Global Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shear-area-principal-axis">Shear Area (Principal Axis)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#section-property-centroids-plots">Section Property Centroids Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plotting-cross-section-stresses">Plotting Cross-Section Stresses</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#primary-stress-plots">Primary Stress Plots</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#axial-stress">Axial Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,N}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bending-stress">Bending Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,Mxx}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Bending Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,Myy}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Bending Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,M11}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Bending Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,M22}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Bending Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,\Sigma M}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torsion-stress">Torsion Stress (<span class="math notranslate nohighlight">\(\sigma_{zx,Mzz}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Torsion Stress (<span class="math notranslate nohighlight">\(\sigma_{zy,Mzz}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">Torsion Stress (<span class="math notranslate nohighlight">\(\sigma_{zxy,Mzz}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shear-stress">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zx,Vx}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zy,Vx}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zxy,Vx}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zx,Vy}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zy,Vy}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id11">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zxy,Vy}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zx,\Sigma V}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id13">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zy,\Sigma V}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id14">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zxy,\Sigma V}\)</span>)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#combined-stress-plots">Combined Stress Plots</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#normal-stress">Normal Stress (<span class="math notranslate nohighlight">\(\sigma_{zz}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id15">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zx}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id16">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zy}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id17">Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zxy}\)</span>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#von-mises-stress">von Mises Stress (<span class="math notranslate nohighlight">\(\sigma_{vM}\)</span>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Theoretical Background</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">sectionproperties</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Viewing the Results</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/rst/post.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="viewing-the-results">
+<span id="label-post"></span><h1>Viewing the Results<a class="headerlink" href="#viewing-the-results" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="printing-a-list-of-the-section-properties">
+<h2>Printing a List of the Section Properties<a class="headerlink" href="#printing-a-list-of-the-section-properties" title="Permalink to this headline">¶</a></h2>
+<p>A list of section properties that have been calculated by various analyses can
+be printed to the terminal using the <a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection.display_results" title="sectionproperties.analysis.cross_section.CrossSection.display_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">display_results()</span></code></a>
+method that belongs to every
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection" title="sectionproperties.analysis.cross_section.CrossSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossSection</span></code></a> object.</p>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">display_results</code><span class="sig-paren">(</span><em>fmt='8.6e'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.display_results"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Prints the results that have been calculated to the terminal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fmt</strong> (<em>string</em>) – String containing number formatting information</td>
+</tr>
+</tbody>
+</table>
+<p>The following example displays the geometric section properties for a
+100D x 50W rectangle with three digits after the decimal point:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RectangularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+
+<span class="n">section</span><span class="o">.</span><span class="n">display_results</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;.3f&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="getting-specific-section-properties">
+<h2>Getting Specific Section Properties<a class="headerlink" href="#getting-specific-section-properties" title="Permalink to this headline">¶</a></h2>
+<p>Alternatively, there are a number of methods that can be called on the
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection" title="sectionproperties.analysis.cross_section.CrossSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossSection</span></code></a> object to return
+a specific section property:</p>
+<div class="section" id="cross-section-area">
+<h3>Cross Section Area<a class="headerlink" href="#cross-section-area" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_area</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_area"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Cross-section area</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">area</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_area</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="first-moments-of-area-global-axis">
+<h3>First Moments of Area (Global Axis)<a class="headerlink" href="#first-moments-of-area-global-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_q</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_q"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">First moments of area of the cross-section about the global
+axis <em>(qx, qy)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">qx</span><span class="p">,</span> <span class="n">qy</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_q</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="second-moments-of-area-global-axis">
+<h3>Second Moments of Area (Global Axis)<a class="headerlink" href="#second-moments-of-area-global-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_ig</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_ig"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Second moments of area of the cross-section about the global
+axis <em>(ixx_g, iyy_g, ixy_g)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">ixx_g</span><span class="p">,</span> <span class="n">iyy_g</span><span class="p">,</span> <span class="n">ixy_g</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ig</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="elastic-centroid">
+<h3>Elastic Centroid<a class="headerlink" href="#elastic-centroid" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_c</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_c"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Elastic centroid of the cross-section <em>(cx, cy)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_elastic_centroid</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="second-moments-of-area-centroidal-axis">
+<h3>Second Moments of Area (Centroidal Axis)<a class="headerlink" href="#second-moments-of-area-centroidal-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_ic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_ic"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Second moments of area of the cross-section about the
+centroidal axis <em>(ixx_c, iyy_c, ixy_c)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">ixx_c</span><span class="p">,</span> <span class="n">iyy_c</span><span class="p">,</span> <span class="n">ixy_c</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ic</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="section-moduli-centroidal-axis">
+<h3>Section Moduli (Centroidal Axis)<a class="headerlink" href="#section-moduli-centroidal-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_z</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_z"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Section moduli about the centroidal axis <em>(zxx_plus,
+zxx_minus, zyy_plus, zyy_minus)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">zxx_plus</span><span class="p">,</span> <span class="n">zxx_minus</span><span class="p">,</span> <span class="n">zyy_plus</span><span class="p">,</span> <span class="n">zyy_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_z</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="radii-of-gyration-centroidal-axis">
+<h3>Radii of Gyration (Centroidal Axis)<a class="headerlink" href="#radii-of-gyration-centroidal-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_rc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_rc"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Radii of gyration about the centroidal x-axis <em>(rx, ry)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_rc</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="second-moments-of-area-principal-axis">
+<h3>Second Moments of Area (Principal Axis)<a class="headerlink" href="#second-moments-of-area-principal-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_ip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_ip"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Second moments of area of the cross-section about the
+principal axis <em>(i11_c, i22_c)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">i11_c</span><span class="p">,</span> <span class="n">i22_c</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ip</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="principal-axis-angle">
+<h3>Principal Axis Angle<a class="headerlink" href="#principal-axis-angle" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_phi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_phi"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Principal bending axis angle</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_phi</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="section-moduli-principal-axis">
+<h3>Section Moduli (Principal Axis)<a class="headerlink" href="#section-moduli-principal-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_zp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_zp"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Section moduli about the principal axis <em>(z11_plus,
+z11_minus, z22_plus, z22_minus)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">z11_plus</span><span class="p">,</span> <span class="n">z11_minus</span><span class="p">,</span> <span class="n">z22_plus</span><span class="p">,</span> <span class="n">z22_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_zp</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="radii-of-gyration-principal-axis">
+<h3>Radii of Gyration (Principal Axis)<a class="headerlink" href="#radii-of-gyration-principal-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_rp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_rp"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Radii of gyration about the principal axis <em>(r11, r22)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">r11</span><span class="p">,</span> <span class="n">r22</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_rp</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="torsion-constant">
+<h3>Torsion Constant<a class="headerlink" href="#torsion-constant" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_j</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_j"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Torsion constant</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="n">j</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_j</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="shear-centre-global-axis">
+<h3>Shear Centre (Global Axis)<a class="headerlink" href="#shear-centre-global-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_sc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_sc"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Shear centre (elasticity approach) <em>(x_se, y_se)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">x_se</span><span class="p">,</span> <span class="n">y_se</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_sc</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="shear-centre-principal-axis">
+<h3>Shear Centre (Principal Axis)<a class="headerlink" href="#shear-centre-principal-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_sc_p</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_sc_p"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Principal axis shear centre (elasticity approach)
+<em>(x1_se, y2_se)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">x1_se</span><span class="p">,</span> <span class="n">y2_se</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_sc_p</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="trefftz-s-shear-centre-global-axis">
+<h3>Trefftz’s Shear Centre (Global Axis)<a class="headerlink" href="#trefftz-s-shear-centre-global-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_sc_t</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_sc_t"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Shear centre (Trefftz’s approach) <em>(x_st, y_st)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">x_st</span><span class="p">,</span> <span class="n">y_st</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_sc_t</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="warping-constant">
+<h3>Warping Constant<a class="headerlink" href="#warping-constant" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_gamma</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_gamma"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Warping constant</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="n">gamma</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_gamma</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="shear-area-global-axis">
+<h3>Shear Area (Global Axis)<a class="headerlink" href="#shear-area-global-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_As</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_As"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Shear areas <em>(A_sx, A_sy)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">A_sx</span><span class="p">,</span> <span class="n">A_sy</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_As</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="shear-area-principal-axis">
+<h3>Shear Area (Principal Axis)<a class="headerlink" href="#shear-area-principal-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_As_p</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_As_p"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Shear areas about the principal bending axis <em>(A_s11, A_s22)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">A_s11</span><span class="p">,</span> <span class="n">A_s22</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_As_p</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="section-property-centroids-plots">
+<h2>Section Property Centroids Plots<a class="headerlink" href="#section-property-centroids-plots" title="Permalink to this headline">¶</a></h2>
+<p>A plot of the centroids (elastic, plastic and shear centre) can be produced with
+the finite element mesh in the background:</p>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">plot_centroids</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.plot_centroids"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Plots all the centroids and the shear centre, if they have been
+calculated, on top of the finite element mesh.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+<p>The following example analyses a 200 PFC section and displays a plot of
+the centroids:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">PfcSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
+
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+
+<span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id18">
+<a class="reference internal image-reference" href="../_images/pfc_centroids.png"><img alt="../_images/pfc_centroids.png" src="../_images/pfc_centroids.png" style="width: 331.5px; height: 366.75px;" /></a>
+<p class="caption"><span class="caption-text">Plot of the elastic centroid and shear centre for the above example
+generated by
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection.plot_centroids" title="sectionproperties.analysis.cross_section.CrossSection.plot_centroids"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_centroids()</span></code></a></span></p>
+<div class="legend">
+# TODO: update example with plastic centroids</div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="plotting-cross-section-stresses">
+<h2>Plotting Cross-Section Stresses<a class="headerlink" href="#plotting-cross-section-stresses" title="Permalink to this headline">¶</a></h2>
+<p>There are a number of methods that can be called from a <a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.StressResult" title="sectionproperties.analysis.cross_section.StressResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">StressResult</span></code></a>
+object to plot the various cross-section stresses. These methods take the following form:</p>
+<blockquote>
+<div><a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.StressResult" title="sectionproperties.analysis.cross_section.StressResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">StressResult</span></code></a>.plot_(<em>stress/vector</em>)_(<em>action</em>)_(<em>stresstype</em>)</div></blockquote>
+<p>where:</p>
+<ul class="simple">
+<li><em>stress</em> denotes a contour plot and <em>vector</em> denotes a vector plot.</li>
+<li><em>action</em> denotes the type of action causing the stress e.g. mxx for bending moment about the x-axis. Note that the action is omitted for stresses caused by the application of all actions.</li>
+<li><em>stresstype</em> denotes the type of stress that is being plotted e.g. zx for the <em>x</em>-component of shear stress.</li>
+</ul>
+<div class="section" id="primary-stress-plots">
+<h3>Primary Stress Plots<a class="headerlink" href="#primary-stress-plots" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="axial-stress">
+<h4>Axial Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,N}\)</span>)<a class="headerlink" href="#axial-stress" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_n_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_n_zz"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,N}\)</span>
+resulting from the applied axial load <span class="math notranslate nohighlight">\(N\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="bending-stress">
+<h4>Bending Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,Mxx}\)</span>)<a class="headerlink" href="#bending-stress" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_mxx_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_mxx_zz"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,Mxx}\)</span>
+resulting from the applied bending moment <span class="math notranslate nohighlight">\(M_{xx}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id1">
+<h4>Bending Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,Myy}\)</span>)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_myy_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_myy_zz"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,Myy}\)</span>
+resulting from the applied bending moment <span class="math notranslate nohighlight">\(M_{yy}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id2">
+<h4>Bending Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,M11}\)</span>)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_m11_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_m11_zz"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,M11}\)</span>
+resulting from the applied bending moment <span class="math notranslate nohighlight">\(M_{11}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id3">
+<h4>Bending Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,M22}\)</span>)<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_m22_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_m22_zz"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,M22}\)</span>
+resulting from the applied bending moment <span class="math notranslate nohighlight">\(M_{22}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id4">
+<h4>Bending Stress (<span class="math notranslate nohighlight">\(\sigma_{zz,\Sigma M}\)</span>)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_m_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_m_zz"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the normal stress
+<span class="math notranslate nohighlight">\(\sigma_{zz,\Sigma M}\)</span> resulting from all applied bending moments
+<span class="math notranslate nohighlight">\(M_{xx} + M_{yy} + M_{11} + M_{22}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="torsion-stress">
+<h4>Torsion Stress (<span class="math notranslate nohighlight">\(\sigma_{zx,Mzz}\)</span>)<a class="headerlink" href="#torsion-stress" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_mzz_zx</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_mzz_zx"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the <em>x</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zx,Mzz}\)</span> resulting from the applied torsion moment
+<span class="math notranslate nohighlight">\(M_{zz}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id5">
+<h4>Torsion Stress (<span class="math notranslate nohighlight">\(\sigma_{zy,Mzz}\)</span>)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_mzz_zy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_mzz_zy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the <em>y</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zy,Mzz}\)</span> resulting from the applied torsion moment
+<span class="math notranslate nohighlight">\(M_{zz}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id6">
+<h4>Torsion Stress (<span class="math notranslate nohighlight">\(\sigma_{zxy,Mzz}\)</span>)<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_mzz_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_mzz_zxy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the resultant shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Mzz}\)</span> resulting from the applied torsion moment
+<span class="math notranslate nohighlight">\(M_{zz}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_vector_mzz_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_vector_mzz_zxy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a vector plot of the resultant shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Mzz}\)</span> resulting from the applied torsion moment
+<span class="math notranslate nohighlight">\(M_{zz}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="shear-stress">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zx,Vx}\)</span>)<a class="headerlink" href="#shear-stress" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_vx_zx</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_vx_zx"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the <em>x</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zx,Vx}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(V_{x}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id7">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zy,Vx}\)</span>)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_vx_zy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_vx_zy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the <em>y</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zy,Vx}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(V_{x}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id8">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zxy,Vx}\)</span>)<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_vx_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_vx_zxy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the resultant shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Vx}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(V_{x}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_vector_vx_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_vector_vx_zxy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a vector plot of the resultant shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Vx}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(V_{x}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id9">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zx,Vy}\)</span>)<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_vy_zx</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_vy_zx"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the <em>x</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zx,Vy}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(V_{y}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id10">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zy,Vy}\)</span>)<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_vy_zy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_vy_zy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the <em>y</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zy,Vy}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(V_{y}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id11">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zxy,Vy}\)</span>)<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_vy_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_vy_zxy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the resultant shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Vy}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(V_{y}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_vector_vy_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_vector_vy_zxy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a vector plot of the resultant shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Vy}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(V_{y}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id12">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zx,\Sigma V}\)</span>)<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_v_zx</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_v_zx"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the <em>x</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zx,\Sigma V}\)</span> resulting from the sum of the applied
+shear forces <span class="math notranslate nohighlight">\(V_{x} + V_{y}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id13">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zy,\Sigma V}\)</span>)<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_v_zy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_v_zy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the <em>y</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zy,\Sigma V}\)</span> resulting from the sum of the applied
+shear forces <span class="math notranslate nohighlight">\(V_{x} + V_{y}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id14">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zxy,\Sigma V}\)</span>)<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_v_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_v_zxy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the resultant shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zxy,\Sigma V}\)</span> resulting from the sum of the applied
+shear forces <span class="math notranslate nohighlight">\(V_{x} + V_{y}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_vector_v_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_vector_v_zxy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a vector plot of the resultant shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zxy,\Sigma V}\)</span> resulting from the sum of the  applied
+shear forces <span class="math notranslate nohighlight">\(V_{x} + V_{y}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="combined-stress-plots">
+<h3>Combined Stress Plots<a class="headerlink" href="#combined-stress-plots" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="normal-stress">
+<h4>Normal Stress (<span class="math notranslate nohighlight">\(\sigma_{zz}\)</span>)<a class="headerlink" href="#normal-stress" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_zz"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the combined normal stress
+<span class="math notranslate nohighlight">\(\sigma_{zz}\)</span> resulting from all applied actions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id15">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zx}\)</span>)<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_zx</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_zx"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the <em>x</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zx}\)</span> resulting from all applied actions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id16">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zy}\)</span>)<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_zy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_zy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the <em>y</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zy}\)</span> resulting from all applied actions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id17">
+<h4>Shear Stress (<span class="math notranslate nohighlight">\(\sigma_{zxy}\)</span>)<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_zxy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the resultant shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zxy}\)</span> resulting from all applied actions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_vector_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_vector_zxy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a vector plot of the resultant shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zxy}\)</span> resulting from all applied actions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="von-mises-stress">
+<h4>von Mises Stress (<span class="math notranslate nohighlight">\(\sigma_{vM}\)</span>)<a class="headerlink" href="#von-mises-stress" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt>
+<code class="descclassname">StressResult.</code><code class="descname">plot_stress_vm</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressResult.plot_stress_vm"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Produces a contour plot of the von Mises <span class="math notranslate nohighlight">\(\sigma_{vM}\)</span>
+resulting from all applied actions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="analysis.html" class="btn btn-neutral" title="Running an Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Robbie van Leeuwen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

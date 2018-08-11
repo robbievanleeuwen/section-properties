@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sectionproperties.post.post &mdash; sectionproperties 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> sectionproperties
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/structure.html">Structure of an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/analysis.html">Running an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/post.html">Viewing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/api.html">Python API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/theory.html">Theoretical Background</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">sectionproperties</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sectionproperties.post.post</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sectionproperties.post.post</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+
+<div class="viewcode-block" id="setup_plot"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.post.post.setup_plot">[docs]</a><span class="k">def</span> <span class="nf">setup_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Exectues code required to set up a matplotlib figure.</span>
+
+<span class="sd">    :param ax: Axes object on which to plot</span>
+<span class="sd">    :type ax: :class:`matplotlib.axes.Axes`</span>
+<span class="sd">    :param bool pause: If set to true, the figure pauses the script until</span>
+<span class="sd">        the window is closed. If set to false, the script continues</span>
+<span class="sd">        immediately after the window is rendered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pause</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="finish_plot"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.post.post.finish_plot">[docs]</a><span class="k">def</span> <span class="nf">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Executes code required to finish a matplotlib figure.</span>
+
+<span class="sd">    :param ax: Axes object on which to plot</span>
+<span class="sd">    :param bool pause: If set to true, the figure pauses the script until</span>
+<span class="sd">        the window is closed. If set to false, the script continues</span>
+<span class="sd">        immediately after the window is rendered.</span>
+<span class="sd">    :param string title: Plot title</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pause</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="print_results"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.post.post.print_results">[docs]</a><span class="k">def</span> <span class="nf">print_results</span><span class="p">(</span><span class="n">cross_section</span><span class="p">,</span> <span class="n">fmt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Prints the results that have been calculated to the terminal.</span>
+
+<span class="sd">    :param cross_section: Structural cross-section object</span>
+<span class="sd">    :type cross_section:</span>
+<span class="sd">        :class:`~sectionproperties.analysis.cross_section.CrossSection`</span>
+<span class="sd">    :param string fmt: Number format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">area</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_area</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">area</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Section Properties:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Area</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">qx</span><span class="p">,</span> <span class="n">qy</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_q</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">qx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Qx</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">qx</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Qy</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">qy</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_c</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">cx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cx</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cy</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cy</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">ixx_g</span><span class="p">,</span> <span class="n">iyy_g</span><span class="p">,</span> <span class="n">ixy_g</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_ig</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">ixx_g</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ixx_g</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ixx_g</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Iyy_g</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iyy_g</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ixy_g</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ixy_g</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">ixx_c</span><span class="p">,</span> <span class="n">iyy_c</span><span class="p">,</span> <span class="n">ixy_c</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_ic</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">ixx_c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ixx_c</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ixx_c</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Iyy_c</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iyy_c</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ixy_c</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ixy_c</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">zxx_plus</span><span class="p">,</span> <span class="n">zxx_minus</span><span class="p">,</span> <span class="n">zyy_plus</span><span class="p">,</span> <span class="n">zyy_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_z</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">zxx_plus</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Zxx+</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">zxx_plus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Zxx-</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">zxx_minus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Zyy+</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">zyy_plus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Zyy-</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">zyy_minus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_rc</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">rx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rx</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ry</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ry</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_phi</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">i11_c</span><span class="p">,</span> <span class="n">i22_c</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_ip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">phi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;phi</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I11_c</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i11_c</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I22_c</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i22_c</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">z11_plus</span><span class="p">,</span> <span class="n">z11_minus</span><span class="p">,</span> <span class="n">z22_plus</span><span class="p">,</span> <span class="n">z22_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_zp</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">z11_plus</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Z11+</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z11_plus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Z11-</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z11_minus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Z22+</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z22_plus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Z22-</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z22_minus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">r11</span><span class="p">,</span> <span class="n">r22</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_rp</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">r11</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;r11</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">r11</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;r22</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">r22</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="n">j</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_j</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;J</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_gamma</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">gamma</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Iw</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">x_se</span><span class="p">,</span> <span class="n">y_se</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_sc</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">x_se</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x_se</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x_se</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;y_se</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y_se</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">x_st</span><span class="p">,</span> <span class="n">y_st</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_sc_t</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">x_se</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x_st</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x_st</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;y_st</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y_st</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">x1_se</span><span class="p">,</span> <span class="n">y2_se</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_sc_p</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">x1_se</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x1_se</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x1_se</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;y2_se</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y2_se</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">A_sx</span><span class="p">,</span> <span class="n">A_sy</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_As</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">A_sx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_sx</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_sx</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_sy</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_sy</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">A_s11</span><span class="p">,</span> <span class="n">A_s22</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_As_p</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">A_sx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s11</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_s11</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s22</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_s22</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="c1"># if section_properties.x_pc is not None:</span>
+    <span class="c1">#     print(&quot;x_pc\t = {:&gt;{fmt}}&quot;.format(section_properties.x_pc, fmt=fmt))</span>
+    <span class="c1">#     print(&quot;y_pc\t = {:&gt;{fmt}}&quot;.format(section_properties.y_pc, fmt=fmt))</span>
+    <span class="c1">#</span>
+    <span class="c1"># if section_properties.Sxx is not None:</span>
+    <span class="c1">#     print(&quot;Sxx\t = {:&gt;{fmt}}&quot;.format(section_properties.Sxx, fmt=fmt))</span>
+    <span class="c1">#     print(&quot;Syy\t = {:&gt;{fmt}}&quot;.format(section_properties.Syy, fmt=fmt))</span>
+    <span class="c1">#     print(&quot;SF_xx+\t = {:&gt;{fmt}}&quot;.format(section_properties.SF_xx_plus,</span>
+    <span class="c1">#                                         fmt=fmt))</span>
+    <span class="c1">#     print(&quot;SF_xx-\t = {:&gt;{fmt}}&quot;.format(section_properties.SF_xx_minus,</span>
+    <span class="c1">#                                         fmt=fmt))</span>
+    <span class="c1">#     print(&quot;SF_yy+\t = {:&gt;{fmt}}&quot;.format(section_properties.SF_yy_plus,</span>
+    <span class="c1">#                                         fmt=fmt))</span>
+    <span class="c1">#     print(&quot;SF_yy-\t = {:&gt;{fmt}}&quot;.format(section_properties.SF_yy_minus,</span>
+    <span class="c1">#                                         fmt=fmt))</span>
+    <span class="c1">#</span>
+    <span class="c1"># if section_properties.x1_pc is not None:</span>
+    <span class="c1">#     print(&quot;x1_pc\t = {:&gt;{fmt}}&quot;.format(section_properties.x1_pc, fmt=fmt))</span>
+    <span class="c1">#     print(&quot;y2_pc\t = {:&gt;{fmt}}&quot;.format(section_properties.y2_pc, fmt=fmt))</span>
+    <span class="c1">#</span>
+    <span class="c1"># if section_properties.S11 is not None:</span>
+    <span class="c1">#     print(&quot;S11\t = {:&gt;{fmt}}&quot;.format(section_properties.S11, fmt=fmt))</span>
+    <span class="c1">#     print(&quot;S22\t = {:&gt;{fmt}}&quot;.format(section_properties.S22, fmt=fmt))</span>
+    <span class="c1">#     print(&quot;SF_11+\t = {:&gt;{fmt}}&quot;.format(section_properties.SF_11_plus,</span>
+    <span class="c1">#                                         fmt=fmt))</span>
+    <span class="c1">#     print(&quot;SF_11-\t = {:&gt;{fmt}}&quot;.format(section_properties.SF_11_minus,</span>
+    <span class="c1">#                                         fmt=fmt))</span>
+    <span class="c1">#     print(&quot;SF_22+\t = {:&gt;{fmt}}&quot;.format(section_properties.SF_22_plus,</span>
+    <span class="c1">#                                         fmt=fmt))</span>
+    <span class="c1">#     print(&quot;SF_22-\t = {:&gt;{fmt}}&quot;.format(section_properties.SF_22_minus,</span>
+    <span class="c1">#                                         fmt=fmt))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Robbie van Leeuwen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

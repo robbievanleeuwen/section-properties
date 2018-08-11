@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Sections &mdash; sectionproperties 0.0.1 documentation</title>
+  <title>Creating a Geometry and Mesh &mdash; sectionproperties 0.0.1 documentation</title>
   
 
   
@@ -29,7 +29,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="cross_section" href="cross_section.html" /> 
+    <link rel="next" title="Running an Analysis" href="analysis.html" />
+    <link rel="prev" title="Structure of an Analysis" href="structure.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -80,24 +81,35 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="cross_section.html">cross_section</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Sections</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#section-input-class">Section Input Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#custom-section">Custom Section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#rectangular-section">Rectangular Section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#circular-section">Circular Section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#circular-hollow-section-chs">Circular Hollow Section (CHS)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#rectangular-hollow-section-rhs">Rectangular Hollow Section (RHS)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#i-section">I-Section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#parallel-flange-channel-pfc-section">Parallel Flange Channel (PFC) Section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tee-section">Tee Section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#angle-section">Angle Section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#cee-section">Cee Section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#zed-section">Zed Section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#cruciform-section">Cruciform Section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#merged-section">Merged Section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure of an Analysis</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Creating a Geometry and Mesh</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cross-section-geometry">Cross-Section Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-common-structural-geometries">Creating Common Structural Geometries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#rectangular-section">Rectangular Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#circular-section">Circular Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#circular-hollow-section-chs">Circular Hollow Section (CHS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rectangular-hollow-section-rhs">Rectangular Hollow Section (RHS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#i-section">I-Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parallel-flange-channel-pfc-section">Parallel Flange Channel (PFC) Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tee-section">Tee Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#angle-section">Angle Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cee-section">Cee Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zed-section">Zed Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cruciform-section">Cruciform Section</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#arbitrary-cross-section-geometries">Arbitrary Cross-Section Geometries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#merging-geometries">Merging Geometries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualising-the-geometry">Visualising the Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-a-mesh">Generating a Mesh</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Running an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="post.html">Viewing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Theoretical Background</a></li>
 </ul>
 
             
@@ -143,13 +155,13 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>Sections</li>
+      <li>Creating a Geometry and Mesh</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/rst/sections.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/rst/geom_mesh.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -162,91 +174,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="sections">
-<h1>Sections<a class="headerlink" href="#sections" title="Permalink to this headline">¶</a></h1>
-<p>blah blah text</p>
-<div class="section" id="section-input-class">
-<h2>Section Input Class<a class="headerlink" href="#section-input-class" title="Permalink to this headline">¶</a></h2>
-<p>blah blah text</p>
+  <div class="section" id="creating-a-geometry-and-mesh">
+<span id="label-geom-mesh"></span><h1>Creating a Geometry and Mesh<a class="headerlink" href="#creating-a-geometry-and-mesh" title="Permalink to this headline">¶</a></h1>
+<p>Before performing a cross-section analysis, the geometry of the cross-section and
+a finite element mesh must be created.</p>
+<div class="section" id="cross-section-geometry">
+<h2>Cross-Section Geometry<a class="headerlink" href="#cross-section-geometry" title="Permalink to this headline">¶</a></h2>
+<p>The geometry of a cross-section defines its dimensions, shape and material properties
+and involves the creation of a <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+object. This geometry object stores all the information needed to create a finite
+element mesh.</p>
 <dl class="class">
-<dt id="sectionproperties.pre.sections.SectionInput">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">SectionInput</code><span class="sig-paren">(</span><em>control_points</em>, <em>shift</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#SectionInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.SectionInput" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parent class for a cross-section input.</p>
-<p>Provides an interface for the user to generate common section types as well
-as section combinations. A method is provided for generating a triangular
-mesh, for translating the cross-section by (x, y) and for plotting the
-geometry.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="sectionproperties.pre.sections.SectionInput.create_mesh">
-<code class="descname">create_mesh</code><span class="sig-paren">(</span><em>mesh_sizes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#SectionInput.create_mesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.SectionInput.create_mesh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a quadratic triangular mesh from the SectionInput object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mesh_sizes</strong> – A list of maximum element areas corresponding to
-each region within the cross-section geometry.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Object containing generated mesh data</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">meshpy.triangle.MeshInfo</span></code></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="sectionproperties.pre.sections.SectionInput.plot_geometry">
-<code class="descname">plot_geometry</code><span class="sig-paren">(</span><em>ax=None</em>, <em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#SectionInput.plot_geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.SectionInput.plot_geometry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots the geometry defined by the input section. If no axes object
-is supplied a new figure and axis is created.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>ax</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.axes.Axes</span></code>) – Axes object on which the mesh is plotted</li>
-<li><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
-the window is closed. If set to false, the script continues
-immediately after the window is rendered.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="custom-section">
-<h2>Custom Section<a class="headerlink" href="#custom-section" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="sectionproperties.pre.sections.CustomSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">CustomSection</code><span class="sig-paren">(</span><em>points, facets, holes, control_points, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CustomSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.CustomSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
-<p>Constructs a cross section from a list of points, facets, holes and a
-user specified control point.</p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">Geometry</code><span class="sig-paren">(</span><em>control_points</em>, <em>shift</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Parent class for a cross-section geometry input.</p>
+<p>Provides an interface for the user to specify the geometry defining a
+cross-section. A method is provided for generating a triangular mesh, for
+translating the cross-section by <em>(x, y)</em> and for plotting the geometry.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -269,13 +213,24 @@ within a region enclosed by facets.</li>
 </table>
 </dd></dl>
 
+<p>Different regions of the geometry can be specified by defining a list of <code class="docutils literal notranslate"><span class="pre">control_points</span></code>,
+which are located within unique enclosed areas of the geometry. Different regions
+can be used to specify different mesh sizes and/or different material properties
+within the structural cross-section. See the <a class="reference internal" href="examples.html#label-examples"><span class="std std-ref">Examples</span></a> for some example
+scripts in which different regions are specified through a list of control points.</p>
 </div>
+<div class="section" id="creating-common-structural-geometries">
+<h2>Creating Common Structural Geometries<a class="headerlink" href="#creating-common-structural-geometries" title="Permalink to this headline">¶</a></h2>
+<p>In order to make your life easier, there are a number of built-in classes that generate
+typical structural cross-sections that also inherit from the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+class. Note that these classes automatically assign a <code class="docutils literal notranslate"><span class="pre">control_point</span></code> to the geometry
+object.</p>
 <div class="section" id="rectangular-section">
-<h2>Rectangular Section<a class="headerlink" href="#rectangular-section" title="Permalink to this headline">¶</a></h2>
+<h3>Rectangular Section<a class="headerlink" href="#rectangular-section" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="sectionproperties.pre.sections.RectangularSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">RectangularSection</code><span class="sig-paren">(</span><em>d, b, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#RectangularSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.RectangularSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">RectangularSection</code><span class="sig-paren">(</span><em>d, b, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#RectangularSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a rectangular section with the bottom left corner at the
 origin <em>(0, 0)</em>, with depth <em>d</em> and width <em>b</em>.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -300,35 +255,15 @@ origin <em>(0, 0)</em>, with depth <em>d</em> and width <em>b</em>.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div>
 <div class="section" id="circular-section">
-<h2>Circular Section<a class="headerlink" href="#circular-section" title="Permalink to this headline">¶</a></h2>
+<h3>Circular Section<a class="headerlink" href="#circular-section" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="sectionproperties.pre.sections.CircularSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">CircularSection</code><span class="sig-paren">(</span><em>d, n, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CircularSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.CircularSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">CircularSection</code><span class="sig-paren">(</span><em>d, n, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CircularSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a solid circle centered at the origin <em>(0, 0)</em> with diameter
 <em>d</em> and using <em>n</em> points to construct the circle.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -353,35 +288,15 @@ within a region enclosed by facets.</li>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div>
 <div class="section" id="circular-hollow-section-chs">
-<h2>Circular Hollow Section (CHS)<a class="headerlink" href="#circular-hollow-section-chs" title="Permalink to this headline">¶</a></h2>
+<h3>Circular Hollow Section (CHS)<a class="headerlink" href="#circular-hollow-section-chs" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="sectionproperties.pre.sections.ChsSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">ChsSection</code><span class="sig-paren">(</span><em>d, t, n, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#ChsSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.ChsSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">ChsSection</code><span class="sig-paren">(</span><em>d, t, n, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#ChsSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a circular hollow section centered at the origin <em>(0, 0)</em>,
 with diameter <em>d</em> and thickness <em>t</em>, using <em>n</em> points to construct the
 inner and outer circles.</p>
@@ -408,35 +323,15 @@ triangular area of 1.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div>
 <div class="section" id="rectangular-hollow-section-rhs">
-<h2>Rectangular Hollow Section (RHS)<a class="headerlink" href="#rectangular-hollow-section-rhs" title="Permalink to this headline">¶</a></h2>
+<h3>Rectangular Hollow Section (RHS)<a class="headerlink" href="#rectangular-hollow-section-rhs" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="sectionproperties.pre.sections.RhsSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">RhsSection</code><span class="sig-paren">(</span><em>d, b, t, r_out, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#RhsSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.RhsSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">RhsSection</code><span class="sig-paren">(</span><em>d, b, t, r_out, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#RhsSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a rectangular hollow section centered at <em>(b/2, d/2)</em>, with
 depth <em>d</em>, width <em>b</em>, thickness <em>t</em> and outer radius <em>r_out</em>, using <em>n_r</em>
 points to construct the inner and outer radii.</p>
@@ -466,36 +361,16 @@ of 2.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div>
 <div class="section" id="i-section">
-<h2>I-Section<a class="headerlink" href="#i-section" title="Permalink to this headline">¶</a></h2>
+<h3>I-Section<a class="headerlink" href="#i-section" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
-<dt id="sectionproperties.pre.sections.ISection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">ISection</code><span class="sig-paren">(</span><em>d, b, t_f, t_w, r, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#ISection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.ISection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">ISection</code><span class="sig-paren">(</span><em>d, b, t_f, t_w, r, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#ISection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs an I-section centered at <em>(b/2, d/2)</em>, with depth <em>d</em>, width
 <em>b</em>, flange thickness <em>t_f</em>, web thickness <em>t_w</em>, and root radius <em>r</em>,
 using <em>n_r</em> points to construct the root radius.</p>
@@ -526,37 +401,17 @@ with a maximum triangular area of 3.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div></blockquote>
 </div>
 <div class="section" id="parallel-flange-channel-pfc-section">
-<h2>Parallel Flange Channel (PFC) Section<a class="headerlink" href="#parallel-flange-channel-pfc-section" title="Permalink to this headline">¶</a></h2>
+<h3>Parallel Flange Channel (PFC) Section<a class="headerlink" href="#parallel-flange-channel-pfc-section" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
-<dt id="sectionproperties.pre.sections.PfcSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">PfcSection</code><span class="sig-paren">(</span><em>d, b, t_f, t_w, r, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#PfcSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.PfcSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">PfcSection</code><span class="sig-paren">(</span><em>d, b, t_f, t_w, r, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#PfcSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a PFC section with the bottom left corner at the origin
 <em>(0, 0)</em>, with depth <em>d</em>, width <em>b</em>, flange thickness <em>t_f</em>, web  thickness
 <em>t_w</em> and root radius <em>r</em>, using <em>n_r</em> points to construct the root radius.</p>
@@ -587,37 +442,17 @@ with a maximum triangular area of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div></blockquote>
 </div>
 <div class="section" id="tee-section">
-<h2>Tee Section<a class="headerlink" href="#tee-section" title="Permalink to this headline">¶</a></h2>
+<h3>Tee Section<a class="headerlink" href="#tee-section" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
-<dt id="sectionproperties.pre.sections.TeeSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">TeeSection</code><span class="sig-paren">(</span><em>d, b, t_f, t_w, r, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#TeeSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.TeeSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">TeeSection</code><span class="sig-paren">(</span><em>d, b, t_f, t_w, r, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#TeeSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a Tee section with the top left corner at <em>(0, d)</em>, with
 depth <em>d</em>, width <em>b</em>, flange thickness <em>t_f</em>, web thickness <em>t_w</em> and root
 radius <em>r</em>, using <em>n_r</em> points to construct the root radius.</p>
@@ -648,37 +483,17 @@ with a maximum triangular area of 3.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div></blockquote>
 </div>
 <div class="section" id="angle-section">
-<h2>Angle Section<a class="headerlink" href="#angle-section" title="Permalink to this headline">¶</a></h2>
+<h3>Angle Section<a class="headerlink" href="#angle-section" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
-<dt id="sectionproperties.pre.sections.AngleSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">AngleSection</code><span class="sig-paren">(</span><em>d, b, t, r_r, r_t, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#AngleSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.AngleSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">AngleSection</code><span class="sig-paren">(</span><em>d, b, t, r_r, r_t, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#AngleSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs an angle section with the bottom left corner at the origin
 <em>(0, 0)</em>, with depth <em>d</em>, width <em>b</em>, thickness <em>t</em>, root radius <em>r_r</em> and
 toe radius <em>r_t</em>, using <em>n_r</em> points to construct the radii.</p>
@@ -709,37 +524,17 @@ triangular area of 2.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div></blockquote>
 </div>
 <div class="section" id="cee-section">
-<h2>Cee Section<a class="headerlink" href="#cee-section" title="Permalink to this headline">¶</a></h2>
+<h3>Cee Section<a class="headerlink" href="#cee-section" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
-<dt id="sectionproperties.pre.sections.CeeSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">CeeSection</code><span class="sig-paren">(</span><em>d, b, l, t, r_out, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CeeSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.CeeSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">CeeSection</code><span class="sig-paren">(</span><em>d, b, l, t, r_out, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CeeSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a Cee section with the bottom left corner at the origin
 <em>(0, 0)</em>, with depth <em>d</em>, width <em>b</em>, lip <em>l</em>, thickness <em>t</em> and outer
 radius <em>r_out</em>, using <em>n_r</em> points to construct the radius.</p>
@@ -770,37 +565,17 @@ triangular area of 0.25:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div></blockquote>
 </div>
 <div class="section" id="zed-section">
-<h2>Zed Section<a class="headerlink" href="#zed-section" title="Permalink to this headline">¶</a></h2>
+<h3>Zed Section<a class="headerlink" href="#zed-section" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
-<dt id="sectionproperties.pre.sections.ZedSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">ZedSection</code><span class="sig-paren">(</span><em>d, b_l, b_r, l, t, r_out, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#ZedSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.ZedSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">ZedSection</code><span class="sig-paren">(</span><em>d, b_l, b_r, l, t, r_out, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#ZedSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a Zed section with the bottom left corner at the origin
 <em>(0, 0)</em>, with depth <em>d</em>, left flange width <em>b_l</em>, right flange width
 <em>b_r</em>, lip <em>l</em>, thickness <em>t</em> and outer radius <em>r_out</em>, using <em>n_r</em> points
@@ -833,37 +608,17 @@ A mesh is generated with a maximum triangular area of 0.15:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.15</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div></blockquote>
 </div>
 <div class="section" id="cruciform-section">
-<h2>Cruciform Section<a class="headerlink" href="#cruciform-section" title="Permalink to this headline">¶</a></h2>
+<h3>Cruciform Section<a class="headerlink" href="#cruciform-section" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
-<dt id="sectionproperties.pre.sections.CruciformSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">CruciformSection</code><span class="sig-paren">(</span><em>d, b, t, r, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CruciformSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.CruciformSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">CruciformSection</code><span class="sig-paren">(</span><em>d, b, t, r, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CruciformSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a cruciform section centered at the origin <em>(0, 0)</em>, with
 depth <em>d</em>, width <em>b</em>, thickness <em>t</em> and root radius <em>r</em>, using <em>n_r</em> points
 to construct the root radius.</p>
@@ -893,17 +648,34 @@ of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
+</dd></dl>
+
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="arbitrary-cross-section-geometries">
+<h2>Arbitrary Cross-Section Geometries<a class="headerlink" href="#arbitrary-cross-section-geometries" title="Permalink to this headline">¶</a></h2>
+<p>If none of the above classes gives you what you need, you can create a
+<a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a> geometry object, which is
+defined by a list of points (nodes), facets (node connectivities) and hole locations:</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">CustomSection</code><span class="sig-paren">(</span><em>points, facets, holes, control_points, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CustomSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
+<p>Constructs a cross section from a list of points, facets, holes and a
+user specified control point.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
 cross-section</li>
 <li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
 the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
+<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes
+within the cross-section. If there are no holes, provide an empty list
+[].</li>
 <li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
 regions of the cross-section. A control point is an arbitrary point
 within a region enclosed by facets.</li>
@@ -913,17 +685,38 @@ within a region enclosed by facets.</li>
 </tr>
 </tbody>
 </table>
+<p>The following example creates a hollow trapezium with a base width of 100,
+top width of 50, height of 50 and a wall thickness of 10. A mesh is
+generated with a maximum triangular area of 2.0:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">points</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">75</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">85</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">70</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">]]</span>
+<span class="n">facets</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
+<span class="n">holes</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">25</span><span class="p">]]</span>
+<span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CustomSection</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
-</div></blockquote>
 </div>
-<div class="section" id="merged-section">
-<h2>Merged Section<a class="headerlink" href="#merged-section" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><dl class="class">
-<dt id="sectionproperties.pre.sections.MergedSection">
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">MergedSection</code><span class="sig-paren">(</span><em>sections</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#MergedSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.MergedSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a></p>
+<div class="section" id="merging-geometries">
+<h2>Merging Geometries<a class="headerlink" href="#merging-geometries" title="Permalink to this headline">¶</a></h2>
+<p>If you wish to merge multiple <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+objects into a single object, you can use the <a class="reference internal" href="api.html#sectionproperties.pre.sections.MergedSection" title="sectionproperties.pre.sections.MergedSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">MergedSection</span></code></a>
+class:</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">There must be connectivity between the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+objects that you wish to merge. It is currently not possible to analyse a cross-section
+that is composed of two or more unconnected domains.</p>
+</div>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">MergedSection</code><span class="sig-paren">(</span><em>sections</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#MergedSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Merges a number of section geometries into one geometry. Note that for
 the meshing algorithm to work, there needs to be connectivity between all
 regions of the provided geometries. Overlapping of geometries is permitted.</p>
@@ -931,7 +724,7 @@ regions of the provided geometries. Overlapping of geometries is permitted.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sections</strong> (list[<a class="reference internal" href="#sectionproperties.pre.sections.SectionInput" title="sectionproperties.pre.sections.SectionInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.SectionInput</span></code></a>]) – A list of geometries to merge into one geometry</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sections</strong> (list[<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>]) – A list of geometries to merge into one geometry</td>
 </tr>
 </tbody>
 </table>
@@ -944,34 +737,91 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <span class="n">box</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RhsSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r_out</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">8.5</span><span class="p">,</span> <span class="mi">203</span><span class="p">])</span>
 
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MergedSection</span><span class="p">([</span><span class="n">isection</span><span class="p">,</span> <span class="n">box</span><span class="p">])</span>
-<span class="n">geometry</span><span class="o">.</span><span class="n">plot_geometry</span><span class="p">()</span>
-
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
+</dd></dl>
+
+</div>
+<div class="section" id="visualising-the-geometry">
+<h2>Visualising the Geometry<a class="headerlink" href="#visualising-the-geometry" title="Permalink to this headline">¶</a></h2>
+<p>Geometry objects can be visualised by using the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry.plot_geometry" title="sectionproperties.pre.sections.Geometry.plot_geometry"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_geometry()</span></code></a>
+method:</p>
+<dl class="method">
+<dt>
+<code class="descclassname">Geometry.</code><code class="descname">plot_geometry</code><span class="sig-paren">(</span><em>ax=None</em>, <em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.plot_geometry"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Plots the geometry defined by the input section. If no axes object
+is supplied a new figure and axis is created.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
-cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
-the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
-the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
-regions of the cross-section. A control point is an arbitrary point
-within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.axes.Axes</span></code>) – Axes object on which the mesh is plotted</li>
+<li><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<p>The following example creates a CHS discretised with 64 points, with a
+diameter of 48 and thickness of 3.2, and plots the geometry:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ChsSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">3.2</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">plot_geometry</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<img alt="../_images/chs_geometry.png" src="../_images/chs_geometry.png" />
+<p class="caption"><span class="caption-text">Geometry generated by the above example.</span></p>
+</div>
 </dd></dl>
 
-</div></blockquote>
+</div>
+<div class="section" id="generating-a-mesh">
+<h2>Generating a Mesh<a class="headerlink" href="#generating-a-mesh" title="Permalink to this headline">¶</a></h2>
+<p>A finite element mesh is required to perform a cross-section analysis. A finite
+element mesh can be created by using the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry.create_mesh" title="sectionproperties.pre.sections.Geometry.create_mesh"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_mesh()</span></code></a>
+method:</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The length of <code class="docutils literal notranslate"><span class="pre">mesh_sizes</span></code> must match the number of regions
+in the geometry object.</p>
+</div>
+<dl class="method">
+<dt>
+<code class="descclassname">Geometry.</code><code class="descname">create_mesh</code><span class="sig-paren">(</span><em>mesh_sizes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.create_mesh"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Creates a quadratic triangular mesh from the Geometry object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mesh_sizes</strong> – A list of maximum element areas corresponding to
+each region within the cross-section geometry.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Object containing generated mesh data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">meshpy.triangle.MeshInfo</span></code></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>AssertionError</strong> – If the number of mesh sizes does not match the
+number of regions</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates a circular cross-section with a diameter of
+50 with 32 points, and generates a mesh with a maximum triangular area of
+2.5:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CircularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
@@ -983,8 +833,10 @@ within a region enclosed by facets.</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="analysis.html" class="btn btn-neutral float-right" title="Running an Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="cross_section.html" class="btn btn-neutral" title="cross_section" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="structure.html" class="btn btn-neutral" title="Structure of an Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -1,0 +1,719 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sectionproperties.analysis.fea &mdash; sectionproperties 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> sectionproperties
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/structure.html">Structure of an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/analysis.html">Running an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/post.html">Viewing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/api.html">Python API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/theory.html">Theoretical Background</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">sectionproperties</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sectionproperties.analysis.fea</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sectionproperties.analysis.fea</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="Tri6"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6">[docs]</a><span class="k">class</span> <span class="nc">Tri6</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class for a six noded quadratic triangular element.</span>
+
+<span class="sd">    Provides methods for the calculation of section properties based on the</span>
+<span class="sd">    finite element method.</span>
+
+<span class="sd">    :param coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The</span>
+<span class="sd">        first three columns relate to the vertices of the triangle and the</span>
+<span class="sd">        last three columns correspond to the mid-nodes.</span>
+<span class="sd">    :type coords: :class:`numpy.ndarray`</span>
+<span class="sd">    :param node_ids: A list of the global node ids for the current element</span>
+<span class="sd">    :type node_ids: list[int]</span>
+<span class="sd">    :param int attribute: Attribute number for the element</span>
+
+<span class="sd">    :cvar coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The</span>
+<span class="sd">        first three columns relate to the vertices of the triangle and the last</span>
+<span class="sd">        three columns correspond to the mid-nodes.</span>
+<span class="sd">    :vartype coords: :class:`numpy.ndarray`</span>
+<span class="sd">    :cvar node_ids: A list of the global node ids for the current element</span>
+<span class="sd">    :vartype node_ids: list[int]</span>
+<span class="sd">    :cvar int attribute: Attribute number for the element</span>
+<span class="sd">    :cvar float area: Area of the element</span>
+<span class="sd">    :cvar float qx: First moment of area of the element about the x-axis</span>
+<span class="sd">    :cvar float qy: First moment of area of the element about the y-axis</span>
+<span class="sd">    :cvar float ixx: Second moment of area of the element about the x-axis</span>
+<span class="sd">    :cvar float iyy: Second moment of area of the element about the y-axis</span>
+<span class="sd">    :cvar float ixy: Second moment of area of the element about the xy-axis</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">attribute</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inits the Tri6 class. Calculates and stores the area properties of</span>
+<span class="sd">        the element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">coords</span> <span class="o">=</span> <span class="n">coords</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span> <span class="o">=</span> <span class="n">node_ids</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># TODO: implement Poissons ratio</span>
+
+        <span class="c1"># initialise area properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ixx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iyy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ixy</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Gauss points for 6 point Gaussian integration</span>
+        <span class="n">gps</span> <span class="o">=</span> <span class="n">gauss_points</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="c1"># loop through each Gauss point</span>
+        <span class="k">for</span> <span class="n">gp</span> <span class="ow">in</span> <span class="n">gps</span><span class="p">:</span>
+            <span class="c1"># determine shape function, shape function derivative and jacobian</span>
+            <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">shape_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">gp</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qx</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qy</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ixx</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iyy</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ixy</span> <span class="o">+=</span> <span class="p">(</span><span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">*</span>
+                         <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">*</span> <span class="n">j</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Tri6.torsion_properties"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.torsion_properties">[docs]</a>    <span class="k">def</span> <span class="nf">torsion_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the element stiffness matrix used for warping analysis</span>
+<span class="sd">        and the torsion load vector.</span>
+
+<span class="sd">        :return: Element stiffness matrix (k_el) and element torsion load</span>
+<span class="sd">            vector (f_el)</span>
+<span class="sd">        :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># initialise stiffness matrix and load vector</span>
+        <span class="n">k_el</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">f_el</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Gauss points for 6 point Gaussian integration</span>
+        <span class="n">gps</span> <span class="o">=</span> <span class="n">gauss_points</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">gp</span> <span class="ow">in</span> <span class="n">gps</span><span class="p">:</span>
+            <span class="c1"># determine shape function, shape function derivative and jacobian</span>
+            <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">shape_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">gp</span><span class="p">)</span>
+
+            <span class="c1"># determine x and y position at Gauss point</span>
+            <span class="n">Nx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span>
+            <span class="n">Ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span>
+
+            <span class="n">k_el</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">),</span> <span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="n">f_el</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">Ny</span><span class="p">,</span> <span class="o">-</span><span class="n">Nx</span><span class="p">])))</span> <span class="o">*</span> <span class="n">j</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">k_el</span><span class="p">,</span> <span class="n">f_el</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Tri6.shear_load_vectors"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.shear_load_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">shear_load_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the element shear load vectors used to evaluate the shear</span>
+<span class="sd">        functions.</span>
+
+<span class="sd">        :return: Element shear load vector psi (f_psi) and phi (f_phi)</span>
+<span class="sd">        :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># initialise force vectors</span>
+        <span class="n">f_psi</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">f_phi</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Gauss points for 6 point Gaussian integration</span>
+        <span class="n">gps</span> <span class="o">=</span> <span class="n">gauss_points</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">gp</span> <span class="ow">in</span> <span class="n">gps</span><span class="p">:</span>
+            <span class="c1"># determine shape function, shape function derivative and jacobian</span>
+            <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">shape_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">gp</span><span class="p">)</span>
+
+            <span class="c1"># determine x and y position at Gauss point</span>
+            <span class="n">Nx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span>
+            <span class="n">Ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span>
+
+            <span class="c1"># determine shear parameters</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">Nx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">Ny</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Ny</span>
+            <span class="n">d1</span> <span class="o">=</span> <span class="n">ixx</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">q</span>
+            <span class="n">d2</span> <span class="o">=</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="n">ixx</span> <span class="o">*</span> <span class="n">q</span>
+            <span class="n">h1</span> <span class="o">=</span> <span class="o">-</span><span class="n">ixy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="n">iyy</span> <span class="o">*</span> <span class="n">q</span>
+            <span class="n">h2</span> <span class="o">=</span> <span class="o">-</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">q</span>
+
+            <span class="n">f_psi</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">d1</span><span class="p">],</span> <span class="p">[</span><span class="n">d2</span><span class="p">]])))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span>
+                <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">))</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="n">f_phi</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">h1</span><span class="p">],</span> <span class="p">[</span><span class="n">h2</span><span class="p">]])))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span>
+                <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Nx</span><span class="p">))</span> <span class="o">*</span> <span class="n">j</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">f_psi</span><span class="p">,</span> <span class="n">f_phi</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Tri6.shear_warping_integrals"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.shear_warping_integrals">[docs]</a>    <span class="k">def</span> <span class="nf">shear_warping_integrals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the element shear centre and warping integrals required</span>
+<span class="sd">        for shear analysis of the cross-section.</span>
+
+<span class="sd">        :return: Shear centre integrals about the x and y-axes (sc_xint,</span>
+<span class="sd">            sc_yint), warping integrals (q_omega, i_omega, i_xomega, i_yomega)</span>
+<span class="sd">        :rtype: tuple(float, float, float, float, float, float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># initialise integrals</span>
+        <span class="n">sc_xint</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sc_yint</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">q_omega</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">i_omega</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">i_xomega</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">i_yomega</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Gauss points for 6 point Gaussian integration</span>
+        <span class="n">gps</span> <span class="o">=</span> <span class="n">gauss_points</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">gp</span> <span class="ow">in</span> <span class="n">gps</span><span class="p">:</span>
+            <span class="c1"># determine shape function, shape function derivative and jacobian</span>
+            <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">shape_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">gp</span><span class="p">)</span>
+
+            <span class="c1"># determine x and y position at Gauss point</span>
+            <span class="n">Nx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span>
+            <span class="n">Ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span>
+            <span class="n">Nomega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">omega</span><span class="p">))</span>
+
+            <span class="n">sc_xint</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">+</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">Ny</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="n">sc_yint</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">+</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Nx</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">Ny</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="n">q_omega</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">Nomega</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="n">i_omega</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">Nomega</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="n">i_xomega</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Nomega</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="n">i_yomega</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">*</span> <span class="n">Nomega</span> <span class="o">*</span> <span class="n">j</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">sc_xint</span><span class="p">,</span> <span class="n">sc_yint</span><span class="p">,</span> <span class="n">q_omega</span><span class="p">,</span> <span class="n">i_omega</span><span class="p">,</span> <span class="n">i_xomega</span><span class="p">,</span> <span class="n">i_yomega</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Tri6.shear_coefficients"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.shear_coefficients">[docs]</a>    <span class="k">def</span> <span class="nf">shear_coefficients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="n">psi_shear</span><span class="p">,</span> <span class="n">phi_shear</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the variables used to determine the shear</span>
+<span class="sd">        deformation coefficients.</span>
+
+<span class="sd">        :return: Shear deformation variables (kappa_x, kappa_y, kappa_xy)</span>
+<span class="sd">        :rtype: tuple(float, float, float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># initialise properties</span>
+        <span class="n">kappa_x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">kappa_y</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">kappa_xy</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Gauss points for 6 point Gaussian integration</span>
+        <span class="n">gps</span> <span class="o">=</span> <span class="n">gauss_points</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">gp</span> <span class="ow">in</span> <span class="n">gps</span><span class="p">:</span>
+            <span class="c1"># determine shape function, shape function derivative and jacobian</span>
+            <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">shape_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">gp</span><span class="p">)</span>
+
+            <span class="c1"># determine x and y position at Gauss point</span>
+            <span class="n">Nx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span>
+            <span class="n">Ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span>
+
+            <span class="c1"># determine shear parameters</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">Nx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">Ny</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Ny</span>
+            <span class="n">d1</span> <span class="o">=</span> <span class="n">ixx</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">q</span>
+            <span class="n">d2</span> <span class="o">=</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="n">ixx</span> <span class="o">*</span> <span class="n">q</span>
+            <span class="n">h1</span> <span class="o">=</span> <span class="o">-</span><span class="n">ixy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="n">iyy</span> <span class="o">*</span> <span class="n">q</span>
+            <span class="n">h2</span> <span class="o">=</span> <span class="o">-</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">q</span>
+
+            <span class="n">kappa_x</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">psi_shear</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">))</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">psi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                        <span class="p">[</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="n">kappa_y</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">phi_shear</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">))</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">]))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">phi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                        <span class="p">[</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">]))</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="n">kappa_xy</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">psi_shear</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">))</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">phi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                        <span class="p">[</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">]))</span> <span class="o">*</span> <span class="n">j</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">kappa_x</span><span class="p">,</span> <span class="n">kappa_y</span><span class="p">,</span> <span class="n">kappa_xy</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Tri6.element_stress"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.element_stress">[docs]</a>    <span class="k">def</span> <span class="nf">element_stress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="n">i11</span><span class="p">,</span> <span class="n">i22</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span>
+                       <span class="n">omega</span><span class="p">,</span> <span class="n">psi_shear</span><span class="p">,</span> <span class="n">phi_shear</span><span class="p">,</span> <span class="n">Delta_s</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the stress within an element resulting from unit loading.</span>
+
+<span class="sd">        :param float area: Total area of the cross-section</span>
+<span class="sd">        :param float cx: x position of the centroidal axis</span>
+<span class="sd">        :param float cy: y position of the centroidal axis</span>
+<span class="sd">        :param float ixx: Second moment of area about the centroidal x-axis</span>
+<span class="sd">        :param float iyy: Second moment of area about the centroidal y-axis</span>
+<span class="sd">        :param float ixy: Second moment of area about the centroidal xy-axis</span>
+<span class="sd">        :param float i11: Second moment of area about the principal 11-axis</span>
+<span class="sd">        :param float i22: Second moment of area about the principal 22-axis</span>
+<span class="sd">        :param float phi: Principal axis angle</span>
+<span class="sd">        :param float j: Torsion constant of the cross-section</span>
+<span class="sd">        :param omega: Warping function at the nodes of the element</span>
+<span class="sd">        :type omega: :class:`numpy.ndarray`</span>
+<span class="sd">        :param psi_shear: Psi shear function at the nodes of the element</span>
+<span class="sd">        :type psi_shear: :class:`numpy.ndarray`</span>
+<span class="sd">        :param phi_shear: Phi shear function at the nodes of the element</span>
+<span class="sd">        :type phi_shear: :class:`numpy.ndarray`</span>
+<span class="sd">        :param float Delta_s: Shear factor</span>
+<span class="sd">        :return: Tuple containing element stresses and integration weights (</span>
+<span class="sd">            :math:`\sigma_{zz,n}`, :math:`\sigma_{zz,mxx}`,</span>
+<span class="sd">            :math:`\sigma_{zz,myy}`, :math:`\sigma_{zz,m11}`,</span>
+<span class="sd">            :math:`\sigma_{zz,m22}`, :math:`\sigma_{zx,mzz}`,</span>
+<span class="sd">            :math:`\sigma_{zy,mzz}`, :math:`\sigma_{zx,vx}`,</span>
+<span class="sd">            :math:`\sigma_{zy,vx}`, :math:`\sigma_{zx,vy}`,</span>
+<span class="sd">            :math:`\sigma_{zy,vy}`, :math:`w_i`)</span>
+<span class="sd">        :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`, ...)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># calculate axial stress</span>
+        <span class="n">sig_zz_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">area</span>
+
+        <span class="c1"># initialise stresses at the gauss points</span>
+        <span class="n">sig_zz_mxx_gp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">sig_zz_myy_gp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">sig_zz_m11_gp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">sig_zz_m22_gp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">sig_zxy_mzz_gp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">sig_zxy_vx_gp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">sig_zxy_vy_gp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="c1"># Gauss points for 6 point Gaussian integration</span>
+        <span class="n">gps</span> <span class="o">=</span> <span class="n">gauss_points</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">gp</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gps</span><span class="p">):</span>
+            <span class="c1"># determine x and y positions with respect to the centroidal axis</span>
+            <span class="n">coords_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+            <span class="n">coords_c</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">cx</span>
+            <span class="n">coords_c</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">cy</span>
+
+            <span class="c1"># determine shape function, shape function derivative and jacobian</span>
+            <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">shape_function</span><span class="p">(</span><span class="n">coords_c</span><span class="p">,</span> <span class="n">gp</span><span class="p">)</span>
+
+            <span class="c1"># determine x and y position at Gauss point</span>
+            <span class="n">Nx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">coords_c</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span>
+            <span class="n">Ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">coords_c</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span>
+
+            <span class="c1"># determine 11 and 22 position at Gauss point</span>
+            <span class="p">(</span><span class="n">Nx_11</span><span class="p">,</span> <span class="n">Ny_22</span><span class="p">)</span> <span class="o">=</span> <span class="n">principal_coordinate</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span>
+
+            <span class="c1"># determine shear parameters</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">Nx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">Ny</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Ny</span>
+            <span class="n">d1</span> <span class="o">=</span> <span class="n">ixx</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">q</span>
+            <span class="n">d2</span> <span class="o">=</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="n">ixx</span> <span class="o">*</span> <span class="n">q</span>
+            <span class="n">h1</span> <span class="o">=</span> <span class="o">-</span><span class="n">ixy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="n">iyy</span> <span class="o">*</span> <span class="n">q</span>
+            <span class="n">h2</span> <span class="o">=</span> <span class="o">-</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">q</span>
+
+            <span class="n">sig_zz_mxx_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">ixy</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">+</span> <span class="p">(</span>
+                <span class="n">iyy</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Ny</span>
+            <span class="n">sig_zz_myy_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">+</span> <span class="p">(</span>
+                <span class="n">ixy</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Ny</span>
+            <span class="n">sig_zz_m11_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">i11</span> <span class="o">*</span> <span class="n">Ny_22</span>
+            <span class="n">sig_zz_m22_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">i22</span> <span class="o">*</span> <span class="n">Nx_11</span>
+            <span class="n">sig_zxy_mzz_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">Ny</span><span class="p">,</span> <span class="o">-</span><span class="n">Nx</span><span class="p">]))</span>
+            <span class="n">sig_zxy_vx_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Delta_s</span> <span class="o">*</span> <span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                <span class="n">psi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span>
+            <span class="n">sig_zxy_vy_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Delta_s</span> <span class="o">*</span> <span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                <span class="n">phi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">]))</span>
+
+        <span class="c1"># extrapolate results to nodes</span>
+        <span class="n">sig_zz_mxx</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zz_mxx_gp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">sig_zz_myy</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zz_myy_gp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">sig_zz_m11</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zz_m11_gp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">sig_zz_m22</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zz_m22_gp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">sig_zx_mzz</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zxy_mzz_gp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">sig_zy_mzz</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zxy_mzz_gp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">sig_zx_vx</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zxy_vx_gp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">sig_zy_vx</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zxy_vx_gp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">sig_zx_vy</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zxy_vy_gp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">sig_zy_vy</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zxy_vy_gp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">sig_zz_n</span><span class="p">,</span> <span class="n">sig_zz_mxx</span><span class="p">,</span> <span class="n">sig_zz_myy</span><span class="p">,</span> <span class="n">sig_zz_m11</span><span class="p">,</span> <span class="n">sig_zz_m22</span><span class="p">,</span>
+                <span class="n">sig_zx_mzz</span><span class="p">,</span> <span class="n">sig_zy_mzz</span><span class="p">,</span> <span class="n">sig_zx_vx</span><span class="p">,</span> <span class="n">sig_zy_vx</span><span class="p">,</span> <span class="n">sig_zx_vy</span><span class="p">,</span>
+                <span class="n">sig_zy_vy</span><span class="p">,</span> <span class="n">gps</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span></div></div>
+
+
+<div class="viewcode-block" id="gauss_points"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.gauss_points">[docs]</a><span class="k">def</span> <span class="nf">gauss_points</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the Gaussian weights and locations for *n* point Gaussian</span>
+<span class="sd">    integration of a quadratic triangular element.</span>
+
+<span class="sd">    :param int n: Number of Gauss points (1, 3 or 6)</span>
+<span class="sd">    :return: An *n x 4* matrix consisting of the integration weight and the</span>
+<span class="sd">        eta, xi and zeta locations for *n* Gauss points</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># one point gaussian integration</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">]])</span>
+
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="c1"># three point gaussian integration</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">],</span>
+                         <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">],</span>
+                         <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">]])</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+        <span class="c1"># six point gaussian integration</span>
+        <span class="n">g1</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">18</span> <span class="o">*</span> <span class="p">(</span><span class="mi">8</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">38</span> <span class="o">-</span> <span class="mi">44</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">/</span> <span class="mi">5</span><span class="p">)))</span>
+        <span class="n">g2</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">18</span> <span class="o">*</span> <span class="p">(</span><span class="mi">8</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">38</span> <span class="o">-</span> <span class="mi">44</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">/</span> <span class="mi">5</span><span class="p">)))</span>
+        <span class="n">w1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">620</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">213125</span> <span class="o">-</span> <span class="mi">53320</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span> <span class="o">/</span> <span class="mi">3720</span>
+        <span class="n">w2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">620</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">213125</span> <span class="o">-</span> <span class="mi">53320</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span> <span class="o">/</span> <span class="mi">3720</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">w2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">w2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">w2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g2</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g1</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">]])</span></div>
+
+
+<div class="viewcode-block" id="shape_function"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.shape_function">[docs]</a><span class="k">def</span> <span class="nf">shape_function</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">gauss_point</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes shape functions, shape function derivatives and the determinant</span>
+<span class="sd">    of the Jacobian matrix for a tri 6 element at a given Gauss point.</span>
+
+<span class="sd">    :param coords: Global coordinates of the quadratic triangle vertices</span>
+<span class="sd">        [2 x 6]</span>
+<span class="sd">    :type coords: :class:`numpy.ndarray`</span>
+<span class="sd">    :param gauss_point: Gaussian weight and isoparametric location of the Gauss</span>
+<span class="sd">        point</span>
+<span class="sd">    :type gauss_point: :class:`numpy.ndarray`</span>
+<span class="sd">    :return: The value of the shape functions *N(i)* at the given Gauss point</span>
+<span class="sd">        [1 x 6], the derivative of the shape functions in the j-th global</span>
+<span class="sd">        direction *B(i,j)* [2 x 6] and the determinant of the Jacobian matrix</span>
+<span class="sd">        *j*</span>
+<span class="sd">    :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`, float)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># location of isoparametric co-ordinates for each Gauss point</span>
+    <span class="n">eta</span> <span class="o">=</span> <span class="n">gauss_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">xi</span> <span class="o">=</span> <span class="n">gauss_point</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">zeta</span> <span class="o">=</span> <span class="n">gauss_point</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="c1"># value of the shape functions</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">eta</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                  <span class="n">xi</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">xi</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                  <span class="n">zeta</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">zeta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                  <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">*</span> <span class="n">xi</span><span class="p">,</span>
+                  <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span> <span class="o">*</span> <span class="n">zeta</span><span class="p">,</span>
+                  <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">*</span> <span class="n">zeta</span><span class="p">])</span>
+
+    <span class="c1"># derivatives of the shape functions wrt the isoparametric co-ordinates</span>
+    <span class="n">B_iso</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">zeta</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">zeta</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">zeta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span><span class="p">]])</span>
+
+    <span class="c1"># form Jacobian matrix</span>
+    <span class="n">J_upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+    <span class="n">J_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B_iso</span><span class="p">))</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">J_upper</span><span class="p">,</span> <span class="n">J_lower</span><span class="p">))</span>
+
+    <span class="c1"># calculate the jacobian</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="c1"># handle warning if area is zero during plastic centroid algorithm</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># cacluate the P matrix</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">J</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]))</span>
+        <span class="c1"># calculate the B matrix in terms of cartesian co-ordinates</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B_iso</span><span class="p">),</span> <span class="n">P</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="extrapolate_to_nodes"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.extrapolate_to_nodes">[docs]</a><span class="k">def</span> <span class="nf">extrapolate_to_nodes</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extrapolates results at six Gauss points to the six noes of a quadratic</span>
+<span class="sd">    triangular element.</span>
+
+<span class="sd">    :param w: Result at the six Gauss points [1 x 6]</span>
+<span class="sd">    :type w: :class:`numpy.ndarray`</span>
+<span class="sd">    :return: Extrapolated nodal values at the six nodes [1 x 6]</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">H_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[[</span><span class="mf">1.87365927351160</span><span class="p">,</span>	<span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">0.138559587411935</span><span class="p">,</span>
+          <span class="o">-</span><span class="mf">0.638559587411936</span><span class="p">,</span> <span class="mf">0.126340726488397</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">1.87365927351160</span><span class="p">,</span> <span class="mf">0.138559587411935</span><span class="p">,</span>
+          <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">,</span> <span class="mf">0.126340726488397</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">1.87365927351160</span><span class="p">,</span>
+          <span class="mf">0.126340726488396</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.180053080734478</span><span class="p">,</span>
+          <span class="mf">1.36051633430762</span><span class="p">,</span>	<span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.180053080734478</span><span class="p">,</span> <span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.0749010751157440</span><span class="p">,</span>
+          <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="mf">1.36051633430762</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.180053080734478</span><span class="p">,</span>  <span class="mf">0.0749010751157440</span><span class="p">,</span>
+          <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="mf">1.36051633430762</span><span class="p">]])</span>
+
+    <span class="k">return</span> <span class="n">H_inv</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="principal_coordinate"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.principal_coordinate">[docs]</a><span class="k">def</span> <span class="nf">principal_coordinate</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determines the coordinates of the cartesian point *(x, y)* in the</span>
+<span class="sd">    principal axis system given an axis rotation angle phi.</span>
+
+<span class="sd">    :param float phi: Prinicpal axis rotation angle</span>
+<span class="sd">    :param float x: x coordinate in the global axis</span>
+<span class="sd">    :param float y: y coordinate in the global axis</span>
+<span class="sd">    :return: Principal axis coordinates *(x1, y2)*</span>
+<span class="sd">    :rtype: tuple(float, float)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># convert principal axis angle to radians</span>
+    <span class="n">phi_rad</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+
+    <span class="c1"># form rotation matrix</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)],</span>
+                  <span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)]])</span>
+
+    <span class="c1"># calculate rotated x and y coordinates</span>
+    <span class="n">x_rotated</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">x_rotated</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_rotated</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="global_coordinate"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.global_coordinate">[docs]</a><span class="k">def</span> <span class="nf">global_coordinate</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determines the global coordinates of the principal axis point *(x1, y2)*</span>
+<span class="sd">    given principal axis rotation angle phi.</span>
+
+<span class="sd">    :param float phi: Prinicpal axis rotation angle</span>
+<span class="sd">    :param float x1: 11 coordinate in the principal axis</span>
+<span class="sd">    :param float y2: 22 coordinate in the principal axis</span>
+<span class="sd">    :return: Global axis coordinates *(x, y)*</span>
+<span class="sd">    :rtype: tuple(float, float)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># convert principal axis angle to radians</span>
+    <span class="n">phi_rad</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+
+    <span class="c1"># form transposed rotation matrix</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)],</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span>
+                                                         <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)]]))</span>
+    <span class="c1"># calculate rotated x_1 and y_2 coordinates</span>
+    <span class="n">x_rotated</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y2</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">x_rotated</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_rotated</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="point_above_line"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.point_above_line">[docs]</a><span class="k">def</span> <span class="nf">point_above_line</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">px</span><span class="p">,</span> <span class="n">py</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determines whether a point *(x, y)* is a above or below the line defined</span>
+<span class="sd">    by the parallel unit vector *u* and the point *(px, py)*.</span>
+
+<span class="sd">    :param u: Unit vector parallel to the line [1 x 2]</span>
+<span class="sd">    :type u: :class:`numpy.ndarray`</span>
+<span class="sd">    :param float px: x coordinate of a point on the line</span>
+<span class="sd">    :param float py: y coordinate of a point on the line</span>
+<span class="sd">    :param float x: x coordinate of the point to be tested</span>
+<span class="sd">    :param float y: y coordinate of the point to be tested</span>
+<span class="sd">    :return: This method returns *True* if the point is above the line or</span>
+<span class="sd">        *False* if the point is below the line</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># vector from point to point on line</span>
+    <span class="n">PQ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">px</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="n">py</span> <span class="o">-</span> <span class="n">y</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">PQ</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Robbie van Leeuwen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

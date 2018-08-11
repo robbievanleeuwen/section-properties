@@ -18,13 +18,17 @@ def solve_cgs(k, f, m=None, tol=1e-5):
     :param m: Preconditioner for the linear matrix approximating the inverse
         of k
     :type m: :class:`scipy.linalg.LinearOperator`
+
+    :return: The solution vector to the linear system of equations
+    :rtype: :class:`numpy.ndarray`
+
+    :raises RuntimeError: If the CGS iterative method does not converge
     """
 
     (u, exit) = linalg.cgs(k, f, tol=tol, M=m)
 
     if (exit != 0):
-        pass
-        # TODO: handle error
+        raise RuntimeError("CGS iterative method did not converge.")
 
     return u
 
@@ -43,20 +47,25 @@ def solve_cgs_lagrange(k_lg, f, tol=1e-5, m=None):
     :param m: Preconditioner for the linear matrix approximating the inverse
         of k
     :type m: :class:`scipy.linalg.LinearOperator`
+
+    :return: The solution vector to the linear system of equations
+    :rtype: :class:`numpy.ndarray`
+
+    :raises RuntimeError: If the CGS iterative method does not converge or the
+        error from the Lagrangian multiplier method exceeds the tolerance
     """
 
     (u, exit) = linalg.cgs(k_lg, np.append(f, 0), tol=tol, M=m)
 
     if (exit != 0):
-        pass
-        # TODO: handle error
+        raise RuntimeError("CGS iterative method did not converge.")
 
     # compute error
     err = u[-1] / max(np.absolute(u))
 
     if err > tol:
-        pass
-        # TODO: handle error
+        err = "Lagrangian multiplier method error exceeds tolerance."
+        raise RuntimeError(err)
 
     return u[:-1]
 
@@ -69,6 +78,9 @@ def solve_direct(k, f):
     :type k: :class:`scipy.sparse.csc_matrix`
     :param f: N x 1 right hand side of the linear system
     :type f: :class:`numpy.ndarray`
+
+    :return: The solution vector to the linear system of equations
+    :rtype: :class:`numpy.ndarray`
     """
 
     return spsolve(k, f)
@@ -82,6 +94,12 @@ def solve_direct_lagrange(k_lg, f):
     :type k: :class:`scipy.sparse.csc_matrix`
     :param f: N x 1 right hand side of the linear system
     :type f: :class:`numpy.ndarray`
+
+    :return: The solution vector to the linear system of equations
+    :rtype: :class:`numpy.ndarray`
+
+    :raises RuntimeError: If the Lagrangian multiplier method exceeds a
+        tolerance of 1e-5
     """
 
     u = spsolve(k_lg, np.append(f, 0))
@@ -90,8 +108,8 @@ def solve_direct_lagrange(k_lg, f):
     err = u[-1] / max(np.absolute(u))
 
     if err > 1e-5:
-        pass
-        # TODO: handle error
+        err = "Lagrangian multiplier method error exceeds tolerance of 1e-5."
+        raise RuntimeError(err)
 
     return u[:-1]
 

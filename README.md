@@ -1,7 +1,13 @@
 # sectionproperties
-a python package for the analysis of arbitrary cross-sections using the finite element method.
+a python package for the analysis of arbitrary cross-sections using the finite element method written by Robbie van Leeuwen. *sectionproperties* can be used to determine section properties to be used in structural design and visualise cross-sectional stresses resulting from combinations of applied forces and bending moments.
+
+## Documentation:
+
+*sectionproperties* has a fully documented python API which you can find at [https://sectionproperties.readthedocs.io/](https://sectionproperties.readthedocs.io/). To read more about the theory behind the program, its implementation and some more examples, check out my blog at [https://robbievanleeuwen.github.io/](https://robbievanleeuwen.github.io/).
 
 ## Current Capabilities:
+
+*Note: this branch of sectionproperties is still in development and thus the calculations may not be correct until the branch is merged back to the master.*
 
 ### Pre-Processor:
 - [x] Python API
@@ -41,7 +47,7 @@ a python package for the analysis of arbitrary cross-sections using the finite e
   - [x] Shear centre (Trefftz's method)
   - [x] Shear areas (global axis)
   - [x] Shear areas (principal axis)
-- [ ] Cross-section stresses
+- [x] Cross-section stresses
 
 ### Solver:
 - [x] Direct solver
@@ -52,7 +58,7 @@ a python package for the analysis of arbitrary cross-sections using the finite e
 - [x] Plot geometry
 - [x] Plot mesh
 - [x] Plot centroids
-- [ ] Plot cross-section stresses
+- [x] Plot cross-section stresses
 - [ ] Generate cross-section report
 - [ ] Export to Paraview
 
@@ -60,3 +66,6 @@ a python package for the analysis of arbitrary cross-sections using the finite e
 - [ ] Optimisation
 - [ ] Reinforced Concrete
 - [ ] Steel
+
+## Change Log:
+xxx

@@ -1,0 +1,655 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sectionproperties.pre.pre &mdash; sectionproperties 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> sectionproperties
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/structure.html">Structure of an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/analysis.html">Running an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/post.html">Viewing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/api.html">Python API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/theory.html">Theoretical Background</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">sectionproperties</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sectionproperties.pre.pre</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sectionproperties.pre.pre</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">meshpy.triangle</span> <span class="k">as</span> <span class="nn">triangle</span>
+
+
+<div class="viewcode-block" id="create_mesh"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.create_mesh">[docs]</a><span class="k">def</span> <span class="nf">create_mesh</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">,</span> <span class="n">mesh_sizes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a quadratic triangular mesh using the meshpy module, which</span>
+<span class="sd">    utilises the code &#39;Triangle&#39;, by Jonathan Shewchuk.</span>
+
+<span class="sd">    :param points: List of points *(x, y)* defining the vertices of the</span>
+<span class="sd">        cross-section</span>
+<span class="sd">    :type points: list[tuple(float, float)]</span>
+<span class="sd">    :param facets: List of point index pairs *(p1, p2)* defining the edges of</span>
+<span class="sd">        the cross-section</span>
+<span class="sd">    :type points: list[tuple(int, int)]</span>
+<span class="sd">    :param holes: List of points *(x, y)* defining the locations of holes</span>
+<span class="sd">        within the cross-section. If there are no holes, provide an empty list</span>
+<span class="sd">        [].</span>
+<span class="sd">    :type holes: list[tuple(float, float)]</span>
+<span class="sd">    :param control_points: A list of points *(x, y)* that define different</span>
+<span class="sd">        regions of the cross-section. A control point is an arbitrary point</span>
+<span class="sd">        within a region enclosed by facets.</span>
+<span class="sd">    :type control_points: list[tuple(float, float)]</span>
+<span class="sd">    :param mesh_sizes: List of maximum element areas for each region defined by</span>
+<span class="sd">        a control point</span>
+<span class="sd">    :type mesh_sizes: list[float]</span>
+
+<span class="sd">    :return: Object containing generated mesh data</span>
+<span class="sd">    :rtype: :class:`meshpy.triangle.MeshInfo`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">triangle</span><span class="o">.</span><span class="n">MeshInfo</span><span class="p">()</span>  <span class="c1"># create mesh info object</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">set_points</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>  <span class="c1"># set points</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">set_facets</span><span class="p">(</span><span class="n">facets</span><span class="p">)</span>  <span class="c1"># set facets</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">set_holes</span><span class="p">(</span><span class="n">holes</span><span class="p">)</span>  <span class="c1"># set holes</span>
+
+    <span class="c1"># set regions</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">control_points</span><span class="p">))</span>  <span class="c1"># resize regions list</span>
+    <span class="n">region_id</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># initialise region ID variable</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">cp</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">control_points</span><span class="p">):</span>
+        <span class="n">mesh</span><span class="o">.</span><span class="n">regions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">cp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">region_id</span><span class="p">,</span> <span class="n">mesh_sizes</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">region_id</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">triangle</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+        <span class="n">mesh</span><span class="p">,</span> <span class="n">min_angle</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">mesh_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">quality_meshing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">volume_constraints</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mesh</span></div>
+
+
+<span class="c1"># def divideMesh(points, facets, nodes, elements, x1, y1, x2, y2, d):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This method loops through each facet to check for an intersection point</span>
+<span class="c1">#     with the line defined by (x1,y1) and (x2,y2). If so, a point is added to</span>
+<span class="c1">#     the mesh at the interesection point. Facets are then added between the new</span>
+<span class="c1">#     points if the new facet is within the mesh domain (and not within a hole).</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # allocate lists for intersection points</span>
+<span class="c1">#     xIntPoints = []  # list of x locations for intersection points</span>
+<span class="c1">#     yIntPoints = []  # list of y locations for intersection points</span>
+<span class="c1">#     facetIndices = []  # list of facet indices that have been intersected</span>
+<span class="c1">#     numPoints = len(points)</span>
+<span class="c1">#     tol = 1e-6 * d  # tolerance for zipping nodes</span>
+<span class="c1">#</span>
+<span class="c1">#     # find all intersections between the input line and the facets</span>
+<span class="c1">#     (xIntPoints, yIntPoints, facetIndices) = determineFacetIntersections(</span>
+<span class="c1">#         points, facets, x1, y1, x2, y2, tol)</span>
+<span class="c1">#</span>
+<span class="c1">#     # ordered list of point indices that lie along the intersection axis</span>
+<span class="c1">#     facetIntersections = []</span>
+<span class="c1">#</span>
+<span class="c1">#     # build new facets along the axis of intersection</span>
+<span class="c1">#     (points, newFacets, facetIntersections) = addNewFacets(</span>
+<span class="c1">#         xIntPoints, yIntPoints, points, facets, nodes, elements, numPoints)</span>
+<span class="c1">#</span>
+<span class="c1">#     # reconstruct facet list and subdivide facets at all intersection points</span>
+<span class="c1">#     finalFacets = rebuildFacetList(facets, facetIndices, facetIntersections,</span>
+<span class="c1">#                                    numPoints)</span>
+<span class="c1">#     # plotGeometry(points, newFacets, []) # plot for debugging purposes</span>
+<span class="c1">#</span>
+<span class="c1">#     return (points, finalFacets)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def determineFacetIntersections(points, facets, x1, y1, x2, y2, tol):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This method determines all intersections between the &#39;facets&#39; and line</span>
+<span class="c1">#     defined by (x1,y1) and (x2,y2). Returned is a sorted list (by x position or</span>
+<span class="c1">#     by y position if intersection line is the y-axis) of intersection locations</span>
+<span class="c1">#     (&#39;xIntPoints&#39; and &#39;yIntPoints&#39;) and a list of facet indices that have been</span>
+<span class="c1">#     intersected.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # allocate lists for intersection points</span>
+<span class="c1">#     xIntPoints = []  # list of x locations for intersection points</span>
+<span class="c1">#     yIntPoints = []  # list of y locations for intersection points</span>
+<span class="c1">#     facetIndices = []  # list of facet indices that have been intersected</span>
+<span class="c1">#</span>
+<span class="c1">#     # calculate intersection points using determinant approach determine</span>
+<span class="c1">#     # values governed by (x1,y1) &amp; (x2,y2) only</span>
+<span class="c1">#     numerator_11 = x1 * y2 - y1 * x2</span>
+<span class="c1">#</span>
+<span class="c1">#     # loop through each facet in the mesh to # find all intersections between</span>
+<span class="c1">#     # the input line and the facets</span>
+<span class="c1">#     for (i, line) in enumerate(facets):</span>
+<span class="c1">#         # start and end points of the current facet</span>
+<span class="c1">#         x3 = points[line[0]][0]</span>
+<span class="c1">#         y3 = points[line[0]][1]</span>
+<span class="c1">#         x4 = points[line[1]][0]</span>
+<span class="c1">#         y4 = points[line[1]][1]</span>
+<span class="c1">#</span>
+<span class="c1">#         # calculate denominator for determinant approach</span>
+<span class="c1">#         den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)</span>
+<span class="c1">#</span>
+<span class="c1">#         # check to see if there is an intersection</span>
+<span class="c1">#         if den != 0:</span>
+<span class="c1">#             # determine remaining values</span>
+<span class="c1">#             numerator_21 = x3 * y4 - y3 * x4</span>
+<span class="c1">#</span>
+<span class="c1">#             # determine intersection points</span>
+<span class="c1">#             xInt = (numerator_11 * (x3 - x4) - (x1 - x2) * numerator_21) / den</span>
+<span class="c1">#             yInt = (numerator_11 * (y3 - y4) - (y1 - y2) * numerator_21) / den</span>
+<span class="c1">#</span>
+<span class="c1">#             # check to see if points lie within extents of facet</span>
+<span class="c1">#             if (min(x3, x4) - tol &lt;= xInt &lt;= max(x3, x4) + tol and</span>
+<span class="c1">#                     min(y3, y4) - tol &lt;= yInt &lt;= max(y3, y4) + tol):</span>
+<span class="c1">#</span>
+<span class="c1">#                 # check to see if point already added</span>
+<span class="c1">#                 isAdded = False</span>
+<span class="c1">#                 for (j, xj) in enumerate(xIntPoints):</span>
+<span class="c1">#                     if ((abs(xj - xInt) &lt; tol) and (</span>
+<span class="c1">#                             abs(yIntPoints[j] - yInt) &lt; tol)):</span>
+<span class="c1">#                         isAdded = True</span>
+<span class="c1">#</span>
+<span class="c1">#                 # if we are adding a new point</span>
+<span class="c1">#                 if isAdded is False:</span>
+<span class="c1">#                     # if the new point is very close to an end-point, take the</span>
+<span class="c1">#                     # value of the end point (zip nodes)</span>
+<span class="c1">#                     if abs(xInt - x3) &lt; tol:</span>
+<span class="c1">#                         xInt = x3</span>
+<span class="c1">#                     elif abs(xInt - x4) &lt; tol:</span>
+<span class="c1">#                         xInt = x4</span>
+<span class="c1">#                     if abs(yInt - y3) &lt; tol:</span>
+<span class="c1">#                         yInt = y3</span>
+<span class="c1">#                     elif abs(yInt - y4) &lt; tol:</span>
+<span class="c1">#                         yInt = y4</span>
+<span class="c1">#</span>
+<span class="c1">#                     # add point to intersection list</span>
+<span class="c1">#                     xIntPoints.append(xInt)</span>
+<span class="c1">#                     yIntPoints.append(yInt)</span>
+<span class="c1">#</span>
+<span class="c1">#                     # add facet to intersection list</span>
+<span class="c1">#                     facetIndices.append(i)</span>
+<span class="c1">#</span>
+<span class="c1">#     # sort intersection lists and facet list based on x or y value</span>
+<span class="c1">#     if len(xIntPoints) &gt; 0:</span>
+<span class="c1">#         # if we are working with the y-axis</span>
+<span class="c1">#         if x1 == x2:</span>
+<span class="c1">#             # sort by y</span>
+<span class="c1">#             (yIntPoints, xIntPoints, facetIndices) = (list(t) for t in zip(</span>
+<span class="c1">#                 *sorted(zip(yIntPoints, xIntPoints, facetIndices))))</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             # sort by x</span>
+<span class="c1">#             (xIntPoints, yIntPoints, facetIndices) = (list(t) for t in zip(</span>
+<span class="c1">#                 *sorted(zip(xIntPoints, yIntPoints, facetIndices))))</span>
+<span class="c1">#</span>
+<span class="c1">#     return (xIntPoints, yIntPoints, facetIndices)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def addNewFacets(xIntPoints, yIntPoints, points, facets, nodes, elements,</span>
+<span class="c1">#                  numPoints):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This method appends a list of new facets defined by the intersection points</span>
+<span class="c1">#     to the existing list of &#39;facets&#39; and also appends a list of new point</span>
+<span class="c1">#     indices to the existing list &#39;points&#39;. New facets are checked to ensure</span>
+<span class="c1">#     that they lie within the mesh domain (i.e. do not lie within a hole).</span>
+<span class="c1">#     Returned is the new list of points and facets and an ordered list of point</span>
+<span class="c1">#     indices that lie along the interseciton axis (&#39;facetIntersections&#39;).</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # ordered list of point indices that lie along the intersection axis</span>
+<span class="c1">#     facetIntersections = []</span>
+<span class="c1">#</span>
+<span class="c1">#     # loop through all found intersection points to build new facets along axis</span>
+<span class="c1">#     for (i, pt) in enumerate(xIntPoints):</span>
+<span class="c1">#         # add intersection points to geometry point list</span>
+<span class="c1">#         points.append([pt, yIntPoints[i]])</span>
+<span class="c1">#</span>
+<span class="c1">#         # add index of new point to the facetIntersections list</span>
+<span class="c1">#         facetIntersections.append(i)</span>
+<span class="c1">#</span>
+<span class="c1">#         # add connecting facets to facet list</span>
+<span class="c1">#         if i != 0:  # start by joining new point 2 to new point 1</span>
+<span class="c1">#             # check to see if midpoint of facet lies within an element of mesh,</span>
+<span class="c1">#             # i.e. we are not in a hole</span>
+<span class="c1">#             px = 0.5 * (xIntPoints[i] + xIntPoints[i - 1])</span>
+<span class="c1">#             py = 0.5 * (yIntPoints[i] + yIntPoints[i - 1])</span>
+<span class="c1">#</span>
+<span class="c1">#             if (pointWithinElement(px, py, nodes, elements)):</span>
+<span class="c1">#                 # add connecting facet along line of intersection</span>
+<span class="c1">#                 facets.append([numPoints + i - 1, numPoints + i])</span>
+<span class="c1">#</span>
+<span class="c1">#     return (points, facets, facetIntersections)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def rebuildFacetList(facets, facetIndices, facetIntersections, numPoints):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This method rebuilds the facet list by splitting intersected facets into</span>
+<span class="c1">#     two new facets. Returned is a list of new facets (&#39;newFacets&#39;).</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     newFacets = []  # allocate new facet list</span>
+<span class="c1">#</span>
+<span class="c1">#     # loop through all facets to reconstruct facet list and subdivide facets</span>
+<span class="c1">#     # at all intersection points</span>
+<span class="c1">#     for (i, facet) in enumerate(facets):</span>
+<span class="c1">#         # assume that the facet has already been added (either in the original</span>
+<span class="c1">#         # geometry, or added in the addNewFacets method)</span>
+<span class="c1">#         facetOriginal = True</span>
+<span class="c1">#</span>
+<span class="c1">#         # loop through all facets that have been intersected</span>
+<span class="c1">#         for (counter, j) in enumerate(facetIndices):</span>
+<span class="c1">#             # if the current facet is being interesected with a new facet</span>
+<span class="c1">#             if i == j:</span>
+<span class="c1">#                 # subdivide this current facet into two facets:</span>
+<span class="c1">#                 # facet[0] = start point of original facet</span>
+<span class="c1">#                 # facet[1] = end point of original facet</span>
+<span class="c1">#                 # facetIntersections[counter] = intersection point index</span>
+<span class="c1">#                 newFacets.append([facet[0], numPoints +</span>
+<span class="c1">#                                   facetIntersections[counter]])</span>
+<span class="c1">#                 newFacets.append([numPoints + facetIntersections[counter],</span>
+<span class="c1">#                                   facet[1]])</span>
+<span class="c1">#                 facetOriginal = False</span>
+<span class="c1">#</span>
+<span class="c1">#         # if the current facet has not been intersected</span>
+<span class="c1">#         if facetOriginal:</span>
+<span class="c1">#             newFacets.append([facet[0], facet[1]])</span>
+<span class="c1">#</span>
+<span class="c1">#     return newFacets</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def pointWithinElement(px, py, nodes, elements):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This method determines whether the point (px,py) lies within any tri6</span>
+<span class="c1">#     element defined by &#39;nodes&#39; and &#39;elements&#39;.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     # loop through all elements in mesh</span>
+<span class="c1">#     for el in elements:</span>
+<span class="c1">#         x1 = nodes[el[0]][0]</span>
+<span class="c1">#         y1 = nodes[el[0]][1]</span>
+<span class="c1">#         x2 = nodes[el[1]][0]</span>
+<span class="c1">#         y2 = nodes[el[1]][1]</span>
+<span class="c1">#         x3 = nodes[el[2]][0]</span>
+<span class="c1">#         y3 = nodes[el[2]][1]</span>
+<span class="c1">#</span>
+<span class="c1">#         # compute variables alpha, beta, gamma, to determine if current</span>
+<span class="c1">#         # point lies within the triangular element</span>
+<span class="c1">#         alpha = (((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) /</span>
+<span class="c1">#                  ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)))</span>
+<span class="c1">#         beta = (((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) /</span>
+<span class="c1">#                 ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)))</span>
+<span class="c1">#         gamma = 1.0 - alpha - beta</span>
+<span class="c1">#</span>
+<span class="c1">#         # if the point lies within an element</span>
+<span class="c1">#         if alpha &gt;= 0 and beta &gt;= 0 and gamma &gt;= 0:</span>
+<span class="c1">#             return True</span>
+<span class="c1">#</span>
+<span class="c1">#     # if the point does not lie within an element</span>
+<span class="c1">#     return False</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># class LoadData:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This class parses the input load data and stores the load values.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     def __init__(self, loads):</span>
+<span class="c1">#         self.containsLoads = False</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             self.Nzz = loads[&quot;nzz&quot;]</span>
+<span class="c1">#             self.containsLoads = True</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             self.Nzz = 0.0</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             self.Vx = loads[&quot;vx&quot;]</span>
+<span class="c1">#             self.containsLoads = True</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             self.Vx = 0.0</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             self.Vy = loads[&quot;vy&quot;]</span>
+<span class="c1">#             self.containsLoads = True</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             self.Vy = 0.0</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             self.Mxx = loads[&quot;mxx&quot;]</span>
+<span class="c1">#             self.containsLoads = True</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             self.Mxx = 0.0</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             self.Myy = loads[&quot;myy&quot;]</span>
+<span class="c1">#             self.containsLoads = True</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             self.Myy = 0.0</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             self.M11 = loads[&quot;m11&quot;]</span>
+<span class="c1">#             self.containsLoads = True</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             self.M11 = 0.0</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             self.M22 = loads[&quot;m22&quot;]</span>
+<span class="c1">#             self.containsLoads = True</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             self.M22 = 0.0</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             self.Mzz = loads[&quot;mzz&quot;]</span>
+<span class="c1">#             self.containsLoads = True</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             self.Mzz = 0.0</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># class CrossSectionSettings:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This class contains the settings used for the cross-section analysis.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     def __init__(self, settings):</span>
+<span class="c1">#         # load default settings</span>
+<span class="c1">#         self.checkGeometry = True</span>
+<span class="c1">#         self.checkMesh = True</span>
+<span class="c1">#         self.outputLog = True</span>
+<span class="c1">#         self.outputSettings = True</span>
+<span class="c1">#         self.outputResults = True</span>
+<span class="c1">#         self.plasticAnalysis = True</span>
+<span class="c1">#         self.numberFormat = &quot;.2f&quot;</span>
+<span class="c1">#         self.solverType = &quot;cgs&quot;</span>
+<span class="c1">#         self.tol = 1e-5</span>
+<span class="c1">#         self.plots = []</span>
+<span class="c1">#</span>
+<span class="c1">#         # load custom settings</span>
+<span class="c1">#         self.applySettings(settings)</span>
+<span class="c1">#</span>
+<span class="c1">#     def applySettings(self, settings):</span>
+<span class="c1">#         # read all valid settings from the dictionary settings</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;check-geometry&quot;].lower() in</span>
+<span class="c1">#                         [&quot;true&quot;])</span>
+<span class="c1">#             self.checkGeometry = testBool</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;check-mesh&quot;].lower() in</span>
+<span class="c1">#                         [&quot;true&quot;])</span>
+<span class="c1">#             self.checkMesh = testBool</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;output-log&quot;].lower() in</span>
+<span class="c1">#                         [&quot;true&quot;])</span>
+<span class="c1">#             self.outputLog = testBool</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;output-settings&quot;].lower() in</span>
+<span class="c1">#                         [&quot;true&quot;])</span>
+<span class="c1">#             self.outputSettings = testBool</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;output-results&quot;].lower() in</span>
+<span class="c1">#                         [&quot;true&quot;])</span>
+<span class="c1">#             self.outputResults = testBool</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;plastic-analysis&quot;].lower() in</span>
+<span class="c1">#                         [&quot;true&quot;])</span>
+<span class="c1">#             self.plasticAnalysis = testBool</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             width = int(settings[&quot;number-format&quot;][&quot;width&quot;])</span>
+<span class="c1">#             precision = int(settings[&quot;number-format&quot;][&quot;precision&quot;])</span>
+<span class="c1">#             numType = str(settings[&quot;number-format&quot;][&quot;type&quot;])</span>
+<span class="c1">#             self.numberFormat = str(width) + &quot;.&quot; + str(precision) + numType</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             solverType = settings[&quot;solver&quot;][&quot;type&quot;]</span>
+<span class="c1">#</span>
+<span class="c1">#             if (solverType.lower() == &quot;cgs&quot;):</span>
+<span class="c1">#                 self.solverType = &quot;cgs&quot;</span>
+<span class="c1">#             elif (solverType.lower() == &quot;direct&quot;):</span>
+<span class="c1">#                 self.solverType = &quot;direct&quot;</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             self.tol = settings[&quot;solver&quot;][&quot;tol&quot;]</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             self.plots = settings[&quot;plots&quot;]</span>
+<span class="c1">#         except KeyError:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#</span>
+<span class="c1">#     def printSettings(self):</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         This method prints the current settings to the console.</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#         print(&quot;\n-----------------------------&quot;)</span>
+<span class="c1">#         print(&quot;Program Settings&quot;)</span>
+<span class="c1">#         print(&quot;-----------------------------&quot;)</span>
+<span class="c1">#         print(&quot;General Settings:&quot;)</span>
+<span class="c1">#         print(&quot;\tcheck-geometry:\t{}&quot;.format(self.checkGeometry))</span>
+<span class="c1">#         print(&quot;\tcheck-mesh:\t{}&quot;.format(self.checkMesh))</span>
+<span class="c1">#         print(&quot;\toutput-log:\t{}&quot;.format(self.outputLog))</span>
+<span class="c1">#         print(&quot;\toutput-setting:\t{}&quot;.format(self.outputSettings))</span>
+<span class="c1">#         print(&quot;\toutput-results:\t{}&quot;.format(self.outputResults))</span>
+<span class="c1">#         print(&quot;Output Settings:&quot;)</span>
+<span class="c1">#         print(&quot;\tnumber-format:\t{}&quot;.format(self.numberFormat))</span>
+<span class="c1">#         print(&quot;Solver Settings:&quot;)</span>
+<span class="c1">#         print(&quot;\ttype:\t\t{}&quot;.format(self.solverType))</span>
+<span class="c1">#         print(&quot;\ttol:\t\t{}&quot;.format(self.tol))</span>
+<span class="c1">#         print(&quot;Plot Settings:&quot;)</span>
+<span class="c1">#         print(&quot;\tplots:\t\t{}\n&quot;.format(self.plots))</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Robbie van Leeuwen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

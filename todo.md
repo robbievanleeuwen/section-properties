@@ -4,7 +4,7 @@ List of items to complete before returning to master branch:
 
 [x] Function Timer
 [x] Direct Solver
-[ ] Error Handling
+[x] Error Handling
 [ ] Plastic Properties
 [ ] Section Stresses
 [ ] Plot Stresses

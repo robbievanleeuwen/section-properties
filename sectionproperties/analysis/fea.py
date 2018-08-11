@@ -7,6 +7,14 @@ class Tri6:
     Provides methods for the calculation of section properties based on the
     finite element method.
 
+    :param coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The
+        first three columns relate to the vertices of the triangle and the
+        last three columns correspond to the mid-nodes.
+    :type coords: :class:`numpy.ndarray`
+    :param node_ids: A list of the global node ids for the current element
+    :type node_ids: list[int]
+    :param int attribute: Attribute number for the element
+
     :cvar coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The
         first three columns relate to the vertices of the triangle and the last
         three columns correspond to the mid-nodes.
@@ -25,14 +33,6 @@ class Tri6:
     def __init__(self, coords, node_ids, attribute):
         """Inits the Tri6 class. Calculates and stores the area properties of
         the element.
-
-        :param coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The
-            first three columns relate to the vertices of the triangle and the
-            last three columns correspond to the mid-nodes
-        :type coords: :class:`numpy.ndarray`
-        :param node_ids: A list of the global node ids for the current element
-        :type node_ids: list[int]
-        :param int attribute: Attribute number for the element
         """
 
         self.coords = coords
@@ -221,80 +221,104 @@ class Tri6:
 
         return (kappa_x, kappa_y, kappa_xy)
 
-    # def calculateStress(self, area, ixx, iyy, ixy, i11, i22, phi, omega, J,
-    #                     Psi, Phi, Delta_s):
-    #     """
-    #     This method calculates the stresses within an an element resulting
-    #     from unit loading.
-    #     """
-    #
-    #     # initialise stress vectors
-    #     sigma_zz_axial = np.ones((6, 1)) * 1 / area
-    #     sigma_zz_bending_xx_gp = np.zeros((6, 1))
-    #     sigma_zz_bending_yy_gp = np.zeros((6, 1))
-    #     sigma_zz_bending_11_gp = np.zeros((6, 1))
-    #     sigma_zz_bending_22_gp = np.zeros((6, 1))
-    #     tau_torsion_gp = np.zeros((6, 2))
-    #     tau_shear_x_gp = np.zeros((6, 2))
-    #     tau_shear_y_gp = np.zeros((6, 2))
-    #
-    #     # Gauss points for 6 point Gaussian integration
-    #     gps = femUtilities.gaussPoints(6)
-    #
-    #     for (i, gp) in enumerate(gps):
-    #         # determine shape function, shape function derivative and jacobian
-    #         (N, B, j) = femUtilities.shapeFunction(self.xy, gp)
-    #
-    #         # determine x and y position at Gauss point
-    #         Nx = np.dot(N, np.transpose(self.xy[0, :]))
-    #         Ny = np.dot(N, np.transpose(self.xy[1, :]))
-    #
-    #         # determine 11 and 22 position at Gauss point
-    #         (Nx_1, Ny_2) = principalCoordinate(phi, Nx, Ny)
-    #
-    #         # determine shear parameters
-    #         r = Nx ** 2 - Ny ** 2
-    #         q = 2 * Nx * Ny
-    #         d1 = ixx * r - ixy * q
-    #         d2 = ixy * r + ixx * q
-    #         h1 = -ixy * r + iyy * q
-    #         h2 = -iyy * r - ixy * q
-    #
-    #         sigma_zz_bending_xx_gp[i, :] = (
-    #             -(ixy * 1) / (ixx * iyy - ixy ** 2) * Nx + (iyy * 1) /
-    #             (ixx * iyy - ixy ** 2) * Ny)
-    #         sigma_zz_bending_yy_gp[i, :] = (
-    #             -(ixx * 1) / (ixx * iyy - ixy ** 2) * Nx + (ixy * 1) /
-    #             (ixx * iyy - ixy ** 2) * Ny)
-    #         sigma_zz_bending_11_gp[i, :] = 1 / i11 * Ny_2
-    #         sigma_zz_bending_22_gp[i, :] = -1 / i22 * Nx_1
-    #         tau_torsion_gp[i, :] = (1 / J * (
-    #             B.dot(omega) - np.array([Ny, -Nx])))
-    #         tau_shear_x_gp[i, :] = (
-    #             1 / Delta_s * (B.dot(Psi) - self.nu / 2 * np.array([d1, d2])))
-    #         tau_shear_y_gp[i, :] = (
-    #             1 / Delta_s * (B.dot(Phi) - self.nu / 2 * np.array([h1, h2])))
-    #
-    #     # extrapolate results to nodes
-    #     sigma_zz_bending_xx = femUtilities.extrapolateToNodes(
-    #         sigma_zz_bending_xx_gp[:, 0])
-    #     sigma_zz_bending_yy = femUtilities.extrapolateToNodes(
-    #         sigma_zz_bending_yy_gp[:, 0])
-    #     sigma_zz_bending_11 = femUtilities.extrapolateToNodes(
-    #         sigma_zz_bending_11_gp[:, 0])
-    #     sigma_zz_bending_22 = femUtilities.extrapolateToNodes(
-    #         sigma_zz_bending_22_gp[:, 0])
-    #     tau_zx_torsion = femUtilities.extrapolateToNodes(tau_torsion_gp[:, 0])
-    #     tau_zy_torsion = femUtilities.extrapolateToNodes(tau_torsion_gp[:, 1])
-    #     tau_shear_zx_x = femUtilities.extrapolateToNodes(tau_shear_x_gp[:, 0])
-    #     tau_shear_zy_x = femUtilities.extrapolateToNodes(tau_shear_x_gp[:, 1])
-    #     tau_shear_zx_y = femUtilities.extrapolateToNodes(tau_shear_y_gp[:, 0])
-    #     tau_shear_zy_y = femUtilities.extrapolateToNodes(tau_shear_y_gp[:, 1])
-    #
-    #     return (sigma_zz_axial, sigma_zz_bending_xx, sigma_zz_bending_yy,
-    #             sigma_zz_bending_11, sigma_zz_bending_22, tau_zx_torsion,
-    #             tau_zy_torsion, tau_shear_zx_x, tau_shear_zy_x,
-    #             tau_shear_zx_y, tau_shear_zy_y, gps[:, 0])
+    def element_stress(self, area, cx, cy, ixx, iyy, ixy, i11, i22, phi, j,
+                       omega, psi_shear, phi_shear, Delta_s):
+        """Calculates the stress within an element resulting from unit loading.
+
+        :param float area: Total area of the cross-section
+        :param float cx: x position of the centroidal axis
+        :param float cy: y position of the centroidal axis
+        :param float ixx: Second moment of area about the centroidal x-axis
+        :param float iyy: Second moment of area about the centroidal y-axis
+        :param float ixy: Second moment of area about the centroidal xy-axis
+        :param float i11: Second moment of area about the principal 11-axis
+        :param float i22: Second moment of area about the principal 22-axis
+        :param float phi: Principal axis angle
+        :param float j: Torsion constant of the cross-section
+        :param omega: Warping function at the nodes of the element
+        :type omega: :class:`numpy.ndarray`
+        :param psi_shear: Psi shear function at the nodes of the element
+        :type psi_shear: :class:`numpy.ndarray`
+        :param phi_shear: Phi shear function at the nodes of the element
+        :type phi_shear: :class:`numpy.ndarray`
+        :param float Delta_s: Shear factor
+        :return: Tuple containing element stresses and integration weights (
+            :math:`\sigma_{zz,n}`, :math:`\sigma_{zz,mxx}`,
+            :math:`\sigma_{zz,myy}`, :math:`\sigma_{zz,m11}`,
+            :math:`\sigma_{zz,m22}`, :math:`\sigma_{zx,mzz}`,
+            :math:`\sigma_{zy,mzz}`, :math:`\sigma_{zx,vx}`,
+            :math:`\sigma_{zy,vx}`, :math:`\sigma_{zx,vy}`,
+            :math:`\sigma_{zy,vy}`, :math:`w_i`)
+        :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`, ...)
+        """
+
+        # calculate axial stress
+        sig_zz_n = np.ones((6, 1)) * 1 / area
+
+        # initialise stresses at the gauss points
+        sig_zz_mxx_gp = np.zeros((6, 1))
+        sig_zz_myy_gp = np.zeros((6, 1))
+        sig_zz_m11_gp = np.zeros((6, 1))
+        sig_zz_m22_gp = np.zeros((6, 1))
+        sig_zxy_mzz_gp = np.zeros((6, 2))
+        sig_zxy_vx_gp = np.zeros((6, 2))
+        sig_zxy_vy_gp = np.zeros((6, 2))
+
+        # Gauss points for 6 point Gaussian integration
+        gps = gauss_points(6)
+
+        for (i, gp) in enumerate(gps):
+            # determine x and y positions with respect to the centroidal axis
+            coords_c = np.zeros((2, 6))
+            coords_c[0, :] = self.coords[0, :] - cx
+            coords_c[1, :] = self.coords[1, :] - cy
+
+            # determine shape function, shape function derivative and jacobian
+            (N, B, j) = shape_function(coords_c, gp)
+
+            # determine x and y position at Gauss point
+            Nx = np.dot(N, np.transpose(coords_c[0, :]))
+            Ny = np.dot(N, np.transpose(coords_c[1, :]))
+
+            # determine 11 and 22 position at Gauss point
+            (Nx_11, Ny_22) = principal_coordinate(phi, Nx, Ny)
+
+            # determine shear parameters
+            r = Nx ** 2 - Ny ** 2
+            q = 2 * Nx * Ny
+            d1 = ixx * r - ixy * q
+            d2 = ixy * r + ixx * q
+            h1 = -ixy * r + iyy * q
+            h2 = -iyy * r - ixy * q
+
+            sig_zz_mxx_gp[i, :] = -(ixy * 1) / (ixx * iyy - ixy ** 2) * Nx + (
+                iyy * 1) / (ixx * iyy - ixy ** 2) * Ny
+            sig_zz_myy_gp[i, :] = -(ixx * 1) / (ixx * iyy - ixy ** 2) * Nx + (
+                ixy * 1) / (ixx * iyy - ixy ** 2) * Ny
+            sig_zz_m11_gp[i, :] = 1 / i11 * Ny_22
+            sig_zz_m22_gp[i, :] = -1 / i22 * Nx_11
+            sig_zxy_mzz_gp[i, :] = 1 / j * (B.dot(omega) - np.array(
+                [Ny, -Nx]))
+            sig_zxy_vx_gp[i, :] = 1 / Delta_s * (B.dot(
+                psi_shear) - self.nu / 2 * np.array([d1, d2]))
+            sig_zxy_vy_gp[i, :] = 1 / Delta_s * (B.dot(
+                phi_shear) - self.nu / 2 * np.array([h1, h2]))
+
+        # extrapolate results to nodes
+        sig_zz_mxx = extrapolate_to_nodes(sig_zz_mxx_gp[:, 0])
+        sig_zz_myy = extrapolate_to_nodes(sig_zz_myy_gp[:, 0])
+        sig_zz_m11 = extrapolate_to_nodes(sig_zz_m11_gp[:, 0])
+        sig_zz_m22 = extrapolate_to_nodes(sig_zz_m22_gp[:, 0])
+        sig_zx_mzz = extrapolate_to_nodes(sig_zxy_mzz_gp[:, 0])
+        sig_zy_mzz = extrapolate_to_nodes(sig_zxy_mzz_gp[:, 1])
+        sig_zx_vx = extrapolate_to_nodes(sig_zxy_vx_gp[:, 0])
+        sig_zy_vx = extrapolate_to_nodes(sig_zxy_vx_gp[:, 1])
+        sig_zx_vy = extrapolate_to_nodes(sig_zxy_vy_gp[:, 0])
+        sig_zy_vy = extrapolate_to_nodes(sig_zxy_vy_gp[:, 1])
+
+        return (sig_zz_n, sig_zz_mxx, sig_zz_myy, sig_zz_m11, sig_zz_m22,
+                sig_zx_mzz, sig_zy_mzz, sig_zx_vx, sig_zy_vx, sig_zx_vy,
+                sig_zy_vy, gps[:, 0])
 
 
 def gauss_points(n):

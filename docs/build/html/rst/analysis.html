@@ -1,0 +1,524 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Running an Analysis &mdash; sectionproperties 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Viewing the Results" href="post.html" />
+    <link rel="prev" title="Creating a Geometry and Mesh" href="geom_mesh.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> sectionproperties
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure of an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Running an Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#checking-the-mesh-quality">Checking the Mesh Quality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geometric-analysis">Geometric Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plastic-analysis">Plastic Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#warping-analysis">Warping Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stress-analysis">Stress Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="post.html">Viewing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Theoretical Background</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">sectionproperties</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Running an Analysis</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/rst/analysis.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="running-an-analysis">
+<span id="label-analysis"></span><h1>Running an Analysis<a class="headerlink" href="#running-an-analysis" title="Permalink to this headline">¶</a></h1>
+<p>The first step in running a cross-section analysis is the creation of a
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection" title="sectionproperties.analysis.cross_section.CrossSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossSection</span></code></a> object. This class
+stores the structural geometry and finite element mesh and provides methods to
+perform various types of cross-section analyses.</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.analysis.cross_section.</code><code class="descname">CrossSection</code><span class="sig-paren">(</span><em>geometry</em>, <em>mesh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for structural cross-sections.</p>
+<p>Stores the finite element geometry and mesh and provides methods to compute
+the cross-section properties. The element type used in this program is the
+six-noded quadratic triangular element.</p>
+<p>The constructor extracts information from the provided mesh object and
+creates and stores corresponding tri-6 finite element objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>geometry</strong> (<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>) – Cross-section geometry object used to generate the mesh</li>
+<li><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">meshpy.triangle.MeshInfo</span></code>) – Mesh object returned by meshpy</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates a
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection" title="sectionproperties.analysis.cross_section.CrossSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossSection</span></code></a> object of a
+100D x 50W rectangle using a mesh size of 5:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RectangularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>elements</strong> (list[<a class="reference internal" href="api.html#sectionproperties.analysis.fea.Tri6" title="sectionproperties.analysis.fea.Tri6"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tri6</span></code></a>]) – List of finite element objects describing the cross-section
+mesh</li>
+<li><strong>num_nodes</strong> (<em>int</em>) – Number of nodes in the finite element mesh</li>
+<li><strong>geometry</strong> (<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>) – Cross-section geometry object used to generate the mesh</li>
+<li><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">meshpy.triangle.MeshInfo</span></code>) – Mesh object returned by meshpy</li>
+<li><strong>mesh_nodes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Array of node coordinates from the mesh</li>
+<li><strong>mesh_elements</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Array of connectivities from the mesh</li>
+<li><strong>mesh_attributes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Array of attributes from the mesh</li>
+<li><strong>section_props</strong> (<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>) – Class to store calculated section properties</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="checking-the-mesh-quality">
+<h2>Checking the Mesh Quality<a class="headerlink" href="#checking-the-mesh-quality" title="Permalink to this headline">¶</a></h2>
+<p>Before carrying out a cross-section analysis it is a good idea to check the quality
+of the finite element mesh. Some useful methods are provided to display mesh statistics
+and to plot the finite element mesh:</p>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">display_mesh_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.display_mesh_info"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Prints mesh statistics (number of nodes, elements and regions) to
+the command window.</p>
+<p>The following example displays the mesh statistics for a 100D x 50W
+rectangle using a mesh size of 5:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RectangularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">display_mesh_info</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span><span class="n">Mesh</span> <span class="n">Statistics</span><span class="p">:</span>
+<span class="o">&gt;&gt;&gt;--</span><span class="mi">3282</span> <span class="n">nodes</span>
+<span class="o">&gt;&gt;&gt;--</span><span class="mi">1591</span> <span class="n">elements</span>
+<span class="o">&gt;&gt;&gt;--</span><span class="mi">1</span> <span class="n">region</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">plot_mesh</code><span class="sig-paren">(</span><em>ax=None</em>, <em>pause=True</em>, <em>alpha=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.plot_mesh"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Plots the finite element mesh. If no axes object is supplied a new
+figure and axis is created.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.axes.Axes</span></code>) – Axes object on which the mesh is plotted</li>
+<li><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
+the window is closed. If set to false, the script continues
+immediately after the window is rendered.</li>
+<li><strong>alpha</strong> (<em>float</em>) – Transparency of the mesh: 0 &lt;= alpha &lt;= 1</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example plots the mesh generated for a 50D x 100W
+rectangle using a mesh size of 5:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RectangularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<img alt="../_images/rectangle_mesh.png" src="../_images/rectangle_mesh.png" />
+<p class="caption"><span class="caption-text">Finite element mesh generated by the above example.</span></p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="geometric-analysis">
+<h2>Geometric Analysis<a class="headerlink" href="#geometric-analysis" title="Permalink to this headline">¶</a></h2>
+<p>A geometric analysis calculates the area properties of the cross-section.</p>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">calculate_geometric_properties</code><span class="sig-paren">(</span><em>time_info=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_geometric_properties"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Calculates all the geometric properties of the cross-section and
+stores them in the
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>
+object contained in section_props.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time_info</strong> (<em>bool</em>) – If set to True, a detailed description of the
+computation and the time cost is printed to the terminal.</td>
+</tr>
+</tbody>
+</table>
+<p>The following section properties are calculated:</p>
+<ul class="simple">
+<li>Area</li>
+<li>First moments of area</li>
+<li>Second moments of area about the global axis</li>
+<li>Second moments of area about the centroidal axis</li>
+<li>Centroidal section moduli</li>
+<li>Radii of gyration</li>
+<li>Principal axis properties</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="plastic-analysis">
+<h2>Plastic Analysis<a class="headerlink" href="#plastic-analysis" title="Permalink to this headline">¶</a></h2>
+<p>A plastic analysis calculates the plastic properties of the cross-section.</p>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">calculate_plastic_properties</code><span class="sig-paren">(</span><em>time_info=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_plastic_properties"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>s</p>
+</dd></dl>
+
+</div>
+<div class="section" id="warping-analysis">
+<h2>Warping Analysis<a class="headerlink" href="#warping-analysis" title="Permalink to this headline">¶</a></h2>
+<p>A warping analysis calculates the torsion and shear properties of the cross-section.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A geometric analysis must be performed on the CrossSection object before
+a warping analysis is carried out.</p>
+</div>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">calculate_warping_properties</code><span class="sig-paren">(</span><em>time_info=False</em>, <em>solver_type='direct'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_warping_properties"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Calculates all the warping properties of the cross-section and
+stores them in the
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>
+object contained in section_props.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>time_info</strong> (<em>bool</em>) – If set to True, a detailed description of the
+computation and the time cost is printed to the terminal.</li>
+<li><strong>solver_type</strong> (<em>string</em>) – Solver used for solving systems of linear
+equations, either using the <em>‘direct’</em> method or <em>‘cgs’</em> iterative
+method</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following section properties are calculated:</p>
+<ul class="simple">
+<li>Torsion constant</li>
+<li>Shear centre</li>
+<li>Shear area</li>
+<li>Warping constant</li>
+</ul>
+<p>Note that the geometric properties must be calculated first for the
+calculation of the warping properties to be correct:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RuntimeError</strong> – If the geometric properties have not been
+calculated prior to calling this method</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="stress-analysis">
+<h2>Stress Analysis<a class="headerlink" href="#stress-analysis" title="Permalink to this headline">¶</a></h2>
+<p>A stress analysis calculates the cross-section stresses arising from a set of forces
+and moments.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Geometric and warping analyses must be performed on the CrossSection
+object before a stress analysis is carried out.</p>
+</div>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">calculate_stress</code><span class="sig-paren">(</span><em>N=0</em>, <em>Vx=0</em>, <em>Vy=0</em>, <em>Mxx=0</em>, <em>Myy=0</em>, <em>M11=0</em>, <em>M22=0</em>, <em>Mzz=0</em>, <em>time_info=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_stress"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Calculates the cross-section stress resulting from design actions
+and returns a
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.StressResult" title="sectionproperties.analysis.cross_section.StressResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">StressResult</span></code></a> object
+containing the cross-section stresses.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>N</strong> (<em>float</em>) – Axial force</li>
+<li><strong>Vx</strong> (<em>float</em>) – Shear force acting in the x-direction</li>
+<li><strong>Vy</strong> (<em>float</em>) – Shear force acting in the y-direction</li>
+<li><strong>Mxx</strong> (<em>float</em>) – Bending moment about the centroidal xx-axis</li>
+<li><strong>Myy</strong> (<em>float</em>) – Bending moment about the centroidal yy-axis</li>
+<li><strong>M11</strong> (<em>float</em>) – Bending moment about the centroidal 11-axis</li>
+<li><strong>M22</strong> (<em>float</em>) – Bending moment about the centroidal 22-axis</li>
+<li><strong>Mzz</strong> (<em>float</em>) – Torsion moment about the centroidal zz-axis</li>
+<li><strong>time_info</strong> (<em>bool</em>) – If set to True, a detailed description of the
+computation and the time cost is printed to the terminal.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Object containing the cross-section stresses</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.StressResult" title="sectionproperties.analysis.cross_section.StressResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">StressResult</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Note that a geometric and warping analysis must be performed before a
+stress analysis is carried out:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="n">stress_result</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">calculate_stress</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">Vy</span><span class="o">=</span><span class="mf">3e3</span><span class="p">,</span> <span class="n">Mxx</span><span class="o">=</span><span class="mf">1e6</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RuntimeError</strong> – If a geometric and warping analysis have not been
+performed prior to calling this method</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="post.html" class="btn btn-neutral float-right" title="Viewing the Results" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="geom_mesh.html" class="btn btn-neutral" title="Creating a Geometry and Mesh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Robbie van Leeuwen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

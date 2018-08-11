@@ -1,9 +1,12 @@
 import numpy as np
 from scipy.sparse import csc_matrix, coo_matrix, linalg
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
+
+# TODO: fix torsion stress - or related issues???
 
 
 class CrossSection:
@@ -17,12 +20,13 @@ class CrossSection:
     creates and stores corresponding tri-6 finite element objects.
 
     :param geometry: Cross-section geometry object used to generate the mesh
-    :type geometry: :class:`sectionproperties.pre.sections.SectionInput`
+    :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
     :param mesh: Mesh object returned by meshpy
     :type mesh: :class:`meshpy.triangle.MeshInfo`
 
-    The following example creates a CrossSection object of a 100D x 50W
-    rectangle using a mesh size of 5::
+    The following example creates a
+    :class:`~sectionproperties.analysis.cross_section.CrossSection` object of a
+    100D x 50W rectangle using a mesh size of 5::
 
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import CrossSection
@@ -33,10 +37,10 @@ class CrossSection:
 
     :cvar elements: List of finite element objects describing the cross-section
         mesh
-    :vartype elements: list[:class:`sectionproperties.fea.Tri6`]
+    :vartype elements: list[:class:`~sectionproperties.analysis.fea.Tri6`]
     :cvar int num_nodes: Number of nodes in the finite element mesh
     :cvar geometry: Cross-section geometry object used to generate the mesh
-    :vartype geometry: :class:`sectionproperties.pre.sections.SectionInput`
+    :vartype geometry: :class:`~sectionproperties.pre.sections.Geometry`
     :cvar mesh: Mesh object returned by meshpy
     :vartype mesh: :class:`meshpy.triangle.MeshInfo`
     :cvar mesh_nodes: Array of node coordinates from the mesh
@@ -47,7 +51,7 @@ class CrossSection:
     :vartype mesh_attributes: :class:`numpy.ndarray`
     :cvar section_props: Class to store calculated section properties
     :vartype section_props:
-        :class:`sectionproperties.cross_section.SectionProperties`
+        :class:`~sectionproperties.analysis.cross_section.SectionProperties`
     """
 
     def __init__(self, geometry, mesh):
@@ -99,87 +103,11 @@ class CrossSection:
         # initialise class storing section properties
         self.section_props = SectionProperties()
 
-    def calculate_area(self):
-        """Calculates the area of the cross-section."""
-
-        self.section_props.area = 0
-
-        for el in self.elements:
-            self.section_props.area += el.area
-
-    def calculate_qx(self):
-        """Calculates the first moment area of the cross-section about the
-        x-axis.
-        """
-
-        self.section_props.qx = 0
-
-        for el in self.elements:
-            self.section_props.qx += el.qx
-
-    def calculate_qy(self):
-        """Calculates the first moment area of the cross-section about the
-        y-axis.
-        """
-
-        self.section_props.qy = 0
-
-        for el in self.elements:
-            self.section_props.qy += el.qy
-
-    def calculate_ixx_g(self):
-        """Calculates the second moment area of the cross-section about the
-        global x-axis.
-        """
-
-        self.section_props.ixx_g = 0
-
-        for el in self.elements:
-            self.section_props.ixx_g += el.ixx
-
-    def calculate_iyy_g(self):
-        """Calculates the second moment area of the cross-section about the
-        global y-axis.
-        """
-
-        self.section_props.iyy_g = 0
-
-        for el in self.elements:
-            self.section_props.iyy_g += el.iyy
-
-    def calculate_ixy_g(self):
-        """Calculates the second moment area of the cross-section about the
-        global xy-axis.
-        """
-
-        self.section_props.ixy_g = 0
-
-        for el in self.elements:
-            self.section_props.ixy_g += el.ixy
-
-    def calculate_elastic_centroid(self):
-        """Calculates the elastic centroid of the cross-section.
-
-        :return: Tuple containing the coordinates of the elastic centroid.
-        :rtype: tuple(float, float)
-        """
-
-        if self.section_props.area is None:
-            self.calculate_area()
-
-        if self.section_props.qx is None:
-            self.calculate_qx()
-
-        if self.section_props.qy is None:
-            self.calculate_qy()
-
-        return(self.section_props.calculate_elastic_centroid())
-
     def calculate_geometric_properties(self, time_info=False):
         """Calculates all the geometric properties of the cross-section and
         stores them in the
-        :class:`sectionproperties.cross_section.SectionProperties` object
-        contained in section_props.
+        :class:`~sectionproperties.analysis.cross_section.SectionProperties`
+        object contained in section_props.
 
         :param bool time_info: If set to True, a detailed description of the
             computation and the time cost is printed to the terminal.
@@ -213,22 +141,21 @@ class CrossSection:
         if time_info:
             text = "--Calculating geometric section properties..."
             solver.function_timer(text, calculate_geom)
+            print("")
         else:
             calculate_geom()
-
-        print("")
 
     def calculate_warping_properties(self, time_info=False,
                                      solver_type='direct'):
         """Calculates all the warping properties of the cross-section and
         stores them in the
-        :class:`sectionproperties.cross_section.SectionProperties` object
-        contained in section_props.
+        :class:`~sectionproperties.analysis.cross_section.SectionProperties`
+        object contained in section_props.
 
         :param bool time_info: If set to True, a detailed description of the
             computation and the time cost is printed to the terminal.
         :param string solver_type: Solver used for solving systems of linear
-            equations, either useing the 'direct' method or 'cgs' iterative
+            equations, either using the *'direct'* method or *'cgs'* iterative
             method
 
         The following section properties are calculated:
@@ -244,18 +171,22 @@ class CrossSection:
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
+
+        :raises RuntimeError: If the geometric properties have not been
+            calculated prior to calling this method
         """
 
-        # TODO: if geometric properties are None, raise error
-
-        if solver_type not in ['direct', 'cgs']:
-            pass
-            # TODO: throw error
+        # check that a geometric analysis has been performed
+        if None in [self.section_props.area, self.section_props.ixx_c,
+                    self.section_props.cx]:
+            err = "Cacluate geometric properties before "
+            err += "performing warping analysis."
+            raise RuntimeError(err)
 
         # create a new CrossSection with the origin shifted to the centroid for
         # calculation of the warping properties such that the Lagrangian
         # multiplier approach can be utilised
-        warping_section = CrossSection(self.get_j, self.mesh)
+        warping_section = CrossSection(self.geometry, self.mesh)
 
         # shift the coordinates of each element
         # N.B. the mesh class attribute remains unshifted!
@@ -500,10 +431,204 @@ class CrossSection:
         self.section_props.A_s11 = self.section_props.area / rotatedAlpha[0, 0]
         self.section_props.A_s22 = self.section_props.area / rotatedAlpha[1, 1]
 
-    def calculate_plastic_properties(self):
+    def calculate_plastic_properties(self, time_info=False):
         """s"""
 
         # TODO: implement
+
+    def calculate_stress(self, N=0, Vx=0, Vy=0, Mxx=0, Myy=0, M11=0, M22=0,
+                         Mzz=0, time_info=False):
+        """Calculates the cross-section stress resulting from design actions
+        and returns a
+        :class:`~sectionproperties.analysis.cross_section.StressResult` object
+        containing the cross-section stresses.
+
+        :param float N: Axial force
+        :param float Vx: Shear force acting in the x-direction
+        :param float Vy: Shear force acting in the y-direction
+        :param float Mxx: Bending moment about the centroidal xx-axis
+        :param float Myy: Bending moment about the centroidal yy-axis
+        :param float M11: Bending moment about the centroidal 11-axis
+        :param float M22: Bending moment about the centroidal 22-axis
+        :param float Mzz: Torsion moment about the centroidal zz-axis
+        :param bool time_info: If set to True, a detailed description of the
+            computation and the time cost is printed to the terminal.
+        :return: Object containing the cross-section stresses
+        :rtype: :class:`~sectionproperties.analysis.cross_section.StressResult`
+
+        Note that a geometric and warping analysis must be performed before a
+        stress analysis is carried out::
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_result = section.calculate_stress(N=1e3, Vy=3e3, Mxx=1e6)
+
+        :raises RuntimeError: If a geometric and warping analysis have not been
+            performed prior to calling this method
+        """
+
+        # check that a geometric and warping analysis has been performed
+        if None in [self.section_props.area, self.section_props.ixx_c,
+                    self.section_props.cx, self.section_props.j]:
+            err = "Perform a geometric and warping analysis before "
+            err += "carrying out a stress analysis."
+            raise RuntimeError(err)
+
+        def calc_stress():
+            # create stress result object
+            stress_result = StressResult(self, self.num_nodes)
+
+            # allocate nodal weights vector for nodal averaging
+            nodal_weights = np.zeros(self.num_nodes)
+
+            # loop through all elements in the mesh
+            for el in self.elements:
+                # evaluate stresses at nodes of the current element
+                (sig_zz_n_el, sig_zz_mxx_el, sig_zz_myy_el, sig_zz_m11_el,
+                    sig_zz_m22_el, sig_zx_mzz_el, sig_zy_mzz_el, sig_zx_vx_el,
+                    sig_zy_vx_el, sig_zx_vy_el, sig_zy_vy_el,
+                    weights) = el.element_stress(
+                    self.section_props.area, self.section_props.cx,
+                    self.section_props.cy, self.section_props.ixx_c,
+                    self.section_props.iyy_c, self.section_props.ixy_c,
+                    self.section_props.i11_c, self.section_props.i22_c,
+                    self.section_props.phi, self.section_props.j,
+                    self.section_props.omega[el.node_ids],
+                    self.section_props.psi_shear[el.node_ids],
+                    self.section_props.phi_shear[el.node_ids],
+                    self.section_props.Delta_s)
+
+                # add stresses to global vectors
+                stress_result.sig_zz_n[el.node_ids] += (
+                    N * sig_zz_n_el[:, 0] * weights)
+                stress_result.sig_zz_mxx[el.node_ids] += (
+                    Mxx * sig_zz_mxx_el * weights)
+                stress_result.sig_zz_myy[el.node_ids] += (
+                    Myy * sig_zz_myy_el * weights)
+                stress_result.sig_zz_m11[el.node_ids] += (
+                    M11 * sig_zz_m11_el * weights)
+                stress_result.sig_zz_m22[el.node_ids] += (
+                    M22 * sig_zz_m22_el * weights)
+                stress_result.sig_zx_mzz[el.node_ids] += (
+                    Mzz * sig_zx_mzz_el * weights)
+                stress_result.sig_zy_mzz[el.node_ids] += (
+                    Mzz * sig_zy_mzz_el * weights)
+                stress_result.sig_zx_vx[el.node_ids] += (
+                    Vx * sig_zx_vx_el * weights)
+                stress_result.sig_zy_vx[el.node_ids] += (
+                    Vx * sig_zy_vx_el * weights)
+                stress_result.sig_zx_vy[el.node_ids] += (
+                    Vy * sig_zx_vy_el * weights)
+                stress_result.sig_zy_vy[el.node_ids] += (
+                    Vy * sig_zy_vy_el * weights)
+
+                # add nodal weights
+                nodal_weights[el.node_ids] += weights
+
+            # nodal averaging
+            stress_result.sig_zz_n *= 1 / nodal_weights
+            stress_result.sig_zz_mxx *= 1 / nodal_weights
+            stress_result.sig_zz_myy *= 1 / nodal_weights
+            stress_result.sig_zz_m11 *= 1 / nodal_weights
+            stress_result.sig_zz_m22 *= 1 / nodal_weights
+            stress_result.sig_zx_mzz *= 1 / nodal_weights
+            stress_result.sig_zy_mzz *= 1 / nodal_weights
+            stress_result.sig_zx_vx *= 1 / nodal_weights
+            stress_result.sig_zy_vx *= 1 / nodal_weights
+            stress_result.sig_zx_vy *= 1 / nodal_weights
+            stress_result.sig_zy_vy *= 1 / nodal_weights
+
+            # calculate combined stresses
+            stress_result.calculate_combined_stresses()
+
+            return stress_result
+
+        if time_info:
+            text = "--Calculating cross-section stresses..."
+            stress_result = solver.function_timer(text, calc_stress)
+            print("")
+        else:
+            stress_result = calc_stress()
+
+        # return the stress result object
+        return stress_result
+
+    def calculate_area(self):
+        """Calculates the area of the cross-section."""
+
+        self.section_props.area = 0
+
+        for el in self.elements:
+            self.section_props.area += el.area
+
+    def calculate_qx(self):
+        """Calculates the first moment area of the cross-section about the
+        x-axis.
+        """
+
+        self.section_props.qx = 0
+
+        for el in self.elements:
+            self.section_props.qx += el.qx
+
+    def calculate_qy(self):
+        """Calculates the first moment area of the cross-section about the
+        y-axis.
+        """
+
+        self.section_props.qy = 0
+
+        for el in self.elements:
+            self.section_props.qy += el.qy
+
+    def calculate_ixx_g(self):
+        """Calculates the second moment area of the cross-section about the
+        global x-axis.
+        """
+
+        self.section_props.ixx_g = 0
+
+        for el in self.elements:
+            self.section_props.ixx_g += el.ixx
+
+    def calculate_iyy_g(self):
+        """Calculates the second moment area of the cross-section about the
+        global y-axis.
+        """
+
+        self.section_props.iyy_g = 0
+
+        for el in self.elements:
+            self.section_props.iyy_g += el.iyy
+
+    def calculate_ixy_g(self):
+        """Calculates the second moment area of the cross-section about the
+        global xy-axis.
+        """
+
+        self.section_props.ixy_g = 0
+
+        for el in self.elements:
+            self.section_props.ixy_g += el.ixy
+
+    def calculate_elastic_centroid(self):
+        """Calculates the elastic centroid of the cross-section.
+
+        :return: Tuple containing the coordinates of the elastic centroid.
+        :rtype: tuple(float, float)
+        """
+
+        if self.section_props.area is None:
+            self.calculate_area()
+
+        if self.section_props.qx is None:
+            self.calculate_qx()
+
+        if self.section_props.qy is None:
+            self.calculate_qy()
+
+        return(self.section_props.calculate_elastic_centroid())
 
     def assemble_torsion(self):
         """Assembles stiffness matrices to be used for the computation of
@@ -581,7 +706,23 @@ class CrossSection:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
-        :param float alpha: Transparency of the mesh
+        :param float alpha: Transparency of the mesh: 0 <= alpha <= 1
+
+        The following example plots the mesh generated for a 50D x 100W
+        rectangle using a mesh size of 5::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.RectangularSection(d=50, b=100)
+            mesh = geometry.create_mesh(mesh_sizes=[5])
+            section = CrossSection(geometry, mesh)
+            section.plot_mesh()
+
+        ..  figure:: ../images/rectangle_mesh.png
+            :align: center
+
+            Finite element mesh generated by the above example.
         """
 
         # if no axes object is supplied, create and setup the plot
@@ -608,7 +749,34 @@ class CrossSection:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example analyses a 200 PFC section and displays a plot of
+        the centroids::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.PfcSection(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+
+            section.plot_centroids()
+
+        ..  figure:: ../images/pfc_centroids.png
+            :align: center
+            :scale: 75 %
+
+            Plot of the elastic centroid and shear centre for the above example
+            generated by
+            :func:`~sectionproperties.analysis.cross_section.CrossSection.plot_centroids`
+
+            # TODO: update example with plastic centroids
         """
+
+        # TODO: add plot principal axes
 
         # create plot and setup the plot
         (fig, ax) = plt.subplots()
@@ -625,7 +793,7 @@ class CrossSection:
 
         # if the shear centre has been calculated
         if self.section_props.x_se is not None:
-            (x_s, y_s) = self.get_sc_e()
+            (x_s, y_s) = self.get_sc()
             ax.scatter(x_s, y_s, c='r', marker='+', s=100,
                        label='Shear centre')
 
@@ -648,7 +816,25 @@ class CrossSection:
         post.finish_plot(ax, pause, title='Centroids')
 
     def display_mesh_info(self):
-        """Prints mesh statistics to the command window."""
+        """Prints mesh statistics (number of nodes, elements and regions) to
+        the command window.
+
+        The following example displays the mesh statistics for a 100D x 50W
+        rectangle using a mesh size of 5::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.RectangularSection(d=100, b=50)
+            mesh = geometry.create_mesh(mesh_sizes=[5])
+            section = CrossSection(geometry, mesh)
+            section.display_mesh_info()
+
+            >>>Mesh Statistics:
+            >>>--3282 nodes
+            >>>--1591 elements
+            >>>--1 region
+        """
 
         print("Mesh Statistics:")
         print("--{0} nodes".format(self.num_nodes))
@@ -667,7 +853,21 @@ class CrossSection:
     def display_results(self, fmt='8.6e'):
         """Prints the results that have been calculated to the terminal.
 
-        :param string fmt: Number format
+        :param string fmt: String containing number formatting information
+
+        The following example displays the geometric section properties for a
+        100D x 50W rectangle with three digits after the decimal point::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.RectangularSection(d=100, b=50)
+            mesh = geometry.create_mesh(mesh_sizes=[5])
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+
+            section.display_results(fmt='.3f')
         """
 
         post.print_results(self, fmt)
@@ -851,7 +1051,7 @@ class CrossSection:
 
         return self.section_props.j
 
-    def get_sc_e(self):
+    def get_sc(self):
         """
         :return: Shear centre (elasticity approach) *(x_se, y_se)*
         :rtype: tuple(float, float)
@@ -861,7 +1061,7 @@ class CrossSection:
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
-            (x_se, y_se) = section.get_sc_e()
+            (x_se, y_se) = section.get_sc()
         """
 
         if self.section_props.x_se is None:
@@ -873,7 +1073,7 @@ class CrossSection:
 
         return (x_se, y_se)
 
-    def get_sc_p_e(self):
+    def get_sc_p(self):
         """
         :return: Principal axis shear centre (elasticity approach)
             *(x1_se, y2_se)*
@@ -884,7 +1084,7 @@ class CrossSection:
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
-            (x1_se, y2_se) = section.get_sc_p_e()
+            (x1_se, y2_se) = section.get_sc_p()
         """
 
         if self.section_props.x1_se is None:
@@ -935,19 +1135,18 @@ class CrossSection:
 
     def get_As(self):
         """
-        :return: Shear areas *(A_sx, A_sy, A_sxy)*
-        :rtype: tuple(float, float, float)
+        :return: Shear areas *(A_sx, A_sy)*
+        :rtype: tuple(float, float)
 
         ::
 
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
-            (A_sx, A_sy, A_sxy) = section.get_As()
+            (A_sx, A_sy) = section.get_As()
         """
 
-        return (self.section_props.A_sx, self.section_props.A_sy,
-                self.section_props.A_sxy)
+        return (self.section_props.A_sx, self.section_props.A_sy)
 
     def get_As_p(self):
         """
@@ -972,22 +1171,16 @@ class SectionProperties:
     section properties entirely derived from other section properties.
 
     :cvar float area: Cross-sectional area
-    :cvar float qx: First moment of area of the element about the x-axis
-    :cvar float qy: First moment of area of the element about the y-axis
-    :cvar float ixx_g: Second moment of area of the element about the global
-        x-axis
-    :cvar float iyy_g: Second moment of area of the element about the global
-        y-axis
-    :cvar float ixy_g: Second moment of area of the element about the global
-        xy-axis
+    :cvar float qx: First moment of area about the x-axis
+    :cvar float qy: First moment of area about the y-axis
+    :cvar float ixx_g: Second moment of area about the global x-axis
+    :cvar float iyy_g: Second moment of area about the global y-axis
+    :cvar float ixy_g: Second moment of area about the global xy-axis
     :cvar float cx: X coordinate of the elastic centroid
     :cvar float cy: Y coordinate of the elastic centroid
-    :cvar float ixx_c: Second moment of area of the element about the
-        centroidal x-axis
-    :cvar float iyy_c: Second moment of area of the element about the
-        centroidal y-axis
-    :cvar float ixy_c: Second moment of area of the element about the
-        centroidal xy-axis
+    :cvar float ixx_c: Second moment of area about the centroidal x-axis
+    :cvar float iyy_c: Second moment of area about the centroidal y-axis
+    :cvar float ixy_c: Second moment of area about the centroidal xy-axis
     :cvar float zxx_plus: Section modulus about the centroidal x-axis for
         stresses at the positive extreme value of y
     :cvar float zxx_minus: Section modulus about the centroidal x-axis for
@@ -998,10 +1191,8 @@ class SectionProperties:
         stresses at the negative extreme value of x
     :cvar float rx_c: Radius of gyration about the centroidal x-axis.
     :cvar float ry_c: Radius of gyration about the centroidal y-axis.
-    :cvar float i11_c: Second moment of area of the element about the
-        centroidal 11-axis
-    :cvar float i22_c: Second moment of area of the element about the
-        centroidal 22-axis
+    :cvar float i11_c: Second moment of area about the centroidal 11-axis
+    :cvar float i22_c: Second moment of area about the centroidal 22-axis
     :cvar float phi: Principal axis angle
     :cvar float z11_plus: Section modulus about the principal 11-axis for
         stresses at the positive extreme value of the 22-axis
@@ -1210,6 +1401,543 @@ class SectionProperties:
         self.r11_c = (self.i11_c / self.area) ** 0.5
         self.r22_c = (self.i22_c / self.area) ** 0.5
 
+
+class StressResult:
+    """Class for storing a stress result.
+
+    Provides a way to store the results from a cross-section stress analysis.
+    Also provides methods to calculate combined stresses and post-process the
+    stress results.
+
+    :param cross_section: CrossSection object that the stress analysis was
+        performed on
+    :type cross_section:
+        :class:`~sectionproperties.analysis.cross_section.CrossSection`
+    :param int num_nodes: Number of nodes in the finite element mesh
+
+    :cvar cross_section: CrossSection object that the stress analysis was
+        performed on
+    :vartype cross_section:
+        :class:`~sectionproperties.analysis.cross_section.CrossSection`
+    :cvar sig_zz_n: Normal stress (:math:`\sigma_{zz,N}`) resulting from
+        an axial force
+    :vartype sig_zz_n: :class:`numpy.ndarray`
+    :cvar sig_zz_mxx: Normal stress (:math:`\sigma_{zz,Mxx}`) resulting from
+        a bending moment about the xx-axis
+    :vartype sig_zz_mxx: :class:`numpy.ndarray`
+    :cvar sig_zz_myy: Normal stress (:math:`\sigma_{zz,Myy}`) resulting from
+        a bending moment about the yy-axis
+    :vartype sig_zz_myy: :class:`numpy.ndarray`
+    :cvar sig_zz_m11: Normal stress (:math:`\sigma_{zz,M11}`) resulting from
+        a bending moment about the 11-axis
+    :vartype sig_zz_m11: :class:`numpy.ndarray`
+    :cvar sig_zz_m22: Normal stress (:math:`\sigma_{zz,M22}`) resulting from
+        a bending moment about the 22-axis
+    :vartype sig_zz_m22: :class:`numpy.ndarray`
+    :cvar sig_zx_mzz: Shear stress (:math:`\sigma_{zx,Mzz}`) resulting from
+        a torsion moment about the zz-axis
+    :vartype sig_zx_mzz: :class:`numpy.ndarray`
+    :cvar sig_zy_mzz: Shear stress (:math:`\sigma_{zy,Mzz}`) resulting from
+        a torsion moment about the zz-axis
+    :vartype sig_zy_mzz: :class:`numpy.ndarray`
+    :cvar sig_zx_vx: Shear stress (:math:`\sigma_{zx,Vx}`) resulting from
+        a shear force in the x-direction
+    :vartype sig_zx_vx: :class:`numpy.ndarray`
+    :cvar sig_zy_vx: Shear stress (:math:`\sigma_{zy,Vx}`) resulting from
+        a shear force in the x-direction
+    :vartype sig_zy_vx: :class:`numpy.ndarray`
+    :cvar sig_zx_vy: Shear stress (:math:`\sigma_{zx,Vy}`) resulting from
+        a shear force in the y-direction
+    :vartype sig_zx_vy: :class:`numpy.ndarray`
+    :cvar sig_zy_vy: Shear stress (:math:`\sigma_{zy,Vy}`) resulting from
+        a shear force in the y-direction
+    :vartype sig_zy_vy: :class:`numpy.ndarray`
+    :cvar sig_zz_m: Normal stress (:math:`\sigma_{zz,\Sigma M}`) resulting from
+        all applied bending moments
+    :vartype sig_zz_m: :class:`numpy.ndarray`
+    :cvar sig_zxy_mzz: Resultant shear stress (:math:`\sigma_{zxy,Mzz}`)
+        resulting from a torsion moment in the zz-direction
+    :vartype sig_zxy_mzz: :class:`numpy.ndarray`
+    :cvar sig_zxy_vx: Resultant shear stress (:math:`\sigma_{zxy,Vx}`)
+        resulting from a a shear force in the x-direction
+    :vartype sig_zxy_vx: :class:`numpy.ndarray`
+    :cvar sig_zxy_vy: Resultant shear stress (:math:`\sigma_{zxy,Vy}`)
+        resulting from a a shear force in the y-direction
+    :vartype sig_zxy_vy: :class:`numpy.ndarray`
+    :cvar sig_zx_v: Shear stress (:math:`\sigma_{zx,\Sigma V}`) resulting from
+        all applied shear forces
+    :vartype sig_zx_v: :class:`numpy.ndarray`
+    :cvar sig_zy_v: Shear stress (:math:`\sigma_{zy,\Sigma V}`) resulting from
+        all applied shear forces
+    :vartype sig_zy_v: :class:`numpy.ndarray`
+    :cvar sig_zxy_v: Resultant shear stress (:math:`\sigma_{zxy,\Sigma V}`)
+        resulting from all applied shear forces
+    :vartype sig_zxy_v: :class:`numpy.ndarray`
+    :cvar sig_zz: Combined normal force (:math:`\sigma_{zz}`) resulting from
+        all applied actions
+    :vartype sig_zz: :class:`numpy.ndarray`
+    :cvar sig_zx: Combined shear stress (:math:`\sigma_{zx}`) resulting from
+        all applied actions
+    :vartype sig_zx: :class:`numpy.ndarray`
+    :cvar sig_zy: Combined shear stress (:math:`\sigma_{zy}`) resulting from
+        all applied actions
+    :vartype sig_zy: :class:`numpy.ndarray`
+    :cvar sig_zxy: Combined resultant shear stress (:math:`\sigma_{zxy}`)
+        resulting from all applied actions
+    :vartype sig_zxy: :class:`numpy.ndarray`
+    :cvar sig_vm: von Mises stress (:math:`\sigma_{VM}`) resulting from
+        all applied actions
+    :vartype sig_vm: :class:`numpy.ndarray`
+    """
+
+    def __init__(self, cross_section, num_nodes):
+        """Inits the StressResult class."""
+
+        self.cross_section = cross_section
+
+        # allocate stresses arising directly from actions
+        self.sig_zz_n = np.zeros(num_nodes)
+        self.sig_zz_mxx = np.zeros(num_nodes)
+        self.sig_zz_myy = np.zeros(num_nodes)
+        self.sig_zz_m11 = np.zeros(num_nodes)
+        self.sig_zz_m22 = np.zeros(num_nodes)
+        self.sig_zx_mzz = np.zeros(num_nodes)
+        self.sig_zy_mzz = np.zeros(num_nodes)
+        self.sig_zx_vx = np.zeros(num_nodes)
+        self.sig_zy_vx = np.zeros(num_nodes)
+        self.sig_zx_vy = np.zeros(num_nodes)
+        self.sig_zy_vy = np.zeros(num_nodes)
+
+        # allocate combined stresses
+        self.sig_zz_m = np.zeros(num_nodes)
+        self.sig_zxy_mzz = np.zeros(num_nodes)
+        self.sig_zxy_vx = np.zeros(num_nodes)
+        self.sig_zxy_vy = np.zeros(num_nodes)
+        self.sig_zx_v = np.zeros(num_nodes)
+        self.sig_zy_v = np.zeros(num_nodes)
+        self.sig_zxy_v = np.zeros(num_nodes)
+        self.sig_zz = np.zeros(num_nodes)
+        self.sig_zx = np.zeros(num_nodes)
+        self.sig_zy = np.zeros(num_nodes)
+        self.sig_zxy = np.zeros(num_nodes)
+        self.sig_vm = np.zeros(num_nodes)
+
+    def calculate_combined_stresses(self):
+        """Calculates the combined cross-section stresses."""
+
+        self.sig_zz_m = (self.sig_zz_mxx + self.sig_zz_myy + self.sig_zz_m11 +
+                         self.sig_zz_m22)
+        self.sig_zxy_mzz = (self.sig_zx_mzz ** 2 + self.sig_zy_mzz ** 2) ** 0.5
+        self.sig_zxy_vx = (self.sig_zx_vx ** 2 + self.sig_zy_vx ** 2) ** 0.5
+        self.sig_zxy_vy = (self.sig_zx_vy ** 2 + self.sig_zy_vy ** 2) ** 0.5
+        self.sig_zx_v = self.sig_zx_vx + self.sig_zx_vy
+        self.sig_zy_v = self.sig_zy_vx + self.sig_zy_vy
+        self.sig_zxy_v = (self.sig_zx_v ** 2 + self.sig_zy_v ** 2) ** 0.5
+        self.sig_zz = self.sig_zz_n + self.sig_zz_m
+        self.sig_zx = self.sig_zx_mzz + self.sig_zx_v
+        self.sig_zy = self.sig_zy_mzz + self.sig_zy_v
+        self.sig_zxy = (self.sig_zx ** 2 + self.sig_zy ** 2) ** 0.5
+        self.sig_vm = (self.sig_zz ** 2 + 3 * self.sig_zxy ** 2) ** 0.5
+
+    def plot_stress_contour(self, sig, title, pause):
+        """Plots filled stress contours over the finite element mesh.
+
+        :param sig: Nodal stress values
+        :type sig: :class:`numpy.ndarray`
+        :param string title: Plot title
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        # create plot and setup the plot
+        (fig, ax) = plt.subplots()
+        post.setup_plot(ax, pause)
+
+        # plot the finite element mesh
+        self.cross_section.plot_mesh(ax, pause, alpha=0.5)
+
+        # set up the colormap and contours
+        cmap = cm.get_cmap(name='jet')
+
+        # if contour values are not all constant
+        if np.amax(sig) - np.amin(sig) > 1e-6:
+            v = np.linspace(np.amin(sig), np.amax(sig), 10, endpoint=True)
+        else:
+            # ten contours
+            v = 10
+
+        # plot the filled contour
+        trictr = ax.tricontourf(
+            self.cross_section.mesh_nodes[:, 0],
+            self.cross_section.mesh_nodes[:, 1],
+            self.cross_section.mesh_elements[:, 0:3], sig, v, cmap=cmap)
+        fig.colorbar(trictr, label='Stress', format='%.4e')
+
+        # finish the plot
+        post.finish_plot(ax, pause, title=title)
+
+    def plot_stress_vector(self, sigx, sigy, title, pause):
+        """a"""
+
+        pass
+        # TODO: implement
+
+    # TODO: implement examples for stress plot methods
+
+    def plot_stress_n_zz(self, pause=True):
+        """Produces a contour plot of the normal stress :math:`\sigma_{zz,N}`
+        resulting from the applied axial load :math:`N`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zz,N}$'
+        self.plot_stress_contour(self.sig_zz_n, title, pause)
+
+    def plot_stress_mxx_zz(self, pause=True):
+        """Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}`
+        resulting from the applied bending moment :math:`M_{xx}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zz,Mxx}$'
+        self.plot_stress_contour(self.sig_zz_mxx, title, pause)
+
+    def plot_stress_myy_zz(self, pause=True):
+        """Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}`
+        resulting from the applied bending moment :math:`M_{yy}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zz,Myy}$'
+        self.plot_stress_contour(self.sig_zz_myy, title, pause)
+
+    def plot_stress_m11_zz(self, pause=True):
+        """Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}`
+        resulting from the applied bending moment :math:`M_{11}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zz,M11}$'
+        self.plot_stress_contour(self.sig_zz_m11, title, pause)
+
+    def plot_stress_m22_zz(self, pause=True):
+        """Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}`
+        resulting from the applied bending moment :math:`M_{22}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zz,M22}$'
+        self.plot_stress_contour(self.sig_zz_m22, title, pause)
+
+    def plot_stress_m_zz(self, pause=True):
+        """Produces a contour plot of the normal stress
+        :math:`\sigma_{zz,\Sigma M}` resulting from all applied bending moments
+        :math:`M_{xx} + M_{yy} + M_{11} + M_{22}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zz,\Sigma M}$'
+        self.plot_stress_contour(self.sig_zz_m, title, pause)
+
+    def plot_stress_mzz_zx(self, pause=True):
+        """Produces a contour plot of the *x*-component of the shear stress
+        :math:`\sigma_{zx,Mzz}` resulting from the applied torsion moment
+        :math:`M_{zz}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zx,Mzz}$'
+        self.plot_stress_contour(self.sig_zx_mzz, title, pause)
+
+    def plot_stress_mzz_zy(self, pause=True):
+        """Produces a contour plot of the *y*-component of the shear stress
+        :math:`\sigma_{zy,Mzz}` resulting from the applied torsion moment
+        :math:`M_{zz}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zy,Mzz}$'
+        self.plot_stress_contour(self.sig_zy_mzz, title, pause)
+
+    def plot_stress_mzz_zxy(self, pause=True):
+        """Produces a contour plot of the resultant shear stress
+        :math:`\sigma_{zxy,Mzz}` resulting from the applied torsion moment
+        :math:`M_{zz}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zxy,Mzz}$'
+        self.plot_stress_contour(self.sig_zxy_mzz, title, pause)
+
+    def plot_vector_mzz_zxy(self, pause=True):
+        """Produces a vector plot of the resultant shear stress
+        :math:`\sigma_{zxy,Mzz}` resulting from the applied torsion moment
+        :math:`M_{zz}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Vector Plot - $\sigma_{zxy,Mzz}$'
+        self.plot_stress_vector(self.sig_zx_mzz, self.sig_zy_mzz, title, pause)
+
+    def plot_stress_vx_zx(self, pause=True):
+        """Produces a contour plot of the *x*-component of the shear stress
+        :math:`\sigma_{zx,Vx}` resulting from the applied shear force
+        :math:`V_{x}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zx,Vx}$'
+        self.plot_stress_contour(self.sig_zx_vx, title, pause)
+
+    def plot_stress_vx_zy(self, pause=True):
+        """Produces a contour plot of the *y*-component of the shear stress
+        :math:`\sigma_{zy,Vx}` resulting from the applied shear force
+        :math:`V_{x}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zy,Vx}$'
+        self.plot_stress_contour(self.sig_zy_vx, title, pause)
+
+    def plot_stress_vx_zxy(self, pause=True):
+        """Produces a contour plot of the resultant shear stress
+        :math:`\sigma_{zxy,Vx}` resulting from the applied shear force
+        :math:`V_{x}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zxy,Vx}$'
+        self.plot_stress_contour(self.sig_zxy_vx, title, pause)
+
+    def plot_vector_vx_zxy(self, pause=True):
+        """Produces a vector plot of the resultant shear stress
+        :math:`\sigma_{zxy,Vx}` resulting from the applied shear force
+        :math:`V_{x}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Vector Plot - $\sigma_{zxy,Vx}$'
+        self.plot_stress_vector(self.sig_zx_vx, self.sig_zx_vy, title, pause)
+
+    def plot_stress_vy_zx(self, pause=True):
+        """Produces a contour plot of the *x*-component of the shear stress
+        :math:`\sigma_{zx,Vy}` resulting from the applied shear force
+        :math:`V_{y}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zx,Vy}$'
+        self.plot_stress_contour(self.sig_zx_vy, title, pause)
+
+    def plot_stress_vy_zy(self, pause=True):
+        """Produces a contour plot of the *y*-component of the shear stress
+        :math:`\sigma_{zy,Vy}` resulting from the applied shear force
+        :math:`V_{y}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zy,Vy}$'
+        self.plot_stress_contour(self.sig_zy_vy, title, pause)
+
+    def plot_stress_vy_zxy(self, pause=True):
+        """Produces a contour plot of the resultant shear stress
+        :math:`\sigma_{zxy,Vy}` resulting from the applied shear force
+        :math:`V_{y}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zxy,Vy}$'
+        self.plot_stress_contour(self.sig_zxy_vy, title, pause)
+
+    def plot_vector_vy_zxy(self, pause=True):
+        """Produces a vector plot of the resultant shear stress
+        :math:`\sigma_{zxy,Vy}` resulting from the applied shear force
+        :math:`V_{y}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Vector Plot - $\sigma_{zxy,Vy}$'
+        self.plot_stress_vector(self.sig_zx_vy, self.sig_zy_vy, title, pause)
+
+    def plot_stress_v_zx(self, pause=True):
+        """Produces a contour plot of the *x*-component of the shear stress
+        :math:`\sigma_{zx,\Sigma V}` resulting from the sum of the applied
+        shear forces :math:`V_{x} + V_{y}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zx,\Sigma V}$'
+        self.plot_stress_contour(self.sig_zx_v, title, pause)
+
+    def plot_stress_v_zy(self, pause=True):
+        """Produces a contour plot of the *y*-component of the shear stress
+        :math:`\sigma_{zy,\Sigma V}` resulting from the sum of the applied
+        shear forces :math:`V_{x} + V_{y}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zy,\Sigma V}$'
+        self.plot_stress_contour(self.sig_zy_v, title, pause)
+
+    def plot_stress_v_zxy(self, pause=True):
+        """Produces a contour plot of the resultant shear stress
+        :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the applied
+        shear forces :math:`V_{x} + V_{y}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zxy,\Sigma V}$'
+        self.plot_stress_contour(self.sig_zxy_v, title, pause)
+
+    def plot_vector_v_zxy(self, pause=True):
+        """Produces a vector plot of the resultant shear stress
+        :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the  applied
+        shear forces :math:`V_{x} + V_{y}`.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Vector Plot - $\sigma_{zxy,\Sigma V}$'
+        self.plot_stress_vector(self.sig_zx_v, self.sig_zy_v, title, pause)
+
+    def plot_stress_zz(self, pause=True):
+        """Produces a contour plot of the combined normal stress
+        :math:`\sigma_{zz}` resulting from all applied actions.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zz}$'
+        self.plot_stress_contour(self.sig_zz, title, pause)
+
+    def plot_stress_zx(self, pause=True):
+        """Produces a contour plot of the *x*-component of the shear stress
+        :math:`\sigma_{zx}` resulting from all applied actions.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zx}$'
+        self.plot_stress_contour(self.sig_zx, title, pause)
+
+    def plot_stress_zy(self, pause=True):
+        """Produces a contour plot of the *y*-component of the shear stress
+        :math:`\sigma_{zy}` resulting from all applied actions.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zy}$'
+        self.plot_stress_contour(self.sig_zy, title, pause)
+
+    def plot_stress_zxy(self, pause=True):
+        """Produces a contour plot of the resultant shear stress
+        :math:`\sigma_{zxy}` resulting from all applied actions.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{zxy}$'
+        self.plot_stress_contour(self.sig_zxy, title, pause)
+
+    def plot_vector_zxy(self, pause=True):
+        """Produces a vector plot of the resultant shear stress
+        :math:`\sigma_{zxy}` resulting from all applied actions.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Vector Plot - $\sigma_{zxy}$'
+        self.plot_stress_vector(self.sig_zx, self.sig_zy, title, pause)
+
+    def plot_stress_vm(self, pause=True):
+        """Produces a contour plot of the von Mises :math:`\sigma_{vM}`
+        resulting from all applied actions.
+
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{vM}$'
+        self.plot_stress_contour(self.sig_vm, title, pause)
+
 # def computeSectionProperties(self, points, facets, holes, controlPoints,
 #                              materials):
 #     """
@@ -1231,11 +1959,6 @@ class SectionProperties:
 #             processText, self.computePrincipalPlasticProperties, points,
 #             facets, holes, controlPoints, materials)
 #
-#     # calculate section stresses
-#     if (self.settings.outputLog):
-#         processText = "-- Calculating cross-section stresses..."
-#     otherUtilities.functionTimer(
-#         processText, self.calculateStress)
 #
 # def computeGlobalPlasticProperties(self, points, facets, holes,
 #                                    controlPoints, materials):
@@ -1360,103 +2083,6 @@ class SectionProperties:
 #         botCen = np.array([botQy / botA, botQx / botA])
 #
 #     return (topA, botA, topCen, botCen)
-#
-# def calculateStress(self):
-#     """
-#     This method calculates the cross-section stresses as a result of unit
-#     loading(axial, moment, shear, torsion).
-#     """
-#
-#     # allocate stress vectors
-#     self.sigma_zz_axial = np.zeros(self.noNodes)
-#     self.sigma_zz_bending_xx = np.zeros(self.noNodes)
-#     self.sigma_zz_bending_yy = np.zeros(self.noNodes)
-#     self.sigma_zz_bending_11 = np.zeros(self.noNodes)
-#     self.sigma_zz_bending_22 = np.zeros(self.noNodes)
-#     self.tau_zx_torsion = np.zeros(self.noNodes)
-#     self.tau_zy_torsion = np.zeros(self.noNodes)
-#     self.tau_zx_shear_x = np.zeros(self.noNodes)
-#     self.tau_zy_shear_x = np.zeros(self.noNodes)
-#     self.tau_zx_shear_y = np.zeros(self.noNodes)
-#     self.tau_zy_shear_y = np.zeros(self.noNodes)
-#
-#     # allocate nodal weights vector for nodal averaging
-#     nodal_weights = np.zeros(self.noNodes)
-#
-#     # loop through all elements in the mesh
-#     for el in self.triElements:
-#         # evaluate stresses at nodes
-#         (elSigma_zz_axial, elSigma_zz_bending_xx, elSigma_zz_bending_yy,
-#             elSigma_zz_bending_11, elSigma_zz_bending_22, elTau_zx_torsion,
-#             elTau_zy_torsion, elTau_shear_zx_x, elTau_shear_zy_x,
-#             elTau_shear_zx_y, elTau_shear_zy_y,
-#             weights) = el.calculateStress(
-#             self.area, self.ixx_c, self.iyy_c, self.ixy_c, self.i11_c,
-#             self.i22_c, self.phi, self.omega[el.nodes], self.J,
-#             self.Psi[el.nodes], self.Phi[el.nodes], self.Delta_s)
-#
-#         # add stresses to global vectors
-#         self.sigma_zz_axial[el.nodes] += elSigma_zz_axial[:, 0] * weights
-#         self.sigma_zz_bending_xx[el.nodes] += (
-#             elSigma_zz_bending_xx * weights)
-#         self.sigma_zz_bending_yy[el.nodes] += (
-#             elSigma_zz_bending_yy * weights)
-#         self.sigma_zz_bending_11[el.nodes] += (
-#             elSigma_zz_bending_11 * weights)
-#         self.sigma_zz_bending_22[el.nodes] += (
-#             elSigma_zz_bending_22 * weights)
-#         self.tau_zx_torsion[el.nodes] += elTau_zx_torsion * weights
-#         self.tau_zy_torsion[el.nodes] += elTau_zy_torsion * weights
-#         self.tau_zx_shear_x[el.nodes] += elTau_shear_zx_x * weights
-#         self.tau_zy_shear_x[el.nodes] += elTau_shear_zy_x * weights
-#         self.tau_zx_shear_y[el.nodes] += elTau_shear_zx_y * weights
-#         self.tau_zy_shear_y[el.nodes] += elTau_shear_zy_y * weights
-#
-#         # increment the nodal count vector
-#         nodal_weights[el.nodes] += weights
-#
-#     # nodal averaging
-#     self.sigma_zz_axial *= 1 / nodal_weights
-#     self.sigma_zz_bending_xx *= 1 / nodal_weights
-#     self.sigma_zz_bending_yy *= 1 / nodal_weights
-#     self.sigma_zz_bending_11 *= 1 / nodal_weights
-#     self.sigma_zz_bending_22 *= 1 / nodal_weights
-#     self.tau_zx_torsion *= 1 / nodal_weights
-#     self.tau_zy_torsion *= 1 / nodal_weights
-#     self.tau_zx_shear_x *= 1 / nodal_weights
-#     self.tau_zy_shear_x *= 1 / nodal_weights
-#     self.tau_zx_shear_y *= 1 / nodal_weights
-#     self.tau_zy_shear_y *= 1 / nodal_weights
-#
-# def evaluateSectionStress(self, loadData):
-#     """
-#     This method scales the results obtained from the calculateStress
-#     function by the design actions specified as input.
-#     """
-#
-#     # scale unit stresses by design actions
-#     self.axialStress = self.sigma_zz_axial * loadData.Nzz
-#     self.bendingStress = (self.sigma_zz_bending_xx * loadData.Mxx +
-#                           self.sigma_zz_bending_yy * loadData.Myy +
-#                           self.sigma_zz_bending_11 * loadData.M11 +
-#                           self.sigma_zz_bending_22 * loadData.M22)
-#     self.torsionStress_zx = self.tau_zx_torsion * loadData.Mzz
-#     self.torsionStress_zy = self.tau_zy_torsion * loadData.Mzz
-#     self.torsionStress = ((self.torsionStress_zx ** 2 +
-#                            self.torsionStress_zy ** 2) ** 0.5)
-#     self.shearStress_zx = (self.tau_zx_shear_x * loadData.Vx +
-#                            self.tau_zx_shear_y * loadData.Vy)
-#     self.shearStress_zy = (self.tau_zy_shear_x * loadData.Vx +
-#                            self.tau_zy_shear_y * loadData.Vy)
-#     self.shearStress = ((self.shearStress_zx ** 2 +
-#                          self.shearStress_zy ** 2) ** 0.5)
-#
-#     # compute combined stresses
-#     self.sigma_zz = self.axialStress + self.bendingStress
-#     self.tau_zx = self.torsionStress_zx + self.shearStress_zx
-#     self.tau_zy = self.torsionStress_zy + self.shearStress_zy
-#     self.tau = (self.tau_zx ** 2 + self.tau_zy ** 2) ** 0.5
-#     self.vonMises = ((self.sigma_zz ** 2 + 3 * (self.tau ** 2)) ** 0.5)
 #
 # def plotResults(self, plots):
 #     """

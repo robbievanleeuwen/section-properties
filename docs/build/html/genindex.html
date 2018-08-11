@@ -80,8 +80,14 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="rst/cross_section.html">cross_section</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rst/sections.html">Sections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/structure.html">Structure of an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/analysis.html">Running an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/post.html">Viewing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/api.html">Python API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/theory.html">Theoretical Background</a></li>
 </ul>
 
             
@@ -150,6 +156,9 @@
 <div class="genindex-jumpbox">
  <a href="#A"><strong>A</strong></a>
  | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#M"><strong>M</strong></a>
@@ -163,7 +172,11 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.AngleSection">AngleSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.AngleSection">AngleSection (class in sectionproperties.pre.sections)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.assemble_torsion">assemble_torsion() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -171,25 +184,87 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties">calculate_geometric_properties() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_area">calculate_area() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.calculate_warping_properties">calculate_warping_properties() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.SectionProperties.calculate_centroidal_properties">calculate_centroidal_properties() (sectionproperties.analysis.cross_section.SectionProperties method)</a>
 </li>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.CeeSection">CeeSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.calculate_combined_stresses">calculate_combined_stresses() (sectionproperties.analysis.cross_section.StressResult method)</a>
 </li>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.ChsSection">ChsSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_elastic_centroid">calculate_elastic_centroid() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+
+      <ul>
+        <li><a href="rst/api.html#sectionproperties.analysis.cross_section.SectionProperties.calculate_elastic_centroid">(sectionproperties.analysis.cross_section.SectionProperties method)</a>
+</li>
+      </ul></li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties">calculate_geometric_properties() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_ixx_g">calculate_ixx_g() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_ixy_g">calculate_ixy_g() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_iyy_g">calculate_iyy_g() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_plastic_properties">calculate_plastic_properties() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_qx">calculate_qx() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.CircularSection">CircularSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_qy">calculate_qy() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.SectionInput.create_mesh">create_mesh() (sectionproperties.pre.sections.SectionInput method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_stress">calculate_stress() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection">CrossSection (class in sectionproperties.analysis.cross_section)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_warping_properties">calculate_warping_properties() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.CruciformSection">CruciformSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.CeeSection">CeeSection (class in sectionproperties.pre.sections)</a>
 </li>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.CustomSection">CustomSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.ChsSection">ChsSection (class in sectionproperties.pre.sections)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.CircularSection">CircularSection (class in sectionproperties.pre.sections)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.pre.pre.create_mesh">create_mesh() (in module sectionproperties.pre.pre)</a>
+
+      <ul>
+        <li><a href="rst/api.html#sectionproperties.pre.sections.Geometry.create_mesh">(sectionproperties.pre.sections.Geometry method)</a>
+</li>
+      </ul></li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection">CrossSection (class in sectionproperties.analysis.cross_section)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.CruciformSection">CruciformSection (class in sectionproperties.pre.sections)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.CustomSection">CustomSection (class in sectionproperties.pre.sections)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.display_mesh_info">display_mesh_info() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.display_results">display_results() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.Tri6.element_stress">element_stress() (sectionproperties.analysis.fea.Tri6 method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.extrapolate_to_nodes">extrapolate_to_nodes() (in module sectionproperties.analysis.fea)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/api.html#sectionproperties.post.post.finish_plot">finish_plot() (in module sectionproperties.post.post)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -197,43 +272,49 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_area">get_area() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.gauss_points">gauss_points() (in module sectionproperties.analysis.fea)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_As">get_As() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.Geometry">Geometry (class in sectionproperties.pre.sections)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_As_p">get_As_p() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_area">get_area() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_c">get_c() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_As">get_As() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_gamma">get_gamma() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_As_p">get_As_p() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_ic">get_ic() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_c">get_c() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_ig">get_ig() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_gamma">get_gamma() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_ip">get_ip() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_ic">get_ic() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_j">get_j() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_ig">get_ig() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_ip">get_ip() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_phi">get_phi() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_j">get_j() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_q">get_q() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_phi">get_phi() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_rc">get_rc() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_q">get_q() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_rp">get_rp() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_rc">get_rc() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_sc_e">get_sc_e() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_rp">get_rp() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_sc_p_e">get_sc_p_e() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_sc">get_sc() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_sc_t">get_sc_t() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_sc_p">get_sc_p() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_z">get_z() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_sc_t">get_sc_t() (sectionproperties.analysis.cross_section.CrossSection method)</a>
 </li>
-      <li><a href="rst/cross_section.html#sectionproperties.analysis.cross_section.CrossSection.get_zp">get_zp() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_z">get_z() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_zp">get_zp() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.global_coordinate">global_coordinate() (in module sectionproperties.analysis.fea)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -241,7 +322,7 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.ISection">ISection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.ISection">ISection (class in sectionproperties.pre.sections)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -249,7 +330,7 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.MergedSection">MergedSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.MergedSection">MergedSection (class in sectionproperties.pre.sections)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -257,11 +338,81 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.PfcSection">PfcSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.PfcSection">PfcSection (class in sectionproperties.pre.sections)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.plot_centroids">plot_centroids() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.Geometry.plot_geometry">plot_geometry() (sectionproperties.pre.sections.Geometry method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.plot_mesh">plot_mesh() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_contour">plot_stress_contour() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_m11_zz">plot_stress_m11_zz() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_m22_zz">plot_stress_m22_zz() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_m_zz">plot_stress_m_zz() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_mxx_zz">plot_stress_mxx_zz() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_myy_zz">plot_stress_myy_zz() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_mzz_zx">plot_stress_mzz_zx() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_mzz_zxy">plot_stress_mzz_zxy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_mzz_zy">plot_stress_mzz_zy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_n_zz">plot_stress_n_zz() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_v_zx">plot_stress_v_zx() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_v_zxy">plot_stress_v_zxy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_v_zy">plot_stress_v_zy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_vector">plot_stress_vector() (sectionproperties.analysis.cross_section.StressResult method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.SectionInput.plot_geometry">plot_geometry() (sectionproperties.pre.sections.SectionInput method)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_vm">plot_stress_vm() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_vx_zx">plot_stress_vx_zx() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_vx_zxy">plot_stress_vx_zxy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_vx_zy">plot_stress_vx_zy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_vy_zx">plot_stress_vy_zx() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_vy_zxy">plot_stress_vy_zxy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_vy_zy">plot_stress_vy_zy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_zx">plot_stress_zx() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_zxy">plot_stress_zxy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_zy">plot_stress_zy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_zz">plot_stress_zz() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_vector_mzz_zxy">plot_vector_mzz_zxy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_vector_v_zxy">plot_vector_v_zxy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_vector_vx_zxy">plot_vector_vx_zxy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_vector_vy_zxy">plot_vector_vy_zxy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_vector_zxy">plot_vector_zxy() (sectionproperties.analysis.cross_section.StressResult method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.point_above_line">point_above_line() (in module sectionproperties.analysis.fea)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.principal_coordinate">principal_coordinate() (in module sectionproperties.analysis.fea)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.post.post.print_results">print_results() (in module sectionproperties.post.post)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -269,11 +420,11 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.RectangularSection">RectangularSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.RectangularSection">RectangularSection (class in sectionproperties.pre.sections)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.RhsSection">RhsSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.RhsSection">RhsSection (class in sectionproperties.pre.sections)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -281,7 +432,31 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.SectionInput">SectionInput (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.SectionProperties">SectionProperties (class in sectionproperties.analysis.cross_section)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.post.post.setup_plot">setup_plot() (in module sectionproperties.post.post)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.shape_function">shape_function() (in module sectionproperties.analysis.fea)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.Tri6.shear_coefficients">shear_coefficients() (sectionproperties.analysis.fea.Tri6 method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.Tri6.shear_load_vectors">shear_load_vectors() (sectionproperties.analysis.fea.Tri6 method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.Tri6.shear_warping_integrals">shear_warping_integrals() (sectionproperties.analysis.fea.Tri6 method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.Geometry.shift_section">shift_section() (sectionproperties.pre.sections.Geometry method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.solver.solve_cgs">solve_cgs() (in module sectionproperties.analysis.solver)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.solver.solve_cgs_lagrange">solve_cgs_lagrange() (in module sectionproperties.analysis.solver)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.solver.solve_direct">solve_direct() (in module sectionproperties.analysis.solver)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.solver.solve_direct_lagrange">solve_direct_lagrange() (in module sectionproperties.analysis.solver)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressResult">StressResult (class in sectionproperties.analysis.cross_section)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -289,7 +464,13 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.TeeSection">TeeSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.TeeSection">TeeSection (class in sectionproperties.pre.sections)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.Tri6.torsion_properties">torsion_properties() (sectionproperties.analysis.fea.Tri6 method)</a>
+</li>
+      <li><a href="rst/api.html#sectionproperties.analysis.fea.Tri6">Tri6 (class in sectionproperties.analysis.fea)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -297,7 +478,7 @@
 <h2 id="Z">Z</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/sections.html#sectionproperties.pre.sections.ZedSection">ZedSection (class in sectionproperties.pre.sections)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.ZedSection">ZedSection (class in sectionproperties.pre.sections)</a>
 </li>
   </ul></td>
 </tr></table>

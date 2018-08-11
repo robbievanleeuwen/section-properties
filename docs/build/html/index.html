@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to sectionproperties’s documentation! &mdash; sectionproperties 0.0.1 documentation</title>
+  <title>sectionproperties Documentation &mdash; sectionproperties 0.0.1 documentation</title>
   
 
   
@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="cross_section" href="rst/cross_section.html" /> 
+    <link rel="next" title="Installation" href="rst/installation.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -80,8 +80,14 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="rst/cross_section.html">cross_section</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rst/sections.html">Sections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/structure.html">Structure of an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/analysis.html">Running an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/post.html">Viewing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/api.html">Python API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/theory.html">Theoretical Background</a></li>
 </ul>
 
             
@@ -127,7 +133,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Welcome to sectionproperties’s documentation!</li>
+      <li>sectionproperties Documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -146,23 +152,65 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-sectionproperties-s-documentation">
-<h1>Welcome to sectionproperties’s documentation!<a class="headerlink" href="#welcome-to-sectionproperties-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="sectionproperties-documentation">
+<h1>sectionproperties Documentation<a class="headerlink" href="#sectionproperties-documentation" title="Permalink to this headline">¶</a></h1>
+<p><em>sectionproperties</em> is a python package for the analysis of arbitrary cross-sections
+using the finite element method written by Robbie van Leeuwen. <em>sectionproperties</em>
+can be used to determine section properties to be used in structural design and
+visualise cross-sectional stresses resulting from combinations of applied forces and
+bending moments.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="rst/cross_section.html">cross_section</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rst/sections.html">Sections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/structure.html">Structure of an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/analysis.html">Running an Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/post.html">Viewing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/api.html">Python API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/theory.html">Theoretical Background</a></li>
 </ul>
 </div>
+<p>Here’s a quick example that harnesses some of the power of <em>sectionproperties</em> and shows its simplicity:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
+
+<span class="c1"># create geometry of the cross-section</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="c1"># generate a finite element mesh</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
+
+<span class="c1"># create a CrossSection object for analysis</span>
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+
+<span class="c1"># calculate various cross-section properties</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+
+<span class="c1"># print some of the calculated section properties</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">get_area</span><span class="p">())</span>  <span class="c1"># cross-section area</span>
+<span class="o">&gt;&gt;&gt;</span><span class="mf">3231.80</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">get_ic</span><span class="p">())</span>  <span class="c1"># second moments of area about the centroidal axis</span>
+<span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="mf">23544664.29</span><span class="p">,</span> <span class="mf">3063383.07</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">get_j</span><span class="p">())</span>  <span class="c1"># torsion constant</span>
+<span class="o">&gt;&gt;&gt;</span><span class="mf">62907.79</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">get_As</span><span class="p">())</span>  <span class="c1"># shear areas in the x &amp; y directions</span>
+<span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="mf">1842.17</span><span class="p">,</span> <span class="mf">1120.18</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
-</ul>
+<p>A list of the current features of the package and implementation goals for future releases
+can be found here. If you have a request for a feature to be added to the <em>sectionproperties</em>
+pacakge, please don’t hesitate to get in touch! # TODO!!!</p>
+<div class="section" id="support">
+<h2>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h2>
+<p>blah blah support</p>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>The project is licensed under the MIT license.</p>
+</div>
 </div>
 
 
@@ -173,7 +221,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="rst/cross_section.html" class="btn btn-neutral float-right" title="cross_section" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="rst/installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

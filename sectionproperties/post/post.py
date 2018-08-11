@@ -15,8 +15,6 @@ def setup_plot(ax, pause):
         plt.ion()
         plt.show()
 
-    ax.set_aspect("equal")
-
 
 def finish_plot(ax, pause, title=''):
     """Executes code required to finish a matplotlib figure.
@@ -29,6 +27,7 @@ def finish_plot(ax, pause, title=''):
     """
 
     ax.set_title(title)
+    ax.set_aspect("equal", anchor='C')
 
     if pause:
         plt.show()
@@ -41,8 +40,8 @@ def print_results(cross_section, fmt):
     """Prints the results that have been calculated to the terminal.
 
     :param cross_section: Structural cross-section object
-    :type section_properties:
-        :class:`sectionproperties.cross_section.CrossSection`
+    :type cross_section:
+        :class:`~sectionproperties.analysis.cross_section.CrossSection`
     :param string fmt: Number format
     """
 
@@ -112,7 +111,7 @@ def print_results(cross_section, fmt):
     if gamma is not None:
         print("Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
 
-    (x_se, y_se) = cross_section.get_sc_e()
+    (x_se, y_se) = cross_section.get_sc()
     if x_se is not None:
         print("x_se\t = {:>{fmt}}".format(x_se, fmt=fmt))
         print("y_se\t = {:>{fmt}}".format(y_se, fmt=fmt))
@@ -122,12 +121,12 @@ def print_results(cross_section, fmt):
         print("x_st\t = {:>{fmt}}".format(x_st, fmt=fmt))
         print("y_st\t = {:>{fmt}}".format(y_st, fmt=fmt))
 
-    (x1_se, y2_se) = cross_section.get_sc_p_e()
+    (x1_se, y2_se) = cross_section.get_sc_p()
     if x1_se is not None:
         print("x1_se\t = {:>{fmt}}".format(x1_se, fmt=fmt))
         print("y2_se\t = {:>{fmt}}".format(y2_se, fmt=fmt))
 
-    (A_sx, A_sy, _) = cross_section.get_As()
+    (A_sx, A_sy) = cross_section.get_As()
     if A_sx is not None:
         print("A_sx\t = {:>{fmt}}".format(A_sx, fmt=fmt))
         print("A_sy\t = {:>{fmt}}".format(A_sy, fmt=fmt))
@@ -169,4 +168,4 @@ def print_results(cross_section, fmt):
     #     print("SF_22-\t = {:>{fmt}}".format(section_properties.SF_22_minus,
     #                                         fmt=fmt))
 
-    print("\n")
+    print("")
