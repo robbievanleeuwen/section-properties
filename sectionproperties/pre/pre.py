@@ -19,6 +19,8 @@ class Material:
     :cvar float yield_strength: Material yield strength
     :cvar color: Material color for rendering
     :vartype color: :class:`matplotlib.colors`
+
+    # TODO: add example
     """
 
     def __init__(self, name, elastic_modulus, poissons_ratio, yield_strength,

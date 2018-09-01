@@ -2,6 +2,8 @@ import numpy as np
 from scipy.sparse import csc_matrix, coo_matrix, linalg
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib.patches as mpatches
+from matplotlib.colors import ListedColormap
 import sectionproperties.pre.pre as pre
 import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
@@ -678,7 +680,7 @@ class CrossSection:
 
         return (csc_matrix(k), csc_matrix(k_lg), f_torsion)
 
-    def plot_mesh(self, ax=None, pause=True, alpha=1, color=False):
+    def plot_mesh(self, ax=None, pause=True, alpha=1, materials=False):
         """Plots the finite element mesh. If no axes object is supplied a new
         figure and axis is created.
 
@@ -688,7 +690,7 @@ class CrossSection:
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
         :param float alpha: Transparency of the mesh: 0 <= alpha <= 1
-        :param bool color: If set to true and material properties have been
+        :param bool materials: If set to true and material properties have been
             provided to the
             :class:`~sectionproperties.analysis.cross_section.CrossSection`
             object, shades the elements with the specified material colours
@@ -718,12 +720,38 @@ class CrossSection:
         else:
             ax_supplied = True
 
-        # TODO: implement colour shading
-
-        # plot all the elements in the mesh
+        # plot the mesh
         ax.triplot(self.mesh_nodes[:, 0], self.mesh_nodes[:, 1],
                    self.mesh_elements[:, 0:3], lw=0.5, color='black',
                    alpha=alpha)
+
+        # if the material colours are to be displayed
+        if materials and self.materials is not None:
+            color_array = []
+            legend_list = []
+
+            # create an array of finite element colours
+            for element in self.elements:
+                color_array.append(element.material.color)
+
+            # create a list of unique material legend entries
+            for (i, material) in enumerate(self.materials):
+                # if the material has not be entered yet
+                if i == 0 or material in self.materials[0:i - 1]:
+                    # add the material colour and name to the legend list
+                    legend_list.append(mpatches.Patch(color=material.color,
+                                                      label=material.name))
+
+            cmap = ListedColormap(color_array)  # custom colormap
+            c = np.arange(len(color_array))  # indicies of elements
+
+            # plot the mesh colours
+            ax.tripcolor(self.mesh_nodes[:, 0], self.mesh_nodes[:, 1],
+                         self.mesh_elements[:, 0:3], c, cmap=cmap)
+
+            # display the legend
+            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5),
+                      handles=legend_list)
 
         # if no axes object is supplied, finish the plot
         if not ax_supplied:

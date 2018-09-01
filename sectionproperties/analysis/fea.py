@@ -22,9 +22,8 @@ class Tri6:
     :vartype coords: :class:`numpy.ndarray`
     :cvar node_ids: A list of the global node ids for the current element
     :vartype node_ids: list[int]
-    :cvar float elastic_modulus: Finite element modulus of elasticity
-    :cvar float poissons_ratio: Finite element Poisson's ratio
-    :cvar float yield_strength: Finite element yield strength
+    :cvar material: Material of the current finite element.
+    :vartype material: :class:`~sectionproperties.pre.pre.Material`
     """
 
     def __init__(self, coords, node_ids, material):
@@ -32,9 +31,7 @@ class Tri6:
 
         self.coords = coords
         self.node_ids = node_ids
-        self.elastic_modulus = material.elastic_modulus
-        self.poissons_ratio = material.poissons_ratio
-        self.yield_strength = material.yield_strength
+        self.material = material
 
     def geometric_properties(self):
         """Calculates the geometric properties for the current finite element.
@@ -108,6 +105,8 @@ class Tri6:
         :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`)
         """
 
+        nu = self.material.poissons_ratio
+
         # initialise force vectors
         f_psi = 0
         f_phi = 0
@@ -131,14 +130,12 @@ class Tri6:
             h1 = -ixy * r + iyy * q
             h2 = -iyy * r - ixy * q
 
-            f_psi += gp[0] * (self.poissons_ratio / 2 * np.transpose(
-                np.transpose(B).dot(np.array([[d1], [d2]])))[0] + 2 *
-                (1 + self.poissons_ratio) * np.transpose(N) * (
-                ixx * Nx - ixy * Ny)) * j
-            f_phi += gp[0] * (self.poissons_ratio / 2 * np.transpose(
-                np.transpose(B).dot(np.array([[h1], [h2]])))[0] + 2 *
-                (1 + self.poissons_ratio) * np.transpose(N) * (
-                iyy * Ny - ixy * Nx)) * j
+            f_psi += gp[0] * (nu / 2 * np.transpose(np.transpose(B).dot(
+                np.array([[d1], [d2]])))[0] + 2 * (1 + nu) * np.transpose(
+                N) * (ixx * Nx - ixy * Ny)) * j
+            f_phi += gp[0] * (nu / 2 * np.transpose(np.transpose(B).dot(
+                np.array([[h1], [h2]])))[0] + 2 * (1 + nu) * np.transpose(
+                N) * (iyy * Ny - ixy * Nx)) * j
 
         return (f_psi, f_phi)
 
@@ -188,6 +185,8 @@ class Tri6:
         :rtype: tuple(float, float, float)
         """
 
+        nu = self.material.poissons_ratio
+
         # initialise properties
         kappa_x = 0
         kappa_y = 0
@@ -213,20 +212,17 @@ class Tri6:
             h2 = -iyy * r - ixy * q
 
             kappa_x += gp[0] * (
-                psi_shear.dot(np.transpose(B)) - self.poissons_ratio / 2 *
-                np.array([d1, d2])).dot(
-                B.dot(psi_shear) - self.poissons_ratio / 2 *
-                np.array([d1, d2])) * j
+                psi_shear.dot(np.transpose(B)) - nu / 2 * np.array(
+                    [d1, d2])).dot(B.dot(psi_shear) - nu / 2 * np.array(
+                        [d1, d2])) * j
             kappa_y += gp[0] * (
-                phi_shear.dot(np.transpose(B)) - self.poissons_ratio / 2 *
-                np.array([h1, h2])).dot(
-                B.dot(phi_shear) - self.poissons_ratio / 2 *
-                np.array([h1, h2])) * j
+                phi_shear.dot(np.transpose(B)) - nu / 2 * np.array(
+                    [h1, h2])).dot(B.dot(phi_shear) - nu / 2 * np.array(
+                        [h1, h2])) * j
             kappa_xy += gp[0] * (
-                psi_shear.dot(np.transpose(B)) - self.poissons_ratio / 2 *
-                np.array([d1, d2])).dot(
-                B.dot(phi_shear) - self.poissons_ratio / 2 *
-                np.array([h1, h2])) * j
+                psi_shear.dot(np.transpose(B)) - nu / 2 * np.array(
+                    [d1, d2])).dot(B.dot(phi_shear) - nu / 2 * np.array(
+                        [h1, h2])) * j
 
         return (kappa_x, kappa_y, kappa_xy)
 
@@ -266,6 +262,8 @@ class Tri6:
             :math:`\sigma_{zy,vy}`, :math:`w_i`)
         :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`, ...)
         """
+
+        nu = self.material.poissons_ratio
 
         # calculate axial stress
         sig_zz_n = np.ones((6, 1)) * 1 / area
@@ -315,9 +313,9 @@ class Tri6:
             sig_zxy_mzz_gp[i, :] = 1 / j * (B.dot(omega) - np.array(
                 [Ny, -Nx]))
             sig_zxy_vx_gp[i, :] = 1 / Delta_s * (B.dot(
-                psi_shear) - self.poissons_ratio / 2 * np.array([d1, d2]))
+                psi_shear) - nu / 2 * np.array([d1, d2]))
             sig_zxy_vy_gp[i, :] = 1 / Delta_s * (B.dot(
-                phi_shear) - self.poissons_ratio / 2 * np.array([h1, h2]))
+                phi_shear) - nu / 2 * np.array([h1, h2]))
 
         # extrapolate results to nodes
         sig_zz_mxx = extrapolate_to_nodes(sig_zz_mxx_gp[:, 0])
