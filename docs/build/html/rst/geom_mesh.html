@@ -225,6 +225,7 @@ scripts in which different regions are specified through a list of control point
 typical structural cross-sections that also inherit from the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
 class. Note that these classes automatically assign a <code class="docutils literal notranslate"><span class="pre">control_point</span></code> to the geometry
 object.</p>
+<p># TODO: add pictures for each geometry!</p>
 <div class="section" id="rectangular-section">
 <h3>Rectangular Section<a class="headerlink" href="#rectangular-section" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
@@ -295,7 +296,7 @@ origin <em>(0, 0)</em>, with depth <em>d</em> and width <em>b</em>.</p>
 <h3>Circular Hollow Section (CHS)<a class="headerlink" href="#circular-hollow-section-chs" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">ChsSection</code><span class="sig-paren">(</span><em>d, t, n, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#ChsSection"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">Chs</code><span class="sig-paren">(</span><em>d, t, n, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Chs"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a circular hollow section centered at the origin <em>(0, 0)</em>,
 with diameter <em>d</em> and thickness <em>t</em>, using <em>n</em> points to construct the
@@ -319,7 +320,7 @@ diameter of 48 and thickness of 3.2, and generates a mesh with a maximum
 triangular area of 1.0:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ChsSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">3.2</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">Chs</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">3.2</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -330,7 +331,7 @@ triangular area of 1.0:</p>
 <h3>Rectangular Hollow Section (RHS)<a class="headerlink" href="#rectangular-hollow-section-rhs" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">RhsSection</code><span class="sig-paren">(</span><em>d, b, t, r_out, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#RhsSection"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">Rhs</code><span class="sig-paren">(</span><em>d, b, t, r_out, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Rhs"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a rectangular hollow section centered at <em>(b/2, d/2)</em>, with
 depth <em>d</em>, width <em>b</em>, thickness <em>t</em> and outer radius <em>r_out</em>, using <em>n_r</em>
@@ -357,7 +358,7 @@ inner and outer radii. A mesh is generated with a maximum triangular area
 of 2.0:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RhsSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r_out</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">Rhs</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r_out</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -662,7 +663,7 @@ defined by a list of points (nodes), facets (node connectivities) and hole locat
 <dt>
 <em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">CustomSection</code><span class="sig-paren">(</span><em>points, facets, holes, control_points, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CustomSection"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
-<p>Constructs a cross section from a list of points, facets, holes and a
+<p>Constructs a cross-section from a list of points, facets, holes and a
 user specified control point.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -724,7 +725,8 @@ regions of the provided geometries. Overlapping of geometries is permitted.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sections</strong> (list[<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>]) – A list of geometries to merge into one geometry</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sections</strong> (list[<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>]) – A list of geometry objects to merge into one
+<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> object</td>
 </tr>
 </tbody>
 </table>
@@ -734,7 +736,7 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 
 <span class="n">isection</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-<span class="n">box</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RhsSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r_out</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">8.5</span><span class="p">,</span> <span class="mi">203</span><span class="p">])</span>
+<span class="n">box</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">Rhs</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r_out</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">8.5</span><span class="p">,</span> <span class="mi">203</span><span class="p">])</span>
 
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MergedSection</span><span class="p">([</span><span class="n">isection</span><span class="p">,</span> <span class="n">box</span><span class="p">])</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
@@ -770,7 +772,7 @@ immediately after the window is rendered.</li>
 diameter of 48 and thickness of 3.2, and plots the geometry:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ChsSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">3.2</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">Chs</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">3.2</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">geometry</span><span class="o">.</span><span class="n">plot_geometry</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -786,11 +788,6 @@ diameter of 48 and thickness of 3.2, and plots the geometry:</p>
 <p>A finite element mesh is required to perform a cross-section analysis. A finite
 element mesh can be created by using the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry.create_mesh" title="sectionproperties.pre.sections.Geometry.create_mesh"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_mesh()</span></code></a>
 method:</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">The length of <code class="docutils literal notranslate"><span class="pre">mesh_sizes</span></code> must match the number of regions
-in the geometry object.</p>
-</div>
 <dl class="method">
 <dt>
 <code class="descclassname">Geometry.</code><code class="descname">create_mesh</code><span class="sig-paren">(</span><em>mesh_sizes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.create_mesh"><span class="viewcode-link">[source]</span></a></dt>
@@ -822,6 +819,11 @@ number of regions</td>
 </div>
 </dd></dl>
 
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The length of <code class="docutils literal notranslate"><span class="pre">mesh_sizes</span></code> must match the number of regions
+in the geometry object.</p>
+</div>
 </div>
 </div>
 

@@ -212,8 +212,9 @@
 <span class="sd">            mesh = geometry.create_mesh(mesh_sizes=[2.5])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Number of mesh_sizes should match the number of regions &quot;</span>
-        <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot;(</span><span class="si">{0}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">))</span>
+        <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Number of mesh_sizes (</span><span class="si">{0}</span><span class="s2">), &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="p">))</span>
+        <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot;should match the number of regions &quot;</span>
+        <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot;(</span><span class="si">{0}</span><span class="s2">).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">))</span>
         <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">)),</span> <span class="nb">str</span>
 
         <span class="k">return</span> <span class="n">pre</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">holes</span><span class="p">,</span>
@@ -249,7 +250,7 @@
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
 
-<span class="sd">            geometry = sections.ChsSection(d=48, t=3.2, n=64)</span>
+<span class="sd">            geometry = sections.Chs(d=48, t=3.2, n=64)</span>
 <span class="sd">            geometry.plot_geometry()</span>
 
 <span class="sd">        ..  figure:: ../images/chs_geometry.png</span>
@@ -301,7 +302,7 @@
 
 
 <div class="viewcode-block" id="CustomSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.CustomSection">[docs]</a><span class="k">class</span> <span class="nc">CustomSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Constructs a cross section from a list of points, facets, holes and a</span>
+    <span class="sd">&quot;&quot;&quot;Constructs a cross-section from a list of points, facets, holes and a</span>
 <span class="sd">    user specified control point.</span>
 
 <span class="sd">    :param points: List of points *[x, y]* defining the vertices of the</span>
@@ -431,7 +432,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="ChsSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.ChsSection">[docs]</a><span class="k">class</span> <span class="nc">ChsSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="Chs"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Chs">[docs]</a><span class="k">class</span> <span class="nc">Chs</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a circular hollow section centered at the origin *(0, 0)*,</span>
 <span class="sd">    with diameter *d* and thickness *t*, using *n* points to construct the</span>
 <span class="sd">    inner and outer circles.</span>
@@ -448,12 +449,12 @@
 
 <span class="sd">        import sectionproperties.pre.sections as sections</span>
 
-<span class="sd">        geometry = sections.ChsSection(d=48, t=3.2, n=64)</span>
+<span class="sd">        geometry = sections.Chs(d=48, t=3.2, n=64)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[1.0])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;Inits the ChsSection class.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Inits the Chs class.&quot;&quot;&quot;</span>
 
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="n">d</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
@@ -490,7 +491,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="RhsSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.RhsSection">[docs]</a><span class="k">class</span> <span class="nc">RhsSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="Rhs"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Rhs">[docs]</a><span class="k">class</span> <span class="nc">Rhs</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a rectangular hollow section centered at *(b/2, d/2)*, with</span>
 <span class="sd">    depth *d*, width *b*, thickness *t* and outer radius *r_out*, using *n_r*</span>
 <span class="sd">    points to construct the inner and outer radii.</span>
@@ -510,12 +511,12 @@
 
 <span class="sd">        import sectionproperties.pre.sections as sections</span>
 
-<span class="sd">        geometry = sections.RhsSection(d=100, b=50, t=6, r_out=9, n_r=8)</span>
+<span class="sd">        geometry = sections.Rhs(d=100, b=50, t=6, r_out=9, n_r=8)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[2.0])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">r_out</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;Inits the RhsSection class.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Inits the Rhs class.&quot;&quot;&quot;</span>
 
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="n">b</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">d</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">]]</span>
@@ -1371,7 +1372,8 @@
 <span class="sd">    the meshing algorithm to work, there needs to be connectivity between all</span>
 <span class="sd">    regions of the provided geometries. Overlapping of geometries is permitted.</span>
 
-<span class="sd">    :param sections: A list of geometries to merge into one geometry</span>
+<span class="sd">    :param sections: A list of geometry objects to merge into one</span>
+<span class="sd">        :class:`~sectionproperties.pre.sections.Geometry` object</span>
 <span class="sd">    :type sections: list[:class:`~sectionproperties.pre.sections.Geometry`]</span>
 
 <span class="sd">    The following example creates a combined cross-section with a 150x100x6 RHS</span>
@@ -1381,7 +1383,7 @@
 <span class="sd">        import sectionproperties.pre.sections as sections</span>
 
 <span class="sd">        isection = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)</span>
-<span class="sd">        box = sections.RhsSection(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])</span>
+<span class="sd">        box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])</span>
 
 <span class="sd">        geometry = sections.MergedSection([isection, box])</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[5.0, 2.5])</span>

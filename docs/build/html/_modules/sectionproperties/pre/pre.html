@@ -153,6 +153,37 @@
 <span></span><span class="kn">import</span> <span class="nn">meshpy.triangle</span> <span class="k">as</span> <span class="nn">triangle</span>
 
 
+<div class="viewcode-block" id="Material"><a class="viewcode-back" href="../../../rst/analysis.html#sectionproperties.pre.pre.Material">[docs]</a><span class="k">class</span> <span class="nc">Material</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;a</span>
+
+<span class="sd">    aaa</span>
+
+<span class="sd">    :param string name: Material name</span>
+<span class="sd">    :param float elastic_modulus: Material modulus of elasticity</span>
+<span class="sd">    :param float poissons_ratio: Material Poisson&#39;s ratio</span>
+<span class="sd">    :param float yield_strength: Material yield strength</span>
+<span class="sd">    :param color: Material color for rendering</span>
+<span class="sd">    :type color: :class:`matplotlib.colors`</span>
+
+<span class="sd">    :cvar string name: Material name</span>
+<span class="sd">    :cvar float elastic_modulus: Material modulus of elasticity</span>
+<span class="sd">    :cvar float poissons_ratio: Material Poisson&#39;s ratio</span>
+<span class="sd">    :cvar float yield_strength: Material yield strength</span>
+<span class="sd">    :cvar color: Material color for rendering</span>
+<span class="sd">    :vartype color: :class:`matplotlib.colors`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="p">,</span> <span class="n">yield_strength</span><span class="p">,</span>
+                 <span class="n">color</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inits the Material class&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">=</span> <span class="n">elastic_modulus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">poissons_ratio</span> <span class="o">=</span> <span class="n">poissons_ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yield_strength</span> <span class="o">=</span> <span class="n">yield_strength</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span></div>
+
+
 <div class="viewcode-block" id="create_mesh"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.create_mesh">[docs]</a><span class="k">def</span> <span class="nf">create_mesh</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">,</span> <span class="n">mesh_sizes</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates a quadratic triangular mesh using the meshpy module, which</span>
 <span class="sd">    utilises the code &#39;Triangle&#39;, by Jonathan Shewchuk.</span>

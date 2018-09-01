@@ -154,25 +154,35 @@
 <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="k">import</span> <span class="n">csc_matrix</span><span class="p">,</span> <span class="n">coo_matrix</span><span class="p">,</span> <span class="n">linalg</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">matplotlib.cm</span> <span class="k">as</span> <span class="nn">cm</span>
+<span class="kn">import</span> <span class="nn">sectionproperties.pre.pre</span> <span class="k">as</span> <span class="nn">pre</span>
 <span class="kn">import</span> <span class="nn">sectionproperties.analysis.fea</span> <span class="k">as</span> <span class="nn">fea</span>
 <span class="kn">import</span> <span class="nn">sectionproperties.analysis.solver</span> <span class="k">as</span> <span class="nn">solver</span>
 <span class="kn">import</span> <span class="nn">sectionproperties.post.post</span> <span class="k">as</span> <span class="nn">post</span>
+
+<span class="c1"># TODO: fix torsion stress - or related issues???</span>
 
 
 <div class="viewcode-block" id="CrossSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection">[docs]</a><span class="k">class</span> <span class="nc">CrossSection</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class for structural cross-sections.</span>
 
-<span class="sd">    Stores the finite element geometry and mesh and provides methods to compute</span>
-<span class="sd">    the cross-section properties. The element type used in this program is the</span>
-<span class="sd">    six-noded quadratic triangular element.</span>
+<span class="sd">    Stores the finite element geometry, mesh and material information and</span>
+<span class="sd">    provides methods to compute the cross-section properties. The element type</span>
+<span class="sd">    used in this program is the six-noded quadratic triangular element.</span>
 
 <span class="sd">    The constructor extracts information from the provided mesh object and</span>
-<span class="sd">    creates and stores corresponding tri-6 finite element objects.</span>
+<span class="sd">    creates and stores corresponding Tri6 finite element objects.</span>
 
 <span class="sd">    :param geometry: Cross-section geometry object used to generate the mesh</span>
 <span class="sd">    :type geometry: :class:`~sectionproperties.pre.sections.Geometry`</span>
 <span class="sd">    :param mesh: Mesh object returned by meshpy</span>
 <span class="sd">    :type mesh: :class:`meshpy.triangle.MeshInfo`</span>
+<span class="sd">    :param materials: A list of material objects corresponding to the various</span>
+<span class="sd">        regions in the geometry and mesh. Note that if materials are specified,</span>
+<span class="sd">        the number of material objects must equal the number of regions in the</span>
+<span class="sd">        geometry. If no materials are specified, all elements will be assigned</span>
+<span class="sd">        a default material with an elastic modulus and yield strength equal to</span>
+<span class="sd">        1, and a Poisson&#39;s ratio equal to 0.</span>
+<span class="sd">    :type materials: list[:class:`~sectionproperties.pre.pre.Material`]</span>
 
 <span class="sd">    The following example creates a</span>
 <span class="sd">    :class:`~sectionproperties.analysis.cross_section.CrossSection` object of a</span>
@@ -199,12 +209,17 @@
 <span class="sd">    :vartype mesh_elements: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar mesh_attributes: Array of attributes from the mesh</span>
 <span class="sd">    :vartype mesh_attributes: :class:`numpy.ndarray`</span>
+<span class="sd">    :cvar materials: List of materials</span>
+<span class="sd">    :type materials: list[:class:`~sectionproperties.pre.pre.Material`]</span>
 <span class="sd">    :cvar section_props: Class to store calculated section properties</span>
 <span class="sd">    :vartype section_props:</span>
 <span class="sd">        :class:`~sectionproperties.analysis.cross_section.SectionProperties`</span>
+
+<span class="sd">    :raises AssertionError: If the number of materials does not equal the</span>
+<span class="sd">        number of regions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">materials</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Inits the CrossSection class.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span>  <span class="c1"># save geometry data</span>
@@ -216,6 +231,16 @@
 
         <span class="c1"># swap mid-node order to retain node ordering consistency</span>
         <span class="n">elements</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span> <span class="o">=</span> <span class="n">elements</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
+
+        <span class="c1"># if materials are specified, check that the right number of material</span>
+        <span class="c1"># properties are specified</span>
+        <span class="k">if</span> <span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Number of materials (</span><span class="si">{0}</span><span class="s2">), &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">materials</span><span class="p">))</span>
+            <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot;should match the number of regions (</span><span class="si">{0}</span><span class="s2">).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">max</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">materials</span><span class="p">)</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">str</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">materials</span> <span class="o">=</span> <span class="n">materials</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># initialise list holding all element objects</span>
 
@@ -238,8 +263,19 @@
             <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
                 <span class="p">[[</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">,</span> <span class="n">x4</span><span class="p">,</span> <span class="n">x5</span><span class="p">,</span> <span class="n">x6</span><span class="p">],</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">y3</span><span class="p">,</span> <span class="n">y4</span><span class="p">,</span> <span class="n">y5</span><span class="p">,</span> <span class="n">y6</span><span class="p">]])</span>
 
-            <span class="c1"># add a tri6 element to the mesh</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fea</span><span class="o">.</span><span class="n">Tri6</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">attributes</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="c1"># if materials are specified, get the material</span>
+            <span class="k">if</span> <span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># get attribute index of current element</span>
+                <span class="n">att_el</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="c1"># fetch the material</span>
+                <span class="n">material</span> <span class="o">=</span> <span class="n">materials</span><span class="p">[</span><span class="n">att_el</span><span class="p">]</span>
+            <span class="c1"># if there are no materials specified, use a default material</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">material</span> <span class="o">=</span> <span class="n">pre</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># add tri6 elements to the mesh</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fea</span><span class="o">.</span><span class="n">Tri6</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">material</span><span class="p">))</span>
 
         <span class="c1"># save total number of nodes in mesh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
@@ -278,13 +314,32 @@
 <span class="sd">            section.calculate_geometric_properties()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># TODO: which properties to change calculation for composite???</span>
+
         <span class="k">def</span> <span class="nf">calculate_geom</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_area</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_qx</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_qy</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_ixx_g</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_iyy_g</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_ixy_g</span><span class="p">()</span>
+            <span class="c1"># initialise properties</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qy</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_g</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_g</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_g</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c1"># calculate global geometric properties</span>
+            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">qx</span><span class="p">,</span> <span class="n">qy</span><span class="p">,</span> <span class="n">ixx_g</span><span class="p">,</span> <span class="n">iyy_g</span><span class="p">,</span> <span class="n">ixy_g</span><span class="p">)</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">geometric_properties</span><span class="p">()</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">+=</span> <span class="n">area</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qx</span> <span class="o">+=</span> <span class="n">qx</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qy</span> <span class="o">+=</span> <span class="n">qy</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_g</span> <span class="o">+=</span> <span class="n">ixx_g</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_g</span> <span class="o">+=</span> <span class="n">iyy_g</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_g</span> <span class="o">+=</span> <span class="n">ixy_g</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># TODO: calculate and store ea, eqx, eqy, eixx_g etc...</span>
+                    <span class="k">pass</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">calculate_elastic_centroid</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">calculate_centroidal_properties</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
 
@@ -325,6 +380,8 @@
 <span class="sd">        :raises RuntimeError: If the geometric properties have not been</span>
 <span class="sd">            calculated prior to calling this method</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO: modify calculations so that it works for composite materials</span>
 
         <span class="c1"># check that a geometric analysis has been performed</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span><span class="p">,</span>
@@ -484,7 +541,7 @@
             <span class="p">(</span><span class="n">sc_xint</span><span class="p">,</span> <span class="n">sc_yint</span><span class="p">,</span> <span class="n">q_omega</span><span class="p">,</span> <span class="n">i_omega</span><span class="p">,</span> <span class="n">i_xomega</span><span class="p">,</span> <span class="n">i_yomega</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">assemle_sc_warping_integrals</span><span class="p">())</span>
 
-        <span class="c1"># calculate effective Poissons ratio</span>
+        <span class="c1"># calculate effective Poisson&#39;s ratio</span>
         <span class="n">nu</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># TODO: implement</span>
 
         <span class="c1"># calculate shear centres</span>
@@ -618,6 +675,8 @@
 <span class="sd">            performed prior to calling this method</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># TODO: implement based on composite materials</span>
+
         <span class="c1"># check that a geometric and warping analysis has been performed</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">j</span><span class="p">]:</span>
@@ -704,82 +763,6 @@
         <span class="c1"># return the stress result object</span>
         <span class="k">return</span> <span class="n">stress_result</span></div>
 
-<div class="viewcode-block" id="CrossSection.calculate_area"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_area">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the area of the cross-section.&quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">+=</span> <span class="n">el</span><span class="o">.</span><span class="n">area</span></div>
-
-<div class="viewcode-block" id="CrossSection.calculate_qx"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_qx">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_qx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the first moment area of the cross-section about the</span>
-<span class="sd">        x-axis.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qx</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qx</span> <span class="o">+=</span> <span class="n">el</span><span class="o">.</span><span class="n">qx</span></div>
-
-<div class="viewcode-block" id="CrossSection.calculate_qy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_qy">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_qy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the first moment area of the cross-section about the</span>
-<span class="sd">        y-axis.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qy</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qy</span> <span class="o">+=</span> <span class="n">el</span><span class="o">.</span><span class="n">qy</span></div>
-
-<div class="viewcode-block" id="CrossSection.calculate_ixx_g"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_ixx_g">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_ixx_g</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the second moment area of the cross-section about the</span>
-<span class="sd">        global x-axis.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_g</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_g</span> <span class="o">+=</span> <span class="n">el</span><span class="o">.</span><span class="n">ixx</span></div>
-
-<div class="viewcode-block" id="CrossSection.calculate_iyy_g"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_iyy_g">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_iyy_g</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the second moment area of the cross-section about the</span>
-<span class="sd">        global y-axis.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_g</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_g</span> <span class="o">+=</span> <span class="n">el</span><span class="o">.</span><span class="n">iyy</span></div>
-
-<div class="viewcode-block" id="CrossSection.calculate_ixy_g"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_ixy_g">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_ixy_g</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the second moment area of the cross-section about the</span>
-<span class="sd">        global xy-axis.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_g</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_g</span> <span class="o">+=</span> <span class="n">el</span><span class="o">.</span><span class="n">ixy</span></div>
-
-<div class="viewcode-block" id="CrossSection.calculate_elastic_centroid"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_elastic_centroid">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_elastic_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the elastic centroid of the cross-section.</span>
-
-<span class="sd">        :return: Tuple containing the coordinates of the elastic centroid.</span>
-<span class="sd">        :rtype: tuple(float, float)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_area</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_qx</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_qy</span><span class="p">()</span>
-
-        <span class="k">return</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">calculate_elastic_centroid</span><span class="p">())</span></div>
-
 <div class="viewcode-block" id="CrossSection.assemble_torsion"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.assemble_torsion">[docs]</a>    <span class="k">def</span> <span class="nf">assemble_torsion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Assembles stiffness matrices to be used for the computation of</span>
 <span class="sd">        warping properties and the torsion load vector (f_torsion). Both a</span>
@@ -847,7 +830,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">csc_matrix</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">csc_matrix</span><span class="p">(</span><span class="n">k_lg</span><span class="p">),</span> <span class="n">f_torsion</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.plot_mesh"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.plot_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">plot_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.plot_mesh"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.plot_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">plot_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plots the finite element mesh. If no axes object is supplied a new</span>
 <span class="sd">        figure and axis is created.</span>
 
@@ -857,6 +840,10 @@
 <span class="sd">            the window is closed. If set to false, the script continues</span>
 <span class="sd">            immediately after the window is rendered.</span>
 <span class="sd">        :param float alpha: Transparency of the mesh: 0 &lt;= alpha &lt;= 1</span>
+<span class="sd">        :param bool color: If set to true and material properties have been</span>
+<span class="sd">            provided to the</span>
+<span class="sd">            :class:`sectionproperties.analysis.cross_section.CrossSection` </span>
+<span class="sd">            object, shades the elements with the specified material colours</span>
 
 <span class="sd">        The following example plots the mesh generated for a 50D x 100W</span>
 <span class="sd">        rectangle using a mesh size of 5::</span>
@@ -882,6 +869,8 @@
             <span class="n">post</span><span class="o">.</span><span class="n">setup_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ax_supplied</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># TODO: implement colour shading</span>
 
         <span class="c1"># plot all the elements in the mesh</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">triplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
@@ -969,22 +958,26 @@
         <span class="sd">&quot;&quot;&quot;Prints mesh statistics (number of nodes, elements and regions) to</span>
 <span class="sd">        the command window.</span>
 
-<span class="sd">        The following example displays the mesh statistics for a 100D x 50W</span>
-<span class="sd">        rectangle using a mesh size of 5::</span>
+<span class="sd">        The following example displays the mesh statistics for a Tee section</span>
+<span class="sd">        merged from two rectangles::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
 <span class="sd">            from sectionproperties.analysis.cross_section import CrossSection</span>
 
-<span class="sd">            geometry = sections.RectangularSection(d=100, b=50)</span>
-<span class="sd">            mesh = geometry.create_mesh(mesh_sizes=[5])</span>
+<span class="sd">            rec1 = sections.RectangularSection(d=100, b=25, shift=[-12.5, 0])</span>
+<span class="sd">            rec2 = sections.RectangularSection(d=25, b=100, shift=[-50, 100])</span>
+<span class="sd">            geometry = sections.MergedSection([rec1, rec2])</span>
+<span class="sd">            mesh = geometry.create_mesh(mesh_sizes=[5, 2.5])</span>
 <span class="sd">            section = CrossSection(geometry, mesh)</span>
 <span class="sd">            section.display_mesh_info()</span>
 
 <span class="sd">            &gt;&gt;&gt;Mesh Statistics:</span>
-<span class="sd">            &gt;&gt;&gt;--3282 nodes</span>
-<span class="sd">            &gt;&gt;&gt;--1591 elements</span>
-<span class="sd">            &gt;&gt;&gt;--1 region</span>
+<span class="sd">            &gt;&gt;&gt;--4920 nodes</span>
+<span class="sd">            &gt;&gt;&gt;--2365 elements</span>
+<span class="sd">            &gt;&gt;&gt;--2 regions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO: add more statistics</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mesh Statistics:&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--</span><span class="si">{0}</span><span class="s2"> nodes&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">))</span>
@@ -1021,6 +1014,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">post</span><span class="o">.</span><span class="n">print_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span></div>
+
+    <span class="c1"># TODO: add new get methods when new section properties are added</span>
+    <span class="c1"># e.g. plastic and composite</span>
 
 <div class="viewcode-block" id="CrossSection.get_area"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_area">[docs]</a>    <span class="k">def</span> <span class="nf">get_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1320,6 +1316,8 @@
 <span class="sd">    Stores calculated section properties. Also provides methods to calculate</span>
 <span class="sd">    section properties entirely derived from other section properties.</span>
 
+<span class="sd">    # TODO: add new section properties for composite</span>
+
 <span class="sd">    :cvar float area: Cross-sectional area</span>
 <span class="sd">    :cvar float qx: First moment of area about the x-axis</span>
 <span class="sd">    :cvar float qy: First moment of area about the y-axis</span>
@@ -1479,6 +1477,8 @@
 <span class="sd">        :rtype: tuple(float, float)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># TODO: adjust for material properties!</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">cx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qy</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qx</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span>
 
@@ -1488,6 +1488,8 @@
         <span class="sd">&quot;&quot;&quot;Calculates the geometric section properties about the centroidal and</span>
 <span class="sd">        principal axes based on the results about the global axis.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO: adjust for material properties!</span>
 
         <span class="c1"># calculate second moments of area about the centroidal xy axis</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ixx_g</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">qx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span>
@@ -1550,6 +1552,52 @@
         <span class="c1"># calculate radii of gyration about centroidal principal axis</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">r11_c</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i11_c</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">r22_c</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i22_c</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">PlasticSection</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;asldj TODO!!!</span>
+
+<span class="sd">    asdlkjasd</span>
+
+<span class="sd">    :param geometry: Cross-section geometry object</span>
+<span class="sd">    :type geometry: :class:`~sectionproperties.pre.sections.Geometry`</span>
+
+<span class="sd">    :cvar geometry: Cross-section geometry object</span>
+<span class="sd">    :vartype geometry: :class:`~sectionproperties.pre.sections.Geometry`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inits the PlasticSection class.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span>
+
+    <span class="k">def</span> <span class="nf">calculate_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+
+        <span class="c1"># unit vectors in the axis directions</span>
+        <span class="n">ux</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)]</span>
+        <span class="n">uy</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)]</span>
+
+        <span class="c1"># calculate x-axis plastic centroid</span>
+        <span class="c1"># implement</span>
+
+        <span class="c1"># calculate y-axis plastic centroid</span>
+        <span class="c1"># implement</span>
+
+        <span class="c1"># think about SFs and S for different materials</span>
+
+    <span class="c1"># ELEMENT METHODS:</span>
+        <span class="c1"># is element above axis or below axis?</span>
+        <span class="c1"># return element force</span>
+
+    <span class="c1"># CLASS METHODS:</span>
+        <span class="c1"># calculate plastic force</span>
+        <span class="c1"># calculate area centroids</span>
+        <span class="c1"># meshing methods</span>
+        <span class="c1"># pc algorithm</span>
+
+<span class="c1"># TODO: think about how to do stresses for composite! don&#39;t average across</span>
+<span class="c1"># different properties!</span>
 
 
 <div class="viewcode-block" id="StressResult"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressResult">[docs]</a><span class="k">class</span> <span class="nc">StressResult</span><span class="p">:</span>
@@ -1700,6 +1748,8 @@
 <span class="sd">            immediately after the window is rendered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># TODO: find a way to get better arrow lengths?</span>
+
         <span class="c1"># create plot and setup the plot</span>
         <span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
         <span class="n">post</span><span class="o">.</span><span class="n">setup_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span>
@@ -1728,10 +1778,39 @@
         <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StressResult.plot_stress_vector"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressResult.plot_stress_vector">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigx</span><span class="p">,</span> <span class="n">sigy</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Plots stress vectors over the finite element mesh.</span>
 
-        <span class="k">pass</span></div>
-        <span class="c1"># TODO: implement</span>
+<span class="sd">        :param sigx: x-component of the nodal stress values</span>
+<span class="sd">        :type sigx: :class:`numpy.ndarray`</span>
+<span class="sd">        :param sigy: y-component of the nodal stress values</span>
+<span class="sd">        :type sigy: :class:`numpy.ndarray`</span>
+<span class="sd">        :param string title: Plot title</span>
+<span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
+<span class="sd">            the window is closed. If set to false, the script continues</span>
+<span class="sd">            immediately after the window is rendered.&quot;&quot;&quot;</span>
+
+        <span class="c1"># create plot and setup the plot</span>
+        <span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="n">post</span><span class="o">.</span><span class="n">setup_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span>
+
+        <span class="c1"># plot the finite element mesh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="c1"># scale the colour with respect to the magnitude of the vector</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">sigx</span><span class="p">,</span> <span class="n">sigy</span><span class="p">)</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+            <span class="c1"># only show the quiver plot if there are results</span>
+            <span class="n">quiv</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">sigx</span><span class="p">,</span> <span class="n">sigy</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+            <span class="c1"># apply the colourbar</span>
+            <span class="n">v1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="mi">10</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">quiv</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Stress&#39;</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">v1</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.4e</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># finish the plot</span>
+        <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span></div>
 
     <span class="c1"># TODO: implement examples for stress plot methods</span>
 
@@ -2091,7 +2170,7 @@
 <span class="c1"># def computeSectionProperties(self, points, facets, holes, controlPoints,</span>
 <span class="c1">#                              materials):</span>
 <span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This function computes the the cross section properties for the mesh.</span>
+<span class="c1">#     This function computes the the cross-section properties for the mesh.</span>
 <span class="c1">#     &quot;&quot;&quot;</span>
 <span class="c1">#</span>
 <span class="c1">#     if (self.settings.plasticAnalysis):</span>
@@ -2233,237 +2312,6 @@
 <span class="c1">#         botCen = np.array([botQy / botA, botQx / botA])</span>
 <span class="c1">#</span>
 <span class="c1">#     return (topA, botA, topCen, botCen)</span>
-<span class="c1">#</span>
-<span class="c1"># def plotResults(self, plots):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This method generates all the plots in the &#39;plots&#39; list.</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#     for plot in plots:</span>
-<span class="c1">#         # initialise plot variables</span>
-<span class="c1">#         x = []  # x-component of vector</span>
-<span class="c1">#         y = []  # y-component of vector</span>
-<span class="c1">#         z = []  # contour values</span>
-<span class="c1">#         globalAxis = False</span>
-<span class="c1">#         principalAxis = False</span>
-<span class="c1">#         nodes = False</span>
-<span class="c1">#         plotTitle = &quot;&quot;</span>
-<span class="c1">#         centroids = False</span>
-<span class="c1">#         plotType = &quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#         if (plot.lower() == &quot;axial&quot;):</span>
-<span class="c1">#             z = self.axialStress</span>
-<span class="c1">#             plotTitle = &quot;Axial Stress&quot;</span>
-<span class="c1">#             plotType = &quot;contour&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;bending&quot;):</span>
-<span class="c1">#             z = self.bendingStress</span>
-<span class="c1">#             plotTitle = &quot;Bending Stress&quot;</span>
-<span class="c1">#             plotType = &quot;contour&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;torsion&quot;):</span>
-<span class="c1">#             z = self.torsionStress</span>
-<span class="c1">#             plotTitle = &quot;Torsion Stress&quot;</span>
-<span class="c1">#             plotType = &quot;contour&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;torsion-vector&quot;):</span>
-<span class="c1">#             x = self.torsionStress_zx</span>
-<span class="c1">#             y = self.torsionStress_zy</span>
-<span class="c1">#             plotTitle = &quot;Torsion Stress Vectors&quot;</span>
-<span class="c1">#             plotType = &quot;vector&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;shear&quot;):</span>
-<span class="c1">#             z = self.shearStress</span>
-<span class="c1">#             plotTitle = &quot;Transverse Shear Stress&quot;</span>
-<span class="c1">#             plotType = &quot;contour&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;shear-zx&quot;):</span>
-<span class="c1">#             z = self.shearStress_zx</span>
-<span class="c1">#             plotTitle = &quot;Transverse Shear (zx) Stress&quot;</span>
-<span class="c1">#             plotType = &quot;contour&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;shear-zy&quot;):</span>
-<span class="c1">#             z = self.shearStress_zy</span>
-<span class="c1">#             plotTitle = &quot;Transverse Shear (zy) Stress&quot;</span>
-<span class="c1">#             plotType = &quot;contour&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;shear-vector&quot;):</span>
-<span class="c1">#             x = self.shearStress_zx</span>
-<span class="c1">#             y = self.shearStress_zy</span>
-<span class="c1">#             plotTitle = &quot;Transverse Shear Stress Vectors&quot;</span>
-<span class="c1">#             plotType = &quot;vector&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;combined-normal&quot;):</span>
-<span class="c1">#             z = self.sigma_zz</span>
-<span class="c1">#             plotTitle = &quot;Combined Normal Stress&quot;</span>
-<span class="c1">#             plotType = &quot;contour&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;combined-shear&quot;):</span>
-<span class="c1">#             z = self.tau</span>
-<span class="c1">#             plotTitle = &quot;Combined Shear Stress&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;combined-shear-vector&quot;):</span>
-<span class="c1">#             x = self.tau_zx</span>
-<span class="c1">#             y = self.tau_zy</span>
-<span class="c1">#             plotTitle = &quot;Combined Shear Stress Vectors&quot;</span>
-<span class="c1">#             plotType = &quot;vector&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;von-mises&quot;):</span>
-<span class="c1">#             z = self.vonMises</span>
-<span class="c1">#             plotTitle = &quot;von Mises Stress&quot;</span>
-<span class="c1">#             plotType = &quot;contour&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;centroids&quot;):</span>
-<span class="c1">#             z = None</span>
-<span class="c1">#             globalAxis = True</span>
-<span class="c1">#             principalAxis = True</span>
-<span class="c1">#             centroids = True</span>
-<span class="c1">#             plotTitle = &quot;Centroids&quot;</span>
-<span class="c1">#             plotType = &quot;contour&quot;</span>
-<span class="c1">#         elif (plot.lower() == &quot;mesh&quot;):</span>
-<span class="c1">#             z = None</span>
-<span class="c1">#             globalAxis = True</span>
-<span class="c1">#             plotTitle = &quot;Mesh&quot;</span>
-<span class="c1">#             plotType = &quot;contour&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#         # if we are displaying a contour plot</span>
-<span class="c1">#         if (plotType == &quot;contour&quot;):</span>
-<span class="c1">#             self.contourPlot(</span>
-<span class="c1">#                 globalAxis=globalAxis, principalAxis=principalAxis, z=z,</span>
-<span class="c1">#                 nodes=nodes, plotTitle=plotTitle, centroids=centroids)</span>
-<span class="c1">#         elif (plotType == &quot;vector&quot;):</span>
-<span class="c1">#             self.quiverPlot(u=x, v=y, plotTitle=plotTitle)</span>
-<span class="c1">#</span>
-<span class="c1"># def contourPlot(self, globalAxis=False, principalAxis=False, z=None,</span>
-<span class="c1">#                 nodes=False, plotTitle=&quot;&quot;, centroids=False):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This method generates a plot of the mesh with an optional contour</span>
-<span class="c1">#     plot of results(z). Additional options include displaying the nodes, a</span>
-<span class="c1">#     plot title, and the principal axis and centroids.</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#     fig, ax = plt.subplots()</span>
-<span class="c1">#     plt.ion()  # interactive mode enabled</span>
-<span class="c1">#     plt.show()  # show the plot</span>
-<span class="c1">#     ax.set_aspect(&quot;equal&quot;)  # set the scale on the x and y axes equal</span>
-<span class="c1">#</span>
-<span class="c1">#     # plot the title and axis labels</span>
-<span class="c1">#     ax.set_title(plotTitle)</span>
-<span class="c1">#     ax.set_xlabel(&quot;x&quot;)</span>
-<span class="c1">#     ax.set_ylabel(&quot;y&quot;)</span>
-<span class="c1">#</span>
-<span class="c1">#     # plot the mesh</span>
-<span class="c1">#     ax.triplot(self.nodes[:, 0], self.nodes[:, 1], self.elements[:, 0:3],</span>
-<span class="c1">#                lw=0.5, color=&#39;black&#39;)</span>
-<span class="c1">#</span>
-<span class="c1">#     # plot the global axis as lines</span>
-<span class="c1">#     if (globalAxis):</span>
-<span class="c1">#         # determine min and max values of the nodes</span>
-<span class="c1">#         (xmin, ymin) = np.amin(self.nodes, axis=0)</span>
-<span class="c1">#         (xmax, ymax) = np.amax(self.nodes, axis=0)</span>
-<span class="c1">#         xLim = xmax - xmin</span>
-<span class="c1">#         yLim = ymax - ymin</span>
-<span class="c1">#</span>
-<span class="c1">#         # plot x axis</span>
-<span class="c1">#         ax.plot([xmin - 0.1 * xLim, xmax + 0.1 * xLim],</span>
-<span class="c1">#                 [-self.cy, -self.cy], label=&quot;Global x-axis&quot;)</span>
-<span class="c1">#         # plot y axis</span>
-<span class="c1">#         ax.plot([-self.cx, -self.cx],</span>
-<span class="c1">#                 [ymin - 0.1 * yLim, ymax + 0.1 * yLim],</span>
-<span class="c1">#                 label=&quot;Global y-axis&quot;)</span>
-<span class="c1">#</span>
-<span class="c1">#     # plot the principal axis as lines</span>
-<span class="c1">#     if principalAxis:</span>
-<span class="c1">#         start_11 = otherUtilities.globalCoordinate(</span>
-<span class="c1">#             self.phi, self.x1min, 0)</span>
-<span class="c1">#         end_11 = otherUtilities.globalCoordinate(</span>
-<span class="c1">#             self.phi, self.x1max, 0)</span>
-<span class="c1">#         start_22 = otherUtilities.globalCoordinate(</span>
-<span class="c1">#             self.phi, 0, self.y2min)</span>
-<span class="c1">#         end_22 = otherUtilities.globalCoordinate(</span>
-<span class="c1">#             self.phi, 0, self.y2max)</span>
-<span class="c1">#</span>
-<span class="c1">#         lim11_x = end_11[0] - start_11[0]</span>
-<span class="c1">#         lim11_y = end_11[1] - start_11[1]</span>
-<span class="c1">#         lim22_x = end_22[0] - start_22[0]</span>
-<span class="c1">#         lim22_y = end_22[1] - start_22[1]</span>
-<span class="c1">#</span>
-<span class="c1">#         ax.plot([start_11[0] - 0.1 * lim11_x, end_11[0] + 0.1 * lim11_x],</span>
-<span class="c1">#                 [start_11[1] - 0.1 * lim11_y, end_11[1] + 0.1 * lim11_y],</span>
-<span class="c1">#                 label=&#39;Principal 11-axis&#39;)</span>
-<span class="c1">#         ax.plot([start_22[0] - 0.1 * lim22_x, end_22[0] + 0.1 * lim22_x],</span>
-<span class="c1">#                 [start_22[1] - 0.1 * lim22_y, end_22[1] + 0.1 * lim22_y],</span>
-<span class="c1">#                 label=&#39;Principal 22-axis&#39;)</span>
-<span class="c1">#</span>
-<span class="c1">#     # plot the locations of the various centroids</span>
-<span class="c1">#     if centroids:</span>
-<span class="c1">#         ax.scatter(0, 0, facecolors=&#39;None&#39;, edgecolors=&#39;k&#39;, marker=&#39;o&#39;,</span>
-<span class="c1">#                    s=100, label=&#39;Elastic Centroid&#39;)</span>
-<span class="c1">#         ax.scatter(self.x_se, self.y_se, c=&#39;k&#39;, marker=&#39;+&#39;, s=100,</span>
-<span class="c1">#                    label=&#39;Shear Centre&#39;)</span>
-<span class="c1">#</span>
-<span class="c1">#         if (self.settings.plasticAnalysis):</span>
-<span class="c1">#             ax.scatter(self.x_pc, self.y_pc, c=&#39;k&#39;, marker=&#39;x&#39;, s=100,</span>
-<span class="c1">#                        label=&#39;Global Plastic Centroid&#39;)</span>
-<span class="c1">#             ax.scatter(self.x1_pc, self.y2_pc, facecolors=&#39;None&#39;,</span>
-<span class="c1">#                        edgecolors=&#39;k&#39;, marker=&#39;s&#39;, s=100,</span>
-<span class="c1">#                        label=&#39;Principal Plastic Centroid&#39;)</span>
-<span class="c1">#</span>
-<span class="c1">#     # plot a contour of results defined by z</span>
-<span class="c1">#     if z is not None:</span>
-<span class="c1">#         cmap = cm.get_cmap(name=&#39;jet&#39;)</span>
-<span class="c1">#</span>
-<span class="c1">#         # if values are not all constant</span>
-<span class="c1">#         if np.amax(z) - np.amin(z) &gt; 1e-6:</span>
-<span class="c1">#             v = np.linspace(np.amin(z), np.amax(z), 10, endpoint=True)</span>
-<span class="c1">#         else:</span>
-<span class="c1">#             # ten contours</span>
-<span class="c1">#             v = 10</span>
-<span class="c1">#</span>
-<span class="c1">#         trictr = ax.tricontourf(</span>
-<span class="c1">#             self.nodes[:, 0], self.nodes[:, 1], self.elements[:, 0:3],</span>
-<span class="c1">#             z, v, cmap=cmap)</span>
-<span class="c1">#         fig.colorbar(trictr, label=&#39;Stress&#39;)</span>
-<span class="c1">#</span>
-<span class="c1">#     # show the nodes</span>
-<span class="c1">#     if nodes:</span>
-<span class="c1">#         ax.plot(self.nodes[:, 0], self.nodes[:, 1], &#39;ko&#39;, markersize=1)</span>
-<span class="c1">#</span>
-<span class="c1">#     # show the legend</span>
-<span class="c1">#     if (globalAxis or principalAxis or centroids):</span>
-<span class="c1">#         ax.legend()</span>
-<span class="c1">#</span>
-<span class="c1">#     ax.grid(True)</span>
-<span class="c1">#     plt.draw()  # render the figure</span>
-<span class="c1">#     plt.pause(0.001)</span>
-<span class="c1">#</span>
-<span class="c1">#     return fig</span>
-<span class="c1">#</span>
-<span class="c1"># def quiverPlot(self, u, v, plotTitle=&#39;&#39;):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This method produces a quiver plot of a vector with components u and</span>
-<span class="c1">#     v, overlaid with the mesh.</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#     fig, ax = plt.subplots()</span>
-<span class="c1">#     plt.ion()  # interactive mode enabled</span>
-<span class="c1">#     plt.show()  # show the plot</span>
-<span class="c1">#     ax.set_aspect(&quot;equal&quot;)  # set the scale on the x and y axes equal</span>
-<span class="c1">#</span>
-<span class="c1">#     # plot the title and axis labels</span>
-<span class="c1">#     ax.set_title(plotTitle)</span>
-<span class="c1">#     ax.set_xlabel(&quot;x&quot;)</span>
-<span class="c1">#     ax.set_ylabel(&quot;y&quot;)</span>
-<span class="c1">#</span>
-<span class="c1">#     # plot the mesh</span>
-<span class="c1">#     plt.triplot(self.nodes[:, 0], self.nodes[:, 1], self.elements[:, 0:3],</span>
-<span class="c1">#                 lw=0.5, color=&#39;black&#39;)</span>
-<span class="c1">#</span>
-<span class="c1">#     # scale the colour with respect to the magnitude of the vector</span>
-<span class="c1">#     c = np.hypot(u, v)</span>
-<span class="c1">#     cmap = cm.get_cmap(name=&#39;jet&#39;)</span>
-<span class="c1">#</span>
-<span class="c1">#     # generate the quiver plot and apply the colourbar</span>
-<span class="c1">#     if np.amin(c) != np.amax(c):</span>
-<span class="c1">#         # only show the quiver plot if there are results</span>
-<span class="c1">#         quiv = ax.quiver(self.nodes[:, 0], self.nodes[:, 1], u, v, c,</span>
-<span class="c1">#                          cmap=cmap)</span>
-<span class="c1">#         v1 = np.linspace(np.amin(c), np.amax(c), 10, endpoint=True)</span>
-<span class="c1">#         fig.colorbar(quiv, label=&#39;Stress&#39;, ticks=v1)</span>
-<span class="c1">#</span>
-<span class="c1">#     ax.grid(True)</span>
-<span class="c1">#     plt.draw()  # render the figure</span>
-<span class="c1">#     plt.pause(0.001)</span>
-<span class="c1">#</span>
-<span class="c1">#     return fig</span>
 </pre></div>
 
            </div>

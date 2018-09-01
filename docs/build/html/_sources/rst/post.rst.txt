@@ -150,8 +150,8 @@ object to plot the various cross-section stresses. These methods take the follow
 where:
 
 - *stress* denotes a contour plot and *vector* denotes a vector plot.
-- *action* denotes the type of action causing the stress e.g. mxx for bending moment about the x-axis. Note that the action is omitted for stresses caused by the application of all actions.
-- *stresstype* denotes the type of stress that is being plotted e.g. zx for the *x*-component of shear stress.
+- *action* denotes the type of action causing the stress e.g. *mxx* for bending moment about the x-axis. Note that the action is omitted for stresses caused by the application of all actions.
+- *stresstype* denotes the type of stress that is being plotted e.g. *zx* for the *x*-component of shear stress.
 
 Primary Stress Plots
 ^^^^^^^^^^^^^^^^^^^^

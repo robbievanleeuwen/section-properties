@@ -35,14 +35,14 @@ CircularSection Class
 ..  autoclass:: sectionproperties.pre.sections.CircularSection
     :show-inheritance:
 
-ChsSection Class
+Chs Class
 """"""""""""""""
-..  autoclass:: sectionproperties.pre.sections.ChsSection
+..  autoclass:: sectionproperties.pre.sections.Chs
     :show-inheritance:
 
-RhsSection Class
+Rhs Class
 """"""""""""""""
-..  autoclass:: sectionproperties.pre.sections.RhsSection
+..  autoclass:: sectionproperties.pre.sections.Rhs
     :show-inheritance:
 
 ISection Class

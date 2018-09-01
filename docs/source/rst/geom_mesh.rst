@@ -32,6 +32,8 @@ typical structural cross-sections that also inherit from the :class:`~sectionpro
 class. Note that these classes automatically assign a ``control_point`` to the geometry
 object.
 
+# TODO: add pictures for each geometry!
+
 Rectangular Section
 ^^^^^^^^^^^^^^^^^^^
 ..  autoclass:: sectionproperties.pre.sections.RectangularSection
@@ -46,13 +48,13 @@ Circular Section
 
 Circular Hollow Section (CHS)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autoclass:: sectionproperties.pre.sections.ChsSection
+..  autoclass:: sectionproperties.pre.sections.Chs
     :show-inheritance:
     :noindex:
 
 Rectangular Hollow Section (RHS)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autoclass:: sectionproperties.pre.sections.RhsSection
+..  autoclass:: sectionproperties.pre.sections.Rhs
     :show-inheritance:
     :noindex:
 
@@ -140,8 +142,8 @@ A finite element mesh is required to perform a cross-section analysis. A finite
 element mesh can be created by using the :func:`~sectionproperties.pre.sections.Geometry.create_mesh`
 method:
 
-..  warning:: The length of ``mesh_sizes`` must match the number of regions
-  in the geometry object.
-
 ..  automethod:: sectionproperties.pre.sections.Geometry.create_mesh
     :noindex:
+
+..  warning:: The length of ``mesh_sizes`` must match the number of regions
+  in the geometry object.
