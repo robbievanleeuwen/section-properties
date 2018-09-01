@@ -13,7 +13,8 @@ class Tri6:
     :type coords: :class:`numpy.ndarray`
     :param node_ids: A list of the global node ids for the current element
     :type node_ids: list[int]
-    :param int attribute: Attribute number for the element
+    :param material: Material object for the current finite element.
+    :type material: :class:`~sectionproperties.pre.pre.Material`
 
     :cvar coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The
         first three columns relate to the vertices of the triangle and the last
@@ -21,32 +22,35 @@ class Tri6:
     :vartype coords: :class:`numpy.ndarray`
     :cvar node_ids: A list of the global node ids for the current element
     :vartype node_ids: list[int]
-    :cvar int attribute: Attribute number for the element
-    :cvar float area: Area of the element
-    :cvar float qx: First moment of area of the element about the x-axis
-    :cvar float qy: First moment of area of the element about the y-axis
-    :cvar float ixx: Second moment of area of the element about the x-axis
-    :cvar float iyy: Second moment of area of the element about the y-axis
-    :cvar float ixy: Second moment of area of the element about the xy-axis
+    :cvar float elastic_modulus: Finite element modulus of elasticity
+    :cvar float poissons_ratio: Finite element Poisson's ratio
+    :cvar float yield_strength: Finite element yield strength
     """
 
-    def __init__(self, coords, node_ids, attribute):
-        """Inits the Tri6 class. Calculates and stores the area properties of
-        the element.
-        """
+    def __init__(self, coords, node_ids, material):
+        """Inits the Tri6 class."""
 
         self.coords = coords
         self.node_ids = node_ids
-        self.attribute = attribute
-        self.nu = 0  # TODO: implement Poissons ratio
+        self.elastic_modulus = material.elastic_modulus
+        self.poissons_ratio = material.poissons_ratio
+        self.yield_strength = material.yield_strength
 
-        # initialise area properties
-        self.area = 0
-        self.qx = 0
-        self.qy = 0
-        self.ixx = 0
-        self.iyy = 0
-        self.ixy = 0
+    def geometric_properties(self):
+        """Calculates the geometric properties for the current finite element.
+
+        :return: Tuple containing the geometric properties: *(area, qx, qy,
+            ixx, iyy, ixy)*
+        :rtype: tuple(float)
+        """
+
+        # initialise geometric properties
+        area = 0
+        qx = 0
+        qy = 0
+        ixx = 0
+        iyy = 0
+        ixy = 0
 
         # Gauss points for 6 point Gaussian integration
         gps = gauss_points(6)
@@ -56,15 +60,15 @@ class Tri6:
             # determine shape function, shape function derivative and jacobian
             (N, B, j) = shape_function(self.coords, gp)
 
-            self.area += gp[0] * j
-            self.qx += gp[0] * np.dot(N, np.transpose(self.coords[1, :])) * j
-            self.qy += gp[0] * np.dot(N, np.transpose(self.coords[0, :])) * j
-            self.ixx += gp[0] * (
-                np.dot(N, np.transpose(self.coords[1, :]))) ** 2 * j
-            self.iyy += gp[0] * (
-                np.dot(N, np.transpose(self.coords[0, :]))) ** 2 * j
-            self.ixy += (gp[0] * np.dot(N, np.transpose(self.coords[1, :])) *
-                         np.dot(N, np.transpose(self.coords[0, :])) * j)
+            area += gp[0] * j
+            qx += gp[0] * np.dot(N, np.transpose(self.coords[1, :])) * j
+            qy += gp[0] * np.dot(N, np.transpose(self.coords[0, :])) * j
+            ixx += gp[0] * np.dot(N, np.transpose(self.coords[1, :])) ** 2 * j
+            iyy += gp[0] * np.dot(N, np.transpose(self.coords[0, :])) ** 2 * j
+            ixy += gp[0] * np.dot(N, np.transpose(self.coords[1, :])) * np.dot(
+                N, np.transpose(self.coords[0, :])) * j
+
+        return (area, qx, qy, ixx, iyy, ixy)
 
     def torsion_properties(self):
         """Calculates the element stiffness matrix used for warping analysis
@@ -127,12 +131,14 @@ class Tri6:
             h1 = -ixy * r + iyy * q
             h2 = -iyy * r - ixy * q
 
-            f_psi += gp[0] * (self.nu / 2 * np.transpose(
+            f_psi += gp[0] * (self.poissons_ratio / 2 * np.transpose(
                 np.transpose(B).dot(np.array([[d1], [d2]])))[0] + 2 *
-                (1 + self.nu) * np.transpose(N) * (ixx * Nx - ixy * Ny)) * j
-            f_phi += gp[0] * (self.nu / 2 * np.transpose(
+                (1 + self.poissons_ratio) * np.transpose(N) * (
+                ixx * Nx - ixy * Ny)) * j
+            f_phi += gp[0] * (self.poissons_ratio / 2 * np.transpose(
                 np.transpose(B).dot(np.array([[h1], [h2]])))[0] + 2 *
-                (1 + self.nu) * np.transpose(N) * (iyy * Ny - ixy * Nx)) * j
+                (1 + self.poissons_ratio) * np.transpose(N) * (
+                iyy * Ny - ixy * Nx)) * j
 
         return (f_psi, f_phi)
 
@@ -207,17 +213,20 @@ class Tri6:
             h2 = -iyy * r - ixy * q
 
             kappa_x += gp[0] * (
-                psi_shear.dot(np.transpose(B)) - self.nu / 2 * np.array(
-                    [d1, d2])).dot(B.dot(psi_shear) - self.nu / 2 * np.array(
-                        [d1, d2])) * j
+                psi_shear.dot(np.transpose(B)) - self.poissons_ratio / 2 *
+                np.array([d1, d2])).dot(
+                B.dot(psi_shear) - self.poissons_ratio / 2 *
+                np.array([d1, d2])) * j
             kappa_y += gp[0] * (
-                phi_shear.dot(np.transpose(B)) - self.nu / 2 * np.array(
-                    [h1, h2])).dot(B.dot(phi_shear) - self.nu / 2 * np.array(
-                        [h1, h2])) * j
+                phi_shear.dot(np.transpose(B)) - self.poissons_ratio / 2 *
+                np.array([h1, h2])).dot(
+                B.dot(phi_shear) - self.poissons_ratio / 2 *
+                np.array([h1, h2])) * j
             kappa_xy += gp[0] * (
-                psi_shear.dot(np.transpose(B)) - self.nu / 2 * np.array(
-                    [d1, d2])).dot(B.dot(phi_shear) - self.nu / 2 * np.array(
-                        [h1, h2])) * j
+                psi_shear.dot(np.transpose(B)) - self.poissons_ratio / 2 *
+                np.array([d1, d2])).dot(
+                B.dot(phi_shear) - self.poissons_ratio / 2 *
+                np.array([h1, h2])) * j
 
         return (kappa_x, kappa_y, kappa_xy)
 
@@ -226,14 +235,20 @@ class Tri6:
         """Calculates the stress within an element resulting from unit loading.
 
         :param float area: Total area of the cross-section
-        :param float cx: x position of the centroidal axis
-        :param float cy: y position of the centroidal axis
+        :param float cx: x position of the centroidal axis of the cross-section
+        :param float cy: y position of the centroidal axis of the cross-section
         :param float ixx: Second moment of area about the centroidal x-axis
+            of the cross-section
         :param float iyy: Second moment of area about the centroidal y-axis
+            of the cross-section
         :param float ixy: Second moment of area about the centroidal xy-axis
+            of the cross-section
         :param float i11: Second moment of area about the principal 11-axis
+            of the cross-section
         :param float i22: Second moment of area about the principal 22-axis
+            of the cross-section
         :param float phi: Principal axis angle
+            of the cross-section
         :param float j: Torsion constant of the cross-section
         :param omega: Warping function at the nodes of the element
         :type omega: :class:`numpy.ndarray`
@@ -241,7 +256,7 @@ class Tri6:
         :type psi_shear: :class:`numpy.ndarray`
         :param phi_shear: Phi shear function at the nodes of the element
         :type phi_shear: :class:`numpy.ndarray`
-        :param float Delta_s: Shear factor
+        :param float Delta_s: Shear factor of the cross-section
         :return: Tuple containing element stresses and integration weights (
             :math:`\sigma_{zz,n}`, :math:`\sigma_{zz,mxx}`,
             :math:`\sigma_{zz,myy}`, :math:`\sigma_{zz,m11}`,
@@ -300,9 +315,9 @@ class Tri6:
             sig_zxy_mzz_gp[i, :] = 1 / j * (B.dot(omega) - np.array(
                 [Ny, -Nx]))
             sig_zxy_vx_gp[i, :] = 1 / Delta_s * (B.dot(
-                psi_shear) - self.nu / 2 * np.array([d1, d2]))
+                psi_shear) - self.poissons_ratio / 2 * np.array([d1, d2]))
             sig_zxy_vy_gp[i, :] = 1 / Delta_s * (B.dot(
-                phi_shear) - self.nu / 2 * np.array([h1, h2]))
+                phi_shear) - self.poissons_ratio / 2 * np.array([h1, h2]))
 
         # extrapolate results to nodes
         sig_zz_mxx = extrapolate_to_nodes(sig_zz_mxx_gp[:, 0])
@@ -396,17 +411,13 @@ def shape_function(coords, gauss_point):
     J = np.vstack((J_upper, J_lower))
 
     # calculate the jacobian
-    try:
-        j = 0.5 * np.linalg.det(J)
-    except ValueError:
-        # handle warning if area is zero during plastic centroid algorithm
-        j = 0
+    j = 0.5 * np.linalg.det(J)
 
     # cacluate the P matrix
-    if j != 0:
-        P = np.dot(np.linalg.inv(J), np.array([[0, 0], [1, 0], [0, 1]]))
-        # calculate the B matrix in terms of cartesian co-ordinates
-        B = np.transpose(np.dot(np.transpose(B_iso), P))
+    P = np.dot(np.linalg.inv(J), np.array([[0, 0], [1, 0], [0, 1]]))
+
+    # calculate the B matrix in terms of cartesian co-ordinates
+    B = np.transpose(np.dot(np.transpose(B_iso), P))
 
     return (N, B, j)
 

@@ -2,6 +2,7 @@ import numpy as np
 from scipy.sparse import csc_matrix, coo_matrix, linalg
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import sectionproperties.pre.pre as pre
 import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
@@ -12,17 +13,24 @@ import sectionproperties.post.post as post
 class CrossSection:
     """Class for structural cross-sections.
 
-    Stores the finite element geometry and mesh and provides methods to compute
-    the cross-section properties. The element type used in this program is the
-    six-noded quadratic triangular element.
+    Stores the finite element geometry, mesh and material information and
+    provides methods to compute the cross-section properties. The element type
+    used in this program is the six-noded quadratic triangular element.
 
     The constructor extracts information from the provided mesh object and
-    creates and stores corresponding tri-6 finite element objects.
+    creates and stores corresponding Tri6 finite element objects.
 
     :param geometry: Cross-section geometry object used to generate the mesh
     :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
     :param mesh: Mesh object returned by meshpy
     :type mesh: :class:`meshpy.triangle.MeshInfo`
+    :param materials: A list of material objects corresponding to the various
+        regions in the geometry and mesh. Note that if materials are specified,
+        the number of material objects must equal the number of regions in the
+        geometry. If no materials are specified, all regions will be assigned
+        a default material with an elastic modulus and yield strength equal to
+        1, and a Poisson's ratio equal to 0.
+    :type materials: list[:class:`~sectionproperties.pre.pre.Material`]
 
     The following example creates a
     :class:`~sectionproperties.analysis.cross_section.CrossSection` object of a
@@ -49,12 +57,17 @@ class CrossSection:
     :vartype mesh_elements: :class:`numpy.ndarray`
     :cvar mesh_attributes: Array of attributes from the mesh
     :vartype mesh_attributes: :class:`numpy.ndarray`
+    :cvar materials: List of materials
+    :type materials: list[:class:`~sectionproperties.pre.pre.Material`]
     :cvar section_props: Class to store calculated section properties
     :vartype section_props:
         :class:`~sectionproperties.analysis.cross_section.SectionProperties`
+
+    :raises AssertionError: If the number of materials does not equal the
+        number of regions
     """
 
-    def __init__(self, geometry, mesh):
+    def __init__(self, geometry, mesh, materials=None):
         """Inits the CrossSection class."""
 
         self.geometry = geometry  # save geometry data
@@ -66,6 +79,16 @@ class CrossSection:
 
         # swap mid-node order to retain node ordering consistency
         elements[:, [3, 4, 5]] = elements[:, [5, 3, 4]]
+
+        # if materials are specified, check that the right number of material
+        # properties are specified
+        if materials is not None:
+            str = "Number of materials ({0}), ".format(len(materials))
+            str += "should match the number of regions ({0}).".format(
+                max(attributes) + 1)
+            assert(len(materials) == max(attributes) + 1), str
+
+        self.materials = materials
 
         self.elements = []  # initialise list holding all element objects
 
@@ -88,8 +111,19 @@ class CrossSection:
             coords = np.array(
                 [[x1, x2, x3, x4, x5, x6], [y1, y2, y3, y4, y5, y6]])
 
-            # add a tri6 element to the mesh
-            self.elements.append(fea.Tri6(coords, node_ids, attributes[i]))
+            # if materials are specified, get the material
+            if materials is not None:
+                # get attribute index of current element
+                att_el = attributes[i]
+
+                # fetch the material
+                material = materials[att_el]
+            # if there are no materials specified, use a default material
+            else:
+                material = pre.Material('default', 1, 0, 1)
+
+            # add tri6 elements to the mesh
+            self.elements.append(fea.Tri6(coords, node_ids, material))
 
         # save total number of nodes in mesh
         self.num_nodes = len(nodes)
@@ -128,13 +162,32 @@ class CrossSection:
             section.calculate_geometric_properties()
         """
 
+        # TODO: which properties to change calculation for composite???
+
         def calculate_geom():
-            self.calculate_area()
-            self.calculate_qx()
-            self.calculate_qy()
-            self.calculate_ixx_g()
-            self.calculate_iyy_g()
-            self.calculate_ixy_g()
+            # initialise properties
+            self.section_props.area = 0
+            self.section_props.qx = 0
+            self.section_props.qy = 0
+            self.section_props.ixx_g = 0
+            self.section_props.iyy_g = 0
+            self.section_props.ixy_g = 0
+
+            # calculate global geometric properties
+            for el in self.elements:
+                (area, qx, qy, ixx_g, iyy_g, ixy_g) = el.geometric_properties()
+
+                self.section_props.area += area
+                self.section_props.qx += qx
+                self.section_props.qy += qy
+                self.section_props.ixx_g += ixx_g
+                self.section_props.iyy_g += iyy_g
+                self.section_props.ixy_g += ixy_g
+
+                if self.materials is not None:
+                    # TODO: calculate and store ea, eqx, eqy, eixx_g etc...
+                    pass
+
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(self.mesh)
 
@@ -175,6 +228,8 @@ class CrossSection:
         :raises RuntimeError: If the geometric properties have not been
             calculated prior to calling this method
         """
+
+        # TODO: modify calculations so that it works for composite materials
 
         # check that a geometric analysis has been performed
         if None in [self.section_props.area, self.section_props.ixx_c,
@@ -334,7 +389,7 @@ class CrossSection:
             (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = (
                 assemle_sc_warping_integrals())
 
-        # calculate effective Poissons ratio
+        # calculate effective Poisson's ratio
         nu = 0  # TODO: implement
 
         # calculate shear centres
@@ -468,6 +523,8 @@ class CrossSection:
             performed prior to calling this method
         """
 
+        # TODO: implement based on composite materials
+
         # check that a geometric and warping analysis has been performed
         if None in [self.section_props.area, self.section_props.ixx_c,
                     self.section_props.cx, self.section_props.j]:
@@ -554,82 +611,6 @@ class CrossSection:
         # return the stress result object
         return stress_result
 
-    def calculate_area(self):
-        """Calculates the area of the cross-section."""
-
-        self.section_props.area = 0
-
-        for el in self.elements:
-            self.section_props.area += el.area
-
-    def calculate_qx(self):
-        """Calculates the first moment area of the cross-section about the
-        x-axis.
-        """
-
-        self.section_props.qx = 0
-
-        for el in self.elements:
-            self.section_props.qx += el.qx
-
-    def calculate_qy(self):
-        """Calculates the first moment area of the cross-section about the
-        y-axis.
-        """
-
-        self.section_props.qy = 0
-
-        for el in self.elements:
-            self.section_props.qy += el.qy
-
-    def calculate_ixx_g(self):
-        """Calculates the second moment area of the cross-section about the
-        global x-axis.
-        """
-
-        self.section_props.ixx_g = 0
-
-        for el in self.elements:
-            self.section_props.ixx_g += el.ixx
-
-    def calculate_iyy_g(self):
-        """Calculates the second moment area of the cross-section about the
-        global y-axis.
-        """
-
-        self.section_props.iyy_g = 0
-
-        for el in self.elements:
-            self.section_props.iyy_g += el.iyy
-
-    def calculate_ixy_g(self):
-        """Calculates the second moment area of the cross-section about the
-        global xy-axis.
-        """
-
-        self.section_props.ixy_g = 0
-
-        for el in self.elements:
-            self.section_props.ixy_g += el.ixy
-
-    def calculate_elastic_centroid(self):
-        """Calculates the elastic centroid of the cross-section.
-
-        :return: Tuple containing the coordinates of the elastic centroid.
-        :rtype: tuple(float, float)
-        """
-
-        if self.section_props.area is None:
-            self.calculate_area()
-
-        if self.section_props.qx is None:
-            self.calculate_qx()
-
-        if self.section_props.qy is None:
-            self.calculate_qy()
-
-        return(self.section_props.calculate_elastic_centroid())
-
     def assemble_torsion(self):
         """Assembles stiffness matrices to be used for the computation of
         warping properties and the torsion load vector (f_torsion). Both a
@@ -697,7 +678,7 @@ class CrossSection:
 
         return (csc_matrix(k), csc_matrix(k_lg), f_torsion)
 
-    def plot_mesh(self, ax=None, pause=True, alpha=1):
+    def plot_mesh(self, ax=None, pause=True, alpha=1, color=False):
         """Plots the finite element mesh. If no axes object is supplied a new
         figure and axis is created.
 
@@ -707,6 +688,10 @@ class CrossSection:
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
         :param float alpha: Transparency of the mesh: 0 <= alpha <= 1
+        :param bool color: If set to true and material properties have been
+            provided to the
+            :class:`~sectionproperties.analysis.cross_section.CrossSection`
+            object, shades the elements with the specified material colours
 
         The following example plots the mesh generated for a 50D x 100W
         rectangle using a mesh size of 5::
@@ -732,6 +717,8 @@ class CrossSection:
             post.setup_plot(ax, pause)
         else:
             ax_supplied = True
+
+        # TODO: implement colour shading
 
         # plot all the elements in the mesh
         ax.triplot(self.mesh_nodes[:, 0], self.mesh_nodes[:, 1],
@@ -819,22 +806,26 @@ class CrossSection:
         """Prints mesh statistics (number of nodes, elements and regions) to
         the command window.
 
-        The following example displays the mesh statistics for a 100D x 50W
-        rectangle using a mesh size of 5::
+        The following example displays the mesh statistics for a Tee section
+        merged from two rectangles::
 
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import CrossSection
 
-            geometry = sections.RectangularSection(d=100, b=50)
-            mesh = geometry.create_mesh(mesh_sizes=[5])
+            rec1 = sections.RectangularSection(d=100, b=25, shift=[-12.5, 0])
+            rec2 = sections.RectangularSection(d=25, b=100, shift=[-50, 100])
+            geometry = sections.MergedSection([rec1, rec2])
+            mesh = geometry.create_mesh(mesh_sizes=[5, 2.5])
             section = CrossSection(geometry, mesh)
             section.display_mesh_info()
 
             >>>Mesh Statistics:
-            >>>--3282 nodes
-            >>>--1591 elements
-            >>>--1 region
+            >>>--4920 nodes
+            >>>--2365 elements
+            >>>--2 regions
         """
+
+        # TODO: add more statistics
 
         print("Mesh Statistics:")
         print("--{0} nodes".format(self.num_nodes))
@@ -871,6 +862,9 @@ class CrossSection:
         """
 
         post.print_results(self, fmt)
+
+    # TODO: add new get methods when new section properties are added
+    # e.g. plastic and composite
 
     def get_area(self):
         """
@@ -1170,6 +1164,8 @@ class SectionProperties:
     Stores calculated section properties. Also provides methods to calculate
     section properties entirely derived from other section properties.
 
+    # TODO: add new section properties for composite
+
     :cvar float area: Cross-sectional area
     :cvar float qx: First moment of area about the x-axis
     :cvar float qy: First moment of area about the y-axis
@@ -1329,6 +1325,8 @@ class SectionProperties:
         :rtype: tuple(float, float)
         """
 
+        # TODO: adjust for material properties!
+
         self.cx = self.qy / self.area
         self.cy = self.qx / self.area
 
@@ -1338,6 +1336,8 @@ class SectionProperties:
         """Calculates the geometric section properties about the centroidal and
         principal axes based on the results about the global axis.
         """
+
+        # TODO: adjust for material properties!
 
         # calculate second moments of area about the centroidal xy axis
         self.ixx_c = self.ixx_g - self.qx ** 2 / self.area
@@ -1400,6 +1400,52 @@ class SectionProperties:
         # calculate radii of gyration about centroidal principal axis
         self.r11_c = (self.i11_c / self.area) ** 0.5
         self.r22_c = (self.i22_c / self.area) ** 0.5
+
+
+class PlasticSection:
+    """asldj TODO!!!
+
+    asdlkjasd
+
+    :param geometry: Cross-section geometry object
+    :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
+
+    :cvar geometry: Cross-section geometry object
+    :vartype geometry: :class:`~sectionproperties.pre.sections.Geometry`
+    """
+
+    def __init__(self, geometry):
+        """Inits the PlasticSection class."""
+
+        self.geometry = geometry
+
+    def calculate_properties(self, angle):
+        """a"""
+
+        # unit vectors in the axis directions
+        ux = [np.cos(angle), np.sin(angle)]
+        uy = [-np.sin(angle), np.cos(angle)]
+
+        # calculate x-axis plastic centroid
+        # implement
+
+        # calculate y-axis plastic centroid
+        # implement
+
+        # think about SFs and S for different materials
+
+    # ELEMENT METHODS:
+        # is element above axis or below axis?
+        # return element force
+
+    # CLASS METHODS:
+        # calculate plastic force
+        # calculate area centroids
+        # meshing methods
+        # pc algorithm
+
+# TODO: think about how to do stresses for composite! don't average across
+# different properties!
 
 
 class StressResult:
@@ -1550,6 +1596,8 @@ class StressResult:
             immediately after the window is rendered.
         """
 
+        # TODO: find a way to get better arrow lengths?
+
         # create plot and setup the plot
         (fig, ax) = plt.subplots()
         post.setup_plot(ax, pause)
@@ -1578,10 +1626,39 @@ class StressResult:
         post.finish_plot(ax, pause, title=title)
 
     def plot_stress_vector(self, sigx, sigy, title, pause):
-        """a"""
+        """Plots stress vectors over the finite element mesh.
 
-        pass
-        # TODO: implement
+        :param sigx: x-component of the nodal stress values
+        :type sigx: :class:`numpy.ndarray`
+        :param sigy: y-component of the nodal stress values
+        :type sigy: :class:`numpy.ndarray`
+        :param string title: Plot title
+        :param bool pause: If set to true, the figure pauses the script until
+            the window is closed. If set to false, the script continues
+            immediately after the window is rendered."""
+
+        # create plot and setup the plot
+        (fig, ax) = plt.subplots()
+        post.setup_plot(ax, pause)
+
+        # plot the finite element mesh
+        self.cross_section.plot_mesh(ax, pause, alpha=0.5)
+
+        # scale the colour with respect to the magnitude of the vector
+        c = np.hypot(sigx, sigy)
+        cmap = cm.get_cmap(name='jet')
+
+        if np.amin(c) != np.amax(c):
+            # only show the quiver plot if there are results
+            quiv = ax.quiver(
+                self.cross_section.mesh_nodes[:, 0],
+                self.cross_section.mesh_nodes[:, 1], sigx, sigy, c, cmap=cmap)
+            # apply the colourbar
+            v1 = np.linspace(np.amin(c), np.amax(c), 10, endpoint=True)
+            fig.colorbar(quiv, label='Stress', ticks=v1, format='%.4e')
+
+        # finish the plot
+        post.finish_plot(ax, pause, title=title)
 
     # TODO: implement examples for stress plot methods
 
@@ -1941,7 +2018,7 @@ class StressResult:
 # def computeSectionProperties(self, points, facets, holes, controlPoints,
 #                              materials):
 #     """
-#     This function computes the the cross section properties for the mesh.
+#     This function computes the the cross-section properties for the mesh.
 #     """
 #
 #     if (self.settings.plasticAnalysis):
@@ -2083,234 +2160,3 @@ class StressResult:
 #         botCen = np.array([botQy / botA, botQx / botA])
 #
 #     return (topA, botA, topCen, botCen)
-#
-# def plotResults(self, plots):
-#     """
-#     This method generates all the plots in the 'plots' list.
-#     """
-#
-#     for plot in plots:
-#         # initialise plot variables
-#         x = []  # x-component of vector
-#         y = []  # y-component of vector
-#         z = []  # contour values
-#         globalAxis = False
-#         principalAxis = False
-#         nodes = False
-#         plotTitle = ""
-#         centroids = False
-#         plotType = ""
-#
-#         if (plot.lower() == "axial"):
-#             z = self.axialStress
-#             plotTitle = "Axial Stress"
-#             plotType = "contour"
-#         elif (plot.lower() == "bending"):
-#             z = self.bendingStress
-#             plotTitle = "Bending Stress"
-#             plotType = "contour"
-#         elif (plot.lower() == "torsion"):
-#             z = self.torsionStress
-#             plotTitle = "Torsion Stress"
-#             plotType = "contour"
-#         elif (plot.lower() == "torsion-vector"):
-#             x = self.torsionStress_zx
-#             y = self.torsionStress_zy
-#             plotTitle = "Torsion Stress Vectors"
-#             plotType = "vector"
-#         elif (plot.lower() == "shear"):
-#             z = self.shearStress
-#             plotTitle = "Transverse Shear Stress"
-#             plotType = "contour"
-#         elif (plot.lower() == "shear-zx"):
-#             z = self.shearStress_zx
-#             plotTitle = "Transverse Shear (zx) Stress"
-#             plotType = "contour"
-#         elif (plot.lower() == "shear-zy"):
-#             z = self.shearStress_zy
-#             plotTitle = "Transverse Shear (zy) Stress"
-#             plotType = "contour"
-#         elif (plot.lower() == "shear-vector"):
-#             x = self.shearStress_zx
-#             y = self.shearStress_zy
-#             plotTitle = "Transverse Shear Stress Vectors"
-#             plotType = "vector"
-#         elif (plot.lower() == "combined-normal"):
-#             z = self.sigma_zz
-#             plotTitle = "Combined Normal Stress"
-#             plotType = "contour"
-#         elif (plot.lower() == "combined-shear"):
-#             z = self.tau
-#             plotTitle = "Combined Shear Stress"
-#         elif (plot.lower() == "combined-shear-vector"):
-#             x = self.tau_zx
-#             y = self.tau_zy
-#             plotTitle = "Combined Shear Stress Vectors"
-#             plotType = "vector"
-#         elif (plot.lower() == "von-mises"):
-#             z = self.vonMises
-#             plotTitle = "von Mises Stress"
-#             plotType = "contour"
-#         elif (plot.lower() == "centroids"):
-#             z = None
-#             globalAxis = True
-#             principalAxis = True
-#             centroids = True
-#             plotTitle = "Centroids"
-#             plotType = "contour"
-#         elif (plot.lower() == "mesh"):
-#             z = None
-#             globalAxis = True
-#             plotTitle = "Mesh"
-#             plotType = "contour"
-#
-#         # if we are displaying a contour plot
-#         if (plotType == "contour"):
-#             self.contourPlot(
-#                 globalAxis=globalAxis, principalAxis=principalAxis, z=z,
-#                 nodes=nodes, plotTitle=plotTitle, centroids=centroids)
-#         elif (plotType == "vector"):
-#             self.quiverPlot(u=x, v=y, plotTitle=plotTitle)
-#
-# def contourPlot(self, globalAxis=False, principalAxis=False, z=None,
-#                 nodes=False, plotTitle="", centroids=False):
-#     """
-#     This method generates a plot of the mesh with an optional contour
-#     plot of results(z). Additional options include displaying the nodes, a
-#     plot title, and the principal axis and centroids.
-#     """
-#
-#     fig, ax = plt.subplots()
-#     plt.ion()  # interactive mode enabled
-#     plt.show()  # show the plot
-#     ax.set_aspect("equal")  # set the scale on the x and y axes equal
-#
-#     # plot the title and axis labels
-#     ax.set_title(plotTitle)
-#     ax.set_xlabel("x")
-#     ax.set_ylabel("y")
-#
-#     # plot the mesh
-#     ax.triplot(self.nodes[:, 0], self.nodes[:, 1], self.elements[:, 0:3],
-#                lw=0.5, color='black')
-#
-#     # plot the global axis as lines
-#     if (globalAxis):
-#         # determine min and max values of the nodes
-#         (xmin, ymin) = np.amin(self.nodes, axis=0)
-#         (xmax, ymax) = np.amax(self.nodes, axis=0)
-#         xLim = xmax - xmin
-#         yLim = ymax - ymin
-#
-#         # plot x axis
-#         ax.plot([xmin - 0.1 * xLim, xmax + 0.1 * xLim],
-#                 [-self.cy, -self.cy], label="Global x-axis")
-#         # plot y axis
-#         ax.plot([-self.cx, -self.cx],
-#                 [ymin - 0.1 * yLim, ymax + 0.1 * yLim],
-#                 label="Global y-axis")
-#
-#     # plot the principal axis as lines
-#     if principalAxis:
-#         start_11 = otherUtilities.globalCoordinate(
-#             self.phi, self.x1min, 0)
-#         end_11 = otherUtilities.globalCoordinate(
-#             self.phi, self.x1max, 0)
-#         start_22 = otherUtilities.globalCoordinate(
-#             self.phi, 0, self.y2min)
-#         end_22 = otherUtilities.globalCoordinate(
-#             self.phi, 0, self.y2max)
-#
-#         lim11_x = end_11[0] - start_11[0]
-#         lim11_y = end_11[1] - start_11[1]
-#         lim22_x = end_22[0] - start_22[0]
-#         lim22_y = end_22[1] - start_22[1]
-#
-#         ax.plot([start_11[0] - 0.1 * lim11_x, end_11[0] + 0.1 * lim11_x],
-#                 [start_11[1] - 0.1 * lim11_y, end_11[1] + 0.1 * lim11_y],
-#                 label='Principal 11-axis')
-#         ax.plot([start_22[0] - 0.1 * lim22_x, end_22[0] + 0.1 * lim22_x],
-#                 [start_22[1] - 0.1 * lim22_y, end_22[1] + 0.1 * lim22_y],
-#                 label='Principal 22-axis')
-#
-#     # plot the locations of the various centroids
-#     if centroids:
-#         ax.scatter(0, 0, facecolors='None', edgecolors='k', marker='o',
-#                    s=100, label='Elastic Centroid')
-#         ax.scatter(self.x_se, self.y_se, c='k', marker='+', s=100,
-#                    label='Shear Centre')
-#
-#         if (self.settings.plasticAnalysis):
-#             ax.scatter(self.x_pc, self.y_pc, c='k', marker='x', s=100,
-#                        label='Global Plastic Centroid')
-#             ax.scatter(self.x1_pc, self.y2_pc, facecolors='None',
-#                        edgecolors='k', marker='s', s=100,
-#                        label='Principal Plastic Centroid')
-#
-#     # plot a contour of results defined by z
-#     if z is not None:
-#         cmap = cm.get_cmap(name='jet')
-#
-#         # if values are not all constant
-#         if np.amax(z) - np.amin(z) > 1e-6:
-#             v = np.linspace(np.amin(z), np.amax(z), 10, endpoint=True)
-#         else:
-#             # ten contours
-#             v = 10
-#
-#         trictr = ax.tricontourf(
-#             self.nodes[:, 0], self.nodes[:, 1], self.elements[:, 0:3],
-#             z, v, cmap=cmap)
-#         fig.colorbar(trictr, label='Stress')
-#
-#     # show the nodes
-#     if nodes:
-#         ax.plot(self.nodes[:, 0], self.nodes[:, 1], 'ko', markersize=1)
-#
-#     # show the legend
-#     if (globalAxis or principalAxis or centroids):
-#         ax.legend()
-#
-#     ax.grid(True)
-#     plt.draw()  # render the figure
-#     plt.pause(0.001)
-#
-#     return fig
-#
-# def quiverPlot(self, u, v, plotTitle=''):
-#     """
-#     This method produces a quiver plot of a vector with components u and
-#     v, overlaid with the mesh.
-#     """
-#
-#     fig, ax = plt.subplots()
-#     plt.ion()  # interactive mode enabled
-#     plt.show()  # show the plot
-#     ax.set_aspect("equal")  # set the scale on the x and y axes equal
-#
-#     # plot the title and axis labels
-#     ax.set_title(plotTitle)
-#     ax.set_xlabel("x")
-#     ax.set_ylabel("y")
-#
-#     # plot the mesh
-#     plt.triplot(self.nodes[:, 0], self.nodes[:, 1], self.elements[:, 0:3],
-#                 lw=0.5, color='black')
-#
-#     # scale the colour with respect to the magnitude of the vector
-#     c = np.hypot(u, v)
-#     cmap = cm.get_cmap(name='jet')
-#
-#     # generate the quiver plot and apply the colourbar
-#     if np.amin(c) != np.amax(c):
-#         # only show the quiver plot if there are results
-#         quiv = ax.quiver(self.nodes[:, 0], self.nodes[:, 1], u, v, c,
-#                          cmap=cmap)
-#         v1 = np.linspace(np.amin(c), np.amax(c), 10, endpoint=True)
-#         fig.colorbar(quiv, label='Stress', ticks=v1)
-#
-#     ax.grid(True)
-#     plt.draw()  # render the figure
-#     plt.pause(0.001)
-#
-#     return fig

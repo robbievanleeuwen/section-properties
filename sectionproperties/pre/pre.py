@@ -1,6 +1,37 @@
 import meshpy.triangle as triangle
 
 
+class Material:
+    """a
+
+    aaa
+
+    :param string name: Material name
+    :param float elastic_modulus: Material modulus of elasticity
+    :param float poissons_ratio: Material Poisson's ratio
+    :param float yield_strength: Material yield strength
+    :param color: Material color for rendering
+    :type color: :class:`matplotlib.colors`
+
+    :cvar string name: Material name
+    :cvar float elastic_modulus: Material modulus of elasticity
+    :cvar float poissons_ratio: Material Poisson's ratio
+    :cvar float yield_strength: Material yield strength
+    :cvar color: Material color for rendering
+    :vartype color: :class:`matplotlib.colors`
+    """
+
+    def __init__(self, name, elastic_modulus, poissons_ratio, yield_strength,
+                 color='w'):
+        """Inits the Material class"""
+
+        self.name = name
+        self.elastic_modulus = elastic_modulus
+        self.poissons_ratio = poissons_ratio
+        self.yield_strength = yield_strength
+        self.color = color
+
+
 def create_mesh(points, facets, holes, control_points, mesh_sizes):
     """Creates a quadratic triangular mesh using the meshpy module, which
     utilises the code 'Triangle', by Jonathan Shewchuk.

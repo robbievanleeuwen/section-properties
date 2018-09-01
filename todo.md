@@ -6,10 +6,12 @@ List of items to complete before returning to master branch:
 [x] Direct Solver
 [x] Error Handling
 [ ] Plastic Properties
-[ ] Section Stresses
-[ ] Plot Stresses
+[x] Section Stresses
+[ ] Fix Torsion Stresses
+[x] Plot Stresses
 [x] Plot Centroids
 [x] Print Results
-[ ] Material Properties
+[ ] Different Material Properties
 [ ] Input File
 [ ] Documentation
+[ ] Packing Testing

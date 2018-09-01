@@ -60,8 +60,9 @@ class Geometry:
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
         """
 
-        str = "Number of mesh_sizes should match the number of regions "
-        str += "({0})".format(len(self.control_points))
+        str = "Number of mesh_sizes ({0}), ".format(len(mesh_sizes))
+        str += "should match the number of regions "
+        str += "({0}).".format(len(self.control_points))
         assert(len(mesh_sizes) == len(self.control_points)), str
 
         return pre.create_mesh(self.points, self.facets, self.holes,
@@ -97,7 +98,7 @@ class Geometry:
 
             import sectionproperties.pre.sections as sections
 
-            geometry = sections.ChsSection(d=48, t=3.2, n=64)
+            geometry = sections.Chs(d=48, t=3.2, n=64)
             geometry.plot_geometry()
 
         ..  figure:: ../images/chs_geometry.png
@@ -149,7 +150,7 @@ class Geometry:
 
 
 class CustomSection(Geometry):
-    """Constructs a cross section from a list of points, facets, holes and a
+    """Constructs a cross-section from a list of points, facets, holes and a
     user specified control point.
 
     :param points: List of points *[x, y]* defining the vertices of the
@@ -279,7 +280,7 @@ class CircularSection(Geometry):
         self.shift_section()
 
 
-class ChsSection(Geometry):
+class Chs(Geometry):
     """Constructs a circular hollow section centered at the origin *(0, 0)*,
     with diameter *d* and thickness *t*, using *n* points to construct the
     inner and outer circles.
@@ -296,12 +297,12 @@ class ChsSection(Geometry):
 
         import sectionproperties.pre.sections as sections
 
-        geometry = sections.ChsSection(d=48, t=3.2, n=64)
+        geometry = sections.Chs(d=48, t=3.2, n=64)
         mesh = geometry.create_mesh(mesh_sizes=[1.0])
     """
 
     def __init__(self, d, t, n, shift=[0, 0]):
-        """Inits the ChsSection class."""
+        """Inits the Chs class."""
 
         # assign control point
         control_points = [[d * 0.5 - t * 0.5, 0]]
@@ -338,7 +339,7 @@ class ChsSection(Geometry):
         self.shift_section()
 
 
-class RhsSection(Geometry):
+class Rhs(Geometry):
     """Constructs a rectangular hollow section centered at *(b/2, d/2)*, with
     depth *d*, width *b*, thickness *t* and outer radius *r_out*, using *n_r*
     points to construct the inner and outer radii.
@@ -358,12 +359,12 @@ class RhsSection(Geometry):
 
         import sectionproperties.pre.sections as sections
 
-        geometry = sections.RhsSection(d=100, b=50, t=6, r_out=9, n_r=8)
+        geometry = sections.Rhs(d=100, b=50, t=6, r_out=9, n_r=8)
         mesh = geometry.create_mesh(mesh_sizes=[2.0])
     """
 
     def __init__(self, d, b, t, r_out, n_r, shift=[0, 0]):
-        """Inits the RhsSection class."""
+        """Inits the Rhs class."""
 
         # assign control point
         control_points = [[b - t * 0.5, d * 0.5]]
@@ -1219,7 +1220,8 @@ class MergedSection(Geometry):
     the meshing algorithm to work, there needs to be connectivity between all
     regions of the provided geometries. Overlapping of geometries is permitted.
 
-    :param sections: A list of geometries to merge into one geometry
+    :param sections: A list of geometry objects to merge into one
+        :class:`~sectionproperties.pre.sections.Geometry` object
     :type sections: list[:class:`~sectionproperties.pre.sections.Geometry`]
 
     The following example creates a combined cross-section with a 150x100x6 RHS
@@ -1229,7 +1231,7 @@ class MergedSection(Geometry):
         import sectionproperties.pre.sections as sections
 
         isection = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-        box = sections.RhsSection(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
+        box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
 
         geometry = sections.MergedSection([isection, box])
         mesh = geometry.create_mesh(mesh_sizes=[5.0, 2.5])

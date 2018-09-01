@@ -13,7 +13,7 @@
 # def crossSectionAnalysis(sectionTypes, sectionData, meshSizes, materials,
 #                          loads, settings=None):
 #     """
-#     This is the main method that performs the cross section analysis.
+#     This is the main method that performs the cross-section analysis.
 #     """
 #
 #     # check length of section inputs
@@ -135,6 +135,6 @@
 #             __file__, frame.f_lineno, err))
 #         quit()
 #
-#     # perform cross section analysis
+#     # perform cross-section analysis
 #     crossSectionAnalysis(sectionTypes, sectionData, meshSizes, materials,
 #                          loads, settings)
