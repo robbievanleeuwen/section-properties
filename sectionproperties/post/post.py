@@ -1,5 +1,9 @@
+import numpy as np
 import matplotlib.pyplot as plt
 
+
+# TODO: fix (sometimes) window not wide enough to display legend
+# if section is wider than taller for e.g.
 
 def setup_plot(ax, pause):
     """Exectues code required to set up a matplotlib figure.
@@ -34,6 +38,54 @@ def finish_plot(ax, pause, title=''):
     else:
         plt.draw()
         plt.pause(0.001)
+
+
+def draw_principal_axis(ax, phi, cx, cy):
+    """a"""
+
+    # get current axis limits
+    (xmin, xmax) = ax.get_xlim()
+    (ymin, ymax) = ax.get_ylim()
+    lims = [xmin, xmax, ymin, ymax]
+
+    # form rotation matrix
+    R = np.array([[np.cos(phi), -np.sin(phi)],
+                  [np.sin(phi), np.cos(phi)]])
+
+    # get basis vectors in the directions of the principal axes
+    x11_basis = R.dot(np.array([1, 0]))
+    y22_basis = R.dot(np.array([0, 1]))
+
+    def add_point(vec, basis, centroid, num, denom):
+        if denom != 0:
+            point = basis * num / denom + centroid
+            vec.append([point[0], point[1]])
+
+    def get_prinicipal_points(basis, lims, centroid):
+        """a (xmin, xmax, ymin, ymax)"""
+
+        pts = []
+
+        add_point(pts, basis, centroid, lims[0] - centroid[0], basis[0])
+        add_point(pts, basis, centroid, lims[1] - centroid[0], basis[0])
+        add_point(pts, basis, centroid, lims[2] - centroid[1], basis[1])
+        add_point(pts, basis, centroid, lims[3] - centroid[1], basis[1])
+
+        # sort point vector
+        pts = np.array(pts)
+        pts = pts[pts[:, 0].argsort()]  # stackoverflow sort numpy array by col
+
+        # if there are four points, take the middle two points
+        if len(pts) == 4:
+            return pts[1:3, :]
+
+        return pts
+
+    x11 = get_prinicipal_points(x11_basis, lims, [cx, cy])
+    y22 = get_prinicipal_points(y22_basis, lims, [cx, cy])
+
+    ax.plot(x11[:, 0], x11[:, 1], 'k--', alpha=0.5, label='11-axis')
+    ax.plot(y22[:, 0], y22[:, 1], 'k-.', alpha=0.5, label='22-axis')
 
 
 def print_results(cross_section, fmt):

@@ -9,8 +9,6 @@ import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
 
-# TODO: fix torsion stress - or related issues???
-
 
 class CrossSection:
     """Class for structural cross-sections.
@@ -357,7 +355,7 @@ class CrossSection:
             (psi_shear, phi_shear) = solve_shear_functions()
 
         self.section_props.psi_shear = psi_shear
-        self.section_props.phi_shear = psi_shear
+        self.section_props.phi_shear = phi_shear
 
         # assemble shear centre and warping moment integrals
         def assemle_sc_warping_integrals():
@@ -526,6 +524,7 @@ class CrossSection:
         """
 
         # TODO: implement based on composite materials
+        # TODO: only calc if non-zero supplied!
 
         # check that a geometric and warping analysis has been performed
         if None in [self.section_props.area, self.section_props.ixx_c,
@@ -737,7 +736,7 @@ class CrossSection:
             # create a list of unique material legend entries
             for (i, material) in enumerate(self.materials):
                 # if the material has not be entered yet
-                if i == 0 or material in self.materials[0:i - 1]:
+                if i == 0 or material not in self.materials[0:i]:
                     # add the material colour and name to the legend list
                     legend_list.append(mpatches.Patch(color=material.color,
                                                       label=material.name))
@@ -758,8 +757,8 @@ class CrossSection:
             post.finish_plot(ax, pause, title='Finite Element Mesh')
 
     def plot_centroids(self, pause=True):
-        """Plots all the centroids and the shear centre, if they have been
-        calculated, on top of the finite element mesh.
+        """Plots all the centroids, the shear centre and the principal axis, if
+        they have been calculated, on top of the finite element mesh.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -790,8 +789,6 @@ class CrossSection:
 
             # TODO: update example with plastic centroids
         """
-
-        # TODO: add plot principal axes
 
         # create plot and setup the plot
         (fig, ax) = plt.subplots()
@@ -824,6 +821,12 @@ class CrossSection:
                        edgecolors='r', marker='s', s=100,
                        label='Principal plastic centroid')
 
+        # if the principal axis has been calculated
+        if self.section_props.phi is not None:
+            post.draw_principal_axis(
+                ax, self.section_props.phi * np.pi / 180,
+                self.section_props.cx, self.section_props.cy)
+
         # display the legend
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
@@ -852,8 +855,6 @@ class CrossSection:
             >>>--2365 elements
             >>>--2 regions
         """
-
-        # TODO: add more statistics
 
         print("Mesh Statistics:")
         print("--{0} nodes".format(self.num_nodes))

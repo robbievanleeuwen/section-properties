@@ -7,7 +7,7 @@ List of items to complete before returning to master branch:
 [x] Error Handling
 [ ] Plastic Properties
 [x] Section Stresses
-[ ] Fix Torsion Stresses
+[x] Fix Torsion Stresses
 [x] Plot Stresses
 [x] Plot Centroids
 [x] Print Results
@@ -15,3 +15,6 @@ List of items to complete before returning to master branch:
 [ ] Input File
 [ ] Documentation
 [ ] Packing Testing
+[ ] Geometry cleaning class
+[ ] Fix pause graphs when multiple graphs
+[ ] Hover over stress shows the stress result

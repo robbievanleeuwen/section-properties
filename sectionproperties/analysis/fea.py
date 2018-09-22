@@ -287,7 +287,7 @@ class Tri6:
             coords_c[1, :] = self.coords[1, :] - cy
 
             # determine shape function, shape function derivative and jacobian
-            (N, B, j) = shape_function(coords_c, gp)
+            (N, B, _) = shape_function(coords_c, gp)
 
             # determine x and y position at Gauss point
             Nx = np.dot(N, np.transpose(coords_c[0, :]))

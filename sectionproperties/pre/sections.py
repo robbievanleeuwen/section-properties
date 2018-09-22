@@ -4,6 +4,8 @@ import sectionproperties.pre.pre as pre
 import sectionproperties.post.post as post
 
 
+# TODO: ensure dimensions are floats
+
 class Geometry:
     """Parent class for a cross-section geometry input.
 
@@ -82,6 +84,69 @@ class Geometry:
         for cp in self.control_points:
             cp[0] += self.shift[0]
             cp[1] += self.shift[1]
+
+    def rotate_section(self, angle, rot_point=None):
+        """rotates geometry about rot_point - takes first cp if
+        rot_point=None, angle in degrees
+        """
+
+        rot_phi = angle * np.pi / 180
+
+        def get_r(pt, c):
+            """aaa"""
+
+            return ((pt[0] - c[0]) ** 2 + (pt[1] - c[1]) ** 2) ** 0.5
+
+        def get_phi(pt, c):
+            """a"""
+
+            return np.arctan2(pt[1] - c[1], pt[0] - c[0])
+
+        if rot_point is None:
+            rot_point = self.control_points[0]
+
+        for point in self.points:
+            r = get_r(point, rot_point)
+            phi = get_phi(point, rot_point)
+            point[0] = r * np.cos(phi + rot_phi) + rot_point[0]
+            point[1] = r * np.sin(phi + rot_phi) + rot_point[1]
+
+        for hole in self.holes:
+            r = get_r(hole, rot_point)
+            phi = get_phi(hole, rot_point)
+            hole[0] = r * np.cos(phi + rot_phi) + rot_point[0]
+            hole[1] = r * np.sin(phi + rot_phi) + rot_point[1]
+
+        for cp in self.control_points:
+            r = get_r(cp, rot_point)
+            phi = get_phi(cp, rot_point)
+            cp[0] = r * np.cos(phi + rot_phi) + rot_point[0]
+            cp[1] = r * np.sin(phi + rot_phi) + rot_point[1]
+
+    def mirror_section(self, axis='x', mirror_point=None):
+        """mirrors geometry about axis at mirror_point. If no mirror_point,
+        takes first cp
+        """
+
+        if mirror_point is None:
+            mirror_point = self.control_points[0]
+
+        if axis == 'x':
+            i = 1
+        elif axis == 'y':
+            i = 0
+        else:
+            pass
+            # TODO: raise error
+
+        for point in self.points:
+            point[i] = 2 * mirror_point[i] - point[i]
+
+        for hole in self.holes:
+            hole[i] = 2 * mirror_point[i] - hole[i]
+
+        for cp in self.control_points:
+            cp[i] = 2 * mirror_point[i] - cp[i]
 
     def plot_geometry(self, ax=None, pause=True):
         """Plots the geometry defined by the input section. If no axes object

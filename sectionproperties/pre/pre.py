@@ -1,3 +1,4 @@
+import numpy as np
 import meshpy.triangle as triangle
 
 
@@ -34,24 +35,331 @@ class Material:
         self.color = color
 
 
+class GeometryCleaner:
+    """a
+
+    a
+
+    :param geometry: Geometry object to clean
+    :type geometry: :class:`sectionproperties.pre.sections.Geometry`
+    :cvar geometry: Geometry object to clean
+    :vartype geometry: :class:`sectionproperties.pre.sections.Geometry`
+    """
+
+    def __init__(self, geometry):
+        """Inits the GeometryCleaner class."""
+
+        self.geometry = geometry
+
+    def clean_geometry(self):
+        self.zip_points()
+        self.remove_zero_length_facets()
+        self.remove_overlapping_facets()
+
+        return self.geometry
+
+    def zip_points(self, atol=1e-5):
+        """Zips points that are close to each other. Searches through the point
+        list and merges two points if there are deemed to be sufficiently
+        close. The average value of the coordinates is used for the new point.
+        One of the points is deleted from the point list and the facet list is
+        updated to remove references to the old points and renumber the
+        remaining point indices in the facet list.
+
+        :param float atol: Absolute tolerance for point zipping
+        """
+
+        # TODO: implement rtol
+        idx_to_remove = []
+
+        # loop through the list of points
+        for (i, pt1) in enumerate(self.geometry.points):
+            # check all other points
+            for (j, pt2) in enumerate(self.geometry.points[i + 1:]):
+                # get point indices
+                idx_1 = i
+                idx_2 = i + j + 1
+
+                # determine distance between two points
+                dist = ((pt2[0] - pt1[0]) ** 2 +
+                        (pt2[1] - pt1[1]) ** 2) ** 0.5
+
+                # if the points are sufficiently close together...
+                # and the point has not already been removed
+                if dist < atol and idx_2 not in idx_to_remove:
+                    # update point1 (average of point1 + point2)
+                    pt1[0] = 0.5 * (pt1[0] + pt2[0])
+                    pt1[1] = 0.5 * (pt1[1] + pt2[1])
+
+                    # join facets connected to pt2 to pt1 instead
+                    self.replace_point_id(idx_2, idx_1)
+
+                    # add pt2 to the list of points to remove
+                    idx_to_remove.append(idx_2)
+
+                    print("Zipped point {0} to point {1}".format(idx_2, idx_1))
+
+        # sort list of indices to remove in reverse order so as not to
+        # comprimise the indices
+        idx_to_remove = sorted(idx_to_remove, reverse=True)
+
+        for idx in idx_to_remove:
+            self.remove_point_id(idx)
+
+    def remove_zero_length_facets(self):
+        """Searches through all facets and removes those that have the same
+        starting and ending point."""
+
+        idx_to_remove = []
+
+        # loop through the list of facets
+        for (idx, fct) in enumerate(self.geometry.facets):
+            if fct[0] == fct[1]:
+                idx_to_remove.append(idx)
+
+        # sort list of indices to remove in reverse order so as not to
+        # comprimise the indices
+        idx_to_remove = sorted(idx_to_remove, reverse=True)
+
+        for idx in idx_to_remove:
+            self.geometry.facets.pop(idx)
+            print("Removed zero length facet {0}".format(idx))
+
+    def remove_overlapping_facets(self):
+        """a"""
+
+        cleaning = True
+
+        while cleaning:
+            # loop through the list of facets
+            for (i, fct1) in enumerate(self.geometry.facets):
+                broken = False
+
+                # check all other facets
+                for (j, fct2) in enumerate(self.geometry.facets[i + 1:]):
+                    # get facet indices
+                    idx_1 = i
+                    idx_2 = i + j + 1
+
+                    # get facets points
+                    # facet 1: p -> p + r
+                    p = np.array(self.geometry.points[fct1[0]])
+                    r = self.geometry.points[fct1[1]] - p
+
+                    # facet 2: q -> q + s
+                    q = np.array(self.geometry.points[fct2[0]])
+                    s = self.geometry.points[fct2[1]] - q
+
+                    pts = self.is_overlap(p, q, r, s, fct1, fct2)
+
+                    if pts is not None:
+                        # delete both facets
+                        idx_to_remove = sorted([idx_1, idx_2], reverse=True)
+                        for idx in idx_to_remove:
+                            self.geometry.facets.pop(idx)
+
+                        # add new facets
+                        for i in range(len(pts) - 1):
+                            self.geometry.facets.append([pts[i], pts[i + 1]])
+
+                        # remove duplicate facets
+                        self.remove_duplicate_facets()
+                        str = "Removed overlapping facets... Rebuilt with "
+                        str += "points: {0}".format(pts)
+                        print(str)
+
+                        # break both loops
+                        broken = True
+                        break
+
+                if broken:
+                    break
+
+            if not broken:
+                cleaning = False
+
+    def intersect_facets(self):
+        """a"""
+
+        pass
+
+    def replace_point_id(self, id_old, id_new):
+        """Searches all facets and replaces references to point id_old with
+        id_new.
+
+        :param int id_old: Point index to be replaced
+        :param int id_new: Point index to replace point id_old
+        """
+
+        # loop through all facets
+        for (i, facet) in enumerate(self.geometry.facets):
+            # loop through the point indices defining the facet
+            for (j, point_id) in enumerate(facet):
+                if point_id == id_old:
+                    self.geometry.facets[i][j] = id_new
+
+    def remove_point_id(self, point_id):
+        """Removes point point_id from the points list and renumbers the
+        references to points after point_id in the facet list.
+
+        :param int point_id: Index of point to be removed
+        """
+
+        # remove index point_id from the points list
+        self.geometry.points.pop(point_id)
+
+        # renumber facet references to points after point_id
+        for (i, facet) in enumerate(self.geometry.facets):
+            # loop through the point indices defining the facet
+            for (j, p_id) in enumerate(facet):
+                # if the point index is greater the point to be deleted
+                if p_id > point_id:
+                    # decrement the point index
+                    self.geometry.facets[i][j] -= 1
+
+    def is_duplicate_facet(self, fct1, fct2):
+        """a"""
+
+        # check for a facet duplicate
+        if fct1 == fct2 or fct1 == list(reversed(fct2)):
+            return True
+        else:
+            return False
+
+    def is_intersect(self, p, q, r, s):
+        """Determines if the line segment p->p+r intersects q->q+s. Implements
+        Gareth Rees's answer: https://stackoverflow.com/questions/563198.
+
+        :param p: Starting point of the first line segment
+        :type p: :class:`numpy.ndarray`[float, float]
+        :param q: Starting point of the second line segment
+        :type q: :class:`numpy.ndarray`[float, float]
+        :param r: Vector of the first line segment
+        :type r: :class:`numpy.ndarray`[float, float]
+        :param s: Vector of the second line segment
+        :type s: :class:`numpy.ndarray`[float, float]
+        :returns: The intersection points of the line segments. If there is no
+            intersection, returns None.
+        :rtype: :class:`numpy.ndarray`[float, float]
+        """
+
+        if np.cross(r, s) != 0:
+            # calculate t and u
+            t = np.cross(q - p, s) / np.cross(r, s)
+            u = np.cross(p - q, r) / np.cross(s, r)
+
+            # modify from closed inequality (<=) to open (<) so end...
+            # intersections are not picked up
+            if (t > 0 and t < 1) and (u > 0 and u < 1):
+                # CASE 3: two line segments intersect
+                return p + t * r
+            else:
+                # CASE 4: line segments are not parallel and do not intersect
+                return None
+
+    def is_overlap(self, p, q, r, s, fct1, fct2):
+        """Determines if the line segment p->p+r overlaps q->q+s. Implements
+        Gareth Rees's answer: https://stackoverflow.com/questions/563198.
+
+        :param p: Starting point of the first line segment
+        :type p: :class:`numpy.ndarray`[float, float]
+        :param q: Starting point of the second line segment
+        :type q: :class:`numpy.ndarray`[float, float]
+        :param r: Vector of the first line segment
+        :type r: :class:`numpy.ndarray`[float, float]
+        :param s: Vector of the second line segment
+        :type s: :class:`numpy.ndarray`[float, float]
+        :param fct1: sadkjas;dkas;dj
+        :returns: A list containing the points required for facet rebuilding.
+            If there is no rebuild to be done, returns None.
+        :rtype: list[list[float, float]]
+        """
+
+        if np.cross(r, s) == 0:
+            if np.cross(q - p, r) == 0:  # TODO: ADD TOLERANCE!!!
+                # CASE 1: two line segments are collinear
+                # calculate end points of second segment in terms of the...
+                # equation of the first line segment (p + t * r)
+                if np.dot(s, r) >= 0:
+                    t0 = np.dot(q - p, r) / np.dot(r, r)
+                    t1 = np.dot(q + s - p, r) / np.dot(r, r)
+                else:
+                    t0 = np.dot(q + s - p, r) / np.dot(r, r)
+                    t1 = np.dot(q - p, r) / np.dot(r, r)
+
+                # check interval [t0, t1] intersects (0, 1)
+                if t0 < 1 and 0 < t1:
+                    # recalculate t0 and t1 based on original assumptions
+                    t0 = np.dot(q - p, r) / np.dot(r, r)
+                    t1 = np.dot(q + s - p, r) / np.dot(r, r)
+
+                    t = sorted(list(set([0.0, t0, 1.0, t1])))
+                    idx_list = []
+
+                    # loop through new points
+                    for pt in t:
+                        if pt == 0.0:
+                            idx_list.append(fct1[0])
+                        elif pt == 1.0:
+                            idx_list.append(fct1[1])
+                        elif pt == t0:
+                            idx_list.append(fct2[0])
+                        elif pt == t1:
+                            idx_list.append(fct2[1])
+
+                    return idx_list
+                else:
+                    # collinear and disjoint
+                    return None
+            else:
+                # CASE 2: two line segments are parallel and non-intersecting
+                return None
+
+    def remove_duplicate_facets(self):
+        """Searches through all facets and removes facets that are duplicates,
+        independent of the point order.
+        """
+
+        idx_to_remove = []
+
+        # loop through the list of facets
+        for (i, fct1) in enumerate(self.geometry.facets):
+            # check all other facets
+            for (j, fct2) in enumerate(self.geometry.facets[i + 1:]):
+                # get facet indices
+                idx_2 = i + j + 1
+
+                # check for a duplicate facet that has not already been deleted
+                if (self.is_duplicate_facet(fct1, fct2) and
+                        idx_2 not in idx_to_remove):
+                    idx_to_remove.append(idx_2)
+
+        # sort list of indices to remove in reverse order so as not to
+        # comprimise the indices
+        idx_to_remove = sorted(idx_to_remove, reverse=True)
+
+        for idx in idx_to_remove:
+            self.geometry.facets.pop(idx)
+
+
 def create_mesh(points, facets, holes, control_points, mesh_sizes):
     """Creates a quadratic triangular mesh using the meshpy module, which
     utilises the code 'Triangle', by Jonathan Shewchuk.
 
     :param points: List of points *(x, y)* defining the vertices of the
         cross-section
-    :type points: list[tuple(float, float)]
+    :type points: list[list[float, float]]
     :param facets: List of point index pairs *(p1, p2)* defining the edges of
         the cross-section
-    :type points: list[tuple(int, int)]
+    :type points: list[list[int, int]]
     :param holes: List of points *(x, y)* defining the locations of holes
         within the cross-section. If there are no holes, provide an empty list
         [].
-    :type holes: list[tuple(float, float)]
+    :type holes: list[list[float, float]]
     :param control_points: A list of points *(x, y)* that define different
         regions of the cross-section. A control point is an arbitrary point
         within a region enclosed by facets.
-    :type control_points: list[tuple(float, float)]
+    :type control_points: list[list[float, float]]
     :param mesh_sizes: List of maximum element areas for each region defined by
         a control point
     :type mesh_sizes: list[float]
