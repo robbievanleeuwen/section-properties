@@ -1,14 +1,12 @@
 import sectionproperties.pre.sections as sections
-import sectionproperties.pre.pre as pre
 
-points = [[0, 0], [5, 0], [5, 5], [0, 0], [0, 5], [0, 0], [5.0000001, 0]]
-facets = [[0, 1], [1, 2], [2, 4], [4, 0], [3, 1], [5, 1], [0, 6]]
+points = [[0, 0], [5, 0], [2.5, -1], [2.5, 6]]
+facets = [[0, 1], [2, 3]]
 holes = []
 control_points = [[2.5, 2.5]]
 
 geometry = sections.CustomSection(points, facets, holes, control_points)
-cleaner = pre.GeometryCleaner(geometry)
-geometry = cleaner.clean_geometry()
+geometry.clean_geometry()
 geometry.plot_geometry()
 
 print(geometry.points)

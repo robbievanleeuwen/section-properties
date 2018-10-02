@@ -1,4 +1,4 @@
-# Todo List (21/07/2018):
+# Todo List:
 
 List of items to complete before returning to master branch:
 
@@ -15,6 +15,7 @@ List of items to complete before returning to master branch:
 [ ] Input File
 [ ] Documentation
 [ ] Packing Testing
-[ ] Geometry cleaning class
+[x] Geometry cleaning class
 [ ] Fix pause graphs when multiple graphs
 [ ] Hover over stress shows the stress result
+[x] Show geometry point and facet numbers

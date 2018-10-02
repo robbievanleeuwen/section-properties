@@ -148,7 +148,21 @@ class Geometry:
         for cp in self.control_points:
             cp[i] = 2 * mirror_point[i] - cp[i]
 
-    def plot_geometry(self, ax=None, pause=True):
+    def add_hole(self, hole):
+        """Adds a point defining a hole location to the geometry.
+
+        :param hole: Location of the hole
+        :type hole: list[float, float]
+        """
+
+        self.holes.append(hole)
+
+    def clean_geometry(self, verbose=False):
+        """a"""
+
+        self = pre.GeometryCleaner(self, verbose).clean_geometry()
+
+    def plot_geometry(self, ax=None, pause=True, labels=False):
         """Plots the geometry defined by the input section. If no axes object
         is supplied a new figure and axis is created.
 
@@ -157,6 +171,7 @@ class Geometry:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+        :param bool labels: If set to true, node and facet labels are displayed
 
         The following example creates a CHS discretised with 64 points, with a
         diameter of 48 and thickness of 3.2, and plots the geometry::
@@ -208,6 +223,20 @@ class Geometry:
 
         # display the legend
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        # display the labels
+        if labels:
+            # plot node labels
+            for (i, pt) in enumerate(self.points):
+                ax.annotate(str(i), xy=pt, color='r')
+
+            # plot facet labels
+            for (i, fct) in enumerate(self.facets):
+                pt1 = self.points[fct[0]]
+                pt2 = self.points[fct[1]]
+                xy = [(pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2]
+
+                ax.annotate(str(i), xy=xy, color='b')
 
         # if no axes object is supplied, finish the plot
         if not ax_supplied:
