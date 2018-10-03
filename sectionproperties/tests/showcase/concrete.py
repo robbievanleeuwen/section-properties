@@ -39,7 +39,7 @@ spacing = (w - 2 * cover - diameter) / (n_bars - 1)
 
 for i in range(n_bars):
     shift = [cover + diameter / 2 + i * spacing, cover + diameter / 2]
-    bar = sections.CircularSection(d=diameter, n=16, shift=shift)
+    bar = sections.CircularSection(d=diameter, n=32, shift=shift)
 
     geometries.append(bar)
     mesh_sizes.append(bar_mesh)

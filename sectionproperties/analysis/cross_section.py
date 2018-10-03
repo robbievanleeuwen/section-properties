@@ -138,8 +138,8 @@ class CrossSection:
         self.section_props = SectionProperties()
 
     def calculate_geometric_properties(self, time_info=False):
-        """Calculates all the geometric properties of the cross-section and
-        stores them in the
+        """Calculates the geometric properties of the cross-section and stores
+        them in the
         :class:`~sectionproperties.analysis.cross_section.SectionProperties`
         object contained in section_props.
 
@@ -148,25 +148,28 @@ class CrossSection:
 
         The following section properties are calculated:
 
-        * Area
+        * Cross-sectional area
+        * Modulus weighted area (axial rigidity)
         * First moments of area
         * Second moments of area about the global axis
         * Second moments of area about the centroidal axis
+        * Elastic centroid
         * Centroidal section moduli
         * Radii of gyration
         * Principal axis properties
 
+        If materials are specified for the cross-section, the moments of area
+        and section moduli are multipled by the elastic moduli.
         ::
 
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
         """
 
-        # TODO: which properties to change calculation for composite???
-
         def calculate_geom():
             # initialise properties
             self.section_props.area = 0
+            self.section_props.ea = 0
             self.section_props.qx = 0
             self.section_props.qy = 0
             self.section_props.ixx_g = 0
@@ -175,18 +178,16 @@ class CrossSection:
 
             # calculate global geometric properties
             for el in self.elements:
-                (area, qx, qy, ixx_g, iyy_g, ixy_g) = el.geometric_properties()
+                (area, qx, qy, ixx_g,
+                 iyy_g, ixy_g, e) = el.geometric_properties()
 
                 self.section_props.area += area
-                self.section_props.qx += qx
-                self.section_props.qy += qy
-                self.section_props.ixx_g += ixx_g
-                self.section_props.iyy_g += iyy_g
-                self.section_props.ixy_g += ixy_g
-
-                if self.materials is not None:
-                    # TODO: calculate and store ea, eqx, eqy, eixx_g etc...
-                    pass
+                self.section_props.ea += area * e
+                self.section_props.qx += qx * e
+                self.section_props.qy += qy * e
+                self.section_props.ixx_g += ixx_g * e
+                self.section_props.iyy_g += iyy_g * e
+                self.section_props.ixy_g += ixy_g * e
 
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(self.mesh)
@@ -909,6 +910,20 @@ class CrossSection:
 
         return self.section_props.area
 
+    def get_ea(self):
+        """
+        :return: Modulus weighted area (axial rigidity)
+        :rtype: float
+
+        ::
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            area = section.get_ea()
+        """
+
+        return self.section_props.ea
+
     def get_q(self):
         """
         :return: First moments of area of the cross-section about the global
@@ -1196,6 +1211,7 @@ class SectionProperties:
     # TODO: add new section properties for composite
 
     :cvar float area: Cross-sectional area
+    :cvar float ea: Modulus weighted area (axial rigidity)
     :cvar float qx: First moment of area about the x-axis
     :cvar float qy: First moment of area about the y-axis
     :cvar float ixx_g: Second moment of area about the global x-axis
@@ -1287,6 +1303,7 @@ class SectionProperties:
         """Inits the SectionProperties class."""
 
         self.area = None
+        self.ea = None
         self.qx = None
         self.qy = None
         self.ixx_g = None
@@ -1349,29 +1366,20 @@ class SectionProperties:
     def calculate_elastic_centroid(self):
         """Calculates the elastic centroid based on the cross-section area and
         first moments of area.
-
-        :return: Tuple containing the coordinates of the elastic centroid.
-        :rtype: tuple(float, float)
         """
 
-        # TODO: adjust for material properties!
-
-        self.cx = self.qy / self.area
-        self.cy = self.qx / self.area
-
-        return (self.cx, self.cy)
+        self.cx = self.qy / self.ea
+        self.cy = self.qx / self.ea
 
     def calculate_centroidal_properties(self, mesh):
         """Calculates the geometric section properties about the centroidal and
         principal axes based on the results about the global axis.
         """
 
-        # TODO: adjust for material properties!
-
         # calculate second moments of area about the centroidal xy axis
-        self.ixx_c = self.ixx_g - self.qx ** 2 / self.area
-        self.iyy_c = self.iyy_g - self.qy ** 2 / self.area
-        self.ixy_c = self.ixy_g - self.qx * self.qy / self.area
+        self.ixx_c = self.ixx_g - self.qx ** 2 / self.ea
+        self.iyy_c = self.iyy_g - self.qy ** 2 / self.ea
+        self.ixy_c = self.ixy_g - self.qx * self.qy / self.ea
 
         # calculate section moduli about the centroidal xy axis
         nodes = np.array(mesh.points)
@@ -1385,8 +1393,8 @@ class SectionProperties:
         self.zyy_minus = self.iyy_c / abs(self.xmin - self.cx)
 
         # calculate radii of gyration about centroidal xy axis
-        self.rx_c = (self.ixx_c / self.area) ** 0.5
-        self.ry_c = (self.iyy_c / self.area) ** 0.5
+        self.rx_c = (self.ixx_c / self.ea) ** 0.5
+        self.ry_c = (self.iyy_c / self.ea) ** 0.5
 
         # calculate prinicpal 2nd moments of area about the centroidal xy axis
         Delta = (((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c ** 2) ** 0.5
@@ -1427,8 +1435,8 @@ class SectionProperties:
         self.z22_minus = self.i22_c / abs(self.x1min)
 
         # calculate radii of gyration about centroidal principal axis
-        self.r11_c = (self.i11_c / self.area) ** 0.5
-        self.r22_c = (self.i22_c / self.area) ** 0.5
+        self.r11_c = (self.i11_c / self.ea) ** 0.5
+        self.r22_c = (self.i22_c / self.ea) ** 0.5
 
 
 class PlasticSection:
@@ -1625,8 +1633,6 @@ class StressResult:
             immediately after the window is rendered.
         """
 
-        # TODO: find a way to get better arrow lengths?
-
         # create plot and setup the plot
         (fig, ax) = plt.subplots()
         post.setup_plot(ax, pause)
@@ -1650,6 +1656,8 @@ class StressResult:
             self.cross_section.mesh_nodes[:, 1],
             self.cross_section.mesh_elements[:, 0:3], sig, v, cmap=cmap)
         fig.colorbar(trictr, label='Stress', format='%.4e')
+
+        # TODO: display stress values in the toolbar (format_coord)
 
         # finish the plot
         post.finish_plot(ax, pause, title=title)

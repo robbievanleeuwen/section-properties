@@ -1,5 +1,4 @@
 import sectionproperties.pre.sections as sections
-import sectionproperties.pre.pre as pre
 from sectionproperties.analysis.cross_section import CrossSection
 
 # create cross-section geometry
@@ -9,7 +8,8 @@ pfc_right.mirror_section(axis='y', mirror_point=[75, 0])
 plate_top = sections.RectangularSection(d=16, b=250, shift=[-50, 200])
 geometry = sections.MergedSection([pfc_left, pfc_right, plate_top])
 geometry.add_hole([75, 100])
-geometry = pre.GeometryCleaner(geometry).clean_geometry()
+geometry.plot_geometry()
+geometry.clean_geometry(verbose=True)
 geometry.plot_geometry()
 
 # create cross-section mesh

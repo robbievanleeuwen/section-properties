@@ -418,12 +418,18 @@ class GeometryCleaner:
             # check all other facets
             for (j, fct2) in enumerate(self.geometry.facets[i + 1:]):
                 # get facet indices
+                idx_1 = i
                 idx_2 = i + j + 1
 
                 # check for a duplicate facet that has not already been deleted
                 if (self.is_duplicate_facet(fct1, fct2) and
                         idx_2 not in idx_to_remove):
                     idx_to_remove.append(idx_2)
+
+                    if self.verbose:
+                        str = "Removed duplicate facet: {0}".format(idx_2)
+                        str += " (identical to facet: {0})".format(idx_1)
+                        print(str)
 
         # sort list of indices to remove in reverse order so as not to
         # comprimise the indices

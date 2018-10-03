@@ -16,6 +16,3 @@ List of items to complete before returning to master branch:
 [ ] Documentation
 [ ] Packing Testing
 [x] Geometry cleaning class
-[ ] Fix pause graphs when multiple graphs
-[ ] Hover over stress shows the stress result
-[x] Show geometry point and facet numbers

@@ -14,6 +14,7 @@ a python package for the analysis of arbitrary cross-sections using the finite e
 - [x] Custom section geometry input
 - [x] Common section geometry generators
 - [x] Multiple geometry merging
+- [x] Geometry cleaning
 - [ ] JSON input file
 - [ ] .dxf import
 - [x] Quadratic triangular mesh generation

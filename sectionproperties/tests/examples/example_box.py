@@ -2,7 +2,7 @@ import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
 
 geometry = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8)
-geometry.plot_geometry()
+geometry.plot_geometry(pause=False)
 mesh = geometry.create_mesh(mesh_sizes=[5])
 
 section = CrossSection(geometry, mesh)
@@ -16,4 +16,5 @@ stress_result = section.calculate_stress(
 
 # section.plot_centroids()
 section.display_results()
+stress_result.plot_stress_m_zz(pause=False)
 stress_result.plot_stress_vm()

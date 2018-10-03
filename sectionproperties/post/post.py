@@ -2,9 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# TODO: fix (sometimes) window not wide enough to display legend
-# if section is wider than taller for e.g.
-
 def setup_plot(ax, pause):
     """Exectues code required to set up a matplotlib figure.
 
@@ -18,6 +15,8 @@ def setup_plot(ax, pause):
     if not pause:
         plt.ion()
         plt.show()
+    else:
+        plt.ioff()
 
 
 def finish_plot(ax, pause, title=''):
@@ -31,7 +30,7 @@ def finish_plot(ax, pause, title=''):
     """
 
     ax.set_title(title)
-    ax.set_aspect("equal", anchor='C')
+    ax.set_aspect('equal', anchor='C')
 
     if pause:
         plt.show()
@@ -97,15 +96,25 @@ def print_results(cross_section, fmt):
     :param string fmt: Number format
     """
 
+    if cross_section.materials is not None:
+        str = "E."
+    else:
+        str = ""
+
     area = cross_section.get_area()
     if area is not None:
         print("Section Properties:")
         print("Area\t = {:>{fmt}}".format(area, fmt=fmt))
 
+    if cross_section.materials is not None:
+        ea = cross_section.get_ea()
+        if ea is not None:
+            print("EA\t = {:>{fmt}}".format(ea, fmt=fmt))
+
     (qx, qy) = cross_section.get_q()
     if qx is not None:
-        print("Qx\t = {:>{fmt}}".format(qx, fmt=fmt))
-        print("Qy\t = {:>{fmt}}".format(qy, fmt=fmt))
+        print(str + "Qx\t = {:>{fmt}}".format(qx, fmt=fmt))
+        print(str + "Qy\t = {:>{fmt}}".format(qy, fmt=fmt))
 
     (cx, cy) = cross_section.get_c()
     if cx is not None:
@@ -114,22 +123,22 @@ def print_results(cross_section, fmt):
 
     (ixx_g, iyy_g, ixy_g) = cross_section.get_ig()
     if ixx_g is not None:
-        print("Ixx_g\t = {:>{fmt}}".format(ixx_g, fmt=fmt))
-        print("Iyy_g\t = {:>{fmt}}".format(iyy_g, fmt=fmt))
-        print("Ixy_g\t = {:>{fmt}}".format(ixy_g, fmt=fmt))
+        print(str + "Ixx_g\t = {:>{fmt}}".format(ixx_g, fmt=fmt))
+        print(str + "Iyy_g\t = {:>{fmt}}".format(iyy_g, fmt=fmt))
+        print(str + "Ixy_g\t = {:>{fmt}}".format(ixy_g, fmt=fmt))
 
     (ixx_c, iyy_c, ixy_c) = cross_section.get_ic()
     if ixx_c is not None:
-        print("Ixx_c\t = {:>{fmt}}".format(ixx_c, fmt=fmt))
-        print("Iyy_c\t = {:>{fmt}}".format(iyy_c, fmt=fmt))
-        print("Ixy_c\t = {:>{fmt}}".format(ixy_c, fmt=fmt))
+        print(str + "Ixx_c\t = {:>{fmt}}".format(ixx_c, fmt=fmt))
+        print(str + "Iyy_c\t = {:>{fmt}}".format(iyy_c, fmt=fmt))
+        print(str + "Ixy_c\t = {:>{fmt}}".format(ixy_c, fmt=fmt))
 
     (zxx_plus, zxx_minus, zyy_plus, zyy_minus) = cross_section.get_z()
     if zxx_plus is not None:
-        print("Zxx+\t = {:>{fmt}}".format(zxx_plus, fmt=fmt))
-        print("Zxx-\t = {:>{fmt}}".format(zxx_minus, fmt=fmt))
-        print("Zyy+\t = {:>{fmt}}".format(zyy_plus, fmt=fmt))
-        print("Zyy-\t = {:>{fmt}}".format(zyy_minus, fmt=fmt))
+        print(str + "Zxx+\t = {:>{fmt}}".format(zxx_plus, fmt=fmt))
+        print(str + "Zxx-\t = {:>{fmt}}".format(zxx_minus, fmt=fmt))
+        print(str + "Zyy+\t = {:>{fmt}}".format(zyy_plus, fmt=fmt))
+        print(str + "Zyy-\t = {:>{fmt}}".format(zyy_minus, fmt=fmt))
 
     (rx, ry) = cross_section.get_rc()
     if rx is not None:
@@ -140,15 +149,15 @@ def print_results(cross_section, fmt):
     (i11_c, i22_c) = cross_section.get_ip()
     if phi is not None:
         print("phi\t = {:>{fmt}}".format(phi, fmt=fmt))
-        print("I11_c\t = {:>{fmt}}".format(i11_c, fmt=fmt))
-        print("I22_c\t = {:>{fmt}}".format(i22_c, fmt=fmt))
+        print(str + "I11_c\t = {:>{fmt}}".format(i11_c, fmt=fmt))
+        print(str + "I22_c\t = {:>{fmt}}".format(i22_c, fmt=fmt))
 
     (z11_plus, z11_minus, z22_plus, z22_minus) = cross_section.get_zp()
     if z11_plus is not None:
-        print("Z11+\t = {:>{fmt}}".format(z11_plus, fmt=fmt))
-        print("Z11-\t = {:>{fmt}}".format(z11_minus, fmt=fmt))
-        print("Z22+\t = {:>{fmt}}".format(z22_plus, fmt=fmt))
-        print("Z22-\t = {:>{fmt}}".format(z22_minus, fmt=fmt))
+        print(str + "Z11+\t = {:>{fmt}}".format(z11_plus, fmt=fmt))
+        print(str + "Z11-\t = {:>{fmt}}".format(z11_minus, fmt=fmt))
+        print(str + "Z22+\t = {:>{fmt}}".format(z22_plus, fmt=fmt))
+        print(str + "Z22-\t = {:>{fmt}}".format(z22_minus, fmt=fmt))
 
     (r11, r22) = cross_section.get_rp()
     if r11 is not None:
