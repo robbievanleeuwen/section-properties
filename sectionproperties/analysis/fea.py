@@ -37,7 +37,8 @@ class Tri6:
         """Calculates the geometric properties for the current finite element.
 
         :return: Tuple containing the geometric properties and the elastic
-            modulus of the element: *(area, qx, qy, ixx, iyy, ixy, E)*
+            and shear moduli of the element: *(area, qx, qy, ixx, iyy, ixy, e,
+            g)*
         :rtype: tuple(float)
         """
 
@@ -65,7 +66,8 @@ class Tri6:
             ixy += gp[0] * np.dot(N, np.transpose(self.coords[1, :])) * np.dot(
                 N, np.transpose(self.coords[0, :])) * j
 
-        return (area, qx, qy, ixx, iyy, ixy, self.material.elastic_modulus)
+        return (area, qx, qy, ixx, iyy, ixy, self.material.elastic_modulus,
+                self.material.shear_modulus)
 
     def torsion_properties(self):
         """Calculates the element stiffness matrix used for warping analysis
@@ -91,9 +93,11 @@ class Tri6:
             Nx = np.dot(N, np.transpose(self.coords[0, :]))
             Ny = np.dot(N, np.transpose(self.coords[1, :]))
 
-            k_el += gp[0] * np.dot(np.transpose(B), B) * j
+            # calculated modulus weighted stiffness matrix and load vector
+            k_el += gp[0] * np.dot(np.transpose(B), B) * j * (
+                self.material.elastic_modulus)
             f_el += gp[0] * np.dot(np.transpose(B), np.transpose(np.array(
-                [Ny, -Nx]))) * j
+                [Ny, -Nx]))) * j * self.material.elastic_modulus
 
         return (k_el, f_el)
 

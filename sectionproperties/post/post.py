@@ -104,12 +104,12 @@ def print_results(cross_section, fmt):
     area = cross_section.get_area()
     if area is not None:
         print("Section Properties:")
-        print("Area\t = {:>{fmt}}".format(area, fmt=fmt))
+        print("A\t = {:>{fmt}}".format(area, fmt=fmt))
 
     if cross_section.materials is not None:
         ea = cross_section.get_ea()
         if ea is not None:
-            print("EA\t = {:>{fmt}}".format(ea, fmt=fmt))
+            print("E.A\t = {:>{fmt}}".format(ea, fmt=fmt))
 
     (qx, qy) = cross_section.get_q()
     if qx is not None:
@@ -166,7 +166,11 @@ def print_results(cross_section, fmt):
 
     j = cross_section.get_j()
     if j is not None:
-        print("J\t = {:>{fmt}}".format(j, fmt=fmt))
+        if cross_section.materials is not None:
+            print("G.J\t = {:>{fmt}}".format(
+                j / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt))
+        else:
+            print("J\t = {:>{fmt}}".format(j, fmt=fmt))
 
     gamma = cross_section.get_gamma()
     if gamma is not None:

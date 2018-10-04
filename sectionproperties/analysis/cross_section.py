@@ -170,6 +170,7 @@ class CrossSection:
             # initialise properties
             self.section_props.area = 0
             self.section_props.ea = 0
+            self.section_props.ga = 0
             self.section_props.qx = 0
             self.section_props.qy = 0
             self.section_props.ixx_g = 0
@@ -179,16 +180,19 @@ class CrossSection:
             # calculate global geometric properties
             for el in self.elements:
                 (area, qx, qy, ixx_g,
-                 iyy_g, ixy_g, e) = el.geometric_properties()
+                 iyy_g, ixy_g, e, g) = el.geometric_properties()
 
                 self.section_props.area += area
                 self.section_props.ea += area * e
+                self.section_props.ga += area * g
                 self.section_props.qx += qx * e
                 self.section_props.qy += qy * e
                 self.section_props.ixx_g += ixx_g * e
                 self.section_props.iyy_g += iyy_g * e
                 self.section_props.ixy_g += ixy_g * e
 
+            self.section_props.nu_eff = self.section_props.ea / (
+                2 * self.section_props.ga) - 1
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(self.mesh)
 
@@ -230,8 +234,6 @@ class CrossSection:
             calculated prior to calling this method
         """
 
-        # TODO: modify calculations so that it works for composite materials
-
         # check that a geometric analysis has been performed
         if None in [self.section_props.area, self.section_props.ixx_c,
                     self.section_props.cx]:
@@ -242,7 +244,8 @@ class CrossSection:
         # create a new CrossSection with the origin shifted to the centroid for
         # calculation of the warping properties such that the Lagrangian
         # multiplier approach can be utilised
-        warping_section = CrossSection(self.geometry, self.mesh)
+        warping_section = CrossSection(self.geometry, self.mesh,
+                                       self.materials)
 
         # shift the coordinates of each element
         # N.B. the mesh class attribute remains unshifted!
@@ -278,8 +281,8 @@ class CrossSection:
 
         if solver_type == 'cgs':
             if time_info:
-                text = "--Performing ILU decomposition on stiffness"
-                text += "matrices..."
+                text = "--Performing ILU decomposition on the stiffness"
+                text += " matrices..."
                 (k_precond, k_lg_precond) = solver.function_timer(
                     text, ilu_decomp)
             else:
@@ -314,178 +317,178 @@ class CrossSection:
         else:
             self.section_props.j = j_func()
 
-        # assemble shear function load vectors
-        def assemble_shear_load():
-            f_psi = np.zeros(self.num_nodes)
-            f_phi = np.zeros(self.num_nodes)
-
-            for el in warping_section.elements:
-                (f_psi_el, f_phi_el) = el.shear_load_vectors(
-                    self.section_props.ixx_c, self.section_props.iyy_c,
-                    self.section_props.ixy_c)
-                f_psi[el.node_ids] += f_psi_el
-                f_phi[el.node_ids] += f_phi_el
-
-            return (f_psi, f_phi)
-
-        if time_info:
-            text = "--Assembling shear function load vectors..."
-            (f_psi, f_phi) = solver.function_timer(text, assemble_shear_load)
-        else:
-            (f_psi, f_phi) = assemble_shear_load()
-
-        # solve for shear functions psi and phi
-        def solve_shear_functions():
-            if solver_type == 'cgs':
-                psi_shear = solver.solve_cgs_lagrange(k_lg, f_psi,
-                                                      m=k_lg_precond)
-                phi_shear = solver.solve_cgs_lagrange(k_lg, f_phi,
-                                                      m=k_lg_precond)
-            elif solver_type == 'direct':
-                psi_shear = solver.solve_direct_lagrange(k_lg, f_psi)
-                phi_shear = solver.solve_direct_lagrange(k_lg, f_phi)
-
-            return (psi_shear, phi_shear)
-
-        if time_info:
-            text = "--Solving for the shear functions using the "
-            text += "{0} solver...".format(solver_type)
-            (psi_shear, phi_shear) = solver.function_timer(
-                text, solve_shear_functions)
-        else:
-            (psi_shear, phi_shear) = solve_shear_functions()
-
-        self.section_props.psi_shear = psi_shear
-        self.section_props.phi_shear = phi_shear
-
-        # assemble shear centre and warping moment integrals
-        def assemle_sc_warping_integrals():
-            sc_xint = 0
-            sc_yint = 0
-            q_omega = 0
-            i_omega = 0
-            i_xomega = 0
-            i_yomega = 0
-
-            for el in warping_section.elements:
-                (sc_xint_el, sc_yint_el, q_omega_el, i_omega_el, i_xomega_el,
-                 i_yomega_el) = el.shear_warping_integrals(
-                    self.section_props.ixx_c, self.section_props.iyy_c,
-                    self.section_props.ixy_c, omega[el.node_ids])
-
-                sc_xint += sc_xint_el
-                sc_yint += sc_yint_el
-                q_omega += q_omega_el
-                i_omega += i_omega_el
-                i_xomega += i_xomega_el
-                i_yomega += i_yomega_el
-
-            return (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega)
-
-        if time_info:
-            text = "--Assembling shear centre and warping moment integrals..."
-            (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = (
-                solver.function_timer(text, assemle_sc_warping_integrals))
-        else:
-            (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = (
-                assemle_sc_warping_integrals())
-
-        # calculate effective Poisson's ratio
-        nu = 0  # TODO: implement
-
-        # calculate shear centres
-        def shear_centres():
-            # calculate shear centres (elasticity approach)
-            Delta_s = 2 * (1 + nu) * (
-                self.section_props.ixx_c * self.section_props.iyy_c -
-                self.section_props.ixy_c ** 2)
-            x_se = (1 / Delta_s) * ((nu / 2 * sc_xint) - f_torsion.dot(
-                phi_shear))
-            y_se = (1 / Delta_s) * ((nu / 2 * sc_yint) + f_torsion.dot(
-                psi_shear))
-            (x1_se, y2_se) = fea.principal_coordinate(self.section_props.phi,
-                                                      x_se, y_se)
-
-            # calculate shear centres (Trefftz's approach)
-            x_st = (self.section_props.ixy_c *
-                    i_xomega - self.section_props.iyy_c * i_yomega) / (
-                self.section_props.ixx_c * self.section_props.iyy_c -
-                self.section_props.ixy_c ** 2)
-            y_st = (self.section_props.ixx_c *
-                    i_xomega - self.section_props.ixy_c * i_yomega) / (
-                self.section_props.ixx_c * self.section_props.iyy_c -
-                self.section_props.ixy_c ** 2)
-
-            return (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st)
-
-        if time_info:
-            text = "--Calculating shear centres..."
-            (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st) = (
-                solver.function_timer(text, shear_centres))
-        else:
-            (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st) = shear_centres()
-
-        # save shear centres
-        self.section_props.Delta_s = Delta_s
-        self.section_props.x_se = x_se
-        self.section_props.y_se = y_se
-        self.section_props.x1_se = x1_se
-        self.section_props.y2_se = y2_se
-        self.section_props.x_st = x_st
-        self.section_props.y_st = y_st
-
-        # calculate warping constant
-        self.section_props.gamma = (
-            i_omega - q_omega ** 2 / self.section_props.area -
-            y_se * i_xomega + x_se * i_yomega)
-
-        def assemble_shear_deformation():
-            # assemble shear deformation coefficients
-            kappa_x = 0
-            kappa_y = 0
-            kappa_xy = 0
-
-            for el in warping_section.elements:
-                (kappa_x_el, kappa_y_el, kappa_xy_el) = el.shear_coefficients(
-                    self.section_props.ixx_c, self.section_props.iyy_c,
-                    self.section_props.ixy_c, psi_shear[el.node_ids],
-                    phi_shear[el.node_ids])
-                kappa_x += kappa_x_el
-                kappa_y += kappa_y_el
-                kappa_xy += kappa_xy_el
-
-            return (kappa_x, kappa_y, kappa_xy)
-
-        if time_info:
-            text = "--Assembling shear deformation coefficients..."
-            (kappa_x, kappa_y, kappa_xy) = (
-                solver.function_timer(text, assemble_shear_deformation))
-            print("")
-        else:
-            (kappa_x, kappa_y, kappa_xy) = assemble_shear_deformation()
-
-        # calculate shear areas wrt global axis
-        self.section_props.A_sx = Delta_s ** 2 / kappa_x
-        self.section_props.A_sy = Delta_s ** 2 / kappa_y
-        self.section_props.A_sxy = Delta_s ** 2 / kappa_xy
-
-        # calculate shear areas wrt principal bending axis:
-        alpha_xx = kappa_x * self.section_props.area / Delta_s ** 2
-        alpha_yy = kappa_y * self.section_props.area / Delta_s ** 2
-        alpha_xy = kappa_xy * self.section_props.area / Delta_s ** 2
-
-        # rotate the tensor by the principal axis angle
-        phi_rad = self.section_props.phi * np.pi / 180
-        R = (np.array([[np.cos(phi_rad),  np.sin(phi_rad)],
-                       [-np.sin(phi_rad), np.cos(phi_rad)]]))
-
-        rotatedAlpha = R.dot(np.array(
-            [[alpha_xx, alpha_xy],
-             [alpha_xy, alpha_yy]])).dot(np.transpose(R))
-
-        # recalculate the shear area based on the rotated alpha value
-        self.section_props.A_s11 = self.section_props.area / rotatedAlpha[0, 0]
-        self.section_props.A_s22 = self.section_props.area / rotatedAlpha[1, 1]
+        # # assemble shear function load vectors
+        # def assemble_shear_load():
+        #     f_psi = np.zeros(self.num_nodes)
+        #     f_phi = np.zeros(self.num_nodes)
+        #
+        #     for el in warping_section.elements:
+        #         (f_psi_el, f_phi_el) = el.shear_load_vectors(
+        #             self.section_props.ixx_c, self.section_props.iyy_c,
+        #             self.section_props.ixy_c)
+        #         f_psi[el.node_ids] += f_psi_el
+        #         f_phi[el.node_ids] += f_phi_el
+        #
+        #     return (f_psi, f_phi)
+        #
+        # if time_info:
+        #     text = "--Assembling shear function load vectors..."
+        #     (f_psi, f_phi) = solver.function_timer(text, assemble_shear_load)
+        # else:
+        #     (f_psi, f_phi) = assemble_shear_load()
+        #
+        # # solve for shear functions psi and phi
+        # def solve_shear_functions():
+        #     if solver_type == 'cgs':
+        #         psi_shear = solver.solve_cgs_lagrange(k_lg, f_psi,
+        #                                               m=k_lg_precond)
+        #         phi_shear = solver.solve_cgs_lagrange(k_lg, f_phi,
+        #                                               m=k_lg_precond)
+        #     elif solver_type == 'direct':
+        #         psi_shear = solver.solve_direct_lagrange(k_lg, f_psi)
+        #         phi_shear = solver.solve_direct_lagrange(k_lg, f_phi)
+        #
+        #     return (psi_shear, phi_shear)
+        #
+        # if time_info:
+        #     text = "--Solving for the shear functions using the "
+        #     text += "{0} solver...".format(solver_type)
+        #     (psi_shear, phi_shear) = solver.function_timer(
+        #         text, solve_shear_functions)
+        # else:
+        #     (psi_shear, phi_shear) = solve_shear_functions()
+        #
+        # self.section_props.psi_shear = psi_shear
+        # self.section_props.phi_shear = phi_shear
+        #
+        # # assemble shear centre and warping moment integrals
+        # def assemle_sc_warping_integrals():
+        #     sc_xint = 0
+        #     sc_yint = 0
+        #     q_omega = 0
+        #     i_omega = 0
+        #     i_xomega = 0
+        #     i_yomega = 0
+        #
+        #     for el in warping_section.elements:
+        #         (sc_xint_el, sc_yint_el, q_omega_el, i_omega_el, i_xomega_el,
+        #          i_yomega_el) = el.shear_warping_integrals(
+        #             self.section_props.ixx_c, self.section_props.iyy_c,
+        #             self.section_props.ixy_c, omega[el.node_ids])
+        #
+        #         sc_xint += sc_xint_el
+        #         sc_yint += sc_yint_el
+        #         q_omega += q_omega_el
+        #         i_omega += i_omega_el
+        #         i_xomega += i_xomega_el
+        #         i_yomega += i_yomega_el
+        #
+        #     return (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega)
+        #
+        # if time_info:
+        #     text = "--Assembling shear centre and warping moment integrals..."
+        #     (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = (
+        #         solver.function_timer(text, assemle_sc_warping_integrals))
+        # else:
+        #     (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = (
+        #         assemle_sc_warping_integrals())
+        #
+        # # calculate effective Poisson's ratio
+        # nu = 0  # TODO: implement
+        #
+        # # calculate shear centres
+        # def shear_centres():
+        #     # calculate shear centres (elasticity approach)
+        #     Delta_s = 2 * (1 + nu) * (
+        #         self.section_props.ixx_c * self.section_props.iyy_c -
+        #         self.section_props.ixy_c ** 2)
+        #     x_se = (1 / Delta_s) * ((nu / 2 * sc_xint) - f_torsion.dot(
+        #         phi_shear))
+        #     y_se = (1 / Delta_s) * ((nu / 2 * sc_yint) + f_torsion.dot(
+        #         psi_shear))
+        #     (x1_se, y2_se) = fea.principal_coordinate(self.section_props.phi,
+        #                                               x_se, y_se)
+        #
+        #     # calculate shear centres (Trefftz's approach)
+        #     x_st = (self.section_props.ixy_c *
+        #             i_xomega - self.section_props.iyy_c * i_yomega) / (
+        #         self.section_props.ixx_c * self.section_props.iyy_c -
+        #         self.section_props.ixy_c ** 2)
+        #     y_st = (self.section_props.ixx_c *
+        #             i_xomega - self.section_props.ixy_c * i_yomega) / (
+        #         self.section_props.ixx_c * self.section_props.iyy_c -
+        #         self.section_props.ixy_c ** 2)
+        #
+        #     return (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st)
+        #
+        # if time_info:
+        #     text = "--Calculating shear centres..."
+        #     (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st) = (
+        #         solver.function_timer(text, shear_centres))
+        # else:
+        #     (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st) = shear_centres()
+        #
+        # # save shear centres
+        # self.section_props.Delta_s = Delta_s
+        # self.section_props.x_se = x_se
+        # self.section_props.y_se = y_se
+        # self.section_props.x1_se = x1_se
+        # self.section_props.y2_se = y2_se
+        # self.section_props.x_st = x_st
+        # self.section_props.y_st = y_st
+        #
+        # # calculate warping constant
+        # self.section_props.gamma = (
+        #     i_omega - q_omega ** 2 / self.section_props.area -
+        #     y_se * i_xomega + x_se * i_yomega)
+        #
+        # def assemble_shear_deformation():
+        #     # assemble shear deformation coefficients
+        #     kappa_x = 0
+        #     kappa_y = 0
+        #     kappa_xy = 0
+        #
+        #     for el in warping_section.elements:
+        #         (kappa_x_el, kappa_y_el, kappa_xy_el) = el.shear_coefficients(
+        #             self.section_props.ixx_c, self.section_props.iyy_c,
+        #             self.section_props.ixy_c, psi_shear[el.node_ids],
+        #             phi_shear[el.node_ids])
+        #         kappa_x += kappa_x_el
+        #         kappa_y += kappa_y_el
+        #         kappa_xy += kappa_xy_el
+        #
+        #     return (kappa_x, kappa_y, kappa_xy)
+        #
+        # if time_info:
+        #     text = "--Assembling shear deformation coefficients..."
+        #     (kappa_x, kappa_y, kappa_xy) = (
+        #         solver.function_timer(text, assemble_shear_deformation))
+        #     print("")
+        # else:
+        #     (kappa_x, kappa_y, kappa_xy) = assemble_shear_deformation()
+        #
+        # # calculate shear areas wrt global axis
+        # self.section_props.A_sx = Delta_s ** 2 / kappa_x
+        # self.section_props.A_sy = Delta_s ** 2 / kappa_y
+        # self.section_props.A_sxy = Delta_s ** 2 / kappa_xy
+        #
+        # # calculate shear areas wrt principal bending axis:
+        # alpha_xx = kappa_x * self.section_props.area / Delta_s ** 2
+        # alpha_yy = kappa_y * self.section_props.area / Delta_s ** 2
+        # alpha_xy = kappa_xy * self.section_props.area / Delta_s ** 2
+        #
+        # # rotate the tensor by the principal axis angle
+        # phi_rad = self.section_props.phi * np.pi / 180
+        # R = (np.array([[np.cos(phi_rad),  np.sin(phi_rad)],
+        #                [-np.sin(phi_rad), np.cos(phi_rad)]]))
+        #
+        # rotatedAlpha = R.dot(np.array(
+        #     [[alpha_xx, alpha_xy],
+        #      [alpha_xy, alpha_yy]])).dot(np.transpose(R))
+        #
+        # # recalculate the shear area based on the rotated alpha value
+        # self.section_props.A_s11 = self.section_props.area / rotatedAlpha[0, 0]
+        # self.section_props.A_s22 = self.section_props.area / rotatedAlpha[1, 1]
 
     def calculate_plastic_properties(self, time_info=False):
         """s"""
@@ -1212,6 +1215,8 @@ class SectionProperties:
 
     :cvar float area: Cross-sectional area
     :cvar float ea: Modulus weighted area (axial rigidity)
+    :cvar float ga: Modulus weighted product of shear modulus and area
+    :cvar float nu_eff: Effective Poisson's ratio
     :cvar float qx: First moment of area about the x-axis
     :cvar float qy: First moment of area about the y-axis
     :cvar float ixx_g: Second moment of area about the global x-axis
@@ -1304,6 +1309,8 @@ class SectionProperties:
 
         self.area = None
         self.ea = None
+        self.ga = None
+        self.nu_eff = None
         self.qx = None
         self.qy = None
         self.ixx_g = None

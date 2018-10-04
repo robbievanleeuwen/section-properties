@@ -17,6 +17,8 @@ class Material:
     :cvar string name: Material name
     :cvar float elastic_modulus: Material modulus of elasticity
     :cvar float poissons_ratio: Material Poisson's ratio
+    :cvar float shear_modulus: Material shear modulus, derived from the elastic
+        modulus and Poisson's ratio assuming an isotropic material
     :cvar float yield_strength: Material yield strength
     :cvar color: Material color for rendering
     :vartype color: :class:`matplotlib.colors`
@@ -31,6 +33,7 @@ class Material:
         self.name = name
         self.elastic_modulus = elastic_modulus
         self.poissons_ratio = poissons_ratio
+        self.shear_modulus = elastic_modulus / (2 * (1 + poissons_ratio))
         self.yield_strength = yield_strength
         self.color = color
 
