@@ -174,7 +174,11 @@ def print_results(cross_section, fmt):
 
     gamma = cross_section.get_gamma()
     if gamma is not None:
-        print("Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
+        if cross_section.materials is not None:
+            print("G.Iw\t = {:>{fmt}}".format(gamma / (2 * (
+                1 + cross_section.section_props.nu_eff)), fmt=fmt))
+        else:
+            print("Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
 
     (x_se, y_se) = cross_section.get_sc()
     if x_se is not None:
@@ -193,13 +197,30 @@ def print_results(cross_section, fmt):
 
     (A_sx, A_sy) = cross_section.get_As()
     if A_sx is not None:
-        print("A_sx\t = {:>{fmt}}".format(A_sx, fmt=fmt))
-        print("A_sy\t = {:>{fmt}}".format(A_sy, fmt=fmt))
+        if cross_section.materials is not None:
+            print("A_sx\t = {:>{fmt}}".format(
+                A_sx * cross_section.section_props.area /
+                cross_section.section_props.ea, fmt=fmt))
+            print("A_sy\t = {:>{fmt}}".format(
+                A_sy * cross_section.section_props.area /
+                cross_section.section_props.ea, fmt=fmt))
+        else:
+            print("A_sx\t = {:>{fmt}}".format(A_sx, fmt=fmt))
+            print("A_sy\t = {:>{fmt}}".format(A_sy, fmt=fmt))
 
     (A_s11, A_s22) = cross_section.get_As_p()
-    if A_sx is not None:
-        print("A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))
-        print("A_s22\t = {:>{fmt}}".format(A_s22, fmt=fmt))
+    if A_s11 is not None:
+        if cross_section.materials is not None:
+            if cross_section.materials is not None:
+                print("A_s11\t = {:>{fmt}}".format(
+                    A_s11 * cross_section.section_props.area /
+                    cross_section.section_props.ea, fmt=fmt))
+                print("A_s22\t = {:>{fmt}}".format(
+                    A_s22 * cross_section.section_props.area /
+                    cross_section.section_props.ea, fmt=fmt))
+            else:
+                print("A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))
+                print("A_s22\t = {:>{fmt}}".format(A_s22, fmt=fmt))
 
     # if section_properties.x_pc is not None:
     #     print("x_pc\t = {:>{fmt}}".format(section_properties.x_pc, fmt=fmt))

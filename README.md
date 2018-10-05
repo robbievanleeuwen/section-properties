@@ -18,7 +18,7 @@ a python package for the analysis of arbitrary cross-sections using the finite e
 - [ ] JSON input file
 - [ ] .dxf import
 - [x] Quadratic triangular mesh generation
-- [ ] Composite material properties
+- [x] Composite material properties
 
 ### Cross-Section Analysis:
 - [x] Global axis geometric section properties:

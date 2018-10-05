@@ -11,7 +11,7 @@ List of items to complete before returning to master branch:
 [x] Plot Stresses
 [x] Plot Centroids
 [x] Print Results
-[ ] Different Material Properties
+[x] Different Material Properties
 [ ] Input File
 [ ] Documentation
 [ ] Packing Testing

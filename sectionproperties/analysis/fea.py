@@ -7,6 +7,7 @@ class Tri6:
     Provides methods for the calculation of section properties based on the
     finite element method.
 
+    :param int el_id: Unique element id
     :param coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The
         first three columns relate to the vertices of the triangle and the
         last three columns correspond to the mid-nodes.
@@ -26,9 +27,10 @@ class Tri6:
     :vartype material: :class:`~sectionproperties.pre.pre.Material`
     """
 
-    def __init__(self, coords, node_ids, material):
+    def __init__(self, el_id, coords, node_ids, material):
         """Inits the Tri6 class."""
 
+        self.el_id = el_id
         self.coords = coords
         self.node_ids = node_ids
         self.material = material
@@ -101,15 +103,13 @@ class Tri6:
 
         return (k_el, f_el)
 
-    def shear_load_vectors(self, ixx, iyy, ixy):
+    def shear_load_vectors(self, ixx, iyy, ixy, nu):
         """Calculates the element shear load vectors used to evaluate the shear
         functions.
 
         :return: Element shear load vector psi (f_psi) and phi (f_phi)
         :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`)
         """
-
-        nu = self.material.poissons_ratio
 
         # initialise force vectors
         f_psi = 0
@@ -136,10 +136,10 @@ class Tri6:
 
             f_psi += gp[0] * (nu / 2 * np.transpose(np.transpose(B).dot(
                 np.array([[d1], [d2]])))[0] + 2 * (1 + nu) * np.transpose(
-                N) * (ixx * Nx - ixy * Ny)) * j
+                N) * (ixx * Nx - ixy * Ny)) * j * self.material.elastic_modulus
             f_phi += gp[0] * (nu / 2 * np.transpose(np.transpose(B).dot(
                 np.array([[h1], [h2]])))[0] + 2 * (1 + nu) * np.transpose(
-                N) * (iyy * Ny - ixy * Nx)) * j
+                N) * (iyy * Ny - ixy * Nx)) * j * self.material.elastic_modulus
 
         return (f_psi, f_phi)
 
@@ -172,24 +172,24 @@ class Tri6:
             Ny = np.dot(N, np.transpose(self.coords[1, :]))
             Nomega = np.dot(N, np.transpose(omega))
 
-            sc_xint += gp[0] * (iyy * Nx + ixy * Ny) * (Nx ** 2 + Ny ** 2) * j
-            sc_yint += gp[0] * (ixx * Ny + ixy * Nx) * (Nx ** 2 + Ny ** 2) * j
-            q_omega += gp[0] * Nomega * j
-            i_omega += gp[0] * Nomega ** 2 * j
-            i_xomega += gp[0] * Nx * Nomega * j
-            i_yomega += gp[0] * Ny * Nomega * j
+            sc_xint += gp[0] * (iyy * Nx + ixy * Ny) * (Nx ** 2 + Ny ** 2) * \
+                j * self.material.elastic_modulus
+            sc_yint += gp[0] * (ixx * Ny + ixy * Nx) * (Nx ** 2 + Ny ** 2) * \
+                j * self.material.elastic_modulus
+            q_omega += gp[0] * Nomega * j * self.material.elastic_modulus
+            i_omega += gp[0] * Nomega ** 2 * j * self.material.elastic_modulus
+            i_xomega += gp[0] * Nx * Nomega * j * self.material.elastic_modulus
+            i_yomega += gp[0] * Ny * Nomega * j * self.material.elastic_modulus
 
         return (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega)
 
-    def shear_coefficients(self, ixx, iyy, ixy, psi_shear, phi_shear):
+    def shear_coefficients(self, ixx, iyy, ixy, psi_shear, phi_shear, nu):
         """Calculates the variables used to determine the shear
         deformation coefficients.
 
         :return: Shear deformation variables (kappa_x, kappa_y, kappa_xy)
         :rtype: tuple(float, float, float)
         """
-
-        nu = self.material.poissons_ratio
 
         # initialise properties
         kappa_x = 0
@@ -218,22 +218,22 @@ class Tri6:
             kappa_x += gp[0] * (
                 psi_shear.dot(np.transpose(B)) - nu / 2 * np.array(
                     [d1, d2])).dot(B.dot(psi_shear) - nu / 2 * np.array(
-                        [d1, d2])) * j
+                        [d1, d2])) * j * self.material.elastic_modulus
             kappa_y += gp[0] * (
                 phi_shear.dot(np.transpose(B)) - nu / 2 * np.array(
                     [h1, h2])).dot(B.dot(phi_shear) - nu / 2 * np.array(
-                        [h1, h2])) * j
+                        [h1, h2])) * j * self.material.elastic_modulus
             kappa_xy += gp[0] * (
                 psi_shear.dot(np.transpose(B)) - nu / 2 * np.array(
                     [d1, d2])).dot(B.dot(phi_shear) - nu / 2 * np.array(
-                        [h1, h2])) * j
+                        [h1, h2])) * j * self.material.elastic_modulus
 
         return (kappa_x, kappa_y, kappa_xy)
 
-    def element_stress(self, area, cx, cy, ixx, iyy, ixy, i11, i22, phi, j,
-                       omega, psi_shear, phi_shear, Delta_s):
+    def element_stress(self, N, Mxx, Myy, M11, M22, Mzz, Vx, Vy, ea, cx, cy,
+                       ixx, iyy, ixy, i11, i22, phi, j, nu, omega, psi_shear,
+                       phi_shear, Delta_s):
         """Calculates the stress within an element resulting from unit loading.
-
         :param float area: Total area of the cross-section
         :param float cx: x position of the centroidal axis of the cross-section
         :param float cy: y position of the centroidal axis of the cross-section
@@ -267,10 +267,8 @@ class Tri6:
         :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`, ...)
         """
 
-        nu = self.material.poissons_ratio
-
         # calculate axial stress
-        sig_zz_n = np.ones((6, 1)) * 1 / area
+        sig_zz_n = N * np.ones(6) * self.material.elastic_modulus / ea
 
         # initialise stresses at the gauss points
         sig_zz_mxx_gp = np.zeros((6, 1))
@@ -308,18 +306,32 @@ class Tri6:
             h1 = -ixy * r + iyy * q
             h2 = -iyy * r - ixy * q
 
-            sig_zz_mxx_gp[i, :] = -(ixy * 1) / (ixx * iyy - ixy ** 2) * Nx + (
-                iyy * 1) / (ixx * iyy - ixy ** 2) * Ny
-            sig_zz_myy_gp[i, :] = -(ixx * 1) / (ixx * iyy - ixy ** 2) * Nx + (
-                ixy * 1) / (ixx * iyy - ixy ** 2) * Ny
-            sig_zz_m11_gp[i, :] = 1 / i11 * Ny_22
-            sig_zz_m22_gp[i, :] = -1 / i22 * Nx_11
-            sig_zxy_mzz_gp[i, :] = 1 / j * (B.dot(omega) - np.array(
-                [Ny, -Nx]))
-            sig_zxy_vx_gp[i, :] = 1 / Delta_s * (B.dot(
-                psi_shear) - nu / 2 * np.array([d1, d2]))
-            sig_zxy_vy_gp[i, :] = 1 / Delta_s * (B.dot(
-                phi_shear) - nu / 2 * np.array([h1, h2]))
+            # calculate element stresses
+            sig_zz_mxx_gp[i, :] = (self.material.elastic_modulus * (
+                -(ixy * Mxx) / (ixx * iyy - ixy ** 2) * Nx + (
+                    iyy * Mxx) / (ixx * iyy - ixy ** 2) * Ny))
+            sig_zz_myy_gp[i, :] = (self.material.elastic_modulus * (
+                -(ixx * Myy) / (ixx * iyy - ixy ** 2) * Nx + (
+                    ixy * Myy) / (ixx * iyy - ixy ** 2) * Ny))
+            sig_zz_m11_gp[i, :] = (
+                self.material.elastic_modulus * M11 / i11 * Ny_22)
+            sig_zz_m22_gp[i, :] = (
+                self.material.elastic_modulus * -M22 / i22 * Nx_11)
+
+            if Mzz != 0:
+                sig_zxy_mzz_gp[i, :] = (
+                    self.material.elastic_modulus * Mzz / j * (B.dot(
+                        omega) - np.array([Ny, -Nx])))
+
+            if Vx != 0:
+                sig_zxy_vx_gp[i, :] = (
+                    self.material.elastic_modulus * Vx / Delta_s * (B.dot(
+                        psi_shear) - nu / 2 * np.array([d1, d2])))
+
+            if Vy != 0:
+                sig_zxy_vy_gp[i, :] = (
+                    self.material.elastic_modulus * Vy / Delta_s * (B.dot(
+                        phi_shear) - nu / 2 * np.array([h1, h2])))
 
         # extrapolate results to nodes
         sig_zz_mxx = extrapolate_to_nodes(sig_zz_mxx_gp[:, 0])
