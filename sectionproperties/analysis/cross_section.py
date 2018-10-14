@@ -1,11 +1,13 @@
 import copy
 import numpy as np
 from scipy.sparse import csc_matrix, coo_matrix, linalg
+from scipy.optimize import brentq
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 import matplotlib.cm as cm
 import matplotlib.patches as mpatches
 from matplotlib.colors import ListedColormap
+import meshpy.triangle as triangle
 import sectionproperties.pre.pre as pre
 import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
@@ -286,7 +288,7 @@ class CrossSection:
         if None in [self.section_props.area, self.section_props.ixx_c,
                     self.section_props.cx]:
             err = "Cacluate geometric properties before "
-            err += "performing warping analysis."
+            err += "performing a warping analysis."
             raise RuntimeError(err)
 
         # create a new CrossSection with the origin shifted to the centroid for
@@ -451,8 +453,8 @@ class CrossSection:
                                     f_torsion.dot(phi_shear))
             y_se = (1 / Delta_s) * ((self.section_props.nu_eff / 2 * sc_yint) +
                                     f_torsion.dot(psi_shear))
-            (x1_se, y2_se) = fea.principal_coordinate(self.section_props.phi,
-                                                      x_se, y_se)
+            (x11_se, y22_se) = fea.principal_coordinate(self.section_props.phi,
+                                                        x_se, y_se)
 
             # calculate shear centres (Trefftz's approach)
             x_st = (self.section_props.ixy_c *
@@ -464,21 +466,21 @@ class CrossSection:
                 self.section_props.ixx_c * self.section_props.iyy_c -
                 self.section_props.ixy_c ** 2)
 
-            return (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st)
+            return (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st)
 
         if time_info:
             text = "--Calculating shear centres..."
-            (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st) = (
+            (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st) = (
                 solver.function_timer(text, shear_centres))
         else:
-            (Delta_s, x_se, y_se, x1_se, y2_se, x_st, y_st) = shear_centres()
+            (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st) = shear_centres()
 
         # save shear centres
         self.section_props.Delta_s = Delta_s
         self.section_props.x_se = x_se
         self.section_props.y_se = y_se
-        self.section_props.x1_se = x1_se
-        self.section_props.y2_se = y2_se
+        self.section_props.x11_se = x11_se
+        self.section_props.y22_se = y22_se
         self.section_props.x_st = x_st
         self.section_props.y_st = y_st
 
@@ -535,10 +537,42 @@ class CrossSection:
         self.section_props.A_s11 = self.section_props.area / rotatedAlpha[0, 0]
         self.section_props.A_s22 = self.section_props.area / rotatedAlpha[1, 1]
 
-    def calculate_plastic_properties(self, time_info=False):
-        """s"""
+    def calculate_plastic_properties(self, pc_region=[0.95, 0.95, 0.95, 0.95],
+                                     time_info=False,
+                                     verbose=False, debug=False):
+        """aaa
 
-        # TODO: implement
+        Note that the geometric properties must be calculated before the
+        plastic properties are calculated::
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_plastic_properties()
+
+        :raises RuntimeError: If the geometric properties have not been
+            calculated prior to calling this method
+        """
+
+        # check that a geometric analysis has been performed
+        if self.section_props.cx is None:
+            err = "Cacluate geometric properties before "
+            err += "performing a plastic analysis."
+            raise RuntimeError(err)
+
+        def calc_plastic():
+            plastic_section = PlasticSection(
+                self.geometry, self.materials, debug)
+
+            # calculate plastic properties
+            plastic_section.calculate_plastic_properties(
+                self, pc_region, verbose)
+
+        if time_info:
+            text = "--Calculating plastic properties..."
+            solver.function_timer(text, calc_plastic)
+            print("")
+        else:
+            calc_plastic()
 
     def calculate_stress(self, N=0, Vx=0, Vy=0, Mxx=0, Myy=0, M11=0, M22=0,
                          Mzz=0, time_info=False):
@@ -876,15 +910,15 @@ class CrossSection:
 
         # if the global plastic centroid has been calculated
         if self.section_props.x_pc is not None:
-            ax.scatter(self.section_props.x_pc, self.section_props.y_pc,
-                       c='r', marker='x', s=100,
+            (x_pc, y_pc) = self.get_pc()
+            ax.scatter(x_pc, y_pc, c='r', marker='x', s=100,
                        label='Global plastic centroid')
 
         # if the principal plastic centroid has been calculated
-        if self.section_props.x1_pc is not None:
-            ax.scatter(self.section_props.x1_pc, self.section_props.y2_pc,
-                       edgecolors='r', marker='s', s=100,
-                       label='Principal plastic centroid')
+        if self.section_props.x11_pc is not None:
+            (x11_pc, y22_pc) = self.get_pc_p()
+            ax.scatter(x11_pc, y22_pc, edgecolors='r', facecolors='none',
+                       marker='s', s=100, label='Principal plastic centroid')
 
         # if the principal axis has been calculated
         if self.section_props.phi is not None:
@@ -956,9 +990,6 @@ class CrossSection:
         """
 
         post.print_results(self, fmt)
-
-    # TODO: add new get methods when new section properties are added
-    # e.g. plastic and composite
 
     def get_area(self):
         """
@@ -1178,7 +1209,7 @@ class CrossSection:
     def get_sc_p(self):
         """
         :return: Principal axis shear centre (elasticity approach)
-            *(x1_se, y2_se)*
+            *(x11_se, y22_se)*
         :rtype: tuple(float, float)
 
         ::
@@ -1186,17 +1217,17 @@ class CrossSection:
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
-            (x1_se, y2_se) = section.get_sc_p()
+            (x11_se, y22_se) = section.get_sc_p()
         """
 
-        if self.section_props.x1_se is None:
+        if self.section_props.x11_se is None:
             return (None, None)
         else:
             # add centroid location to move section back to original location
-            x1_se = self.section_props.x1_se + self.section_props.cx
-            y2_se = self.section_props.y2_se + self.section_props.cy
+            x11_se = self.section_props.x11_se + self.section_props.cx
+            y22_se = self.section_props.y22_se + self.section_props.cy
 
-        return (x1_se, y2_se)
+        return (x11_se, y22_se)
 
     def get_sc_t(self):
         """
@@ -1265,6 +1296,48 @@ class CrossSection:
 
         return (self.section_props.A_s11, self.section_props.A_s22)
 
+    def get_pc(self):
+        """a"""
+
+        x_pc = self.section_props.x_pc + self.section_props.cx
+        y_pc = self.section_props.y_pc + self.section_props.cy
+
+        return (x_pc, y_pc)
+
+    def get_pc_p(self):
+        """a"""
+
+        x11_pc = self.section_props.x11_pc + self.section_props.cx
+        y22_pc = self.section_props.y22_pc + self.section_props.cy
+
+        return (x11_pc, y22_pc)
+
+    def get_s(self):
+        """aaa
+        """
+
+        return (self.section_props.sxx, self.section_props.syy)
+
+    def get_sp(self):
+        """aaa
+        """
+
+        return (self.section_props.s11, self.section_props.s22)
+
+    def get_sf(self):
+        """aaa
+        """
+
+        return (self.section_props.sf_xx_plus, self.section_props.sf_xx_minus,
+                self.section_props.sf_yy_plus, self.section_props.sf_yy_minus)
+
+    def get_sf_p(self):
+        """aaa
+        """
+
+        return (self.section_props.sf_11_plus, self.section_props.sf_11_minus,
+                self.section_props.sf_22_plus, self.section_props.sf_22_minus)
+
 
 class PlasticSection:
     """asldj TODO!!!
@@ -1278,35 +1351,515 @@ class PlasticSection:
     :vartype geometry: :class:`~sectionproperties.pre.sections.Geometry`
     """
 
-    def __init__(self, geometry):
+    def __init__(self, geometry, materials, debug):
         """Inits the PlasticSection class."""
 
-        self.geometry = geometry
+        # make a deepcopy of the geometry so that we can modify it
+        self.geometry = copy.deepcopy(geometry)
+        self.materials = materials
+        self.debug = debug
 
-    def calculate_properties(self, angle):
+        # create simple mesh of the geometry
+        mesh = self.create_plastic_mesh()
+
+        # get the elements of the mesh
+        (_, _, elements) = self.get_elements(mesh, self.materials)
+
+        # calculate centroid of the mesh
+        (cx, cy) = self.calculate_centroid(elements)
+
+        # shift geometry such that the origin is at the centroid
+        self.geometry.shift = [-cx, -cy]
+        self.geometry.shift_section()
+
+        # remesh the geometry and store the mesh
+        self.mesh = self.create_plastic_mesh()
+
+        # store the nodes, elements and list of elements in the mesh
+        (self.mesh_nodes, self.mesh_elements, self.elements) = (
+            self.get_elements(self.mesh, self.materials))
+
+    def get_elements(self, mesh, materials):
         """a"""
 
+        # extract mesh data
+        nodes = np.array(mesh.points, dtype=np.dtype(float))
+        elements = np.array(mesh.elements, dtype=np.dtype(int))
+        attributes = np.array(mesh.element_attributes, dtype=np.dtype(int))
+
+        # swap mid-node order to retain node ordering consistency
+        elements[:, [3, 4, 5]] = elements[:, [5, 3, 4]]
+
+        # initialise list of Tri6 elements
+        element_list = []
+
+        # build the element list one element at a time
+        for (i, node_ids) in enumerate(elements):
+            x1 = nodes[node_ids[0]][0]
+            y1 = nodes[node_ids[0]][1]
+            x2 = nodes[node_ids[1]][0]
+            y2 = nodes[node_ids[1]][1]
+            x3 = nodes[node_ids[2]][0]
+            y3 = nodes[node_ids[2]][1]
+            x4 = nodes[node_ids[3]][0]
+            y4 = nodes[node_ids[3]][1]
+            x5 = nodes[node_ids[4]][0]
+            y5 = nodes[node_ids[4]][1]
+            x6 = nodes[node_ids[5]][0]
+            y6 = nodes[node_ids[5]][1]
+
+            # create a list containing the vertex and mid-node coordinates
+            coords = np.array(
+                [[x1, x2, x3, x4, x5, x6], [y1, y2, y3, y4, y5, y6]])
+
+            # if materials are specified, get the material
+            if materials is not None:
+                # get attribute index of current element
+                att_el = attributes[i]
+
+                # fetch the material
+                material = materials[att_el]
+            # if there are no materials specified, use a default material
+            else:
+                material = pre.Material('default', 1, 0, 1)
+
+            # add tri6 elements to the element list
+            element_list.append(fea.Tri6(i, coords, node_ids, material))
+
+        return (nodes, elements, element_list)
+
+    def calculate_centroid(self, elements):
+        """a"""
+
+        ea = 0
+        qx = 0
+        qy = 0
+
+        # loop through all the elements
+        for el in elements:
+            (area, qx_el, qy_el, _, _, _, e, _) = el.geometric_properties()
+            ea += area * e
+            qx += qx_el * e
+            qy += qy_el * e
+
+        return (qy / ea, qx / ea)
+
+    def calculate_plastic_properties(self, cross_section, pc_region, verbose):
+        """a"""
+
+        # 1) Calculate plastic properties for centroidal axis
+        # calculate distances to the extreme fibres
+        fibres = self.calculate_extreme_fibres(0)
+
+        # 1a) Calculate x-axis plastic centroid
+        (y_pc, r, f, c_top, c_bot) = self.pc_algorithm(
+            np.array([1, 0]), fibres[2:], 1, pc_region[1])
+
+        self.check_convergence(r, 'x-axis')
+        cross_section.section_props.y_pc = y_pc
+        cross_section.section_props.sxx = f * abs(c_top[1] - c_bot[1])
+
+        if verbose:
+            self.print_verbose(r, 'x-axis')
+
+        # 1b) Calculate y-axis plastic centroid
+        (x_pc, r, f, c_top, c_bot) = self.pc_algorithm(
+            np.array([0, 1]), fibres[0:2], 2, pc_region[0])
+
+        self.check_convergence(r, 'y-axis')
+        cross_section.section_props.x_pc = x_pc
+        cross_section.section_props.syy = f * abs(c_top[0] - c_bot[0])
+
+        if verbose:
+            self.print_verbose(r, 'y-axis')
+
+        # 2) Calculate plastic properties for principal axis
+        # convert principal axis angle to radians
+        angle = cross_section.section_props.phi * np.pi / 180
+
         # unit vectors in the axis directions
-        ux = [np.cos(angle), np.sin(angle)]
-        uy = [-np.sin(angle), np.cos(angle)]
+        ux = np.array([np.cos(angle), np.sin(angle)])
+        uy = np.array([-np.sin(angle), np.cos(angle)])
 
-        # calculate x-axis plastic centroid
-        # implement
+        # calculate distances to the extreme fibres in the principal axis
+        fibres = self.calculate_extreme_fibres(
+            cross_section.section_props.phi)
 
-        # calculate y-axis plastic centroid
-        # implement
+        # 2a) Calculate 11-axis plastic centroid
+        (y22_pc, r, f, c_top, c_bot) = self.pc_algorithm(
+            ux, fibres[2:], 1, pc_region[3])
 
-        # think about SFs and S for different materials
+        self.check_convergence(r, '11-axis')
+        cross_section.section_props.y22_pc = y22_pc
+        cross_section.section_props.s11 = f * abs(c_top[0] - c_bot[0])
 
-    # ELEMENT METHODS:
-        # is element above axis or below axis?
-        # return element force
+        if verbose:
+            self.print_verbose(r, '11-axis')
 
-    # CLASS METHODS:
-        # calculate plastic force
-        # calculate area centroids
-        # meshing methods
-        # pc algorithm
+        # 2b) Calculate 22-axis plastic centroid
+        (x11_pc, r, f, c_top, c_bot) = self.pc_algorithm(
+            uy, fibres[0:2], 2, pc_region[2])
+
+        self.check_convergence(r, '22-axis')
+        cross_section.section_props.x11_pc = x11_pc
+        cross_section.section_props.s22 = f * abs(c_top[1] - c_bot[1])
+
+        if verbose:
+            self.print_verbose(r, '22-axis')
+
+        # if there are no materials specified, calculate shape factors
+        if cross_section.materials is None:
+            cross_section.section_props.sf_xx_plus = (
+                cross_section.section_props.sxx /
+                cross_section.section_props.zxx_plus)
+            cross_section.section_props.sf_xx_minus = (
+                cross_section.section_props.sxx /
+                cross_section.section_props.zxx_minus)
+            cross_section.section_props.sf_yy_plus = (
+                cross_section.section_props.syy /
+                cross_section.section_props.zyy_plus)
+            cross_section.section_props.sf_yy_minus = (
+                cross_section.section_props.syy /
+                cross_section.section_props.zyy_minus)
+
+            cross_section.section_props.sf_11_plus = (
+                cross_section.section_props.s11 /
+                cross_section.section_props.z11_plus)
+            cross_section.section_props.sf_11_minus = (
+                cross_section.section_props.s11 /
+                cross_section.section_props.z11_minus)
+            cross_section.section_props.sf_22_plus = (
+                cross_section.section_props.s22 /
+                cross_section.section_props.z22_plus)
+            cross_section.section_props.sf_22_minus = (
+                cross_section.section_props.s22 /
+                cross_section.section_props.z22_minus)
+
+    def check_convergence(self, root_result, axis):
+        """a"""
+
+        if not root_result.converged:
+            str = "Plastic centroid calculation about the {0}".format(axis)
+            str += " failed. Contact robbie.vanleeuwen@gmail.com with your"
+            str += " analysis parameters. Termination flag: {0}".format(
+                root_result.flag)
+
+            raise RuntimeError(str)
+
+    def print_verbose(self, root_result, axis):
+        """a"""
+
+        str = "---{0} plastic centroid calculation converged in".format(axis)
+        str += " {0} iterations.".format(root_result.iterations)
+        print(str)
+
+    def calculate_extreme_fibres(self, angle):
+        """a"""
+
+        # calculate section moduli about the principal axis
+        for (i, pt) in enumerate(self.mesh_nodes):
+            # determine the coordinate of the point wrt the axis
+            (u, v) = fea.principal_coordinate(angle, pt[0], pt[1])
+
+            # initialise min, max variables
+            if i == 0:
+                u_min = u
+                u_max = u
+                v_min = v
+                v_max = v
+
+            # update the mins and maxs where necessary
+            u_min = min(u_min, u)
+            u_max = max(u_max, u)
+            v_min = min(v_min, v)
+            v_max = max(v_max, v)
+
+        return (u_min, u_max, v_min, v_max)
+
+    def evaluate_force_eq(self, d, u, u_p):
+        """a"""
+
+        p = np.array([d * u_p[0], d * u_p[1]])
+
+        # create a mesh with the axis included
+        mesh = self.create_plastic_mesh([p, u])
+        (nodes, elements, element_list) = (
+            self.get_elements(mesh, self.materials))
+
+        # calculate force equilibrium
+        (f_top, f_bot, _, _) = (
+            self.calculate_plastic_force(element_list, u, p))
+
+        # return the force norm
+        return (f_top - f_bot) / (f_top + f_bot)
+
+    def pc_algorithm(self, u, dlim, axis, pc_region):
+        """a
+
+        :param u: Unit vector in the direction of the axis
+        :type u: :class:`numpy.ndarray`
+        :param dlim: List [dmax, dmin] containing the distances from the
+            centroid to the extreme fibres perpendicular to the axis
+        :type dlim: list[float, float]
+        :param int axis: The current axis direction: 1 (e.g. x or 11) or
+            2 (e.g. y or 22)
+        """
+
+        D = dlim[1] - dlim[0]  # depth of the section perpendicular to the axis
+
+        # calculate vector perpendicular to u
+        if axis == 1:
+            u_p = np.array([-u[1], u[0]])
+        else:
+            u_p = np.array([u[1], -u[0]])
+
+        x = (1 - pc_region) / 2
+        a = dlim[0] + x * D
+        b = dlim[1] - x * D
+
+        (d, r) = brentq(self.evaluate_force_eq, a, b, args=(u, u_p),
+                        full_output=True, disp=False)
+
+        # get centroids of the areas
+        p = np.array([d * u_p[0], d * u_p[1]])
+        mesh = self.create_plastic_mesh([p, u])
+        (nodes, elements, element_list) = (
+            self.get_elements(mesh, self.materials))
+        (f_top, f_bot, c_top, c_bot) = (
+            self.calculate_plastic_force(element_list, u, p))
+
+        return (d, r, f_top, c_top, c_bot)
+
+    def calculate_plastic_force(self, elements, u, p):
+        """a"""
+
+        # initialise variables
+        (f_top, f_bot) = (0, 0)
+        (ea_top, ea_bot) = (0, 0)
+        (qx_top, qx_bot) = (0, 0)
+        (qy_top, qy_bot) = (0, 0)
+
+        # loop through all elements in the mesh
+        for el in elements:
+            # calculate element force and area properties
+            (f_el, ea_el, qx_el, qy_el, is_above) = el.plastic_properties(u, p)
+
+            # assign force and area properties to the top or bottom segments
+            if is_above:
+                f_top += f_el
+                ea_top += ea_el
+                qx_top += qx_el
+                qy_top += qy_el
+            else:
+                f_bot += f_el
+                ea_bot += ea_el
+                qx_bot += qx_el
+                qy_bot += qy_el
+
+        # calculate the centroid of the top and bottom segments
+        c_top = [qy_top / ea_top, qx_top / ea_top]
+        c_bot = [qy_bot / ea_bot, qx_bot / ea_bot]
+
+        return(f_top, f_bot, c_top, c_bot)
+
+    def create_plastic_mesh(self, new_line=None):
+        """a
+
+        :param new_line: A point p and a unit vector u defining a line to add
+            to the mesh (new_line: p -> p + u)
+        :type new_line: list[:class:`numpy.ndarray`, :class:`numpy.ndarray`]
+        """
+
+        # start with the initial geometry
+        geom = copy.deepcopy(self.geometry)
+
+        # add line at new_line
+        if new_line is not None:
+            self.add_line(geom, new_line)
+
+            # fast clean the geometry after adding the line
+            clean = pre.GeometryCleaner(geom, verbose=False)
+            clean.zip_points()
+            clean.remove_zero_length_facets()
+            clean.remove_unused_points()
+            geom = clean.geometry
+
+        if self.debug:
+            if new_line is not None:
+                geom.plot_geometry(labels=True)
+
+        # build mesh object
+        mesh = triangle.MeshInfo()  # create mesh info object
+        mesh.set_points(geom.points)  # set points
+        mesh.set_facets(geom.facets)  # set facets
+        mesh.set_holes(geom.holes)  # set holes
+
+        # set regions
+        mesh.regions.resize(len(geom.control_points))
+        region_id = 0  # initialise region ID variable
+
+        for (i, cp) in enumerate(geom.control_points):
+            mesh.regions[i] = [cp[0], cp[1], region_id, 1]
+            region_id += 1
+
+        mesh = triangle.build(
+            mesh, mesh_order=2, quality_meshing=False, attributes=True)
+
+        return mesh
+
+    def add_line(self, geometry, line):
+        """a
+
+        :param line: A point p and a unit vector u defining a line to add to
+            the mesh (line: p -> p + u)
+        :type line: list[:class:`numpy.ndarray`, :class:`numpy.ndarray`]
+        """
+
+        # initialise intersection points and facet index list
+        int_pts = []
+        fct_idx = []
+
+        # get current number of points in the geometry object
+        num_pts = len(geometry.points)
+
+        # line: p -> p + r
+        p = line[0]
+        r = line[1]
+
+        # loop through all the facets in the geometry to find intersection pts
+        for (idx, fct) in enumerate(geometry.facets):
+            # facet: q -> q + s
+            q = np.array(geometry.points[fct[0]])
+            s = geometry.points[fct[1]] - q
+
+            # cacluate intersection point between p -> p + r and q -> q + s
+            # N.B. make line p -> p + r inifintely long to find all intersects
+            # if the lines are not parallel
+            if np.cross(r, s) != 0:
+                # calculate t and u
+                t = np.cross(q - p, s) / np.cross(r, s)
+                u = np.cross(p - q, r) / np.cross(s, r)
+
+                new_pt = p + t * r
+
+                # if the line lies within q -> q + s and the point hasn't
+                # already been added (ignore t as it is infinitely long)
+                if (u >= 0 and u <= 1 and
+                        list(new_pt) not in [list(item) for item in int_pts]):
+                    int_pts.append(new_pt)
+                    fct_idx.append(idx)
+
+        # sort intersection points and facet list first by x, then by y
+        int_pts = np.array(int_pts)
+        idx_sort = np.lexsort((int_pts[:, 0], int_pts[:, 1]))
+        int_pts = int_pts[idx_sort]
+        fct_idx = list(np.array(fct_idx)[idx_sort])
+
+        # add points to the geometry object
+        for pt in int_pts:
+            geometry.points.append([pt[0], pt[1]])
+
+        # add new facets by looping from the second facet index to the end
+        for (i, idx) in enumerate(fct_idx[1:]):
+            # get mid-point of proposed new facet
+            mid_pt = 0.5 * (int_pts[i] + int_pts[i+1])
+
+            # check to see if the mid-point is not in a hole
+            # add the facet
+            if self.point_within_element(mid_pt):
+                geometry.facets.append([num_pts + i, num_pts + i + 1])
+
+            # rebuild the intersected facet
+            self.rebuild_parent_facet(geometry, idx, num_pts + i + 1)
+
+            # rebuild the first facet the looped skipped
+            if i == 0:
+                self.rebuild_parent_facet(geometry, fct_idx[0], num_pts + i)
+
+        # sort list of facet indices (to be removed) in reverse order so as not
+        # to comprimise the indices during deletion
+        idx_to_remove = sorted(fct_idx, reverse=True)
+
+        for idx in idx_to_remove:
+            geometry.facets.pop(idx)
+
+    def rebuild_parent_facet(self, geometry, fct_idx, pt_idx):
+        """a"""
+
+        # get current facet
+        fct = geometry.facets[fct_idx]
+
+        # rebuild facet
+        geometry.facets.append([fct[0], pt_idx])
+        geometry.facets.append([pt_idx, fct[1]])
+
+    def point_within_element(self, pt):
+        """a"""
+
+        px = pt[0]
+        py = pt[1]
+
+        # loop through elements in the mesh
+        for el in self.mesh_elements:
+            # get coordinates of corner points
+            x1 = self.mesh_nodes[el[0]][0]
+            y1 = self.mesh_nodes[el[0]][1]
+            x2 = self.mesh_nodes[el[1]][0]
+            y2 = self.mesh_nodes[el[1]][1]
+            x3 = self.mesh_nodes[el[2]][0]
+            y3 = self.mesh_nodes[el[2]][1]
+
+            # compute variables alpha, beta and gamma
+            alpha = (((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) /
+                     ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)))
+            beta = (((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) /
+                    ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)))
+            gamma = 1.0 - alpha - beta
+
+            # if the point lies within an element
+            if alpha >= 0 and beta >= 0 and gamma >= 0:
+                return True
+
+        return False
+
+    def plot_mesh(self, nodes, elements):
+        """a"""
+
+        (fig, ax) = plt.subplots()
+
+        ax.triplot(nodes[:, 0], nodes[:, 1], elements[:, 0:3], 'k-', lw=0.5,
+                   alpha=0.5)
+
+        # plot material colours
+        if self.materials is not None:
+            color_array = []
+            legend_list = []
+
+            # create an array of finite element colours
+            for element in self.elements:
+                color_array.append(element.material.color)
+
+            # create a list of unique material legend entries
+            for (i, material) in enumerate(self.materials):
+                # if the material has not be entered yet
+                if i == 0 or material not in self.materials[0:i]:
+                    # add the material colour and name to the legend list
+                    legend_list.append(mpatches.Patch(color=material.color,
+                                                      label=material.name))
+
+            cmap = ListedColormap(color_array)  # custom colormap
+            c = np.arange(len(color_array))  # indicies of elements
+
+            # plot the mesh colours
+            ax.tripcolor(self.mesh_nodes[:, 0], self.mesh_nodes[:, 1],
+                         self.mesh_elements[:, 0:3], c, cmap=cmap)
+
+            # display the legend
+            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5),
+                      handles=legend_list)
+
+        ax.set_aspect('equal', anchor='C')
+        plt.show()
 
 
 class MaterialGroup:
@@ -1316,9 +1869,9 @@ class MaterialGroup:
         """Inits the MaterialGroup class."""
 
         self.material = material
+        self.stress_result = StressResult(num_nodes)
         self.elements = []
         self.el_ids = []
-        self.stress_result = StressResult(num_nodes)
 
     def add_element(self, element):
         """a"""
@@ -2115,14 +2668,6 @@ class SectionProperties:
         stresses at the negative extreme value of the 11-axis
     :cvar float r11_c: Radius of gyration about the principal 11-axis.
     :cvar float r22_c: Radius of gyration about the principal 22-axis.
-    :cvar float xmax: Maximum x-axis coordinate
-    :cvar float xmin: Minimum x-axis coordinate
-    :cvar float ymax: Maximum y-axis coordinate
-    :cvar float ymin: Minimum y-axis coordinate
-    :cvar float x1max: Maximum 11-axis coordinate
-    :cvar float x1min: Minimum 11-axis coordinate
-    :cvar float y2max: Maximum 22-axis coordinate
-    :cvar float y2min: Minimum 22-axis coordinate
     :cvar float j: Torsion constant
     :cvar omega: Warping function
     :vartype omega: :class:`numpy.ndarray`
@@ -2133,8 +2678,8 @@ class SectionProperties:
     :cvar float Delta_s: Shear factor
     :cvar float x_se: X coordinate of the shear centre (elasticity approach)
     :cvar float y_se: Y coordinate of the shear centre (elasticity approach)
-    :cvar float x1_se: 11 coordinate of the shear centre (elasticity approach)
-    :cvar float y2_se: 22 coordinate of the shear centre (elasticity approach)
+    :cvar float x11_se: 11 coordinate of the shear centre (elasticity approach)
+    :cvar float y22_se: 22 coordinate of the shear centre (elasticity approach)
     :cvar float x_st: X coordinate of the shear centre (Trefftz's approach)
     :cvar float y_st: Y coordinate of the shear centre (Trefftz's approach)
     :cvar float gamma: Warping constant
@@ -2145,27 +2690,27 @@ class SectionProperties:
     :cvar float A_s22: Shear area about the 22 bending axis
     :cvar float x_pc: X coordinate of the global plastic centroid
     :cvar float y_pc: Y coordinate of the global plastic centroid
-    :cvar float x1_pc: 11 coordinate of the principal plastic centroid
-    :cvar float y2_pc: 22 coordinate of the principal plastic centroid
-    :cvar float Sxx: Plastic section modulus about the centroidal x-axis
-    :cvar float Syy: Plastic section modulus about the centroidal y-axis
-    :cvar float SF_xx_plus: Shape factor for bending about the x-axis with
+    :cvar float x11_pc: 11 coordinate of the principal plastic centroid
+    :cvar float y22_pc: 22 coordinate of the principal plastic centroid
+    :cvar float sxx: Plastic section modulus about the centroidal x-axis
+    :cvar float syy: Plastic section modulus about the centroidal y-axis
+    :cvar float sf_xx_plus: Shape factor for bending about the x-axis with
         respect to the top fibre
-    :cvar float SF_xx_minus: Shape factor for bending about the x-axis with
+    :cvar float sf_xx_minus: Shape factor for bending about the x-axis with
         respect to the bottom fibre
-    :cvar float SF_yy_plus: Shape factor for bending about the y-axis with
+    :cvar float sf_yy_plus: Shape factor for bending about the y-axis with
         respect to the top fibre
-    :cvar float SF_yy_minus: Shape factor for bending about the y-axis with
+    :cvar float sf_yy_minus: Shape factor for bending about the y-axis with
         respect to the bottom fibre
-    :cvar float S11: Plastic section modulus about the 11-axis
-    :cvar float S22: Plastic section modulus about the 22-axis
-    :cvar float SF_11_plus: Shape factor for bending about the 11-axis with
+    :cvar float s11: Plastic section modulus about the 11-axis
+    :cvar float s22: Plastic section modulus about the 22-axis
+    :cvar float sf_11_plus: Shape factor for bending about the 11-axis with
         respect to the top fibre
-    :cvar float SF_11_minus: Shape factor for bending about the 11-axis with
+    :cvar float sf_11_minus: Shape factor for bending about the 11-axis with
         respect to the bottom fibre
-    :cvar float SF_22_plus: Shape factor for bending about the 22-axis with
+    :cvar float sf_22_plus: Shape factor for bending about the 22-axis with
         respect to the top fibre
-    :cvar float SF_22_minus: Shape factor for bending about the 22-axis with
+    :cvar float sf_22_minus: Shape factor for bending about the 22-axis with
         respect to the bottom fibre
     """
 
@@ -2208,8 +2753,8 @@ class SectionProperties:
         self.Delta_s = None
         self.x_se = None
         self.y_se = None
-        self.x1_se = None
-        self.y2_se = None
+        self.x11_se = None
+        self.y22_se = None
         self.x_st = None
         self.y_st = None
         self.gamma = None
@@ -2220,20 +2765,20 @@ class SectionProperties:
         self.A_s22 = None
         self.x_pc = None
         self.y_pc = None
-        self.x1_pc = None
-        self.y2_pc = None
-        self.Sxx = None
-        self.Syy = None
-        self.SF_xx_plus = None
-        self.SF_xx_minus = None
-        self.SF_yy_plus = None
-        self.SF_yy_minus = None
-        self.S11 = None
-        self.S22 = None
-        self.SF_11_plus = None
-        self.SF_11_minus = None
-        self.SF_22_plus = None
-        self.SF_22_minus = None
+        self.x11_pc = None
+        self.y22_pc = None
+        self.sxx = None
+        self.syy = None
+        self.sf_xx_plus = None
+        self.sf_xx_minus = None
+        self.sf_yy_plus = None
+        self.sf_yy_minus = None
+        self.s11 = None
+        self.s22 = None
+        self.sf_11_plus = None
+        self.sf_11_minus = None
+        self.sf_22_plus = None
+        self.sf_22_minus = None
 
     def calculate_elastic_centroid(self):
         """Calculates the elastic centroid based on the cross-section area and
@@ -2255,14 +2800,14 @@ class SectionProperties:
 
         # calculate section moduli about the centroidal xy axis
         nodes = np.array(mesh.points)
-        self.xmax = nodes[:, 0].max()
-        self.xmin = nodes[:, 0].min()
-        self.ymax = nodes[:, 1].max()
-        self.ymin = nodes[:, 1].min()
-        self.zxx_plus = self.ixx_c / abs(self.ymax - self.cy)
-        self.zxx_minus = self.ixx_c / abs(self.ymin - self.cy)
-        self.zyy_plus = self.iyy_c / abs(self.xmax - self.cx)
-        self.zyy_minus = self.iyy_c / abs(self.xmin - self.cx)
+        xmax = nodes[:, 0].max()
+        xmin = nodes[:, 0].min()
+        ymax = nodes[:, 1].max()
+        ymin = nodes[:, 1].min()
+        self.zxx_plus = self.ixx_c / abs(ymax - self.cy)
+        self.zxx_minus = self.ixx_c / abs(ymin - self.cy)
+        self.zyy_plus = self.iyy_c / abs(xmax - self.cx)
+        self.zyy_minus = self.iyy_c / abs(xmin - self.cx)
 
         # calculate radii of gyration about centroidal xy axis
         self.rx_c = (self.ixx_c / self.ea) ** 0.5
@@ -2289,169 +2834,23 @@ class SectionProperties:
 
             # initialise min, max variables
             if i == 0:
-                self.x1max = x1
-                self.x1min = x1
-                self.y2max = y2
-                self.y2min = y2
+                x1max = x1
+                x1min = x1
+                y2max = y2
+                y2min = y2
 
             # update the mins and maxs where necessary
-            self.x1max = max(self.x1max, x1)
-            self.x1min = min(self.x1min, x1)
-            self.y2max = max(self.y2max, y2)
-            self.y2min = min(self.y2min, y2)
+            x1max = max(x1max, x1)
+            x1min = min(x1min, x1)
+            y2max = max(y2max, y2)
+            y2min = min(y2min, y2)
 
         # evaluate principal section moduli
-        self.z11_plus = self.i11_c / abs(self.y2max)
-        self.z11_minus = self.i11_c / abs(self.y2min)
-        self.z22_plus = self.i22_c / abs(self.x1max)
-        self.z22_minus = self.i22_c / abs(self.x1min)
+        self.z11_plus = self.i11_c / abs(y2max)
+        self.z11_minus = self.i11_c / abs(y2min)
+        self.z22_plus = self.i22_c / abs(x1max)
+        self.z22_minus = self.i22_c / abs(x1min)
 
         # calculate radii of gyration about centroidal principal axis
         self.r11_c = (self.i11_c / self.ea) ** 0.5
         self.r22_c = (self.i22_c / self.ea) ** 0.5
-
-# def computeSectionProperties(self, points, facets, holes, controlPoints,
-#                              materials):
-#     """
-#     This function computes the the cross-section properties for the mesh.
-#     """
-#
-#     if (self.settings.plasticAnalysis):
-#         # calculate global plastic properties
-#         if (self.settings.outputLog):
-#             processText = "-- Calculating global plastic properties..."
-#         otherUtilities.functionTimer(
-#             processText, self.computeGlobalPlasticProperties, points,
-#             facets, holes, controlPoints, materials)
-#
-#         # calculate principal plastic properties
-#         if (self.settings.outputLog):
-#             processText = "-- Calculating principal plastic properties..."
-#         otherUtilities.functionTimer(
-#             processText, self.computePrincipalPlasticProperties, points,
-#             facets, holes, controlPoints, materials)
-#
-#
-# def computeGlobalPlasticProperties(self, points, facets, holes,
-#                                    controlPoints, materials):
-#     """
-#     This method computes the plastic centroid and plastic section moduli
-#     for global axis bending.
-#     """
-#
-#     # unit vectors in the x & y directions
-#     ux = [1, 0]
-#     uy = [0, 1]
-#
-#     # compute plastic centroids and plastic section moduli:
-#     # compute x-location of plastic centroid
-#     (self.x_pc, topA, botA, topCenX, botCenX) = otherUtilities.pcAlgorithm(
-#         self.settings.tol, 1000, uy, self.xmin, self.xmax,
-#         points, facets, holes, controlPoints, self.nodes, self.elements,
-#         materials, 1)
-#
-#     # compute y-location of the plastic centroid
-#     (self.y_pc, topA, botA, topCenY, botCenY) = otherUtilities.pcAlgorithm(
-#         self.settings.tol, 1000, ux, self.ymin, self.ymax,
-#         points, facets, holes, controlPoints, self.nodes, self.elements,
-#         materials, 2)
-#
-#     self.Sxx = self.area / 2 * abs(topCenY[1] - botCenY[1])
-#     self.Syy = self.area / 2 * abs(topCenX[0] - botCenX[0])
-#
-#     # compute shape factors
-#     self.SF_xx_plus = self.Sxx / self.zxx_plus
-#     self.SF_xx_minus = self.Sxx / self.zxx_minus
-#     self.SF_yy_plus = self.Syy / self.zyy_plus
-#     self.SF_yy_minus = self.Syy / self.zyy_minus
-#
-# def computePrincipalPlasticProperties(self, points, facets, holes,
-#                                       controlPoints, materials):
-#     """
-#     This method computes the plastic centroid and plastic section moduli
-#     for principal axis bending.
-#     """
-#
-#     # unit vectors in the 1 & 2 directions
-#     u1 = np.array(
-#         [np.cos(self.phi * np.pi / 180), np.sin(self.phi * np.pi / 180)])
-#     u2 = np.array(
-#         [-np.sin(self.phi * np.pi / 180), np.cos(self.phi * np.pi / 180)])
-#
-#     # compute plastic centroids and plastic section moduli
-#     (x1_pc, topA, botA, topCen1, botCen1) = otherUtilities.pcAlgorithm(
-#         self.settings.tol, 1000, -u1, self.y2min, self.y2max,
-#         points, facets, holes, controlPoints, self.nodes, self.elements,
-#         materials, 1)
-#     (y2_pc, topA, botA, topCen2, botCen2) = otherUtilities.pcAlgorithm(
-#         self.settings.tol, 1000, -u2, self.x1min, self.x1max,
-#         points, facets, holes, controlPoints, self.nodes, self.elements,
-#         materials, 2)
-#
-#     # calculate the area centroids in the principal coordinate system
-#     (tc1_1, tc1_2) = otherUtilities.principalCoordinate(
-#         self.phi, topCen1[0], topCen1[1])
-#     (bc1_1, bc1_2) = otherUtilities.principalCoordinate(
-#         self.phi, botCen1[0], botCen1[1])
-#     (tc2_1, tc2_2) = otherUtilities.principalCoordinate(
-#         self.phi, topCen2[0], topCen2[1])
-#     (bc2_1, bc2_2) = otherUtilities.principalCoordinate(
-#         self.phi, botCen2[0], botCen2[1])
-#
-#     self.x1_pc = x1_pc * u2[0] + y2_pc * u1[0]
-#     self.y2_pc = x1_pc * u2[1] + y2_pc * u1[1]
-#     self.S11 = self.area / 2 * abs(tc1_2 - bc1_2)
-#     self.S22 = self.area / 2 * abs(tc2_1 - bc2_1)
-#
-#     # compute shape factors
-#     self.SF_11_plus = self.S11 / self.z11_plus
-#     self.SF_11_minus = self.S11 / self.z11_minus
-#     self.SF_22_plus = self.S22 / self.z22_plus
-#     self.SF_22_minus = self.S22 / self.z22_minus
-
-# def computeAreaSegments(self, u, px, py):
-#     """
-#     This method computes the area above and below a line defined by unit
-#     vector u and point(px, py)
-#     """
-#
-#     # allocate area variables
-#     topA = 0
-#     botA = 0
-#     topQx = 0
-#     topQy = 0
-#     botQx = 0
-#     botQy = 0
-#     topCen = [0, 0]
-#     botCen = [0, 0]
-#
-#     # loop through all elements in the mesh
-#     for el in self.triElements:
-#         # calculate area of element and its first moments of area
-#         (elA, Qx, Qy) = el.areaProperties()
-#
-#         # if the element is not infinitessimally small (meshing artefacts)
-#         if elA != 0:
-#             # calculate the element centroid
-#             elCen = [Qy / elA, Qx / elA]
-#         else:
-#             elCen = [0, 0]
-#
-#         # determine location of element and allocate element areas and
-#         # first moments of area accordingly
-#         if (otherUtilities.pointAboveLine(u, px, py, elCen[0], elCen[1])):
-#             topA += elA
-#             topQx += Qx
-#             topQy += Qy
-#         else:
-#             botA += elA
-#             botQx += Qx
-#             botQy += Qy
-#
-#     # if the element is not infinitessimally small
-#     if (topA != 0 and botA != 0):
-#         # calculate the centroid of the top and bottom areas
-#         topCen = np.array([topQy / topA, topQx / topA])
-#         botCen = np.array([botQy / botA, botQx / botA])
-#
-#     return (topA, botA, topCen, botCen)

@@ -49,21 +49,22 @@ for i in range(n_bars):
     materials.append(steel)
 
 geometry = sections.MergedSection(geometries)
-# geometry.plot_geometry()
+geometry.plot_geometry()
 mesh = geometry.create_mesh(mesh_sizes=mesh_sizes)
 
 section = CrossSection(geometry, mesh, materials, time_info=True)
 section.display_mesh_info()
-# section.plot_mesh(materials=True, alpha=0.5)
+section.plot_mesh(materials=True, alpha=0.5)
 
 section.calculate_geometric_properties(time_info=True)
-section.calculate_warping_properties(time_info=True)
-# section.calculate_plastic_properties()
-stress_result = section.calculate_stress(N=1e3, Vy=3e3, Mxx=1e6, Mzz=5e5,
-                                         time_info=True)
-# #
-# # # section.plot_centroids()
-# # section.display_results()
-stress_result.plot_vector_mzz_zxy(pause=False)
-stress_result.plot_vector_vy_zxy(pause=False)
-stress_result.plot_vector_zxy()
+# section.display_results()
+# section.calculate_warping_properties(time_info=True)
+section.calculate_plastic_properties(time_info=True, verbose=True)
+# stress_result = section.calculate_stress(N=1e3, Vy=3e3, Mxx=1e6, Mzz=5e5,
+#                                          time_info=True)
+
+section.plot_centroids()
+section.display_results()
+# stress_result.plot_vector_mzz_zxy(pause=False)
+# stress_result.plot_vector_vy_zxy(pause=False)
+# stress_result.plot_vector_zxy()

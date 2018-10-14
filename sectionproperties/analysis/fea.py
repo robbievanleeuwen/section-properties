@@ -58,7 +58,7 @@ class Tri6:
         # loop through each Gauss point
         for gp in gps:
             # determine shape function, shape function derivative and jacobian
-            (N, B, j) = shape_function(self.coords, gp)
+            (N, _, j) = shape_function(self.coords, gp)
 
             area += gp[0] * j
             qx += gp[0] * np.dot(N, np.transpose(self.coords[1, :])) * j
@@ -229,6 +229,37 @@ class Tri6:
                         [h1, h2])) * j * self.material.elastic_modulus
 
         return (kappa_x, kappa_y, kappa_xy)
+
+    def plastic_properties(self, u, p):
+        """a"""
+
+        # initialise geometric properties
+        e = self.material.elastic_modulus
+        area = 0
+        qx = 0
+        qy = 0
+        force = 0
+
+        # Gauss points for 3 point Gaussian integration
+        gps = gauss_points(3)
+
+        # loop through each Gauss point
+        for gp in gps:
+            # determine shape function, shape function derivative and jacobian
+            (N, _, j) = shape_function(self.coords, gp)
+
+            area += gp[0] * j
+            qx += gp[0] * np.dot(N, np.transpose(self.coords[1, :])) * j
+            qy += gp[0] * np.dot(N, np.transpose(self.coords[0, :])) * j
+            force += gp[0] * j * self.material.yield_strength
+
+        # calculate element centroid
+        (cx, cy) = (qy / area, qx / area)
+
+        # determine if the element is above the line p + u
+        is_above = point_above_line(u, p[0], p[1], cx, cy)
+
+        return (force, area * e, qx * e, qy * e, is_above)
 
     def element_stress(self, N, Mxx, Myy, M11, M22, Mzz, Vx, Vy, ea, cx, cy,
                        ixx, iyy, ixy, i11, i22, phi, j, nu, omega, psi_shear,
@@ -467,7 +498,7 @@ def principal_coordinate(phi, x, y):
     """Determines the coordinates of the cartesian point *(x, y)* in the
     principal axis system given an axis rotation angle phi.
 
-    :param float phi: Prinicpal axis rotation angle
+    :param float phi: Prinicpal axis rotation angle (degrees)
     :param float x: x coordinate in the global axis
     :param float y: y coordinate in the global axis
     :return: Principal axis coordinates *(x1, y2)*

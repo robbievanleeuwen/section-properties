@@ -30,16 +30,16 @@ a python package for the analysis of arbitrary cross-sections using the finite e
   - [x] Second moments of area
   - [x] Elastic section moduli
   - [x] Radii of gyration
-  - [ ] Plastic centroid
-  - [ ] Plastic section moduli
-  - [ ] Shape factors
+  - [x] Plastic centroid
+  - [x] Plastic section moduli
+  - [x] Shape factors
 - [x] Principal axis geometric section properties:
   - [x] Second moments of area
   - [x] Elastic section moduli
   - [x] Radii of gyration
-  - [ ] Plastic centroid
-  - [ ] Plastic section moduli
-  - [ ] Shape factors
+  - [x] Plastic centroid
+  - [x] Plastic section moduli
+  - [x] Shape factors
 - [x] Warping section properties:
   - [x] Torsion constant
   - [x] Warping constant

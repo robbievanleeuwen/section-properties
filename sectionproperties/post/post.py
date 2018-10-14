@@ -222,36 +222,47 @@ def print_results(cross_section, fmt):
                 print("A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))
                 print("A_s22\t = {:>{fmt}}".format(A_s22, fmt=fmt))
 
-    # if section_properties.x_pc is not None:
-    #     print("x_pc\t = {:>{fmt}}".format(section_properties.x_pc, fmt=fmt))
-    #     print("y_pc\t = {:>{fmt}}".format(section_properties.y_pc, fmt=fmt))
-    #
-    # if section_properties.Sxx is not None:
-    #     print("Sxx\t = {:>{fmt}}".format(section_properties.Sxx, fmt=fmt))
-    #     print("Syy\t = {:>{fmt}}".format(section_properties.Syy, fmt=fmt))
-    #     print("SF_xx+\t = {:>{fmt}}".format(section_properties.SF_xx_plus,
-    #                                         fmt=fmt))
-    #     print("SF_xx-\t = {:>{fmt}}".format(section_properties.SF_xx_minus,
-    #                                         fmt=fmt))
-    #     print("SF_yy+\t = {:>{fmt}}".format(section_properties.SF_yy_plus,
-    #                                         fmt=fmt))
-    #     print("SF_yy-\t = {:>{fmt}}".format(section_properties.SF_yy_minus,
-    #                                         fmt=fmt))
-    #
-    # if section_properties.x1_pc is not None:
-    #     print("x1_pc\t = {:>{fmt}}".format(section_properties.x1_pc, fmt=fmt))
-    #     print("y2_pc\t = {:>{fmt}}".format(section_properties.y2_pc, fmt=fmt))
-    #
-    # if section_properties.S11 is not None:
-    #     print("S11\t = {:>{fmt}}".format(section_properties.S11, fmt=fmt))
-    #     print("S22\t = {:>{fmt}}".format(section_properties.S22, fmt=fmt))
-    #     print("SF_11+\t = {:>{fmt}}".format(section_properties.SF_11_plus,
-    #                                         fmt=fmt))
-    #     print("SF_11-\t = {:>{fmt}}".format(section_properties.SF_11_minus,
-    #                                         fmt=fmt))
-    #     print("SF_22+\t = {:>{fmt}}".format(section_properties.SF_22_plus,
-    #                                         fmt=fmt))
-    #     print("SF_22-\t = {:>{fmt}}".format(section_properties.SF_22_minus,
-    #                                         fmt=fmt))
+    (x_pc, y_pc) = cross_section.get_pc()
+    if x_pc is not None:
+        print("x_pc\t = {:>{fmt}}".format(x_pc, fmt=fmt))
+        print("y_pc\t = {:>{fmt}}".format(y_pc, fmt=fmt))
+
+    (sxx, syy) = cross_section.get_s()
+    if sxx is not None:
+        if cross_section.materials is not None:
+            print("M_p,xx\t = {:>{fmt}}".format(sxx, fmt=fmt))
+            print("M_p,yy\t = {:>{fmt}}".format(syy, fmt=fmt))
+        else:
+            print("Sxx\t = {:>{fmt}}".format(sxx, fmt=fmt))
+            print("Syy\t = {:>{fmt}}".format(syy, fmt=fmt))
+
+    (sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus) = cross_section.get_sf()
+    if sf_xx_plus is not None:
+        print("SF_xx+\t = {:>{fmt}}".format(sf_xx_plus, fmt=fmt))
+        print("SF_xx-\t = {:>{fmt}}".format(sf_xx_minus, fmt=fmt))
+        print("SF_yy+\t = {:>{fmt}}".format(sf_yy_plus, fmt=fmt))
+        print("SF_yy-\t = {:>{fmt}}".format(sf_yy_minus, fmt=fmt))
+
+    (x11_pc, y22_pc) = cross_section.get_pc_p()
+    if x_pc is not None:
+        print("x11_pc\t = {:>{fmt}}".format(x11_pc, fmt=fmt))
+        print("y22_pc\t = {:>{fmt}}".format(y22_pc, fmt=fmt))
+
+    (s11, s22) = cross_section.get_sp()
+    if s11 is not None:
+        if cross_section.materials is not None:
+            print("M_p,11\t = {:>{fmt}}".format(s11, fmt=fmt))
+            print("M_p,22\t = {:>{fmt}}".format(s22, fmt=fmt))
+        else:
+            print("S11\t = {:>{fmt}}".format(s11, fmt=fmt))
+            print("S22\t = {:>{fmt}}".format(s22, fmt=fmt))
+
+    (sf_11_plus, sf_11_minus,
+     sf_22_plus, sf_22_minus) = cross_section.get_sf_p()
+    if sf_11_plus is not None:
+        print("SF_11+\t = {:>{fmt}}".format(sf_11_plus, fmt=fmt))
+        print("SF_11-\t = {:>{fmt}}".format(sf_11_minus, fmt=fmt))
+        print("SF_22+\t = {:>{fmt}}".format(sf_22_plus, fmt=fmt))
+        print("SF_22-\t = {:>{fmt}}".format(sf_22_minus, fmt=fmt))
 
     print("")
