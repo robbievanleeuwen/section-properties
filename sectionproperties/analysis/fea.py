@@ -17,6 +17,7 @@ class Tri6:
     :param material: Material object for the current finite element.
     :type material: :class:`~sectionproperties.pre.pre.Material`
 
+    :cvar int el_id: Unique element id
     :cvar coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The
         first three columns relate to the vertices of the triangle and the last
         three columns correspond to the mid-nodes.
@@ -75,8 +76,8 @@ class Tri6:
         """Calculates the element stiffness matrix used for warping analysis
         and the torsion load vector.
 
-        :return: Element stiffness matrix (k_el) and element torsion load
-            vector (f_el)
+        :return: Element stiffness matrix *(k_el)* and element torsion load
+            vector *(f_el)*
         :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`)
         """
 
@@ -107,7 +108,12 @@ class Tri6:
         """Calculates the element shear load vectors used to evaluate the shear
         functions.
 
-        :return: Element shear load vector psi (f_psi) and phi (f_phi)
+        :param float ixx: Second moment of area about the centroidal x-axis
+        :param float iyy: Second moment of area about the centroidal y-axis
+        :param float ixy: Second moment of area about the centroidal xy-axis
+        :param float nu: Effective Poisson's ratio for the cross-section
+
+        :return: Element shear load vector psi *(f_psi)* and phi *(f_phi)*
         :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`)
         """
 
@@ -147,8 +153,15 @@ class Tri6:
         """Calculates the element shear centre and warping integrals required
         for shear analysis of the cross-section.
 
-        :return: Shear centre integrals about the x and y-axes (sc_xint,
-            sc_yint), warping integrals (q_omega, i_omega, i_xomega, i_yomega)
+        :param float ixx: Second moment of area about the centroidal x-axis
+        :param float iyy: Second moment of area about the centroidal y-axis
+        :param float ixy: Second moment of area about the centroidal xy-axis
+        :param omega: Values of the warping function at the element nodes
+        :type omega: :class:`numpy.ndarray`
+
+        :return: Shear centre integrals about the x and y-axes *(sc_xint,
+            sc_yint)*, warping integrals
+            *(q_omega, i_omega, i_xomega, i_yomega)*
         :rtype: tuple(float, float, float, float, float, float)
         """
 
@@ -187,7 +200,16 @@ class Tri6:
         """Calculates the variables used to determine the shear
         deformation coefficients.
 
-        :return: Shear deformation variables (kappa_x, kappa_y, kappa_xy)
+        :param float ixx: Second moment of area about the centroidal x-axis
+        :param float iyy: Second moment of area about the centroidal y-axis
+        :param float ixy: Second moment of area about the centroidal xy-axis
+        :param psi_shear: Values of the psi shear function at the element nodes
+        :type psi_shear: :class:`numpy.ndarray`
+        :param phi_shear: Values of the phi shear function at the element nodes
+        :type phi_shear: :class:`numpy.ndarray`
+        :param float nu: Effective Poisson's ratio for the cross-section
+
+        :return: Shear deformation variables *(kappa_x, kappa_y, kappa_xy)*
         :rtype: tuple(float, float, float)
         """
 
@@ -231,7 +253,21 @@ class Tri6:
         return (kappa_x, kappa_y, kappa_xy)
 
     def plastic_properties(self, u, p):
-        """a"""
+        """Calculates total force resisted by the element when subjected to a
+        stress equal to the yield strength. Also returns the modulus weighted
+        area and first moments of area, and determines whether or not the
+        element is above or below the line defined by the unit vector *u* and
+        point *p*.
+
+        :param u: Unit vector in the direction of the line
+        :type u: :class:`numpy.ndarray`
+        :param p: Point on the line
+        :type p: :class:`numpy.ndarray`
+
+        :return: Element force *(force)*, modulus weighted area properties
+            *(ea, e.qx, e.qy)* and whether or not the element is above the line
+        :rtype: tuple(float, float, float, float, bool)
+        """
 
         # initialise geometric properties
         e = self.material.elastic_modulus
@@ -264,32 +300,37 @@ class Tri6:
     def element_stress(self, N, Mxx, Myy, M11, M22, Mzz, Vx, Vy, ea, cx, cy,
                        ixx, iyy, ixy, i11, i22, phi, j, nu, omega, psi_shear,
                        phi_shear, Delta_s):
-        """Calculates the stress within an element resulting from unit loading.
-        :param float area: Total area of the cross-section
-        :param float cx: x position of the centroidal axis of the cross-section
-        :param float cy: y position of the centroidal axis of the cross-section
+        """Calculates the stress within an element resulting from a specified
+        loading. Also returns the shape function weights.
+
+        :param float N: Axial force
+        :param float Mxx: Bending moment about the centroidal xx-axis
+        :param float Myy: Bending moment about the centroidal yy-axis
+        :param float M11: Bending moment about the centroidal 11-axis
+        :param float M22: Bending moment about the centroidal 22-axis
+        :param float Mzz: Torsion moment about the centroidal zz-axis
+        :param float Vx: Shear force acting in the x-direction
+        :param float Vy: Shear force acting in the y-direction
+        :param float ea: Modulus weighted area
+        :param float cx: x position of the elastic centroid
+        :param float cy: y position of the elastic centroid
         :param float ixx: Second moment of area about the centroidal x-axis
-            of the cross-section
         :param float iyy: Second moment of area about the centroidal y-axis
-            of the cross-section
         :param float ixy: Second moment of area about the centroidal xy-axis
-            of the cross-section
         :param float i11: Second moment of area about the principal 11-axis
-            of the cross-section
         :param float i22: Second moment of area about the principal 22-axis
-            of the cross-section
-        :param float phi: Principal axis angle
-            of the cross-section
-        :param float j: Torsion constant of the cross-section
-        :param omega: Warping function at the nodes of the element
+        :param float phi: Principal bending axis angle
+        :param float j: St. Venant torsion constant
+        :param float nu: Effective Poisson's ratio for the cross-section
+        :param omega: Values of the warping function at the element nodes
         :type omega: :class:`numpy.ndarray`
-        :param psi_shear: Psi shear function at the nodes of the element
+        :param psi_shear: Values of the psi shear function at the element nodes
         :type psi_shear: :class:`numpy.ndarray`
-        :param phi_shear: Phi shear function at the nodes of the element
+        :param phi_shear: Values of the phi shear function at the element nodes
         :type phi_shear: :class:`numpy.ndarray`
-        :param float Delta_s: Shear factor of the cross-section
-        :return: Tuple containing element stresses and integration weights (
-            :math:`\sigma_{zz,n}`, :math:`\sigma_{zz,mxx}`,
+        :param float Delta_s: Cross-section shear factor
+        :return: Tuple containing element stresses and integration weights
+            (:math:`\sigma_{zz,n}`, :math:`\sigma_{zz,mxx}`,
             :math:`\sigma_{zz,myy}`, :math:`\sigma_{zz,m11}`,
             :math:`\sigma_{zz,m22}`, :math:`\sigma_{zx,mzz}`,
             :math:`\sigma_{zy,mzz}`, :math:`\sigma_{zx,vx}`,
@@ -498,7 +539,7 @@ def principal_coordinate(phi, x, y):
     """Determines the coordinates of the cartesian point *(x, y)* in the
     principal axis system given an axis rotation angle phi.
 
-    :param float phi: Prinicpal axis rotation angle (degrees)
+    :param float phi: Prinicpal bending axis angle (degrees)
     :param float x: x coordinate in the global axis
     :param float y: y coordinate in the global axis
     :return: Principal axis coordinates *(x1, y2)*
@@ -518,13 +559,13 @@ def principal_coordinate(phi, x, y):
     return (x_rotated[0], x_rotated[1])
 
 
-def global_coordinate(phi, x1, y2):
+def global_coordinate(phi, x11, y22):
     """Determines the global coordinates of the principal axis point *(x1, y2)*
     given principal axis rotation angle phi.
 
-    :param float phi: Prinicpal axis rotation angle
-    :param float x1: 11 coordinate in the principal axis
-    :param float y2: 22 coordinate in the principal axis
+    :param float phi: Prinicpal bending axis angle (degrees)
+    :param float x11: 11 coordinate in the principal axis
+    :param float y22: 22 coordinate in the principal axis
     :return: Global axis coordinates *(x, y)*
     :rtype: tuple(float, float)
     """
@@ -536,7 +577,7 @@ def global_coordinate(phi, x1, y2):
     R = (np.array([[np.cos(phi_rad), -np.sin(phi_rad)], [np.sin(phi_rad),
                                                          np.cos(phi_rad)]]))
     # calculate rotated x_1 and y_2 coordinates
-    x_rotated = R.dot(np.array([x1, y2]))
+    x_rotated = R.dot(np.array([x11, y22]))
 
     return (x_rotated[0], x_rotated[1])
 

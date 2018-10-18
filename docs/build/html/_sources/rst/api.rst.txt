@@ -91,6 +91,23 @@ MergedSection Class
 
 blah blah text
 
+Material Class
+""""""""""""""
+
+  ..  autoclass:: sectionproperties.pre.pre.Material
+      :show-inheritance:
+      :members:
+
+GeometryCleaner Class
+"""""""""""""""""""""
+
+  ..  autoclass:: sectionproperties.pre.pre.GeometryCleaner
+      :show-inheritance:
+      :members:
+
+pre Functions
+"""""""""""""
+
 ..  autofunction:: sectionproperties.pre.pre.create_mesh
 
 
@@ -111,17 +128,38 @@ CrossSection Class
       :show-inheritance:
       :members:
 
-SectionProperties Class
-"""""""""""""""""""""""
+PlasticSection Class
+""""""""""""""""""""
 
-..  autoclass:: sectionproperties.analysis.cross_section.SectionProperties
+  ..  autoclass:: sectionproperties.analysis.cross_section.PlasticSection
+      :show-inheritance:
+      :members:
+
+StressPost Class
+""""""""""""""""
+
+..  autoclass:: sectionproperties.analysis.cross_section.StressPost
     :show-inheritance:
     :members:
+
+MaterialGroup Class
+"""""""""""""""""""
+
+  ..  autoclass:: sectionproperties.analysis.cross_section.MaterialGroup
+      :show-inheritance:
+      :members:
 
 StressResult Class
 """"""""""""""""""
 
 ..  autoclass:: sectionproperties.analysis.cross_section.StressResult
+    :show-inheritance:
+    :members:
+
+SectionProperties Class
+"""""""""""""""""""""""
+
+..  autoclass:: sectionproperties.analysis.cross_section.SectionProperties
     :show-inheritance:
     :members:
 
@@ -175,4 +213,5 @@ post Functions
 
 ..  autofunction:: sectionproperties.post.post.setup_plot
 ..  autofunction:: sectionproperties.post.post.finish_plot
+..  autofunction:: sectionproperties.post.post.draw_principal_axis
 ..  autofunction:: sectionproperties.post.post.print_results

@@ -150,10 +150,11 @@
            <div itemprop="articleBody">
             
   <h1>Source code for sectionproperties.pre.pre</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">meshpy.triangle</span> <span class="k">as</span> <span class="nn">triangle</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">meshpy.triangle</span> <span class="k">as</span> <span class="nn">triangle</span>
 
 
-<div class="viewcode-block" id="Material"><a class="viewcode-back" href="../../../rst/analysis.html#sectionproperties.pre.pre.Material">[docs]</a><span class="k">class</span> <span class="nc">Material</span><span class="p">:</span>
+<div class="viewcode-block" id="Material"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.Material">[docs]</a><span class="k">class</span> <span class="nc">Material</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;a</span>
 
 <span class="sd">    aaa</span>
@@ -168,9 +169,13 @@
 <span class="sd">    :cvar string name: Material name</span>
 <span class="sd">    :cvar float elastic_modulus: Material modulus of elasticity</span>
 <span class="sd">    :cvar float poissons_ratio: Material Poisson&#39;s ratio</span>
+<span class="sd">    :cvar float shear_modulus: Material shear modulus, derived from the elastic</span>
+<span class="sd">        modulus and Poisson&#39;s ratio assuming an isotropic material</span>
 <span class="sd">    :cvar float yield_strength: Material yield strength</span>
 <span class="sd">    :cvar color: Material color for rendering</span>
 <span class="sd">    :vartype color: :class:`matplotlib.colors`</span>
+
+<span class="sd">    # TODO: add example</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="p">,</span> <span class="n">yield_strength</span><span class="p">,</span>
@@ -180,8 +185,411 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">=</span> <span class="n">elastic_modulus</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">poissons_ratio</span> <span class="o">=</span> <span class="n">poissons_ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shear_modulus</span> <span class="o">=</span> <span class="n">elastic_modulus</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">poissons_ratio</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">yield_strength</span> <span class="o">=</span> <span class="n">yield_strength</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span></div>
+
+
+<div class="viewcode-block" id="GeometryCleaner"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner">[docs]</a><span class="k">class</span> <span class="nc">GeometryCleaner</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;a</span>
+
+<span class="sd">    a</span>
+
+<span class="sd">    :param geometry: Geometry object to clean</span>
+<span class="sd">    :type geometry: :class:`sectionproperties.pre.sections.Geometry`</span>
+<span class="sd">    :cvar geometry: Geometry object to clean</span>
+<span class="sd">    :vartype geometry: :class:`sectionproperties.pre.sections.Geometry`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inits the GeometryCleaner class.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+    <span class="k">def</span> <span class="nf">clean_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zip_points</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_zero_length_facets</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_overlapping_facets</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_unused_points</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intersect_facets</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span>
+
+<div class="viewcode-block" id="GeometryCleaner.zip_points"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.zip_points">[docs]</a>    <span class="k">def</span> <span class="nf">zip_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Zips points that are close to each other. Searches through the point</span>
+<span class="sd">        list and merges two points if there are deemed to be sufficiently</span>
+<span class="sd">        close. The average value of the coordinates is used for the new point.</span>
+<span class="sd">        One of the points is deleted from the point list and the facet list is</span>
+<span class="sd">        updated to remove references to the old points and renumber the</span>
+<span class="sd">        remaining point indices in the facet list.</span>
+
+<span class="sd">        :param float atol: Absolute tolerance for point zipping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO: implement rtol</span>
+        <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># loop through the list of points</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">pt1</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">):</span>
+            <span class="c1"># check all other points</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">pt2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]):</span>
+                <span class="c1"># get point indices</span>
+                <span class="n">idx_1</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="n">idx_2</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+
+                <span class="c1"># determine distance between two points</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="p">((</span><span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+                        <span class="p">(</span><span class="n">pt2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+
+                <span class="c1"># if the points are sufficiently close together...</span>
+                <span class="c1"># and the point has not already been removed</span>
+                <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="n">atol</span> <span class="ow">and</span> <span class="n">idx_2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
+                    <span class="c1"># update point1 (average of point1 + point2)</span>
+                    <span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+                    <span class="c1"># join facets connected to pt2 to pt1 instead</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">replace_point_id</span><span class="p">(</span><span class="n">idx_2</span><span class="p">,</span> <span class="n">idx_1</span><span class="p">)</span>
+
+                    <span class="c1"># add pt2 to the list of points to remove</span>
+                    <span class="n">idx_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_2</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                        <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Zipped point </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_2</span><span class="p">)</span>
+                        <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot; to point </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_1</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+        <span class="c1"># sort list of indices to remove in reverse order so as not to</span>
+        <span class="c1"># comprimise the indices</span>
+        <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">idx_to_remove</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_point_id</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GeometryCleaner.remove_zero_length_facets"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.remove_zero_length_facets">[docs]</a>    <span class="k">def</span> <span class="nf">remove_zero_length_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Searches through all facets and removes those that have the same</span>
+<span class="sd">        starting and ending point.&quot;&quot;&quot;</span>
+
+        <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># loop through the list of facets</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">fct</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">fct</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">fct</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">idx_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+        <span class="c1"># sort list of indices to remove in reverse order so as not to</span>
+        <span class="c1"># comprimise the indices</span>
+        <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">idx_to_remove</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Removed zero length facet </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GeometryCleaner.remove_overlapping_facets"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.remove_overlapping_facets">[docs]</a>    <span class="k">def</span> <span class="nf">remove_overlapping_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+
+        <span class="n">cleaning</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">while</span> <span class="n">cleaning</span><span class="p">:</span>
+            <span class="c1"># loop through the list of facets</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fct1</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">):</span>
+                <span class="n">broken</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="c1"># check all other facets</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">fct2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]):</span>
+                    <span class="c1"># get facet indices</span>
+                    <span class="n">idx_1</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">idx_2</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+
+                    <span class="c1"># get facets points</span>
+                    <span class="c1"># facet 1: p -&gt; p + r</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">fct1</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">fct1</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">p</span>
+
+                    <span class="c1"># facet 2: q -&gt; q + s</span>
+                    <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">fct2</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">fct2</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">q</span>
+
+                    <span class="n">pts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overlap</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">fct1</span><span class="p">,</span> <span class="n">fct2</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">pts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="c1"># delete both facets</span>
+                        <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">idx_1</span><span class="p">,</span> <span class="n">idx_2</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+                        <span class="c1"># add new facets</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]])</span>
+
+                        <span class="c1"># remove duplicate facets</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">remove_duplicate_facets</span><span class="p">()</span>
+
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                            <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Removed overlapping facets... Rebuilt with &quot;</span>
+                            <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot;points: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+                        <span class="c1"># break both loops and loop through all facets again</span>
+                        <span class="n">broken</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">broken</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+            <span class="c1"># if we&#39;ve arrived at the end without detecting any overlaps</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">broken</span><span class="p">:</span>
+                <span class="n">cleaning</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="GeometryCleaner.remove_unused_points"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.remove_unused_points">[docs]</a>    <span class="k">def</span> <span class="nf">remove_unused_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+
+        <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">facet_flattened</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">fct</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">fct</span><span class="p">]</span>
+
+        <span class="c1"># loop through number of points</span>
+        <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">pt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">facet_flattened</span><span class="p">:</span>
+                <span class="n">idx_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Removed unused point </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pt</span><span class="p">))</span>
+
+        <span class="c1"># sort list of indices to remove in reverse order so as not to</span>
+        <span class="c1"># comprimise the indices</span>
+        <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">idx_to_remove</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_point_id</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GeometryCleaner.intersect_facets"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.intersect_facets">[docs]</a>    <span class="k">def</span> <span class="nf">intersect_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+
+        <span class="n">cleaning</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">while</span> <span class="n">cleaning</span><span class="p">:</span>
+            <span class="c1"># loop through the list of facets</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fct1</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">):</span>
+                <span class="n">broken</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="c1"># check all other facets</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">fct2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]):</span>
+                    <span class="c1"># get facet indices</span>
+                    <span class="n">idx_1</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">idx_2</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+
+                    <span class="c1"># get facets points</span>
+                    <span class="c1"># facet 1: p -&gt; p + r</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">fct1</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">fct1</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">p</span>
+
+                    <span class="c1"># facet 2: q -&gt; q + s</span>
+                    <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">fct2</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">fct2</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">q</span>
+
+                    <span class="n">pt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_intersect</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">pt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="c1"># add point</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                        <span class="n">pt_idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+                        <span class="c1"># delete both facets</span>
+                        <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">idx_1</span><span class="p">,</span> <span class="n">idx_2</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+                        <span class="c1"># rebuild facet 1</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">fct1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt_idx</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">pt_idx</span><span class="p">,</span> <span class="n">fct1</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
+                        <span class="c1"># rebuild facet 2</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">fct2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt_idx</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">pt_idx</span><span class="p">,</span> <span class="n">fct2</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                            <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Intersected facets&quot;</span>
+                            <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">{0}</span><span class="s2"> and </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_1</span><span class="p">,</span> <span class="n">idx_2</span><span class="p">)</span>
+                            <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot; at point: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+                        <span class="c1"># break both loops and loop through all facets again</span>
+                        <span class="n">broken</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">broken</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+            <span class="c1"># if we&#39;ve arrived at the end without detecting any overlaps</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">broken</span><span class="p">:</span>
+                <span class="n">cleaning</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="GeometryCleaner.replace_point_id"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.replace_point_id">[docs]</a>    <span class="k">def</span> <span class="nf">replace_point_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_old</span><span class="p">,</span> <span class="n">id_new</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Searches all facets and replaces references to point id_old with</span>
+<span class="sd">        id_new.</span>
+
+<span class="sd">        :param int id_old: Point index to be replaced</span>
+<span class="sd">        :param int id_new: Point index to replace point id_old</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># loop through all facets</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">facet</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">):</span>
+            <span class="c1"># loop through the point indices defining the facet</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">point_id</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">facet</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">point_id</span> <span class="o">==</span> <span class="n">id_old</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">id_new</span></div>
+
+<div class="viewcode-block" id="GeometryCleaner.remove_point_id"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.remove_point_id">[docs]</a>    <span class="k">def</span> <span class="nf">remove_point_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes point point_id from the points list and renumbers the</span>
+<span class="sd">        references to points after point_id in the facet list.</span>
+
+<span class="sd">        :param int point_id: Index of point to be removed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># remove index point_id from the points list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">point_id</span><span class="p">)</span>
+
+        <span class="c1"># renumber facet references to points after point_id</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">facet</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">):</span>
+            <span class="c1"># loop through the point indices defining the facet</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">p_id</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">facet</span><span class="p">):</span>
+                <span class="c1"># if the point index is greater the point to be deleted</span>
+                <span class="k">if</span> <span class="n">p_id</span> <span class="o">&gt;</span> <span class="n">point_id</span><span class="p">:</span>
+                    <span class="c1"># decrement the point index</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="GeometryCleaner.is_duplicate_facet"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.is_duplicate_facet">[docs]</a>    <span class="k">def</span> <span class="nf">is_duplicate_facet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fct1</span><span class="p">,</span> <span class="n">fct2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+
+        <span class="c1"># check for a facet duplicate</span>
+        <span class="k">if</span> <span class="n">fct1</span> <span class="o">==</span> <span class="n">fct2</span> <span class="ow">or</span> <span class="n">fct1</span> <span class="o">==</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">fct2</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="GeometryCleaner.is_intersect"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.is_intersect">[docs]</a>    <span class="k">def</span> <span class="nf">is_intersect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Determines if the line segment p-&gt;p+r intersects q-&gt;q+s. Implements</span>
+<span class="sd">        Gareth Rees&#39;s answer: https://stackoverflow.com/questions/563198.</span>
+
+<span class="sd">        :param p: Starting point of the first line segment</span>
+<span class="sd">        :type p: :class:`numpy.ndarray` [float, float]</span>
+<span class="sd">        :param q: Starting point of the second line segment</span>
+<span class="sd">        :type q: :class:`numpy.ndarray` [float, float]</span>
+<span class="sd">        :param r: Vector of the first line segment</span>
+<span class="sd">        :type r: :class:`numpy.ndarray` [float, float]</span>
+<span class="sd">        :param s: Vector of the second line segment</span>
+<span class="sd">        :type s: :class:`numpy.ndarray` [float, float]</span>
+<span class="sd">        :returns: The intersection point of the line segments. If there is no</span>
+<span class="sd">            intersection, returns None.</span>
+<span class="sd">        :rtype: :class:`numpy.ndarray` [float, float]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># calculate t and u</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+
+            <span class="c1"># modify from closed inequality (&lt;=) to open (&lt;) so end...</span>
+            <span class="c1"># intersections are not picked up</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">u</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">u</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">p</span> <span class="o">+</span> <span class="n">t</span> <span class="o">*</span> <span class="n">r</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="GeometryCleaner.is_overlap"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.is_overlap">[docs]</a>    <span class="k">def</span> <span class="nf">is_overlap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">fct1</span><span class="p">,</span> <span class="n">fct2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Determines if the line segment p-&gt;p+r overlaps q-&gt;q+s. Implements</span>
+<span class="sd">        Gareth Rees&#39;s answer: https://stackoverflow.com/questions/563198.</span>
+
+<span class="sd">        :param p: Starting point of the first line segment</span>
+<span class="sd">        :type p: :class:`numpy.ndarray` [float, float]</span>
+<span class="sd">        :param q: Starting point of the second line segment</span>
+<span class="sd">        :type q: :class:`numpy.ndarray` [float, float]</span>
+<span class="sd">        :param r: Vector of the first line segment</span>
+<span class="sd">        :type r: :class:`numpy.ndarray` [float, float]</span>
+<span class="sd">        :param s: Vector of the second line segment</span>
+<span class="sd">        :type s: :class:`numpy.ndarray` [float, float]</span>
+<span class="sd">        :param fct1: sadkjas;dkas;dj</span>
+<span class="sd">        :returns: A list containing the points required for facet rebuilding.</span>
+<span class="sd">            If there is no rebuild to be done, returns None.</span>
+<span class="sd">        :rtype: list[list[float, float]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-3</span>  <span class="c1"># minimum angle tolerance (smaller is considered overlap)</span>
+
+        <span class="c1"># are the line segments collinear?</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+                <span class="c1"># CASE 1: two line segments are collinear</span>
+                <span class="c1"># calculate end points of second segment in terms of the...</span>
+                <span class="c1"># equation of the first line segment (p + t * r)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">t0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+                    <span class="n">t1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">q</span> <span class="o">+</span> <span class="n">s</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">t0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">q</span> <span class="o">+</span> <span class="n">s</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+                    <span class="n">t1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+
+                <span class="c1"># check interval [t0, t1] intersects (0, 1)</span>
+                <span class="k">if</span> <span class="n">t0</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">t1</span><span class="p">:</span>
+                    <span class="c1"># recalculate t0 and t1 based on original assumptions</span>
+                    <span class="n">t0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+                    <span class="n">t1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">q</span> <span class="o">+</span> <span class="n">s</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+
+                    <span class="n">t</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">t1</span><span class="p">])))</span>
+                    <span class="n">idx_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+                    <span class="c1"># loop through new points</span>
+                    <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">pt</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                            <span class="n">idx_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fct1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">elif</span> <span class="n">pt</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+                            <span class="n">idx_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fct1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="k">elif</span> <span class="n">pt</span> <span class="o">==</span> <span class="n">t0</span><span class="p">:</span>
+                            <span class="n">idx_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fct2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">elif</span> <span class="n">pt</span> <span class="o">==</span> <span class="n">t1</span><span class="p">:</span>
+                            <span class="n">idx_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fct2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+                    <span class="k">return</span> <span class="n">idx_list</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># collinear and disjoint</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="GeometryCleaner.remove_duplicate_facets"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.remove_duplicate_facets">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Searches through all facets and removes facets that are duplicates,</span>
+<span class="sd">        independent of the point order.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># loop through the list of facets</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fct1</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">):</span>
+            <span class="c1"># check all other facets</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">fct2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]):</span>
+                <span class="c1"># get facet indices</span>
+                <span class="n">idx_1</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="n">idx_2</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+
+                <span class="c1"># check for a duplicate facet that has not already been deleted</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_duplicate_facet</span><span class="p">(</span><span class="n">fct1</span><span class="p">,</span> <span class="n">fct2</span><span class="p">)</span> <span class="ow">and</span>
+                        <span class="n">idx_2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">):</span>
+                    <span class="n">idx_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_2</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                        <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Removed duplicate facet: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_2</span><span class="p">)</span>
+                        <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot; (identical to facet: </span><span class="si">{0}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_1</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+        <span class="c1"># sort list of indices to remove in reverse order so as not to</span>
+        <span class="c1"># comprimise the indices</span>
+        <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">idx_to_remove</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="create_mesh"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.create_mesh">[docs]</a><span class="k">def</span> <span class="nf">create_mesh</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">,</span> <span class="n">mesh_sizes</span><span class="p">):</span>
@@ -190,18 +598,18 @@
 
 <span class="sd">    :param points: List of points *(x, y)* defining the vertices of the</span>
 <span class="sd">        cross-section</span>
-<span class="sd">    :type points: list[tuple(float, float)]</span>
+<span class="sd">    :type points: list[list[float, float]]</span>
 <span class="sd">    :param facets: List of point index pairs *(p1, p2)* defining the edges of</span>
 <span class="sd">        the cross-section</span>
-<span class="sd">    :type points: list[tuple(int, int)]</span>
+<span class="sd">    :type points: list[list[int, int]]</span>
 <span class="sd">    :param holes: List of points *(x, y)* defining the locations of holes</span>
 <span class="sd">        within the cross-section. If there are no holes, provide an empty list</span>
 <span class="sd">        [].</span>
-<span class="sd">    :type holes: list[tuple(float, float)]</span>
+<span class="sd">    :type holes: list[list[float, float]]</span>
 <span class="sd">    :param control_points: A list of points *(x, y)* that define different</span>
 <span class="sd">        regions of the cross-section. A control point is an arbitrary point</span>
 <span class="sd">        within a region enclosed by facets.</span>
-<span class="sd">    :type control_points: list[tuple(float, float)]</span>
+<span class="sd">    :type control_points: list[list[float, float]]</span>
 <span class="sd">    :param mesh_sizes: List of maximum element areas for each region defined by</span>
 <span class="sd">        a control point</span>
 <span class="sd">    :type mesh_sizes: list[float]</span>
@@ -230,228 +638,6 @@
     <span class="k">return</span> <span class="n">mesh</span></div>
 
 
-<span class="c1"># def divideMesh(points, facets, nodes, elements, x1, y1, x2, y2, d):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This method loops through each facet to check for an intersection point</span>
-<span class="c1">#     with the line defined by (x1,y1) and (x2,y2). If so, a point is added to</span>
-<span class="c1">#     the mesh at the interesection point. Facets are then added between the new</span>
-<span class="c1">#     points if the new facet is within the mesh domain (and not within a hole).</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#     # allocate lists for intersection points</span>
-<span class="c1">#     xIntPoints = []  # list of x locations for intersection points</span>
-<span class="c1">#     yIntPoints = []  # list of y locations for intersection points</span>
-<span class="c1">#     facetIndices = []  # list of facet indices that have been intersected</span>
-<span class="c1">#     numPoints = len(points)</span>
-<span class="c1">#     tol = 1e-6 * d  # tolerance for zipping nodes</span>
-<span class="c1">#</span>
-<span class="c1">#     # find all intersections between the input line and the facets</span>
-<span class="c1">#     (xIntPoints, yIntPoints, facetIndices) = determineFacetIntersections(</span>
-<span class="c1">#         points, facets, x1, y1, x2, y2, tol)</span>
-<span class="c1">#</span>
-<span class="c1">#     # ordered list of point indices that lie along the intersection axis</span>
-<span class="c1">#     facetIntersections = []</span>
-<span class="c1">#</span>
-<span class="c1">#     # build new facets along the axis of intersection</span>
-<span class="c1">#     (points, newFacets, facetIntersections) = addNewFacets(</span>
-<span class="c1">#         xIntPoints, yIntPoints, points, facets, nodes, elements, numPoints)</span>
-<span class="c1">#</span>
-<span class="c1">#     # reconstruct facet list and subdivide facets at all intersection points</span>
-<span class="c1">#     finalFacets = rebuildFacetList(facets, facetIndices, facetIntersections,</span>
-<span class="c1">#                                    numPoints)</span>
-<span class="c1">#     # plotGeometry(points, newFacets, []) # plot for debugging purposes</span>
-<span class="c1">#</span>
-<span class="c1">#     return (points, finalFacets)</span>
-<span class="c1">#</span>
-<span class="c1">#</span>
-<span class="c1"># def determineFacetIntersections(points, facets, x1, y1, x2, y2, tol):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This method determines all intersections between the &#39;facets&#39; and line</span>
-<span class="c1">#     defined by (x1,y1) and (x2,y2). Returned is a sorted list (by x position or</span>
-<span class="c1">#     by y position if intersection line is the y-axis) of intersection locations</span>
-<span class="c1">#     (&#39;xIntPoints&#39; and &#39;yIntPoints&#39;) and a list of facet indices that have been</span>
-<span class="c1">#     intersected.</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#     # allocate lists for intersection points</span>
-<span class="c1">#     xIntPoints = []  # list of x locations for intersection points</span>
-<span class="c1">#     yIntPoints = []  # list of y locations for intersection points</span>
-<span class="c1">#     facetIndices = []  # list of facet indices that have been intersected</span>
-<span class="c1">#</span>
-<span class="c1">#     # calculate intersection points using determinant approach determine</span>
-<span class="c1">#     # values governed by (x1,y1) &amp; (x2,y2) only</span>
-<span class="c1">#     numerator_11 = x1 * y2 - y1 * x2</span>
-<span class="c1">#</span>
-<span class="c1">#     # loop through each facet in the mesh to # find all intersections between</span>
-<span class="c1">#     # the input line and the facets</span>
-<span class="c1">#     for (i, line) in enumerate(facets):</span>
-<span class="c1">#         # start and end points of the current facet</span>
-<span class="c1">#         x3 = points[line[0]][0]</span>
-<span class="c1">#         y3 = points[line[0]][1]</span>
-<span class="c1">#         x4 = points[line[1]][0]</span>
-<span class="c1">#         y4 = points[line[1]][1]</span>
-<span class="c1">#</span>
-<span class="c1">#         # calculate denominator for determinant approach</span>
-<span class="c1">#         den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)</span>
-<span class="c1">#</span>
-<span class="c1">#         # check to see if there is an intersection</span>
-<span class="c1">#         if den != 0:</span>
-<span class="c1">#             # determine remaining values</span>
-<span class="c1">#             numerator_21 = x3 * y4 - y3 * x4</span>
-<span class="c1">#</span>
-<span class="c1">#             # determine intersection points</span>
-<span class="c1">#             xInt = (numerator_11 * (x3 - x4) - (x1 - x2) * numerator_21) / den</span>
-<span class="c1">#             yInt = (numerator_11 * (y3 - y4) - (y1 - y2) * numerator_21) / den</span>
-<span class="c1">#</span>
-<span class="c1">#             # check to see if points lie within extents of facet</span>
-<span class="c1">#             if (min(x3, x4) - tol &lt;= xInt &lt;= max(x3, x4) + tol and</span>
-<span class="c1">#                     min(y3, y4) - tol &lt;= yInt &lt;= max(y3, y4) + tol):</span>
-<span class="c1">#</span>
-<span class="c1">#                 # check to see if point already added</span>
-<span class="c1">#                 isAdded = False</span>
-<span class="c1">#                 for (j, xj) in enumerate(xIntPoints):</span>
-<span class="c1">#                     if ((abs(xj - xInt) &lt; tol) and (</span>
-<span class="c1">#                             abs(yIntPoints[j] - yInt) &lt; tol)):</span>
-<span class="c1">#                         isAdded = True</span>
-<span class="c1">#</span>
-<span class="c1">#                 # if we are adding a new point</span>
-<span class="c1">#                 if isAdded is False:</span>
-<span class="c1">#                     # if the new point is very close to an end-point, take the</span>
-<span class="c1">#                     # value of the end point (zip nodes)</span>
-<span class="c1">#                     if abs(xInt - x3) &lt; tol:</span>
-<span class="c1">#                         xInt = x3</span>
-<span class="c1">#                     elif abs(xInt - x4) &lt; tol:</span>
-<span class="c1">#                         xInt = x4</span>
-<span class="c1">#                     if abs(yInt - y3) &lt; tol:</span>
-<span class="c1">#                         yInt = y3</span>
-<span class="c1">#                     elif abs(yInt - y4) &lt; tol:</span>
-<span class="c1">#                         yInt = y4</span>
-<span class="c1">#</span>
-<span class="c1">#                     # add point to intersection list</span>
-<span class="c1">#                     xIntPoints.append(xInt)</span>
-<span class="c1">#                     yIntPoints.append(yInt)</span>
-<span class="c1">#</span>
-<span class="c1">#                     # add facet to intersection list</span>
-<span class="c1">#                     facetIndices.append(i)</span>
-<span class="c1">#</span>
-<span class="c1">#     # sort intersection lists and facet list based on x or y value</span>
-<span class="c1">#     if len(xIntPoints) &gt; 0:</span>
-<span class="c1">#         # if we are working with the y-axis</span>
-<span class="c1">#         if x1 == x2:</span>
-<span class="c1">#             # sort by y</span>
-<span class="c1">#             (yIntPoints, xIntPoints, facetIndices) = (list(t) for t in zip(</span>
-<span class="c1">#                 *sorted(zip(yIntPoints, xIntPoints, facetIndices))))</span>
-<span class="c1">#         else:</span>
-<span class="c1">#             # sort by x</span>
-<span class="c1">#             (xIntPoints, yIntPoints, facetIndices) = (list(t) for t in zip(</span>
-<span class="c1">#                 *sorted(zip(xIntPoints, yIntPoints, facetIndices))))</span>
-<span class="c1">#</span>
-<span class="c1">#     return (xIntPoints, yIntPoints, facetIndices)</span>
-<span class="c1">#</span>
-<span class="c1">#</span>
-<span class="c1"># def addNewFacets(xIntPoints, yIntPoints, points, facets, nodes, elements,</span>
-<span class="c1">#                  numPoints):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This method appends a list of new facets defined by the intersection points</span>
-<span class="c1">#     to the existing list of &#39;facets&#39; and also appends a list of new point</span>
-<span class="c1">#     indices to the existing list &#39;points&#39;. New facets are checked to ensure</span>
-<span class="c1">#     that they lie within the mesh domain (i.e. do not lie within a hole).</span>
-<span class="c1">#     Returned is the new list of points and facets and an ordered list of point</span>
-<span class="c1">#     indices that lie along the interseciton axis (&#39;facetIntersections&#39;).</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#     # ordered list of point indices that lie along the intersection axis</span>
-<span class="c1">#     facetIntersections = []</span>
-<span class="c1">#</span>
-<span class="c1">#     # loop through all found intersection points to build new facets along axis</span>
-<span class="c1">#     for (i, pt) in enumerate(xIntPoints):</span>
-<span class="c1">#         # add intersection points to geometry point list</span>
-<span class="c1">#         points.append([pt, yIntPoints[i]])</span>
-<span class="c1">#</span>
-<span class="c1">#         # add index of new point to the facetIntersections list</span>
-<span class="c1">#         facetIntersections.append(i)</span>
-<span class="c1">#</span>
-<span class="c1">#         # add connecting facets to facet list</span>
-<span class="c1">#         if i != 0:  # start by joining new point 2 to new point 1</span>
-<span class="c1">#             # check to see if midpoint of facet lies within an element of mesh,</span>
-<span class="c1">#             # i.e. we are not in a hole</span>
-<span class="c1">#             px = 0.5 * (xIntPoints[i] + xIntPoints[i - 1])</span>
-<span class="c1">#             py = 0.5 * (yIntPoints[i] + yIntPoints[i - 1])</span>
-<span class="c1">#</span>
-<span class="c1">#             if (pointWithinElement(px, py, nodes, elements)):</span>
-<span class="c1">#                 # add connecting facet along line of intersection</span>
-<span class="c1">#                 facets.append([numPoints + i - 1, numPoints + i])</span>
-<span class="c1">#</span>
-<span class="c1">#     return (points, facets, facetIntersections)</span>
-<span class="c1">#</span>
-<span class="c1">#</span>
-<span class="c1"># def rebuildFacetList(facets, facetIndices, facetIntersections, numPoints):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This method rebuilds the facet list by splitting intersected facets into</span>
-<span class="c1">#     two new facets. Returned is a list of new facets (&#39;newFacets&#39;).</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#     newFacets = []  # allocate new facet list</span>
-<span class="c1">#</span>
-<span class="c1">#     # loop through all facets to reconstruct facet list and subdivide facets</span>
-<span class="c1">#     # at all intersection points</span>
-<span class="c1">#     for (i, facet) in enumerate(facets):</span>
-<span class="c1">#         # assume that the facet has already been added (either in the original</span>
-<span class="c1">#         # geometry, or added in the addNewFacets method)</span>
-<span class="c1">#         facetOriginal = True</span>
-<span class="c1">#</span>
-<span class="c1">#         # loop through all facets that have been intersected</span>
-<span class="c1">#         for (counter, j) in enumerate(facetIndices):</span>
-<span class="c1">#             # if the current facet is being interesected with a new facet</span>
-<span class="c1">#             if i == j:</span>
-<span class="c1">#                 # subdivide this current facet into two facets:</span>
-<span class="c1">#                 # facet[0] = start point of original facet</span>
-<span class="c1">#                 # facet[1] = end point of original facet</span>
-<span class="c1">#                 # facetIntersections[counter] = intersection point index</span>
-<span class="c1">#                 newFacets.append([facet[0], numPoints +</span>
-<span class="c1">#                                   facetIntersections[counter]])</span>
-<span class="c1">#                 newFacets.append([numPoints + facetIntersections[counter],</span>
-<span class="c1">#                                   facet[1]])</span>
-<span class="c1">#                 facetOriginal = False</span>
-<span class="c1">#</span>
-<span class="c1">#         # if the current facet has not been intersected</span>
-<span class="c1">#         if facetOriginal:</span>
-<span class="c1">#             newFacets.append([facet[0], facet[1]])</span>
-<span class="c1">#</span>
-<span class="c1">#     return newFacets</span>
-<span class="c1">#</span>
-<span class="c1">#</span>
-<span class="c1"># def pointWithinElement(px, py, nodes, elements):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This method determines whether the point (px,py) lies within any tri6</span>
-<span class="c1">#     element defined by &#39;nodes&#39; and &#39;elements&#39;.</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#     # loop through all elements in mesh</span>
-<span class="c1">#     for el in elements:</span>
-<span class="c1">#         x1 = nodes[el[0]][0]</span>
-<span class="c1">#         y1 = nodes[el[0]][1]</span>
-<span class="c1">#         x2 = nodes[el[1]][0]</span>
-<span class="c1">#         y2 = nodes[el[1]][1]</span>
-<span class="c1">#         x3 = nodes[el[2]][0]</span>
-<span class="c1">#         y3 = nodes[el[2]][1]</span>
-<span class="c1">#</span>
-<span class="c1">#         # compute variables alpha, beta, gamma, to determine if current</span>
-<span class="c1">#         # point lies within the triangular element</span>
-<span class="c1">#         alpha = (((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) /</span>
-<span class="c1">#                  ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)))</span>
-<span class="c1">#         beta = (((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) /</span>
-<span class="c1">#                 ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)))</span>
-<span class="c1">#         gamma = 1.0 - alpha - beta</span>
-<span class="c1">#</span>
-<span class="c1">#         # if the point lies within an element</span>
-<span class="c1">#         if alpha &gt;= 0 and beta &gt;= 0 and gamma &gt;= 0:</span>
-<span class="c1">#             return True</span>
-<span class="c1">#</span>
-<span class="c1">#     # if the point does not lie within an element</span>
-<span class="c1">#     return False</span>
-<span class="c1">#</span>
-<span class="c1">#</span>
 <span class="c1"># class LoadData:</span>
 <span class="c1">#     &quot;&quot;&quot;</span>
 <span class="c1">#     This class parses the input load data and stores the load values.</span>

@@ -323,16 +323,16 @@ class GeometryCleaner:
         Gareth Rees's answer: https://stackoverflow.com/questions/563198.
 
         :param p: Starting point of the first line segment
-        :type p: :class:`numpy.ndarray`[float, float]
+        :type p: :class:`numpy.ndarray` [float, float]
         :param q: Starting point of the second line segment
-        :type q: :class:`numpy.ndarray`[float, float]
+        :type q: :class:`numpy.ndarray` [float, float]
         :param r: Vector of the first line segment
-        :type r: :class:`numpy.ndarray`[float, float]
+        :type r: :class:`numpy.ndarray` [float, float]
         :param s: Vector of the second line segment
-        :type s: :class:`numpy.ndarray`[float, float]
+        :type s: :class:`numpy.ndarray` [float, float]
         :returns: The intersection point of the line segments. If there is no
             intersection, returns None.
-        :rtype: :class:`numpy.ndarray`[float, float]
+        :rtype: :class:`numpy.ndarray` [float, float]
         """
 
         if np.cross(r, s) != 0:
@@ -352,13 +352,13 @@ class GeometryCleaner:
         Gareth Rees's answer: https://stackoverflow.com/questions/563198.
 
         :param p: Starting point of the first line segment
-        :type p: :class:`numpy.ndarray`[float, float]
+        :type p: :class:`numpy.ndarray` [float, float]
         :param q: Starting point of the second line segment
-        :type q: :class:`numpy.ndarray`[float, float]
+        :type q: :class:`numpy.ndarray` [float, float]
         :param r: Vector of the first line segment
-        :type r: :class:`numpy.ndarray`[float, float]
+        :type r: :class:`numpy.ndarray` [float, float]
         :param s: Vector of the second line segment
-        :type s: :class:`numpy.ndarray`[float, float]
+        :type s: :class:`numpy.ndarray` [float, float]
         :param fct1: sadkjas;dkas;dj
         :returns: A list containing the points required for facet rebuilding.
             If there is no rebuild to be done, returns None.

@@ -22,18 +22,19 @@ class CrossSection:
     used in this program is the six-noded quadratic triangular element.
 
     The constructor extracts information from the provided mesh object and
-    creates and stores corresponding Tri6 finite element objects.
+    creates and stores the corresponding Tri6 finite element objects.
 
     :param geometry: Cross-section geometry object used to generate the mesh
     :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
     :param mesh: Mesh object returned by meshpy
     :type mesh: :class:`meshpy.triangle.MeshInfo`
-    :param materials: A list of material objects corresponding to the various
+    :param materials: A list of material properties corresponding to various
         regions in the geometry and mesh. Note that if materials are specified,
         the number of material objects must equal the number of regions in the
-        geometry. If no materials are specified, all regions will be assigned
-        a default material with an elastic modulus and yield strength equal to
-        1, and a Poisson's ratio equal to 0.
+        geometry. If no materials are specified, only a purely geometric
+        analysis can take place, and all regions will be assigned a default
+        material with an elastic modulus and yield strength equal to 1, and a
+        Poisson's ratio equal to 0.
     :type materials: list[:class:`~sectionproperties.pre.pre.Material`]
     :param bool time_info: If set to True, a detailed description of the
         computation and the time cost is printed to the terminal.
@@ -48,6 +49,30 @@ class CrossSection:
             geometry = sections.RectangularSection(d=100, b=50)
             mesh = geometry.create_mesh(mesh_sizes=[5])
             section = CrossSection(geometry, mesh)
+
+    The following example creates a 100D x 50W rectangle, with the top half
+    of the section comprised of timber and the bottom half steel. The timber
+    section is meshed with a maximum area of 10 and the steel section mesh with
+    a maximum area of 5::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.pre.pre import Material
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geom_steel = sections.RectangularSection(d=50, b=50)
+            geom_timber = sections.RectangularSection(d=50, b=50, shift=[0, 50])
+            geometry = sections.MergedSection([geom_steel, geom_timber])
+            geometry.clean_geometry()
+
+            mesh = geometry.create_mesh(mesh_sizes=[5, 10])
+
+            steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
+                color='grey')
+            timber = Material(name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
+                color='burlywood')
+
+            section = CrossSection(geometry, mesh, [steel, timber])
+            section.plot_mesh(materials=True, alpha=0.5)
 
     :cvar elements: List of finite element objects describing the cross-section
         mesh
@@ -124,7 +149,7 @@ class CrossSection:
                 self.material_groups.append(
                     MaterialGroup(default_material, self.num_nodes))
 
-            self.materials = materials
+            self.materials = materials  # save the input materials list
 
             self.elements = []  # initialise list holding all element objects
 
@@ -193,7 +218,7 @@ class CrossSection:
         :param bool time_info: If set to True, a detailed description of the
             computation and the time cost is printed to the terminal.
 
-        The following section properties are calculated:
+        The following geometric section properties are calculated:
 
         * Cross-sectional area
         * Modulus weighted area (axial rigidity)
@@ -206,8 +231,9 @@ class CrossSection:
         * Principal axis properties
 
         If materials are specified for the cross-section, the moments of area
-        and section moduli are multipled by the elastic moduli.
-        ::
+        and section moduli are elastic modulus weighted.
+
+        The following example demonstrates the use of this method::
 
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
@@ -255,7 +281,7 @@ class CrossSection:
         """Calculates all the warping properties of the cross-section and
         stores them in the
         :class:`~sectionproperties.analysis.cross_section.SectionProperties`
-        object contained in section_props.
+        object contained in the ``section_props`` class variable.
 
         :param bool time_info: If set to True, a detailed description of the
             computation and the time cost is printed to the terminal.
@@ -263,7 +289,7 @@ class CrossSection:
             equations, either using the *'direct'* method or *'cgs'* iterative
             method
 
-        The following section properties are calculated:
+        The following warping section properties are calculated:
 
         * Torsion constant
         * Shear centre
@@ -329,6 +355,7 @@ class CrossSection:
 
             return (k_precond, k_lg_precond)
 
+        # if the cgs method is used, perform ILU decomposition
         if solver_type == 'cgs':
             if time_info:
                 text = "--Performing ILU decomposition on the stiffness"
@@ -338,7 +365,7 @@ class CrossSection:
             else:
                 (k_precond, k_lg_precond) = ilu_decomp()
 
-        # solve for warping constant
+        # solve for warping function
         def solve_warping():
             if solver_type == 'cgs':
                 omega = solver.solve_cgs(k, f_torsion, k_precond)
@@ -348,12 +375,13 @@ class CrossSection:
             return omega
 
         if time_info:
-            text = "--Solving for the warping constant using the "
+            text = "--Solving for the warping function using the "
             text += "{0} solver...".format(solver_type)
             omega = solver.function_timer(text, solve_warping)
         else:
             omega = solve_warping()
 
+        # save the warping function
         self.section_props.omega = omega
 
         # determine the torsion constant
@@ -408,6 +436,7 @@ class CrossSection:
         else:
             (psi_shear, phi_shear) = solve_shear_functions()
 
+        # save the shear functions
         self.section_props.psi_shear = psi_shear
         self.section_props.phi_shear = phi_shear
 
@@ -540,7 +569,35 @@ class CrossSection:
     def calculate_plastic_properties(self, pc_region=[0.95, 0.95, 0.95, 0.95],
                                      time_info=False,
                                      verbose=False, debug=False):
-        """aaa
+        """Calculates the plastic properties of the cross-section and stores
+        the, in the
+        :class:`~sectionproperties.analysis.cross_section.SectionProperties`
+        object contained in the ``section_props`` class variable.
+
+        :param pc_region: Region of cross-section in which to search for the
+            plastic centroids. The value represents the fraction of the depth
+            to search within perpendicular to the axis being considered
+            [x-axis, y-axis, 11-axis, 22-axis]. Ensure 0 < pc_region[i] < 1.
+            The default scheme searches 95% of the section depth (ie. centroid
+            :math:`\pm` 47.5%)
+        :type pc_region: list[float, float, float, float]
+        :param bool time_info: If set to True, a detailed description of the
+            computation and the time cost is printed to the terminal.
+        :param bool verbose: If set to True, the number of iterations required
+            for each plastic axis is printed to the terminal.
+        :param bool debug: If set to True, the geometry is plotted each time a
+            new mesh is generated by the plastic centroid algorithm.
+
+        The following warping section properties are calculated:
+
+        * Plastic centroid for bending about the centroidal and principal axes
+        * Plastic section moduli for bending about the centroidal and principal
+          axes
+        * Shape factors for bending about the centroidal and principal axes
+
+        If materials are specified for the cross-section, the plastic section
+        moduli are displayed as plastic moments (i.e :math:`M_p = f_y S`) and
+        the shape factors are not calculated.
 
         Note that the geometric properties must be calculated before the
         plastic properties are calculated::
@@ -564,8 +621,13 @@ class CrossSection:
                 self.geometry, self.materials, debug)
 
             # calculate plastic properties
-            plastic_section.calculate_plastic_properties(
-                self, pc_region, verbose)
+            try:
+                plastic_section.calculate_plastic_properties(
+                    self, pc_region, verbose)
+            except ValueError:
+                str = "Platic section properties calculation failed. "
+                str += "Consider increasing pc_region bounds."
+                raise RuntimeError(str)
 
         if time_info:
             text = "--Calculating plastic properties..."
@@ -615,10 +677,7 @@ class CrossSection:
 
         def calc_stress():
             # create stress post object
-            stress_post = StressPost(self, self.num_nodes)
-
-            # make a deep copy of the material groups to the StressPost object
-            stress_post.material_groups = copy.deepcopy(self.material_groups)
+            stress_post = StressPost(self)
 
             # get relevant section properties
             ea = self.section_props.ea
@@ -785,26 +844,40 @@ class CrossSection:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
-        :param float alpha: Transparency of the mesh: 0 <= alpha <= 1
+        :param float alpha: Transparency of the mesh outlines:
+            :math:`0 \leq \\alpha \leq 1`
         :param bool materials: If set to true and material properties have been
             provided to the
             :class:`~sectionproperties.analysis.cross_section.CrossSection`
             object, shades the elements with the specified material colours
-        :param mask: Mask array of shape (num_nodes) to mask out triangles.
+        :param mask: Mask array, of length ``num_nodes``, to mask out triangles
         :type mask: list[bool]
 
-        The following example plots the mesh generated for a 50D x 100W
-        rectangle using a mesh size of 5::
+        The following example plots the mesh generated for the second example
+        listed under the
+        :class:`~sectionproperties.analysis.cross_section.CrossSection` object
+        definition::
 
             import sectionproperties.pre.sections as sections
+            from sectionproperties.pre.pre import Material
             from sectionproperties.analysis.cross_section import CrossSection
 
-            geometry = sections.RectangularSection(d=50, b=100)
-            mesh = geometry.create_mesh(mesh_sizes=[5])
-            section = CrossSection(geometry, mesh)
-            section.plot_mesh()
+            geom_steel = sections.RectangularSection(d=50, b=50)
+            geom_timber = sections.RectangularSection(d=50, b=50, shift=[50, 0])
+            geometry = sections.MergedSection([geom_steel, geom_timber])
+            geometry.clean_geometry()
 
-        ..  figure:: ../images/rectangle_mesh.png
+            mesh = geometry.create_mesh(mesh_sizes=[5, 10])
+
+            steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
+                color='grey')
+            timber = Material(name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
+                color='burlywood')
+
+            section = CrossSection(geometry, mesh, [steel, timber])
+            section.plot_mesh(materials=True, alpha=0.5)
+
+        ..  figure:: ../images/composite_mesh.png
             :align: center
 
             Finite element mesh generated by the above example.
@@ -856,8 +929,9 @@ class CrossSection:
             post.finish_plot(ax, pause, title='Finite Element Mesh')
 
     def plot_centroids(self, pause=True):
-        """Plots all the centroids, the shear centre and the principal axis, if
-        they have been calculated, on top of the finite element mesh.
+        """Plots the elastic centroid, the shear centre, the plastic centroids
+        and the principal axis, if they have been calculated, on top of the
+        finite element mesh.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -875,6 +949,7 @@ class CrossSection:
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
+            section.calculate_plastic_properties()
 
             section.plot_centroids()
 
@@ -882,11 +957,29 @@ class CrossSection:
             :align: center
             :scale: 75 %
 
-            Plot of the elastic centroid and shear centre for the above example
-            generated by
-            :func:`~sectionproperties.analysis.cross_section.CrossSection.plot_centroids`
+            Plot of the centroids generated by the above example.
 
-            # TODO: update example with plastic centroids
+        The following example analyses a 150x90x12 UA section and displays a
+        plot of the centroids::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            section.calculate_plastic_properties()
+
+            section.plot_centroids()
+
+        ..  figure:: ../images/angle_centroids.png
+            :align: center
+            :scale: 75 %
+
+            Plot of the centroids generated by the above example.
         """
 
         # create plot and setup the plot
@@ -972,7 +1065,7 @@ class CrossSection:
     def display_results(self, fmt='8.6e'):
         """Prints the results that have been calculated to the terminal.
 
-        :param string fmt: String containing number formatting information
+        :param string fmt: Number formatting string
 
         The following example displays the geometric section properties for a
         100D x 50W rectangle with three digits after the decimal point::
@@ -1021,8 +1114,7 @@ class CrossSection:
 
     def get_q(self):
         """
-        :return: First moments of area of the cross-section about the global
-            axis *(qx, qy)*
+        :return: First moments of area about the global axis *(qx, qy)*
         :rtype: tuple(float, float)
 
         ::
@@ -1036,8 +1128,8 @@ class CrossSection:
 
     def get_ig(self):
         """
-        :return: Second moments of area of the cross-section about the global
-            axis *(ixx_g, iyy_g, ixy_g)*
+        :return: Second moments of area about the global axis
+            *(ixx_g, iyy_g, ixy_g)*
         :rtype: tuple(float, float, float)
 
         ::
@@ -1052,7 +1144,7 @@ class CrossSection:
 
     def get_c(self):
         """
-        :return: Elastic centroid of the cross-section *(cx, cy)*
+        :return: Elastic centroid *(cx, cy)*
         :rtype: tuple(float, float)
 
         ::
@@ -1066,8 +1158,7 @@ class CrossSection:
 
     def get_ic(self):
         """
-        :return: Second moments of area of the cross-section about the
-            centroidal axis *(ixx_c, iyy_c, ixy_c)*
+        :return: Second moments of area centroidal axis *(ixx_c, iyy_c, ixy_c)*
         :rtype: tuple(float, float, float)
 
         ::
@@ -1082,8 +1173,9 @@ class CrossSection:
 
     def get_z(self):
         """
-        :return: Section moduli about the centroidal axis *(zxx_plus,
-            zxx_minus, zyy_plus, zyy_minus)*
+        :return: Elastic section moduli about the centroidal axis with respect
+            to the top and bottom fibres
+            *(zxx_plus, zxx_minus, zyy_plus, zyy_minus)*
         :rtype: tuple(float, float, float, float)
 
         ::
@@ -1098,7 +1190,7 @@ class CrossSection:
 
     def get_rc(self):
         """
-        :return: Radii of gyration about the centroidal x-axis *(rx, ry)*
+        :return: Radii of gyration about the centroidal axis *(rx, ry)*
         :rtype: tuple(float, float)
 
         ::
@@ -1112,8 +1204,8 @@ class CrossSection:
 
     def get_ip(self):
         """
-        :return: Second moments of area of the cross-section about the
-            principal axis *(i11_c, i22_c)*
+        :return: Second moments of area about the principal axis
+            *(i11_c, i22_c)*
         :rtype: tuple(float, float)
 
         ::
@@ -1141,8 +1233,9 @@ class CrossSection:
 
     def get_zp(self):
         """
-        :return: Section moduli about the principal axis *(z11_plus,
-            z11_minus, z22_plus, z22_minus)*
+        :return: Elastic section moduli about the principal axis with respect
+            to the top and bottom fibres
+            *(z11_plus, z11_minus, z22_plus, z22_minus)*
         :rtype: tuple(float, float, float, float)
 
         ::
@@ -1171,7 +1264,7 @@ class CrossSection:
 
     def get_j(self):
         """
-        :return: Torsion constant
+        :return: St. Venant torsion constant
         :rtype: float
 
         ::
@@ -1186,7 +1279,8 @@ class CrossSection:
 
     def get_sc(self):
         """
-        :return: Shear centre (elasticity approach) *(x_se, y_se)*
+        :return: Centroidal axis shear centre (elasticity approach)
+            *(x_se, y_se)*
         :rtype: tuple(float, float)
 
         ::
@@ -1231,7 +1325,8 @@ class CrossSection:
 
     def get_sc_t(self):
         """
-        :return: Shear centre (Trefftz's approach) *(x_st, y_st)*
+        :return: Centroidal axis shear centre (Trefftz's approach)
+            *(x_st, y_st)*
         :rtype: tuple(float, float)
 
         ::
@@ -1268,7 +1363,8 @@ class CrossSection:
 
     def get_As(self):
         """
-        :return: Shear areas *(A_sx, A_sy)*
+        :return: Shear area for loading about the centroidal axis
+            *(A_sx, A_sy)*
         :rtype: tuple(float, float)
 
         ::
@@ -1283,7 +1379,8 @@ class CrossSection:
 
     def get_As_p(self):
         """
-        :return: Shear areas about the principal bending axis *(A_s11, A_s22)*
+        :return: Shear area for loading about the principal bending axis
+            *(A_s11, A_s22)*
         :rtype: tuple(float, float)
 
         ::
@@ -1297,42 +1394,119 @@ class CrossSection:
         return (self.section_props.A_s11, self.section_props.A_s22)
 
     def get_pc(self):
-        """a"""
+        """
+        :return: Centroidal axis plastic centroid *(x_pc, y_pc)*
+        :rtype: tuple(float, float)
 
-        x_pc = self.section_props.x_pc + self.section_props.cx
-        y_pc = self.section_props.y_pc + self.section_props.cy
+        ::
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_plastic_properties()
+            (x_pc, y_pc) = section.get_pc()
+        """
+
+        if self.section_props.x_pc is None:
+            return (None, None)
+        else:
+            # add centroid location to move section back to original location
+            x_pc = self.section_props.x_pc + self.section_props.cx
+            y_pc = self.section_props.y_pc + self.section_props.cy
 
         return (x_pc, y_pc)
 
     def get_pc_p(self):
-        """a"""
+        """
+        :return: Principal bending axis plastic centroid *(x11_pc, y22_pc)*
+        :rtype: tuple(float, float)
 
-        x11_pc = self.section_props.x11_pc + self.section_props.cx
-        y22_pc = self.section_props.y22_pc + self.section_props.cy
+        ::
 
-        return (x11_pc, y22_pc)
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_plastic_properties()
+            (x11_pc, y22_pc) = section.get_pc_p()
+        """
+
+        if self.section_props.x11_pc is None:
+            return (None, None)
+        else:
+            # determine the position of the plastic centroid in the global axis
+            (x_pc, y_pc) = fea.global_coordinate(
+                self.section_props.phi, self.section_props.x11_pc,
+                self.section_props.y22_pc)
+
+            # add centroid location to move section back to original location
+            return (x_pc + self.section_props.cx, y_pc + self.section_props.cy)
 
     def get_s(self):
-        """aaa
+        """
+        :return: Plastic section moduli about the centroidal axis
+            *(sxx, syy)*
+        :rtype: tuple(float, float)
+
+        If material properties have been specified, returns the plastic moment
+        :math:`M_p = f_y S`.
+
+        ::
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_plastic_properties()
+            (sxx, syy) = section.get_s()
         """
 
         return (self.section_props.sxx, self.section_props.syy)
 
     def get_sp(self):
-        """aaa
+        """
+        :return: Plastic section moduli about the principal bending axis
+            *(s11, s22)*
+        :rtype: tuple(float, float)
+
+        If material properties have been specified, returns the plastic moment
+        :math:`M_p = f_y S`.
+
+        ::
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_plastic_properties()
+            (s11, s22) = section.get_sp()
         """
 
         return (self.section_props.s11, self.section_props.s22)
 
     def get_sf(self):
-        """aaa
+        """
+        :return: Centroidal axis shape factors with respect to the top and
+            bottom fibres *(sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus)*
+        :rtype: tuple(float, float, float, float)
+
+        ::
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_plastic_properties()
+            (sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus) = section.get_sf()
         """
 
         return (self.section_props.sf_xx_plus, self.section_props.sf_xx_minus,
                 self.section_props.sf_yy_plus, self.section_props.sf_yy_minus)
 
     def get_sf_p(self):
-        """aaa
+        """
+        :return: Principal bending axis shape factors with respect to the top
+            and bottom fibres
+            *(sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus)*
+        :rtype: tuple(float, float, float, float)
+
+        ::
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_plastic_properties()
+            (sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus) = section.get_sf_p()
         """
 
         return (self.section_props.sf_11_plus, self.section_props.sf_11_minus,
@@ -1340,15 +1514,36 @@ class CrossSection:
 
 
 class PlasticSection:
-    """asldj TODO!!!
+    """Class for the plastic analysis of cross-sections.
 
-    asdlkjasd
+    Stores the finite element geometry and material information and provides
+    methods to compute the plastic section properties.
 
     :param geometry: Cross-section geometry object
     :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
+    :param materials: A list of material properties corresponding to various
+        regions in the geometry and mesh.
+    :type materials: list[:class:`~sectionproperties.pre.pre.Material`]
+    :param bool debug: If set to True, the geometry is plotted each time a
+        new mesh is generated by the plastic centroid algorithm.
 
-    :cvar geometry: Cross-section geometry object
+    :cvar geometry: Deep copy of the cross-section geometry object provided to
+        the constructor
     :vartype geometry: :class:`~sectionproperties.pre.sections.Geometry`
+    :cvar materials: A list of material properties corresponding to various
+        regions in the geometry and mesh.
+    :vartype materials: list[:class:`~sectionproperties.pre.pre.Material`]
+    :cvar bool debug: If set to True, the geometry is plotted each time a
+        new mesh is generated by the plastic centroid algorithm.
+    :cvar mesh: Mesh object returned by meshpy
+    :vartype mesh: :class:`meshpy.triangle.MeshInfo`
+    :cvar mesh_nodes: Array of node coordinates from the mesh
+    :vartype mesh_nodes: :class:`numpy.ndarray`
+    :cvar mesh_elements: Array of connectivities from the mesh
+    :vartype mesh_elements: :class:`numpy.ndarray`
+    :cvar elements: List of finite element objects describing the cross-section
+        mesh
+    :vartype elements: list[:class:`~sectionproperties.analysis.fea.Tri6`]
     """
 
     def __init__(self, geometry, materials, debug):
@@ -1380,7 +1575,19 @@ class PlasticSection:
             self.get_elements(self.mesh, self.materials))
 
     def get_elements(self, mesh, materials):
-        """a"""
+        """Extracts finite elements from the provided mesh and returns Tri6
+        finite elements with their associated material properties.
+
+        :param mesh: Mesh object returned by meshpy
+        :type mesh: :class:`meshpy.triangle.MeshInfo`
+        :param materials: A list of material properties corresponding to
+            various regions in the geometry and mesh.
+        :type materials: list[:class:`~sectionproperties.pre.pre.Material`]
+        :return: A tuple containing an array of the nodes locations, element
+            indicies and a list of the finite elements.
+        :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`,
+            list[:class:`~sectionproperties.analysis.fea.Tri6`])
+        """
 
         # extract mesh data
         nodes = np.array(mesh.points, dtype=np.dtype(float))
@@ -1429,7 +1636,14 @@ class PlasticSection:
         return (nodes, elements, element_list)
 
     def calculate_centroid(self, elements):
-        """a"""
+        """Calculates the elastic centroid from a list of finite elements.
+
+        :param elements: A list of Tri6 finite elements.
+        :type elements: list[:class:`~sectionproperties.analysis.fea.Tri6`]
+        :return: A tuple containing the x and y location of the elastic
+            centroid.
+        :rtype: tuple(float, float)
+        """
 
         ea = 0
         qx = 0
@@ -1445,7 +1659,21 @@ class PlasticSection:
         return (qy / ea, qx / ea)
 
     def calculate_plastic_properties(self, cross_section, pc_region, verbose):
-        """a"""
+        """Calculates the location of the plastic centroid with respect to the
+        centroidal and principal bending axes, the plastic section moduli and
+        shape factors and stores the results to the supplied
+        :class:`~sectionproperties.analysis.cross_section.CrossSection` object.
+
+        :param cross_section: Cross section object that uses the same geometry
+            and materials specified in the class constructor
+        :type cross_section:
+            :class:`~sectionproperties.analysis.cross_section.CrossSection`
+        :param pc_region: Region of cross-section in which to search for the
+            plastic centroids.
+        :type pc_region: list[float, float, float, float]
+        :param bool verbose: If set to True, the number of iterations required
+            for each plastic axis is printed to the terminal.
+        """
 
         # 1) Calculate plastic properties for centroidal axis
         # calculate distances to the extreme fibres
@@ -1460,7 +1688,7 @@ class PlasticSection:
         cross_section.section_props.sxx = f * abs(c_top[1] - c_bot[1])
 
         if verbose:
-            self.print_verbose(r, 'x-axis')
+            self.print_verbose(y_pc, r, 'x-axis')
 
         # 1b) Calculate y-axis plastic centroid
         (x_pc, r, f, c_top, c_bot) = self.pc_algorithm(
@@ -1471,7 +1699,7 @@ class PlasticSection:
         cross_section.section_props.syy = f * abs(c_top[0] - c_bot[0])
 
         if verbose:
-            self.print_verbose(r, 'y-axis')
+            self.print_verbose(x_pc, r, 'y-axis')
 
         # 2) Calculate plastic properties for principal axis
         # convert principal axis angle to radians
@@ -1494,7 +1722,7 @@ class PlasticSection:
         cross_section.section_props.s11 = f * abs(c_top[0] - c_bot[0])
 
         if verbose:
-            self.print_verbose(r, '11-axis')
+            self.print_verbose(y22_pc, r, '11-axis')
 
         # 2b) Calculate 22-axis plastic centroid
         (x11_pc, r, f, c_top, c_bot) = self.pc_algorithm(
@@ -1505,7 +1733,7 @@ class PlasticSection:
         cross_section.section_props.s22 = f * abs(c_top[1] - c_bot[1])
 
         if verbose:
-            self.print_verbose(r, '22-axis')
+            self.print_verbose(x11_pc, r, '22-axis')
 
         # if there are no materials specified, calculate shape factors
         if cross_section.materials is None:
@@ -1536,7 +1764,14 @@ class PlasticSection:
                 cross_section.section_props.z22_minus)
 
     def check_convergence(self, root_result, axis):
-        """a"""
+        """Checks that the function solver converged and if not, raises a
+        helpful error.
+
+        :param root_result: Result object from the root finder
+        :type root_result: :class:`scipy.optimize.RootResults`
+        :param string axis: Axis being considered by the function sovler
+        :raises RuntimeError: If the function solver did not converge
+        """
 
         if not root_result.converged:
             str = "Plastic centroid calculation about the {0}".format(axis)
@@ -1546,15 +1781,31 @@ class PlasticSection:
 
             raise RuntimeError(str)
 
-    def print_verbose(self, root_result, axis):
-        """a"""
+    def print_verbose(self, d, root_result, axis):
+        """Prints information related to the function solver convergence to the
+        terminal.
 
-        str = "---{0} plastic centroid calculation converged in".format(axis)
-        str += " {0} iterations.".format(root_result.iterations)
+        :param float d: Location of the plastic centroid axis
+        :param root_result: Result object from the root finder
+        :type root_result: :class:`scipy.optimize.RootResults`
+        :param string axis: Axis being considered by the function sovler
+        """
+
+        str = "---{0} plastic centroid calculation converged at ".format(axis)
+        str += "{0:.5e} in {1} iterations.".format(d, root_result.iterations)
         print(str)
 
     def calculate_extreme_fibres(self, angle):
-        """a"""
+        """Calculates the locations of the extreme fibres along and
+        perpendicular to the axis specified by 'angle' using the elements
+        stored in `self.elements`.
+
+        :param float angle: Angle (in radians) along which to calculate the
+            extreme fibre locations
+        :return: The location of the extreme fibres parallel (u) and
+            perpendicular (v) to the axis *(u_min, u_max, v_min, v_max)*
+        :rtype: tuple(float, float, float, float)
+        """
 
         # calculate section moduli about the principal axis
         for (i, pt) in enumerate(self.mesh_nodes):
@@ -1577,7 +1828,19 @@ class PlasticSection:
         return (u_min, u_max, v_min, v_max)
 
     def evaluate_force_eq(self, d, u, u_p):
-        """a"""
+        """Given a distance *d* from the centroid to an axis (defined by unit
+        vector *u*), creates a mesh including the new and axis and calculates
+        the force equilibrium. The resultant force, as a ratio of the total
+        force, is returned.
+
+        :param float d: Distance from the centroid to current axis
+        :param u: Unit vector defining the direction of the axis
+        :type u: :class:`numpy.ndarray`
+        :param u_p: Unit vector perpendicular to the direction of the axis
+        :type u_p: :class:`numpy.ndarray`
+        :return: The force equilibrium norm
+        :rtype: float
+        """
 
         p = np.array([d * u_p[0], d * u_p[1]])
 
@@ -1594,15 +1857,27 @@ class PlasticSection:
         return (f_top - f_bot) / (f_top + f_bot)
 
     def pc_algorithm(self, u, dlim, axis, pc_region):
-        """a
+        """An algorithm used for solving for the location of the plastic
+        centroid. The algorithm searches for the location of the axis, defined
+        by unit vector *u* and within limits *pc_region*, that satisfies force
+        equilibrium.
 
-        :param u: Unit vector in the direction of the axis
+        :param u: Unit vector defining the direction of the axis
         :type u: :class:`numpy.ndarray`
         :param dlim: List [dmax, dmin] containing the distances from the
             centroid to the extreme fibres perpendicular to the axis
         :type dlim: list[float, float]
         :param int axis: The current axis direction: 1 (e.g. x or 11) or
             2 (e.g. y or 22)
+        :param pc_region: Region of cross-section in which to search for the
+            plastic centroids.
+        :type pc_region: list[float, float, float, float]
+        :return: The distance to the plastic centroid axis *d*, the result
+            object *r*, the force in the top of the section *f_top* and the
+            location of the centroids of the top and bottom areas *c_top* and
+            *c_bottom*
+        :rtype: tuple(float, :class:`scipy.optimize.RootResults`, float,
+            list[float, float], list[float, float])
         """
 
         D = dlim[1] - dlim[0]  # depth of the section perpendicular to the axis
@@ -1618,7 +1893,7 @@ class PlasticSection:
         b = dlim[1] - x * D
 
         (d, r) = brentq(self.evaluate_force_eq, a, b, args=(u, u_p),
-                        full_output=True, disp=False)
+                        full_output=True, disp=False, xtol=1e-6, rtol=1e-6)
 
         # get centroids of the areas
         p = np.array([d * u_p[0], d * u_p[1]])
@@ -1631,7 +1906,20 @@ class PlasticSection:
         return (d, r, f_top, c_top, c_bot)
 
     def calculate_plastic_force(self, elements, u, p):
-        """a"""
+        """Sums the forces above and below the axis defined by unit vector *u*
+        and point *p*. Also returns the force centroid of the forces above and
+        below the axis.
+
+        :param elements: A list of Tri6 finite elements.
+        :type elements: list[:class:`~sectionproperties.analysis.fea.Tri6`]
+        :param u: Unit vector defining the direction of the axis
+        :type u: :class:`numpy.ndarray`
+        :param p: Point on the axis
+        :type p: :class:`numpy.ndarray`
+        :return: Force in the top and bottom areas and centroids of these
+            forces *(f_top, f_bot, [c_top_x, c_top_y], [c_bot_x, c_bot_y])*
+        :rtype: tuple(float, float, list[float, float], list[float, float])
+        """
 
         # initialise variables
         (f_top, f_bot) = (0, 0)
@@ -1663,11 +1951,15 @@ class PlasticSection:
         return(f_top, f_bot, c_top, c_bot)
 
     def create_plastic_mesh(self, new_line=None):
-        """a
+        """Generates a triangular mesh of a deep copy of the geometry stored in
+        `self.geometry`. Optionally, a line can be added to the copied
+        geometry, which is defined by a point *p* and a unit vector *u*.
 
         :param new_line: A point p and a unit vector u defining a line to add
-            to the mesh (new_line: p -> p + u)
+            to the mesh (new_line: p -> p + u) [*p*, *u*]
         :type new_line: list[:class:`numpy.ndarray`, :class:`numpy.ndarray`]
+        :param mesh: Mesh object returned by meshpy
+        :type mesh: :class:`meshpy.triangle.MeshInfo`
         """
 
         # start with the initial geometry
@@ -1708,8 +2000,13 @@ class PlasticSection:
         return mesh
 
     def add_line(self, geometry, line):
-        """a
+        """Adds a line a geometry object. Finds the intersection points of the
+        line with the current facets and splits the existing facets to
+        accomodate the new line.
 
+        :param geometry: Cross-section geometry object used to generate the
+            mesh
+        :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
         :param line: A point p and a unit vector u defining a line to add to
             the mesh (line: p -> p + u)
         :type line: list[:class:`numpy.ndarray`, :class:`numpy.ndarray`]
@@ -1784,7 +2081,14 @@ class PlasticSection:
             geometry.facets.pop(idx)
 
     def rebuild_parent_facet(self, geometry, fct_idx, pt_idx):
-        """a"""
+        """Splits and rebuilds a facet at a given point.
+
+        :param geometry: Cross-section geometry object used to generate the
+            mesh
+        :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
+        :param int fct_idx: Index of the facet to be split
+        :param int pt_idx: Index of the point to insert into the facet
+        """
 
         # get current facet
         fct = geometry.facets[fct_idx]
@@ -1794,7 +2098,14 @@ class PlasticSection:
         geometry.facets.append([pt_idx, fct[1]])
 
     def point_within_element(self, pt):
-        """a"""
+        """Determines whether a point lies within an element in the mesh stored
+        in `self.mesh_elements`.
+
+        :param pt: Point to check
+        :type pt: :class:`numpy.ndarray`
+        :return: Whether the point lies within an element
+        :rtype: bool
+        """
 
         px = pt[0]
         py = pt[1]
@@ -1822,78 +2133,42 @@ class PlasticSection:
 
         return False
 
-    def plot_mesh(self, nodes, elements):
-        """a"""
-
-        (fig, ax) = plt.subplots()
-
-        ax.triplot(nodes[:, 0], nodes[:, 1], elements[:, 0:3], 'k-', lw=0.5,
-                   alpha=0.5)
-
-        # plot material colours
-        if self.materials is not None:
-            color_array = []
-            legend_list = []
-
-            # create an array of finite element colours
-            for element in self.elements:
-                color_array.append(element.material.color)
-
-            # create a list of unique material legend entries
-            for (i, material) in enumerate(self.materials):
-                # if the material has not be entered yet
-                if i == 0 or material not in self.materials[0:i]:
-                    # add the material colour and name to the legend list
-                    legend_list.append(mpatches.Patch(color=material.color,
-                                                      label=material.name))
-
-            cmap = ListedColormap(color_array)  # custom colormap
-            c = np.arange(len(color_array))  # indicies of elements
-
-            # plot the mesh colours
-            ax.tripcolor(self.mesh_nodes[:, 0], self.mesh_nodes[:, 1],
-                         self.mesh_elements[:, 0:3], c, cmap=cmap)
-
-            # display the legend
-            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5),
-                      handles=legend_list)
-
-        ax.set_aspect('equal', anchor='C')
-        plt.show()
-
-
-class MaterialGroup:
-    """a"""
-
-    def __init__(self, material, num_nodes):
-        """Inits the MaterialGroup class."""
-
-        self.material = material
-        self.stress_result = StressResult(num_nodes)
-        self.elements = []
-        self.el_ids = []
-
-    def add_element(self, element):
-        """a"""
-
-        # add Tri6 element to the list of elements
-        self.elements.append(element)
-        self.el_ids.append(element.el_id)
-
 
 class StressPost:
-    """a"""
+    """Class for post-processing finite element stress results.
 
-    def __init__(self, cross_section, material_groups):
+    A StressPost object is created when a stress analysis is carried out and is
+    returned as an object to allow post-processing of the results.
+    The StressPost object creates a deep copy of the MaterialGroups within the
+    cross-section to allow the calculation of stresses for each material.
+    Methods for post-processing the calculated stresses are provided.
+
+    :param cross_section: Cross section object for stress calculation
+    :type cross_section:
+        :class:`~sectionproperties.analysis.cross_section.CrossSection`
+
+    :cvar cross_section: Cross section object for stress calculation
+    :vartype cross_section:
+        :class:`~sectionproperties.analysis.cross_section.CrossSection`
+    :cvar material_groups: A deep copy of the `cross_section` material groups
+        to allow a new stress analysis
+    :vartype material_groups:
+        list[:class:`~sectionproperties.pre.pre.MaterialGroup`]
+    """
+
+    def __init__(self, cross_section):
         """Inits the StressPost class."""
 
         self.cross_section = cross_section
-        self.material_groups = material_groups
+
+        # make a deep copy of the material groups to the StressPost object
+        # such that stress results can be saved to a new material group
+        self.material_groups = copy.deepcopy(cross_section.material_groups)
 
     def plot_stress_contour(self, sigs, title, pause):
         """Plots filled stress contours over the finite element mesh.
 
-        :param sig: List of nodal stress values for each material
+        :param sigs: List of nodal stress values for each material
         :type sigs: list[:class:`numpy.ndarray`]
         :param string title: Plot title
         :param bool pause: If set to true, the figure pauses the script until
@@ -1916,14 +2191,20 @@ class StressPost:
                                    self.cross_section.mesh_nodes[:, 1],
                                    self.cross_section.mesh_elements[:, 0:3])
 
-        # determine minimum and maximum stress values and contour list
+        # determine minimum and maximum stress values for the contour list
         sig_min = min([min(x) for x in sigs])
         sig_max = max([max(x) for x in sigs])
         v = np.linspace(sig_min, sig_max, 15, endpoint=True)
 
-        # plot the filled contour
+        if np.isclose(v[0], v[-1], atol=1e-12):
+            v = 15
+            ticks = None
+        else:
+            ticks = v
+
+        # plot the filled contour, looping through the materials
         for (i, sig) in enumerate(sigs):
-            # create and set the mask
+            # create and set the mask for the current material
             mask_array = np.ones(len(self.cross_section.elements), dtype=bool)
             mask_array[self.material_groups[i].el_ids] = False
             triang.set_mask(mask_array)
@@ -1932,7 +2213,7 @@ class StressPost:
             trictr = ax.tricontourf(triang, sig, v, cmap=cmap)
 
         # display the colourbar
-        fig.colorbar(trictr, label='Stress', format='%.4e', ticks=v)
+        fig.colorbar(trictr, label='Stress', format='%.4e', ticks=ticks)
 
         # TODO: display stress values in the toolbar (format_coord)
 
@@ -1942,10 +2223,12 @@ class StressPost:
     def plot_stress_vector(self, sigxs, sigys, title, pause):
         """Plots stress vectors over the finite element mesh.
 
-        :param sigx: x-component of the nodal stress values
-        :type sigx: :class:`numpy.ndarray`
-        :param sigy: y-component of the nodal stress values
-        :type sigy: :class:`numpy.ndarray`
+        :param sigxs: List of x-components of the nodal stress values for each
+            material
+        :type sigxs: list[:class:`numpy.ndarray`]
+        :param sigys: List of y-components of the nodal stress values for each
+            material
+        :type sigys: list[:class:`numpy.ndarray`]
         :param string title: Plot title
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -1968,6 +2251,8 @@ class StressPost:
             # scale the colour with respect to the magnitude of the vector
             c = np.hypot(sigx, sigy)
 
+            # The scale is defined by the scale of the first plot
+            # TODO: return all scales then use the largest one???
             if i == 0:
                 c_min = min(c)
                 c_max = max(c)
@@ -1992,8 +2277,6 @@ class StressPost:
         # finish the plot
         post.finish_plot(ax, pause, title=title)
 
-    # TODO: implement examples for stress plot methods
-
     def plot_stress_n_zz(self, pause=True):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,N}`
         resulting from the applied axial load :math:`N`.
@@ -2001,6 +2284,28 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the normal stress within a 150x90x12 UA
+        section resulting from an axial force of 10 kN::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(N=10e3)
+
+            stress_post.plot_stress_n_zz()
+
+        ..  figure:: ../images/stress_n_zz.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the axial stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zz,N}$'
@@ -2018,6 +2323,28 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the normal stress within a 150x90x12 UA
+        section resulting from an bending moment about the x-axis of 5 kN.m::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Mxx=5e6)
+
+            stress_post.plot_stress_mxx_zz()
+
+        ..  figure:: ../images/stress_mxx_zz.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the bending stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zz,Mxx}$'
@@ -2035,6 +2362,28 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the normal stress within a 150x90x12 UA
+        section resulting from an bending moment about the y-axis of 2 kN.m::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Myy=2e6)
+
+            stress_post.plot_stress_myy_zz()
+
+        ..  figure:: ../images/stress_myy_zz.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the bending stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zz,Myy}$'
@@ -2052,6 +2401,28 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the normal stress within a 150x90x12 UA
+        section resulting from an bending moment about the 11-axis of 5 kN.m::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(M11=5e6)
+
+            stress_post.plot_stress_m11_zz()
+
+        ..  figure:: ../images/stress_m11_zz.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the bending stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zz,M11}$'
@@ -2069,6 +2440,28 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the normal stress within a 150x90x12 UA
+        section resulting from an bending moment about the 22-axis of 2 kN.m::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(M22=5e6)
+
+            stress_post.plot_stress_m22_zz()
+
+        ..  figure:: ../images/stress_m22_zz.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the bending stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zz,M22}$'
@@ -2087,6 +2480,30 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the normal stress within a 150x90x12 UA
+        section resulting from a bending moment about the x-axis of 5 kN.m, a
+        bending moment about the y-axis of 2 kN.m and a bending moment of
+        3 kN.m about the 11-axis::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Mxx=5e6, Myy=2e6, M11=3e6)
+
+            stress_post.plot_stress_m_zz()
+
+        ..  figure:: ../images/stress_m_zz.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the bending stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zz,\Sigma M}$'
@@ -2105,6 +2522,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the x-component of the shear stress within
+        a 150x90x12 UA section resulting from an applied torsion moment of
+        1 kN.m::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Mzz=1e6)
+
+            stress_post.plot_stress_mzz_zx()
+
+        ..  figure:: ../images/stress_mzz_zx.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zx,Mzz}$'
@@ -2123,6 +2563,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the y-component of the shear stress within
+        a 150x90x12 UA section resulting from an applied torsion moment of
+        1 kN.m::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Mzz=1e6)
+
+            stress_post.plot_stress_mzz_zy()
+
+        ..  figure:: ../images/stress_mzz_zy.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zy,Mzz}$'
@@ -2141,6 +2604,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots a contour of the resultant shear stress
+        within a 150x90x12 UA section resulting from an applied torsion moment
+        of 1 kN.m::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Mzz=1e6)
+
+            stress_post.plot_stress_mzz_zxy()
+
+        ..  figure:: ../images/stress_mzz_zxy.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zxy,Mzz}$'
@@ -2159,6 +2645,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example generates a vector plot of the shear stress
+        within a 150x90x12 UA section resulting from an applied torsion moment
+        of 1 kN.m::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Mzz=1e6)
+
+            stress_post.plot_vector_mzz_zxy()
+
+        ..  figure:: ../images/vector_mzz_zxy.png
+            :align: center
+            :scale: 75 %
+
+            Vector plot of the shear stress.
         """
 
         title = 'Stress Vector Plot - $\sigma_{zxy,Mzz}$'
@@ -2179,6 +2688,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the x-component of the shear stress within
+        a 150x90x12 UA section resulting from an applied shear force in the
+        x-direction of 15 kN::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vx=15e3)
+
+            stress_post.plot_stress_vx_zx()
+
+        ..  figure:: ../images/stress_vx_zx.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zx,Vx}$'
@@ -2197,6 +2729,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the y-component of the shear stress within
+        a 150x90x12 UA section resulting from an applied shear force in the
+        x-direction of 15 kN::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vx=15e3)
+
+            stress_post.plot_stress_vx_zy()
+
+        ..  figure:: ../images/stress_vx_zy.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zy,Vx}$'
@@ -2215,6 +2770,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots a contour of the resultant shear stress
+        within a 150x90x12 UA section resulting from an applied shear force in
+        the x-direction of 15 kN::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vx=15e3)
+
+            stress_post.plot_stress_vx_zxy()
+
+        ..  figure:: ../images/stress_vx_zxy.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zxy,Vx}$'
@@ -2233,6 +2811,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example generates a vector plot of the shear stress
+        within a 150x90x12 UA section resulting from an applied shear force in
+        the x-direction of 15 kN::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vx=15e3)
+
+            stress_post.plot_vector_vx_zxy()
+
+        ..  figure:: ../images/vector_vx_zxy.png
+            :align: center
+            :scale: 75 %
+
+            Vector plot of the shear stress.
         """
 
         title = 'Stress Vector Plot - $\sigma_{zxy,Vx}$'
@@ -2253,6 +2854,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the x-component of the shear stress within
+        a 150x90x12 UA section resulting from an applied shear force in the
+        y-direction of 30 kN::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vy=30e3)
+
+            stress_post.plot_stress_vy_zx()
+
+        ..  figure:: ../images/stress_vy_zx.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zx,Vy}$'
@@ -2271,6 +2895,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the y-component of the shear stress within
+        a 150x90x12 UA section resulting from an applied shear force in the
+        y-direction of 30 kN::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vy=30e3)
+
+            stress_post.plot_stress_vy_zy()
+
+        ..  figure:: ../images/stress_vy_zy.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zy,Vy}$'
@@ -2289,6 +2936,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots a contour of the resultant shear stress
+        within a 150x90x12 UA section resulting from an applied shear force in
+        the y-direction of 30 kN::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vy=30e3)
+
+            stress_post.plot_stress_vy_zxy()
+
+        ..  figure:: ../images/stress_vy_zxy.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zxy,Vy}$'
@@ -2307,6 +2977,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example generates a vector plot of the shear stress
+        within a 150x90x12 UA section resulting from an applied shear force in
+        the y-direction of 30 kN::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vy=30e3)
+
+            stress_post.plot_vector_vy_zxy()
+
+        ..  figure:: ../images/vector_vy_zxy.png
+            :align: center
+            :scale: 75 %
+
+            Vector plot of the shear stress.
         """
 
         title = 'Stress Vector Plot - $\sigma_{zxy,Vy}$'
@@ -2327,6 +3020,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the x-component of the shear stress within
+        a 150x90x12 UA section resulting from an applied shear force of 15 kN
+        in the x-direction and 30 kN in the y-direction::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vx=15e3, Vy=30e3)
+
+            stress_post.plot_stress_v_zx()
+
+        ..  figure:: ../images/stress_v_zx.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zx,\Sigma V}$'
@@ -2345,6 +3061,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the y-component of the shear stress within
+        a 150x90x12 UA section resulting from an applied shear force of 15 kN
+        in the x-direction and 30 kN in the y-direction::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vx=15e3, Vy=30e3)
+
+            stress_post.plot_stress_v_zy()
+
+        ..  figure:: ../images/stress_v_zy.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zy,\Sigma V}$'
@@ -2363,6 +3102,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots a contour of the resultant shear stress
+        within a 150x90x12 UA section resulting from an applied shear force of
+        15 kN in the x-direction and 30 kN in the y-direction::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vx=15e3, Vy=30e3)
+
+            stress_post.plot_stress_v_zxy()
+
+        ..  figure:: ../images/stress_v_zxy.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zxy,\Sigma V}$'
@@ -2381,6 +3143,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example generates a vector plot of the shear stress
+        within a 150x90x12 UA section resulting from an applied shear force of
+        15 kN in the x-direction and 30 kN inthe y-direction::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Vx=15e3, Vy=30e3)
+
+            stress_post.plot_vector_v_zxy()
+
+        ..  figure:: ../images/vector_v_zxy.png
+            :align: center
+            :scale: 75 %
+
+            Vector plot of the shear stress.
         """
 
         title = 'Stress Vector Plot - $\sigma_{zxy,\Sigma V}$'
@@ -2400,6 +3185,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the normal stress within a 150x90x12 UA
+        section resulting from an axial force of 100 kN, a bending moment about
+        the x-axis of 5 kN.m and a bending moment about the y-axis of 2 kN.m::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(N=100e3, Mxx=5e6, Myy=2e6)
+
+            stress_post.plot_stress_zz()
+
+        ..  figure:: ../images/stress_zz.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the normal stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zz}$'
@@ -2417,6 +3225,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the x-component of the shear stress within
+        a 150x90x12 UA section resulting from a torsion moment of 1 kN.m and a
+        shear force of 30 kN in the y-direction::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Mzz=1e6, Vy=30e3)
+
+            stress_post.plot_stress_zx()
+
+        ..  figure:: ../images/stress_zx.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zx}$'
@@ -2434,6 +3265,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots the y-component of the shear stress within
+        a 150x90x12 UA section resulting from a torsion moment of 1 kN.m and a
+        shear force of 30 kN in the y-direction::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Mzz=1e6, Vy=30e3)
+
+            stress_post.plot_stress_zy()
+
+        ..  figure:: ../images/stress_zy.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zy}$'
@@ -2451,6 +3305,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots a contour of the resultant shear stress
+        within a 150x90x12 UA section resulting from a torsion moment of 1 kN.m
+        and a shear force of 30 kN in the y-direction::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Mzz=1e6, Vy=30e3)
+
+            stress_post.plot_stress_zxy()
+
+        ..  figure:: ../images/stress_zxy.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the shear stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{zxy}$'
@@ -2468,6 +3345,29 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example generates a vector plot of the shear stress
+        within a 150x90x12 UA section resulting from a torsion moment of 1 kN.m
+        and a shear force of 30 kN in the y-direction::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Mzz=1e6, Vy=30e3)
+
+            stress_post.plot_vector_zxy()
+
+        ..  figure:: ../images/vector_zxy.png
+            :align: center
+            :scale: 75 %
+
+            Vector plot of the shear stress.
         """
 
         title = 'Stress Vector Plot - $\sigma_{zxy}$'
@@ -2487,6 +3387,37 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
             immediately after the window is rendered.
+
+        The following example plots a contour of the von Mises stress within a
+        150x90x12 UA section resulting from the following actions:
+
+        * :math:`N = 50` kN
+        * :math:`M_{xx} = -5` kN.m
+        * :math:`M_{22} = 2.5` kN.m
+        * :math:`M_{zz} = 1.5` kN.m
+        * :math:`V_{x} = 10` kN
+        * :math:`V_{y} = 5` kN
+
+        ::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3)
+
+            stress_post.plot_stress_vm()
+
+        ..  figure:: ../images/stress_vm.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the von Mises stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{vM}$'
@@ -2498,11 +3429,56 @@ class StressPost:
         self.plot_stress_contour(sigs, title, pause)
 
 
+class MaterialGroup:
+    """Class for storing elements of different materials.
+
+    A MaterialGroup object contains the finite element objects for a specified
+    `material`. `The stress_result` variable provides storage for stresses
+    related each material.
+
+    :param material: Material object for the current MaterialGroup
+    :type material: :class:`~sectionproperties.pre.pre.Material`
+    :param int num_nods: Number of nodes for the entire cross-section
+
+    :cvar material: Material object for the current MaterialGroup
+    :vartype material: :class:`~sectionproperties.pre.pre.Material`
+    :cvar stress_result: A StressResult object for saving the stresses of the
+        current material
+    :vartype stress_result:
+        :class:`~sectionproperties.analysis.cross_section.StressResult`
+    :cvar elements: A list of finite element objects that are of the current
+        material type
+    :vartype elements: list[:class:`~sectionproperties.analysis.fea.Tri6`]
+    :cvar el_ids: A list of the element IDs of the elements that are of the
+        current material type
+    :vartype el_ids: list[int]
+    """
+
+    def __init__(self, material, num_nodes):
+        """Inits the MaterialGroup class."""
+
+        self.material = material
+        self.stress_result = StressResult(num_nodes)
+        self.elements = []
+        self.el_ids = []
+
+    def add_element(self, element):
+        """Adds an element and its element ID to the MaterialGroup.
+
+        :param element: Element to add to the MaterialGroup
+        :type element: :class:`~sectionproperties.analysis.fea.Tri6`
+        """
+
+        # add Tri6 element to the list of elements
+        self.elements.append(element)
+        self.el_ids.append(element.el_id)
+
+
 class StressResult:
     """Class for storing a stress result.
 
-    Provides a way to store the results from a cross-section stress analysis.
-    Also provides a method to calculate combined stresses.
+    Provides variables to store the results from a cross-section stress
+    analysis. Also provides a method to calculate combined stresses.
 
     :param int num_nodes: Number of nodes in the finite element mesh
 

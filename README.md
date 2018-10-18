@@ -29,6 +29,7 @@ a python package for the analysis of arbitrary cross-sections using the finite e
 - [x] Centroidal axis geometric section properties:
   - [x] Second moments of area
   - [x] Elastic section moduli
+  - [ ] Yield moment
   - [x] Radii of gyration
   - [x] Plastic centroid
   - [x] Plastic section moduli
@@ -36,6 +37,7 @@ a python package for the analysis of arbitrary cross-sections using the finite e
 - [x] Principal axis geometric section properties:
   - [x] Second moments of area
   - [x] Elastic section moduli
+  - [ ] Yield moment
   - [x] Radii of gyration
   - [x] Plastic centroid
   - [x] Plastic section moduli

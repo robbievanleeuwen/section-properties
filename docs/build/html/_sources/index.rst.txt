@@ -61,7 +61,6 @@ Support
 -------
 
 blah blah support
-TODO: document materials!!!
 
 License
 -------

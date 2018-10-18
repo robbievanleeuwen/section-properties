@@ -56,6 +56,8 @@ def draw_principal_axis(ax, phi, cx, cy):
     y22_basis = R.dot(np.array([0, 1]))
 
     def add_point(vec, basis, centroid, num, denom):
+        """a"""
+
         if denom != 0:
             point = basis * num / denom + centroid
             vec.append([point[0], point[1]])

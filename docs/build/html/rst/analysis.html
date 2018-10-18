@@ -169,14 +169,14 @@ stores the structural geometry and finite element mesh and provides methods to
 perform various types of cross-section analyses.</p>
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">sectionproperties.analysis.cross_section.</code><code class="descname">CrossSection</code><span class="sig-paren">(</span><em>geometry</em>, <em>mesh</em>, <em>materials=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.analysis.cross_section.</code><code class="descname">CrossSection</code><span class="sig-paren">(</span><em>geometry</em>, <em>mesh</em>, <em>materials=None</em>, <em>time_info=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for structural cross-sections.</p>
 <p>Stores the finite element geometry, mesh and material information and
 provides methods to compute the cross-section properties. The element type
 used in this program is the six-noded quadratic triangular element.</p>
 <p>The constructor extracts information from the provided mesh object and
-creates and stores corresponding Tri6 finite element objects.</p>
+creates and stores the corresponding Tri6 finite element objects.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -184,12 +184,15 @@ creates and stores corresponding Tri6 finite element objects.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>geometry</strong> (<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>) – Cross-section geometry object used to generate the mesh</li>
 <li><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">meshpy.triangle.MeshInfo</span></code>) – Mesh object returned by meshpy</li>
-<li><strong>materials</strong> (list[<code class="xref py py-class docutils literal notranslate"><span class="pre">Material</span></code>]) – A list of material objects corresponding to the various
+<li><strong>materials</strong> (list[<a class="reference internal" href="api.html#sectionproperties.pre.pre.Material" title="sectionproperties.pre.pre.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">Material</span></code></a>]) – A list of material properties corresponding to various
 regions in the geometry and mesh. Note that if materials are specified,
 the number of material objects must equal the number of regions in the
-geometry. If no materials are specified, all elements will be assigned
-a default material with an elastic modulus and yield strength equal to
-1, and a Poisson’s ratio equal to 0.</li>
+geometry. If no materials are specified, only a purely geometric
+analysis can take place, and all regions will be assigned a default
+material with an elastic modulus and yield strength equal to 1, and a
+Poisson’s ratio equal to 0.</li>
+<li><strong>time_info</strong> (<em>bool</em>) – If set to True, a detailed description of the
+computation and the time cost is printed to the terminal.</li>
 </ul>
 </td>
 </tr>
@@ -206,6 +209,30 @@ a default material with an elastic modulus and yield strength equal to
 <span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>The following example creates a 100D x 50W rectangle, with the top half
+of the section comprised of timber and the bottom half steel. The timber
+section is meshed with a maximum area of 10 and the steel section mesh with
+a maximum area of 5:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.pre.pre</span> <span class="k">import</span> <span class="n">Material</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
+
+<span class="n">geom_steel</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RectangularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">geom_timber</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RectangularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MergedSection</span><span class="p">([</span><span class="n">geom_steel</span><span class="p">,</span> <span class="n">geom_timber</span><span class="p">])</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">clean_geometry</span><span class="p">()</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+
+<span class="n">steel</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Steel&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">200e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+<span class="n">timber</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Timber&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">8e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s1">&#39;burlywood&#39;</span><span class="p">)</span>
+
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="p">[</span><span class="n">steel</span><span class="p">,</span> <span class="n">timber</span><span class="p">])</span>
+<span class="n">section</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">materials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -220,6 +247,8 @@ mesh</li>
 <li><strong>mesh_elements</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Array of connectivities from the mesh</li>
 <li><strong>mesh_attributes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Array of attributes from the mesh</li>
 <li><strong>materials</strong> – List of materials</li>
+<li><strong>material_groups</strong> – List of objects containing the elements in each
+defined material</li>
 <li><strong>section_props</strong> (<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>) – Class to store calculated section properties</li>
 </ul>
 </td>
@@ -258,6 +287,8 @@ number of regions</p>
 <li><strong>name</strong> (<em>string</em>) – Material name</li>
 <li><strong>elastic_modulus</strong> (<em>float</em>) – Material modulus of elasticity</li>
 <li><strong>poissons_ratio</strong> (<em>float</em>) – Material Poisson’s ratio</li>
+<li><strong>shear_modulus</strong> (<em>float</em>) – Material shear modulus, derived from the elastic
+modulus and Poisson’s ratio assuming an isotropic material</li>
 <li><strong>yield_strength</strong> (<em>float</em>) – Material yield strength</li>
 <li><strong>color</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.colors</span></code>) – Material color for rendering</li>
 </ul>
@@ -265,6 +296,7 @@ number of regions</p>
 </tr>
 </tbody>
 </table>
+<p># TODO: add example</p>
 </dd></dl>
 
 </div>
@@ -300,7 +332,7 @@ merged from two rectangles:</p>
 
 <dl class="method">
 <dt>
-<code class="descclassname">CrossSection.</code><code class="descname">plot_mesh</code><span class="sig-paren">(</span><em>ax=None</em>, <em>pause=True</em>, <em>alpha=1</em>, <em>color=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.plot_mesh"><span class="viewcode-link">[source]</span></a></dt>
+<code class="descclassname">CrossSection.</code><code class="descname">plot_mesh</code><span class="sig-paren">(</span><em>ax=None</em>, <em>pause=True</em>, <em>alpha=1</em>, <em>materials=False</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.plot_mesh"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Plots the finite element mesh. If no axes object is supplied a new
 figure and axis is created.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -312,29 +344,44 @@ figure and axis is created.</p>
 <li><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
 the window is closed. If set to false, the script continues
 immediately after the window is rendered.</li>
-<li><strong>alpha</strong> (<em>float</em>) – Transparency of the mesh: 0 &lt;= alpha &lt;= 1</li>
-<li><strong>color</strong> (<em>bool</em>) – If set to true and material properties have been
+<li><strong>alpha</strong> (<em>float</em>) – Transparency of the mesh outlines:
+<span class="math notranslate nohighlight">\(0 \leq \alpha \leq 1\)</span></li>
+<li><strong>materials</strong> (<em>bool</em>) – If set to true and material properties have been
 provided to the
-<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection" title="sectionproperties.analysis.cross_section.CrossSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.analysis.cross_section.CrossSection</span></code></a> 
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection" title="sectionproperties.analysis.cross_section.CrossSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossSection</span></code></a>
 object, shades the elements with the specified material colours</li>
+<li><strong>mask</strong> (<em>list</em><em>[</em><em>bool</em><em>]</em>) – Mask array, of length <code class="docutils literal notranslate"><span class="pre">num_nodes</span></code>, to mask out triangles</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
-<p>The following example plots the mesh generated for a 50D x 100W
-rectangle using a mesh size of 5:</p>
+<p>The following example plots the mesh generated for the second example
+listed under the
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection" title="sectionproperties.analysis.cross_section.CrossSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossSection</span></code></a> object
+definition:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.pre.pre</span> <span class="k">import</span> <span class="n">Material</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RectangularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
-<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
-<span class="n">section</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">()</span>
+<span class="n">geom_steel</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RectangularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">geom_timber</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RectangularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MergedSection</span><span class="p">([</span><span class="n">geom_steel</span><span class="p">,</span> <span class="n">geom_timber</span><span class="p">])</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">clean_geometry</span><span class="p">()</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+
+<span class="n">steel</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Steel&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">200e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+<span class="n">timber</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Timber&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">8e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s1">&#39;burlywood&#39;</span><span class="p">)</span>
+
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="p">[</span><span class="n">steel</span><span class="p">,</span> <span class="n">timber</span><span class="p">])</span>
+<span class="n">section</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">materials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="figure align-center" id="id1">
-<img alt="../_images/rectangle_mesh.png" src="../_images/rectangle_mesh.png" />
+<img alt="../_images/composite_mesh.png" src="../_images/composite_mesh.png" />
 <p class="caption"><span class="caption-text">Finite element mesh generated by the above example.</span></p>
 </div>
 </dd></dl>
@@ -346,8 +393,8 @@ rectangle using a mesh size of 5:</p>
 <dl class="method">
 <dt>
 <code class="descclassname">CrossSection.</code><code class="descname">calculate_geometric_properties</code><span class="sig-paren">(</span><em>time_info=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_geometric_properties"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Calculates all the geometric properties of the cross-section and
-stores them in the
+<dd><p>Calculates the geometric properties of the cross-section and stores
+them in the
 <a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>
 object contained in section_props.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -359,16 +406,21 @@ computation and the time cost is printed to the terminal.</td>
 </tr>
 </tbody>
 </table>
-<p>The following section properties are calculated:</p>
+<p>The following geometric section properties are calculated:</p>
 <ul class="simple">
-<li>Area</li>
+<li>Cross-sectional area</li>
+<li>Modulus weighted area (axial rigidity)</li>
 <li>First moments of area</li>
 <li>Second moments of area about the global axis</li>
 <li>Second moments of area about the centroidal axis</li>
+<li>Elastic centroid</li>
 <li>Centroidal section moduli</li>
 <li>Radii of gyration</li>
 <li>Principal axis properties</li>
 </ul>
+<p>If materials are specified for the cross-section, the moments of area
+and section moduli are elastic modulus weighted.</p>
+<p>The following example demonstrates the use of this method:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
 </pre></div>
@@ -381,8 +433,59 @@ computation and the time cost is printed to the terminal.</td>
 <p>A plastic analysis calculates the plastic properties of the cross-section.</p>
 <dl class="method">
 <dt>
-<code class="descclassname">CrossSection.</code><code class="descname">calculate_plastic_properties</code><span class="sig-paren">(</span><em>time_info=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_plastic_properties"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>s</p>
+<code class="descclassname">CrossSection.</code><code class="descname">calculate_plastic_properties</code><span class="sig-paren">(</span><em>pc_region=[0.95, 0.95, 0.95, 0.95], time_info=False, verbose=False, debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_plastic_properties"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Calculates the plastic properties of the cross-section and stores
+the, in the
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>
+object contained in the <code class="docutils literal notranslate"><span class="pre">section_props</span></code> class variable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pc_region</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) – Region of cross-section in which to search for the
+plastic centroids. The value represents the fraction of the depth
+to search within perpendicular to the axis being considered
+[x-axis, y-axis, 11-axis, 22-axis]. Ensure 0 &lt; pc_region[i] &lt; 1.
+The default scheme searches 95% of the section depth (ie. centroid
+<span class="math notranslate nohighlight">\(\pm\)</span> 47.5%)</li>
+<li><strong>time_info</strong> (<em>bool</em>) – If set to True, a detailed description of the
+computation and the time cost is printed to the terminal.</li>
+<li><strong>verbose</strong> (<em>bool</em>) – If set to True, the number of iterations required
+for each plastic axis is printed to the terminal.</li>
+<li><strong>debug</strong> (<em>bool</em>) – If set to True, the geometry is plotted each time a
+new mesh is generated by the plastic centroid algorithm.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following warping section properties are calculated:</p>
+<ul class="simple">
+<li>Plastic centroid for bending about the centroidal and principal axes</li>
+<li>Plastic section moduli for bending about the centroidal and principal
+axes</li>
+<li>Shape factors for bending about the centroidal and principal axes</li>
+</ul>
+<p>If materials are specified for the cross-section, the plastic section
+moduli are displayed as plastic moments (i.e <span class="math notranslate nohighlight">\(M_p = f_y S\)</span>) and
+the shape factors are not calculated.</p>
+<p>Note that the geometric properties must be calculated before the
+plastic properties are calculated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_plastic_properties</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RuntimeError</strong> – If the geometric properties have not been
+calculated prior to calling this method</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -400,7 +503,7 @@ a warping analysis is carried out.</p>
 <dd><p>Calculates all the warping properties of the cross-section and
 stores them in the
 <a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>
-object contained in section_props.</p>
+object contained in the <code class="docutils literal notranslate"><span class="pre">section_props</span></code> class variable.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -416,13 +519,15 @@ method</li>
 </tr>
 </tbody>
 </table>
-<p>The following section properties are calculated:</p>
+<p>The following warping section properties are calculated:</p>
 <ul class="simple">
 <li>Torsion constant</li>
 <li>Shear centre</li>
 <li>Shear area</li>
 <li>Warping constant</li>
 </ul>
+<p>If materials are specified, the values calculated for the torsion
+constant, warping constant and shear area are elastic modulus weighted.</p>
 <p>Note that the geometric properties must be calculated first for the
 calculation of the warping properties to be correct:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
@@ -457,8 +562,8 @@ object before a stress analysis is carried out.</p>
 <code class="descclassname">CrossSection.</code><code class="descname">calculate_stress</code><span class="sig-paren">(</span><em>N=0</em>, <em>Vx=0</em>, <em>Vy=0</em>, <em>Mxx=0</em>, <em>Myy=0</em>, <em>M11=0</em>, <em>M22=0</em>, <em>Mzz=0</em>, <em>time_info=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_stress"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Calculates the cross-section stress resulting from design actions
 and returns a
-<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.StressResult" title="sectionproperties.analysis.cross_section.StressResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">StressResult</span></code></a> object
-containing the cross-section stresses.</p>
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.StressPost" title="sectionproperties.analysis.cross_section.StressPost"><code class="xref py py-class docutils literal notranslate"><span class="pre">StressPost</span></code></a> object
+allowing post-processing of the stress results.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -477,10 +582,10 @@ computation and the time cost is printed to the terminal.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Object containing the cross-section stresses</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Object for post-processing cross-section stresses</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.StressResult" title="sectionproperties.analysis.cross_section.StressResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">StressResult</span></code></a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.StressPost" title="sectionproperties.analysis.cross_section.StressPost"><code class="xref py py-class docutils literal notranslate"><span class="pre">StressPost</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -490,7 +595,7 @@ stress analysis is carried out:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
-<span class="n">stress_result</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">calculate_stress</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">Vy</span><span class="o">=</span><span class="mf">3e3</span><span class="p">,</span> <span class="n">Mxx</span><span class="o">=</span><span class="mf">1e6</span><span class="p">)</span>
+<span class="n">stress_post</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">calculate_stress</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">Vy</span><span class="o">=</span><span class="mf">3e3</span><span class="p">,</span> <span class="n">Mxx</span><span class="o">=</span><span class="mf">1e6</span><span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">

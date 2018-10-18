@@ -52,9 +52,9 @@ class Geometry:
         :raises AssertionError: If the number of mesh sizes does not match the
             number of regions
 
-        The following example creates a circular cross-section with a diameter of
-        50 with 32 points, and generates a mesh with a maximum triangular area of
-        2.5::
+        The following example creates a circular cross-section with a diameter
+        of 50 with 32 points, and generates a mesh with a maximum triangular
+        area of 2.5::
 
             import sectionproperties.pre.sections as sections
 

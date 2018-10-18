@@ -156,6 +156,8 @@
 <span class="kn">import</span> <span class="nn">sectionproperties.post.post</span> <span class="k">as</span> <span class="nn">post</span>
 
 
+<span class="c1"># TODO: ensure dimensions are floats</span>
+
 <div class="viewcode-block" id="Geometry"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry">[docs]</a><span class="k">class</span> <span class="nc">Geometry</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Parent class for a cross-section geometry input.</span>
 
@@ -235,7 +237,84 @@
             <span class="n">cp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">cp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Geometry.plot_geometry"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.plot_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">plot_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Geometry.rotate_section"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.rotate_section">[docs]</a>    <span class="k">def</span> <span class="nf">rotate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">rot_point</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;rotates geometry about rot_point - takes first cp if</span>
+<span class="sd">        rot_point=None, angle in degrees</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">rot_phi</span> <span class="o">=</span> <span class="n">angle</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+
+        <span class="k">def</span> <span class="nf">get_r</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;aaa&quot;&quot;&quot;</span>
+
+            <span class="k">return</span> <span class="p">((</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+
+        <span class="k">def</span> <span class="nf">get_phi</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">rot_point</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rot_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">get_r</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="n">get_phi</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
+            <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">hole</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">holes</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">get_r</span><span class="p">(</span><span class="n">hole</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="n">get_phi</span><span class="p">(</span><span class="n">hole</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
+            <span class="n">hole</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">hole</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">get_r</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="n">get_phi</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
+            <span class="n">cp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">cp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Geometry.mirror_section"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.mirror_section">[docs]</a>    <span class="k">def</span> <span class="nf">mirror_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">mirror_point</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;mirrors geometry about axis at mirror_point. If no mirror_point,</span>
+<span class="sd">        takes first cp</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mirror_point</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mirror_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+            <span class="c1"># TODO: raise error</span>
+
+        <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
+            <span class="n">point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mirror_point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">hole</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">holes</span><span class="p">:</span>
+            <span class="n">hole</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mirror_point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">hole</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">:</span>
+            <span class="n">cp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mirror_point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">cp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Geometry.add_hole"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.add_hole">[docs]</a>    <span class="k">def</span> <span class="nf">add_hole</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hole</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a point defining a hole location to the geometry.</span>
+
+<span class="sd">        :param hole: Location of the hole</span>
+<span class="sd">        :type hole: list[float, float]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">holes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hole</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geometry.clean_geometry"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.clean_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">clean_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span> <span class="o">=</span> <span class="n">pre</span><span class="o">.</span><span class="n">GeometryCleaner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span><span class="o">.</span><span class="n">clean_geometry</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Geometry.plot_geometry"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.plot_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">plot_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plots the geometry defined by the input section. If no axes object</span>
 <span class="sd">        is supplied a new figure and axis is created.</span>
 
@@ -244,6 +323,7 @@
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
 <span class="sd">            immediately after the window is rendered.</span>
+<span class="sd">        :param bool labels: If set to true, node and facet labels are displayed</span>
 
 <span class="sd">        The following example creates a CHS discretised with 64 points, with a</span>
 <span class="sd">        diameter of 48 and thickness of 3.2, and plots the geometry::</span>
@@ -295,6 +375,20 @@
 
         <span class="c1"># display the legend</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center left&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+
+        <span class="c1"># display the labels</span>
+        <span class="k">if</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="c1"># plot node labels</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">pt</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">):</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">xy</span><span class="o">=</span><span class="n">pt</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+            <span class="c1"># plot facet labels</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fct</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">):</span>
+                <span class="n">pt1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">fct</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="n">pt2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">fct</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">xy</span> <span class="o">=</span> <span class="p">[(</span><span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">xy</span><span class="o">=</span><span class="n">xy</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
 
         <span class="c1"># if no axes object is supplied, finish the plot</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ax_supplied</span><span class="p">:</span>

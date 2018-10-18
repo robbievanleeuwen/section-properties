@@ -129,6 +129,7 @@ Shear Area (Principal Axis)
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_As_p
     :noindex:
 
+# TODO: add plastic properties
 
 Section Property Centroids Plots
 --------------------------------
@@ -153,109 +154,120 @@ where:
 - *action* denotes the type of action causing the stress e.g. *mxx* for bending moment about the x-axis. Note that the action is omitted for stresses caused by the application of all actions.
 - *stresstype* denotes the type of stress that is being plotted e.g. *zx* for the *x*-component of shear stress.
 
+The examples shown in the methods below are performed on a 150x90x12 UA
+(unequal angle) section. The :class:`~sectionproperties.analysis.cross_section.CrossSection`
+object is created below::
+
+  import sectionproperties.pre.sections as sections
+  from sectionproperties.analysis.cross_section import CrossSection
+
+  geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+  mesh = geometry.create_mesh(mesh_sizes=[2.5])
+  section = CrossSection(geometry, mesh)
+
 Primary Stress Plots
 ^^^^^^^^^^^^^^^^^^^^
 
 Axial Stress (:math:`\sigma_{zz,N}`)
 """"""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_n_zz
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_n_zz
     :noindex:
 
 Bending Stress (:math:`\sigma_{zz,Mxx}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_mxx_zz
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_mxx_zz
     :noindex:
 
 Bending Stress (:math:`\sigma_{zz,Myy}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_myy_zz
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_myy_zz
     :noindex:
 
 Bending Stress (:math:`\sigma_{zz,M11}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_m11_zz
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_m11_zz
     :noindex:
 
 Bending Stress (:math:`\sigma_{zz,M22}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_m22_zz
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_m22_zz
     :noindex:
 
 Bending Stress (:math:`\sigma_{zz,\Sigma M}`)
 """""""""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_m_zz
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_m_zz
     :noindex:
 
 Torsion Stress (:math:`\sigma_{zx,Mzz}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_mzz_zx
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zx
     :noindex:
 
 Torsion Stress (:math:`\sigma_{zy,Mzz}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_mzz_zy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zy
     :noindex:
 
 Torsion Stress (:math:`\sigma_{zxy,Mzz}`)
 """""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_mzz_zxy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zxy
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_vector_mzz_zxy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_vector_mzz_zxy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zx,Vx}`)
 """""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_vx_zx
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zx
     :noindex:
 
 Shear Stress (:math:`\sigma_{zy,Vx}`)
 """""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_vx_zy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zxy,Vx}`)
 """"""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_vx_zxy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zxy
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_vector_vx_zxy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_vector_vx_zxy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zx,Vy}`)
 """""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_vy_zx
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zx
     :noindex:
 
 Shear Stress (:math:`\sigma_{zy,Vy}`)
 """""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_vy_zy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zxy,Vy}`)
 """"""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_vy_zxy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zxy
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_vector_vy_zxy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_vector_vy_zxy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zx,\Sigma V}`)
 """""""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_v_zx
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zx
     :noindex:
 
 Shear Stress (:math:`\sigma_{zy,\Sigma V}`)
 """""""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_v_zy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zxy,\Sigma V}`)
 """"""""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_v_zxy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zxy
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_vector_v_zxy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_vector_v_zxy
     :noindex:
 
 Combined Stress Plots
@@ -263,28 +275,28 @@ Combined Stress Plots
 
 Normal Stress (:math:`\sigma_{zz}`)
 """"""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_zz
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zz
     :noindex:
 
 Shear Stress (:math:`\sigma_{zx}`)
 """""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_zx
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zx
     :noindex:
 
 Shear Stress (:math:`\sigma_{zy}`)
 """""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_zy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zxy}`)
 """"""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_zxy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zxy
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_vector_zxy
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_vector_zxy
     :noindex:
 
 von Mises Stress (:math:`\sigma_{vM}`)
 """""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressResult.plot_stress_vm
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vm
     :noindex:
