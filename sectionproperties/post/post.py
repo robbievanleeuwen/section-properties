@@ -23,6 +23,7 @@ def finish_plot(ax, pause, title=''):
     """Executes code required to finish a matplotlib figure.
 
     :param ax: Axes object on which to plot
+    :type ax: :class:`matplotlib.axes.Axes`
     :param bool pause: If set to true, the figure pauses the script until
         the window is closed. If set to false, the script continues
         immediately after the window is rendered.
@@ -40,7 +41,15 @@ def finish_plot(ax, pause, title=''):
 
 
 def draw_principal_axis(ax, phi, cx, cy):
-    """a"""
+    """
+    Draws the principal axis on a plot.
+
+    :param ax: Axes object on which to plot
+    :type ax: :class:`matplotlib.axes.Axes`
+    :param float phi: Principal axis angle in radians
+    :param float cx: x-location of the centroid
+    :param float cy: y-location of the centroid
+    """
 
     # get current axis limits
     (xmin, xmax) = ax.get_xlim()
@@ -56,17 +65,31 @@ def draw_principal_axis(ax, phi, cx, cy):
     y22_basis = R.dot(np.array([0, 1]))
 
     def add_point(vec, basis, centroid, num, denom):
-        """a"""
+        """Adds a point to the list *vec* if there is an intersection."""
 
         if denom != 0:
             point = basis * num / denom + centroid
             vec.append([point[0], point[1]])
 
     def get_prinicipal_points(basis, lims, centroid):
-        """a (xmin, xmax, ymin, ymax)"""
+        """Determines the intersections of the prinicpal axis with the four
+        lines defining a bounding box around the limits of the cross-section.
+        The middle two intersection points are returned for plotting.
 
-        pts = []
+        :param basis: Basis (unit) vector in the direction of the principal
+            axis
+        :type basis: :class:`numpy.ndarray`
+        :param lims: Tuple containing the axis limits
+            *(xmin, xmax, ymin, ymax)*
+        :type lims: tuple(float, float, float, float)
+        :param centroid: Centroid *(cx, cy)* of the cross-section, through
+            which the principal axis passes
+        :type centroid: list[float, float]
+        """
 
+        pts = []  # initialise list containing the intersection points
+
+        # add intersection points to the list
         add_point(pts, basis, centroid, lims[0] - centroid[0], basis[0])
         add_point(pts, basis, centroid, lims[1] - centroid[0], basis[0])
         add_point(pts, basis, centroid, lims[2] - centroid[1], basis[1])
@@ -82,9 +105,11 @@ def draw_principal_axis(ax, phi, cx, cy):
 
         return pts
 
+    # get intersection points for the 11 and 22 axes
     x11 = get_prinicipal_points(x11_basis, lims, [cx, cy])
     y22 = get_prinicipal_points(y22_basis, lims, [cx, cy])
 
+    # plot the principal axis
     ax.plot(x11[:, 0], x11[:, 1], 'k--', alpha=0.5, label='11-axis')
     ax.plot(y22[:, 0], y22[:, 1], 'k-.', alpha=0.5, label='22-axis')
 

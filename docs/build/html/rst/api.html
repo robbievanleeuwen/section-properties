@@ -83,7 +83,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="structure.html">Structure of an Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom_mesh.html">Creating a Geometry, Mesh and Material Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">Running an Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="post.html">Viewing the Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
@@ -232,16 +232,16 @@ translating the cross-section by <em>(x, y)</em> and for plotting the geometry.<
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
+<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>(x, y)</em> defining the vertices of the
 cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
+<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>(p1, p2)</em> defining the edges of
 the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
+<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>(x, y)</em> defining the locations of holes within
 the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
+<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>(x, y)</em> that define different
 regions of the cross-section. A control point is an arbitrary point
 within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
+<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
 </ul>
 </td>
 </tr>
@@ -262,9 +262,42 @@ within a region enclosed by facets.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="sectionproperties.pre.sections.Geometry.calculate_extents">
+<code class="descname">calculate_extents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.calculate_extents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.calculate_extents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the minimum and maximum x and y-values amongst the list
+of points.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Minimum and maximum x and y-values
+<em>(x_min, x_max, y_min, y_max)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float, float)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="sectionproperties.pre.sections.Geometry.clean_geometry">
 <code class="descname">clean_geometry</code><span class="sig-paren">(</span><em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.clean_geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.clean_geometry" title="Permalink to this definition">¶</a></dt>
-<dd><p>a</p>
+<dd><p>Peforms a full clean on the geometry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>verbose</strong> (<em>bool</em>) – If set to true, information related to the
+geometry cleaning process is printed to the terminal.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Cleaning the geometry is always recommended when creating a
+merged section which may result in overlapping or intersecting
+facets, or duplicate nodes.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -287,22 +320,49 @@ number of regions</td>
 </tr>
 </tbody>
 </table>
-<p>The following example creates a circular cross-section with a diameter of
-50 with 32 points, and generates a mesh with a maximum triangular area of
-2.5:</p>
+<p>The following example creates a circular cross-section with a diameter
+of 50 with 64 points, and generates a mesh with a maximum triangular
+area of 2.5:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CircularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CircularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/circle_mesh.png"><img alt="../_images/circle_mesh.png" src="../_images/circle_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt id="sectionproperties.pre.sections.Geometry.mirror_section">
 <code class="descname">mirror_section</code><span class="sig-paren">(</span><em>axis='x'</em>, <em>mirror_point=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.mirror_section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.mirror_section" title="Permalink to this definition">¶</a></dt>
-<dd><p>mirrors geometry about axis at mirror_point. If no mirror_point,
-takes first cp</p>
+<dd><p>Mirrors the geometry about a point on either the x or y-axis. If no
+point is provided, mirrors the geometry about the first control point
+in the list of control points of the
+<a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>axis</strong> (<em>string</em>) – Axis about which to mirror the geometry, <em>‘x’</em> or
+<em>‘y’</em></li>
+<li><strong>mirror_point</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Point about which to mirror the geometry <em>(x, y)</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example mirrors a 200PFC section about the y-axis and the
+point (0, 0):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">PfcSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">mirror_section</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">mirror_point</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -333,8 +393,8 @@ diameter of 48 and thickness of 3.2, and plots the geometry:</p>
 <span class="n">geometry</span><span class="o">.</span><span class="n">plot_geometry</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id1">
-<img alt="../_images/chs_geometry.png" src="../_images/chs_geometry.png" />
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/chs_geometry1.png"><img alt="../_images/chs_geometry1.png" src="../_images/chs_geometry1.png" style="width: 429.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Geometry generated by the above example.</span></p>
 </div>
 </dd></dl>
@@ -342,14 +402,38 @@ diameter of 48 and thickness of 3.2, and plots the geometry:</p>
 <dl class="method">
 <dt id="sectionproperties.pre.sections.Geometry.rotate_section">
 <code class="descname">rotate_section</code><span class="sig-paren">(</span><em>angle</em>, <em>rot_point=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.rotate_section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.rotate_section" title="Permalink to this definition">¶</a></dt>
-<dd><p>rotates geometry about rot_point - takes first cp if
-rot_point=None, angle in degrees</p>
+<dd><p>Rotates the geometry and specified angle about a point. If the
+rotation point is not provided, rotates the section about the first
+control point in the list of control points of the
+<a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>angle</strong> (<em>float</em>) – Angle (degrees) by which to rotate the section. A
+positive angle leads to a counter-clockwise rotation.</li>
+<li><strong>rot_point</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Point <em>(x, y)</em> about which to rotate the section</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example rotates a 200UB25 section clockwise by 30
+degrees:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">rotate_section</span><span class="p">(</span><span class="n">angle</span><span class="o">=-</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="sectionproperties.pre.sections.Geometry.shift_section">
 <code class="descname">shift_section</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.shift_section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.shift_section" title="Permalink to this definition">¶</a></dt>
-<dd><p>Shifts the cross-section parameters by the vector <em>shift</em>.</p>
+<dd><p>Shifts the cross-section parameters by the class variable vector
+<em>shift</em>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -368,17 +452,17 @@ user specified control point.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
+<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>(x, y)</em> defining the vertices of the
 cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
+<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>(p1, p2)</em> defining the edges of
 the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes
+<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>(x, y)</em> defining the locations of holes
 within the cross-section. If there are no holes, provide an empty list
 [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
+<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>(x, y)</em> that define different
 regions of the cross-section. A control point is an arbitrary point
 within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
+<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
 </ul>
 </td>
 </tr>
@@ -397,6 +481,14 @@ generated with a maximum triangular area of 2.0:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CustomSection</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/custom_geometry.png"><img alt="../_images/custom_geometry.png" src="../_images/custom_geometry.png" style="width: 699.0px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Custom section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/custom_mesh.png"><img alt="../_images/custom_mesh.png" src="../_images/custom_mesh.png" style="width: 393.75px; height: 218.25px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -431,6 +523,14 @@ origin <em>(0, 0)</em>, with depth <em>d</em> and width <em>b</em>.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id5">
+<a class="reference internal image-reference" href="../_images/rectangle_geometry.png"><img alt="../_images/rectangle_geometry.png" src="../_images/rectangle_geometry.png" style="width: 288.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Rectangular section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id6">
+<a class="reference internal image-reference" href="../_images/rectangle_mesh.png"><img alt="../_images/rectangle_mesh.png" src="../_images/rectangle_mesh.png" style="width: 165.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
+</div>
 </dd></dl>
 
 </div>
@@ -456,13 +556,21 @@ origin <em>(0, 0)</em>, with depth <em>d</em> and width <em>b</em>.</p>
 </tbody>
 </table>
 <p>The following example creates a circular cross-section with a diameter of
-50 with 32 points, and generates a mesh with a maximum triangular area of
+50 with 64 points, and generates a mesh with a maximum triangular area of
 2.5:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CircularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CircularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id7">
+<a class="reference internal image-reference" href="../_images/circle_geometry.png"><img alt="../_images/circle_geometry.png" src="../_images/circle_geometry.png" style="width: 429.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Circular section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id8">
+<a class="reference internal image-reference" href="../_images/circle_mesh.png"><img alt="../_images/circle_mesh.png" src="../_images/circle_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -498,6 +606,14 @@ triangular area of 1.0:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">Chs</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">3.2</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id9">
+<a class="reference internal image-reference" href="../_images/chs_geometry1.png"><img alt="../_images/chs_geometry1.png" src="../_images/chs_geometry1.png" style="width: 429.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">CHS geometry.</span></p>
+</div>
+<div class="figure align-center" id="id10">
+<a class="reference internal image-reference" href="../_images/chs_mesh.png"><img alt="../_images/chs_mesh.png" src="../_images/chs_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -536,6 +652,14 @@ of 2.0:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">Rhs</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r_out</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id11">
+<a class="reference internal image-reference" href="../_images/rhs_geometry.png"><img alt="../_images/rhs_geometry.png" src="../_images/rhs_geometry.png" style="width: 288.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">RHS geometry.</span></p>
+</div>
+<div class="figure align-center" id="id12">
+<a class="reference internal image-reference" href="../_images/rhs_mesh.png"><img alt="../_images/rhs_mesh.png" src="../_images/rhs_mesh.png" style="width: 165.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -576,6 +700,14 @@ with a maximum triangular area of 3.0:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id13">
+<a class="reference internal image-reference" href="../_images/isection_geometry.png"><img alt="../_images/isection_geometry.png" src="../_images/isection_geometry.png" style="width: 332.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">I-section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id14">
+<a class="reference internal image-reference" href="../_images/isection_mesh.png"><img alt="../_images/isection_mesh.png" src="../_images/isection_mesh.png" style="width: 209.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -618,6 +750,14 @@ with a maximum triangular area of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id15">
+<a class="reference internal image-reference" href="../_images/pfc_geometry.png"><img alt="../_images/pfc_geometry.png" src="../_images/pfc_geometry.png" style="width: 250.5px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">PFC geometry.</span></p>
+</div>
+<div class="figure align-center" id="id16">
+<a class="reference internal image-reference" href="../_images/pfc_mesh.png"><img alt="../_images/pfc_mesh.png" src="../_images/pfc_mesh.png" style="width: 138.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
+</div>
 </dd></dl>
 
 </div></blockquote>
@@ -658,6 +798,14 @@ with a maximum triangular area of 3.0:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">TeeSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id17">
+<a class="reference internal image-reference" href="../_images/tee_geometry.png"><img alt="../_images/tee_geometry.png" src="../_images/tee_geometry.png" style="width: 288.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Tee section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id18">
+<a class="reference internal image-reference" href="../_images/tee_mesh.png"><img alt="../_images/tee_mesh.png" src="../_images/tee_mesh.png" style="width: 167.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -700,6 +848,13 @@ triangular area of 2.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id19">
+<a class="reference internal image-reference" href="../_images/angle_geometry.png"><img alt="../_images/angle_geometry.png" src="../_images/angle_geometry.png" style="width: 335.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Angle section geometry.</span></p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/angle_mesh.png"><img alt="../_images/angle_mesh.png" src="../_images/angle_mesh.png" style="width: 212.25px; height: 309.75px;" /></a>
+</div>
 </dd></dl>
 
 </div></blockquote>
@@ -740,6 +895,13 @@ triangular area of 0.25:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CeeSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">125</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">r_out</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id20">
+<a class="reference internal image-reference" href="../_images/cee_geometry.png"><img alt="../_images/cee_geometry.png" src="../_images/cee_geometry.png" style="width: 261.0px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Cee section geometry.</span></p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/cee_mesh.png"><img alt="../_images/cee_mesh.png" src="../_images/cee_mesh.png" style="width: 143.25px; height: 309.75px;" /></a>
 </div>
 </dd></dl>
 
@@ -784,6 +946,13 @@ A mesh is generated with a maximum triangular area of 0.15:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.15</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id21">
+<a class="reference internal image-reference" href="../_images/zed_geometry.png"><img alt="../_images/zed_geometry.png" src="../_images/zed_geometry.png" style="width: 383.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Zed section geometry.</span></p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/zed_mesh.png"><img alt="../_images/zed_mesh.png" src="../_images/zed_mesh.png" style="width: 273.75px; height: 309.75px;" /></a>
+</div>
 </dd></dl>
 
 </div></blockquote>
@@ -824,6 +993,13 @@ of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id22">
+<a class="reference internal image-reference" href="../_images/cruciform_geometry.png"><img alt="../_images/cruciform_geometry.png" src="../_images/cruciform_geometry.png" style="width: 353.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Cruciform section geometry.</span></p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/cruciform_mesh.png"><img alt="../_images/cruciform_mesh.png" src="../_images/cruciform_mesh.png" style="width: 230.25px; height: 309.75px;" /></a>
+</div>
 </dd></dl>
 
 </div></blockquote>
@@ -859,6 +1035,13 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id23">
+<a class="reference internal image-reference" href="../_images/merged_geometry.png"><img alt="../_images/merged_geometry.png" src="../_images/merged_geometry.png" style="width: 287.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Merged section geometry.</span></p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/merged_mesh.png"><img alt="../_images/merged_mesh.png" src="../_images/merged_mesh.png" style="width: 164.25px; height: 309.75px;" /></a>
+</div>
 </dd></dl>
 
 </div></blockquote>
@@ -874,8 +1057,12 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <dt id="sectionproperties.pre.pre.Material">
 <em class="property">class </em><code class="descclassname">sectionproperties.pre.pre.</code><code class="descname">Material</code><span class="sig-paren">(</span><em>name</em>, <em>elastic_modulus</em>, <em>poissons_ratio</em>, <em>yield_strength</em>, <em>color='w'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/pre.html#Material"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.pre.Material" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>a</p>
-<p>aaa</p>
+<p>Class for structural materials.</p>
+<p>Provides a way of storing material properties related to a specific
+material. The color can be a multitude of different formats, refer to
+<a class="reference external" href="https://matplotlib.org/api/colors_api.html">https://matplotlib.org/api/colors_api.html</a> and
+<a class="reference external" href="https://matplotlib.org/examples/color/named_colors.html">https://matplotlib.org/examples/color/named_colors.html</a> for more
+information.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -902,7 +1089,17 @@ modulus and Poisson’s ratio assuming an isotropic material</li>
 </tr>
 </tbody>
 </table>
-<p># TODO: add example</p>
+<p>The following example creates materials for concrete, steel and timber:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sectionproperties.pre.pre</span> <span class="k">import</span> <span class="n">Material</span>
+
+<span class="n">concrete</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Concrete&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">30.1e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+                    <span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">)</span>
+<span class="n">steel</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Steel&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">200e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+                 <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+<span class="n">timber</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Timber&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">8e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+                  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;burlywood&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div></blockquote>
@@ -914,28 +1111,111 @@ modulus and Poisson’s ratio assuming an isotropic material</li>
 <dt id="sectionproperties.pre.pre.GeometryCleaner">
 <em class="property">class </em><code class="descclassname">sectionproperties.pre.pre.</code><code class="descname">GeometryCleaner</code><span class="sig-paren">(</span><em>geometry</em>, <em>verbose</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/pre.html#GeometryCleaner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.pre.GeometryCleaner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>a</p>
-<p>a</p>
+<p>Class for cleaning <a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+objects.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geometry</strong> (<a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a>) – Geometry object to clean</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><strong>geometry</strong> (<a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a>) – Geometry object to clean</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>geometry</strong> (<a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>) – Geometry object to clean</li>
+<li><strong>verbose</strong> (<em>bool</em>) – If set to true, information related to the geometry
+cleaning process is printed to the terminal.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
+<p>Provides methods to clean various aspects of the geometry including:</p>
+<ul class="simple">
+<li>Zipping nodes - Find nodes that are close together (relative and absolute
+tolerance) and deletes one of the nodes and rejoins the facets to the
+remaining node.</li>
+<li>Removing zero length facets - Removes facets that start and end at the
+same point.</li>
+<li>Remove duplicate facets - Removes facets that have the same starting
+and ending point as an existing facet.</li>
+<li>Removing overlapping facets - Searches for facets that overlap each
+other, given a tolerance angle, and reconstructs a unique set of facets
+along the overlapping region.</li>
+<li>Remove unused points - Removes points that are not connected to any
+facets.</li>
+<li>Intersect facets - Searches for intersections between two facets and adds
+the intersection point to the points list and splits the intersected
+facets.</li>
+</ul>
+<p>Note that a geometry cleaning method is provided to all
+<a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>geometry</strong> (<a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>) – Geometry object to clean</li>
+<li><strong>verbose</strong> (<em>bool</em>) – If set to true, information related to the geometry
+cleaning process is printed to the terminal.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates a back-to-back 200PFC geometry, rotates the
+geometry by 30 degrees, and cleans the geometry before meshing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">pfc_right</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">PfcSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">pfc_left</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">PfcSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">pfc_left</span><span class="o">.</span><span class="n">mirror_section</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">mirror_point</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MergedSection</span><span class="p">([</span><span class="n">pfc_left</span><span class="p">,</span> <span class="n">pfc_right</span><span class="p">])</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">rotate_section</span><span class="p">(</span><span class="n">angle</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">clean_geometry</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If the geometry were not cleaned in the previous example, the
+meshing algorithm would crash (most likely return a segment error).
+Cleaning the geometry is always recommended when creating a merged
+section which may result in overlapping or intersecting facets, or
+duplicate nodes.</p>
+</div>
+<dl class="method">
+<dt id="sectionproperties.pre.pre.GeometryCleaner.clean_geometry">
+<code class="descname">clean_geometry</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/pre.html#GeometryCleaner.clean_geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.pre.GeometryCleaner.clean_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a full geometry clean on the <cite>geometry</cite> object.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="sectionproperties.pre.pre.GeometryCleaner.intersect_facets">
 <code class="descname">intersect_facets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/pre.html#GeometryCleaner.intersect_facets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.pre.GeometryCleaner.intersect_facets" title="Permalink to this definition">¶</a></dt>
-<dd><p>a</p>
+<dd><p>Searches through all facet combinations and finds facets that
+intersect each other. The intersection point is added and the facets
+rebuilt.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="sectionproperties.pre.pre.GeometryCleaner.is_duplicate_facet">
 <code class="descname">is_duplicate_facet</code><span class="sig-paren">(</span><em>fct1</em>, <em>fct2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/pre.html#GeometryCleaner.is_duplicate_facet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.pre.GeometryCleaner.is_duplicate_facet" title="Permalink to this definition">¶</a></dt>
-<dd><p>a</p>
+<dd><p>Checks to see if to facets are duplicates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fct1</strong> (<em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em>) – First facet to compare</li>
+<li><strong>fct2</strong> (<em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em>) – Second facet to compare</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether or not the facets are identical</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1005,7 +1285,8 @@ independent of the point order.</p>
 <dl class="method">
 <dt id="sectionproperties.pre.pre.GeometryCleaner.remove_overlapping_facets">
 <code class="descname">remove_overlapping_facets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/pre.html#GeometryCleaner.remove_overlapping_facets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.pre.GeometryCleaner.remove_overlapping_facets" title="Permalink to this definition">¶</a></dt>
-<dd><p>a</p>
+<dd><p>Searches through all facet combinations and fixes facets that
+overlap within a tolerance.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1026,7 +1307,8 @@ references to points after point_id in the facet list.</p>
 <dl class="method">
 <dt id="sectionproperties.pre.pre.GeometryCleaner.remove_unused_points">
 <code class="descname">remove_unused_points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/pre.html#GeometryCleaner.remove_unused_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.pre.GeometryCleaner.remove_unused_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>a</p>
+<dd><p>Searches through all facets and removes points that are not
+connected to any facets.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2054,7 +2336,7 @@ the centroids:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id2">
+<div class="figure align-center" id="id24">
 <a class="reference internal image-reference" href="../_images/pfc_centroids.png"><img alt="../_images/pfc_centroids.png" src="../_images/pfc_centroids.png" style="width: 435.0px; height: 492.0px;" /></a>
 <p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span></p>
 </div>
@@ -2074,7 +2356,7 @@ plot of the centroids:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id3">
+<div class="figure align-center" id="id25">
 <a class="reference internal image-reference" href="../_images/angle_centroids.png"><img alt="../_images/angle_centroids.png" src="../_images/angle_centroids.png" style="width: 428.25px; height: 396.75px;" /></a>
 <p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span></p>
 </div>
@@ -2130,8 +2412,8 @@ definition:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">materials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id4">
-<img alt="../_images/composite_mesh.png" src="../_images/composite_mesh.png" />
+<div class="figure align-center" id="id26">
+<a class="reference internal image-reference" href="../_images/composite_mesh.png"><img alt="../_images/composite_mesh.png" src="../_images/composite_mesh.png" style="width: 673.5px; height: 324.75px;" /></a>
 <p class="caption"><span class="caption-text">Finite element mesh generated by the above example.</span></p>
 </div>
 </dd></dl>
@@ -2306,7 +2588,7 @@ helpful error.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>root_result</strong> – # TODO: complete</li>
+<li><strong>root_result</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.optimize.RootResults</span></code>) – Result object from the root finder</li>
 <li><strong>axis</strong> (<em>string</em>) – Axis being considered by the function sovler</li>
 </ul>
 </td>
@@ -2423,12 +2705,19 @@ location of the centroids of the top and bottom areas <em>c_top</em> and
 <em>c_bottom</em></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple(float, #TODO, float, list[float, float],
-list[float, float])</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple(float, <code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.optimize.RootResults</span></code>, float,
+list[float, float], list[float, float])</p>
 </td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.PlasticSection.plot_mesh">
+<code class="descname">plot_mesh</code><span class="sig-paren">(</span><em>nodes</em>, <em>elements</em>, <em>element_list</em>, <em>materials</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#PlasticSection.plot_mesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.PlasticSection.plot_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Watered down implementation of the CrossSection method to plot the
+finite element mesh, showing material properties.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2461,7 +2750,7 @@ terminal.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>d</strong> (<em>float</em>) – Location of the plastic centroid axis</li>
-<li><strong>root_result</strong> – # TODO: complete</li>
+<li><strong>root_result</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.optimize.RootResults</span></code>) – Result object from the root finder</li>
 <li><strong>axis</strong> (<em>string</em>) – Axis being considered by the function sovler</li>
 </ul>
 </td>
@@ -2574,8 +2863,8 @@ section resulting from an bending moment about the 11-axis of 5 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m11_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id5">
-<a class="reference internal image-reference" href="../_images/stress_m11_zz.png"><img alt="../_images/stress_m11_zz.png" src="../_images/stress_m11_zz.png" style="width: 527.25px; height: 477.75px;" /></a>
+<div class="figure align-center" id="id27">
+<a class="reference internal image-reference" href="../_images/stress_m11_zz1.png"><img alt="../_images/stress_m11_zz1.png" src="../_images/stress_m11_zz1.png" style="width: 527.25px; height: 477.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -2611,8 +2900,8 @@ section resulting from an bending moment about the 22-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m22_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id6">
-<a class="reference internal image-reference" href="../_images/stress_m22_zz.png"><img alt="../_images/stress_m22_zz.png" src="../_images/stress_m22_zz.png" style="width: 506.25px; height: 424.5px;" /></a>
+<div class="figure align-center" id="id28">
+<a class="reference internal image-reference" href="../_images/stress_m22_zz1.png"><img alt="../_images/stress_m22_zz1.png" src="../_images/stress_m22_zz1.png" style="width: 506.25px; height: 424.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -2651,8 +2940,8 @@ bending moment about the y-axis of 2 kN.m and a bending moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id7">
-<a class="reference internal image-reference" href="../_images/stress_m_zz.png"><img alt="../_images/stress_m_zz.png" src="../_images/stress_m_zz.png" style="width: 482.25px; height: 444.0px;" /></a>
+<div class="figure align-center" id="id29">
+<a class="reference internal image-reference" href="../_images/stress_m_zz1.png"><img alt="../_images/stress_m_zz1.png" src="../_images/stress_m_zz1.png" style="width: 482.25px; height: 444.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -2688,8 +2977,8 @@ section resulting from an bending moment about the x-axis of 5 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mxx_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id8">
-<a class="reference internal image-reference" href="../_images/stress_mxx_zz.png"><img alt="../_images/stress_mxx_zz.png" src="../_images/stress_mxx_zz.png" style="width: 503.25px; height: 452.25px;" /></a>
+<div class="figure align-center" id="id30">
+<a class="reference internal image-reference" href="../_images/stress_mxx_zz1.png"><img alt="../_images/stress_mxx_zz1.png" src="../_images/stress_mxx_zz1.png" style="width: 503.25px; height: 452.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -2725,8 +3014,8 @@ section resulting from an bending moment about the y-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_myy_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id9">
-<a class="reference internal image-reference" href="../_images/stress_myy_zz.png"><img alt="../_images/stress_myy_zz.png" src="../_images/stress_myy_zz.png" style="width: 537.0px; height: 471.0px;" /></a>
+<div class="figure align-center" id="id31">
+<a class="reference internal image-reference" href="../_images/stress_myy_zz1.png"><img alt="../_images/stress_myy_zz1.png" src="../_images/stress_myy_zz1.png" style="width: 537.0px; height: 471.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -2764,8 +3053,8 @@ a 150x90x12 UA section resulting from an applied torsion moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id10">
-<a class="reference internal image-reference" href="../_images/stress_mzz_zx.png"><img alt="../_images/stress_mzz_zx.png" src="../_images/stress_mzz_zx.png" style="width: 440.25px; height: 378.0px;" /></a>
+<div class="figure align-center" id="id32">
+<a class="reference internal image-reference" href="../_images/stress_mzz_zx1.png"><img alt="../_images/stress_mzz_zx1.png" src="../_images/stress_mzz_zx1.png" style="width: 440.25px; height: 378.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -2803,8 +3092,8 @@ of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id11">
-<a class="reference internal image-reference" href="../_images/stress_mzz_zxy.png"><img alt="../_images/stress_mzz_zxy.png" src="../_images/stress_mzz_zxy.png" style="width: 470.25px; height: 396.75px;" /></a>
+<div class="figure align-center" id="id33">
+<a class="reference internal image-reference" href="../_images/stress_mzz_zxy1.png"><img alt="../_images/stress_mzz_zxy1.png" src="../_images/stress_mzz_zxy1.png" style="width: 470.25px; height: 396.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -2842,8 +3131,8 @@ a 150x90x12 UA section resulting from an applied torsion moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id12">
-<a class="reference internal image-reference" href="../_images/stress_mzz_zy.png"><img alt="../_images/stress_mzz_zy.png" src="../_images/stress_mzz_zy.png" style="width: 449.25px; height: 383.25px;" /></a>
+<div class="figure align-center" id="id34">
+<a class="reference internal image-reference" href="../_images/stress_mzz_zy1.png"><img alt="../_images/stress_mzz_zy1.png" src="../_images/stress_mzz_zy1.png" style="width: 449.25px; height: 383.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -2879,8 +3168,8 @@ section resulting from an axial force of 10 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_n_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id13">
-<a class="reference internal image-reference" href="../_images/stress_n_zz.png"><img alt="../_images/stress_n_zz.png" src="../_images/stress_n_zz.png" style="width: 450.75px; height: 402.75px;" /></a>
+<div class="figure align-center" id="id35">
+<a class="reference internal image-reference" href="../_images/stress_n_zz1.png"><img alt="../_images/stress_n_zz1.png" src="../_images/stress_n_zz1.png" style="width: 450.75px; height: 402.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the axial stress.</span></p>
 </div>
 </dd></dl>
@@ -2918,8 +3207,8 @@ in the x-direction and 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id14">
-<a class="reference internal image-reference" href="../_images/stress_v_zx.png"><img alt="../_images/stress_v_zx.png" src="../_images/stress_v_zx.png" style="width: 474.75px; height: 425.25px;" /></a>
+<div class="figure align-center" id="id36">
+<a class="reference internal image-reference" href="../_images/stress_v_zx1.png"><img alt="../_images/stress_v_zx1.png" src="../_images/stress_v_zx1.png" style="width: 474.75px; height: 425.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -2957,8 +3246,8 @@ within a 150x90x12 UA section resulting from an applied shear force of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id15">
-<a class="reference internal image-reference" href="../_images/stress_v_zxy.png"><img alt="../_images/stress_v_zxy.png" src="../_images/stress_v_zxy.png" style="width: 448.5px; height: 406.5px;" /></a>
+<div class="figure align-center" id="id37">
+<a class="reference internal image-reference" href="../_images/stress_v_zxy1.png"><img alt="../_images/stress_v_zxy1.png" src="../_images/stress_v_zxy1.png" style="width: 448.5px; height: 406.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -2996,8 +3285,8 @@ in the x-direction and 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id16">
-<a class="reference internal image-reference" href="../_images/stress_v_zy.png"><img alt="../_images/stress_v_zy.png" src="../_images/stress_v_zy.png" style="width: 451.5px; height: 408.75px;" /></a>
+<div class="figure align-center" id="id38">
+<a class="reference internal image-reference" href="../_images/stress_v_zy1.png"><img alt="../_images/stress_v_zy1.png" src="../_images/stress_v_zy1.png" style="width: 451.5px; height: 408.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3065,7 +3354,7 @@ immediately after the window is rendered.</td>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vm</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id17">
+<div class="figure align-center" id="id39">
 <a class="reference internal image-reference" href="../_images/stress_vm.png"><img alt="../_images/stress_vm.png" src="../_images/stress_vm.png" style="width: 491.25px; height: 406.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the von Mises stress.</span></p>
 </div>
@@ -3104,8 +3393,8 @@ x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id18">
-<a class="reference internal image-reference" href="../_images/stress_vx_zx.png"><img alt="../_images/stress_vx_zx.png" src="../_images/stress_vx_zx.png" style="width: 453.0px; height: 387.0px;" /></a>
+<div class="figure align-center" id="id40">
+<a class="reference internal image-reference" href="../_images/stress_vx_zx1.png"><img alt="../_images/stress_vx_zx1.png" src="../_images/stress_vx_zx1.png" style="width: 453.0px; height: 387.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3143,8 +3432,8 @@ the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id19">
-<a class="reference internal image-reference" href="../_images/stress_vx_zxy.png"><img alt="../_images/stress_vx_zxy.png" src="../_images/stress_vx_zxy.png" style="width: 440.25px; height: 369.75px;" /></a>
+<div class="figure align-center" id="id41">
+<a class="reference internal image-reference" href="../_images/stress_vx_zxy1.png"><img alt="../_images/stress_vx_zxy1.png" src="../_images/stress_vx_zxy1.png" style="width: 440.25px; height: 369.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3182,8 +3471,8 @@ x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id20">
-<a class="reference internal image-reference" href="../_images/stress_vx_zy.png"><img alt="../_images/stress_vx_zy.png" src="../_images/stress_vx_zy.png" style="width: 469.5px; height: 402.75px;" /></a>
+<div class="figure align-center" id="id42">
+<a class="reference internal image-reference" href="../_images/stress_vx_zy1.png"><img alt="../_images/stress_vx_zy1.png" src="../_images/stress_vx_zy1.png" style="width: 469.5px; height: 402.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3221,8 +3510,8 @@ y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id21">
-<a class="reference internal image-reference" href="../_images/stress_vy_zx.png"><img alt="../_images/stress_vy_zx.png" src="../_images/stress_vy_zx.png" style="width: 462.0px; height: 397.5px;" /></a>
+<div class="figure align-center" id="id43">
+<a class="reference internal image-reference" href="../_images/stress_vy_zx1.png"><img alt="../_images/stress_vy_zx1.png" src="../_images/stress_vy_zx1.png" style="width: 462.0px; height: 397.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3260,8 +3549,8 @@ the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id22">
-<a class="reference internal image-reference" href="../_images/stress_vy_zxy.png"><img alt="../_images/stress_vy_zxy.png" src="../_images/stress_vy_zxy.png" style="width: 466.5px; height: 424.5px;" /></a>
+<div class="figure align-center" id="id44">
+<a class="reference internal image-reference" href="../_images/stress_vy_zxy1.png"><img alt="../_images/stress_vy_zxy1.png" src="../_images/stress_vy_zxy1.png" style="width: 466.5px; height: 424.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3299,8 +3588,8 @@ y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id23">
-<a class="reference internal image-reference" href="../_images/stress_vy_zy.png"><img alt="../_images/stress_vy_zy.png" src="../_images/stress_vy_zy.png" style="width: 439.5px; height: 398.25px;" /></a>
+<div class="figure align-center" id="id45">
+<a class="reference internal image-reference" href="../_images/stress_vy_zy1.png"><img alt="../_images/stress_vy_zy1.png" src="../_images/stress_vy_zy1.png" style="width: 439.5px; height: 398.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3337,8 +3626,8 @@ shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id24">
-<a class="reference internal image-reference" href="../_images/stress_zx.png"><img alt="../_images/stress_zx.png" src="../_images/stress_zx.png" style="width: 459.0px; height: 414.0px;" /></a>
+<div class="figure align-center" id="id46">
+<a class="reference internal image-reference" href="../_images/stress_zx1.png"><img alt="../_images/stress_zx1.png" src="../_images/stress_zx1.png" style="width: 459.0px; height: 414.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3375,8 +3664,8 @@ and a shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id25">
-<a class="reference internal image-reference" href="../_images/stress_zxy.png"><img alt="../_images/stress_zxy.png" src="../_images/stress_zxy.png" style="width: 495.75px; height: 447.0px;" /></a>
+<div class="figure align-center" id="id47">
+<a class="reference internal image-reference" href="../_images/stress_zxy1.png"><img alt="../_images/stress_zxy1.png" src="../_images/stress_zxy1.png" style="width: 495.75px; height: 447.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3413,8 +3702,8 @@ shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id26">
-<a class="reference internal image-reference" href="../_images/stress_zy.png"><img alt="../_images/stress_zy.png" src="../_images/stress_zy.png" style="width: 489.0px; height: 427.5px;" /></a>
+<div class="figure align-center" id="id48">
+<a class="reference internal image-reference" href="../_images/stress_zy1.png"><img alt="../_images/stress_zy1.png" src="../_images/stress_zy1.png" style="width: 489.0px; height: 427.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3451,8 +3740,8 @@ the x-axis of 5 kN.m and a bending moment about the y-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id27">
-<a class="reference internal image-reference" href="../_images/stress_zz.png"><img alt="../_images/stress_zz.png" src="../_images/stress_zz.png" style="width: 432.75px; height: 403.5px;" /></a>
+<div class="figure align-center" id="id49">
+<a class="reference internal image-reference" href="../_images/stress_zz1.png"><img alt="../_images/stress_zz1.png" src="../_images/stress_zz1.png" style="width: 432.75px; height: 403.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the normal stress.</span></p>
 </div>
 </dd></dl>
@@ -3490,8 +3779,8 @@ of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_mzz_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id28">
-<a class="reference internal image-reference" href="../_images/vector_mzz_zxy.png"><img alt="../_images/vector_mzz_zxy.png" src="../_images/vector_mzz_zxy.png" style="width: 489.0px; height: 441.75px;" /></a>
+<div class="figure align-center" id="id50">
+<a class="reference internal image-reference" href="../_images/vector_mzz_zxy1.png"><img alt="../_images/vector_mzz_zxy1.png" src="../_images/vector_mzz_zxy1.png" style="width: 489.0px; height: 441.75px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3529,8 +3818,8 @@ within a 150x90x12 UA section resulting from an applied shear force of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_v_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id29">
-<a class="reference internal image-reference" href="../_images/vector_v_zxy.png"><img alt="../_images/vector_v_zxy.png" src="../_images/vector_v_zxy.png" style="width: 467.25px; height: 410.25px;" /></a>
+<div class="figure align-center" id="id51">
+<a class="reference internal image-reference" href="../_images/vector_v_zxy1.png"><img alt="../_images/vector_v_zxy1.png" src="../_images/vector_v_zxy1.png" style="width: 467.25px; height: 410.25px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3568,8 +3857,8 @@ the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_vx_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id30">
-<a class="reference internal image-reference" href="../_images/vector_vx_zxy.png"><img alt="../_images/vector_vx_zxy.png" src="../_images/vector_vx_zxy.png" style="width: 506.25px; height: 432.0px;" /></a>
+<div class="figure align-center" id="id52">
+<a class="reference internal image-reference" href="../_images/vector_vx_zxy1.png"><img alt="../_images/vector_vx_zxy1.png" src="../_images/vector_vx_zxy1.png" style="width: 506.25px; height: 432.0px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3607,8 +3896,8 @@ the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_vy_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id31">
-<a class="reference internal image-reference" href="../_images/vector_vy_zxy.png"><img alt="../_images/vector_vy_zxy.png" src="../_images/vector_vy_zxy.png" style="width: 434.25px; height: 408.0px;" /></a>
+<div class="figure align-center" id="id53">
+<a class="reference internal image-reference" href="../_images/vector_vy_zxy1.png"><img alt="../_images/vector_vy_zxy1.png" src="../_images/vector_vy_zxy1.png" style="width: 434.25px; height: 408.0px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -3645,8 +3934,8 @@ and a shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id32">
-<a class="reference internal image-reference" href="../_images/vector_zxy.png"><img alt="../_images/vector_zxy.png" src="../_images/vector_zxy.png" style="width: 453.75px; height: 444.75px;" /></a>
+<div class="figure align-center" id="id54">
+<a class="reference internal image-reference" href="../_images/vector_zxy1.png"><img alt="../_images/vector_zxy1.png" src="../_images/vector_zxy1.png" style="width: 453.75px; height: 444.75px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -4030,6 +4319,24 @@ point <em>p</em>.</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple(float, float, float, float, bool)</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.fea.Tri6.point_within_element">
+<code class="descname">point_within_element</code><span class="sig-paren">(</span><em>pt</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/fea.html#Tri6.point_within_element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.fea.Tri6.point_within_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines whether a point lies within the current element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pt</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Point to check <em>(x, y)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Whether the point lies within an element</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
 </tr>
 </tbody>
 </table>
@@ -4461,7 +4768,7 @@ immediately after the window is rendered.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>ax</strong> – Axes object on which to plot</li>
+<li><strong>ax</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.axes.Axes</span></code>) – Axes object on which to plot</li>
 <li><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until
 the window is closed. If set to false, the script continues
 immediately after the window is rendered.</li>
@@ -4476,7 +4783,21 @@ immediately after the window is rendered.</li>
 <dl class="function">
 <dt id="sectionproperties.post.post.draw_principal_axis">
 <code class="descclassname">sectionproperties.post.post.</code><code class="descname">draw_principal_axis</code><span class="sig-paren">(</span><em>ax</em>, <em>phi</em>, <em>cx</em>, <em>cy</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/post/post.html#draw_principal_axis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.post.post.draw_principal_axis" title="Permalink to this definition">¶</a></dt>
-<dd><p>a</p>
+<dd><p>Draws the principal axis on a plot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.axes.Axes</span></code>) – Axes object on which to plot</li>
+<li><strong>phi</strong> (<em>float</em>) – Principal axis angle in radians</li>
+<li><strong>cx</strong> (<em>float</em>) – x-location of the centroid</li>
+<li><strong>cy</strong> (<em>float</em>) – y-location of the centroid</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">

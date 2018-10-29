@@ -421,6 +421,39 @@ class Tri6:
                 sig_zx_mzz, sig_zy_mzz, sig_zx_vx, sig_zy_vx, sig_zx_vy,
                 sig_zy_vy, gps[:, 0])
 
+    def point_within_element(self, pt):
+        """Determines whether a point lies within the current element.
+
+        :param pt: Point to check *(x, y)*
+        :type pt: list[float, float]
+        :return: Whether the point lies within an element
+        :rtype: bool
+        """
+
+        px = pt[0]
+        py = pt[1]
+
+        # get coordinates of corner points
+        x1 = self.coords[0][0]
+        y1 = self.coords[1][0]
+        x2 = self.coords[0][1]
+        y2 = self.coords[1][1]
+        x3 = self.coords[0][2]
+        y3 = self.coords[1][2]
+
+        # compute variables alpha, beta and gamma
+        alpha = (((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) /
+                 ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)))
+        beta = (((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) /
+                ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)))
+        gamma = 1.0 - alpha - beta
+
+        # if the point lies within an element
+        if alpha >= 0 and beta >= 0 and gamma >= 0:
+            return True
+        else:
+            return False
+
 
 def gauss_points(n):
     """Returns the Gaussian weights and locations for *n* point Gaussian
@@ -499,11 +532,15 @@ def shape_function(coords, gauss_point):
     # calculate the jacobian
     j = 0.5 * np.linalg.det(J)
 
-    # cacluate the P matrix
-    P = np.dot(np.linalg.inv(J), np.array([[0, 0], [1, 0], [0, 1]]))
+    # if the area of the element is not zero
+    if j != 0:
+        # cacluate the P matrix
+        P = np.dot(np.linalg.inv(J), np.array([[0, 0], [1, 0], [0, 1]]))
 
-    # calculate the B matrix in terms of cartesian co-ordinates
-    B = np.transpose(np.dot(np.transpose(B_iso), P))
+        # calculate the B matrix in terms of cartesian co-ordinates
+        B = np.transpose(np.dot(np.transpose(B_iso), P))
+    else:
+        B = np.zeros((2, 6))  # empty B matrix
 
     return (N, B, j)
 

@@ -12,15 +12,6 @@ perform various types of cross-section analyses.
     :show-inheritance:
     :noindex:
 
-Specifying Material Properties
-------------------------------
-
-# TODO!!!!
-
-..  autoclass:: sectionproperties.pre.pre.Material
-    :show-inheritance:
-    :noindex:
-
 Checking the Mesh Quality
 -------------------------
 
@@ -47,6 +38,9 @@ Plastic Analysis
 
 A plastic analysis calculates the plastic properties of the cross-section.
 
+..  note:: A geometric analysis must be performed on the CrossSection object before
+  a plastic analysis is carried out.
+
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.calculate_plastic_properties
     :noindex:
 
@@ -68,7 +62,7 @@ A stress analysis calculates the cross-section stresses arising from a set of fo
 and moments. Executing this method returns a :class:`~sectionproperties.analysis.cross_section.StressResult`
 object which stores the cross-section stresses and provides stress plotting functions.
 
-..  note:: Geometric and warping analyses must be performed on the CrossSection
+..  note:: A geometric and warping analysis must be performed on the CrossSection
   object before a stress analysis is carried out.
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.calculate_stress

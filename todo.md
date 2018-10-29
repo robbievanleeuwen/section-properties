@@ -12,10 +12,7 @@ List of items to complete before returning to master branch:
 [x] Plot Centroids
 [x] Print Results
 [x] Different Material Properties
-[ ] Documentation
-  - [ ] post.py
-  - [ ] pre.py
-  - [ ] sections.py
-  - [ ] check all rst files
+[x] Documentation
 [ ] Packing Testing
 [x] Geometry cleaning class
+[ ] Cross-section tests

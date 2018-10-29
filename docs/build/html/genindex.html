@@ -82,7 +82,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="rst/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rst/structure.html">Structure of an Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rst/geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/geom_mesh.html">Creating a Geometry, Mesh and Material Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rst/analysis.html">Running an Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rst/post.html">Viewing the Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rst/examples.html">Examples</a></li>
@@ -198,6 +198,8 @@
 </li>
       <li><a href="rst/api.html#sectionproperties.analysis.cross_section.SectionProperties.calculate_elastic_centroid">calculate_elastic_centroid() (sectionproperties.analysis.cross_section.SectionProperties method)</a>
 </li>
+      <li><a href="rst/api.html#sectionproperties.pre.sections.Geometry.calculate_extents">calculate_extents() (sectionproperties.pre.sections.Geometry method)</a>
+</li>
       <li><a href="rst/api.html#sectionproperties.analysis.cross_section.PlasticSection.calculate_extreme_fibres">calculate_extreme_fibres() (sectionproperties.analysis.cross_section.PlasticSection method)</a>
 </li>
       <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties">calculate_geometric_properties() (sectionproperties.analysis.cross_section.CrossSection method)</a>
@@ -224,8 +226,12 @@
 </li>
       <li><a href="rst/api.html#sectionproperties.pre.sections.CircularSection">CircularSection (class in sectionproperties.pre.sections)</a>
 </li>
-      <li><a href="rst/api.html#sectionproperties.pre.sections.Geometry.clean_geometry">clean_geometry() (sectionproperties.pre.sections.Geometry method)</a>
+      <li><a href="rst/api.html#sectionproperties.pre.pre.GeometryCleaner.clean_geometry">clean_geometry() (sectionproperties.pre.pre.GeometryCleaner method)</a>
+
+      <ul>
+        <li><a href="rst/api.html#sectionproperties.pre.sections.Geometry.clean_geometry">(sectionproperties.pre.sections.Geometry method)</a>
 </li>
+      </ul></li>
       <li><a href="rst/api.html#sectionproperties.pre.pre.create_mesh">create_mesh() (in module sectionproperties.pre.pre)</a>
 
       <ul>
@@ -399,7 +405,11 @@
       <li><a href="rst/api.html#sectionproperties.pre.sections.Geometry.plot_geometry">plot_geometry() (sectionproperties.pre.sections.Geometry method)</a>
 </li>
       <li><a href="rst/api.html#sectionproperties.analysis.cross_section.CrossSection.plot_mesh">plot_mesh() (sectionproperties.analysis.cross_section.CrossSection method)</a>
+
+      <ul>
+        <li><a href="rst/api.html#sectionproperties.analysis.cross_section.PlasticSection.plot_mesh">(sectionproperties.analysis.cross_section.PlasticSection method)</a>
 </li>
+      </ul></li>
       <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_contour">plot_stress_contour() (sectionproperties.analysis.cross_section.StressPost method)</a>
 </li>
       <li><a href="rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_m11_zz">plot_stress_m11_zz() (sectionproperties.analysis.cross_section.StressPost method)</a>
@@ -465,7 +475,11 @@
       <li><a href="rst/api.html#sectionproperties.analysis.fea.point_above_line">point_above_line() (in module sectionproperties.analysis.fea)</a>
 </li>
       <li><a href="rst/api.html#sectionproperties.analysis.cross_section.PlasticSection.point_within_element">point_within_element() (sectionproperties.analysis.cross_section.PlasticSection method)</a>
+
+      <ul>
+        <li><a href="rst/api.html#sectionproperties.analysis.fea.Tri6.point_within_element">(sectionproperties.analysis.fea.Tri6 method)</a>
 </li>
+      </ul></li>
       <li><a href="rst/api.html#sectionproperties.analysis.fea.principal_coordinate">principal_coordinate() (in module sectionproperties.analysis.fea)</a>
 </li>
       <li><a href="rst/api.html#sectionproperties.post.post.print_results">print_results() (in module sectionproperties.post.post)</a>

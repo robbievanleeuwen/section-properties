@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Creating a Geometry and Mesh" href="geom_mesh.html" />
+    <link rel="next" title="Creating a Geometry, Mesh and Material Properties" href="geom_mesh.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
 
   
@@ -88,7 +88,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#viewing-the-results">Viewing the Results</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom_mesh.html">Creating a Geometry, Mesh and Material Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">Running an Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="post.html">Viewing the Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
@@ -160,23 +160,23 @@
             
   <div class="section" id="structure-of-an-analysis">
 <h1>Structure of an Analysis<a class="headerlink" href="#structure-of-an-analysis" title="Permalink to this headline">¶</a></h1>
-<p>The process of performing a cross-section analysis, similar to a typical finite
-element analysis, can be broken down into three stages:</p>
+<p>The process of performing a cross-section analysis with <em>sectionproperties</em> can
+be broken down into three stages:</p>
 <ol class="arabic simple">
-<li>Pre-Processor: The input geometry and finite element mesh is specified.</li>
+<li>Pre-Processor: The input geometry and finite element mesh is created.</li>
 <li>Solver: The cross-section properties are determined.</li>
 <li>Post-Processor: The results are presented in a number of different formats.</li>
 </ol>
 <div class="section" id="creating-a-geometry-and-mesh">
 <h2>Creating a Geometry and Mesh<a class="headerlink" href="#creating-a-geometry-and-mesh" title="Permalink to this headline">¶</a></h2>
-<p>The dimensions, shape and material properties of the cross-section to be analysed
-define the <em>geometry</em> of the cross-section. The <a class="reference internal" href="api.html#label-sections-module"><span class="std std-ref">sections Module</span></a>
-provides a number of classes to easily generate commonly used structural sections
-as well as generate an arbitrary cross-section defined by a list of points, facets
-and holes. All of the classes in the <a class="reference internal" href="api.html#label-sections-module"><span class="std std-ref">sections Module</span></a> inherit from
-the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> class.</p>
+<p>The dimensions and shape of the cross-section to be analysed define the <em>geometry</em>
+of the cross-section. The <a class="reference internal" href="api.html#label-sections-module"><span class="std std-ref">sections Module</span></a> provides a number of classes
+to easily generate either commonly used structural sections or an  arbitrary
+cross-section, defined by a list of points, facets and holes. All of the classes
+in the <a class="reference internal" href="api.html#label-sections-module"><span class="std std-ref">sections Module</span></a> inherit from the
+<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> class.</p>
 <p>The final stage in the pre-processor involves generating a finite element mesh of
-the <em>geometry</em> that the solver can use to determine the cross-section properties.
+the <em>geometry</em> that the solver can use to calculate the cross-section properties.
 This can easily be performed using the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry.create_mesh" title="sectionproperties.pre.sections.Geometry.create_mesh"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_mesh()</span></code></a>
 method that all <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> objects have
 access to.</p>
@@ -191,10 +191,19 @@ of 2.5:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id1">
-<a class="reference internal image-reference" href="../_images/circle_mesh.png"><img alt="../_images/circle_mesh.png" src="../_images/circle_mesh.png" style="width: 312.75px; height: 315.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/circle_mesh.png"><img alt="../_images/circle_mesh.png" src="../_images/circle_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Finite element mesh generated by the above example.</span></p>
 </div>
-<p>Refer to <a class="reference internal" href="geom_mesh.html#label-geom-mesh"><span class="std std-ref">Creating a Geometry and Mesh</span></a> for a more detailed explanation of the pre-processing
+<p>If you are analysing a composite section, or would like to include material properties
+in your model, material properties can be created using the <a class="reference internal" href="api.html#sectionproperties.pre.pre.Material" title="sectionproperties.pre.pre.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">Material</span></code></a>
+class. The following example creates a steel material object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sectionproperties.pre.pre</span> <span class="k">import</span> <span class="n">Material</span>
+
+<span class="n">steel</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Steel&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">200e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+                 <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Refer to <a class="reference internal" href="geom_mesh.html#label-geom-mesh"><span class="std std-ref">Creating a Geometry, Mesh and Material Properties</span></a> for a more detailed explanation of the pre-processing
 stage.</p>
 </div>
 <div class="section" id="running-an-analysis">
@@ -207,20 +216,24 @@ object and can perform four different analysis types:</p>
 <li>Warping Analysis: calculates torsion and shear properties.</li>
 <li>Stress Analysis: calculates cross-section stresses.</li>
 </ul>
-<p>The geometric and plastic analyses can be performed individually. However in order
-to perform a warping analysis, a geometric analysis must first be performed. Further,
+<p>The geometric analysis can be performed individually. However in order to perform
+a warping or plastic analysis, a geometric analysis must first be performed. Further,
 in order to carry out a stress analysis, both a geometric and warping analysis must
 have already been executed. The program will display a helpful error if you try
 to run any of these analyses without first performing the prerequisite analyses.</p>
 <p>The following example performs a geometric and warping analysis on the circular
-cross-section defined in the previous section:</p>
+cross-section defined in the previous section with steel used as the material
+property:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.pre.pre</span> <span class="k">import</span> <span class="n">Material</span>
 
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CircularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
+<span class="n">steel</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Steel&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">200e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+                 <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
 
-<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="p">[</span><span class="n">steel</span><span class="p">])</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
 </pre></div>
@@ -232,11 +245,10 @@ cross-section defined in the previous section:</p>
 <p>Once an analysis has been performed, a number of methods belonging to the
 <a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection" title="sectionproperties.analysis.cross_section.CrossSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossSection</span></code></a> object can be called
 to present the cross-section results in a number of different formats. For example
-the cross-section properties can be printed to the terminal, the centroids displayed
-on top of a plot of the cross-section mesh and the cross-section stresses visualised
-in a contour plot.</p>
-<p>The following example analyses a 200 PFC section and prints the the cross-section
-properties to the terminal and displays a plot of the centroids:</p>
+the cross-section properties can be printed to the terminal, a plot of the centroids
+displayed and the cross-section stresses visualised in a contour plot.</p>
+<p>The following example analyses a 200 PFC section. The cross-section properties
+are printed to the terminal and a plot of the centroids is displayed:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
 
@@ -245,6 +257,7 @@ properties to the terminal and displays a plot of the centroids:</p>
 
 <span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_plastic_properties</span><span class="p">()</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
 
 <span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
@@ -259,44 +272,58 @@ by <a class="reference internal" href="api.html#sectionproperties.analysis.cross
 <p>Output generated by the <a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection.display_results" title="sectionproperties.analysis.cross_section.CrossSection.display_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">display_results()</span></code></a>
 method:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Section</span> <span class="n">Properties</span><span class="p">:</span>
-<span class="n">Area</span>   <span class="o">=</span> <span class="mf">2.919699e+03</span>
-<span class="n">Qx</span>     <span class="o">=</span> <span class="mf">2.919699e+05</span>
-<span class="n">Qy</span>     <span class="o">=</span> <span class="mf">7.122414e+04</span>
-<span class="n">cx</span>     <span class="o">=</span> <span class="mf">2.439434e+01</span>
-<span class="n">cy</span>     <span class="o">=</span> <span class="mf">1.000000e+02</span>
-<span class="n">Ixx_g</span>  <span class="o">=</span> <span class="mf">4.831277e+07</span>
-<span class="n">Iyy_g</span>  <span class="o">=</span> <span class="mf">3.392871e+06</span>
-<span class="n">Ixy_g</span>  <span class="o">=</span> <span class="mf">7.122414e+06</span>
-<span class="n">Ixx_c</span>  <span class="o">=</span> <span class="mf">1.911578e+07</span>
-<span class="n">Iyy_c</span>  <span class="o">=</span> <span class="mf">1.655405e+06</span>
-<span class="n">Ixy_c</span>  <span class="o">=</span> <span class="o">-</span><span class="mf">6.519258e-09</span>
-<span class="n">Zxx</span><span class="o">+</span>   <span class="o">=</span> <span class="mf">1.911578e+05</span>
-<span class="n">Zxx</span><span class="o">-</span>   <span class="o">=</span> <span class="mf">1.911578e+05</span>
-<span class="n">Zyy</span><span class="o">+</span>   <span class="o">=</span> <span class="mf">3.271186e+04</span>
-<span class="n">Zyy</span><span class="o">-</span>   <span class="o">=</span> <span class="mf">6.786020e+04</span>
-<span class="n">rx</span>     <span class="o">=</span> <span class="mf">8.091461e+01</span>
-<span class="n">ry</span>     <span class="o">=</span> <span class="mf">2.381130e+01</span>
-<span class="n">phi</span>    <span class="o">=</span> <span class="mf">0.000000e+00</span>
-<span class="n">I11_c</span>  <span class="o">=</span> <span class="mf">1.911578e+07</span>
-<span class="n">I22_c</span>  <span class="o">=</span> <span class="mf">1.655405e+06</span>
-<span class="n">Z11</span><span class="o">+</span>   <span class="o">=</span> <span class="mf">1.911578e+05</span>
-<span class="n">Z11</span><span class="o">-</span>   <span class="o">=</span> <span class="mf">1.911578e+05</span>
-<span class="n">Z22</span><span class="o">+</span>   <span class="o">=</span> <span class="mf">3.271186e+04</span>
-<span class="n">Z22</span><span class="o">-</span>   <span class="o">=</span> <span class="mf">6.786020e+04</span>
-<span class="n">r11</span>    <span class="o">=</span> <span class="mf">8.091461e+01</span>
-<span class="n">r22</span>    <span class="o">=</span> <span class="mf">2.381130e+01</span>
-<span class="n">J</span>      <span class="o">=</span> <span class="mf">1.011522e+05</span>
-<span class="n">Iw</span>     <span class="o">=</span> <span class="mf">1.039437e+10</span>
-<span class="n">x_se</span>   <span class="o">=</span> <span class="o">-</span><span class="mf">2.505109e+01</span>
-<span class="n">y_se</span>   <span class="o">=</span> <span class="mf">1.000000e+02</span>
-<span class="n">x_st</span>   <span class="o">=</span> <span class="o">-</span><span class="mf">2.505109e+01</span>
-<span class="n">y_st</span>   <span class="o">=</span> <span class="mf">1.000000e+02</span>
-<span class="n">x1_se</span>  <span class="o">=</span> <span class="o">-</span><span class="mf">2.505109e+01</span>
-<span class="n">y2_se</span>  <span class="o">=</span> <span class="mf">1.000000e+02</span>
-<span class="n">A_sx</span>   <span class="o">=</span> <span class="mf">9.468851e+02</span>
-<span class="n">A_sy</span>   <span class="o">=</span> <span class="mf">1.106943e+03</span>
-<span class="n">A_s11</span>  <span class="o">=</span> <span class="mf">9.468851e+02</span>
-<span class="n">A_s22</span>  <span class="o">=</span> <span class="mf">1.106943e+03</span>
+<span class="n">A</span>       <span class="o">=</span> <span class="mf">2.919699e+03</span>
+<span class="n">Qx</span>      <span class="o">=</span> <span class="mf">2.919699e+05</span>
+<span class="n">Qy</span>      <span class="o">=</span> <span class="mf">7.122414e+04</span>
+<span class="n">cx</span>      <span class="o">=</span> <span class="mf">2.439434e+01</span>
+<span class="n">cy</span>      <span class="o">=</span> <span class="mf">1.000000e+02</span>
+<span class="n">Ixx_g</span>   <span class="o">=</span> <span class="mf">4.831277e+07</span>
+<span class="n">Iyy_g</span>   <span class="o">=</span> <span class="mf">3.392871e+06</span>
+<span class="n">Ixy_g</span>   <span class="o">=</span> <span class="mf">7.122414e+06</span>
+<span class="n">Ixx_c</span>   <span class="o">=</span> <span class="mf">1.911578e+07</span>
+<span class="n">Iyy_c</span>   <span class="o">=</span> <span class="mf">1.655405e+06</span>
+<span class="n">Ixy_c</span>   <span class="o">=</span> <span class="o">-</span><span class="mf">6.519258e-09</span>
+<span class="n">Zxx</span><span class="o">+</span>    <span class="o">=</span> <span class="mf">1.911578e+05</span>
+<span class="n">Zxx</span><span class="o">-</span>    <span class="o">=</span> <span class="mf">1.911578e+05</span>
+<span class="n">Zyy</span><span class="o">+</span>    <span class="o">=</span> <span class="mf">3.271186e+04</span>
+<span class="n">Zyy</span><span class="o">-</span>    <span class="o">=</span> <span class="mf">6.786020e+04</span>
+<span class="n">rx</span>      <span class="o">=</span> <span class="mf">8.091461e+01</span>
+<span class="n">ry</span>      <span class="o">=</span> <span class="mf">2.381130e+01</span>
+<span class="n">phi</span>     <span class="o">=</span> <span class="mf">0.000000e+00</span>
+<span class="n">I11_c</span>   <span class="o">=</span> <span class="mf">1.911578e+07</span>
+<span class="n">I22_c</span>   <span class="o">=</span> <span class="mf">1.655405e+06</span>
+<span class="n">Z11</span><span class="o">+</span>    <span class="o">=</span> <span class="mf">1.911578e+05</span>
+<span class="n">Z11</span><span class="o">-</span>    <span class="o">=</span> <span class="mf">1.911578e+05</span>
+<span class="n">Z22</span><span class="o">+</span>    <span class="o">=</span> <span class="mf">3.271186e+04</span>
+<span class="n">Z22</span><span class="o">-</span>    <span class="o">=</span> <span class="mf">6.786020e+04</span>
+<span class="n">r11</span>     <span class="o">=</span> <span class="mf">8.091461e+01</span>
+<span class="n">r22</span>     <span class="o">=</span> <span class="mf">2.381130e+01</span>
+<span class="n">J</span>       <span class="o">=</span> <span class="mf">1.011522e+05</span>
+<span class="n">Iw</span>      <span class="o">=</span> <span class="mf">1.039437e+10</span>
+<span class="n">x_se</span>    <span class="o">=</span> <span class="o">-</span><span class="mf">2.505109e+01</span>
+<span class="n">y_se</span>    <span class="o">=</span> <span class="mf">1.000000e+02</span>
+<span class="n">x_st</span>    <span class="o">=</span> <span class="o">-</span><span class="mf">2.505109e+01</span>
+<span class="n">y_st</span>    <span class="o">=</span> <span class="mf">1.000000e+02</span>
+<span class="n">x1_se</span>   <span class="o">=</span> <span class="o">-</span><span class="mf">2.505109e+01</span>
+<span class="n">y2_se</span>   <span class="o">=</span> <span class="mf">1.000000e+02</span>
+<span class="n">A_sx</span>    <span class="o">=</span> <span class="mf">9.468851e+02</span>
+<span class="n">A_sy</span>    <span class="o">=</span> <span class="mf">1.106943e+03</span>
+<span class="n">x_pc</span>    <span class="o">=</span> <span class="mf">1.425046e+01</span>
+<span class="n">y_pc</span>    <span class="o">=</span> <span class="mf">1.000000e+02</span>
+<span class="n">Sxx</span>     <span class="o">=</span> <span class="mf">2.210956e+05</span>
+<span class="n">Syy</span>     <span class="o">=</span> <span class="mf">5.895923e+04</span>
+<span class="n">SF_xx</span><span class="o">+</span>  <span class="o">=</span> <span class="mf">1.156613e+00</span>
+<span class="n">SF_xx</span><span class="o">-</span>  <span class="o">=</span> <span class="mf">1.156613e+00</span>
+<span class="n">SF_yy</span><span class="o">+</span>  <span class="o">=</span> <span class="mf">1.802381e+00</span>
+<span class="n">SF_yy</span><span class="o">-</span>  <span class="o">=</span> <span class="mf">8.688337e-01</span>
+<span class="n">x11_pc</span>  <span class="o">=</span> <span class="mf">1.425046e+01</span>
+<span class="n">y22_pc</span>  <span class="o">=</span> <span class="mf">1.000000e+02</span>
+<span class="n">S11</span>     <span class="o">=</span> <span class="mf">2.210956e+05</span>
+<span class="n">S22</span>     <span class="o">=</span> <span class="mf">5.895923e+04</span>
+<span class="n">SF_11</span><span class="o">+</span>  <span class="o">=</span> <span class="mf">1.156613e+00</span>
+<span class="n">SF_11</span><span class="o">-</span>  <span class="o">=</span> <span class="mf">1.156613e+00</span>
+<span class="n">SF_22</span><span class="o">+</span>  <span class="o">=</span> <span class="mf">1.802381e+00</span>
+<span class="n">SF_22</span><span class="o">-</span>  <span class="o">=</span> <span class="mf">8.688337e-01</span>
 </pre></div>
 </div>
 <p>Refer to <a class="reference internal" href="post.html#label-post"><span class="std std-ref">Viewing the Results</span></a> for a more detailed explanation of the post-processing
@@ -312,7 +339,7 @@ stage.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="geom_mesh.html" class="btn btn-neutral float-right" title="Creating a Geometry and Mesh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="geom_mesh.html" class="btn btn-neutral float-right" title="Creating a Geometry, Mesh and Material Properties" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

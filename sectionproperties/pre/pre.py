@@ -3,9 +3,13 @@ import meshpy.triangle as triangle
 
 
 class Material:
-    """a
+    """Class for structural materials.
 
-    aaa
+    Provides a way of storing material properties related to a specific
+    material. The color can be a multitude of different formats, refer to
+    https://matplotlib.org/api/colors_api.html and
+    https://matplotlib.org/examples/color/named_colors.html for more
+    information.
 
     :param string name: Material name
     :param float elastic_modulus: Material modulus of elasticity
@@ -23,7 +27,16 @@ class Material:
     :cvar color: Material color for rendering
     :vartype color: :class:`matplotlib.colors`
 
-    # TODO: add example
+    The following example creates materials for concrete, steel and timber::
+
+        from sectionproperties.pre.pre import Material
+
+        concrete = Material(name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
+                            color='lightgrey')
+        steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
+                         color='grey')
+        timber = Material(name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
+                          color='burlywood')
     """
 
     def __init__(self, name, elastic_modulus, poissons_ratio, yield_strength,
@@ -39,14 +52,58 @@ class Material:
 
 
 class GeometryCleaner:
-    """a
-
-    a
+    """Class for cleaning :class:`~sectionproperties.pre.sections.Geometry`
+    objects.
 
     :param geometry: Geometry object to clean
-    :type geometry: :class:`sectionproperties.pre.sections.Geometry`
+    :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
+    :param bool verbose: If set to true, information related to the geometry
+        cleaning process is printed to the terminal.
+
+    Provides methods to clean various aspects of the geometry including:
+
+    * Zipping nodes - Find nodes that are close together (relative and absolute
+      tolerance) and deletes one of the nodes and rejoins the facets to the
+      remaining node.
+    * Removing zero length facets - Removes facets that start and end at the
+      same point.
+    * Remove duplicate facets - Removes facets that have the same starting
+      and ending point as an existing facet.
+    * Removing overlapping facets - Searches for facets that overlap each
+      other, given a tolerance angle, and reconstructs a unique set of facets
+      along the overlapping region.
+    * Remove unused points - Removes points that are not connected to any
+      facets.
+    * Intersect facets - Searches for intersections between two facets and adds
+      the intersection point to the points list and splits the intersected
+      facets.
+
+    Note that a geometry cleaning method is provided to all
+    :class:`~sectionproperties.pre.sections.Geometry` objects.
+
     :cvar geometry: Geometry object to clean
-    :vartype geometry: :class:`sectionproperties.pre.sections.Geometry`
+    :vartype geometry: :class:`~sectionproperties.pre.sections.Geometry`
+    :cvar bool verbose: If set to true, information related to the geometry
+        cleaning process is printed to the terminal.
+
+    The following example creates a back-to-back 200PFC geometry, rotates the
+    geometry by 30 degrees, and cleans the geometry before meshing::
+
+        import sectionproperties.pre.sections as sections
+
+        pfc_right = sections.PfcSection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+        pfc_left = sections.PfcSection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+        pfc_left.mirror_section(axis='y', mirror_point=[0, 0])
+        geometry = sections.MergedSection([pfc_left, pfc_right])
+        geometry.rotate_section(angle=30)
+        geometry.clean_geometry(verbose=True)
+        mesh = geometry.create_mesh(mesh_sizes=[5, 5])
+
+    ..  warning:: If the geometry were not cleaned in the previous example, the
+      meshing algorithm would crash (most likely return a segment error).
+      Cleaning the geometry is always recommended when creating a merged
+      section which may result in overlapping or intersecting facets, or
+      duplicate nodes.
     """
 
     def __init__(self, geometry, verbose):
@@ -56,8 +113,11 @@ class GeometryCleaner:
         self.verbose = verbose
 
     def clean_geometry(self):
+        """Performs a full geometry clean on the `geometry` object."""
+
         self.zip_points()
         self.remove_zero_length_facets()
+        self.remove_duplicate_facets()
         self.remove_overlapping_facets()
         self.remove_unused_points()
         self.intersect_facets()
@@ -75,7 +135,7 @@ class GeometryCleaner:
         :param float atol: Absolute tolerance for point zipping
         """
 
-        # TODO: implement rtol
+        # TODO: implement rtol and choose better vals
         idx_to_remove = []
 
         # loop through the list of points
@@ -137,7 +197,8 @@ class GeometryCleaner:
                 print("Removed zero length facet {0}".format(idx))
 
     def remove_overlapping_facets(self):
-        """a"""
+        """Searches through all facet combinations and fixes facets that
+        overlap within a tolerance."""
 
         cleaning = True
 
@@ -193,7 +254,8 @@ class GeometryCleaner:
                 cleaning = False
 
     def remove_unused_points(self):
-        """a"""
+        """Searches through all facets and removes points that are not
+        connected to any facets."""
 
         idx_to_remove = []
         facet_flattened = [i for fct in self.geometry.facets for i in fct]
@@ -214,7 +276,9 @@ class GeometryCleaner:
             self.remove_point_id(idx)
 
     def intersect_facets(self):
-        """a"""
+        """Searches through all facet combinations and finds facets that
+        intersect each other. The intersection point is added and the facets
+        rebuilt."""
 
         cleaning = True
 
@@ -310,7 +374,15 @@ class GeometryCleaner:
                     self.geometry.facets[i][j] -= 1
 
     def is_duplicate_facet(self, fct1, fct2):
-        """a"""
+        """Checks to see if to facets are duplicates.
+
+        :param fct1: First facet to compare
+        :type fct1: list[int, int]
+        :param fct2: Second facet to compare
+        :type fct2: list[int, int]
+        :return: Whether or not the facets are identical
+        :rtype: bool
+        """
 
         # check for a facet duplicate
         if fct1 == fct2 or fct1 == list(reversed(fct2)):
@@ -366,6 +438,7 @@ class GeometryCleaner:
         """
 
         tol = 1e-3  # minimum angle tolerance (smaller is considered overlap)
+        float_tol = 1e-12  # rounding error tolerance
 
         # are the line segments collinear?
         if abs(np.cross(r, s)) < tol:
@@ -381,7 +454,7 @@ class GeometryCleaner:
                     t1 = np.dot(q - p, r) / np.dot(r, r)
 
                 # check interval [t0, t1] intersects (0, 1)
-                if t0 < 1 and 0 < t1:
+                if t0 < 1 - float_tol and float_tol < t1:
                     # recalculate t0 and t1 based on original assumptions
                     t0 = np.dot(q - p, r) / np.dot(r, r)
                     t1 = np.dot(q + s - p, r) / np.dot(r, r)
@@ -409,8 +482,7 @@ class GeometryCleaner:
 
     def remove_duplicate_facets(self):
         """Searches through all facets and removes facets that are duplicates,
-        independent of the point order.
-        """
+        independent of the point order."""
 
         idx_to_remove = []
 

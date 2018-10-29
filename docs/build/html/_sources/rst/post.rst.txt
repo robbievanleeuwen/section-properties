@@ -21,10 +21,19 @@ Alternatively, there are a number of methods that can be called on the
 :class:`~sectionproperties.analysis.cross_section.CrossSection` object to return
 a specific section property:
 
-Cross Section Area
+Cross-Section Area
 ^^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_area
+    :noindex:
+
+Axial Rigidity
+^^^^^^^^^^^^^^
+
+If material properties have been specified, returns the axial rigidity of the
+section.
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_ea
     :noindex:
 
 First Moments of Area (Global Axis)
@@ -127,6 +136,43 @@ Shear Area (Principal Axis)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_As_p
+    :noindex:
+
+Plastic Centroid
+^^^^^^^^^^^^^^^^
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_pc
+    :noindex:
+
+Plastic Centroid (Principal Axis)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_pc_p
+    :noindex:
+
+Plastic Section Moduli
+^^^^^^^^^^^^^^^^^^^^^^
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_s
+    :noindex:
+
+Plastic Section Moduli (Principal Axis)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_sp
+    :noindex:
+
+
+Shape Factors
+^^^^^^^^^^^^^
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_sf
+    :noindex:
+
+Shape Factors (Principal Axis)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_sf_p
     :noindex:
 
 

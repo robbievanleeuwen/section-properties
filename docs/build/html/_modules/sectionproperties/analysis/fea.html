@@ -81,7 +81,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/structure.html">Structure of an Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../rst/geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/geom_mesh.html">Creating a Geometry, Mesh and Material Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/analysis.html">Running an Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/post.html">Viewing the Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/examples.html">Examples</a></li>
@@ -571,7 +571,40 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">sig_zz_n</span><span class="p">,</span> <span class="n">sig_zz_mxx</span><span class="p">,</span> <span class="n">sig_zz_myy</span><span class="p">,</span> <span class="n">sig_zz_m11</span><span class="p">,</span> <span class="n">sig_zz_m22</span><span class="p">,</span>
                 <span class="n">sig_zx_mzz</span><span class="p">,</span> <span class="n">sig_zy_mzz</span><span class="p">,</span> <span class="n">sig_zx_vx</span><span class="p">,</span> <span class="n">sig_zy_vx</span><span class="p">,</span> <span class="n">sig_zx_vy</span><span class="p">,</span>
-                <span class="n">sig_zy_vy</span><span class="p">,</span> <span class="n">gps</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span></div></div>
+                <span class="n">sig_zy_vy</span><span class="p">,</span> <span class="n">gps</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Tri6.point_within_element"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.point_within_element">[docs]</a>    <span class="k">def</span> <span class="nf">point_within_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Determines whether a point lies within the current element.</span>
+
+<span class="sd">        :param pt: Point to check *(x, y)*</span>
+<span class="sd">        :type pt: list[float, float]</span>
+<span class="sd">        :return: Whether the point lies within an element</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">px</span> <span class="o">=</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">py</span> <span class="o">=</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># get coordinates of corner points</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">y2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">x3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">y3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="c1"># compute variables alpha, beta and gamma</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="p">(((</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">px</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x3</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">py</span> <span class="o">-</span> <span class="n">y3</span><span class="p">))</span> <span class="o">/</span>
+                 <span class="p">((</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x3</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)))</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="p">(((</span><span class="n">y3</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">px</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">py</span> <span class="o">-</span> <span class="n">y3</span><span class="p">))</span> <span class="o">/</span>
+                <span class="p">((</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x3</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)))</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">-</span> <span class="n">beta</span>
+
+        <span class="c1"># if the point lies within an element</span>
+        <span class="k">if</span> <span class="n">alpha</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">beta</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">gamma</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div></div>
 
 
 <div class="viewcode-block" id="gauss_points"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.gauss_points">[docs]</a><span class="k">def</span> <span class="nf">gauss_points</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
@@ -651,11 +684,15 @@
     <span class="c1"># calculate the jacobian</span>
     <span class="n">j</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
 
-    <span class="c1"># cacluate the P matrix</span>
-    <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">J</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]))</span>
+    <span class="c1"># if the area of the element is not zero</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># cacluate the P matrix</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">J</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]))</span>
 
-    <span class="c1"># calculate the B matrix in terms of cartesian co-ordinates</span>
-    <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B_iso</span><span class="p">),</span> <span class="n">P</span><span class="p">))</span>
+        <span class="c1"># calculate the B matrix in terms of cartesian co-ordinates</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B_iso</span><span class="p">),</span> <span class="n">P</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>  <span class="c1"># empty B matrix</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span></div>
 

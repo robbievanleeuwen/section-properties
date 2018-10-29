@@ -13,20 +13,20 @@ class Geometry:
     cross-section. A method is provided for generating a triangular mesh, for
     translating the cross-section by *(x, y)* and for plotting the geometry.
 
-    :cvar points: List of points *[x, y]* defining the vertices of the
+    :cvar points: List of points *(x, y)* defining the vertices of the
         cross-section
     :vartype points: list[list[float, float]]
-    :cvar facets: List of point index pairs *[p1, p2]* defining the edges of
+    :cvar facets: List of point index pairs *(p1, p2)* defining the edges of
         the cross-section
     :vartype facets: list[list[int, int]]
-    :cvar holes: List of points *[x, y]* defining the locations of holes within
+    :cvar holes: List of points *(x, y)* defining the locations of holes within
         the cross-section. If there are no holes, provide an empty list [].
     :vartype holes: list[list[float, float]]
-    :cvar control_points: A list of points *[x, y]* that define different
+    :cvar control_points: A list of points *(x, y)* that define different
         regions of the cross-section. A control point is an arbitrary point
         within a region enclosed by facets.
     :vartype control_points: list[list[float, float]]
-    :cvar shift: Vector that shifts the cross-section by *[x, y]*
+    :cvar shift: Vector that shifts the cross-section by *(x, y)*
     :vartype shift: list[float, float]
     """
 
@@ -53,13 +53,19 @@ class Geometry:
             number of regions
 
         The following example creates a circular cross-section with a diameter
-        of 50 with 32 points, and generates a mesh with a maximum triangular
+        of 50 with 64 points, and generates a mesh with a maximum triangular
         area of 2.5::
 
             import sectionproperties.pre.sections as sections
 
-            geometry = sections.CircularSection(d=50, n=32)
+            geometry = sections.CircularSection(d=50, n=64)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
+
+        ..  figure:: ../images/sections/circle_mesh.png
+            :align: center
+            :scale: 75 %
+
+            Mesh generated from the above geometry.
         """
 
         str = "Number of mesh_sizes ({0}), ".format(len(mesh_sizes))
@@ -71,7 +77,8 @@ class Geometry:
                                self.control_points, mesh_sizes)
 
     def shift_section(self):
-        """Shifts the cross-section parameters by the vector *shift*."""
+        """Shifts the cross-section parameters by the class variable vector
+        *shift*."""
 
         for point in self.points:
             point[0] += self.shift[0]
@@ -86,51 +93,88 @@ class Geometry:
             cp[1] += self.shift[1]
 
     def rotate_section(self, angle, rot_point=None):
-        """rotates geometry about rot_point - takes first cp if
-        rot_point=None, angle in degrees
+        """Rotates the geometry and specified angle about a point. If the
+        rotation point is not provided, rotates the section about the first
+        control point in the list of control points of the
+        :class:`~sectionproperties.pre.sections.Geometry` object.
+
+        :param float angle: Angle (degrees) by which to rotate the section. A
+            positive angle leads to a counter-clockwise rotation.
+        :param rot_point: Point *(x, y)* about which to rotate the section
+        :type rot_point: list[float, float]
+
+        The following example rotates a 200UB25 section clockwise by 30
+        degrees::
+
+            import sectionproperties.pre.sections as sections
+
+            geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+            geometry.rotate_section(angle=-30)
         """
 
+        # convert angle to radians
         rot_phi = angle * np.pi / 180
 
-        def get_r(pt, c):
-            """aaa"""
+        def get_r(pt1, pt2):
+            """Returns the distance between two points."""
 
-            return ((pt[0] - c[0]) ** 2 + (pt[1] - c[1]) ** 2) ** 0.5
+            return ((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2) ** 0.5
 
-        def get_phi(pt, c):
-            """a"""
+        def get_phi(pt1, pt2):
+            """Returns the angle between two points."""
 
-            return np.arctan2(pt[1] - c[1], pt[0] - c[0])
+            return np.arctan2(pt1[1] - pt2[1], pt1[0] - pt2[0])
 
+        def rotate_point(pt, rot_point, rot_phi):
+            """Rotates a point given a rotation point and rotation angle."""
+
+            r = get_r(pt, rot_point)
+            phi = get_phi(pt, rot_point)
+
+            pt[0] = r * np.cos(phi + rot_phi) + rot_point[0]
+            pt[1] = r * np.sin(phi + rot_phi) + rot_point[1]
+
+        # use the first control point if no rotation point is specified
         if rot_point is None:
             rot_point = self.control_points[0]
 
+        # rotate all the points
         for point in self.points:
-            r = get_r(point, rot_point)
-            phi = get_phi(point, rot_point)
-            point[0] = r * np.cos(phi + rot_phi) + rot_point[0]
-            point[1] = r * np.sin(phi + rot_phi) + rot_point[1]
+            rotate_point(point, rot_point, rot_phi)
 
+        # rotate all the holes
         for hole in self.holes:
-            r = get_r(hole, rot_point)
-            phi = get_phi(hole, rot_point)
-            hole[0] = r * np.cos(phi + rot_phi) + rot_point[0]
-            hole[1] = r * np.sin(phi + rot_phi) + rot_point[1]
+            rotate_point(hole, rot_point, rot_phi)
 
+        # rotate all the control points
         for cp in self.control_points:
-            r = get_r(cp, rot_point)
-            phi = get_phi(cp, rot_point)
-            cp[0] = r * np.cos(phi + rot_phi) + rot_point[0]
-            cp[1] = r * np.sin(phi + rot_phi) + rot_point[1]
+            rotate_point(cp, rot_point, rot_phi)
 
     def mirror_section(self, axis='x', mirror_point=None):
-        """mirrors geometry about axis at mirror_point. If no mirror_point,
-        takes first cp
+        """Mirrors the geometry about a point on either the x or y-axis. If no
+        point is provided, mirrors the geometry about the first control point
+        in the list of control points of the
+        :class:`~sectionproperties.pre.sections.Geometry` object.
+
+        :param string axis: Axis about which to mirror the geometry, *'x'* or
+            *'y'*
+        :param mirror_point: Point about which to mirror the geometry *(x, y)*
+        :type mirror_point: list[float, float]
+
+        The following example mirrors a 200PFC section about the y-axis and the
+        point (0, 0)::
+
+            import sectionproperties.pre.sections as sections
+
+            geometry = sections.PfcSection(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry.mirror_section(axis='y', mirror_point=[0, 0])
         """
 
+        # use the first control point if no mirror point is specified
         if mirror_point is None:
             mirror_point = self.control_points[0]
 
+        # select the axis to mirror
         if axis == 'x':
             i = 1
         elif axis == 'y':
@@ -139,12 +183,15 @@ class Geometry:
             pass
             # TODO: raise error
 
+        # mirror all points
         for point in self.points:
             point[i] = 2 * mirror_point[i] - point[i]
 
+        # mirror all holes
         for hole in self.holes:
             hole[i] = 2 * mirror_point[i] - hole[i]
 
+        # mirror all control points
         for cp in self.control_points:
             cp[i] = 2 * mirror_point[i] - cp[i]
 
@@ -158,7 +205,15 @@ class Geometry:
         self.holes.append(hole)
 
     def clean_geometry(self, verbose=False):
-        """a"""
+        """Peforms a full clean on the geometry.
+
+        :param bool verbose: If set to true, information related to the
+            geometry cleaning process is printed to the terminal.
+
+        ..  note:: Cleaning the geometry is always recommended when creating a
+          merged section which may result in overlapping or intersecting
+          facets, or duplicate nodes.
+        """
 
         self = pre.GeometryCleaner(self, verbose).clean_geometry()
 
@@ -181,8 +236,9 @@ class Geometry:
             geometry = sections.Chs(d=48, t=3.2, n=64)
             geometry.plot_geometry()
 
-        ..  figure:: ../images/chs_geometry.png
+        ..  figure:: ../images/sections/chs_geometry.png
             :align: center
+            :scale: 75 %
 
             Geometry generated by the above example.
         """
@@ -242,26 +298,55 @@ class Geometry:
         if not ax_supplied:
             post.finish_plot(ax, pause, title='Cross-Section Geometry')
 
+    def calculate_extents(self):
+        """Calculates the minimum and maximum x and y-values amongst the list
+        of points.
+
+        :return: Minimum and maximum x and y-values
+            *(x_min, x_max, y_min, y_max)*
+        :rtype: tuple(float, float, float, float)
+        """
+
+        # loop through all points
+        for (i, pt) in enumerate(self.points):
+            x = pt[0]
+            y = pt[1]
+
+            # initialise min, max variables
+            if i == 0:
+                x_min = x
+                x_max = x
+                y_min = y
+                y_max = y
+
+            # update the mins and maxs where necessary
+            x_min = min(x_min, x)
+            x_max = max(x_max, x)
+            y_min = min(y_min, y)
+            y_max = max(y_max, y)
+
+        return (x_min, x_max, y_min, y_max)
+
 
 class CustomSection(Geometry):
     """Constructs a cross-section from a list of points, facets, holes and a
     user specified control point.
 
-    :param points: List of points *[x, y]* defining the vertices of the
+    :param points: List of points *(x, y)* defining the vertices of the
         cross-section
     :type points: list[list[float, float]]
-    :param facets: List of point index pairs *[p1, p2]* defining the edges of
+    :param facets: List of point index pairs *(p1, p2)* defining the edges of
         the cross-section
     :type facets: list[list[int, int]]
-    :param holes: List of points *[x, y]* defining the locations of holes
+    :param holes: List of points *(x, y)* defining the locations of holes
         within the cross-section. If there are no holes, provide an empty list
         [].
     :type holes: list[list[float, float]]
-    :param control_points: A list of points *[x, y]* that define different
+    :param control_points: A list of points *(x, y)* that define different
         regions of the cross-section. A control point is an arbitrary point
         within a region enclosed by facets.
     :type control_points: list[list[float, float]]
-    :param shift: Vector that shifts the cross-section by *[x, y]*
+    :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
     The following example creates a hollow trapezium with a base width of 100,
@@ -277,6 +362,18 @@ class CustomSection(Geometry):
 
         geometry = sections.CustomSection(points, facets, holes, control_points)
         mesh = geometry.create_mesh(mesh_sizes=[2.0])
+
+    ..  figure:: ../images/sections/custom_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Custom section geometry.
+
+    ..  figure:: ../images/sections/custom_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
     """
 
     def __init__(self, points, facets, holes, control_points, shift=[0, 0]):
@@ -308,6 +405,18 @@ class RectangularSection(Geometry):
 
         geometry = sections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
+
+    ..  figure:: ../images/sections/rectangle_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Rectangular section geometry.
+
+    ..  figure:: ../images/sections/rectangle_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
     """
 
     def __init__(self, d, b, shift=[0, 0]):
@@ -335,13 +444,25 @@ class CircularSection(Geometry):
     :type shift: list[float, float]
 
     The following example creates a circular cross-section with a diameter of
-    50 with 32 points, and generates a mesh with a maximum triangular area of
+    50 with 64 points, and generates a mesh with a maximum triangular area of
     2.5::
 
         import sectionproperties.pre.sections as sections
 
-        geometry = sections.CircularSection(d=50, n=32)
+        geometry = sections.CircularSection(d=50, n=64)
         mesh = geometry.create_mesh(mesh_sizes=[2.5])
+
+    ..  figure:: ../images/sections/circle_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Circular section geometry.
+
+    ..  figure:: ../images/sections/circle_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
     """
 
     def __init__(self, d, n, shift=[0, 0]):
@@ -393,6 +514,18 @@ class Chs(Geometry):
 
         geometry = sections.Chs(d=48, t=3.2, n=64)
         mesh = geometry.create_mesh(mesh_sizes=[1.0])
+
+    ..  figure:: ../images/sections/chs_geometry.png
+        :align: center
+        :scale: 75 %
+
+        CHS geometry.
+
+    ..  figure:: ../images/sections/chs_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
     """
 
     def __init__(self, d, t, n, shift=[0, 0]):
@@ -455,6 +588,18 @@ class Rhs(Geometry):
 
         geometry = sections.Rhs(d=100, b=50, t=6, r_out=9, n_r=8)
         mesh = geometry.create_mesh(mesh_sizes=[2.0])
+
+    ..  figure:: ../images/sections/rhs_geometry.png
+        :align: center
+        :scale: 75 %
+
+        RHS geometry.
+
+    ..  figure:: ../images/sections/rhs_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
     """
 
     def __init__(self, d, b, t, r_out, n_r, shift=[0, 0]):
@@ -567,6 +712,18 @@ class ISection(Geometry):
 
         geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=16)
         mesh = geometry.create_mesh(mesh_sizes=[3.0])
+
+    ..  figure:: ../images/sections/isection_geometry.png
+        :align: center
+        :scale: 75 %
+
+        I-section geometry.
+
+    ..  figure:: ../images/sections/isection_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
     """
 
     def __init__(self, d, b, t_f, t_w, r, n_r, shift=[0, 0]):
@@ -674,6 +831,18 @@ class PfcSection(Geometry):
 
         geometry = sections.PfcSection(d=250, b=90, t_f=15, t_w=8, r=12, n_r=8)
         mesh = geometry.create_mesh(mesh_sizes=[5.0])
+
+    ..  figure:: ../images/sections/pfc_geometry.png
+        :align: center
+        :scale: 75 %
+
+        PFC geometry.
+
+    ..  figure:: ../images/sections/pfc_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
     """
 
     def __init__(self, d, b, t_f, t_w, r, n_r, shift=[0, 0]):
@@ -753,6 +922,18 @@ class TeeSection(Geometry):
 
         geometry = sections.TeeSection(d=200, b=100, t_f=12, t_w=6, r=8, n_r=8)
         mesh = geometry.create_mesh(mesh_sizes=[3.0])
+
+    ..  figure:: ../images/sections/tee_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Tee section geometry.
+
+    ..  figure:: ../images/sections/tee_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
     """
 
     def __init__(self, d, b, t_f, t_w, r, n_r, shift=[0, 0]):
@@ -832,6 +1013,16 @@ class AngleSection(Geometry):
 
         geometry = sections.AngleSection(d=150, b=100, t=8, r_r=12, r_t=5, n_r=16)
         mesh = geometry.create_mesh(mesh_sizes=[2.0])
+
+    ..  figure:: ../images/sections/angle_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Angle section geometry.
+
+    ..  figure:: ../images/sections/angle_mesh.png
+        :align: center
+        :scale: 75 %
     """
 
     def __init__(self, d, b, t, r_r, r_t, n_r, shift=[0, 0]):
@@ -920,6 +1111,16 @@ class CeeSection(Geometry):
 
         geometry = sections.CeeSection(d=125, b=50, l=30, t=1.5, r_out=6, n_r=8)
         mesh = geometry.create_mesh(mesh_sizes=[0.25])
+
+    ..  figure:: ../images/sections/cee_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Cee section geometry.
+
+    ..  figure:: ../images/sections/cee_mesh.png
+        :align: center
+        :scale: 75 %
     """
 
     def __init__(self, d, b, l, t, r_out, n_r, shift=[0, 0]):
@@ -1073,6 +1274,16 @@ class ZedSection(Geometry):
 
         geometry = sections.ZedSection(d=100, b_l=40, b_r=50, l=20, t=1.2, r_out=5, n_r=8)
         mesh = geometry.create_mesh(mesh_sizes=[0.15])
+
+    ..  figure:: ../images/sections/zed_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Zed section geometry.
+
+    ..  figure:: ../images/sections/zed_mesh.png
+        :align: center
+        :scale: 75 %
     """
 
     def __init__(self, d, b_l, b_r, l, t, r_out, n_r, shift=[0, 0]):
@@ -1223,6 +1434,16 @@ class CruciformSection(Geometry):
 
         geometry = sections.CruciformSection(d=250, b=175, t=12, r=16, n_r=16)
         mesh = geometry.create_mesh(mesh_sizes=[5.0])
+
+    ..  figure:: ../images/sections/cruciform_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Cruciform section geometry.
+
+    ..  figure:: ../images/sections/cruciform_mesh.png
+        :align: center
+        :scale: 75 %
     """
 
     def __init__(self, d, b, t, r, n_r, shift=[0, 0]):
@@ -1329,6 +1550,16 @@ class MergedSection(Geometry):
 
         geometry = sections.MergedSection([isection, box])
         mesh = geometry.create_mesh(mesh_sizes=[5.0, 2.5])
+
+    ..  figure:: ../images/sections/merged_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Merged section geometry.
+
+    ..  figure:: ../images/sections/merged_mesh.png
+        :align: center
+        :scale: 75 %
     """
 
     def __init__(self, sections):

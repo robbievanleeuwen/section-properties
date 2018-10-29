@@ -83,12 +83,13 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="structure.html">Structure of an Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom_mesh.html">Creating a Geometry, Mesh and Material Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">Running an Analysis</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Viewing the Results</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#printing-a-list-of-the-section-properties">Printing a List of the Section Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#getting-specific-section-properties">Getting Specific Section Properties</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#cross-section-area">Cross Section Area</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cross-section-area">Cross-Section Area</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#axial-rigidity">Axial Rigidity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#first-moments-of-area-global-axis">First Moments of Area (Global Axis)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#second-moments-of-area-global-axis">Second Moments of Area (Global Axis)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#elastic-centroid">Elastic Centroid</a></li>
@@ -106,6 +107,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#warping-constant">Warping Constant</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#shear-area-global-axis">Shear Area (Global Axis)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#shear-area-principal-axis">Shear Area (Principal Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plastic-centroid">Plastic Centroid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plastic-centroid-principal-axis">Plastic Centroid (Principal Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plastic-section-moduli">Plastic Section Moduli</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plastic-section-moduli-principal-axis">Plastic Section Moduli (Principal Axis)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shape-factors">Shape Factors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shape-factors-principal-axis">Shape Factors (Principal Axis)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#section-property-centroids-plots">Section Property Centroids Plots</a></li>
@@ -253,7 +260,7 @@ method that belongs to every
 <a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.CrossSection" title="sectionproperties.analysis.cross_section.CrossSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossSection</span></code></a> object to return
 a specific section property:</p>
 <div class="section" id="cross-section-area">
-<h3>Cross Section Area<a class="headerlink" href="#cross-section-area" title="Permalink to this headline">¶</a></h3>
+<h3>Cross-Section Area<a class="headerlink" href="#cross-section-area" title="Permalink to this headline">¶</a></h3>
 <dl class="method">
 <dt>
 <code class="descclassname">CrossSection.</code><code class="descname">get_area</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_area"><span class="viewcode-link">[source]</span></a></dt>
@@ -270,6 +277,31 @@ a specific section property:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
 <span class="n">area</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_area</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="axial-rigidity">
+<h3>Axial Rigidity<a class="headerlink" href="#axial-rigidity" title="Permalink to this headline">¶</a></h3>
+<p>If material properties have been specified, returns the axial rigidity of the
+section.</p>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_ea</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_ea"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Modulus weighted area (axial rigidity)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">area</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ea</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -684,6 +716,159 @@ to the top and bottom fibres
 </dd></dl>
 
 </div>
+<div class="section" id="plastic-centroid">
+<h3>Plastic Centroid<a class="headerlink" href="#plastic-centroid" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_pc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_pc"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Centroidal axis plastic centroid <em>(x_pc, y_pc)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_plastic_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">x_pc</span><span class="p">,</span> <span class="n">y_pc</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_pc</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="plastic-centroid-principal-axis">
+<h3>Plastic Centroid (Principal Axis)<a class="headerlink" href="#plastic-centroid-principal-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_pc_p</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_pc_p"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Principal bending axis plastic centroid <em>(x11_pc, y22_pc)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_plastic_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">x11_pc</span><span class="p">,</span> <span class="n">y22_pc</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_pc_p</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="plastic-section-moduli">
+<h3>Plastic Section Moduli<a class="headerlink" href="#plastic-section-moduli" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_s</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_s"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Plastic section moduli about the centroidal axis
+<em>(sxx, syy)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<p>If material properties have been specified, returns the plastic moment
+<span class="math notranslate nohighlight">\(M_p = f_y S\)</span>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_plastic_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">sxx</span><span class="p">,</span> <span class="n">syy</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_s</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="plastic-section-moduli-principal-axis">
+<h3>Plastic Section Moduli (Principal Axis)<a class="headerlink" href="#plastic-section-moduli-principal-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_sp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_sp"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Plastic section moduli about the principal bending axis
+<em>(s11, s22)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float)</td>
+</tr>
+</tbody>
+</table>
+<p>If material properties have been specified, returns the plastic moment
+<span class="math notranslate nohighlight">\(M_p = f_y S\)</span>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_plastic_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">s11</span><span class="p">,</span> <span class="n">s22</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_sp</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="shape-factors">
+<h3>Shape Factors<a class="headerlink" href="#shape-factors" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_sf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_sf"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Centroidal axis shape factors with respect to the top and
+bottom fibres <em>(sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_plastic_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">sf_xx_plus</span><span class="p">,</span> <span class="n">sf_xx_minus</span><span class="p">,</span> <span class="n">sf_yy_plus</span><span class="p">,</span> <span class="n">sf_yy_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_sf</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="shape-factors-principal-axis">
+<h3>Shape Factors (Principal Axis)<a class="headerlink" href="#shape-factors-principal-axis" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">get_sf_p</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_sf_p"><span class="viewcode-link">[source]</span></a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Principal bending axis shape factors with respect to the top
+and bottom fibres
+<em>(sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_plastic_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">sf_11_plus</span><span class="p">,</span> <span class="n">sf_11_minus</span><span class="p">,</span> <span class="n">sf_22_plus</span><span class="p">,</span> <span class="n">sf_22_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_sf_p</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="section-property-centroids-plots">
 <h2>Section Property Centroids Plots<a class="headerlink" href="#section-property-centroids-plots" title="Permalink to this headline">¶</a></h2>
@@ -807,7 +992,7 @@ section resulting from an axial force of 10 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id20">
-<a class="reference internal image-reference" href="../_images/stress_n_zz.png"><img alt="../_images/stress_n_zz.png" src="../_images/stress_n_zz.png" style="width: 450.75px; height: 402.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_n_zz1.png"><img alt="../_images/stress_n_zz1.png" src="../_images/stress_n_zz1.png" style="width: 450.75px; height: 402.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the axial stress.</span></p>
 </div>
 </dd></dl>
@@ -847,7 +1032,7 @@ section resulting from an bending moment about the x-axis of 5 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id21">
-<a class="reference internal image-reference" href="../_images/stress_mxx_zz.png"><img alt="../_images/stress_mxx_zz.png" src="../_images/stress_mxx_zz.png" style="width: 503.25px; height: 452.25px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_mxx_zz1.png"><img alt="../_images/stress_mxx_zz1.png" src="../_images/stress_mxx_zz1.png" style="width: 503.25px; height: 452.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -887,7 +1072,7 @@ section resulting from an bending moment about the y-axis of 2 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id22">
-<a class="reference internal image-reference" href="../_images/stress_myy_zz.png"><img alt="../_images/stress_myy_zz.png" src="../_images/stress_myy_zz.png" style="width: 537.0px; height: 471.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_myy_zz1.png"><img alt="../_images/stress_myy_zz1.png" src="../_images/stress_myy_zz1.png" style="width: 537.0px; height: 471.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -927,7 +1112,7 @@ section resulting from an bending moment about the 11-axis of 5 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id23">
-<a class="reference internal image-reference" href="../_images/stress_m11_zz.png"><img alt="../_images/stress_m11_zz.png" src="../_images/stress_m11_zz.png" style="width: 527.25px; height: 477.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_m11_zz1.png"><img alt="../_images/stress_m11_zz1.png" src="../_images/stress_m11_zz1.png" style="width: 527.25px; height: 477.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -967,7 +1152,7 @@ section resulting from an bending moment about the 22-axis of 2 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id24">
-<a class="reference internal image-reference" href="../_images/stress_m22_zz.png"><img alt="../_images/stress_m22_zz.png" src="../_images/stress_m22_zz.png" style="width: 506.25px; height: 424.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_m22_zz1.png"><img alt="../_images/stress_m22_zz1.png" src="../_images/stress_m22_zz1.png" style="width: 506.25px; height: 424.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -1010,7 +1195,7 @@ bending moment about the y-axis of 2 kN.m and a bending moment of
 </pre></div>
 </div>
 <div class="figure align-center" id="id25">
-<a class="reference internal image-reference" href="../_images/stress_m_zz.png"><img alt="../_images/stress_m_zz.png" src="../_images/stress_m_zz.png" style="width: 482.25px; height: 444.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_m_zz1.png"><img alt="../_images/stress_m_zz1.png" src="../_images/stress_m_zz1.png" style="width: 482.25px; height: 444.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -1052,7 +1237,7 @@ a 150x90x12 UA section resulting from an applied torsion moment of
 </pre></div>
 </div>
 <div class="figure align-center" id="id26">
-<a class="reference internal image-reference" href="../_images/stress_mzz_zx.png"><img alt="../_images/stress_mzz_zx.png" src="../_images/stress_mzz_zx.png" style="width: 440.25px; height: 378.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_mzz_zx1.png"><img alt="../_images/stress_mzz_zx1.png" src="../_images/stress_mzz_zx1.png" style="width: 440.25px; height: 378.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1094,7 +1279,7 @@ a 150x90x12 UA section resulting from an applied torsion moment of
 </pre></div>
 </div>
 <div class="figure align-center" id="id27">
-<a class="reference internal image-reference" href="../_images/stress_mzz_zy.png"><img alt="../_images/stress_mzz_zy.png" src="../_images/stress_mzz_zy.png" style="width: 449.25px; height: 383.25px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_mzz_zy1.png"><img alt="../_images/stress_mzz_zy1.png" src="../_images/stress_mzz_zy1.png" style="width: 449.25px; height: 383.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1136,7 +1321,7 @@ of 1 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id28">
-<a class="reference internal image-reference" href="../_images/stress_mzz_zxy.png"><img alt="../_images/stress_mzz_zxy.png" src="../_images/stress_mzz_zxy.png" style="width: 470.25px; height: 396.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_mzz_zxy1.png"><img alt="../_images/stress_mzz_zxy1.png" src="../_images/stress_mzz_zxy1.png" style="width: 470.25px; height: 396.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1175,7 +1360,7 @@ of 1 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id29">
-<a class="reference internal image-reference" href="../_images/vector_mzz_zxy.png"><img alt="../_images/vector_mzz_zxy.png" src="../_images/vector_mzz_zxy.png" style="width: 489.0px; height: 441.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/vector_mzz_zxy1.png"><img alt="../_images/vector_mzz_zxy1.png" src="../_images/vector_mzz_zxy1.png" style="width: 489.0px; height: 441.75px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1217,7 +1402,7 @@ x-direction of 15 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id30">
-<a class="reference internal image-reference" href="../_images/stress_vx_zx.png"><img alt="../_images/stress_vx_zx.png" src="../_images/stress_vx_zx.png" style="width: 453.0px; height: 387.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vx_zx1.png"><img alt="../_images/stress_vx_zx1.png" src="../_images/stress_vx_zx1.png" style="width: 453.0px; height: 387.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1259,7 +1444,7 @@ x-direction of 15 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id31">
-<a class="reference internal image-reference" href="../_images/stress_vx_zy.png"><img alt="../_images/stress_vx_zy.png" src="../_images/stress_vx_zy.png" style="width: 469.5px; height: 402.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vx_zy1.png"><img alt="../_images/stress_vx_zy1.png" src="../_images/stress_vx_zy1.png" style="width: 469.5px; height: 402.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1301,7 +1486,7 @@ the x-direction of 15 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id32">
-<a class="reference internal image-reference" href="../_images/stress_vx_zxy.png"><img alt="../_images/stress_vx_zxy.png" src="../_images/stress_vx_zxy.png" style="width: 440.25px; height: 369.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vx_zxy1.png"><img alt="../_images/stress_vx_zxy1.png" src="../_images/stress_vx_zxy1.png" style="width: 440.25px; height: 369.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1340,7 +1525,7 @@ the x-direction of 15 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id33">
-<a class="reference internal image-reference" href="../_images/vector_vx_zxy.png"><img alt="../_images/vector_vx_zxy.png" src="../_images/vector_vx_zxy.png" style="width: 506.25px; height: 432.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/vector_vx_zxy1.png"><img alt="../_images/vector_vx_zxy1.png" src="../_images/vector_vx_zxy1.png" style="width: 506.25px; height: 432.0px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1382,7 +1567,7 @@ y-direction of 30 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id34">
-<a class="reference internal image-reference" href="../_images/stress_vy_zx.png"><img alt="../_images/stress_vy_zx.png" src="../_images/stress_vy_zx.png" style="width: 462.0px; height: 397.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vy_zx1.png"><img alt="../_images/stress_vy_zx1.png" src="../_images/stress_vy_zx1.png" style="width: 462.0px; height: 397.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1424,7 +1609,7 @@ y-direction of 30 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id35">
-<a class="reference internal image-reference" href="../_images/stress_vy_zy.png"><img alt="../_images/stress_vy_zy.png" src="../_images/stress_vy_zy.png" style="width: 439.5px; height: 398.25px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vy_zy1.png"><img alt="../_images/stress_vy_zy1.png" src="../_images/stress_vy_zy1.png" style="width: 439.5px; height: 398.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1466,7 +1651,7 @@ the y-direction of 30 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id36">
-<a class="reference internal image-reference" href="../_images/stress_vy_zxy.png"><img alt="../_images/stress_vy_zxy.png" src="../_images/stress_vy_zxy.png" style="width: 466.5px; height: 424.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vy_zxy1.png"><img alt="../_images/stress_vy_zxy1.png" src="../_images/stress_vy_zxy1.png" style="width: 466.5px; height: 424.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1505,7 +1690,7 @@ the y-direction of 30 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id37">
-<a class="reference internal image-reference" href="../_images/vector_vy_zxy.png"><img alt="../_images/vector_vy_zxy.png" src="../_images/vector_vy_zxy.png" style="width: 434.25px; height: 408.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/vector_vy_zxy1.png"><img alt="../_images/vector_vy_zxy1.png" src="../_images/vector_vy_zxy1.png" style="width: 434.25px; height: 408.0px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1547,7 +1732,7 @@ in the x-direction and 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id38">
-<a class="reference internal image-reference" href="../_images/stress_v_zx.png"><img alt="../_images/stress_v_zx.png" src="../_images/stress_v_zx.png" style="width: 474.75px; height: 425.25px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_v_zx1.png"><img alt="../_images/stress_v_zx1.png" src="../_images/stress_v_zx1.png" style="width: 474.75px; height: 425.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1589,7 +1774,7 @@ in the x-direction and 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id39">
-<a class="reference internal image-reference" href="../_images/stress_v_zy.png"><img alt="../_images/stress_v_zy.png" src="../_images/stress_v_zy.png" style="width: 451.5px; height: 408.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_v_zy1.png"><img alt="../_images/stress_v_zy1.png" src="../_images/stress_v_zy1.png" style="width: 451.5px; height: 408.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1631,7 +1816,7 @@ within a 150x90x12 UA section resulting from an applied shear force of
 </pre></div>
 </div>
 <div class="figure align-center" id="id40">
-<a class="reference internal image-reference" href="../_images/stress_v_zxy.png"><img alt="../_images/stress_v_zxy.png" src="../_images/stress_v_zxy.png" style="width: 448.5px; height: 406.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_v_zxy1.png"><img alt="../_images/stress_v_zxy1.png" src="../_images/stress_v_zxy1.png" style="width: 448.5px; height: 406.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1670,7 +1855,7 @@ within a 150x90x12 UA section resulting from an applied shear force of
 </pre></div>
 </div>
 <div class="figure align-center" id="id41">
-<a class="reference internal image-reference" href="../_images/vector_v_zxy.png"><img alt="../_images/vector_v_zxy.png" src="../_images/vector_v_zxy.png" style="width: 467.25px; height: 410.25px;" /></a>
+<a class="reference internal image-reference" href="../_images/vector_v_zxy1.png"><img alt="../_images/vector_v_zxy1.png" src="../_images/vector_v_zxy1.png" style="width: 467.25px; height: 410.25px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1714,7 +1899,7 @@ the x-axis of 5 kN.m and a bending moment about the y-axis of 2 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id42">
-<a class="reference internal image-reference" href="../_images/stress_zz.png"><img alt="../_images/stress_zz.png" src="../_images/stress_zz.png" style="width: 432.75px; height: 403.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_zz1.png"><img alt="../_images/stress_zz1.png" src="../_images/stress_zz1.png" style="width: 432.75px; height: 403.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the normal stress.</span></p>
 </div>
 </dd></dl>
@@ -1755,7 +1940,7 @@ shear force of 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id43">
-<a class="reference internal image-reference" href="../_images/stress_zx.png"><img alt="../_images/stress_zx.png" src="../_images/stress_zx.png" style="width: 459.0px; height: 414.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_zx1.png"><img alt="../_images/stress_zx1.png" src="../_images/stress_zx1.png" style="width: 459.0px; height: 414.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1796,7 +1981,7 @@ shear force of 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id44">
-<a class="reference internal image-reference" href="../_images/stress_zy.png"><img alt="../_images/stress_zy.png" src="../_images/stress_zy.png" style="width: 489.0px; height: 427.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_zy1.png"><img alt="../_images/stress_zy1.png" src="../_images/stress_zy1.png" style="width: 489.0px; height: 427.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1837,7 +2022,7 @@ and a shear force of 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id45">
-<a class="reference internal image-reference" href="../_images/stress_zxy.png"><img alt="../_images/stress_zxy.png" src="../_images/stress_zxy.png" style="width: 495.75px; height: 447.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_zxy1.png"><img alt="../_images/stress_zxy1.png" src="../_images/stress_zxy1.png" style="width: 495.75px; height: 447.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1875,7 +2060,7 @@ and a shear force of 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id46">
-<a class="reference internal image-reference" href="../_images/vector_zxy.png"><img alt="../_images/vector_zxy.png" src="../_images/vector_zxy.png" style="width: 453.75px; height: 444.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/vector_zxy1.png"><img alt="../_images/vector_zxy1.png" src="../_images/vector_zxy1.png" style="width: 453.75px; height: 444.75px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>

@@ -81,7 +81,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/structure.html">Structure of an Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../rst/geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/geom_mesh.html">Creating a Geometry, Mesh and Material Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/analysis.html">Running an Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/post.html">Viewing the Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/examples.html">Examples</a></li>
@@ -175,6 +175,7 @@
     <span class="sd">&quot;&quot;&quot;Executes code required to finish a matplotlib figure.</span>
 
 <span class="sd">    :param ax: Axes object on which to plot</span>
+<span class="sd">    :type ax: :class:`matplotlib.axes.Axes`</span>
 <span class="sd">    :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">        the window is closed. If set to false, the script continues</span>
 <span class="sd">        immediately after the window is rendered.</span>
@@ -192,7 +193,15 @@
 
 
 <div class="viewcode-block" id="draw_principal_axis"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.post.post.draw_principal_axis">[docs]</a><span class="k">def</span> <span class="nf">draw_principal_axis</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draws the principal axis on a plot.</span>
+
+<span class="sd">    :param ax: Axes object on which to plot</span>
+<span class="sd">    :type ax: :class:`matplotlib.axes.Axes`</span>
+<span class="sd">    :param float phi: Principal axis angle in radians</span>
+<span class="sd">    :param float cx: x-location of the centroid</span>
+<span class="sd">    :param float cy: y-location of the centroid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># get current axis limits</span>
     <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
@@ -208,17 +217,31 @@
     <span class="n">y22_basis</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
 
     <span class="k">def</span> <span class="nf">add_point</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">centroid</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">denom</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Adds a point to the list *vec* if there is an intersection.&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">denom</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">point</span> <span class="o">=</span> <span class="n">basis</span> <span class="o">*</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span> <span class="o">+</span> <span class="n">centroid</span>
             <span class="n">vec</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 
     <span class="k">def</span> <span class="nf">get_prinicipal_points</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">lims</span><span class="p">,</span> <span class="n">centroid</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;a (xmin, xmax, ymin, ymax)&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Determines the intersections of the prinicpal axis with the four</span>
+<span class="sd">        lines defining a bounding box around the limits of the cross-section.</span>
+<span class="sd">        The middle two intersection points are returned for plotting.</span>
 
-        <span class="n">pts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="sd">        :param basis: Basis (unit) vector in the direction of the principal</span>
+<span class="sd">            axis</span>
+<span class="sd">        :type basis: :class:`numpy.ndarray`</span>
+<span class="sd">        :param lims: Tuple containing the axis limits</span>
+<span class="sd">            *(xmin, xmax, ymin, ymax)*</span>
+<span class="sd">        :type lims: tuple(float, float, float, float)</span>
+<span class="sd">        :param centroid: Centroid *(cx, cy)* of the cross-section, through</span>
+<span class="sd">            which the principal axis passes</span>
+<span class="sd">        :type centroid: list[float, float]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="n">pts</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># initialise list containing the intersection points</span>
+
+        <span class="c1"># add intersection points to the list</span>
         <span class="n">add_point</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">centroid</span><span class="p">,</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">basis</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">add_point</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">centroid</span><span class="p">,</span> <span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">basis</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">add_point</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">centroid</span><span class="p">,</span> <span class="n">lims</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">basis</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -234,9 +257,11 @@
 
         <span class="k">return</span> <span class="n">pts</span>
 
+    <span class="c1"># get intersection points for the 11 and 22 axes</span>
     <span class="n">x11</span> <span class="o">=</span> <span class="n">get_prinicipal_points</span><span class="p">(</span><span class="n">x11_basis</span><span class="p">,</span> <span class="n">lims</span><span class="p">,</span> <span class="p">[</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">])</span>
     <span class="n">y22</span> <span class="o">=</span> <span class="n">get_prinicipal_points</span><span class="p">(</span><span class="n">y22_basis</span><span class="p">,</span> <span class="n">lims</span><span class="p">,</span> <span class="p">[</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">])</span>
 
+    <span class="c1"># plot the principal axis</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x11</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x11</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;11-axis&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y22</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">y22</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;k-.&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;22-axis&#39;</span><span class="p">)</span></div>
 

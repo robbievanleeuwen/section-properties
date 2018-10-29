@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Creating a Geometry and Mesh &mdash; sectionproperties 0.0.1 documentation</title>
+  <title>Creating a Geometry, Mesh and Material Properties &mdash; sectionproperties 0.0.1 documentation</title>
   
 
   
@@ -83,7 +83,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="structure.html">Structure of an Analysis</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Creating a Geometry and Mesh</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Creating a Geometry, Mesh and Material Properties</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#cross-section-geometry">Cross-Section Geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#creating-common-structural-geometries">Creating Common Structural Geometries</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#rectangular-section">Rectangular Section</a></li>
@@ -101,8 +101,10 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#arbitrary-cross-section-geometries">Arbitrary Cross-Section Geometries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#merging-geometries">Merging Geometries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cleaning-the-geometry">Cleaning the Geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#visualising-the-geometry">Visualising the Geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generating-a-mesh">Generating a Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#defining-material-properties">Defining Material Properties</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">Running an Analysis</a></li>
@@ -155,7 +157,7 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>Creating a Geometry and Mesh</li>
+      <li>Creating a Geometry, Mesh and Material Properties</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -174,15 +176,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="creating-a-geometry-and-mesh">
-<span id="label-geom-mesh"></span><h1>Creating a Geometry and Mesh<a class="headerlink" href="#creating-a-geometry-and-mesh" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="creating-a-geometry-mesh-and-material-properties">
+<span id="label-geom-mesh"></span><h1>Creating a Geometry, Mesh and Material Properties<a class="headerlink" href="#creating-a-geometry-mesh-and-material-properties" title="Permalink to this headline">¶</a></h1>
 <p>Before performing a cross-section analysis, the geometry of the cross-section and
-a finite element mesh must be created.</p>
+a finite element mesh must be created. Optionally, material properties can be
+applied to different regions of the cross-section.</p>
 <div class="section" id="cross-section-geometry">
 <h2>Cross-Section Geometry<a class="headerlink" href="#cross-section-geometry" title="Permalink to this headline">¶</a></h2>
-<p>The geometry of a cross-section defines its dimensions, shape and material properties
-and involves the creation of a <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
-object. This geometry object stores all the information needed to create a finite
+<p>The geometry of a cross-section defines its dimensions and shape and involves
+the creation of a <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> object.
+This geometry object stores all the information needed to create a finite
 element mesh.</p>
 <dl class="class">
 <dt>
@@ -196,16 +199,16 @@ translating the cross-section by <em>(x, y)</em> and for plotting the geometry.<
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
+<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>(x, y)</em> defining the vertices of the
 cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
+<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>(p1, p2)</em> defining the edges of
 the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes within
+<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>(x, y)</em> defining the locations of holes within
 the cross-section. If there are no holes, provide an empty list [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
+<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>(x, y)</em> that define different
 regions of the cross-section. A control point is an arbitrary point
 within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
+<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
 </ul>
 </td>
 </tr>
@@ -222,10 +225,9 @@ scripts in which different regions are specified through a list of control point
 <div class="section" id="creating-common-structural-geometries">
 <h2>Creating Common Structural Geometries<a class="headerlink" href="#creating-common-structural-geometries" title="Permalink to this headline">¶</a></h2>
 <p>In order to make your life easier, there are a number of built-in classes that generate
-typical structural cross-sections that also inherit from the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+typical structural cross-sections that inherit from the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
 class. Note that these classes automatically assign a <code class="docutils literal notranslate"><span class="pre">control_point</span></code> to the geometry
 object.</p>
-<p># TODO: add pictures for each geometry!</p>
 <div class="section" id="rectangular-section">
 <h3>Rectangular Section<a class="headerlink" href="#rectangular-section" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
@@ -256,6 +258,14 @@ origin <em>(0, 0)</em>, with depth <em>d</em> and width <em>b</em>.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/rectangle_geometry.png"><img alt="../_images/rectangle_geometry.png" src="../_images/rectangle_geometry.png" style="width: 288.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Rectangular section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/rectangle_mesh.png"><img alt="../_images/rectangle_mesh.png" src="../_images/rectangle_mesh.png" style="width: 165.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
+</div>
 </dd></dl>
 
 </div>
@@ -281,13 +291,21 @@ origin <em>(0, 0)</em>, with depth <em>d</em> and width <em>b</em>.</p>
 </tbody>
 </table>
 <p>The following example creates a circular cross-section with a diameter of
-50 with 32 points, and generates a mesh with a maximum triangular area of
+50 with 64 points, and generates a mesh with a maximum triangular area of
 2.5:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CircularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CircularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/circle_geometry.png"><img alt="../_images/circle_geometry.png" src="../_images/circle_geometry.png" style="width: 429.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Circular section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/circle_mesh.png"><img alt="../_images/circle_mesh.png" src="../_images/circle_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -323,6 +341,14 @@ triangular area of 1.0:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">Chs</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">3.2</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id5">
+<a class="reference internal image-reference" href="../_images/chs_geometry1.png"><img alt="../_images/chs_geometry1.png" src="../_images/chs_geometry1.png" style="width: 429.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">CHS geometry.</span></p>
+</div>
+<div class="figure align-center" id="id6">
+<a class="reference internal image-reference" href="../_images/chs_mesh.png"><img alt="../_images/chs_mesh.png" src="../_images/chs_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -361,6 +387,14 @@ of 2.0:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">Rhs</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r_out</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id7">
+<a class="reference internal image-reference" href="../_images/rhs_geometry.png"><img alt="../_images/rhs_geometry.png" src="../_images/rhs_geometry.png" style="width: 288.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">RHS geometry.</span></p>
+</div>
+<div class="figure align-center" id="id8">
+<a class="reference internal image-reference" href="../_images/rhs_mesh.png"><img alt="../_images/rhs_mesh.png" src="../_images/rhs_mesh.png" style="width: 165.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -401,6 +435,14 @@ with a maximum triangular area of 3.0:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id9">
+<a class="reference internal image-reference" href="../_images/isection_geometry.png"><img alt="../_images/isection_geometry.png" src="../_images/isection_geometry.png" style="width: 332.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">I-section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id10">
+<a class="reference internal image-reference" href="../_images/isection_mesh.png"><img alt="../_images/isection_mesh.png" src="../_images/isection_mesh.png" style="width: 209.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -443,6 +485,14 @@ with a maximum triangular area of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id11">
+<a class="reference internal image-reference" href="../_images/pfc_geometry.png"><img alt="../_images/pfc_geometry.png" src="../_images/pfc_geometry.png" style="width: 250.5px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">PFC geometry.</span></p>
+</div>
+<div class="figure align-center" id="id12">
+<a class="reference internal image-reference" href="../_images/pfc_mesh.png"><img alt="../_images/pfc_mesh.png" src="../_images/pfc_mesh.png" style="width: 138.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
+</div>
 </dd></dl>
 
 </div></blockquote>
@@ -483,6 +533,14 @@ with a maximum triangular area of 3.0:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">TeeSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id13">
+<a class="reference internal image-reference" href="../_images/tee_geometry.png"><img alt="../_images/tee_geometry.png" src="../_images/tee_geometry.png" style="width: 288.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Tee section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id14">
+<a class="reference internal image-reference" href="../_images/tee_mesh.png"><img alt="../_images/tee_mesh.png" src="../_images/tee_mesh.png" style="width: 167.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -525,6 +583,13 @@ triangular area of 2.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id15">
+<a class="reference internal image-reference" href="../_images/angle_geometry.png"><img alt="../_images/angle_geometry.png" src="../_images/angle_geometry.png" style="width: 335.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Angle section geometry.</span></p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/angle_mesh.png"><img alt="../_images/angle_mesh.png" src="../_images/angle_mesh.png" style="width: 212.25px; height: 309.75px;" /></a>
+</div>
 </dd></dl>
 
 </div></blockquote>
@@ -565,6 +630,13 @@ triangular area of 0.25:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CeeSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">125</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">r_out</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id16">
+<a class="reference internal image-reference" href="../_images/cee_geometry.png"><img alt="../_images/cee_geometry.png" src="../_images/cee_geometry.png" style="width: 261.0px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Cee section geometry.</span></p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/cee_mesh.png"><img alt="../_images/cee_mesh.png" src="../_images/cee_mesh.png" style="width: 143.25px; height: 309.75px;" /></a>
 </div>
 </dd></dl>
 
@@ -609,6 +681,13 @@ A mesh is generated with a maximum triangular area of 0.15:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.15</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id17">
+<a class="reference internal image-reference" href="../_images/zed_geometry.png"><img alt="../_images/zed_geometry.png" src="../_images/zed_geometry.png" style="width: 383.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Zed section geometry.</span></p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/zed_mesh.png"><img alt="../_images/zed_mesh.png" src="../_images/zed_mesh.png" style="width: 273.75px; height: 309.75px;" /></a>
+</div>
 </dd></dl>
 
 </div></blockquote>
@@ -649,6 +728,13 @@ of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id18">
+<a class="reference internal image-reference" href="../_images/cruciform_geometry.png"><img alt="../_images/cruciform_geometry.png" src="../_images/cruciform_geometry.png" style="width: 353.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Cruciform section geometry.</span></p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/cruciform_mesh.png"><img alt="../_images/cruciform_mesh.png" src="../_images/cruciform_mesh.png" style="width: 230.25px; height: 309.75px;" /></a>
+</div>
 </dd></dl>
 
 </div></blockquote>
@@ -670,17 +756,17 @@ user specified control point.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the vertices of the
+<li><strong>points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>(x, y)</em> defining the vertices of the
 cross-section</li>
-<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>[p1, p2]</em> defining the edges of
+<li><strong>facets</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – List of point index pairs <em>(p1, p2)</em> defining the edges of
 the cross-section</li>
-<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>[x, y]</em> defining the locations of holes
+<li><strong>holes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of points <em>(x, y)</em> defining the locations of holes
 within the cross-section. If there are no holes, provide an empty list
 [].</li>
-<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>[x, y]</em> that define different
+<li><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>(x, y)</em> that define different
 regions of the cross-section. A control point is an arbitrary point
 within a region enclosed by facets.</li>
-<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>[x, y]</em></li>
+<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
 </ul>
 </td>
 </tr>
@@ -699,6 +785,14 @@ generated with a maximum triangular area of 2.0:</p>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CustomSection</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id19">
+<a class="reference internal image-reference" href="../_images/custom_geometry.png"><img alt="../_images/custom_geometry.png" src="../_images/custom_geometry.png" style="width: 699.0px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Custom section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id20">
+<a class="reference internal image-reference" href="../_images/custom_mesh.png"><img alt="../_images/custom_mesh.png" src="../_images/custom_mesh.png" style="width: 393.75px; height: 218.25px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -742,6 +836,43 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
+<div class="figure align-center" id="id21">
+<a class="reference internal image-reference" href="../_images/merged_geometry.png"><img alt="../_images/merged_geometry.png" src="../_images/merged_geometry.png" style="width: 287.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Merged section geometry.</span></p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/merged_mesh.png"><img alt="../_images/merged_mesh.png" src="../_images/merged_mesh.png" style="width: 164.25px; height: 309.75px;" /></a>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="cleaning-the-geometry">
+<h2>Cleaning the Geometry<a class="headerlink" href="#cleaning-the-geometry" title="Permalink to this headline">¶</a></h2>
+<p>When creating a merged section often there are overlapping facets or duplicate
+nodes. These geometry artefacts can cause difficulty for the meshing algorithm.
+It is therefore recommended to clean the geometry after merging sections which
+may result in overlapping or intersecting facets, or duplicate nodes. Cleaning
+the geometry can be carried out by using the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry.clean_geometry" title="sectionproperties.pre.sections.Geometry.clean_geometry"><code class="xref py py-func docutils literal notranslate"><span class="pre">clean_geometry()</span></code></a>
+method:</p>
+<dl class="method">
+<dt>
+<code class="descclassname">Geometry.</code><code class="descname">clean_geometry</code><span class="sig-paren">(</span><em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.clean_geometry"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Peforms a full clean on the geometry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>verbose</strong> (<em>bool</em>) – If set to true, information related to the
+geometry cleaning process is printed to the terminal.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Cleaning the geometry is always recommended when creating a
+merged section which may result in overlapping or intersecting
+facets, or duplicate nodes.</p>
+</div>
 </dd></dl>
 
 </div>
@@ -777,8 +908,8 @@ diameter of 48 and thickness of 3.2, and plots the geometry:</p>
 <span class="n">geometry</span><span class="o">.</span><span class="n">plot_geometry</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id1">
-<img alt="../_images/chs_geometry.png" src="../_images/chs_geometry.png" />
+<div class="figure align-center" id="id22">
+<a class="reference internal image-reference" href="../_images/chs_geometry1.png"><img alt="../_images/chs_geometry1.png" src="../_images/chs_geometry1.png" style="width: 429.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Geometry generated by the above example.</span></p>
 </div>
 </dd></dl>
@@ -809,14 +940,18 @@ number of regions</td>
 </tr>
 </tbody>
 </table>
-<p>The following example creates a circular cross-section with a diameter of
-50 with 32 points, and generates a mesh with a maximum triangular area of
-2.5:</p>
+<p>The following example creates a circular cross-section with a diameter
+of 50 with 64 points, and generates a mesh with a maximum triangular
+area of 2.5:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CircularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CircularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="figure align-center" id="id23">
+<a class="reference internal image-reference" href="../_images/circle_mesh.png"><img alt="../_images/circle_mesh.png" src="../_images/circle_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
 
@@ -825,6 +960,61 @@ number of regions</td>
 <p class="last">The length of <code class="docutils literal notranslate"><span class="pre">mesh_sizes</span></code> must match the number of regions
 in the geometry object.</p>
 </div>
+</div>
+<div class="section" id="defining-material-properties">
+<h2>Defining Material Properties<a class="headerlink" href="#defining-material-properties" title="Permalink to this headline">¶</a></h2>
+<p>Composite cross-sections can be analysed by specifying different material
+properties for each section of the mesh. Materials are defined in <em>sectionproperties</em>
+by creating a <a class="reference internal" href="api.html#sectionproperties.pre.pre.Material" title="sectionproperties.pre.pre.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">Material</span></code></a> object:</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.pre.</code><code class="descname">Material</code><span class="sig-paren">(</span><em>name</em>, <em>elastic_modulus</em>, <em>poissons_ratio</em>, <em>yield_strength</em>, <em>color='w'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/pre.html#Material"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for structural materials.</p>
+<p>Provides a way of storing material properties related to a specific
+material. The color can be a multitude of different formats, refer to
+<a class="reference external" href="https://matplotlib.org/api/colors_api.html">https://matplotlib.org/api/colors_api.html</a> and
+<a class="reference external" href="https://matplotlib.org/examples/color/named_colors.html">https://matplotlib.org/examples/color/named_colors.html</a> for more
+information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>string</em>) – Material name</li>
+<li><strong>elastic_modulus</strong> (<em>float</em>) – Material modulus of elasticity</li>
+<li><strong>poissons_ratio</strong> (<em>float</em>) – Material Poisson’s ratio</li>
+<li><strong>yield_strength</strong> (<em>float</em>) – Material yield strength</li>
+<li><strong>color</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.colors</span></code>) – Material color for rendering</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>string</em>) – Material name</li>
+<li><strong>elastic_modulus</strong> (<em>float</em>) – Material modulus of elasticity</li>
+<li><strong>poissons_ratio</strong> (<em>float</em>) – Material Poisson’s ratio</li>
+<li><strong>shear_modulus</strong> (<em>float</em>) – Material shear modulus, derived from the elastic
+modulus and Poisson’s ratio assuming an isotropic material</li>
+<li><strong>yield_strength</strong> (<em>float</em>) – Material yield strength</li>
+<li><strong>color</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.colors</span></code>) – Material color for rendering</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates materials for concrete, steel and timber:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sectionproperties.pre.pre</span> <span class="k">import</span> <span class="n">Material</span>
+
+<span class="n">concrete</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Concrete&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">30.1e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+                    <span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">)</span>
+<span class="n">steel</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Steel&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">200e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+                 <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+<span class="n">timber</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Timber&#39;</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="o">=</span><span class="mf">8e3</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">yield_strength</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+                  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;burlywood&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 

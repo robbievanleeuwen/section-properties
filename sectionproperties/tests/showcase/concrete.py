@@ -39,7 +39,7 @@ spacing = (w - 2 * cover - diameter) / (n_bars - 1)
 
 for i in range(n_bars):
     shift = [cover + diameter / 2 + i * spacing, cover + diameter / 2]
-    bar = sections.CircularSection(d=diameter, n=32, shift=shift)
+    bar = sections.CircularSection(d=diameter, n=16, shift=shift)
 
     geometries.append(bar)
     mesh_sizes.append(bar_mesh)
@@ -53,10 +53,11 @@ section = CrossSection(geometry, mesh, materials)
 section.display_mesh_info()
 section.plot_mesh(materials=True, alpha=0.5)
 
-# section.calculate_geometric_properties(time_info=True)
+section.calculate_geometric_properties(time_info=True)
 # section.calculate_warping_properties(time_info=True)
+section.calculate_plastic_properties(time_info=True, verbose=True, debug=False)
 # section.display_results()
-# section.plot_centroids()
-#
+section.plot_centroids()
+
 # stress_result = section.calculate_stress(Mzz=100e6, time_info=True)
 # stress_result.plot_vector_mzz_zxy()

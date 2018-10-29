@@ -1,17 +1,18 @@
 .. _label-geom_mesh:
 
-Creating a Geometry and Mesh
-============================
+Creating a Geometry, Mesh and Material Properties
+=================================================
 
 Before performing a cross-section analysis, the geometry of the cross-section and
-a finite element mesh must be created.
+a finite element mesh must be created. Optionally, material properties can be
+applied to different regions of the cross-section.
 
 Cross-Section Geometry
 ----------------------
 
-The geometry of a cross-section defines its dimensions, shape and material properties
-and involves the creation of a :class:`~sectionproperties.pre.sections.Geometry`
-object. This geometry object stores all the information needed to create a finite
+The geometry of a cross-section defines its dimensions and shape and involves
+the creation of a :class:`~sectionproperties.pre.sections.Geometry` object.
+This geometry object stores all the information needed to create a finite
 element mesh.
 
 ..  autoclass:: sectionproperties.pre.sections.Geometry
@@ -28,11 +29,9 @@ Creating Common Structural Geometries
 ---------------------------------------
 
 In order to make your life easier, there are a number of built-in classes that generate
-typical structural cross-sections that also inherit from the :class:`~sectionproperties.pre.sections.Geometry`
+typical structural cross-sections that inherit from the :class:`~sectionproperties.pre.sections.Geometry`
 class. Note that these classes automatically assign a ``control_point`` to the geometry
 object.
-
-# TODO: add pictures for each geometry!
 
 Rectangular Section
 ^^^^^^^^^^^^^^^^^^^
@@ -126,6 +125,19 @@ class:
     :show-inheritance:
     :noindex:
 
+Cleaning the Geometry
+---------------------
+
+When creating a merged section often there are overlapping facets or duplicate
+nodes. These geometry artefacts can cause difficulty for the meshing algorithm.
+It is therefore recommended to clean the geometry after merging sections which
+may result in overlapping or intersecting facets, or duplicate nodes. Cleaning
+the geometry can be carried out by using the :func:`~sectionproperties.pre.sections.Geometry.clean_geometry`
+method:
+
+..  automethod:: sectionproperties.pre.sections.Geometry.clean_geometry
+    :noindex:
+
 Visualising the Geometry
 ------------------------
 
@@ -147,3 +159,14 @@ method:
 
 ..  warning:: The length of ``mesh_sizes`` must match the number of regions
   in the geometry object.
+
+Defining Material Properties
+----------------------------
+
+Composite cross-sections can be analysed by specifying different material
+properties for each section of the mesh. Materials are defined in *sectionproperties*
+by creating a :class:`~sectionproperties.pre.pre.Material` object:
+
+..  autoclass:: sectionproperties.pre.pre.Material
+    :noindex:
+    :show-inheritance:

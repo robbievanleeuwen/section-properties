@@ -81,7 +81,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/structure.html">Structure of an Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../rst/geom_mesh.html">Creating a Geometry and Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/geom_mesh.html">Creating a Geometry, Mesh and Material Properties</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/analysis.html">Running an Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/post.html">Viewing the Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/examples.html">Examples</a></li>
@@ -165,20 +165,20 @@
 <span class="sd">    cross-section. A method is provided for generating a triangular mesh, for</span>
 <span class="sd">    translating the cross-section by *(x, y)* and for plotting the geometry.</span>
 
-<span class="sd">    :cvar points: List of points *[x, y]* defining the vertices of the</span>
+<span class="sd">    :cvar points: List of points *(x, y)* defining the vertices of the</span>
 <span class="sd">        cross-section</span>
 <span class="sd">    :vartype points: list[list[float, float]]</span>
-<span class="sd">    :cvar facets: List of point index pairs *[p1, p2]* defining the edges of</span>
+<span class="sd">    :cvar facets: List of point index pairs *(p1, p2)* defining the edges of</span>
 <span class="sd">        the cross-section</span>
 <span class="sd">    :vartype facets: list[list[int, int]]</span>
-<span class="sd">    :cvar holes: List of points *[x, y]* defining the locations of holes within</span>
+<span class="sd">    :cvar holes: List of points *(x, y)* defining the locations of holes within</span>
 <span class="sd">        the cross-section. If there are no holes, provide an empty list [].</span>
 <span class="sd">    :vartype holes: list[list[float, float]]</span>
-<span class="sd">    :cvar control_points: A list of points *[x, y]* that define different</span>
+<span class="sd">    :cvar control_points: A list of points *(x, y)* that define different</span>
 <span class="sd">        regions of the cross-section. A control point is an arbitrary point</span>
 <span class="sd">        within a region enclosed by facets.</span>
 <span class="sd">    :vartype control_points: list[list[float, float]]</span>
-<span class="sd">    :cvar shift: Vector that shifts the cross-section by *[x, y]*</span>
+<span class="sd">    :cvar shift: Vector that shifts the cross-section by *(x, y)*</span>
 <span class="sd">    :vartype shift: list[float, float]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -204,14 +204,20 @@
 <span class="sd">        :raises AssertionError: If the number of mesh sizes does not match the</span>
 <span class="sd">            number of regions</span>
 
-<span class="sd">        The following example creates a circular cross-section with a diameter of</span>
-<span class="sd">        50 with 32 points, and generates a mesh with a maximum triangular area of</span>
-<span class="sd">        2.5::</span>
+<span class="sd">        The following example creates a circular cross-section with a diameter</span>
+<span class="sd">        of 50 with 64 points, and generates a mesh with a maximum triangular</span>
+<span class="sd">        area of 2.5::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
 
-<span class="sd">            geometry = sections.CircularSection(d=50, n=32)</span>
+<span class="sd">            geometry = sections.CircularSection(d=50, n=64)</span>
 <span class="sd">            mesh = geometry.create_mesh(mesh_sizes=[2.5])</span>
+
+<span class="sd">        ..  figure:: ../images/sections/circle_mesh.png</span>
+<span class="sd">            :align: center</span>
+<span class="sd">            :scale: 75 %</span>
+
+<span class="sd">            Mesh generated from the above geometry.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Number of mesh_sizes (</span><span class="si">{0}</span><span class="s2">), &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="p">))</span>
@@ -223,7 +229,8 @@
                                <span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">,</span> <span class="n">mesh_sizes</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Geometry.shift_section"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.shift_section">[docs]</a>    <span class="k">def</span> <span class="nf">shift_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Shifts the cross-section parameters by the vector *shift*.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Shifts the cross-section parameters by the class variable vector</span>
+<span class="sd">        *shift*.&quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
             <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -238,51 +245,88 @@
             <span class="n">cp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Geometry.rotate_section"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.rotate_section">[docs]</a>    <span class="k">def</span> <span class="nf">rotate_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">rot_point</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;rotates geometry about rot_point - takes first cp if</span>
-<span class="sd">        rot_point=None, angle in degrees</span>
+        <span class="sd">&quot;&quot;&quot;Rotates the geometry and specified angle about a point. If the</span>
+<span class="sd">        rotation point is not provided, rotates the section about the first</span>
+<span class="sd">        control point in the list of control points of the</span>
+<span class="sd">        :class:`~sectionproperties.pre.sections.Geometry` object.</span>
+
+<span class="sd">        :param float angle: Angle (degrees) by which to rotate the section. A</span>
+<span class="sd">            positive angle leads to a counter-clockwise rotation.</span>
+<span class="sd">        :param rot_point: Point *(x, y)* about which to rotate the section</span>
+<span class="sd">        :type rot_point: list[float, float]</span>
+
+<span class="sd">        The following example rotates a 200UB25 section clockwise by 30</span>
+<span class="sd">        degrees::</span>
+
+<span class="sd">            import sectionproperties.pre.sections as sections</span>
+
+<span class="sd">            geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)</span>
+<span class="sd">            geometry.rotate_section(angle=-30)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># convert angle to radians</span>
         <span class="n">rot_phi</span> <span class="o">=</span> <span class="n">angle</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
 
-        <span class="k">def</span> <span class="nf">get_r</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;aaa&quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">get_r</span><span class="p">(</span><span class="n">pt1</span><span class="p">,</span> <span class="n">pt2</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Returns the distance between two points.&quot;&quot;&quot;</span>
 
-            <span class="k">return</span> <span class="p">((</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+            <span class="k">return</span> <span class="p">((</span><span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
 
-        <span class="k">def</span> <span class="nf">get_phi</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">get_phi</span><span class="p">(</span><span class="n">pt1</span><span class="p">,</span> <span class="n">pt2</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Returns the angle between two points.&quot;&quot;&quot;</span>
 
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
+        <span class="k">def</span> <span class="nf">rotate_point</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">,</span> <span class="n">rot_phi</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Rotates a point given a rotation point and rotation angle.&quot;&quot;&quot;</span>
+
+            <span class="n">r</span> <span class="o">=</span> <span class="n">get_r</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="n">get_phi</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
+
+            <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># use the first control point if no rotation point is specified</span>
         <span class="k">if</span> <span class="n">rot_point</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">rot_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
+        <span class="c1"># rotate all the points</span>
         <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">get_r</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
-            <span class="n">phi</span> <span class="o">=</span> <span class="n">get_phi</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
-            <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">rotate_point</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">,</span> <span class="n">rot_phi</span><span class="p">)</span>
 
+        <span class="c1"># rotate all the holes</span>
         <span class="k">for</span> <span class="n">hole</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">holes</span><span class="p">:</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">get_r</span><span class="p">(</span><span class="n">hole</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
-            <span class="n">phi</span> <span class="o">=</span> <span class="n">get_phi</span><span class="p">(</span><span class="n">hole</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
-            <span class="n">hole</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">hole</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">rotate_point</span><span class="p">(</span><span class="n">hole</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">,</span> <span class="n">rot_phi</span><span class="p">)</span>
 
+        <span class="c1"># rotate all the control points</span>
         <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">:</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">get_r</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
-            <span class="n">phi</span> <span class="o">=</span> <span class="n">get_phi</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">)</span>
-            <span class="n">cp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">cp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">rot_phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">rot_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+            <span class="n">rotate_point</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">rot_point</span><span class="p">,</span> <span class="n">rot_phi</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Geometry.mirror_section"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.mirror_section">[docs]</a>    <span class="k">def</span> <span class="nf">mirror_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">mirror_point</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;mirrors geometry about axis at mirror_point. If no mirror_point,</span>
-<span class="sd">        takes first cp</span>
+        <span class="sd">&quot;&quot;&quot;Mirrors the geometry about a point on either the x or y-axis. If no</span>
+<span class="sd">        point is provided, mirrors the geometry about the first control point</span>
+<span class="sd">        in the list of control points of the</span>
+<span class="sd">        :class:`~sectionproperties.pre.sections.Geometry` object.</span>
+
+<span class="sd">        :param string axis: Axis about which to mirror the geometry, *&#39;x&#39;* or</span>
+<span class="sd">            *&#39;y&#39;*</span>
+<span class="sd">        :param mirror_point: Point about which to mirror the geometry *(x, y)*</span>
+<span class="sd">        :type mirror_point: list[float, float]</span>
+
+<span class="sd">        The following example mirrors a 200PFC section about the y-axis and the</span>
+<span class="sd">        point (0, 0)::</span>
+
+<span class="sd">            import sectionproperties.pre.sections as sections</span>
+
+<span class="sd">            geometry = sections.PfcSection(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)</span>
+<span class="sd">            geometry.mirror_section(axis=&#39;y&#39;, mirror_point=[0, 0])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># use the first control point if no mirror point is specified</span>
         <span class="k">if</span> <span class="n">mirror_point</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">mirror_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
+        <span class="c1"># select the axis to mirror</span>
         <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
@@ -291,12 +335,15 @@
             <span class="k">pass</span>
             <span class="c1"># TODO: raise error</span>
 
+        <span class="c1"># mirror all points</span>
         <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
             <span class="n">point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mirror_point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
+        <span class="c1"># mirror all holes</span>
         <span class="k">for</span> <span class="n">hole</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">holes</span><span class="p">:</span>
             <span class="n">hole</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mirror_point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">hole</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
+        <span class="c1"># mirror all control points</span>
         <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_points</span><span class="p">:</span>
             <span class="n">cp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mirror_point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">cp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
 
@@ -310,7 +357,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">holes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hole</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Geometry.clean_geometry"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.clean_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">clean_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;a&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Peforms a full clean on the geometry.</span>
+
+<span class="sd">        :param bool verbose: If set to true, information related to the</span>
+<span class="sd">            geometry cleaning process is printed to the terminal.</span>
+
+<span class="sd">        ..  note:: Cleaning the geometry is always recommended when creating a</span>
+<span class="sd">          merged section which may result in overlapping or intersecting</span>
+<span class="sd">          facets, or duplicate nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span> <span class="o">=</span> <span class="n">pre</span><span class="o">.</span><span class="n">GeometryCleaner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span><span class="o">.</span><span class="n">clean_geometry</span><span class="p">()</span></div>
 
@@ -333,8 +388,9 @@
 <span class="sd">            geometry = sections.Chs(d=48, t=3.2, n=64)</span>
 <span class="sd">            geometry.plot_geometry()</span>
 
-<span class="sd">        ..  figure:: ../images/chs_geometry.png</span>
+<span class="sd">        ..  figure:: ../images/sections/chs_geometry.png</span>
 <span class="sd">            :align: center</span>
+<span class="sd">            :scale: 75 %</span>
 
 <span class="sd">            Geometry generated by the above example.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -392,28 +448,57 @@
 
         <span class="c1"># if no axes object is supplied, finish the plot</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ax_supplied</span><span class="p">:</span>
-            <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Cross-Section Geometry&#39;</span><span class="p">)</span></div></div>
+            <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Cross-Section Geometry&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geometry.calculate_extents"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.calculate_extents">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_extents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the minimum and maximum x and y-values amongst the list</span>
+<span class="sd">        of points.</span>
+
+<span class="sd">        :return: Minimum and maximum x and y-values</span>
+<span class="sd">            *(x_min, x_max, y_min, y_max)*</span>
+<span class="sd">        :rtype: tuple(float, float, float, float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># loop through all points</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">pt</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># initialise min, max variables</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">x_min</span> <span class="o">=</span> <span class="n">x</span>
+                <span class="n">x_max</span> <span class="o">=</span> <span class="n">x</span>
+                <span class="n">y_min</span> <span class="o">=</span> <span class="n">y</span>
+                <span class="n">y_max</span> <span class="o">=</span> <span class="n">y</span>
+
+            <span class="c1"># update the mins and maxs where necessary</span>
+            <span class="n">x_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="n">x_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x_max</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="n">y_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">y_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">y_max</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CustomSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.CustomSection">[docs]</a><span class="k">class</span> <span class="nc">CustomSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a cross-section from a list of points, facets, holes and a</span>
 <span class="sd">    user specified control point.</span>
 
-<span class="sd">    :param points: List of points *[x, y]* defining the vertices of the</span>
+<span class="sd">    :param points: List of points *(x, y)* defining the vertices of the</span>
 <span class="sd">        cross-section</span>
 <span class="sd">    :type points: list[list[float, float]]</span>
-<span class="sd">    :param facets: List of point index pairs *[p1, p2]* defining the edges of</span>
+<span class="sd">    :param facets: List of point index pairs *(p1, p2)* defining the edges of</span>
 <span class="sd">        the cross-section</span>
 <span class="sd">    :type facets: list[list[int, int]]</span>
-<span class="sd">    :param holes: List of points *[x, y]* defining the locations of holes</span>
+<span class="sd">    :param holes: List of points *(x, y)* defining the locations of holes</span>
 <span class="sd">        within the cross-section. If there are no holes, provide an empty list</span>
 <span class="sd">        [].</span>
 <span class="sd">    :type holes: list[list[float, float]]</span>
-<span class="sd">    :param control_points: A list of points *[x, y]* that define different</span>
+<span class="sd">    :param control_points: A list of points *(x, y)* that define different</span>
 <span class="sd">        regions of the cross-section. A control point is an arbitrary point</span>
 <span class="sd">        within a region enclosed by facets.</span>
 <span class="sd">    :type control_points: list[list[float, float]]</span>
-<span class="sd">    :param shift: Vector that shifts the cross-section by *[x, y]*</span>
+<span class="sd">    :param shift: Vector that shifts the cross-section by *(x, y)*</span>
 <span class="sd">    :type shift: list[float, float]</span>
 
 <span class="sd">    The following example creates a hollow trapezium with a base width of 100,</span>
@@ -429,6 +514,18 @@
 
 <span class="sd">        geometry = sections.CustomSection(points, facets, holes, control_points)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[2.0])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/custom_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Custom section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/custom_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -460,6 +557,18 @@
 
 <span class="sd">        geometry = sections.RectangularSection(d=100, b=50)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[5])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/rectangle_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Rectangular section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/rectangle_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -487,13 +596,25 @@
 <span class="sd">    :type shift: list[float, float]</span>
 
 <span class="sd">    The following example creates a circular cross-section with a diameter of</span>
-<span class="sd">    50 with 32 points, and generates a mesh with a maximum triangular area of</span>
+<span class="sd">    50 with 64 points, and generates a mesh with a maximum triangular area of</span>
 <span class="sd">    2.5::</span>
 
 <span class="sd">        import sectionproperties.pre.sections as sections</span>
 
-<span class="sd">        geometry = sections.CircularSection(d=50, n=32)</span>
+<span class="sd">        geometry = sections.CircularSection(d=50, n=64)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[2.5])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/circle_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Circular section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/circle_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -545,6 +666,18 @@
 
 <span class="sd">        geometry = sections.Chs(d=48, t=3.2, n=64)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[1.0])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/chs_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        CHS geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/chs_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -607,6 +740,18 @@
 
 <span class="sd">        geometry = sections.Rhs(d=100, b=50, t=6, r_out=9, n_r=8)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[2.0])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/rhs_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        RHS geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/rhs_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">r_out</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -719,6 +864,18 @@
 
 <span class="sd">        geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=16)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[3.0])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/isection_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        I-section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/isection_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t_f</span><span class="p">,</span> <span class="n">t_w</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -826,6 +983,18 @@
 
 <span class="sd">        geometry = sections.PfcSection(d=250, b=90, t_f=15, t_w=8, r=12, n_r=8)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[5.0])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/pfc_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        PFC geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/pfc_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t_f</span><span class="p">,</span> <span class="n">t_w</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -905,6 +1074,18 @@
 
 <span class="sd">        geometry = sections.TeeSection(d=200, b=100, t_f=12, t_w=6, r=8, n_r=8)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[3.0])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/tee_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Tee section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/tee_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t_f</span><span class="p">,</span> <span class="n">t_w</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -984,6 +1165,16 @@
 
 <span class="sd">        geometry = sections.AngleSection(d=150, b=100, t=8, r_r=12, r_t=5, n_r=16)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[2.0])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/angle_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Angle section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/angle_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">r_r</span><span class="p">,</span> <span class="n">r_t</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -1072,6 +1263,16 @@
 
 <span class="sd">        geometry = sections.CeeSection(d=125, b=50, l=30, t=1.5, r_out=6, n_r=8)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[0.25])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/cee_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Cee section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/cee_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">r_out</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -1225,6 +1426,16 @@
 
 <span class="sd">        geometry = sections.ZedSection(d=100, b_l=40, b_r=50, l=20, t=1.2, r_out=5, n_r=8)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[0.15])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/zed_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Zed section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/zed_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">b_l</span><span class="p">,</span> <span class="n">b_r</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">r_out</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -1375,6 +1586,16 @@
 
 <span class="sd">        geometry = sections.CruciformSection(d=250, b=175, t=12, r=16, n_r=16)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[5.0])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/cruciform_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Cruciform section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/cruciform_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
@@ -1481,6 +1702,16 @@
 
 <span class="sd">        geometry = sections.MergedSection([isection, box])</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[5.0, 2.5])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/merged_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Merged section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/merged_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sections</span><span class="p">):</span>
