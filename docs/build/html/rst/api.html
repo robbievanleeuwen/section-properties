@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python API Documentation &mdash; sectionproperties 0.0.1 documentation</title>
+  <title>Python API Documentation &mdash; sectionproperties 0.0.2 documentation</title>
   
 
   
@@ -88,7 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="post.html">Viewing the Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python API Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#pre-processor-modules">Pre-Processor Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pre-processor-package">Pre-Processor Package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#sections-module"><em>sections</em> Module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#geometry-class">Geometry Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#customsection-class">CustomSection Class</a></li>
@@ -114,7 +114,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#analysis-modules">Analysis Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#analysis-package">Analysis Package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#cross-section-module"><em>cross_section</em> Module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#crosssection-class">CrossSection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#plasticsection-class">PlasticSection Class</a></li>
@@ -135,7 +135,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#post-processor-modules">Post-Processor Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#post-processor-package">Post-Processor Package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#post-module"><em>post</em> Module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#post-functions">post Functions</a></li>
 </ul>
@@ -211,13 +211,10 @@
             
   <div class="section" id="python-api-documentation">
 <h1>Python API Documentation<a class="headerlink" href="#python-api-documentation" title="Permalink to this headline">¶</a></h1>
-<p>broken into modules…</p>
-<div class="section" id="pre-processor-modules">
-<h2>Pre-Processor Modules<a class="headerlink" href="#pre-processor-modules" title="Permalink to this headline">¶</a></h2>
-<p>blah blah text</p>
+<div class="section" id="pre-processor-package">
+<h2>Pre-Processor Package<a class="headerlink" href="#pre-processor-package" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="sections-module">
 <span id="label-sections-module"></span><h3><em>sections</em> Module<a class="headerlink" href="#sections-module" title="Permalink to this headline">¶</a></h3>
-<p>blah blah text</p>
 <div class="section" id="geometry-class">
 <h4>Geometry Class<a class="headerlink" href="#geometry-class" title="Permalink to this headline">¶</a></h4>
 <dl class="class">
@@ -1032,6 +1029,7 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <span class="n">box</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">Rhs</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r_out</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">8.5</span><span class="p">,</span> <span class="mi">203</span><span class="p">])</span>
 
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MergedSection</span><span class="p">([</span><span class="n">isection</span><span class="p">,</span> <span class="n">box</span><span class="p">])</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">clean_geometry</span><span class="p">()</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -1049,7 +1047,6 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 </div>
 <div class="section" id="pre-module">
 <h3><em>pre</em> Module<a class="headerlink" href="#pre-module" title="Permalink to this headline">¶</a></h3>
-<p>blah blah text</p>
 <div class="section" id="material-class">
 <h4>Material Class<a class="headerlink" href="#material-class" title="Permalink to this headline">¶</a></h4>
 <blockquote>
@@ -1400,12 +1397,10 @@ a control point</li>
 </div>
 </div>
 </div>
-<div class="section" id="analysis-modules">
-<h2>Analysis Modules<a class="headerlink" href="#analysis-modules" title="Permalink to this headline">¶</a></h2>
-<p>blah blah text</p>
+<div class="section" id="analysis-package">
+<h2>Analysis Package<a class="headerlink" href="#analysis-package" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="cross-section-module">
 <h3><em>cross_section</em> Module<a class="headerlink" href="#cross-section-module" title="Permalink to this headline">¶</a></h3>
-<p>blah blah text</p>
 <div class="section" id="crosssection-class">
 <h4>CrossSection Class<a class="headerlink" href="#crosssection-class" title="Permalink to this headline">¶</a></h4>
 <blockquote>
@@ -1850,7 +1845,7 @@ merged from two rectangles:</p>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
-<span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_elastic_centroid</span><span class="p">()</span>
+<span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_c</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1870,7 +1865,7 @@ merged from two rectangles:</p>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
-<span class="n">area</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ea</span><span class="p">()</span>
+<span class="n">ea</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ea</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2651,27 +2646,20 @@ force, is returned.</p>
 
 <dl class="method">
 <dt id="sectionproperties.analysis.cross_section.PlasticSection.get_elements">
-<code class="descname">get_elements</code><span class="sig-paren">(</span><em>mesh</em>, <em>materials</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#PlasticSection.get_elements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.PlasticSection.get_elements" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_elements</code><span class="sig-paren">(</span><em>mesh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#PlasticSection.get_elements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.PlasticSection.get_elements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts finite elements from the provided mesh and returns Tri6
 finite elements with their associated material properties.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">meshpy.triangle.MeshInfo</span></code>) – Mesh object returned by meshpy</li>
-<li><strong>materials</strong> (list[<a class="reference internal" href="#sectionproperties.pre.pre.Material" title="sectionproperties.pre.pre.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">Material</span></code></a>]) – A list of material properties corresponding to
-various regions in the geometry and mesh.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">meshpy.triangle.MeshInfo</span></code>) – Mesh object returned by meshpy</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A tuple containing an array of the nodes locations, element
-indicies and a list of the finite elements.</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A tuple containing an array of the nodes locations, element
+indicies and a list of the finite elements.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple(<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>,
-list[<a class="reference internal" href="#sectionproperties.analysis.fea.Tri6" title="sectionproperties.analysis.fea.Tri6"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tri6</span></code></a>])</p>
-</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple(<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>,
+list[<a class="reference internal" href="#sectionproperties.analysis.fea.Tri6" title="sectionproperties.analysis.fea.Tri6"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tri6</span></code></a>])</td>
 </tr>
 </tbody>
 </table>
@@ -4189,7 +4177,6 @@ first moments of area.</p>
 </div>
 <div class="section" id="fea-module">
 <h3><em>fea</em> Module<a class="headerlink" href="#fea-module" title="Permalink to this headline">¶</a></h3>
-<p>blah blah text</p>
 <div class="section" id="tri6-class">
 <h4>Tri6 Class<a class="headerlink" href="#tri6-class" title="Permalink to this headline">¶</a></h4>
 <dl class="class">
@@ -4604,7 +4591,6 @@ by the parallel unit vector <em>u</em> and the point <em>(px, py)</em>.</p>
 </div>
 <div class="section" id="solver-module">
 <h3><em>solver</em> Module<a class="headerlink" href="#solver-module" title="Permalink to this headline">¶</a></h3>
-<p>blah blah text</p>
 <div class="section" id="solver-functions">
 <h4>solver Functions<a class="headerlink" href="#solver-functions" title="Permalink to this headline">¶</a></h4>
 <dl class="function">
@@ -4728,15 +4714,37 @@ tolerance of 1e-5</p>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="sectionproperties.analysis.solver.function_timer">
+<code class="descclassname">sectionproperties.analysis.solver.</code><code class="descname">function_timer</code><span class="sig-paren">(</span><em>text</em>, <em>function</em>, <em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/solver.html#function_timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.solver.function_timer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the message <em>text</em> and returns the time taken for a
+function, with arguments <em>args</em>, to execute. The value returned by the
+timed function is also returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> (<em>string</em>) – Message to display</li>
+<li><strong>function</strong> (<em>function</em>) – Function to time and execute</li>
+<li><strong>args</strong> – Function arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Value returned from the function</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 </div>
 </div>
-<div class="section" id="post-processor-modules">
-<h2>Post-Processor Modules<a class="headerlink" href="#post-processor-modules" title="Permalink to this headline">¶</a></h2>
-<p>blah blah text</p>
+<div class="section" id="post-processor-package">
+<h2>Post-Processor Package<a class="headerlink" href="#post-processor-package" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="post-module">
 <h3><em>post</em> Module<a class="headerlink" href="#post-module" title="Permalink to this headline">¶</a></h3>
-<p>blah blah text</p>
 <div class="section" id="post-functions">
 <h4>post Functions<a class="headerlink" href="#post-functions" title="Permalink to this headline">¶</a></h4>
 <dl class="function">
@@ -4865,8 +4873,8 @@ immediately after the window is rendered.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.0.1',
-            LANGUAGE:'None',
+            VERSION:'0.0.2',
+            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

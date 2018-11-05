@@ -1,19 +1,13 @@
 Python API Documentation
 ========================
 
-broken into modules...
-
-Pre-Processor Modules
+Pre-Processor Package
 ---------------------
-
-blah blah text
 
 .. _label-sections-module:
 
 *sections* Module
 ^^^^^^^^^^^^^^^^^
-
-blah blah text
 
 Geometry Class
 """"""""""""""
@@ -89,8 +83,6 @@ MergedSection Class
 *pre* Module
 ^^^^^^^^^^^^
 
-blah blah text
-
 Material Class
 """"""""""""""
 
@@ -111,15 +103,11 @@ pre Functions
 ..  autofunction:: sectionproperties.pre.pre.create_mesh
 
 
-Analysis Modules
+Analysis Package
 ----------------
-
-blah blah text
 
 *cross_section* Module
 ^^^^^^^^^^^^^^^^^^^^^^
-
-blah blah text
 
 CrossSection Class
 """"""""""""""""""
@@ -166,8 +154,6 @@ SectionProperties Class
 *fea* Module
 ^^^^^^^^^^^^
 
-blah blah text
-
 Tri6 Class
 """"""""""
 
@@ -188,8 +174,6 @@ fea Functions
 *solver* Module
 ^^^^^^^^^^^^^^^
 
-blah blah text
-
 solver Functions
 """"""""""""""""
 
@@ -197,16 +181,13 @@ solver Functions
 ..  autofunction:: sectionproperties.analysis.solver.solve_cgs_lagrange
 ..  autofunction:: sectionproperties.analysis.solver.solve_direct
 ..  autofunction:: sectionproperties.analysis.solver.solve_direct_lagrange
+..  autofunction:: sectionproperties.analysis.solver.function_timer
 
-Post-Processor Modules
+Post-Processor Package
 ----------------------
-
-blah blah text
 
 *post* Module
 ^^^^^^^^^^^^^
-
-blah blah text
 
 post Functions
 """"""""""""""

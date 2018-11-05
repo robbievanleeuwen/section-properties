@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Creating a Geometry, Mesh and Material Properties &mdash; sectionproperties 0.0.1 documentation</title>
+  <title>Creating a Geometry, Mesh and Material Properties &mdash; sectionproperties 0.0.2 documentation</title>
   
 
   
@@ -833,6 +833,7 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <span class="n">box</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">Rhs</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r_out</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">8.5</span><span class="p">,</span> <span class="mi">203</span><span class="p">])</span>
 
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MergedSection</span><span class="p">([</span><span class="n">isection</span><span class="p">,</span> <span class="n">box</span><span class="p">])</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">clean_geometry</span><span class="p">()</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -1060,8 +1061,8 @@ modulus and Poisson’s ratio assuming an isotropic material</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.0.1',
-            LANGUAGE:'None',
+            VERSION:'0.0.2',
+            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

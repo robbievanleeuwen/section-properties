@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sectionproperties.pre.sections &mdash; sectionproperties 0.0.1 documentation</title>
+  <title>sectionproperties.pre.sections &mdash; sectionproperties 0.0.2 documentation</title>
   
 
   
@@ -158,7 +158,7 @@
 
 <span class="c1"># TODO: ensure dimensions are floats</span>
 
-<div class="viewcode-block" id="Geometry"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.Geometry">[docs]</a><span class="k">class</span> <span class="nc">Geometry</span><span class="p">:</span>
+<div class="viewcode-block" id="Geometry"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry">[docs]</a><span class="k">class</span> <span class="nc">Geometry</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Parent class for a cross-section geometry input.</span>
 
 <span class="sd">    Provides an interface for the user to specify the geometry defining a</span>
@@ -191,7 +191,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">holes</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Geometry.create_mesh"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.Geometry.create_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">create_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh_sizes</span><span class="p">):</span>
+<div class="viewcode-block" id="Geometry.create_mesh"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.create_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">create_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh_sizes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Creates a quadratic triangular mesh from the Geometry object.</span>
 
 <span class="sd">        :param mesh_sizes: A list of maximum element areas corresponding to</span>
@@ -356,7 +356,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">holes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hole</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Geometry.clean_geometry"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.Geometry.clean_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">clean_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Geometry.clean_geometry"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.clean_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">clean_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Peforms a full clean on the geometry.</span>
 
 <span class="sd">        :param bool verbose: If set to true, information related to the</span>
@@ -369,7 +369,7 @@
 
         <span class="bp">self</span> <span class="o">=</span> <span class="n">pre</span><span class="o">.</span><span class="n">GeometryCleaner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span><span class="o">.</span><span class="n">clean_geometry</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Geometry.plot_geometry"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.Geometry.plot_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">plot_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Geometry.plot_geometry"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.plot_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">plot_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plots the geometry defined by the input section. If no axes object</span>
 <span class="sd">        is supplied a new figure and axis is created.</span>
 
@@ -480,7 +480,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CustomSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.CustomSection">[docs]</a><span class="k">class</span> <span class="nc">CustomSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="CustomSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.CustomSection">[docs]</a><span class="k">class</span> <span class="nc">CustomSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a cross-section from a list of points, facets, holes and a</span>
 <span class="sd">    user specified control point.</span>
 
@@ -540,7 +540,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="RectangularSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.RectangularSection">[docs]</a><span class="k">class</span> <span class="nc">RectangularSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="RectangularSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.RectangularSection">[docs]</a><span class="k">class</span> <span class="nc">RectangularSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a rectangular section with the bottom left corner at the</span>
 <span class="sd">    origin *(0, 0)*, with depth *d* and width *b*.</span>
 
@@ -586,7 +586,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="CircularSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.CircularSection">[docs]</a><span class="k">class</span> <span class="nc">CircularSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="CircularSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.CircularSection">[docs]</a><span class="k">class</span> <span class="nc">CircularSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a solid circle centered at the origin *(0, 0)* with diameter</span>
 <span class="sd">    *d* and using *n* points to construct the circle.</span>
 
@@ -647,7 +647,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Chs"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.Chs">[docs]</a><span class="k">class</span> <span class="nc">Chs</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="Chs"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Chs">[docs]</a><span class="k">class</span> <span class="nc">Chs</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a circular hollow section centered at the origin *(0, 0)*,</span>
 <span class="sd">    with diameter *d* and thickness *t*, using *n* points to construct the</span>
 <span class="sd">    inner and outer circles.</span>
@@ -718,7 +718,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Rhs"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.Rhs">[docs]</a><span class="k">class</span> <span class="nc">Rhs</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="Rhs"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Rhs">[docs]</a><span class="k">class</span> <span class="nc">Rhs</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a rectangular hollow section centered at *(b/2, d/2)*, with</span>
 <span class="sd">    depth *d*, width *b*, thickness *t* and outer radius *r_out*, using *n_r*</span>
 <span class="sd">    points to construct the inner and outer radii.</span>
@@ -841,7 +841,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="ISection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.ISection">[docs]</a><span class="k">class</span> <span class="nc">ISection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="ISection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.ISection">[docs]</a><span class="k">class</span> <span class="nc">ISection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs an I-section centered at *(b/2, d/2)*, with depth *d*, width</span>
 <span class="sd">    *b*, flange thickness *t_f*, web thickness *t_w*, and root radius *r*,</span>
 <span class="sd">    using *n_r* points to construct the root radius.</span>
@@ -960,7 +960,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="PfcSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.PfcSection">[docs]</a><span class="k">class</span> <span class="nc">PfcSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="PfcSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.PfcSection">[docs]</a><span class="k">class</span> <span class="nc">PfcSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a PFC section with the bottom left corner at the origin</span>
 <span class="sd">    *(0, 0)*, with depth *d*, width *b*, flange thickness *t_f*, web  thickness</span>
 <span class="sd">    *t_w* and root radius *r*, using *n_r* points to construct the root radius.</span>
@@ -1051,7 +1051,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="TeeSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.TeeSection">[docs]</a><span class="k">class</span> <span class="nc">TeeSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="TeeSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.TeeSection">[docs]</a><span class="k">class</span> <span class="nc">TeeSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a Tee section with the top left corner at *(0, d)*, with</span>
 <span class="sd">    depth *d*, width *b*, flange thickness *t_f*, web thickness *t_w* and root</span>
 <span class="sd">    radius *r*, using *n_r* points to construct the root radius.</span>
@@ -1142,7 +1142,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="AngleSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.AngleSection">[docs]</a><span class="k">class</span> <span class="nc">AngleSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="AngleSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.AngleSection">[docs]</a><span class="k">class</span> <span class="nc">AngleSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs an angle section with the bottom left corner at the origin</span>
 <span class="sd">    *(0, 0)*, with depth *d*, width *b*, thickness *t*, root radius *r_r* and</span>
 <span class="sd">    toe radius *r_t*, using *n_r* points to construct the radii.</span>
@@ -1240,7 +1240,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="CeeSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.CeeSection">[docs]</a><span class="k">class</span> <span class="nc">CeeSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="CeeSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.CeeSection">[docs]</a><span class="k">class</span> <span class="nc">CeeSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a Cee section with the bottom left corner at the origin</span>
 <span class="sd">    *(0, 0)*, with depth *d*, width *b*, lip *l*, thickness *t* and outer</span>
 <span class="sd">    radius *r_out*, using *n_r* points to construct the radius.</span>
@@ -1401,7 +1401,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="ZedSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.ZedSection">[docs]</a><span class="k">class</span> <span class="nc">ZedSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="ZedSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.ZedSection">[docs]</a><span class="k">class</span> <span class="nc">ZedSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a Zed section with the bottom left corner at the origin</span>
 <span class="sd">    *(0, 0)*, with depth *d*, left flange width *b_l*, right flange width</span>
 <span class="sd">    *b_r*, lip *l*, thickness *t* and outer radius *r_out*, using *n_r* points</span>
@@ -1564,7 +1564,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="CruciformSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.CruciformSection">[docs]</a><span class="k">class</span> <span class="nc">CruciformSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="CruciformSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.CruciformSection">[docs]</a><span class="k">class</span> <span class="nc">CruciformSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a cruciform section centered at the origin *(0, 0)*, with</span>
 <span class="sd">    depth *d*, width *b*, thickness *t* and root radius *r*, using *n_r* points</span>
 <span class="sd">    to construct the root radius.</span>
@@ -1682,7 +1682,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="MergedSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.MergedSection">[docs]</a><span class="k">class</span> <span class="nc">MergedSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+<div class="viewcode-block" id="MergedSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.MergedSection">[docs]</a><span class="k">class</span> <span class="nc">MergedSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Merges a number of section geometries into one geometry. Note that for</span>
 <span class="sd">    the meshing algorithm to work, there needs to be connectivity between all</span>
 <span class="sd">    regions of the provided geometries. Overlapping of geometries is permitted.</span>
@@ -1701,6 +1701,7 @@
 <span class="sd">        box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])</span>
 
 <span class="sd">        geometry = sections.MergedSection([isection, box])</span>
+<span class="sd">        geometry.clean_geometry()</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[5.0, 2.5])</span>
 
 <span class="sd">    ..  figure:: ../images/sections/merged_geometry.png</span>
@@ -2117,8 +2118,8 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.1',
-            LANGUAGE:'None',
+            VERSION:'0.0.2',
+            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

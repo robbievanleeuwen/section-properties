@@ -1108,7 +1108,7 @@ class CrossSection:
 
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
-            area = section.get_ea()
+            ea = section.get_ea()
         """
 
         return self.section_props.ea
@@ -1152,7 +1152,7 @@ class CrossSection:
 
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
-            (cx, cy) = section.get_elastic_centroid()
+            (cx, cy) = section.get_c()
         """
 
         return (self.section_props.cx, self.section_props.cy)
@@ -1550,23 +1550,24 @@ class PlasticSection:
     def __init__(self, geometry, materials, debug):
         """Inits the PlasticSection class."""
 
-        # make a deepcopy of the geometry so that we can modify it
+        # make a deepcopy of the geometry & materials so that we can modify it
         self.geometry = copy.deepcopy(geometry)
-        self.materials = materials
+        self.materials = copy.deepcopy(materials)
         self.debug = debug
 
-        # create dummy control point (outside section) at the start of the list
-        (x_min, x_max, y_min, y_max) = geometry.calculate_extents()
-        self.geometry.control_points.insert(0, [x_min - 1, y_min - 1])
+        if self.materials is not None:
+            # create dummy control point at the start of the list
+            (x_min, x_max, y_min, y_max) = geometry.calculate_extents()
+            self.geometry.control_points.insert(0, [x_min - 1, y_min - 1])
 
-        # create matching dummy material
-        self.materials.insert(0, pre.Material('default', 1, 0, 1))
+            # create matching dummy material
+            self.materials.insert(0, pre.Material('default', 1, 0, 1))
 
         # create simple mesh of the geometry
         mesh = self.create_plastic_mesh()
 
         # get the elements of the mesh
-        (_, _, elements) = self.get_elements(mesh, self.materials)
+        (_, _, elements) = self.get_elements(mesh)
 
         # calculate centroid of the mesh
         (cx, cy) = self.calculate_centroid(elements)
@@ -1580,17 +1581,14 @@ class PlasticSection:
 
         # store the nodes, elements and list of elements in the mesh
         (self.mesh_nodes, self.mesh_elements, self.elements) = (
-            self.get_elements(self.mesh, self.materials))
+            self.get_elements(self.mesh))
 
-    def get_elements(self, mesh, materials):
+    def get_elements(self, mesh):
         """Extracts finite elements from the provided mesh and returns Tri6
         finite elements with their associated material properties.
 
         :param mesh: Mesh object returned by meshpy
         :type mesh: :class:`meshpy.triangle.MeshInfo`
-        :param materials: A list of material properties corresponding to
-            various regions in the geometry and mesh.
-        :type materials: list[:class:`~sectionproperties.pre.pre.Material`]
         :return: A tuple containing an array of the nodes locations, element
             indicies and a list of the finite elements.
         :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`,
@@ -1628,7 +1626,7 @@ class PlasticSection:
                 [[x1, x2, x3, x4, x5, x6], [y1, y2, y3, y4, y5, y6]])
 
             # if materials are specified, get the material
-            if materials is not None:
+            if self.materials is not None:
                 # get attribute index of current element
                 att_el = attributes[i]
 
@@ -1645,7 +1643,7 @@ class PlasticSection:
                             break
                 else:
                     # fetch the material
-                    material = materials[att_el]
+                    material = self.materials[att_el]
             # if there are no materials specified, use a default material
             else:
                 material = pre.Material('default', 1, 0, 1)
@@ -1878,8 +1876,7 @@ class PlasticSection:
 
         # create a mesh with the axis included
         mesh = self.create_plastic_mesh([p, u])
-        (nodes, elements, element_list) = (
-            self.get_elements(mesh, self.materials))
+        (nodes, elements, element_list) = self.get_elements(mesh)
 
         if self.debug:
             self.plot_mesh(nodes, elements, element_list, self.materials)
@@ -1935,8 +1932,7 @@ class PlasticSection:
         # have to run it again
         p = np.array([d * u_p[0], d * u_p[1]])
         mesh = self.create_plastic_mesh([p, u])
-        (nodes, elements, element_list) = (
-            self.get_elements(mesh, self.materials))
+        (nodes, elements, element_list) = self.get_elements(mesh)
         (f_top, f_bot, c_top, c_bot) = (
             self.calculate_plastic_force(element_list, u, p))
 
@@ -2184,27 +2180,29 @@ class PlasticSection:
         color_array = []
         legend_list = []
 
-        # create an array of finite element colours
-        for el in element_list:
-            color_array.append(el.material.color)
+        if materials is not None:
+            # create an array of finite element colours
+            for el in element_list:
+                color_array.append(el.material.color)
 
-        # create a list of unique material legend entries
-        for (i, mat) in enumerate(materials):
-            # if the material has not be entered yet
-            if i == 0 or mat not in materials[0:i]:
-                # add the material colour and name to the legend list
-                legend_list.append(mpatches.Patch(color=mat.color,
-                                                  label=mat.name))
+            # create a list of unique material legend entries
+            for (i, mat) in enumerate(materials):
+                # if the material has not be entered yet
+                if i == 0 or mat not in materials[0:i]:
+                    # add the material colour and name to the legend list
+                    legend_list.append(mpatches.Patch(color=mat.color,
+                                                      label=mat.name))
 
-        cmap = ListedColormap(color_array)  # custom colormap
-        c = np.arange(len(color_array))  # indicies of elements
+            cmap = ListedColormap(color_array)  # custom colormap
+            c = np.arange(len(color_array))  # indicies of elements
 
-        # plot the mesh colours
-        ax.tripcolor(nodes[:, 0], nodes[:, 1], elements[:, 0:3], c, cmap=cmap)
+            # plot the mesh colours
+            ax.tripcolor(nodes[:, 0], nodes[:, 1], elements[:, 0:3], c,
+                         cmap=cmap)
 
-        # display the legend
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5),
-                  handles=legend_list)
+            # display the legend
+            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5),
+                      handles=legend_list)
 
         # finish the plot
         post.finish_plot(ax, True, title='Finite Element Mesh')

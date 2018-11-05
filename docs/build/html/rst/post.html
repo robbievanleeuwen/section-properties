@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Viewing the Results &mdash; sectionproperties 0.0.1 documentation</title>
+  <title>Viewing the Results &mdash; sectionproperties 0.0.2 documentation</title>
   
 
   
@@ -301,7 +301,7 @@ section.</p>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
-<span class="n">area</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ea</span><span class="p">()</span>
+<span class="n">ea</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ea</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -371,7 +371,7 @@ section.</p>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
-<span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_elastic_centroid</span><span class="p">()</span>
+<span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_c</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2160,8 +2160,8 @@ immediately after the window is rendered.</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.0.1',
-            LANGUAGE:'None',
+            VERSION:'0.0.2',
+            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -1,13 +1,38 @@
 # sectionproperties
 a python package for the analysis of arbitrary cross-sections using the finite element method written by Robbie van Leeuwen. *sectionproperties* can be used to determine section properties to be used in structural design and visualise cross-sectional stresses resulting from combinations of applied forces and bending moments.
 
+## Installation:
+
+For more detailed installation instructions, refer to the [documentation](https://sectionproperties.readthedocs.io/).
+
+### UNIX (MacOS/Linux):
+
+```
+$ pip install sectionproperties
+```
+
+### Windows
+
+Install *meshpy* by downloading the appropriate [installation wheel](https://www.lfd.uci.edu/~gohlke/pythonlibs/#meshpy).
+
+Navigate to the location of the downloaded wheel and install using pip:
+
+```
+$ cd Downloads
+$ pip install MeshPy‑2018.2.1‑cp36‑cp36m‑win_amd64.whl
+```
+
+Once *meshpy* has been installed, *sectionproperties* can be installed:
+
+```
+$ pip install sectionproperties
+```
+
 ## Documentation:
 
 *sectionproperties* has a fully documented python API which you can find at [https://sectionproperties.readthedocs.io/](https://sectionproperties.readthedocs.io/). To read more about the theory behind the program, its implementation and some more examples, check out my blog at [https://robbievanleeuwen.github.io/](https://robbievanleeuwen.github.io/).
 
 ## Current Capabilities:
-
-*Note: this branch of sectionproperties is still in development and thus the calculations may not be correct until the branch is merged back to the master.*
 
 ### Pre-Processor:
 - [x] Python API
@@ -71,4 +96,7 @@ a python package for the analysis of arbitrary cross-sections using the finite e
 - [ ] Steel
 
 ## Change Log:
-xxx
+
+### v1.0.0:
+
+Initial release.

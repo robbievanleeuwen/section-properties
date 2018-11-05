@@ -12,6 +12,10 @@ can be used to determine section properties to be used in structural design and
 visualise cross-sectional stresses resulting from combinations of applied forces and
 bending moments.
 
+A list of the `current features of the package and implementation goals for future releases
+<https://github.com/robbievanleeuwen/section-properties/tree/master/README.md>`_
+can be found in the README file on github.
+
 .. toctree::
    :maxdepth: 1
    :caption: Contents:
@@ -53,14 +57,14 @@ Here's a quick example that harnesses some of the power of *sectionproperties* a
   print(section.get_As())  # shear areas in the x & y directions
   >>>(1842.17, 1120.18)
 
-A list of the current features of the package and implementation goals for future releases
-can be found here. If you have a request for a feature to be added to the *sectionproperties*
-pacakge, please don't hesitate to get in touch! # TODO!!!
-
 Support
 -------
 
-blah blah support
+Contact me on my email robbie.vanleeuwen@gmail.com or raise an issue on the github issue
+tracker using one of the `issue templates
+<https://github.com/robbievanleeuwen/section-properties/tree/master/.github/ISSUE_TEMPLATE>`_.
+If you have a request for a feature to be added to the *sectionproperties* package,
+please don't hesitate to get in touch
 
 License
 -------

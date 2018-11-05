@@ -3,8 +3,8 @@
 Examples
 ========
 
-The following examples are located in the ``sectionproperties.tests.examples``
-module.
+The following examples are located in the ``sectionproperties.examples``
+package.
 
 Simple Example
 --------------

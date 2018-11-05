@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sectionproperties.analysis.cross_section &mdash; sectionproperties 0.0.1 documentation</title>
+  <title>sectionproperties.analysis.cross_section &mdash; sectionproperties 0.0.2 documentation</title>
   
 
   
@@ -1260,7 +1260,7 @@
 
 <span class="sd">            section = CrossSection(geometry, mesh)</span>
 <span class="sd">            section.calculate_geometric_properties()</span>
-<span class="sd">            area = section.get_ea()</span>
+<span class="sd">            ea = section.get_ea()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span></div>
@@ -1304,7 +1304,7 @@
 
 <span class="sd">            section = CrossSection(geometry, mesh)</span>
 <span class="sd">            section.calculate_geometric_properties()</span>
-<span class="sd">            (cx, cy) = section.get_elastic_centroid()</span>
+<span class="sd">            (cx, cy) = section.get_c()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span><span class="p">)</span></div>
@@ -1702,23 +1702,24 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">materials</span><span class="p">,</span> <span class="n">debug</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Inits the PlasticSection class.&quot;&quot;&quot;</span>
 
-        <span class="c1"># make a deepcopy of the geometry so that we can modify it</span>
+        <span class="c1"># make a deepcopy of the geometry &amp; materials so that we can modify it</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">materials</span> <span class="o">=</span> <span class="n">materials</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">materials</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">materials</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
 
-        <span class="c1"># create dummy control point (outside section) at the start of the list</span>
-        <span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">)</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">calculate_extents</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">control_points</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">x_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># create dummy control point at the start of the list</span>
+            <span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">)</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">calculate_extents</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">control_points</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">x_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
 
-        <span class="c1"># create matching dummy material</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pre</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="c1"># create matching dummy material</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pre</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
         <span class="c1"># create simple mesh of the geometry</span>
         <span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_plastic_mesh</span><span class="p">()</span>
 
         <span class="c1"># get the elements of the mesh</span>
-        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">elements</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">materials</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">elements</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 
         <span class="c1"># calculate centroid of the mesh</span>
         <span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_centroid</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
@@ -1732,17 +1733,14 @@
 
         <span class="c1"># store the nodes, elements and list of elements in the mesh</span>
         <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_elements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">materials</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">))</span>
 
-<div class="viewcode-block" id="PlasticSection.get_elements"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.PlasticSection.get_elements">[docs]</a>    <span class="k">def</span> <span class="nf">get_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">materials</span><span class="p">):</span>
+<div class="viewcode-block" id="PlasticSection.get_elements"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.PlasticSection.get_elements">[docs]</a>    <span class="k">def</span> <span class="nf">get_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Extracts finite elements from the provided mesh and returns Tri6</span>
 <span class="sd">        finite elements with their associated material properties.</span>
 
 <span class="sd">        :param mesh: Mesh object returned by meshpy</span>
 <span class="sd">        :type mesh: :class:`meshpy.triangle.MeshInfo`</span>
-<span class="sd">        :param materials: A list of material properties corresponding to</span>
-<span class="sd">            various regions in the geometry and mesh.</span>
-<span class="sd">        :type materials: list[:class:`~sectionproperties.pre.pre.Material`]</span>
 <span class="sd">        :return: A tuple containing an array of the nodes locations, element</span>
 <span class="sd">            indicies and a list of the finite elements.</span>
 <span class="sd">        :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`,</span>
@@ -1780,7 +1778,7 @@
                 <span class="p">[[</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">,</span> <span class="n">x4</span><span class="p">,</span> <span class="n">x5</span><span class="p">,</span> <span class="n">x6</span><span class="p">],</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">y3</span><span class="p">,</span> <span class="n">y4</span><span class="p">,</span> <span class="n">y5</span><span class="p">,</span> <span class="n">y6</span><span class="p">]])</span>
 
             <span class="c1"># if materials are specified, get the material</span>
-            <span class="k">if</span> <span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># get attribute index of current element</span>
                 <span class="n">att_el</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
@@ -1797,7 +1795,7 @@
                             <span class="k">break</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># fetch the material</span>
-                    <span class="n">material</span> <span class="o">=</span> <span class="n">materials</span><span class="p">[</span><span class="n">att_el</span><span class="p">]</span>
+                    <span class="n">material</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">materials</span><span class="p">[</span><span class="n">att_el</span><span class="p">]</span>
             <span class="c1"># if there are no materials specified, use a default material</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">material</span> <span class="o">=</span> <span class="n">pre</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -2030,8 +2028,7 @@
 
         <span class="c1"># create a mesh with the axis included</span>
         <span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_plastic_mesh</span><span class="p">([</span><span class="n">p</span><span class="p">,</span> <span class="n">u</span><span class="p">])</span>
-        <span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">element_list</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">materials</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">element_list</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">element_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">materials</span><span class="p">)</span>
@@ -2087,8 +2084,7 @@
         <span class="c1"># have to run it again</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d</span> <span class="o">*</span> <span class="n">u_p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span> <span class="o">*</span> <span class="n">u_p</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
         <span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_plastic_mesh</span><span class="p">([</span><span class="n">p</span><span class="p">,</span> <span class="n">u</span><span class="p">])</span>
-        <span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">element_list</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">materials</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">element_list</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
         <span class="p">(</span><span class="n">f_top</span><span class="p">,</span> <span class="n">f_bot</span><span class="p">,</span> <span class="n">c_top</span><span class="p">,</span> <span class="n">c_bot</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">calculate_plastic_force</span><span class="p">(</span><span class="n">element_list</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
 
@@ -2336,27 +2332,29 @@
         <span class="n">color_array</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">legend_list</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="c1"># create an array of finite element colours</span>
-        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">element_list</span><span class="p">:</span>
-            <span class="n">color_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">color</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># create an array of finite element colours</span>
+            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">element_list</span><span class="p">:</span>
+                <span class="n">color_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">color</span><span class="p">)</span>
 
-        <span class="c1"># create a list of unique material legend entries</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">mat</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">materials</span><span class="p">):</span>
-            <span class="c1"># if the material has not be entered yet</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">mat</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">materials</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span><span class="p">]:</span>
-                <span class="c1"># add the material colour and name to the legend list</span>
-                <span class="n">legend_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mpatches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">mat</span><span class="o">.</span><span class="n">color</span><span class="p">,</span>
-                                                  <span class="n">label</span><span class="o">=</span><span class="n">mat</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="c1"># create a list of unique material legend entries</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">mat</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">materials</span><span class="p">):</span>
+                <span class="c1"># if the material has not be entered yet</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">mat</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">materials</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="c1"># add the material colour and name to the legend list</span>
+                    <span class="n">legend_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mpatches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">mat</span><span class="o">.</span><span class="n">color</span><span class="p">,</span>
+                                                      <span class="n">label</span><span class="o">=</span><span class="n">mat</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
 
-        <span class="n">cmap</span> <span class="o">=</span> <span class="n">ListedColormap</span><span class="p">(</span><span class="n">color_array</span><span class="p">)</span>  <span class="c1"># custom colormap</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">color_array</span><span class="p">))</span>  <span class="c1"># indicies of elements</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">ListedColormap</span><span class="p">(</span><span class="n">color_array</span><span class="p">)</span>  <span class="c1"># custom colormap</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">color_array</span><span class="p">))</span>  <span class="c1"># indicies of elements</span>
 
-        <span class="c1"># plot the mesh colours</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">tripcolor</span><span class="p">(</span><span class="n">nodes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">elements</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">c</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+            <span class="c1"># plot the mesh colours</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">tripcolor</span><span class="p">(</span><span class="n">nodes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">elements</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">c</span><span class="p">,</span>
+                         <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
 
-        <span class="c1"># display the legend</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center left&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-                  <span class="n">handles</span><span class="o">=</span><span class="n">legend_list</span><span class="p">)</span>
+            <span class="c1"># display the legend</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center left&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+                      <span class="n">handles</span><span class="o">=</span><span class="n">legend_list</span><span class="p">)</span>
 
         <span class="c1"># finish the plot</span>
         <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Finite Element Mesh&#39;</span><span class="p">)</span></div></div>
@@ -4092,8 +4090,8 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.1',
-            LANGUAGE:'None',
+            VERSION:'0.0.2',
+            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

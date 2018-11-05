@@ -1549,6 +1549,7 @@ class MergedSection(Geometry):
         box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
 
         geometry = sections.MergedSection([isection, box])
+        geometry.clean_geometry()
         mesh = geometry.create_mesh(mesh_sizes=[5.0, 2.5])
 
     ..  figure:: ../images/sections/merged_geometry.png
