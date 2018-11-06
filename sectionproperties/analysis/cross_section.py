@@ -1318,9 +1318,8 @@ class CrossSection:
         if self.section_props.x11_se is None:
             return (None, None)
         else:
-            # add centroid location to move section back to original location
-            x11_se = self.section_props.x11_se + self.section_props.cx
-            y22_se = self.section_props.y22_se + self.section_props.cy
+            x11_se = self.section_props.x11_se
+            y22_se = self.section_props.y22_se
 
         return (x11_se, y22_se)
 

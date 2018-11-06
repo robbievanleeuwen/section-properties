@@ -710,8 +710,8 @@ The following is printed to the terminal:
   y_se      = 2.863400e+02
   x_st      = 8.250070e+01
   y_st      = 2.857074e+02
-  x1_se     = 8.250071e+01
-  y2_se     = 2.863400e+02
+  x1_se     = 7.063407e-04
+  y2_se     = 1.012091e+02
   A_sx      = 1.104723e+04
   A_sy      = 1.021183e+04
   A_s11     = 1.104723e+04

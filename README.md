@@ -94,9 +94,3 @@ $ pip install sectionproperties
 - [ ] Optimisation
 - [ ] Reinforced Concrete
 - [ ] Steel
-
-## Change Log:
-
-### v1.0.0:
-
-Initial release.
