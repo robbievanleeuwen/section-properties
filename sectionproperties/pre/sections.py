@@ -180,8 +180,7 @@ class Geometry:
         elif axis == 'y':
             i = 0
         else:
-            pass
-            # TODO: raise error
+            raise RuntimeError("Enter a valid axis: 'x' or 'y'")
 
         # mirror all points
         for point in self.points:

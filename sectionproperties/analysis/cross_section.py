@@ -1544,6 +1544,12 @@ class PlasticSection:
     :cvar elements: List of finite element objects describing the cross-section
         mesh
     :vartype elements: list[:class:`~sectionproperties.analysis.fea.Tri6`]
+    :cvar float f_top: Current force in the top region
+    :cvar c_top: Centroid of the force in the top region *(c_top_x, c_top_y)*
+    :type c_top: list[float, float]
+    :cvar c_bot: Centroid of the force in the bottom region
+        *(c_bot_x, c_bot_y)*
+    :type c_bot: list[float, float]
     """
 
     def __init__(self, geometry, materials, debug):
@@ -1881,7 +1887,7 @@ class PlasticSection:
             self.plot_mesh(nodes, elements, element_list, self.materials)
 
         # calculate force equilibrium
-        (f_top, f_bot, _, _) = (
+        (f_top, f_bot) = (
             self.calculate_plastic_force(element_list, u, p))
 
         # return the force norm
@@ -1926,16 +1932,7 @@ class PlasticSection:
         (d, r) = brentq(self.evaluate_force_eq, a, b, args=(u, u_p),
                         full_output=True, disp=False, xtol=1e-6, rtol=1e-6)
 
-        # get centroids of the areas
-        # TODO: consider saving f, c_top, c_bot as class variables so we don't
-        # have to run it again
-        p = np.array([d * u_p[0], d * u_p[1]])
-        mesh = self.create_plastic_mesh([p, u])
-        (nodes, elements, element_list) = self.get_elements(mesh)
-        (f_top, f_bot, c_top, c_bot) = (
-            self.calculate_plastic_force(element_list, u, p))
-
-        return (d, r, f_top, c_top, c_bot)
+        return (d, r, self.f_top, self.c_top, self.c_bot)
 
     def calculate_plastic_force(self, elements, u, p):
         """Sums the forces above and below the axis defined by unit vector *u*
@@ -1948,9 +1945,8 @@ class PlasticSection:
         :type u: :class:`numpy.ndarray`
         :param p: Point on the axis
         :type p: :class:`numpy.ndarray`
-        :return: Force in the top and bottom areas and centroids of these
-            forces *(f_top, f_bot, [c_top_x, c_top_y], [c_bot_x, c_bot_y])*
-        :rtype: tuple(float, float, list[float, float], list[float, float])
+        :return: Force in the top and bottom areas *(f_top, f_bot)*
+        :rtype: tuple(float, float)
         """
 
         # initialise variables
@@ -1976,11 +1972,12 @@ class PlasticSection:
                 qx_bot += qx_el
                 qy_bot += qy_el
 
-        # calculate the centroid of the top and bottom segments
-        c_top = [qy_top / ea_top, qx_top / ea_top]
-        c_bot = [qy_bot / ea_bot, qx_bot / ea_bot]
+        # calculate the centroid of the top and bottom segments and save
+        self.c_top = [qy_top / ea_top, qx_top / ea_top]
+        self.c_bot = [qy_bot / ea_bot, qx_bot / ea_bot]
+        self.f_top = f_top
 
-        return(f_top, f_bot, c_top, c_bot)
+        return (f_top, f_bot)
 
     def create_plastic_mesh(self, new_line=None):
         """Generates a triangular mesh of a deep copy of the geometry stored in
@@ -2317,6 +2314,10 @@ class StressPost:
         # set up the colormap
         cmap = cm.get_cmap(name='jet')
 
+        # initialise quiver plot list max scale
+        quiv_list = []
+        max_scale = 0
+
         # plot the vectors
         for (i, sigx) in enumerate(sigxs):
             sigy = sigys[i]
@@ -2324,24 +2325,27 @@ class StressPost:
             # scale the colour with respect to the magnitude of the vector
             c = np.hypot(sigx, sigy)
 
-            # The scale is defined by the scale of the first plot
-            # TODO: return all scales then use the largest one???
+            quiv = ax.quiver(
+                self.cross_section.mesh_nodes[:, 0],
+                self.cross_section.mesh_nodes[:, 1],
+                sigx, sigy, c, cmap=cmap)
+
+            # get the scale and store the max value
+            quiv._init()
+            max_scale = max(max_scale, quiv.scale)
+            quiv_list.append(quiv)
+
+            # update the colormap values
             if i == 0:
                 c_min = min(c)
                 c_max = max(c)
-
-                quiv = ax.quiver(
-                    self.cross_section.mesh_nodes[:, 0],
-                    self.cross_section.mesh_nodes[:, 1],
-                    sigx, sigy, c, cmap=cmap, scale=None)
             else:
                 c_min = min(c_min, min(c))
                 c_max = max(c_max, max(c))
 
-                ax.quiver(
-                    self.cross_section.mesh_nodes[:, 0],
-                    self.cross_section.mesh_nodes[:, 1],
-                    sigx, sigy, c, cmap=cmap, scale=quiv.scale)
+        # apply the scale
+        for quiv_plot in quiv_list:
+            quiv_plot.scale = max_scale
 
         # apply the colourbar
         v1 = np.linspace(c_min, c_max, 15, endpoint=True)

@@ -124,7 +124,7 @@ class GeometryCleaner:
 
         return self.geometry
 
-    def zip_points(self, atol=1e-5):
+    def zip_points(self, atol=1e-8, rtol=1e-5):
         """Zips points that are close to each other. Searches through the point
         list and merges two points if there are deemed to be sufficiently
         close. The average value of the coordinates is used for the new point.
@@ -133,10 +133,16 @@ class GeometryCleaner:
         remaining point indices in the facet list.
 
         :param float atol: Absolute tolerance for point zipping
+        :param float rtol: Relative tolerance (to geometry extents) for point
+            zipping
         """
 
-        # TODO: implement rtol and choose better vals
         idx_to_remove = []
+
+        # determine rtol
+        (x_min, x_max, y_min, y_max) = self.geometry.calculate_extents()
+        geom_range = max(x_max - x_min, y_max - y_min)
+        rel_tol = rtol * geom_range
 
         # loop through the list of points
         for (i, pt1) in enumerate(self.geometry.points):
@@ -152,7 +158,8 @@ class GeometryCleaner:
 
                 # if the points are sufficiently close together...
                 # and the point has not already been removed
-                if dist < atol and idx_2 not in idx_to_remove:
+                if ((dist < atol or dist < rel_tol) and
+                        idx_2 not in idx_to_remove):
                     # update point1 (average of point1 + point2)
                     pt1[0] = 0.5 * (pt1[0] + pt2[0])
                     pt1[1] = 0.5 * (pt1[1] + pt2[1])

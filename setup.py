@@ -23,12 +23,12 @@ if not (sys.platform == 'win32' or sys.platform == 'cygwin'):
     install_requires.append('meshpy')
 
 setup(name='sectionproperties',
-      version='0.0.6',
+      version='1.0.0',
       description=description_text(),
       long_description=readme(),
       long_description_content_type='text/markdown',
       classifiers=[
-          'Development Status :: 2 - Pre-Alpha',
+          'Development Status :: 5 - Production/Stable',
           'Environment :: Console',
           'Intended Audience :: Science/Research',
           'License :: OSI Approved :: MIT License',
