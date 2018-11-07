@@ -3,28 +3,9 @@ language: python
 before_install:
   - pip install pybind11
 
-matrix:
-  include:
-    - os: linux
-      compiler: gcc
-      addons: &gcc49
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.9', 'gcc-4.9']
-      env:
-        - CXX='g++-4.9'
-        - CC='gcc-4.9'
-      python: 3.5
-    - os: linux
-      compiler: gcc
-      addons: &gcc49
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.9', 'gcc-4.9']
-      env:
-        - CXX='g++-4.9'
-        - CC='gcc-4.9'
-      python: 3.6
+python:
+  - "3.5"
+  - "3.6"
 
 install:
   - python setup.py install
