@@ -1,4 +1,4 @@
 [ ] - Travis CI
-[ ] - Address todos
+[ ] - Address #TODOs
 [ ] - confirm setup.py
 [ ] - release on github
