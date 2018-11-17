@@ -8,7 +8,7 @@ def description_text():
 
 
 def readme():
-    with open('README.rst') as f:
+    with open('README_pypi.rst') as f:
         return f.read()
 
 
