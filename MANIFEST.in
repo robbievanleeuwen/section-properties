@@ -1,2 +1,2 @@
-include README.md
-include CHANGELOG.md
+include README_pypi.rst
+include CHANGELOG.rst

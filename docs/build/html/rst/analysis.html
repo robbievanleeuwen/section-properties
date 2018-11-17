@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Running an Analysis &mdash; sectionproperties 0.0.2 documentation</title>
+  <title>Running an Analysis &mdash; sectionproperties 1.0.0 documentation</title>
   
 
   
@@ -58,6 +58,10 @@
           
             
             
+              <div class="version">
+                1.0.0
+              </div>
+            
           
 
           
@@ -90,6 +94,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#plastic-analysis">Plastic Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#warping-analysis">Warping Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#stress-analysis">Stress Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#calculating-frame-properties">Calculating Frame Properties</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="post.html">Viewing the Results</a></li>
@@ -356,7 +361,7 @@ definition:</p>
 <dd><p>Calculates the geometric properties of the cross-section and stores
 them in the
 <a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>
-object contained in section_props.</p>
+object contained in the <code class="docutils literal notranslate"><span class="pre">section_props</span></code> class variable.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -575,6 +580,60 @@ performed prior to calling this method</td>
 </dd></dl>
 
 </div>
+<div class="section" id="calculating-frame-properties">
+<h2>Calculating Frame Properties<a class="headerlink" href="#calculating-frame-properties" title="Permalink to this headline">¶</a></h2>
+<p>Calculates the cross-section properties required for a 2D or 3D frame analysis.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method is significantly faster than performing a geometric and
+a warping analysis and has no prerequisites.</p>
+</div>
+<dl class="method">
+<dt>
+<code class="descclassname">CrossSection.</code><code class="descname">calculate_frame_properties</code><span class="sig-paren">(</span><em>time_info=False</em>, <em>solver_type='direct'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_frame_properties"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Calculates and returns the properties required for a frame analysis.
+The properties are also stored in the
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>
+object contained in the <code class="docutils literal notranslate"><span class="pre">section_props</span></code> class variable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>time_info</strong> (<em>bool</em>) – If set to True, a detailed description of the
+computation and the time cost is printed to the terminal.</li>
+<li><strong>solver_type</strong> (<em>string</em>) – Solver used for solving systems of linear
+equations, either using the <em>‘direct’</em> method or <em>‘cgs’</em> iterative
+method</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">cross-section properties to be used for a frame analysis
+<em>(area, ixx, iyy, ixy, j, phi)</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple(float, float, float, float, float, float)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following section properties are calculated:</p>
+<ul class="simple">
+<li>Cross-sectional area <em>(area)</em></li>
+<li>Second moments of area about the centroidal axis <em>(ixx, iyy, ixy)</em></li>
+<li>Torsion constant <em>(j)</em></li>
+<li>Principal axis angle <em>(phi)</em></li>
+</ul>
+<p>If materials are specified for the cross-section, the area, second
+moments of area and torsion constant are elastic moulus weighted.</p>
+<p>The following example demonstrates the use of this method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">calculate_frame_properties</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -619,7 +678,7 @@ performed prior to calling this method</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.0.2',
+            VERSION:'1.0.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

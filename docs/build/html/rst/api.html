@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python API Documentation &mdash; sectionproperties 0.0.2 documentation</title>
+  <title>Python API Documentation &mdash; sectionproperties 1.0.0 documentation</title>
   
 
   
@@ -57,6 +57,10 @@
 
           
             
+            
+              <div class="version">
+                1.0.0
+              </div>
             
           
 
@@ -1336,7 +1340,7 @@ id_new.</p>
 
 <dl class="method">
 <dt id="sectionproperties.pre.pre.GeometryCleaner.zip_points">
-<code class="descname">zip_points</code><span class="sig-paren">(</span><em>atol=1e-05</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/pre.html#GeometryCleaner.zip_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.pre.GeometryCleaner.zip_points" title="Permalink to this definition">¶</a></dt>
+<code class="descname">zip_points</code><span class="sig-paren">(</span><em>atol=1e-08</em>, <em>rtol=1e-05</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/pre.html#GeometryCleaner.zip_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.pre.GeometryCleaner.zip_points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Zips points that are close to each other. Searches through the point
 list and merges two points if there are deemed to be sufficiently
 close. The average value of the coordinates is used for the new point.
@@ -1347,7 +1351,12 @@ remaining point indices in the facet list.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>atol</strong> (<em>float</em>) – Absolute tolerance for point zipping</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>atol</strong> (<em>float</em>) – Absolute tolerance for point zipping</li>
+<li><strong>rtol</strong> (<em>float</em>) – Relative tolerance (to geometry extents) for point
+zipping</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1498,7 +1507,7 @@ number of regions</p>
 </table>
 <dl class="method">
 <dt id="sectionproperties.analysis.cross_section.CrossSection.assemble_torsion">
-<code class="descname">assemble_torsion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.assemble_torsion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.assemble_torsion" title="Permalink to this definition">¶</a></dt>
+<code class="descname">assemble_torsion</code><span class="sig-paren">(</span><em>lg=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.assemble_torsion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.assemble_torsion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assembles stiffness matrices to be used for the computation of
 warping properties and the torsion load vector (f_torsion). Both a
 regular (k) and Lagrangian multiplier (k_lg) stiffness matrix are
@@ -1508,14 +1517,62 @@ format and returned in the sparse CSC format.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Regular stiffness matrix, Lagrangian multiplier stiffness
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lg</strong> (<em>bool</em>) – Whether or not to calculate the Lagrangian multiplier
+stiffness matrix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Regular stiffness matrix, Lagrangian multiplier stiffness
 matrix and torsion load vector <em>(k, k_lg, f_torsion)</em></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(<code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.sparse.csc_matrix</span></code>,
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple(<code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.sparse.csc_matrix</span></code>,
 <code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.sparse.csc_matrix</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>)</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.calculate_frame_properties">
+<code class="descname">calculate_frame_properties</code><span class="sig-paren">(</span><em>time_info=False</em>, <em>solver_type='direct'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_frame_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.calculate_frame_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and returns the properties required for a frame analysis.
+The properties are also stored in the
+<a class="reference internal" href="#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>
+object contained in the <code class="docutils literal notranslate"><span class="pre">section_props</span></code> class variable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>time_info</strong> (<em>bool</em>) – If set to True, a detailed description of the
+computation and the time cost is printed to the terminal.</li>
+<li><strong>solver_type</strong> (<em>string</em>) – Solver used for solving systems of linear
+equations, either using the <em>‘direct’</em> method or <em>‘cgs’</em> iterative
+method</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">cross-section properties to be used for a frame analysis
+<em>(area, ixx, iyy, ixy, j, phi)</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple(float, float, float, float, float, float)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following section properties are calculated:</p>
+<ul class="simple">
+<li>Cross-sectional area <em>(area)</em></li>
+<li>Second moments of area about the centroidal axis <em>(ixx, iyy, ixy)</em></li>
+<li>Torsion constant <em>(j)</em></li>
+<li>Principal axis angle <em>(phi)</em></li>
+</ul>
+<p>If materials are specified for the cross-section, the area, second
+moments of area and torsion constant are elastic moulus weighted.</p>
+<p>The following example demonstrates the use of this method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">calculate_frame_properties</span><span class="p">()</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -1524,7 +1581,7 @@ matrix and torsion load vector <em>(k, k_lg, f_torsion)</em></td>
 <dd><p>Calculates the geometric properties of the cross-section and stores
 them in the
 <a class="reference internal" href="#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>
-object contained in section_props.</p>
+object contained in the <code class="docutils literal notranslate"><span class="pre">section_props</span></code> class variable.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2452,6 +2509,10 @@ new mesh is generated by the plastic centroid algorithm.</li>
 <li><strong>mesh_elements</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Array of connectivities from the mesh</li>
 <li><strong>elements</strong> (list[<a class="reference internal" href="#sectionproperties.analysis.fea.Tri6" title="sectionproperties.analysis.fea.Tri6"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tri6</span></code></a>]) – List of finite element objects describing the cross-section
 mesh</li>
+<li><strong>f_top</strong> (<em>float</em>) – Current force in the top region</li>
+<li><strong>c_top</strong> – Centroid of the force in the top region <em>(c_top_x, c_top_y)</em></li>
+<li><strong>c_bot</strong> – Centroid of the force in the bottom region
+<em>(c_bot_x, c_bot_y)</em></li>
 </ul>
 </td>
 </tr>
@@ -2537,11 +2598,10 @@ below the axis.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Force in the top and bottom areas and centroids of these
-forces <em>(f_top, f_bot, [c_top_x, c_top_y], [c_bot_x, c_bot_y])</em></p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Force in the top and bottom areas <em>(f_top, f_bot)</em></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple(float, float, list[float, float], list[float, float])</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple(float, float)</p>
 </td>
 </tr>
 </tbody>
@@ -4873,7 +4933,7 @@ immediately after the window is rendered.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.0.2',
+            VERSION:'1.0.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

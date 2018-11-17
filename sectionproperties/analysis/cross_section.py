@@ -213,7 +213,7 @@ class CrossSection:
         """Calculates the geometric properties of the cross-section and stores
         them in the
         :class:`~sectionproperties.analysis.cross_section.SectionProperties`
-        object contained in section_props.
+        object contained in the ``section_props`` class variable.
 
         :param bool time_info: If set to True, a detailed description of the
             computation and the time cost is printed to the terminal.
@@ -328,10 +328,6 @@ class CrossSection:
         for el in warping_section.elements:
             el.coords[0, :] -= self.section_props.cx
             el.coords[1, :] -= self.section_props.cy
-
-        # shift the mesh_nodes
-        warping_section.mesh_nodes[:, 0] -= self.section_props.cx
-        warping_section.mesh_nodes[:, 1] -= self.section_props.cy
 
         # assemble stiffness matrix and load vector for warping function
         if time_info:
@@ -566,6 +562,138 @@ class CrossSection:
         self.section_props.A_s11 = self.section_props.area / rotatedAlpha[0, 0]
         self.section_props.A_s22 = self.section_props.area / rotatedAlpha[1, 1]
 
+    def calculate_frame_properties(self, time_info=False,
+                                   solver_type='direct'):
+        """Calculates and returns the properties required for a frame analysis.
+        The properties are also stored in the
+        :class:`~sectionproperties.analysis.cross_section.SectionProperties`
+        object contained in the ``section_props`` class variable.
+
+        :param bool time_info: If set to True, a detailed description of the
+            computation and the time cost is printed to the terminal.
+        :param string solver_type: Solver used for solving systems of linear
+            equations, either using the *'direct'* method or *'cgs'* iterative
+            method
+
+        :return: Cross-section properties to be used for a frame analysis
+            *(area, ixx, iyy, ixy, j, phi)*
+        :rtype: tuple(float, float, float, float, float, float)
+
+        The following section properties are calculated:
+
+        * Cross-sectional area *(area)*
+        * Second moments of area about the centroidal axis *(ixx, iyy, ixy)*
+        * Torsion constant *(j)*
+        * Principal axis angle *(phi)*
+
+        If materials are specified for the cross-section, the area, second
+        moments of area and torsion constant are elastic moulus weighted.
+
+        The following example demonstrates the use of this method::
+
+            section = CrossSection(geometry, mesh)
+            (area, ixx, iyy, ixy, j, phi) = section.calculate_frame_properties()
+        """
+
+        def calculate_frame():
+            # initialise geometric properties
+            self.section_props.area = 0
+            self.section_props.ea = 0
+            self.section_props.qx = 0
+            self.section_props.qy = 0
+            self.section_props.ixx_g = 0
+            self.section_props.iyy_g = 0
+            self.section_props.ixy_g = 0
+            self.section_props.ixx_c = 0
+            self.section_props.iyy_c = 0
+            self.section_props.ixy_c = 0
+            self.section_props.j = 0
+            self.section_props.phi = 0
+
+            # calculate global geometric properties
+            for el in self.elements:
+                (area, qx, qy, ixx_g,
+                 iyy_g, ixy_g, e, _) = el.geometric_properties()
+
+                self.section_props.area += area
+                self.section_props.ea += area * e
+                self.section_props.qx += qx * e
+                self.section_props.qy += qy * e
+                self.section_props.ixx_g += ixx_g * e
+                self.section_props.iyy_g += iyy_g * e
+                self.section_props.ixy_g += ixy_g * e
+
+            # calculate elastic centroid location
+            self.section_props.calculate_elastic_centroid()
+
+            # calculate second moments of area about the centroidal xy axis
+            self.section_props.ixx_c = (
+                self.section_props.ixx_g - self.section_props.qx ** 2 /
+                self.section_props.ea)
+            self.section_props.iyy_c = (
+                self.section_props.iyy_g - self.section_props.qy ** 2 /
+                self.section_props.ea)
+            self.section_props.ixy_c = (
+                self.section_props.ixy_g - self.section_props.qx *
+                self.section_props.qy / self.section_props.ea)
+
+            # calculate the principal axis angle
+            Delta = (
+                ((self.section_props.ixx_c - self.section_props.iyy_c) / 2) **
+                2 + self.section_props.ixy_c ** 2) ** 0.5
+            i11_c = (
+                (self.section_props.ixx_c + self.section_props.iyy_c) / 2 +
+                Delta)
+
+            # calculate initial principal axis angle
+            if abs(self.section_props.ixx_c - i11_c) < 1e-12 * i11_c:
+                self.section_props.phi = 0
+            else:
+                self.section_props.phi = np.arctan2(
+                    self.section_props.ixx_c - self.section_props.i11_c,
+                    self.section_props.ixy_c) * 180 / np.pi
+
+            # create a new CrossSection with the origin shifted to the centroid
+            # for calculation of the warping properties
+            warping_section = CrossSection(self.geometry, self.mesh,
+                                           self.materials)
+
+            # shift the coordinates of each element
+            # N.B. the mesh class attribute remains unshifted!
+            for el in warping_section.elements:
+                el.coords[0, :] -= self.section_props.cx
+                el.coords[1, :] -= self.section_props.cy
+
+            (k, _, f) = warping_section.assemble_torsion(lg=False)
+
+            # if the cgs method is used, perform ILU decomposition
+            if solver_type == 'cgs':
+                k_precond = linalg.LinearOperator(
+                    (self.num_nodes, self.num_nodes), linalg.spilu(k).solve)
+
+            # solve for warping function
+            if solver_type == 'cgs':
+                omega = solver.solve_cgs(k, f, k_precond)
+            elif solver_type == 'direct':
+                omega = solver.solve_direct(k, f)
+
+            # calculate the torsion constant
+            self.section_props.j = (
+                self.section_props.ixx_c + self.section_props.iyy_c -
+                omega.dot(k.dot(np.transpose(omega))))
+
+        if time_info:
+            text = "--Calculating frame section properties..."
+            solver.function_timer(text, calculate_frame)
+            print("")
+        else:
+            calculate_frame()
+
+        return (
+            self.section_props.ea, self.section_props.ixx_c,
+            self.section_props.iyy_c, self.section_props.ixy_c,
+            self.section_props.j, self.section_props.phi)
+
     def calculate_plastic_properties(self, pc_region=[0.95, 0.95, 0.95, 0.95],
                                      time_info=False,
                                      verbose=False, debug=False):
@@ -767,12 +895,15 @@ class CrossSection:
         # return the stress_post object
         return stress_post
 
-    def assemble_torsion(self):
+    def assemble_torsion(self, lg=True):
         """Assembles stiffness matrices to be used for the computation of
         warping properties and the torsion load vector (f_torsion). Both a
         regular (k) and Lagrangian multiplier (k_lg) stiffness matrix are
         returned. The stiffness matrices are assembled using the sparse COO
         format and returned in the sparse CSC format.
+
+        :param bool lg: Whether or not to calculate the Lagrangian multiplier
+            stiffness matrix
 
         :return: Regular stiffness matrix, Lagrangian multiplier stiffness
             matrix and torsion load vector *(k, k_lg, f_torsion)*
@@ -813,6 +944,9 @@ class CrossSection:
             data = np.hstack((data, k))
 
         k = coo_matrix((data, (row, col)), shape=(N, N))
+
+        if not lg:
+            return (csc_matrix(k), None, f_torsion)
 
         # construct Lagrangian multiplier matrix:
         # column vector of ones

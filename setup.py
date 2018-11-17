@@ -8,7 +8,7 @@ def description_text():
 
 
 def readme():
-    with open('README.md') as f:
+    with open('README.rst') as f:
         return f.read()
 
 
@@ -23,7 +23,7 @@ if not (sys.platform == 'win32' or sys.platform == 'cygwin'):
     install_requires.append('meshpy')
 
 setup(name='sectionproperties',
-      version='1.0.0',
+      version='1.0.1',
       description=description_text(),
       long_description=readme(),
       long_description_content_type='text/markdown',

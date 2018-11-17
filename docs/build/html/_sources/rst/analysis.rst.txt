@@ -67,3 +67,14 @@ object which stores the cross-section stresses and provides stress plotting func
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.calculate_stress
     :noindex:
+
+Calculating Frame Properties
+----------------------------
+
+Calculates the cross-section properties required for a 2D or 3D frame analysis.
+
+..  note:: This method is significantly faster than performing a geometric and
+  a warping analysis and has no prerequisites.
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.calculate_frame_properties
+    :noindex:

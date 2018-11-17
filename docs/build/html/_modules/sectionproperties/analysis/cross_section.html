@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sectionproperties.analysis.cross_section &mdash; sectionproperties 0.0.2 documentation</title>
+  <title>sectionproperties.analysis.cross_section &mdash; sectionproperties 1.0.0 documentation</title>
   
 
   
@@ -55,6 +55,10 @@
 
           
             
+            
+              <div class="version">
+                1.0.0
+              </div>
             
           
 
@@ -166,7 +170,7 @@
 <span class="kn">import</span> <span class="nn">sectionproperties.post.post</span> <span class="k">as</span> <span class="nn">post</span>
 
 
-<div class="viewcode-block" id="CrossSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection">[docs]</a><span class="k">class</span> <span class="nc">CrossSection</span><span class="p">:</span>
+<div class="viewcode-block" id="CrossSection"><a class="viewcode-back" href="../../../rst/analysis.html#sectionproperties.analysis.cross_section.CrossSection">[docs]</a><span class="k">class</span> <span class="nc">CrossSection</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class for structural cross-sections.</span>
 
 <span class="sd">    Stores the finite element geometry, mesh and material information and</span>
@@ -361,11 +365,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">init</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CrossSection.calculate_geometric_properties"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_geometric_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_info</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.calculate_geometric_properties"><a class="viewcode-back" href="../../../rst/analysis.html#sectionproperties.analysis.cross_section.CrossSection.calculate_geometric_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_geometric_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_info</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculates the geometric properties of the cross-section and stores</span>
 <span class="sd">        them in the</span>
 <span class="sd">        :class:`~sectionproperties.analysis.cross_section.SectionProperties`</span>
-<span class="sd">        object contained in section_props.</span>
+<span class="sd">        object contained in the ``section_props`` class variable.</span>
 
 <span class="sd">        :param bool time_info: If set to True, a detailed description of the</span>
 <span class="sd">            computation and the time cost is printed to the terminal.</span>
@@ -428,7 +432,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">calculate_geom</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CrossSection.calculate_warping_properties"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_warping_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_warping_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_info</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<div class="viewcode-block" id="CrossSection.calculate_warping_properties"><a class="viewcode-back" href="../../../rst/analysis.html#sectionproperties.analysis.cross_section.CrossSection.calculate_warping_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_warping_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_info</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                      <span class="n">solver_type</span><span class="o">=</span><span class="s1">&#39;direct&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculates all the warping properties of the cross-section and</span>
 <span class="sd">        stores them in the</span>
@@ -480,10 +484,6 @@
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
             <span class="n">el</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span>
             <span class="n">el</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span>
-
-        <span class="c1"># shift the mesh_nodes</span>
-        <span class="n">warping_section</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span>
-        <span class="n">warping_section</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span>
 
         <span class="c1"># assemble stiffness matrix and load vector for warping function</span>
         <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
@@ -718,7 +718,139 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">A_s11</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span> <span class="n">rotatedAlpha</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">A_s22</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span> <span class="n">rotatedAlpha</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="CrossSection.calculate_plastic_properties"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_plastic_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_plastic_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc_region</span><span class="o">=</span><span class="p">[</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">],</span>
+<div class="viewcode-block" id="CrossSection.calculate_frame_properties"><a class="viewcode-back" href="../../../rst/analysis.html#sectionproperties.analysis.cross_section.CrossSection.calculate_frame_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_frame_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_info</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                   <span class="n">solver_type</span><span class="o">=</span><span class="s1">&#39;direct&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates and returns the properties required for a frame analysis.</span>
+<span class="sd">        The properties are also stored in the</span>
+<span class="sd">        :class:`~sectionproperties.analysis.cross_section.SectionProperties`</span>
+<span class="sd">        object contained in the ``section_props`` class variable.</span>
+
+<span class="sd">        :param bool time_info: If set to True, a detailed description of the</span>
+<span class="sd">            computation and the time cost is printed to the terminal.</span>
+<span class="sd">        :param string solver_type: Solver used for solving systems of linear</span>
+<span class="sd">            equations, either using the *&#39;direct&#39;* method or *&#39;cgs&#39;* iterative</span>
+<span class="sd">            method</span>
+
+<span class="sd">        :return: cross-section properties to be used for a frame analysis</span>
+<span class="sd">            *(area, ixx, iyy, ixy, j, phi)*</span>
+<span class="sd">        :rtype: tuple(float, float, float, float, float, float)</span>
+
+<span class="sd">        The following section properties are calculated:</span>
+
+<span class="sd">        * Cross-sectional area *(area)*</span>
+<span class="sd">        * Second moments of area about the centroidal axis *(ixx, iyy, ixy)*</span>
+<span class="sd">        * Torsion constant *(j)*</span>
+<span class="sd">        * Principal axis angle *(phi)*</span>
+
+<span class="sd">        If materials are specified for the cross-section, the area, second</span>
+<span class="sd">        moments of area and torsion constant are elastic moulus weighted.</span>
+
+<span class="sd">        The following example demonstrates the use of this method::</span>
+
+<span class="sd">            section = CrossSection(geometry, mesh)</span>
+<span class="sd">            (area, ixx, iyy, ixy, j, phi) = section.calculate_frame_properties()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">calculate_frame</span><span class="p">():</span>
+            <span class="c1"># initialise geometric properties</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qy</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_g</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_g</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_g</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">phi</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c1"># calculate global geometric properties</span>
+            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">qx</span><span class="p">,</span> <span class="n">qy</span><span class="p">,</span> <span class="n">ixx_g</span><span class="p">,</span>
+                 <span class="n">iyy_g</span><span class="p">,</span> <span class="n">ixy_g</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">geometric_properties</span><span class="p">()</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">+=</span> <span class="n">area</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span> <span class="o">+=</span> <span class="n">area</span> <span class="o">*</span> <span class="n">e</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qx</span> <span class="o">+=</span> <span class="n">qx</span> <span class="o">*</span> <span class="n">e</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qy</span> <span class="o">+=</span> <span class="n">qy</span> <span class="o">*</span> <span class="n">e</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_g</span> <span class="o">+=</span> <span class="n">ixx_g</span> <span class="o">*</span> <span class="n">e</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_g</span> <span class="o">+=</span> <span class="n">iyy_g</span> <span class="o">*</span> <span class="n">e</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_g</span> <span class="o">+=</span> <span class="n">ixy_g</span> <span class="o">*</span> <span class="n">e</span>
+
+            <span class="c1"># calculate elastic centroid location</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">calculate_elastic_centroid</span><span class="p">()</span>
+
+            <span class="c1"># calculate second moments of area about the centroidal xy axis</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_g</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_g</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qy</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_g</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qx</span> <span class="o">*</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qy</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">)</span>
+
+            <span class="c1"># calculate the principal axis angle</span>
+            <span class="n">Delta</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span>
+                <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+            <span class="n">i11_c</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span>
+                <span class="n">Delta</span><span class="p">)</span>
+
+            <span class="c1"># calculate initial principal axis angle</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">-</span> <span class="n">i11_c</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-12</span> <span class="o">*</span> <span class="n">i11_c</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">phi</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">i11_c</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span><span class="p">)</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+            <span class="c1"># create a new CrossSection with the origin shifted to the centroid</span>
+            <span class="c1"># for calculation of the warping properties</span>
+            <span class="n">warping_section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">materials</span><span class="p">)</span>
+
+            <span class="c1"># shift the coordinates of each element</span>
+            <span class="c1"># N.B. the mesh class attribute remains unshifted!</span>
+            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+                <span class="n">el</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span>
+                <span class="n">el</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span>
+
+            <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="o">=</span> <span class="n">warping_section</span><span class="o">.</span><span class="n">assemble_torsion</span><span class="p">(</span><span class="n">lg</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># if the cgs method is used, perform ILU decomposition</span>
+            <span class="k">if</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s1">&#39;cgs&#39;</span><span class="p">:</span>
+                <span class="n">k_precond</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">LinearOperator</span><span class="p">(</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">),</span> <span class="n">linalg</span><span class="o">.</span><span class="n">spilu</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">solve</span><span class="p">)</span>
+
+            <span class="c1"># solve for warping function</span>
+            <span class="k">if</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s1">&#39;cgs&#39;</span><span class="p">:</span>
+                <span class="n">omega</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve_cgs</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">k_precond</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s1">&#39;direct&#39;</span><span class="p">:</span>
+                <span class="n">omega</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve_direct</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+            <span class="c1"># calculate the torsion constant</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">-</span>
+                <span class="n">omega</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">omega</span><span class="p">))))</span>
+
+        <span class="k">if</span> <span class="n">time_info</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Calculating frame section properties...&quot;</span>
+            <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">calculate_frame</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">calculate_frame</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">phi</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CrossSection.calculate_plastic_properties"><a class="viewcode-back" href="../../../rst/analysis.html#sectionproperties.analysis.cross_section.CrossSection.calculate_plastic_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_plastic_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc_region</span><span class="o">=</span><span class="p">[</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">],</span>
                                      <span class="n">time_info</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                      <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculates the plastic properties of the cross-section and stores</span>
@@ -788,7 +920,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">calc_plastic</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CrossSection.calculate_stress"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_stress">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_stress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Vx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Vy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Mxx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Myy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">M11</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">M22</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<div class="viewcode-block" id="CrossSection.calculate_stress"><a class="viewcode-back" href="../../../rst/analysis.html#sectionproperties.analysis.cross_section.CrossSection.calculate_stress">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_stress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Vx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Vy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Mxx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Myy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">M11</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">M22</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                          <span class="n">Mzz</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">time_info</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculates the cross-section stress resulting from design actions</span>
 <span class="sd">        and returns a</span>
@@ -919,12 +1051,15 @@
         <span class="c1"># return the stress_post object</span>
         <span class="k">return</span> <span class="n">stress_post</span></div>
 
-<div class="viewcode-block" id="CrossSection.assemble_torsion"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.assemble_torsion">[docs]</a>    <span class="k">def</span> <span class="nf">assemble_torsion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.assemble_torsion"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.assemble_torsion">[docs]</a>    <span class="k">def</span> <span class="nf">assemble_torsion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lg</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Assembles stiffness matrices to be used for the computation of</span>
 <span class="sd">        warping properties and the torsion load vector (f_torsion). Both a</span>
 <span class="sd">        regular (k) and Lagrangian multiplier (k_lg) stiffness matrix are</span>
 <span class="sd">        returned. The stiffness matrices are assembled using the sparse COO</span>
 <span class="sd">        format and returned in the sparse CSC format.</span>
+
+<span class="sd">        :param bool lg: Whether or not to calculate the Lagrangian multiplier</span>
+<span class="sd">            stiffness matrix</span>
 
 <span class="sd">        :return: Regular stiffness matrix, Lagrangian multiplier stiffness</span>
 <span class="sd">            matrix and torsion load vector *(k, k_lg, f_torsion)*</span>
@@ -966,6 +1101,9 @@
 
         <span class="n">k</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lg</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">csc_matrix</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="n">f_torsion</span><span class="p">)</span>
+
         <span class="c1"># construct Lagrangian multiplier matrix:</span>
         <span class="c1"># column vector of ones</span>
         <span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)))</span>
@@ -986,7 +1124,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">csc_matrix</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">csc_matrix</span><span class="p">(</span><span class="n">k_lg</span><span class="p">),</span> <span class="n">f_torsion</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.plot_mesh"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.plot_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">plot_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">materials</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<div class="viewcode-block" id="CrossSection.plot_mesh"><a class="viewcode-back" href="../../../rst/analysis.html#sectionproperties.analysis.cross_section.CrossSection.plot_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">plot_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">materials</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                   <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plots the finite element mesh. If no axes object is supplied a new</span>
 <span class="sd">        figure and axis is created.</span>
@@ -1178,7 +1316,7 @@
         <span class="c1"># finish the plot</span>
         <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Centroids&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.display_mesh_info"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.display_mesh_info">[docs]</a>    <span class="k">def</span> <span class="nf">display_mesh_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.display_mesh_info"><a class="viewcode-back" href="../../../rst/analysis.html#sectionproperties.analysis.cross_section.CrossSection.display_mesh_info">[docs]</a>    <span class="k">def</span> <span class="nf">display_mesh_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Prints mesh statistics (number of nodes, elements and regions) to</span>
 <span class="sd">        the command window.</span>
 
@@ -1470,9 +1608,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x11_se</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># add centroid location to move section back to original location</span>
-            <span class="n">x11_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x11_se</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span>
-            <span class="n">y22_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y22_se</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span>
+            <span class="n">x11_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x11_se</span>
+            <span class="n">y22_se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y22_se</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">x11_se</span><span class="p">,</span> <span class="n">y22_se</span><span class="p">)</span></div>
 
@@ -1697,6 +1834,12 @@
 <span class="sd">    :cvar elements: List of finite element objects describing the cross-section</span>
 <span class="sd">        mesh</span>
 <span class="sd">    :vartype elements: list[:class:`~sectionproperties.analysis.fea.Tri6`]</span>
+<span class="sd">    :cvar float f_top: Current force in the top region</span>
+<span class="sd">    :cvar c_top: Centroid of the force in the top region *(c_top_x, c_top_y)*</span>
+<span class="sd">    :type c_top: list[float, float]</span>
+<span class="sd">    :cvar c_bot: Centroid of the force in the bottom region</span>
+<span class="sd">        *(c_bot_x, c_bot_y)*</span>
+<span class="sd">    :type c_bot: list[float, float]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">materials</span><span class="p">,</span> <span class="n">debug</span><span class="p">):</span>
@@ -2034,7 +2177,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">element_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">materials</span><span class="p">)</span>
 
         <span class="c1"># calculate force equilibrium</span>
-        <span class="p">(</span><span class="n">f_top</span><span class="p">,</span> <span class="n">f_bot</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">f_top</span><span class="p">,</span> <span class="n">f_bot</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">calculate_plastic_force</span><span class="p">(</span><span class="n">element_list</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
 
         <span class="c1"># return the force norm</span>
@@ -2079,16 +2222,7 @@
         <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluate_force_eq</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u_p</span><span class="p">),</span>
                         <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
 
-        <span class="c1"># get centroids of the areas</span>
-        <span class="c1"># TODO: consider saving f, c_top, c_bot as class variables so we don&#39;t</span>
-        <span class="c1"># have to run it again</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d</span> <span class="o">*</span> <span class="n">u_p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span> <span class="o">*</span> <span class="n">u_p</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
-        <span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_plastic_mesh</span><span class="p">([</span><span class="n">p</span><span class="p">,</span> <span class="n">u</span><span class="p">])</span>
-        <span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">element_list</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
-        <span class="p">(</span><span class="n">f_top</span><span class="p">,</span> <span class="n">f_bot</span><span class="p">,</span> <span class="n">c_top</span><span class="p">,</span> <span class="n">c_bot</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_plastic_force</span><span class="p">(</span><span class="n">element_list</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
-
-        <span class="k">return</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f_top</span><span class="p">,</span> <span class="n">c_top</span><span class="p">,</span> <span class="n">c_bot</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_bot</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PlasticSection.calculate_plastic_force"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.PlasticSection.calculate_plastic_force">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_plastic_force</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Sums the forces above and below the axis defined by unit vector *u*</span>
@@ -2101,9 +2235,8 @@
 <span class="sd">        :type u: :class:`numpy.ndarray`</span>
 <span class="sd">        :param p: Point on the axis</span>
 <span class="sd">        :type p: :class:`numpy.ndarray`</span>
-<span class="sd">        :return: Force in the top and bottom areas and centroids of these</span>
-<span class="sd">            forces *(f_top, f_bot, [c_top_x, c_top_y], [c_bot_x, c_bot_y])*</span>
-<span class="sd">        :rtype: tuple(float, float, list[float, float], list[float, float])</span>
+<span class="sd">        :return: Force in the top and bottom areas *(f_top, f_bot)*</span>
+<span class="sd">        :rtype: tuple(float, float)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># initialise variables</span>
@@ -2129,11 +2262,12 @@
                 <span class="n">qx_bot</span> <span class="o">+=</span> <span class="n">qx_el</span>
                 <span class="n">qy_bot</span> <span class="o">+=</span> <span class="n">qy_el</span>
 
-        <span class="c1"># calculate the centroid of the top and bottom segments</span>
-        <span class="n">c_top</span> <span class="o">=</span> <span class="p">[</span><span class="n">qy_top</span> <span class="o">/</span> <span class="n">ea_top</span><span class="p">,</span> <span class="n">qx_top</span> <span class="o">/</span> <span class="n">ea_top</span><span class="p">]</span>
-        <span class="n">c_bot</span> <span class="o">=</span> <span class="p">[</span><span class="n">qy_bot</span> <span class="o">/</span> <span class="n">ea_bot</span><span class="p">,</span> <span class="n">qx_bot</span> <span class="o">/</span> <span class="n">ea_bot</span><span class="p">]</span>
+        <span class="c1"># calculate the centroid of the top and bottom segments and save</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_top</span> <span class="o">=</span> <span class="p">[</span><span class="n">qy_top</span> <span class="o">/</span> <span class="n">ea_top</span><span class="p">,</span> <span class="n">qx_top</span> <span class="o">/</span> <span class="n">ea_top</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_bot</span> <span class="o">=</span> <span class="p">[</span><span class="n">qy_bot</span> <span class="o">/</span> <span class="n">ea_bot</span><span class="p">,</span> <span class="n">qx_bot</span> <span class="o">/</span> <span class="n">ea_bot</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_top</span> <span class="o">=</span> <span class="n">f_top</span>
 
-        <span class="k">return</span><span class="p">(</span><span class="n">f_top</span><span class="p">,</span> <span class="n">f_bot</span><span class="p">,</span> <span class="n">c_top</span><span class="p">,</span> <span class="n">c_bot</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">f_top</span><span class="p">,</span> <span class="n">f_bot</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PlasticSection.create_plastic_mesh"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.PlasticSection.create_plastic_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">create_plastic_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_line</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generates a triangular mesh of a deep copy of the geometry stored in</span>
@@ -2470,6 +2604,10 @@
         <span class="c1"># set up the colormap</span>
         <span class="n">cmap</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
 
+        <span class="c1"># initialise quiver plot list max scale</span>
+        <span class="n">quiv_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">max_scale</span> <span class="o">=</span> <span class="mi">0</span>
+
         <span class="c1"># plot the vectors</span>
         <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sigx</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sigxs</span><span class="p">):</span>
             <span class="n">sigy</span> <span class="o">=</span> <span class="n">sigys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
@@ -2477,24 +2615,27 @@
             <span class="c1"># scale the colour with respect to the magnitude of the vector</span>
             <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">sigx</span><span class="p">,</span> <span class="n">sigy</span><span class="p">)</span>
 
-            <span class="c1"># The scale is defined by the scale of the first plot</span>
-            <span class="c1"># TODO: return all scales then use the largest one???</span>
+            <span class="n">quiv</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="n">sigx</span><span class="p">,</span> <span class="n">sigy</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+
+            <span class="c1"># get the scale and store the max value</span>
+            <span class="n">quiv</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
+            <span class="n">max_scale</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_scale</span><span class="p">,</span> <span class="n">quiv</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+            <span class="n">quiv_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">quiv</span><span class="p">)</span>
+
+            <span class="c1"># update the colormap values</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">c_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
                 <span class="n">c_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-
-                <span class="n">quiv</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-                    <span class="n">sigx</span><span class="p">,</span> <span class="n">sigy</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">c_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">c_min</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
                 <span class="n">c_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">c_max</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
 
-                <span class="n">ax</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="o">.</span><span class="n">mesh_nodes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-                    <span class="n">sigx</span><span class="p">,</span> <span class="n">sigy</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">quiv</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="c1"># apply the scale</span>
+        <span class="k">for</span> <span class="n">quiv_plot</span> <span class="ow">in</span> <span class="n">quiv_list</span><span class="p">:</span>
+            <span class="n">quiv_plot</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">max_scale</span>
 
         <span class="c1"># apply the colourbar</span>
         <span class="n">v1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">c_min</span><span class="p">,</span> <span class="n">c_max</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -4090,7 +4231,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.2',
+            VERSION:'1.0.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

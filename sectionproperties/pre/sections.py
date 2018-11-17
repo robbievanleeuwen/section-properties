@@ -194,14 +194,54 @@ class Geometry:
         for cp in self.control_points:
             cp[i] = 2 * mirror_point[i] - cp[i]
 
+    def add_point(self, point):
+        """Adds a point to the geometry and returns the added point id.
+
+        :param point: Location of the point
+        :type point: list[float, float]
+        :return: Point id
+        :rtype: int
+        """
+
+        self.points.append(point)
+        return len(self.points - 1)
+
+    def add_facet(self, facet):
+        """Adds a facet to the geometry and returns the added facet id.
+
+        :param facet: Point indices of the facet
+        :type facet: list[float, float]
+        :return: Facet id
+        :rtype: int
+        """
+
+        self.facets.append(facet)
+        return len(self.facets - 1)
+
     def add_hole(self, hole):
-        """Adds a point defining a hole location to the geometry.
+        """Adds a hole location to the geometry and returns the added hole id.
 
         :param hole: Location of the hole
         :type hole: list[float, float]
+        :return: Hole id
+        :rtype: int
         """
 
         self.holes.append(hole)
+        return len(self.holes - 1)
+
+    def add_control_point(self, control_point):
+        """Adds a control point to the geometry and returns the added control
+        point id.
+
+        :param hole: Location of the control point
+        :type hole: list[float, float]
+        :return: Control point id
+        :rtype: int
+        """
+
+        self.control_points.append(control_point)
+        return len(self.control_points - 1)
 
     def clean_geometry(self, verbose=False):
         """Peforms a full clean on the geometry.

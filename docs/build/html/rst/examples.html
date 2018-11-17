@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Examples &mdash; sectionproperties 0.0.2 documentation</title>
+  <title>Examples &mdash; sectionproperties 1.0.0 documentation</title>
   
 
   
@@ -58,6 +58,10 @@
           
             
             
+              <div class="version">
+                1.0.0
+              </div>
+            
           
 
           
@@ -93,6 +97,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#mirroring-and-rotating-geometry">Mirroring and Rotating Geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#performing-a-stress-analysis">Performing a Stress Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#creating-a-composite-cross-section">Creating a Composite Cross-Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#frame-analysis-example">Frame Analysis Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#advanced-example">Advanced Example</a></li>
 </ul>
 </li>
@@ -803,8 +808,8 @@ x_se      = 8.250071e+01
 y_se      = 2.863400e+02
 x_st      = 8.250070e+01
 y_st      = 2.857074e+02
-x1_se     = 8.250071e+01
-y2_se     = 2.863400e+02
+x1_se     = 7.063407e-04
+y2_se     = 1.012091e+02
 A_sx      = 1.104723e+04
 A_sy      = 1.021183e+04
 A_s11     = 1.104723e+04
@@ -818,6 +823,60 @@ y22_pc    = 2.503607e+02
 M_p,11    = 3.932543e+08
 M_p,22    = 1.610673e+08
 </pre></div>
+</div>
+</div>
+<div class="section" id="frame-analysis-example">
+<h2>Frame Analysis Example<a class="headerlink" href="#frame-analysis-example" title="Permalink to this headline">¶</a></h2>
+<p>The following example demonstrates how <em>sectionproperties</em> can be used to
+calculate the cross-section properties required for a frame analysis. Using this
+method is preferred over executing a geometric and warping analysis as only variables
+required for a frame analysis are computed. In this example the torsion constant of
+a rectangular section is calculated for a number of different mesh sizes and the
+accuracy of the result compared with the time taken to obtain the solution:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
+
+<span class="c1"># create a rectangular section</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">RectangularSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="c1"># create a list of mesh sizes to analyse</span>
+<span class="n">mesh_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
+<span class="n">j_calc</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list to store torsion constants</span>
+<span class="n">t_calc</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list to store computation times</span>
+
+<span class="c1"># loop through mesh sizes</span>
+<span class="k">for</span> <span class="n">mesh_size</span> <span class="ow">in</span> <span class="n">mesh_sizes</span><span class="p">:</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="n">mesh_size</span><span class="p">])</span>  <span class="c1"># create mesh</span>
+    <span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>  <span class="c1"># create a CrossSection object</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>  <span class="c1"># start timing</span>
+    <span class="c1"># calculate the frame properties</span>
+    <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">calculate_frame_properties</span><span class="p">()</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>  <span class="c1"># stop timing</span>
+    <span class="n">t_calc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>  <span class="c1"># save the time</span>
+    <span class="n">j_calc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>  <span class="c1"># save the torsion constant</span>
+    <span class="c1"># print the result</span>
+    <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Mesh Size: </span><span class="si">{0}</span><span class="s2">; &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mesh_size</span><span class="p">)</span>
+    <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot;Solution Time </span><span class="si">{0:.5f}</span><span class="s2"> s; &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot;Torsion Constant: </span><span class="si">{0:.12e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+<span class="n">correct_val</span> <span class="o">=</span> <span class="n">j_calc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># assume the finest mesh gives the &#39;correct&#39; value</span>
+<span class="n">j_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">j_calc</span><span class="p">)</span>  <span class="c1"># convert results to a numpy array</span>
+<span class="n">error_vals</span> <span class="o">=</span> <span class="p">(</span><span class="n">j_calc</span> <span class="o">-</span> <span class="n">correct_val</span><span class="p">)</span> <span class="o">/</span> <span class="n">j_calc</span> <span class="o">*</span> <span class="mi">100</span>  <span class="c1"># compute the error</span>
+
+<span class="c1"># produce a plot of the accuracy of the torsion constant with computation time</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">t_calc</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">error_vals</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="s1">&#39;kx-&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Solver Time [s]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Torsion Constant Error [%]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id23">
+<a class="reference internal image-reference" href="../_images/frame_graph.png"><img alt="../_images/frame_graph.png" src="../_images/frame_graph.png" style="width: 421.5px; height: 313.5px;" /></a>
+<p class="caption"><span class="caption-text">Plot of the torsion constant as a function of the solution time.</span></p>
 </div>
 </div>
 <div class="section" id="advanced-example">
@@ -870,7 +929,7 @@ the aspect ratio is then plotted:</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id23">
+<div class="figure align-center" id="id24">
 <a class="reference internal image-reference" href="../_images/advanced.png"><img alt="../_images/advanced.png" src="../_images/advanced.png" style="width: 480.0px; height: 360.0px;" /></a>
 <p class="caption"><span class="caption-text">Plot of the torsion constant as a function of the aspect ratio.</span></p>
 </div>
@@ -919,7 +978,7 @@ the aspect ratio is then plotted:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.0.2',
+            VERSION:'1.0.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
