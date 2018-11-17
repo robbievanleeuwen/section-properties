@@ -204,7 +204,7 @@ class Geometry:
         """
 
         self.points.append(point)
-        return len(self.points - 1)
+        return len(self.points) - 1
 
     def add_facet(self, facet):
         """Adds a facet to the geometry and returns the added facet id.
@@ -216,7 +216,7 @@ class Geometry:
         """
 
         self.facets.append(facet)
-        return len(self.facets - 1)
+        return len(self.facets) - 1
 
     def add_hole(self, hole):
         """Adds a hole location to the geometry and returns the added hole id.
@@ -228,7 +228,7 @@ class Geometry:
         """
 
         self.holes.append(hole)
-        return len(self.holes - 1)
+        return len(self.holes) - 1
 
     def add_control_point(self, control_point):
         """Adds a control point to the geometry and returns the added control
@@ -241,7 +241,7 @@ class Geometry:
         """
 
         self.control_points.append(control_point)
-        return len(self.control_points - 1)
+        return len(self.control_points) - 1
 
     def clean_geometry(self, verbose=False):
         """Peforms a full clean on the geometry.
