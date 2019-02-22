@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python API Documentation &mdash; sectionproperties 1.0.0 documentation</title>
+  <title>Python API Documentation &mdash; sectionproperties 1.0.2 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                1.0.0
+                1.0.2
               </div>
             
           
@@ -249,14 +249,73 @@ within a region enclosed by facets.</li>
 </tbody>
 </table>
 <dl class="method">
+<dt id="sectionproperties.pre.sections.Geometry.add_control_point">
+<code class="descname">add_control_point</code><span class="sig-paren">(</span><em>control_point</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.add_control_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.add_control_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a control point to the geometry and returns the added control
+point id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hole</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Location of the control point</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Control point id</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.pre.sections.Geometry.add_facet">
+<code class="descname">add_facet</code><span class="sig-paren">(</span><em>facet</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.add_facet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.add_facet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a facet to the geometry and returns the added facet id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>facet</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Point indices of the facet</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Facet id</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="sectionproperties.pre.sections.Geometry.add_hole">
 <code class="descname">add_hole</code><span class="sig-paren">(</span><em>hole</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.add_hole"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.add_hole" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a point defining a hole location to the geometry.</p>
+<dd><p>Adds a hole location to the geometry and returns the added hole id.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hole</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Location of the hole</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Hole id</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.pre.sections.Geometry.add_point">
+<code class="descname">add_point</code><span class="sig-paren">(</span><em>point</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.add_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.add_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a point to the geometry and returns the added point id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>point</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Location of the point</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Point id</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
@@ -1550,7 +1609,7 @@ method</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">cross-section properties to be used for a frame analysis
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Cross-section properties to be used for a frame analysis
 <em>(area, ixx, iyy, ixy, j, phi)</em></p>
 </td>
 </tr>
@@ -4933,7 +4992,7 @@ immediately after the window is rendered.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.0.0',
+            VERSION:'1.0.2',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
