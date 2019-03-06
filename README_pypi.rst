@@ -1,5 +1,7 @@
-sectionproperties
-=================
+.. image:: logo.png
+  :width: 100 %
+  :alt: sectionproperties
+  :align: left
 
 |Build Status| |Documentation Status|
 
@@ -124,6 +126,7 @@ Post-Processor:
 -  [x] Plot mesh
 -  [x] Plot centroids
 -  [x] Plot cross-section stresses
+-  [x] Retrieve cross-section stresses
 -  [ ] Generate cross-section report
 -  [ ] Export to Paraview
 

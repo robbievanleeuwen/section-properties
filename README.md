@@ -92,6 +92,7 @@ $ pip install sectionproperties
 - [x] Plot mesh
 - [x] Plot centroids
 - [x] Plot cross-section stresses
+- [x] Retrieve cross-section stresses
 - [ ] Generate cross-section report
 - [ ] Export to Paraview
 

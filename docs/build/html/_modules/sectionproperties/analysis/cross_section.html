@@ -2644,9 +2644,126 @@
         <span class="c1"># finish the plot</span>
         <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="StressPost.get_stress"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.get_stress">[docs]</a>    <span class="k">def</span> <span class="nf">get_stress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the stresses within each material belonging to the current</span>
+<span class="sd">        :class:`~sectionproperties.analysis.cross_section.StressPost` object.</span>
+
+<span class="sd">        :return: A list of dictionaries containing the cross-section stresses</span>
+<span class="sd">            for each material.</span>
+<span class="sd">        :rtype: list[dict]</span>
+
+<span class="sd">        A dictionary is returned for each material in the cross-section,</span>
+<span class="sd">        containing the following keys and values:</span>
+
+<span class="sd">        * *&#39;Material&#39;*: Material name</span>
+<span class="sd">        * *&#39;sig_zz_n&#39;*: Normal stress :math:`\sigma_{zz,N}` resulting from the</span>
+<span class="sd">          axial load :math:`N`</span>
+<span class="sd">        * *&#39;sig_zz_mxx&#39;*: Normal stress :math:`\sigma_{zz,Mxx}` resulting from</span>
+<span class="sd">          the bending moment :math:`M_{xx}`</span>
+<span class="sd">        * *&#39;sig_zz_myy&#39;*: Normal stress :math:`\sigma_{zz,Myy}` resulting from</span>
+<span class="sd">          the bending moment :math:`M_{yy}`</span>
+<span class="sd">        * *&#39;sig_zz_m11&#39;*: Normal stress :math:`\sigma_{zz,M11}` resulting from</span>
+<span class="sd">          the bending moment :math:`M_{11}`</span>
+<span class="sd">        * *&#39;sig_zz_m22&#39;*: Normal stress :math:`\sigma_{zz,M22}` resulting from</span>
+<span class="sd">          the bending moment :math:`M_{22}`</span>
+<span class="sd">        * *&#39;sig_zz_m&#39;*: Normal stress :math:`\sigma_{zz,\Sigma M}` resulting</span>
+<span class="sd">          from all bending moments</span>
+<span class="sd">        * *&#39;sig_zx_mzz&#39;*: *x*-component of the shear stress</span>
+<span class="sd">          :math:`\sigma_{zx,Mzz}` resulting from the torsion moment</span>
+<span class="sd">        * *&#39;sig_zy_mzz&#39;*: *y*-component of the shear stress</span>
+<span class="sd">          :math:`\sigma_{zy,Mzz}` resulting from the torsion moment</span>
+<span class="sd">        * *&#39;sig_zxy_mzz&#39;*: Resultant shear stress :math:`\sigma_{zxy,Mzz}`</span>
+<span class="sd">          resulting from the torsion moment</span>
+<span class="sd">        * *&#39;sig_zx_vx&#39;*: *x*-component of the shear stress</span>
+<span class="sd">          :math:`\sigma_{zx,Vx}` resulting from the shear force</span>
+<span class="sd">          :math:`V_{x}`</span>
+<span class="sd">        * *&#39;sig_zy_vx&#39;*: *y*-component of the shear stress</span>
+<span class="sd">          :math:`\sigma_{zy,Vx}` resulting from the shear force</span>
+<span class="sd">          :math:`V_{x}`</span>
+<span class="sd">        * *&#39;sig_zxy_vx&#39;*: Resultant shear stress :math:`\sigma_{zxy,Vx}`</span>
+<span class="sd">          resulting from the shear force :math:`V_{x}`</span>
+<span class="sd">        * *&#39;sig_zx_vy&#39;*: *x*-component of the shear stress</span>
+<span class="sd">          :math:`\sigma_{zy,Vx}` resulting from the shear force</span>
+<span class="sd">          :math:`V_{y}`</span>
+<span class="sd">        * *&#39;sig_zy_vy&#39;*: *y*-component of the shear stress</span>
+<span class="sd">          :math:`\sigma_{zy,Vy}` resulting from the shear force</span>
+<span class="sd">          :math:`V_{y}`</span>
+<span class="sd">        * *&#39;sig_zxy_vy&#39;*: Resultant shear stress :math:`\sigma_{zxy,Vy}`</span>
+<span class="sd">          resulting from the shear force :math:`V_{y}`</span>
+<span class="sd">        * *&#39;sig_zx_v&#39;*: *x*-component of the shear stress</span>
+<span class="sd">          :math:`\sigma_{zx,\Sigma V}` resulting from all shear forces</span>
+<span class="sd">        * *&#39;sig_zy_v&#39;*: *y*-component of the shear stress</span>
+<span class="sd">          :math:`\sigma_{zy,\Sigma V}` resulting from all shear forces</span>
+<span class="sd">        * *&#39;sig_zxy_v&#39;*: Resultant shear stress :math:`\sigma_{zxy,\Sigma V}`</span>
+<span class="sd">          resulting from all shear forces</span>
+<span class="sd">        * *&#39;sig_zz&#39;*: Combined normal stress :math:`\sigma_{zz}` resulting from</span>
+<span class="sd">          all actions</span>
+<span class="sd">        * *&#39;sig_zx&#39;*: *x*-component of the shear stress :math:`\sigma_{zx}`</span>
+<span class="sd">          resulting from all actions</span>
+<span class="sd">        * *&#39;sig_zy&#39;*: *y*-component of the shear stress :math:`\sigma_{zy}`</span>
+<span class="sd">          resulting from all actions</span>
+<span class="sd">        * *&#39;sig_zxy&#39;*: Resultant shear stress :math:`\sigma_{zxy}` resulting</span>
+<span class="sd">          from all actions</span>
+<span class="sd">        * *&#39;sig_vm&#39;*: von Mises stress :math:`\sigma_{vM}` resulting from all</span>
+<span class="sd">          actions</span>
+
+<span class="sd">        The following example returns the normal stress within a 150x90x12 UA</span>
+<span class="sd">        section resulting from an axial force of 10 kN::</span>
+
+<span class="sd">            import sectionproperties.pre.sections as sections</span>
+<span class="sd">            from sectionproperties.analysis.cross_section import CrossSection</span>
+
+<span class="sd">            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)</span>
+<span class="sd">            mesh = geometry.create_mesh(mesh_sizes=[2.5])</span>
+<span class="sd">            section = CrossSection(geometry, mesh)</span>
+
+<span class="sd">            section.calculate_geometric_properties()</span>
+<span class="sd">            section.calculate_warping_properties()</span>
+<span class="sd">            stress_post = section.calculate_stress(N=10e3)</span>
+
+<span class="sd">            stresses = stress_post.get_stress()</span>
+<span class="sd">            print(&#39;Material {0}.format(stresses[0][&#39;Material&#39;]))</span>
+<span class="sd">            print(&#39;Axial Stresses {0}&#39;.format(stress[0][&#39;sig_zz_n&#39;]))</span>
+
+<span class="sd">            $ Material: default</span>
+<span class="sd">            $ Axial Stresses: [3.64025694 3.64025694 3.64025694 ... 3.64025694 3.64025694 3.64025694]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">stress</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">material_groups</span><span class="p">:</span>
+            <span class="n">stress</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;Material&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zz_n&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zz_n</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zz_mxx&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zz_mxx</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zz_myy&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zz_myy</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zz_m11&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zz_m11</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zz_m22&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zz_m22</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zz_m&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zz_m</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zx_mzz&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zx_mzz</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zy_mzz&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zy_mzz</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zxy_mzz&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zxy_mzz</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zx_vx&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zx_vx</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zy_vx&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zy_vx</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zxy_vx&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zxy_vx</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zx_vy&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zx_vy</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zy_vy&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zy_vy</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zxy_vy&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zxy_vy</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zx_v&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zx_v</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zy_v&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zy_v</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zxy_v&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zxy_v</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zz&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zz</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zx&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zx</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zy&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zy</span><span class="p">,</span>
+                <span class="s1">&#39;sig_zxy&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_zxy</span><span class="p">,</span>
+                <span class="s1">&#39;sig_vm&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">stress_result</span><span class="o">.</span><span class="n">sig_vm</span>
+            <span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">stress</span></div>
+
 <div class="viewcode-block" id="StressPost.plot_stress_n_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_n_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_n_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress :math:`\sigma_{zz,N}`</span>
-<span class="sd">        resulting from the applied axial load :math:`N`.</span>
+<span class="sd">        resulting from the axial load :math:`N`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
@@ -2685,7 +2802,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_mxx_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mxx_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mxx_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}`</span>
-<span class="sd">        resulting from the applied bending moment :math:`M_{xx}`.</span>
+<span class="sd">        resulting from the bending moment :math:`M_{xx}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
@@ -2724,7 +2841,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_myy_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_myy_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_myy_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}`</span>
-<span class="sd">        resulting from the applied bending moment :math:`M_{yy}`.</span>
+<span class="sd">        resulting from the bending moment :math:`M_{yy}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
@@ -2763,7 +2880,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_m11_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_m11_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_m11_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}`</span>
-<span class="sd">        resulting from the applied bending moment :math:`M_{11}`.</span>
+<span class="sd">        resulting from the bending moment :math:`M_{11}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
@@ -2802,7 +2919,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_m22_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_m22_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_m22_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}`</span>
-<span class="sd">        resulting from the applied bending moment :math:`M_{22}`.</span>
+<span class="sd">        resulting from the bending moment :math:`M_{22}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
@@ -2841,7 +2958,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_m_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_m_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_m_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress</span>
-<span class="sd">        :math:`\sigma_{zz,\Sigma M}` resulting from all applied bending moments</span>
+<span class="sd">        :math:`\sigma_{zz,\Sigma M}` resulting from all bending moments</span>
 <span class="sd">        :math:`M_{xx} + M_{yy} + M_{11} + M_{22}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -2883,7 +3000,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_mzz_zx"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mzz_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *x*-component of the shear stress</span>
-<span class="sd">        :math:`\sigma_{zx,Mzz}` resulting from the applied torsion moment</span>
+<span class="sd">        :math:`\sigma_{zx,Mzz}` resulting from the torsion moment</span>
 <span class="sd">        :math:`M_{zz}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -2891,7 +3008,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots the x-component of the shear stress within</span>
-<span class="sd">        a 150x90x12 UA section resulting from an applied torsion moment of</span>
+<span class="sd">        a 150x90x12 UA section resulting from a torsion moment of</span>
 <span class="sd">        1 kN.m::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -2924,7 +3041,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_mzz_zy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mzz_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *y*-component of the shear stress</span>
-<span class="sd">        :math:`\sigma_{zy,Mzz}` resulting from the applied torsion moment</span>
+<span class="sd">        :math:`\sigma_{zy,Mzz}` resulting from the torsion moment</span>
 <span class="sd">        :math:`M_{zz}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -2932,7 +3049,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots the y-component of the shear stress within</span>
-<span class="sd">        a 150x90x12 UA section resulting from an applied torsion moment of</span>
+<span class="sd">        a 150x90x12 UA section resulting from a torsion moment of</span>
 <span class="sd">        1 kN.m::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -2965,7 +3082,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_mzz_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mzz_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the resultant shear stress</span>
-<span class="sd">        :math:`\sigma_{zxy,Mzz}` resulting from the applied torsion moment</span>
+<span class="sd">        :math:`\sigma_{zxy,Mzz}` resulting from the torsion moment</span>
 <span class="sd">        :math:`M_{zz}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -2973,7 +3090,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots a contour of the resultant shear stress</span>
-<span class="sd">        within a 150x90x12 UA section resulting from an applied torsion moment</span>
+<span class="sd">        within a 150x90x12 UA section resulting from a torsion moment</span>
 <span class="sd">        of 1 kN.m::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3006,7 +3123,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_vector_mzz_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_mzz_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_mzz_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a vector plot of the resultant shear stress</span>
-<span class="sd">        :math:`\sigma_{zxy,Mzz}` resulting from the applied torsion moment</span>
+<span class="sd">        :math:`\sigma_{zxy,Mzz}` resulting from the torsion moment</span>
 <span class="sd">        :math:`M_{zz}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -3014,7 +3131,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example generates a vector plot of the shear stress</span>
-<span class="sd">        within a 150x90x12 UA section resulting from an applied torsion moment</span>
+<span class="sd">        within a 150x90x12 UA section resulting from a torsion moment</span>
 <span class="sd">        of 1 kN.m::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3049,7 +3166,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_vx_zx"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vx_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *x*-component of the shear stress</span>
-<span class="sd">        :math:`\sigma_{zx,Vx}` resulting from the applied shear force</span>
+<span class="sd">        :math:`\sigma_{zx,Vx}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{x}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -3057,7 +3174,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots the x-component of the shear stress within</span>
-<span class="sd">        a 150x90x12 UA section resulting from an applied shear force in the</span>
+<span class="sd">        a 150x90x12 UA section resulting from ashear force in the</span>
 <span class="sd">        x-direction of 15 kN::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3090,7 +3207,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_vx_zy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vx_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *y*-component of the shear stress</span>
-<span class="sd">        :math:`\sigma_{zy,Vx}` resulting from the applied shear force</span>
+<span class="sd">        :math:`\sigma_{zy,Vx}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{x}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -3098,7 +3215,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots the y-component of the shear stress within</span>
-<span class="sd">        a 150x90x12 UA section resulting from an applied shear force in the</span>
+<span class="sd">        a 150x90x12 UA section resulting from ashear force in the</span>
 <span class="sd">        x-direction of 15 kN::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3131,7 +3248,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_vx_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vx_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the resultant shear stress</span>
-<span class="sd">        :math:`\sigma_{zxy,Vx}` resulting from the applied shear force</span>
+<span class="sd">        :math:`\sigma_{zxy,Vx}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{x}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -3139,7 +3256,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots a contour of the resultant shear stress</span>
-<span class="sd">        within a 150x90x12 UA section resulting from an applied shear force in</span>
+<span class="sd">        within a 150x90x12 UA section resulting from ashear force in</span>
 <span class="sd">        the x-direction of 15 kN::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3172,7 +3289,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_vector_vx_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_vx_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_vx_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a vector plot of the resultant shear stress</span>
-<span class="sd">        :math:`\sigma_{zxy,Vx}` resulting from the applied shear force</span>
+<span class="sd">        :math:`\sigma_{zxy,Vx}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{x}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -3180,7 +3297,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example generates a vector plot of the shear stress</span>
-<span class="sd">        within a 150x90x12 UA section resulting from an applied shear force in</span>
+<span class="sd">        within a 150x90x12 UA section resulting from ashear force in</span>
 <span class="sd">        the x-direction of 15 kN::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3215,7 +3332,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_vy_zx"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vy_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *x*-component of the shear stress</span>
-<span class="sd">        :math:`\sigma_{zx,Vy}` resulting from the applied shear force</span>
+<span class="sd">        :math:`\sigma_{zx,Vy}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{y}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -3223,7 +3340,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots the x-component of the shear stress within</span>
-<span class="sd">        a 150x90x12 UA section resulting from an applied shear force in the</span>
+<span class="sd">        a 150x90x12 UA section resulting from ashear force in the</span>
 <span class="sd">        y-direction of 30 kN::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3256,7 +3373,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_vy_zy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vy_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *y*-component of the shear stress</span>
-<span class="sd">        :math:`\sigma_{zy,Vy}` resulting from the applied shear force</span>
+<span class="sd">        :math:`\sigma_{zy,Vy}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{y}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -3264,7 +3381,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots the y-component of the shear stress within</span>
-<span class="sd">        a 150x90x12 UA section resulting from an applied shear force in the</span>
+<span class="sd">        a 150x90x12 UA section resulting from ashear force in the</span>
 <span class="sd">        y-direction of 30 kN::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3297,7 +3414,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_vy_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vy_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the resultant shear stress</span>
-<span class="sd">        :math:`\sigma_{zxy,Vy}` resulting from the applied shear force</span>
+<span class="sd">        :math:`\sigma_{zxy,Vy}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{y}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -3305,7 +3422,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots a contour of the resultant shear stress</span>
-<span class="sd">        within a 150x90x12 UA section resulting from an applied shear force in</span>
+<span class="sd">        within a 150x90x12 UA section resulting from ashear force in</span>
 <span class="sd">        the y-direction of 30 kN::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3338,7 +3455,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_vector_vy_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_vy_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_vy_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a vector plot of the resultant shear stress</span>
-<span class="sd">        :math:`\sigma_{zxy,Vy}` resulting from the applied shear force</span>
+<span class="sd">        :math:`\sigma_{zxy,Vy}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{y}`.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
@@ -3346,7 +3463,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example generates a vector plot of the shear stress</span>
-<span class="sd">        within a 150x90x12 UA section resulting from an applied shear force in</span>
+<span class="sd">        within a 150x90x12 UA section resulting from ashear force in</span>
 <span class="sd">        the y-direction of 30 kN::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3389,7 +3506,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots the x-component of the shear stress within</span>
-<span class="sd">        a 150x90x12 UA section resulting from an applied shear force of 15 kN</span>
+<span class="sd">        a 150x90x12 UA section resulting from ashear force of 15 kN</span>
 <span class="sd">        in the x-direction and 30 kN in the y-direction::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3430,7 +3547,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots the y-component of the shear stress within</span>
-<span class="sd">        a 150x90x12 UA section resulting from an applied shear force of 15 kN</span>
+<span class="sd">        a 150x90x12 UA section resulting from ashear force of 15 kN</span>
 <span class="sd">        in the x-direction and 30 kN in the y-direction::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3471,7 +3588,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example plots a contour of the resultant shear stress</span>
-<span class="sd">        within a 150x90x12 UA section resulting from an applied shear force of</span>
+<span class="sd">        within a 150x90x12 UA section resulting from ashear force of</span>
 <span class="sd">        15 kN in the x-direction and 30 kN in the y-direction::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3512,7 +3629,7 @@
 <span class="sd">            immediately after the window is rendered.</span>
 
 <span class="sd">        The following example generates a vector plot of the shear stress</span>
-<span class="sd">        within a 150x90x12 UA section resulting from an applied shear force of</span>
+<span class="sd">        within a 150x90x12 UA section resulting from ashear force of</span>
 <span class="sd">        15 kN in the x-direction and 30 kN inthe y-direction::</span>
 
 <span class="sd">            import sectionproperties.pre.sections as sections</span>
@@ -3547,7 +3664,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the combined normal stress</span>
-<span class="sd">        :math:`\sigma_{zz}` resulting from all applied actions.</span>
+<span class="sd">        :math:`\sigma_{zz}` resulting from all actions.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
@@ -3587,7 +3704,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_zx"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *x*-component of the shear stress</span>
-<span class="sd">        :math:`\sigma_{zx}` resulting from all applied actions.</span>
+<span class="sd">        :math:`\sigma_{zx}` resulting from all actions.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
@@ -3627,7 +3744,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_zy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *y*-component of the shear stress</span>
-<span class="sd">        :math:`\sigma_{zy}` resulting from all applied actions.</span>
+<span class="sd">        :math:`\sigma_{zy}` resulting from all actions.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
@@ -3667,7 +3784,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_stress_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the resultant shear stress</span>
-<span class="sd">        :math:`\sigma_{zxy}` resulting from all applied actions.</span>
+<span class="sd">        :math:`\sigma_{zxy}` resulting from all actions.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
@@ -3707,7 +3824,7 @@
 
 <div class="viewcode-block" id="StressPost.plot_vector_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a vector plot of the resultant shear stress</span>
-<span class="sd">        :math:`\sigma_{zxy}` resulting from all applied actions.</span>
+<span class="sd">        :math:`\sigma_{zxy}` resulting from all actions.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
@@ -3748,8 +3865,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_vector</span><span class="p">(</span><span class="n">sigxs</span><span class="p">,</span> <span class="n">sigys</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StressPost.plot_stress_vm"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vm">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Produces a contour plot of the von Mises :math:`\sigma_{vM}`</span>
-<span class="sd">        resulting from all applied actions.</span>
+        <span class="sd">&quot;&quot;&quot;Produces a contour plot of the von Mises stress :math:`\sigma_{vM}`</span>
+<span class="sd">        resulting from all actions.</span>
 
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until</span>
 <span class="sd">            the window is closed. If set to false, the script continues</span>
@@ -3883,7 +4000,7 @@
 <span class="sd">        a shear force in the y-direction</span>
 <span class="sd">    :vartype sig_zy_vy: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar sig_zz_m: Normal stress (:math:`\sigma_{zz,\Sigma M}`) resulting from</span>
-<span class="sd">        all applied bending moments</span>
+<span class="sd">        all bending moments</span>
 <span class="sd">    :vartype sig_zz_m: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar sig_zxy_mzz: Resultant shear stress (:math:`\sigma_{zxy,Mzz}`)</span>
 <span class="sd">        resulting from a torsion moment in the zz-direction</span>
@@ -3895,28 +4012,28 @@
 <span class="sd">        resulting from a a shear force in the y-direction</span>
 <span class="sd">    :vartype sig_zxy_vy: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar sig_zx_v: Shear stress (:math:`\sigma_{zx,\Sigma V}`) resulting from</span>
-<span class="sd">        all applied shear forces</span>
+<span class="sd">        all shear forces</span>
 <span class="sd">    :vartype sig_zx_v: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar sig_zy_v: Shear stress (:math:`\sigma_{zy,\Sigma V}`) resulting from</span>
-<span class="sd">        all applied shear forces</span>
+<span class="sd">        all shear forces</span>
 <span class="sd">    :vartype sig_zy_v: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar sig_zxy_v: Resultant shear stress (:math:`\sigma_{zxy,\Sigma V}`)</span>
-<span class="sd">        resulting from all applied shear forces</span>
+<span class="sd">        resulting from all shear forces</span>
 <span class="sd">    :vartype sig_zxy_v: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar sig_zz: Combined normal force (:math:`\sigma_{zz}`) resulting from</span>
-<span class="sd">        all applied actions</span>
+<span class="sd">        all actions</span>
 <span class="sd">    :vartype sig_zz: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar sig_zx: Combined shear stress (:math:`\sigma_{zx}`) resulting from</span>
-<span class="sd">        all applied actions</span>
+<span class="sd">        all actions</span>
 <span class="sd">    :vartype sig_zx: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar sig_zy: Combined shear stress (:math:`\sigma_{zy}`) resulting from</span>
-<span class="sd">        all applied actions</span>
+<span class="sd">        all actions</span>
 <span class="sd">    :vartype sig_zy: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar sig_zxy: Combined resultant shear stress (:math:`\sigma_{zxy}`)</span>
-<span class="sd">        resulting from all applied actions</span>
+<span class="sd">        resulting from all actions</span>
 <span class="sd">    :vartype sig_zxy: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar sig_vm: von Mises stress (:math:`\sigma_{VM}`) resulting from</span>
-<span class="sd">        all applied actions</span>
+<span class="sd">        all actions</span>
 <span class="sd">    :vartype sig_vm: :class:`numpy.ndarray`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

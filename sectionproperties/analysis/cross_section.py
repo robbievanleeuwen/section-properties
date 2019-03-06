@@ -2488,9 +2488,126 @@ class StressPost:
         # finish the plot
         post.finish_plot(ax, pause, title=title)
 
+    def get_stress(self):
+        """Returns the stresses within each material belonging to the current
+        :class:`~sectionproperties.analysis.cross_section.StressPost` object.
+
+        :return: A list of dictionaries containing the cross-section stresses
+            for each material.
+        :rtype: list[dict]
+
+        A dictionary is returned for each material in the cross-section,
+        containing the following keys and values:
+
+        * *'Material'*: Material name
+        * *'sig_zz_n'*: Normal stress :math:`\sigma_{zz,N}` resulting from the
+          axial load :math:`N`
+        * *'sig_zz_mxx'*: Normal stress :math:`\sigma_{zz,Mxx}` resulting from
+          the bending moment :math:`M_{xx}`
+        * *'sig_zz_myy'*: Normal stress :math:`\sigma_{zz,Myy}` resulting from
+          the bending moment :math:`M_{yy}`
+        * *'sig_zz_m11'*: Normal stress :math:`\sigma_{zz,M11}` resulting from
+          the bending moment :math:`M_{11}`
+        * *'sig_zz_m22'*: Normal stress :math:`\sigma_{zz,M22}` resulting from
+          the bending moment :math:`M_{22}`
+        * *'sig_zz_m'*: Normal stress :math:`\sigma_{zz,\Sigma M}` resulting
+          from all bending moments
+        * *'sig_zx_mzz'*: *x*-component of the shear stress
+          :math:`\sigma_{zx,Mzz}` resulting from the torsion moment
+        * *'sig_zy_mzz'*: *y*-component of the shear stress
+          :math:`\sigma_{zy,Mzz}` resulting from the torsion moment
+        * *'sig_zxy_mzz'*: Resultant shear stress :math:`\sigma_{zxy,Mzz}`
+          resulting from the torsion moment
+        * *'sig_zx_vx'*: *x*-component of the shear stress
+          :math:`\sigma_{zx,Vx}` resulting from the shear force
+          :math:`V_{x}`
+        * *'sig_zy_vx'*: *y*-component of the shear stress
+          :math:`\sigma_{zy,Vx}` resulting from the shear force
+          :math:`V_{x}`
+        * *'sig_zxy_vx'*: Resultant shear stress :math:`\sigma_{zxy,Vx}`
+          resulting from the shear force :math:`V_{x}`
+        * *'sig_zx_vy'*: *x*-component of the shear stress
+          :math:`\sigma_{zy,Vx}` resulting from the shear force
+          :math:`V_{y}`
+        * *'sig_zy_vy'*: *y*-component of the shear stress
+          :math:`\sigma_{zy,Vy}` resulting from the shear force
+          :math:`V_{y}`
+        * *'sig_zxy_vy'*: Resultant shear stress :math:`\sigma_{zxy,Vy}`
+          resulting from the shear force :math:`V_{y}`
+        * *'sig_zx_v'*: *x*-component of the shear stress
+          :math:`\sigma_{zx,\Sigma V}` resulting from all shear forces
+        * *'sig_zy_v'*: *y*-component of the shear stress
+          :math:`\sigma_{zy,\Sigma V}` resulting from all shear forces
+        * *'sig_zxy_v'*: Resultant shear stress :math:`\sigma_{zxy,\Sigma V}`
+          resulting from all shear forces
+        * *'sig_zz'*: Combined normal stress :math:`\sigma_{zz}` resulting from
+          all actions
+        * *'sig_zx'*: *x*-component of the shear stress :math:`\sigma_{zx}`
+          resulting from all actions
+        * *'sig_zy'*: *y*-component of the shear stress :math:`\sigma_{zy}`
+          resulting from all actions
+        * *'sig_zxy'*: Resultant shear stress :math:`\sigma_{zxy}` resulting
+          from all actions
+        * *'sig_vm'*: von Mises stress :math:`\sigma_{vM}` resulting from all
+          actions
+
+        The following example returns the normal stress within a 150x90x12 UA
+        section resulting from an axial force of 10 kN::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(N=10e3)
+
+            stresses = stress_post.get_stress()
+            print('Material {0}.format(stresses[0]['Material']))
+            print('Axial Stresses {0}'.format(stress[0]['sig_zz_n']))
+
+            $ Material: default
+            $ Axial Stresses: [3.64025694 3.64025694 3.64025694 ... 3.64025694 3.64025694 3.64025694]
+        """
+
+        stress = []
+
+        for group in self.material_groups:
+            stress.append({
+                'Material': group.material.name,
+                'sig_zz_n': group.stress_result.sig_zz_n,
+                'sig_zz_mxx': group.stress_result.sig_zz_mxx,
+                'sig_zz_myy': group.stress_result.sig_zz_myy,
+                'sig_zz_m11': group.stress_result.sig_zz_m11,
+                'sig_zz_m22': group.stress_result.sig_zz_m22,
+                'sig_zz_m': group.stress_result.sig_zz_m,
+                'sig_zx_mzz': group.stress_result.sig_zx_mzz,
+                'sig_zy_mzz': group.stress_result.sig_zy_mzz,
+                'sig_zxy_mzz': group.stress_result.sig_zxy_mzz,
+                'sig_zx_vx': group.stress_result.sig_zx_vx,
+                'sig_zy_vx': group.stress_result.sig_zy_vx,
+                'sig_zxy_vx': group.stress_result.sig_zxy_vx,
+                'sig_zx_vy': group.stress_result.sig_zx_vy,
+                'sig_zy_vy': group.stress_result.sig_zy_vy,
+                'sig_zxy_vy': group.stress_result.sig_zxy_vy,
+                'sig_zx_v': group.stress_result.sig_zx_v,
+                'sig_zy_v': group.stress_result.sig_zy_v,
+                'sig_zxy_v': group.stress_result.sig_zxy_v,
+                'sig_zz': group.stress_result.sig_zz,
+                'sig_zx': group.stress_result.sig_zx,
+                'sig_zy': group.stress_result.sig_zy,
+                'sig_zxy': group.stress_result.sig_zxy,
+                'sig_vm': group.stress_result.sig_vm
+            })
+
+        return stress
+
     def plot_stress_n_zz(self, pause=True):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,N}`
-        resulting from the applied axial load :math:`N`.
+        resulting from the axial load :math:`N`.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -2529,7 +2646,7 @@ class StressPost:
 
     def plot_stress_mxx_zz(self, pause=True):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}`
-        resulting from the applied bending moment :math:`M_{xx}`.
+        resulting from the bending moment :math:`M_{xx}`.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -2568,7 +2685,7 @@ class StressPost:
 
     def plot_stress_myy_zz(self, pause=True):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}`
-        resulting from the applied bending moment :math:`M_{yy}`.
+        resulting from the bending moment :math:`M_{yy}`.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -2607,7 +2724,7 @@ class StressPost:
 
     def plot_stress_m11_zz(self, pause=True):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}`
-        resulting from the applied bending moment :math:`M_{11}`.
+        resulting from the bending moment :math:`M_{11}`.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -2646,7 +2763,7 @@ class StressPost:
 
     def plot_stress_m22_zz(self, pause=True):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}`
-        resulting from the applied bending moment :math:`M_{22}`.
+        resulting from the bending moment :math:`M_{22}`.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -2685,7 +2802,7 @@ class StressPost:
 
     def plot_stress_m_zz(self, pause=True):
         """Produces a contour plot of the normal stress
-        :math:`\sigma_{zz,\Sigma M}` resulting from all applied bending moments
+        :math:`\sigma_{zz,\Sigma M}` resulting from all bending moments
         :math:`M_{xx} + M_{yy} + M_{11} + M_{22}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -2727,7 +2844,7 @@ class StressPost:
 
     def plot_stress_mzz_zx(self, pause=True):
         """Produces a contour plot of the *x*-component of the shear stress
-        :math:`\sigma_{zx,Mzz}` resulting from the applied torsion moment
+        :math:`\sigma_{zx,Mzz}` resulting from the torsion moment
         :math:`M_{zz}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -2735,7 +2852,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots the x-component of the shear stress within
-        a 150x90x12 UA section resulting from an applied torsion moment of
+        a 150x90x12 UA section resulting from a torsion moment of
         1 kN.m::
 
             import sectionproperties.pre.sections as sections
@@ -2768,7 +2885,7 @@ class StressPost:
 
     def plot_stress_mzz_zy(self, pause=True):
         """Produces a contour plot of the *y*-component of the shear stress
-        :math:`\sigma_{zy,Mzz}` resulting from the applied torsion moment
+        :math:`\sigma_{zy,Mzz}` resulting from the torsion moment
         :math:`M_{zz}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -2776,7 +2893,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots the y-component of the shear stress within
-        a 150x90x12 UA section resulting from an applied torsion moment of
+        a 150x90x12 UA section resulting from a torsion moment of
         1 kN.m::
 
             import sectionproperties.pre.sections as sections
@@ -2809,7 +2926,7 @@ class StressPost:
 
     def plot_stress_mzz_zxy(self, pause=True):
         """Produces a contour plot of the resultant shear stress
-        :math:`\sigma_{zxy,Mzz}` resulting from the applied torsion moment
+        :math:`\sigma_{zxy,Mzz}` resulting from the torsion moment
         :math:`M_{zz}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -2817,7 +2934,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots a contour of the resultant shear stress
-        within a 150x90x12 UA section resulting from an applied torsion moment
+        within a 150x90x12 UA section resulting from a torsion moment
         of 1 kN.m::
 
             import sectionproperties.pre.sections as sections
@@ -2850,7 +2967,7 @@ class StressPost:
 
     def plot_vector_mzz_zxy(self, pause=True):
         """Produces a vector plot of the resultant shear stress
-        :math:`\sigma_{zxy,Mzz}` resulting from the applied torsion moment
+        :math:`\sigma_{zxy,Mzz}` resulting from the torsion moment
         :math:`M_{zz}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -2858,7 +2975,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example generates a vector plot of the shear stress
-        within a 150x90x12 UA section resulting from an applied torsion moment
+        within a 150x90x12 UA section resulting from a torsion moment
         of 1 kN.m::
 
             import sectionproperties.pre.sections as sections
@@ -2893,7 +3010,7 @@ class StressPost:
 
     def plot_stress_vx_zx(self, pause=True):
         """Produces a contour plot of the *x*-component of the shear stress
-        :math:`\sigma_{zx,Vx}` resulting from the applied shear force
+        :math:`\sigma_{zx,Vx}` resulting from the shear force
         :math:`V_{x}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -2901,7 +3018,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots the x-component of the shear stress within
-        a 150x90x12 UA section resulting from an applied shear force in the
+        a 150x90x12 UA section resulting from ashear force in the
         x-direction of 15 kN::
 
             import sectionproperties.pre.sections as sections
@@ -2934,7 +3051,7 @@ class StressPost:
 
     def plot_stress_vx_zy(self, pause=True):
         """Produces a contour plot of the *y*-component of the shear stress
-        :math:`\sigma_{zy,Vx}` resulting from the applied shear force
+        :math:`\sigma_{zy,Vx}` resulting from the shear force
         :math:`V_{x}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -2942,7 +3059,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots the y-component of the shear stress within
-        a 150x90x12 UA section resulting from an applied shear force in the
+        a 150x90x12 UA section resulting from ashear force in the
         x-direction of 15 kN::
 
             import sectionproperties.pre.sections as sections
@@ -2975,7 +3092,7 @@ class StressPost:
 
     def plot_stress_vx_zxy(self, pause=True):
         """Produces a contour plot of the resultant shear stress
-        :math:`\sigma_{zxy,Vx}` resulting from the applied shear force
+        :math:`\sigma_{zxy,Vx}` resulting from the shear force
         :math:`V_{x}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -2983,7 +3100,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots a contour of the resultant shear stress
-        within a 150x90x12 UA section resulting from an applied shear force in
+        within a 150x90x12 UA section resulting from ashear force in
         the x-direction of 15 kN::
 
             import sectionproperties.pre.sections as sections
@@ -3016,7 +3133,7 @@ class StressPost:
 
     def plot_vector_vx_zxy(self, pause=True):
         """Produces a vector plot of the resultant shear stress
-        :math:`\sigma_{zxy,Vx}` resulting from the applied shear force
+        :math:`\sigma_{zxy,Vx}` resulting from the shear force
         :math:`V_{x}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -3024,7 +3141,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example generates a vector plot of the shear stress
-        within a 150x90x12 UA section resulting from an applied shear force in
+        within a 150x90x12 UA section resulting from ashear force in
         the x-direction of 15 kN::
 
             import sectionproperties.pre.sections as sections
@@ -3059,7 +3176,7 @@ class StressPost:
 
     def plot_stress_vy_zx(self, pause=True):
         """Produces a contour plot of the *x*-component of the shear stress
-        :math:`\sigma_{zx,Vy}` resulting from the applied shear force
+        :math:`\sigma_{zx,Vy}` resulting from the shear force
         :math:`V_{y}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -3067,7 +3184,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots the x-component of the shear stress within
-        a 150x90x12 UA section resulting from an applied shear force in the
+        a 150x90x12 UA section resulting from ashear force in the
         y-direction of 30 kN::
 
             import sectionproperties.pre.sections as sections
@@ -3100,7 +3217,7 @@ class StressPost:
 
     def plot_stress_vy_zy(self, pause=True):
         """Produces a contour plot of the *y*-component of the shear stress
-        :math:`\sigma_{zy,Vy}` resulting from the applied shear force
+        :math:`\sigma_{zy,Vy}` resulting from the shear force
         :math:`V_{y}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -3108,7 +3225,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots the y-component of the shear stress within
-        a 150x90x12 UA section resulting from an applied shear force in the
+        a 150x90x12 UA section resulting from ashear force in the
         y-direction of 30 kN::
 
             import sectionproperties.pre.sections as sections
@@ -3141,7 +3258,7 @@ class StressPost:
 
     def plot_stress_vy_zxy(self, pause=True):
         """Produces a contour plot of the resultant shear stress
-        :math:`\sigma_{zxy,Vy}` resulting from the applied shear force
+        :math:`\sigma_{zxy,Vy}` resulting from the shear force
         :math:`V_{y}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -3149,7 +3266,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots a contour of the resultant shear stress
-        within a 150x90x12 UA section resulting from an applied shear force in
+        within a 150x90x12 UA section resulting from ashear force in
         the y-direction of 30 kN::
 
             import sectionproperties.pre.sections as sections
@@ -3182,7 +3299,7 @@ class StressPost:
 
     def plot_vector_vy_zxy(self, pause=True):
         """Produces a vector plot of the resultant shear stress
-        :math:`\sigma_{zxy,Vy}` resulting from the applied shear force
+        :math:`\sigma_{zxy,Vy}` resulting from the shear force
         :math:`V_{y}`.
 
         :param bool pause: If set to true, the figure pauses the script until
@@ -3190,7 +3307,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example generates a vector plot of the shear stress
-        within a 150x90x12 UA section resulting from an applied shear force in
+        within a 150x90x12 UA section resulting from ashear force in
         the y-direction of 30 kN::
 
             import sectionproperties.pre.sections as sections
@@ -3233,7 +3350,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots the x-component of the shear stress within
-        a 150x90x12 UA section resulting from an applied shear force of 15 kN
+        a 150x90x12 UA section resulting from ashear force of 15 kN
         in the x-direction and 30 kN in the y-direction::
 
             import sectionproperties.pre.sections as sections
@@ -3274,7 +3391,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots the y-component of the shear stress within
-        a 150x90x12 UA section resulting from an applied shear force of 15 kN
+        a 150x90x12 UA section resulting from ashear force of 15 kN
         in the x-direction and 30 kN in the y-direction::
 
             import sectionproperties.pre.sections as sections
@@ -3315,7 +3432,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example plots a contour of the resultant shear stress
-        within a 150x90x12 UA section resulting from an applied shear force of
+        within a 150x90x12 UA section resulting from ashear force of
         15 kN in the x-direction and 30 kN in the y-direction::
 
             import sectionproperties.pre.sections as sections
@@ -3356,7 +3473,7 @@ class StressPost:
             immediately after the window is rendered.
 
         The following example generates a vector plot of the shear stress
-        within a 150x90x12 UA section resulting from an applied shear force of
+        within a 150x90x12 UA section resulting from ashear force of
         15 kN in the x-direction and 30 kN inthe y-direction::
 
             import sectionproperties.pre.sections as sections
@@ -3391,7 +3508,7 @@ class StressPost:
 
     def plot_stress_zz(self, pause=True):
         """Produces a contour plot of the combined normal stress
-        :math:`\sigma_{zz}` resulting from all applied actions.
+        :math:`\sigma_{zz}` resulting from all actions.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -3431,7 +3548,7 @@ class StressPost:
 
     def plot_stress_zx(self, pause=True):
         """Produces a contour plot of the *x*-component of the shear stress
-        :math:`\sigma_{zx}` resulting from all applied actions.
+        :math:`\sigma_{zx}` resulting from all actions.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -3471,7 +3588,7 @@ class StressPost:
 
     def plot_stress_zy(self, pause=True):
         """Produces a contour plot of the *y*-component of the shear stress
-        :math:`\sigma_{zy}` resulting from all applied actions.
+        :math:`\sigma_{zy}` resulting from all actions.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -3511,7 +3628,7 @@ class StressPost:
 
     def plot_stress_zxy(self, pause=True):
         """Produces a contour plot of the resultant shear stress
-        :math:`\sigma_{zxy}` resulting from all applied actions.
+        :math:`\sigma_{zxy}` resulting from all actions.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -3551,7 +3668,7 @@ class StressPost:
 
     def plot_vector_zxy(self, pause=True):
         """Produces a vector plot of the resultant shear stress
-        :math:`\sigma_{zxy}` resulting from all applied actions.
+        :math:`\sigma_{zxy}` resulting from all actions.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -3592,8 +3709,8 @@ class StressPost:
         self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_vm(self, pause=True):
-        """Produces a contour plot of the von Mises :math:`\sigma_{vM}`
-        resulting from all applied actions.
+        """Produces a contour plot of the von Mises stress :math:`\sigma_{vM}`
+        resulting from all actions.
 
         :param bool pause: If set to true, the figure pauses the script until
             the window is closed. If set to false, the script continues
@@ -3727,7 +3844,7 @@ class StressResult:
         a shear force in the y-direction
     :vartype sig_zy_vy: :class:`numpy.ndarray`
     :cvar sig_zz_m: Normal stress (:math:`\sigma_{zz,\Sigma M}`) resulting from
-        all applied bending moments
+        all bending moments
     :vartype sig_zz_m: :class:`numpy.ndarray`
     :cvar sig_zxy_mzz: Resultant shear stress (:math:`\sigma_{zxy,Mzz}`)
         resulting from a torsion moment in the zz-direction
@@ -3739,28 +3856,28 @@ class StressResult:
         resulting from a a shear force in the y-direction
     :vartype sig_zxy_vy: :class:`numpy.ndarray`
     :cvar sig_zx_v: Shear stress (:math:`\sigma_{zx,\Sigma V}`) resulting from
-        all applied shear forces
+        all shear forces
     :vartype sig_zx_v: :class:`numpy.ndarray`
     :cvar sig_zy_v: Shear stress (:math:`\sigma_{zy,\Sigma V}`) resulting from
-        all applied shear forces
+        all shear forces
     :vartype sig_zy_v: :class:`numpy.ndarray`
     :cvar sig_zxy_v: Resultant shear stress (:math:`\sigma_{zxy,\Sigma V}`)
-        resulting from all applied shear forces
+        resulting from all shear forces
     :vartype sig_zxy_v: :class:`numpy.ndarray`
     :cvar sig_zz: Combined normal force (:math:`\sigma_{zz}`) resulting from
-        all applied actions
+        all actions
     :vartype sig_zz: :class:`numpy.ndarray`
     :cvar sig_zx: Combined shear stress (:math:`\sigma_{zx}`) resulting from
-        all applied actions
+        all actions
     :vartype sig_zx: :class:`numpy.ndarray`
     :cvar sig_zy: Combined shear stress (:math:`\sigma_{zy}`) resulting from
-        all applied actions
+        all actions
     :vartype sig_zy: :class:`numpy.ndarray`
     :cvar sig_zxy: Combined resultant shear stress (:math:`\sigma_{zxy}`)
-        resulting from all applied actions
+        resulting from all actions
     :vartype sig_zxy: :class:`numpy.ndarray`
     :cvar sig_vm: von Mises stress (:math:`\sigma_{VM}`) resulting from
-        all applied actions
+        all actions
     :vartype sig_vm: :class:`numpy.ndarray`
     """
 

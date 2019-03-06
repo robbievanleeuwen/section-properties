@@ -23,7 +23,7 @@ if not (sys.platform == 'win32' or sys.platform == 'cygwin'):
     install_requires.append('meshpy')
 
 setup(name='sectionproperties',
-      version='1.0.2',
+      version='1.0.3',
       description=description_text(),
       long_description=readme(),
       long_description_content_type='text/markdown',

@@ -152,6 +152,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#retrieving-cross-section-stress">Retrieving Cross-Section Stress</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
@@ -968,7 +969,7 @@ object is created below:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_n_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_n_zz"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,N}\)</span>
-resulting from the applied axial load <span class="math notranslate nohighlight">\(N\)</span>.</p>
+resulting from the axial load <span class="math notranslate nohighlight">\(N\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -996,7 +997,7 @@ section resulting from an axial force of 10 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id20">
-<a class="reference internal image-reference" href="../_images/stress_n_zz1.png"><img alt="../_images/stress_n_zz1.png" src="../_images/stress_n_zz1.png" style="width: 450.75px; height: 402.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_n_zz.png"><img alt="../_images/stress_n_zz.png" src="../_images/stress_n_zz.png" style="width: 450.75px; height: 402.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the axial stress.</span></p>
 </div>
 </dd></dl>
@@ -1008,7 +1009,7 @@ section resulting from an axial force of 10 kN:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_mxx_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_mxx_zz"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,Mxx}\)</span>
-resulting from the applied bending moment <span class="math notranslate nohighlight">\(M_{xx}\)</span>.</p>
+resulting from the bending moment <span class="math notranslate nohighlight">\(M_{xx}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1036,7 +1037,7 @@ section resulting from an bending moment about the x-axis of 5 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id21">
-<a class="reference internal image-reference" href="../_images/stress_mxx_zz1.png"><img alt="../_images/stress_mxx_zz1.png" src="../_images/stress_mxx_zz1.png" style="width: 503.25px; height: 452.25px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_mxx_zz.png"><img alt="../_images/stress_mxx_zz.png" src="../_images/stress_mxx_zz.png" style="width: 503.25px; height: 452.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -1048,7 +1049,7 @@ section resulting from an bending moment about the x-axis of 5 kN.m:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_myy_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_myy_zz"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,Myy}\)</span>
-resulting from the applied bending moment <span class="math notranslate nohighlight">\(M_{yy}\)</span>.</p>
+resulting from the bending moment <span class="math notranslate nohighlight">\(M_{yy}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1076,7 +1077,7 @@ section resulting from an bending moment about the y-axis of 2 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id22">
-<a class="reference internal image-reference" href="../_images/stress_myy_zz1.png"><img alt="../_images/stress_myy_zz1.png" src="../_images/stress_myy_zz1.png" style="width: 537.0px; height: 471.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_myy_zz.png"><img alt="../_images/stress_myy_zz.png" src="../_images/stress_myy_zz.png" style="width: 537.0px; height: 471.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -1088,7 +1089,7 @@ section resulting from an bending moment about the y-axis of 2 kN.m:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_m11_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_m11_zz"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,M11}\)</span>
-resulting from the applied bending moment <span class="math notranslate nohighlight">\(M_{11}\)</span>.</p>
+resulting from the bending moment <span class="math notranslate nohighlight">\(M_{11}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1116,7 +1117,7 @@ section resulting from an bending moment about the 11-axis of 5 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id23">
-<a class="reference internal image-reference" href="../_images/stress_m11_zz1.png"><img alt="../_images/stress_m11_zz1.png" src="../_images/stress_m11_zz1.png" style="width: 527.25px; height: 477.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_m11_zz.png"><img alt="../_images/stress_m11_zz.png" src="../_images/stress_m11_zz.png" style="width: 527.25px; height: 477.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -1128,7 +1129,7 @@ section resulting from an bending moment about the 11-axis of 5 kN.m:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_m22_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_m22_zz"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,M22}\)</span>
-resulting from the applied bending moment <span class="math notranslate nohighlight">\(M_{22}\)</span>.</p>
+resulting from the bending moment <span class="math notranslate nohighlight">\(M_{22}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1156,7 +1157,7 @@ section resulting from an bending moment about the 22-axis of 2 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id24">
-<a class="reference internal image-reference" href="../_images/stress_m22_zz1.png"><img alt="../_images/stress_m22_zz1.png" src="../_images/stress_m22_zz1.png" style="width: 506.25px; height: 424.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_m22_zz.png"><img alt="../_images/stress_m22_zz.png" src="../_images/stress_m22_zz.png" style="width: 506.25px; height: 424.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -1168,7 +1169,7 @@ section resulting from an bending moment about the 22-axis of 2 kN.m:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_m_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_m_zz"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the normal stress
-<span class="math notranslate nohighlight">\(\sigma_{zz,\Sigma M}\)</span> resulting from all applied bending moments
+<span class="math notranslate nohighlight">\(\sigma_{zz,\Sigma M}\)</span> resulting from all bending moments
 <span class="math notranslate nohighlight">\(M_{xx} + M_{yy} + M_{11} + M_{22}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1199,7 +1200,7 @@ bending moment about the y-axis of 2 kN.m and a bending moment of
 </pre></div>
 </div>
 <div class="figure align-center" id="id25">
-<a class="reference internal image-reference" href="../_images/stress_m_zz1.png"><img alt="../_images/stress_m_zz1.png" src="../_images/stress_m_zz1.png" style="width: 482.25px; height: 444.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_m_zz.png"><img alt="../_images/stress_m_zz.png" src="../_images/stress_m_zz.png" style="width: 482.25px; height: 444.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
 </dd></dl>
@@ -1211,7 +1212,7 @@ bending moment about the y-axis of 2 kN.m and a bending moment of
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_mzz_zx</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_mzz_zx"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the <em>x</em>-component of the shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zx,Mzz}\)</span> resulting from the applied torsion moment
+<span class="math notranslate nohighlight">\(\sigma_{zx,Mzz}\)</span> resulting from the torsion moment
 <span class="math notranslate nohighlight">\(M_{zz}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1224,7 +1225,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots the x-component of the shear stress within
-a 150x90x12 UA section resulting from an applied torsion moment of
+a 150x90x12 UA section resulting from a torsion moment of
 1 kN.m:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1241,7 +1242,7 @@ a 150x90x12 UA section resulting from an applied torsion moment of
 </pre></div>
 </div>
 <div class="figure align-center" id="id26">
-<a class="reference internal image-reference" href="../_images/stress_mzz_zx1.png"><img alt="../_images/stress_mzz_zx1.png" src="../_images/stress_mzz_zx1.png" style="width: 440.25px; height: 378.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_mzz_zx.png"><img alt="../_images/stress_mzz_zx.png" src="../_images/stress_mzz_zx.png" style="width: 440.25px; height: 378.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1253,7 +1254,7 @@ a 150x90x12 UA section resulting from an applied torsion moment of
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_mzz_zy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_mzz_zy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the <em>y</em>-component of the shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zy,Mzz}\)</span> resulting from the applied torsion moment
+<span class="math notranslate nohighlight">\(\sigma_{zy,Mzz}\)</span> resulting from the torsion moment
 <span class="math notranslate nohighlight">\(M_{zz}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1266,7 +1267,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots the y-component of the shear stress within
-a 150x90x12 UA section resulting from an applied torsion moment of
+a 150x90x12 UA section resulting from a torsion moment of
 1 kN.m:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1283,7 +1284,7 @@ a 150x90x12 UA section resulting from an applied torsion moment of
 </pre></div>
 </div>
 <div class="figure align-center" id="id27">
-<a class="reference internal image-reference" href="../_images/stress_mzz_zy1.png"><img alt="../_images/stress_mzz_zy1.png" src="../_images/stress_mzz_zy1.png" style="width: 449.25px; height: 383.25px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_mzz_zy.png"><img alt="../_images/stress_mzz_zy.png" src="../_images/stress_mzz_zy.png" style="width: 449.25px; height: 383.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1295,7 +1296,7 @@ a 150x90x12 UA section resulting from an applied torsion moment of
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_mzz_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_mzz_zxy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the resultant shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zxy,Mzz}\)</span> resulting from the applied torsion moment
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Mzz}\)</span> resulting from the torsion moment
 <span class="math notranslate nohighlight">\(M_{zz}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1308,7 +1309,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots a contour of the resultant shear stress
-within a 150x90x12 UA section resulting from an applied torsion moment
+within a 150x90x12 UA section resulting from a torsion moment
 of 1 kN.m:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1325,7 +1326,7 @@ of 1 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id28">
-<a class="reference internal image-reference" href="../_images/stress_mzz_zxy1.png"><img alt="../_images/stress_mzz_zxy1.png" src="../_images/stress_mzz_zxy1.png" style="width: 470.25px; height: 396.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_mzz_zxy.png"><img alt="../_images/stress_mzz_zxy.png" src="../_images/stress_mzz_zxy.png" style="width: 470.25px; height: 396.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1334,7 +1335,7 @@ of 1 kN.m:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_vector_mzz_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_vector_mzz_zxy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a vector plot of the resultant shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zxy,Mzz}\)</span> resulting from the applied torsion moment
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Mzz}\)</span> resulting from the torsion moment
 <span class="math notranslate nohighlight">\(M_{zz}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1347,7 +1348,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example generates a vector plot of the shear stress
-within a 150x90x12 UA section resulting from an applied torsion moment
+within a 150x90x12 UA section resulting from a torsion moment
 of 1 kN.m:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1364,7 +1365,7 @@ of 1 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id29">
-<a class="reference internal image-reference" href="../_images/vector_mzz_zxy1.png"><img alt="../_images/vector_mzz_zxy1.png" src="../_images/vector_mzz_zxy1.png" style="width: 489.0px; height: 441.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/vector_mzz_zxy.png"><img alt="../_images/vector_mzz_zxy.png" src="../_images/vector_mzz_zxy.png" style="width: 489.0px; height: 441.75px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1376,7 +1377,7 @@ of 1 kN.m:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_vx_zx</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_vx_zx"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the <em>x</em>-component of the shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zx,Vx}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(\sigma_{zx,Vx}\)</span> resulting from the shear force
 <span class="math notranslate nohighlight">\(V_{x}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1389,7 +1390,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots the x-component of the shear stress within
-a 150x90x12 UA section resulting from an applied shear force in the
+a 150x90x12 UA section resulting from ashear force in the
 x-direction of 15 kN:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1406,7 +1407,7 @@ x-direction of 15 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id30">
-<a class="reference internal image-reference" href="../_images/stress_vx_zx1.png"><img alt="../_images/stress_vx_zx1.png" src="../_images/stress_vx_zx1.png" style="width: 453.0px; height: 387.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vx_zx.png"><img alt="../_images/stress_vx_zx.png" src="../_images/stress_vx_zx.png" style="width: 453.0px; height: 387.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1418,7 +1419,7 @@ x-direction of 15 kN:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_vx_zy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_vx_zy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the <em>y</em>-component of the shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zy,Vx}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(\sigma_{zy,Vx}\)</span> resulting from the shear force
 <span class="math notranslate nohighlight">\(V_{x}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1431,7 +1432,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots the y-component of the shear stress within
-a 150x90x12 UA section resulting from an applied shear force in the
+a 150x90x12 UA section resulting from ashear force in the
 x-direction of 15 kN:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1448,7 +1449,7 @@ x-direction of 15 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id31">
-<a class="reference internal image-reference" href="../_images/stress_vx_zy1.png"><img alt="../_images/stress_vx_zy1.png" src="../_images/stress_vx_zy1.png" style="width: 469.5px; height: 402.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vx_zy.png"><img alt="../_images/stress_vx_zy.png" src="../_images/stress_vx_zy.png" style="width: 469.5px; height: 402.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1460,7 +1461,7 @@ x-direction of 15 kN:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_vx_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_vx_zxy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the resultant shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zxy,Vx}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Vx}\)</span> resulting from the shear force
 <span class="math notranslate nohighlight">\(V_{x}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1473,7 +1474,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots a contour of the resultant shear stress
-within a 150x90x12 UA section resulting from an applied shear force in
+within a 150x90x12 UA section resulting from ashear force in
 the x-direction of 15 kN:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1490,7 +1491,7 @@ the x-direction of 15 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id32">
-<a class="reference internal image-reference" href="../_images/stress_vx_zxy1.png"><img alt="../_images/stress_vx_zxy1.png" src="../_images/stress_vx_zxy1.png" style="width: 440.25px; height: 369.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vx_zxy.png"><img alt="../_images/stress_vx_zxy.png" src="../_images/stress_vx_zxy.png" style="width: 440.25px; height: 369.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1499,7 +1500,7 @@ the x-direction of 15 kN:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_vector_vx_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_vector_vx_zxy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a vector plot of the resultant shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zxy,Vx}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Vx}\)</span> resulting from the shear force
 <span class="math notranslate nohighlight">\(V_{x}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1512,7 +1513,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example generates a vector plot of the shear stress
-within a 150x90x12 UA section resulting from an applied shear force in
+within a 150x90x12 UA section resulting from ashear force in
 the x-direction of 15 kN:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1529,7 +1530,7 @@ the x-direction of 15 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id33">
-<a class="reference internal image-reference" href="../_images/vector_vx_zxy1.png"><img alt="../_images/vector_vx_zxy1.png" src="../_images/vector_vx_zxy1.png" style="width: 506.25px; height: 432.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/vector_vx_zxy.png"><img alt="../_images/vector_vx_zxy.png" src="../_images/vector_vx_zxy.png" style="width: 506.25px; height: 432.0px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1541,7 +1542,7 @@ the x-direction of 15 kN:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_vy_zx</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_vy_zx"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the <em>x</em>-component of the shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zx,Vy}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(\sigma_{zx,Vy}\)</span> resulting from the shear force
 <span class="math notranslate nohighlight">\(V_{y}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1554,7 +1555,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots the x-component of the shear stress within
-a 150x90x12 UA section resulting from an applied shear force in the
+a 150x90x12 UA section resulting from ashear force in the
 y-direction of 30 kN:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1571,7 +1572,7 @@ y-direction of 30 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id34">
-<a class="reference internal image-reference" href="../_images/stress_vy_zx1.png"><img alt="../_images/stress_vy_zx1.png" src="../_images/stress_vy_zx1.png" style="width: 462.0px; height: 397.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vy_zx.png"><img alt="../_images/stress_vy_zx.png" src="../_images/stress_vy_zx.png" style="width: 462.0px; height: 397.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1583,7 +1584,7 @@ y-direction of 30 kN:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_vy_zy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_vy_zy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the <em>y</em>-component of the shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zy,Vy}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(\sigma_{zy,Vy}\)</span> resulting from the shear force
 <span class="math notranslate nohighlight">\(V_{y}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1596,7 +1597,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots the y-component of the shear stress within
-a 150x90x12 UA section resulting from an applied shear force in the
+a 150x90x12 UA section resulting from ashear force in the
 y-direction of 30 kN:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1613,7 +1614,7 @@ y-direction of 30 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id35">
-<a class="reference internal image-reference" href="../_images/stress_vy_zy1.png"><img alt="../_images/stress_vy_zy1.png" src="../_images/stress_vy_zy1.png" style="width: 439.5px; height: 398.25px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vy_zy.png"><img alt="../_images/stress_vy_zy.png" src="../_images/stress_vy_zy.png" style="width: 439.5px; height: 398.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1625,7 +1626,7 @@ y-direction of 30 kN:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_vy_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_vy_zxy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the resultant shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zxy,Vy}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Vy}\)</span> resulting from the shear force
 <span class="math notranslate nohighlight">\(V_{y}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1638,7 +1639,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots a contour of the resultant shear stress
-within a 150x90x12 UA section resulting from an applied shear force in
+within a 150x90x12 UA section resulting from ashear force in
 the y-direction of 30 kN:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1655,7 +1656,7 @@ the y-direction of 30 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id36">
-<a class="reference internal image-reference" href="../_images/stress_vy_zxy1.png"><img alt="../_images/stress_vy_zxy1.png" src="../_images/stress_vy_zxy1.png" style="width: 466.5px; height: 424.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_vy_zxy.png"><img alt="../_images/stress_vy_zxy.png" src="../_images/stress_vy_zxy.png" style="width: 466.5px; height: 424.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1664,7 +1665,7 @@ the y-direction of 30 kN:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_vector_vy_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_vector_vy_zxy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a vector plot of the resultant shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zxy,Vy}\)</span> resulting from the applied shear force
+<span class="math notranslate nohighlight">\(\sigma_{zxy,Vy}\)</span> resulting from the shear force
 <span class="math notranslate nohighlight">\(V_{y}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1677,7 +1678,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example generates a vector plot of the shear stress
-within a 150x90x12 UA section resulting from an applied shear force in
+within a 150x90x12 UA section resulting from ashear force in
 the y-direction of 30 kN:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1694,7 +1695,7 @@ the y-direction of 30 kN:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id37">
-<a class="reference internal image-reference" href="../_images/vector_vy_zxy1.png"><img alt="../_images/vector_vy_zxy1.png" src="../_images/vector_vy_zxy1.png" style="width: 434.25px; height: 408.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/vector_vy_zxy.png"><img alt="../_images/vector_vy_zxy.png" src="../_images/vector_vy_zxy.png" style="width: 434.25px; height: 408.0px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1719,7 +1720,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots the x-component of the shear stress within
-a 150x90x12 UA section resulting from an applied shear force of 15 kN
+a 150x90x12 UA section resulting from ashear force of 15 kN
 in the x-direction and 30 kN in the y-direction:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1736,7 +1737,7 @@ in the x-direction and 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id38">
-<a class="reference internal image-reference" href="../_images/stress_v_zx1.png"><img alt="../_images/stress_v_zx1.png" src="../_images/stress_v_zx1.png" style="width: 474.75px; height: 425.25px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_v_zx.png"><img alt="../_images/stress_v_zx.png" src="../_images/stress_v_zx.png" style="width: 474.75px; height: 425.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1761,7 +1762,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots the y-component of the shear stress within
-a 150x90x12 UA section resulting from an applied shear force of 15 kN
+a 150x90x12 UA section resulting from ashear force of 15 kN
 in the x-direction and 30 kN in the y-direction:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1778,7 +1779,7 @@ in the x-direction and 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id39">
-<a class="reference internal image-reference" href="../_images/stress_v_zy1.png"><img alt="../_images/stress_v_zy1.png" src="../_images/stress_v_zy1.png" style="width: 451.5px; height: 408.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_v_zy.png"><img alt="../_images/stress_v_zy.png" src="../_images/stress_v_zy.png" style="width: 451.5px; height: 408.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1803,7 +1804,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example plots a contour of the resultant shear stress
-within a 150x90x12 UA section resulting from an applied shear force of
+within a 150x90x12 UA section resulting from ashear force of
 15 kN in the x-direction and 30 kN in the y-direction:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1820,7 +1821,7 @@ within a 150x90x12 UA section resulting from an applied shear force of
 </pre></div>
 </div>
 <div class="figure align-center" id="id40">
-<a class="reference internal image-reference" href="../_images/stress_v_zxy1.png"><img alt="../_images/stress_v_zxy1.png" src="../_images/stress_v_zxy1.png" style="width: 448.5px; height: 406.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_v_zxy.png"><img alt="../_images/stress_v_zxy.png" src="../_images/stress_v_zxy.png" style="width: 448.5px; height: 406.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1842,7 +1843,7 @@ immediately after the window is rendered.</td>
 </tbody>
 </table>
 <p>The following example generates a vector plot of the shear stress
-within a 150x90x12 UA section resulting from an applied shear force of
+within a 150x90x12 UA section resulting from ashear force of
 15 kN in the x-direction and 30 kN inthe y-direction:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 <span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
@@ -1859,7 +1860,7 @@ within a 150x90x12 UA section resulting from an applied shear force of
 </pre></div>
 </div>
 <div class="figure align-center" id="id41">
-<a class="reference internal image-reference" href="../_images/vector_v_zxy1.png"><img alt="../_images/vector_v_zxy1.png" src="../_images/vector_v_zxy1.png" style="width: 467.25px; height: 410.25px;" /></a>
+<a class="reference internal image-reference" href="../_images/vector_v_zxy.png"><img alt="../_images/vector_v_zxy.png" src="../_images/vector_v_zxy.png" style="width: 467.25px; height: 410.25px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1874,7 +1875,7 @@ within a 150x90x12 UA section resulting from an applied shear force of
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_zz</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_zz"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the combined normal stress
-<span class="math notranslate nohighlight">\(\sigma_{zz}\)</span> resulting from all applied actions.</p>
+<span class="math notranslate nohighlight">\(\sigma_{zz}\)</span> resulting from all actions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1903,7 +1904,7 @@ the x-axis of 5 kN.m and a bending moment about the y-axis of 2 kN.m:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id42">
-<a class="reference internal image-reference" href="../_images/stress_zz1.png"><img alt="../_images/stress_zz1.png" src="../_images/stress_zz1.png" style="width: 432.75px; height: 403.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_zz.png"><img alt="../_images/stress_zz.png" src="../_images/stress_zz.png" style="width: 432.75px; height: 403.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the normal stress.</span></p>
 </div>
 </dd></dl>
@@ -1915,7 +1916,7 @@ the x-axis of 5 kN.m and a bending moment about the y-axis of 2 kN.m:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_zx</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_zx"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the <em>x</em>-component of the shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zx}\)</span> resulting from all applied actions.</p>
+<span class="math notranslate nohighlight">\(\sigma_{zx}\)</span> resulting from all actions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1944,7 +1945,7 @@ shear force of 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id43">
-<a class="reference internal image-reference" href="../_images/stress_zx1.png"><img alt="../_images/stress_zx1.png" src="../_images/stress_zx1.png" style="width: 459.0px; height: 414.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_zx.png"><img alt="../_images/stress_zx.png" src="../_images/stress_zx.png" style="width: 459.0px; height: 414.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1956,7 +1957,7 @@ shear force of 30 kN in the y-direction:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_zy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_zy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the <em>y</em>-component of the shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zy}\)</span> resulting from all applied actions.</p>
+<span class="math notranslate nohighlight">\(\sigma_{zy}\)</span> resulting from all actions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1985,7 +1986,7 @@ shear force of 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id44">
-<a class="reference internal image-reference" href="../_images/stress_zy1.png"><img alt="../_images/stress_zy1.png" src="../_images/stress_zy1.png" style="width: 489.0px; height: 427.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_zy.png"><img alt="../_images/stress_zy.png" src="../_images/stress_zy.png" style="width: 489.0px; height: 427.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -1997,7 +1998,7 @@ shear force of 30 kN in the y-direction:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_zxy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a contour plot of the resultant shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zxy}\)</span> resulting from all applied actions.</p>
+<span class="math notranslate nohighlight">\(\sigma_{zxy}\)</span> resulting from all actions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2026,7 +2027,7 @@ and a shear force of 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id45">
-<a class="reference internal image-reference" href="../_images/stress_zxy1.png"><img alt="../_images/stress_zxy1.png" src="../_images/stress_zxy1.png" style="width: 495.75px; height: 447.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/stress_zxy.png"><img alt="../_images/stress_zxy.png" src="../_images/stress_zxy.png" style="width: 495.75px; height: 447.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -2035,7 +2036,7 @@ and a shear force of 30 kN in the y-direction:</p>
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_vector_zxy</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_vector_zxy"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Produces a vector plot of the resultant shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zxy}\)</span> resulting from all applied actions.</p>
+<span class="math notranslate nohighlight">\(\sigma_{zxy}\)</span> resulting from all actions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2064,7 +2065,7 @@ and a shear force of 30 kN in the y-direction:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id46">
-<a class="reference internal image-reference" href="../_images/vector_zxy1.png"><img alt="../_images/vector_zxy1.png" src="../_images/vector_zxy1.png" style="width: 453.75px; height: 444.75px;" /></a>
+<a class="reference internal image-reference" href="../_images/vector_zxy.png"><img alt="../_images/vector_zxy.png" src="../_images/vector_zxy.png" style="width: 453.75px; height: 444.75px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
 </dd></dl>
@@ -2075,8 +2076,8 @@ and a shear force of 30 kN in the y-direction:</p>
 <dl class="method">
 <dt>
 <code class="descclassname">StressPost.</code><code class="descname">plot_stress_vm</code><span class="sig-paren">(</span><em>pause=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.plot_stress_vm"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Produces a contour plot of the von Mises <span class="math notranslate nohighlight">\(\sigma_{vM}\)</span>
-resulting from all applied actions.</p>
+<dd><p>Produces a contour plot of the von Mises stress <span class="math notranslate nohighlight">\(\sigma_{vM}\)</span>
+resulting from all actions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2119,6 +2120,106 @@ immediately after the window is rendered.</td>
 
 </div>
 </div>
+</div>
+<div class="section" id="retrieving-cross-section-stress">
+<h2>Retrieving Cross-Section Stress<a class="headerlink" href="#retrieving-cross-section-stress" title="Permalink to this headline">¶</a></h2>
+<p>All cross-section stresses can be recovered using the <a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.StressPost.get_stress" title="sectionproperties.analysis.cross_section.StressPost.get_stress"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_stress()</span></code></a>
+method that belongs to every
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.StressPost" title="sectionproperties.analysis.cross_section.StressPost"><code class="xref py py-class docutils literal notranslate"><span class="pre">StressPost</span></code></a> object:</p>
+<dl class="method">
+<dt>
+<code class="descclassname">StressPost.</code><code class="descname">get_stress</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#StressPost.get_stress"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the stresses within each material belonging to the current
+<a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.StressPost" title="sectionproperties.analysis.cross_section.StressPost"><code class="xref py py-class docutils literal notranslate"><span class="pre">StressPost</span></code></a> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of dictionaries containing the cross-section stresses
+for each material.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list[dict]</td>
+</tr>
+</tbody>
+</table>
+<p>A dictionary is returned for each material in the cross-section,
+containing the following keys and values:</p>
+<ul class="simple">
+<li><em>‘Material’</em>: Material name</li>
+<li><em>‘sig_zz_n’</em>: Normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,N}\)</span> resulting from the
+axial load <span class="math notranslate nohighlight">\(N\)</span></li>
+<li><em>‘sig_zz_mxx’</em>: Normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,Mxx}\)</span> resulting from
+the bending moment <span class="math notranslate nohighlight">\(M_{xx}\)</span></li>
+<li><em>‘sig_zz_myy’</em>: Normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,Myy}\)</span> resulting from
+the bending moment <span class="math notranslate nohighlight">\(M_{yy}\)</span></li>
+<li><em>‘sig_zz_m11’</em>: Normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,M11}\)</span> resulting from
+the bending moment <span class="math notranslate nohighlight">\(M_{11}\)</span></li>
+<li><em>‘sig_zz_m22’</em>: Normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,M22}\)</span> resulting from
+the bending moment <span class="math notranslate nohighlight">\(M_{22}\)</span></li>
+<li><em>‘sig_zz_m’</em>: Normal stress <span class="math notranslate nohighlight">\(\sigma_{zz,\Sigma M}\)</span> resulting
+from all bending moments</li>
+<li><em>‘sig_zx_mzz’</em>: <em>x</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zx,Mzz}\)</span> resulting from the torsion moment</li>
+<li><em>‘sig_zy_mzz’</em>: <em>y</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zy,Mzz}\)</span> resulting from the torsion moment</li>
+<li><em>‘sig_zxy_mzz’</em>: Resultant shear stress <span class="math notranslate nohighlight">\(\sigma_{zxy,Mzz}\)</span>
+resulting from the torsion moment</li>
+<li><em>‘sig_zx_vx’</em>: <em>x</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zx,Vx}\)</span> resulting from the shear force
+<span class="math notranslate nohighlight">\(V_{x}\)</span></li>
+<li><em>‘sig_zy_vx’</em>: <em>y</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zy,Vx}\)</span> resulting from the shear force
+<span class="math notranslate nohighlight">\(V_{x}\)</span></li>
+<li><em>‘sig_zxy_vx’</em>: Resultant shear stress <span class="math notranslate nohighlight">\(\sigma_{zxy,Vx}\)</span>
+resulting from the shear force <span class="math notranslate nohighlight">\(V_{x}\)</span></li>
+<li><em>‘sig_zx_vy’</em>: <em>x</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zy,Vx}\)</span> resulting from the shear force
+<span class="math notranslate nohighlight">\(V_{y}\)</span></li>
+<li><em>‘sig_zy_vy’</em>: <em>y</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zy,Vy}\)</span> resulting from the shear force
+<span class="math notranslate nohighlight">\(V_{y}\)</span></li>
+<li><em>‘sig_zxy_vy’</em>: Resultant shear stress <span class="math notranslate nohighlight">\(\sigma_{zxy,Vy}\)</span>
+resulting from the shear force <span class="math notranslate nohighlight">\(V_{y}\)</span></li>
+<li><em>‘sig_zx_v’</em>: <em>x</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zx,\Sigma V}\)</span> resulting from all shear forces</li>
+<li><em>‘sig_zy_v’</em>: <em>y</em>-component of the shear stress
+<span class="math notranslate nohighlight">\(\sigma_{zy,\Sigma V}\)</span> resulting from all shear forces</li>
+<li><em>‘sig_zxy_v’</em>: Resultant shear stress <span class="math notranslate nohighlight">\(\sigma_{zxy,\Sigma V}\)</span>
+resulting from all shear forces</li>
+<li><em>‘sig_zz’</em>: Combined normal stress <span class="math notranslate nohighlight">\(\sigma_{zz}\)</span> resulting from
+all actions</li>
+<li><em>‘sig_zx’</em>: <em>x</em>-component of the shear stress <span class="math notranslate nohighlight">\(\sigma_{zx}\)</span>
+resulting from all actions</li>
+<li><em>‘sig_zy’</em>: <em>y</em>-component of the shear stress <span class="math notranslate nohighlight">\(\sigma_{zy}\)</span>
+resulting from all actions</li>
+<li><em>‘sig_zxy’</em>: Resultant shear stress <span class="math notranslate nohighlight">\(\sigma_{zxy}\)</span> resulting
+from all actions</li>
+<li><em>‘sig_vm’</em>: von Mises stress <span class="math notranslate nohighlight">\(\sigma_{vM}\)</span> resulting from all
+actions</li>
+</ul>
+<p>The following example returns the normal stress within a 150x90x12 UA
+section resulting from an axial force of 10 kN:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>import sectionproperties.pre.sections as sections
+from sectionproperties.analysis.cross_section import CrossSection
+
+geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+mesh = geometry.create_mesh(mesh_sizes=[2.5])
+section = CrossSection(geometry, mesh)
+
+section.calculate_geometric_properties()
+section.calculate_warping_properties()
+stress_post = section.calculate_stress(N=10e3)
+
+stresses = stress_post.get_stress()
+print(&#39;Material {0}.format(stresses[0][&#39;Material&#39;]))
+print(&#39;Axial Stresses {0}&#39;.format(stress[0][&#39;sig_zz_n&#39;]))
+
+$ Material: default
+$ Axial Stresses: [3.64025694 3.64025694 3.64025694 ... 3.64025694 3.64025694 3.64025694]
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 

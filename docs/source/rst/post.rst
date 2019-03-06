@@ -185,6 +185,7 @@ the finite element mesh in the background:
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.plot_centroids
     :noindex:
 
+
 Plotting Cross-Section Stresses
 -------------------------------
 
@@ -344,4 +345,15 @@ Shear Stress (:math:`\sigma_{zxy}`)
 von Mises Stress (:math:`\sigma_{vM}`)
 """""""""""""""""""""""""""""""""""""""
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vm
+    :noindex:
+
+
+Retrieving Cross-Section Stress
+-------------------------------
+
+All cross-section stresses can be recovered using the :func:`~sectionproperties.analysis.cross_section.StressPost.get_stress`
+method that belongs to every
+:class:`~sectionproperties.analysis.cross_section.StressPost` object:
+
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.get_stress
     :noindex:
