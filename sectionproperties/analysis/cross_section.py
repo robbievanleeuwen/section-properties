@@ -2566,8 +2566,8 @@ class StressPost:
             stress_post = section.calculate_stress(N=10e3)
 
             stresses = stress_post.get_stress()
-            print('Material {0}.format(stresses[0]['Material']))
-            print('Axial Stresses {0}'.format(stress[0]['sig_zz_n']))
+            print('Material: {0}'.format(stresses[0]['Material']))
+            print('Axial Stresses: {0}'.format(stresses[0]['sig_zz_n']))
 
             $ Material: default
             $ Axial Stresses: [3.64025694 3.64025694 3.64025694 ... 3.64025694 3.64025694 3.64025694]

@@ -1,4 +1,4 @@
-.. image:: logo.png
+.. image:: https://raw.githubusercontent.com/robbievanleeuwen/section-properties/master/logo.png
   :width: 100 %
   :alt: sectionproperties
   :align: left
