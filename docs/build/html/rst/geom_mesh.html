@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Creating a Geometry, Mesh and Material Properties &mdash; sectionproperties 1.0.2 documentation</title>
+  <title>Creating a Geometry, Mesh and Material Properties &mdash; sectionproperties 1.0.3 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                1.0.2
+                1.0.3
               </div>
             
           
@@ -800,6 +800,14 @@ generated with a maximum triangular area of 2.0:</p>
 </div>
 </dd></dl>
 
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Ensure that the <code class="docutils literal notranslate"><span class="pre">control_points</span></code> you choose lies within the
+<a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a>. If any of the <code class="docutils literal notranslate"><span class="pre">control_points</span></code>
+are outside the region, on an edge or within a hole, the meshing algorithm will
+likely not treat distinct areas within the <a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a>
+as a separate regions and mesh refinements may not work as anticipated.</p>
+</div>
 </div>
 <div class="section" id="merging-geometries">
 <h2>Merging Geometries<a class="headerlink" href="#merging-geometries" title="Permalink to this headline">¶</a></h2>
@@ -1043,7 +1051,7 @@ modulus and Poisson’s ratio assuming an isotropic material</li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Robbie van Leeuwen.
+        &copy; Copyright 2019, Robbie van Leeuwen.
 
     </p>
   </div>
@@ -1065,7 +1073,7 @@ modulus and Poisson’s ratio assuming an isotropic material</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.0.2',
+            VERSION:'1.0.3',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

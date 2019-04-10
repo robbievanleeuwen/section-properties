@@ -110,6 +110,12 @@ defined by a list of points (nodes), facets (node connectivities) and hole locat
     :show-inheritance:
     :noindex:
 
+..  note:: Ensure that the ``control_points`` you choose lie within the
+  :class:`~sectionproperties.pre.sections.CustomSection`. If any of the ``control_points``
+  are outside the region, on an edge or within a hole, the meshing algorithm will
+  likely not treat distinct areas within the :class:`~sectionproperties.pre.sections.CustomSection`
+  as a separate regions and mesh refinements may not work as anticipated.
+
 Merging Geometries
 ------------------
 
