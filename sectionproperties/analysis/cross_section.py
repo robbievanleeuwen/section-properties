@@ -753,7 +753,7 @@ class CrossSection:
                 plastic_section.calculate_plastic_properties(
                     self, pc_region, verbose)
             except ValueError:
-                str = "Platic section properties calculation failed. "
+                str = "Plastic section properties calculation failed. "
                 str += "Consider increasing pc_region bounds."
                 raise RuntimeError(str)
 
@@ -1838,7 +1838,7 @@ class PlasticSection:
 
         # 1a) Calculate x-axis plastic centroid
         (y_pc, r, f, c_top, c_bot) = self.pc_algorithm(
-            np.array([1, 0]), fibres[2:], 1, pc_region[1])
+            np.array([1, 0]), fibres[2:], 1, pc_region[1], verbose)
 
         self.check_convergence(r, 'x-axis')
         cross_section.section_props.y_pc = y_pc
@@ -1849,7 +1849,7 @@ class PlasticSection:
 
         # 1b) Calculate y-axis plastic centroid
         (x_pc, r, f, c_top, c_bot) = self.pc_algorithm(
-            np.array([0, 1]), fibres[0:2], 2, pc_region[0])
+            np.array([0, 1]), fibres[0:2], 2, pc_region[0], verbose)
 
         self.check_convergence(r, 'y-axis')
         cross_section.section_props.x_pc = x_pc
@@ -1872,7 +1872,7 @@ class PlasticSection:
 
         # 2a) Calculate 11-axis plastic centroid
         (y22_pc, r, f, c_top, c_bot) = self.pc_algorithm(
-            ux, fibres[2:], 1, pc_region[3])
+            ux, fibres[2:], 1, pc_region[3], verbose)
 
         # calculate the centroids in the principal coordinate system
         c_top_p = fea.principal_coordinate(
@@ -1889,7 +1889,7 @@ class PlasticSection:
 
         # 2b) Calculate 22-axis plastic centroid
         (x11_pc, r, f, c_top, c_bot) = self.pc_algorithm(
-            uy, fibres[0:2], 2, pc_region[2])
+            uy, fibres[0:2], 2, pc_region[2], verbose)
 
         # calculate the centroids in the principal coordinate system
         c_top_p = fea.principal_coordinate(
@@ -1996,7 +1996,7 @@ class PlasticSection:
 
         return (u_min, u_max, v_min, v_max)
 
-    def evaluate_force_eq(self, d, u, u_p):
+    def evaluate_force_eq(self, d, u, u_p, verbose):
         """Given a distance *d* from the centroid to an axis (defined by unit
         vector *u*), creates a mesh including the new and axis and calculates
         the force equilibrium. The resultant force, as a ratio of the total
@@ -2007,6 +2007,8 @@ class PlasticSection:
         :type u: :class:`numpy.ndarray`
         :param u_p: Unit vector perpendicular to the direction of the axis
         :type u_p: :class:`numpy.ndarray`
+        :param bool verbose: If set to True, the number of iterations required
+            for each plastic axis is printed to the terminal.
         :return: The force equilibrium norm
         :rtype: float
         """
@@ -2024,10 +2026,17 @@ class PlasticSection:
         (f_top, f_bot) = (
             self.calculate_plastic_force(element_list, u, p))
 
-        # return the force norm
-        return (f_top - f_bot) / (f_top + f_bot)
+        # calculate the force norm
+        f_norm = (f_top - f_bot) / (f_top + f_bot)
 
-    def pc_algorithm(self, u, dlim, axis, pc_region):
+        # print verbose results
+        if verbose:
+            print("d = {0}; f_norm = {1}".format(d, f_norm))
+
+        # return the force norm
+        return f_norm
+
+    def pc_algorithm(self, u, dlim, axis, pc_region, verbose):
         """An algorithm used for solving for the location of the plastic
         centroid. The algorithm searches for the location of the axis, defined
         by unit vector *u* and within limits *pc_region*, that satisfies force
@@ -2043,6 +2052,8 @@ class PlasticSection:
         :param pc_region: Region of cross-section in which to search for the
             plastic centroids.
         :type pc_region: list[float, float, float, float]
+        :param bool verbose: If set to True, the number of iterations required
+            for each plastic axis is printed to the terminal.
         :return: The distance to the plastic centroid axis *d*, the result
             object *r*, the force in the top of the section *f_top* and the
             location of the centroids of the top and bottom areas *c_top* and
@@ -2063,7 +2074,7 @@ class PlasticSection:
         a = dlim[0] + x * D
         b = dlim[1] - x * D
 
-        (d, r) = brentq(self.evaluate_force_eq, a, b, args=(u, u_p),
+        (d, r) = brentq(self.evaluate_force_eq, a, b, args=(u, u_p, verbose),
                         full_output=True, disp=False, xtol=1e-6, rtol=1e-6)
 
         return (d, r, self.f_top, self.c_top, self.c_bot)

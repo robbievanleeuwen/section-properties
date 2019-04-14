@@ -63,6 +63,12 @@ I-Section
       :show-inheritance:
       :noindex:
 
+Monosymmetric I-Section
+^^^^^^^^^^^^^^^^^^^^^^^
+  ..  autoclass:: sectionproperties.pre.sections.MonoISection
+      :show-inheritance:
+      :noindex:
+
 Parallel Flange Channel (PFC) Section
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   ..  autoclass:: sectionproperties.pre.sections.PfcSection

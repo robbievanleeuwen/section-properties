@@ -95,6 +95,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#circular-hollow-section-chs">Circular Hollow Section (CHS)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#rectangular-hollow-section-rhs">Rectangular Hollow Section (RHS)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#i-section">I-Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#monosymmetric-i-section">Monosymmetric I-Section</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#parallel-flange-channel-pfc-section">Parallel Flange Channel (PFC) Section</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tee-section">Tee Section</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#angle-section">Angle Section</a></li>
@@ -452,6 +453,60 @@ with a maximum triangular area of 3.0:</p>
 
 </div></blockquote>
 </div>
+<div class="section" id="monosymmetric-i-section">
+<h3>Monosymmetric I-Section<a class="headerlink" href="#monosymmetric-i-section" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">MonoISection</code><span class="sig-paren">(</span><em>d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#MonoISection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
+<p>Constructs a monosymmetric I-section centered at
+<em>(max(b_t, b_b)/2, d/2)</em>, with depth <em>d</em>, top flange width <em>b_t</em>, bottom
+flange width <em>b_b</em>, top flange thickness <em>t_ft</em>, top flange thickness
+<em>t_fb</em>, web thickness <em>t_w</em>, and root radius <em>r</em>, using <em>n_r</em> points to
+construct the root radius.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>d</strong> (<em>float</em>) – Depth of the I-section</li>
+<li><strong>b_t</strong> (<em>float</em>) – Top flange width</li>
+<li><strong>b_b</strong> (<em>float</em>) – Bottom flange width</li>
+<li><strong>t_ft</strong> (<em>float</em>) – Top flange thickness of the I-section</li>
+<li><strong>t_fb</strong> (<em>float</em>) – Bottom flange thickness of the I-section</li>
+<li><strong>t_w</strong> (<em>float</em>) – Web thickness of the I-section</li>
+<li><strong>r</strong> (<em>float</em>) – Root radius of the I-section</li>
+<li><strong>n_r</strong> (<em>int</em>) – Number of points discretising the root radius</li>
+<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates a monosymmetric I-section with a depth of
+200, a top flange width of 50, a top flange thickness of 12, a bottom
+flange width of 130, a bottom flange thickness of 8, a web thickness of
+6 and a root radius of 8, using 16 points to discretise the root
+radius. A mesh is generated with a maximum triangular area of 3.0:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MonoISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">b_t</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b_b</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">t_ft</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">t_fb</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id11">
+<a class="reference internal image-reference" href="../_images/monoisection_geometry.png"><img alt="../_images/monoisection_geometry.png" src="../_images/monoisection_geometry.png" style="width: 330.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">I-section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id12">
+<a class="reference internal image-reference" href="../_images/monoisection_mesh.png"><img alt="../_images/monoisection_mesh.png" src="../_images/monoisection_mesh.png" style="width: 207.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</div>
 <div class="section" id="parallel-flange-channel-pfc-section">
 <h3>Parallel Flange Channel (PFC) Section<a class="headerlink" href="#parallel-flange-channel-pfc-section" title="Permalink to this headline">¶</a></h3>
 <blockquote>
@@ -489,11 +544,11 @@ with a maximum triangular area of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id11">
+<div class="figure align-center" id="id13">
 <a class="reference internal image-reference" href="../_images/pfc_geometry.png"><img alt="../_images/pfc_geometry.png" src="../_images/pfc_geometry.png" style="width: 250.5px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">PFC geometry.</span></p>
 </div>
-<div class="figure align-center" id="id12">
+<div class="figure align-center" id="id14">
 <a class="reference internal image-reference" href="../_images/pfc_mesh.png"><img alt="../_images/pfc_mesh.png" src="../_images/pfc_mesh.png" style="width: 138.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -538,11 +593,11 @@ with a maximum triangular area of 3.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id13">
+<div class="figure align-center" id="id15">
 <a class="reference internal image-reference" href="../_images/tee_geometry.png"><img alt="../_images/tee_geometry.png" src="../_images/tee_geometry.png" style="width: 288.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Tee section geometry.</span></p>
 </div>
-<div class="figure align-center" id="id14">
+<div class="figure align-center" id="id16">
 <a class="reference internal image-reference" href="../_images/tee_mesh.png"><img alt="../_images/tee_mesh.png" src="../_images/tee_mesh.png" style="width: 167.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -587,7 +642,7 @@ triangular area of 2.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id15">
+<div class="figure align-center" id="id17">
 <a class="reference internal image-reference" href="../_images/angle_geometry.png"><img alt="../_images/angle_geometry.png" src="../_images/angle_geometry.png" style="width: 335.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Angle section geometry.</span></p>
 </div>
@@ -635,7 +690,7 @@ triangular area of 0.25:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id16">
+<div class="figure align-center" id="id18">
 <a class="reference internal image-reference" href="../_images/cee_geometry.png"><img alt="../_images/cee_geometry.png" src="../_images/cee_geometry.png" style="width: 261.0px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Cee section geometry.</span></p>
 </div>
@@ -685,7 +740,7 @@ A mesh is generated with a maximum triangular area of 0.15:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.15</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id17">
+<div class="figure align-center" id="id19">
 <a class="reference internal image-reference" href="../_images/zed_geometry.png"><img alt="../_images/zed_geometry.png" src="../_images/zed_geometry.png" style="width: 383.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Zed section geometry.</span></p>
 </div>
@@ -732,7 +787,7 @@ of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id18">
+<div class="figure align-center" id="id20">
 <a class="reference internal image-reference" href="../_images/cruciform_geometry.png"><img alt="../_images/cruciform_geometry.png" src="../_images/cruciform_geometry.png" style="width: 353.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Cruciform section geometry.</span></p>
 </div>
@@ -790,11 +845,11 @@ generated with a maximum triangular area of 2.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id19">
+<div class="figure align-center" id="id21">
 <a class="reference internal image-reference" href="../_images/custom_geometry.png"><img alt="../_images/custom_geometry.png" src="../_images/custom_geometry.png" style="width: 699.0px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Custom section geometry.</span></p>
 </div>
-<div class="figure align-center" id="id20">
+<div class="figure align-center" id="id22">
 <a class="reference internal image-reference" href="../_images/custom_mesh.png"><img alt="../_images/custom_mesh.png" src="../_images/custom_mesh.png" style="width: 393.75px; height: 218.25px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -802,7 +857,7 @@ generated with a maximum triangular area of 2.0:</p>
 
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Ensure that the <code class="docutils literal notranslate"><span class="pre">control_points</span></code> you choose lies within the
+<p class="last">Ensure that the <code class="docutils literal notranslate"><span class="pre">control_points</span></code> you choose lie within the
 <a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a>. If any of the <code class="docutils literal notranslate"><span class="pre">control_points</span></code>
 are outside the region, on an edge or within a hole, the meshing algorithm will
 likely not treat distinct areas within the <a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a>
@@ -849,7 +904,7 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id21">
+<div class="figure align-center" id="id23">
 <a class="reference internal image-reference" href="../_images/merged_geometry.png"><img alt="../_images/merged_geometry.png" src="../_images/merged_geometry.png" style="width: 287.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Merged section geometry.</span></p>
 </div>
@@ -921,7 +976,7 @@ diameter of 48 and thickness of 3.2, and plots the geometry:</p>
 <span class="n">geometry</span><span class="o">.</span><span class="n">plot_geometry</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id22">
+<div class="figure align-center" id="id24">
 <a class="reference internal image-reference" href="../_images/chs_geometry1.png"><img alt="../_images/chs_geometry1.png" src="../_images/chs_geometry1.png" style="width: 429.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Geometry generated by the above example.</span></p>
 </div>
@@ -962,7 +1017,7 @@ area of 2.5:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id23">
+<div class="figure align-center" id="id25">
 <a class="reference internal image-reference" href="../_images/circle_mesh.png"><img alt="../_images/circle_mesh.png" src="../_images/circle_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>

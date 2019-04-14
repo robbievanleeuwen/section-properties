@@ -909,7 +909,7 @@
                 <span class="n">plastic_section</span><span class="o">.</span><span class="n">calculate_plastic_properties</span><span class="p">(</span>
                     <span class="bp">self</span><span class="p">,</span> <span class="n">pc_region</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Platic section properties calculation failed. &quot;</span>
+                <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Plastic section properties calculation failed. &quot;</span>
                 <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot;Consider increasing pc_region bounds.&quot;</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
@@ -1219,7 +1219,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ax_supplied</span><span class="p">:</span>
             <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Finite Element Mesh&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.plot_centroids"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.plot_centroids">[docs]</a>    <span class="k">def</span> <span class="nf">plot_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.plot_centroids"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.plot_centroids">[docs]</a>    <span class="k">def</span> <span class="nf">plot_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plots the elastic centroid, the shear centre, the plastic centroids</span>
 <span class="sd">        and the principal axis, if they have been calculated, on top of the</span>
 <span class="sd">        finite element mesh.</span>
@@ -1353,7 +1353,7 @@
 
         <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.display_results"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.display_results">[docs]</a>    <span class="k">def</span> <span class="nf">display_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;8.6e&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.display_results"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.display_results">[docs]</a>    <span class="k">def</span> <span class="nf">display_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;8.6e&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Prints the results that have been calculated to the terminal.</span>
 
 <span class="sd">        :param string fmt: Number formatting string</span>
@@ -1375,7 +1375,7 @@
 
         <span class="n">post</span><span class="o">.</span><span class="n">print_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_area"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_area">[docs]</a>    <span class="k">def</span> <span class="nf">get_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_area"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_area">[docs]</a>    <span class="k">def</span> <span class="nf">get_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Cross-section area</span>
 <span class="sd">        :rtype: float</span>
@@ -1389,7 +1389,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_ea"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_ea">[docs]</a>    <span class="k">def</span> <span class="nf">get_ea</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_ea"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_ea">[docs]</a>    <span class="k">def</span> <span class="nf">get_ea</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Modulus weighted area (axial rigidity)</span>
 <span class="sd">        :rtype: float</span>
@@ -1403,7 +1403,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_q"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_q">[docs]</a>    <span class="k">def</span> <span class="nf">get_q</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_q"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_q">[docs]</a>    <span class="k">def</span> <span class="nf">get_q</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: First moments of area about the global axis *(qx, qy)*</span>
 <span class="sd">        :rtype: tuple(float, float)</span>
@@ -1417,7 +1417,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">qy</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_ig"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_ig">[docs]</a>    <span class="k">def</span> <span class="nf">get_ig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_ig"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_ig">[docs]</a>    <span class="k">def</span> <span class="nf">get_ig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Second moments of area about the global axis</span>
 <span class="sd">            *(ixx_g, iyy_g, ixy_g)*</span>
@@ -1433,7 +1433,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_g</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_g</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_c"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_c">[docs]</a>    <span class="k">def</span> <span class="nf">get_c</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_c"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_c">[docs]</a>    <span class="k">def</span> <span class="nf">get_c</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Elastic centroid *(cx, cy)*</span>
 <span class="sd">        :rtype: tuple(float, float)</span>
@@ -1447,7 +1447,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_ic"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_ic">[docs]</a>    <span class="k">def</span> <span class="nf">get_ic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_ic"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_ic">[docs]</a>    <span class="k">def</span> <span class="nf">get_ic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Second moments of area centroidal axis *(ixx_c, iyy_c, ixy_c)*</span>
 <span class="sd">        :rtype: tuple(float, float, float)</span>
@@ -1462,7 +1462,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixy_c</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_z"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_z">[docs]</a>    <span class="k">def</span> <span class="nf">get_z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_z"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_z">[docs]</a>    <span class="k">def</span> <span class="nf">get_z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Elastic section moduli about the centroidal axis with respect</span>
 <span class="sd">            to the top and bottom fibres</span>
@@ -1479,7 +1479,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">zxx_plus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">zxx_minus</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">zyy_plus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">zyy_minus</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_rc"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_rc">[docs]</a>    <span class="k">def</span> <span class="nf">get_rc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_rc"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_rc">[docs]</a>    <span class="k">def</span> <span class="nf">get_rc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Radii of gyration about the centroidal axis *(rx, ry)*</span>
 <span class="sd">        :rtype: tuple(float, float)</span>
@@ -1493,7 +1493,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">rx_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ry_c</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_ip"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_ip">[docs]</a>    <span class="k">def</span> <span class="nf">get_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_ip"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_ip">[docs]</a>    <span class="k">def</span> <span class="nf">get_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Second moments of area about the principal axis</span>
 <span class="sd">            *(i11_c, i22_c)*</span>
@@ -1508,7 +1508,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">i11_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">i22_c</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_phi"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_phi">[docs]</a>    <span class="k">def</span> <span class="nf">get_phi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_phi"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_phi">[docs]</a>    <span class="k">def</span> <span class="nf">get_phi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Principal bending axis angle</span>
 <span class="sd">        :rtype: float</span>
@@ -1522,7 +1522,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">phi</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_zp"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_zp">[docs]</a>    <span class="k">def</span> <span class="nf">get_zp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_zp"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_zp">[docs]</a>    <span class="k">def</span> <span class="nf">get_zp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Elastic section moduli about the principal axis with respect</span>
 <span class="sd">            to the top and bottom fibres</span>
@@ -1539,7 +1539,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">z11_plus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">z11_minus</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">z22_plus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">z22_minus</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_rp"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_rp">[docs]</a>    <span class="k">def</span> <span class="nf">get_rp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_rp"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_rp">[docs]</a>    <span class="k">def</span> <span class="nf">get_rp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Radii of gyration about the principal axis *(r11, r22)*</span>
 <span class="sd">        :rtype: tuple(float, float)</span>
@@ -1553,7 +1553,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">r11_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">r22_c</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_j"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_j">[docs]</a>    <span class="k">def</span> <span class="nf">get_j</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_j"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_j">[docs]</a>    <span class="k">def</span> <span class="nf">get_j</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: St. Venant torsion constant</span>
 <span class="sd">        :rtype: float</span>
@@ -1568,7 +1568,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">j</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_sc"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_sc">[docs]</a>    <span class="k">def</span> <span class="nf">get_sc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_sc"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_sc">[docs]</a>    <span class="k">def</span> <span class="nf">get_sc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Centroidal axis shear centre (elasticity approach)</span>
 <span class="sd">            *(x_se, y_se)*</span>
@@ -1591,7 +1591,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">x_se</span><span class="p">,</span> <span class="n">y_se</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_sc_p"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_sc_p">[docs]</a>    <span class="k">def</span> <span class="nf">get_sc_p</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_sc_p"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_sc_p">[docs]</a>    <span class="k">def</span> <span class="nf">get_sc_p</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Principal axis shear centre (elasticity approach)</span>
 <span class="sd">            *(x11_se, y22_se)*</span>
@@ -1613,7 +1613,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">x11_se</span><span class="p">,</span> <span class="n">y22_se</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_sc_t"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_sc_t">[docs]</a>    <span class="k">def</span> <span class="nf">get_sc_t</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_sc_t"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_sc_t">[docs]</a>    <span class="k">def</span> <span class="nf">get_sc_t</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Centroidal axis shear centre (Trefftz&#39;s approach)</span>
 <span class="sd">            *(x_st, y_st)*</span>
@@ -1636,7 +1636,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">x_st</span><span class="p">,</span> <span class="n">y_st</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_gamma"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_gamma">[docs]</a>    <span class="k">def</span> <span class="nf">get_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_gamma"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_gamma">[docs]</a>    <span class="k">def</span> <span class="nf">get_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Warping constant</span>
 <span class="sd">        :rtype: float</span>
@@ -1651,7 +1651,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">gamma</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_As"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_As">[docs]</a>    <span class="k">def</span> <span class="nf">get_As</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_As"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_As">[docs]</a>    <span class="k">def</span> <span class="nf">get_As</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Shear area for loading about the centroidal axis</span>
 <span class="sd">            *(A_sx, A_sy)*</span>
@@ -1667,7 +1667,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">A_sx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">A_sy</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_As_p"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_As_p">[docs]</a>    <span class="k">def</span> <span class="nf">get_As_p</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_As_p"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_As_p">[docs]</a>    <span class="k">def</span> <span class="nf">get_As_p</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Shear area for loading about the principal bending axis</span>
 <span class="sd">            *(A_s11, A_s22)*</span>
@@ -1683,7 +1683,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">A_s11</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">A_s22</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_pc"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_pc">[docs]</a>    <span class="k">def</span> <span class="nf">get_pc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_pc"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_pc">[docs]</a>    <span class="k">def</span> <span class="nf">get_pc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Centroidal axis plastic centroid *(x_pc, y_pc)*</span>
 <span class="sd">        :rtype: tuple(float, float)</span>
@@ -1705,7 +1705,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">x_pc</span><span class="p">,</span> <span class="n">y_pc</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_pc_p"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_pc_p">[docs]</a>    <span class="k">def</span> <span class="nf">get_pc_p</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_pc_p"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_pc_p">[docs]</a>    <span class="k">def</span> <span class="nf">get_pc_p</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Principal bending axis plastic centroid *(x11_pc, y22_pc)*</span>
 <span class="sd">        :rtype: tuple(float, float)</span>
@@ -1729,7 +1729,7 @@
             <span class="c1"># add centroid location to move section back to original location</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">x_pc</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cx</span><span class="p">,</span> <span class="n">y_pc</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">cy</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_s"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_s">[docs]</a>    <span class="k">def</span> <span class="nf">get_s</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_s"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_s">[docs]</a>    <span class="k">def</span> <span class="nf">get_s</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Plastic section moduli about the centroidal axis</span>
 <span class="sd">            *(sxx, syy)*</span>
@@ -1748,7 +1748,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">sxx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">syy</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_sp"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_sp">[docs]</a>    <span class="k">def</span> <span class="nf">get_sp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_sp"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_sp">[docs]</a>    <span class="k">def</span> <span class="nf">get_sp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Plastic section moduli about the principal bending axis</span>
 <span class="sd">            *(s11, s22)*</span>
@@ -1767,7 +1767,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">s11</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">s22</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_sf"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_sf">[docs]</a>    <span class="k">def</span> <span class="nf">get_sf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_sf"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_sf">[docs]</a>    <span class="k">def</span> <span class="nf">get_sf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Centroidal axis shape factors with respect to the top and</span>
 <span class="sd">            bottom fibres *(sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus)*</span>
@@ -1784,7 +1784,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">sf_xx_plus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">sf_xx_minus</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">sf_yy_plus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">sf_yy_minus</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossSection.get_sf_p"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_sf_p">[docs]</a>    <span class="k">def</span> <span class="nf">get_sf_p</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSection.get_sf_p"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.get_sf_p">[docs]</a>    <span class="k">def</span> <span class="nf">get_sf_p</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: Principal bending axis shape factors with respect to the top</span>
 <span class="sd">            and bottom fibres</span>
@@ -1994,7 +1994,7 @@
 
         <span class="c1"># 1a) Calculate x-axis plastic centroid</span>
         <span class="p">(</span><span class="n">y_pc</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">c_top</span><span class="p">,</span> <span class="n">c_bot</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pc_algorithm</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">fibres</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pc_region</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">fibres</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pc_region</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">verbose</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">check_convergence</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="s1">&#39;x-axis&#39;</span><span class="p">)</span>
         <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y_pc</span> <span class="o">=</span> <span class="n">y_pc</span>
@@ -2005,7 +2005,7 @@
 
         <span class="c1"># 1b) Calculate y-axis plastic centroid</span>
         <span class="p">(</span><span class="n">x_pc</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">c_top</span><span class="p">,</span> <span class="n">c_bot</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pc_algorithm</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">fibres</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pc_region</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">fibres</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pc_region</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">verbose</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">check_convergence</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="s1">&#39;y-axis&#39;</span><span class="p">)</span>
         <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_pc</span> <span class="o">=</span> <span class="n">x_pc</span>
@@ -2028,7 +2028,7 @@
 
         <span class="c1"># 2a) Calculate 11-axis plastic centroid</span>
         <span class="p">(</span><span class="n">y22_pc</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">c_top</span><span class="p">,</span> <span class="n">c_bot</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pc_algorithm</span><span class="p">(</span>
-            <span class="n">ux</span><span class="p">,</span> <span class="n">fibres</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pc_region</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+            <span class="n">ux</span><span class="p">,</span> <span class="n">fibres</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pc_region</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">verbose</span><span class="p">)</span>
 
         <span class="c1"># calculate the centroids in the principal coordinate system</span>
         <span class="n">c_top_p</span> <span class="o">=</span> <span class="n">fea</span><span class="o">.</span><span class="n">principal_coordinate</span><span class="p">(</span>
@@ -2045,7 +2045,7 @@
 
         <span class="c1"># 2b) Calculate 22-axis plastic centroid</span>
         <span class="p">(</span><span class="n">x11_pc</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">c_top</span><span class="p">,</span> <span class="n">c_bot</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pc_algorithm</span><span class="p">(</span>
-            <span class="n">uy</span><span class="p">,</span> <span class="n">fibres</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pc_region</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">uy</span><span class="p">,</span> <span class="n">fibres</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pc_region</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">verbose</span><span class="p">)</span>
 
         <span class="c1"># calculate the centroids in the principal coordinate system</span>
         <span class="n">c_top_p</span> <span class="o">=</span> <span class="n">fea</span><span class="o">.</span><span class="n">principal_coordinate</span><span class="p">(</span>
@@ -2152,7 +2152,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">u_min</span><span class="p">,</span> <span class="n">u_max</span><span class="p">,</span> <span class="n">v_min</span><span class="p">,</span> <span class="n">v_max</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PlasticSection.evaluate_force_eq"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.PlasticSection.evaluate_force_eq">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_force_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">u_p</span><span class="p">):</span>
+<div class="viewcode-block" id="PlasticSection.evaluate_force_eq"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.PlasticSection.evaluate_force_eq">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_force_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">u_p</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Given a distance *d* from the centroid to an axis (defined by unit</span>
 <span class="sd">        vector *u*), creates a mesh including the new and axis and calculates</span>
 <span class="sd">        the force equilibrium. The resultant force, as a ratio of the total</span>
@@ -2163,6 +2163,8 @@
 <span class="sd">        :type u: :class:`numpy.ndarray`</span>
 <span class="sd">        :param u_p: Unit vector perpendicular to the direction of the axis</span>
 <span class="sd">        :type u_p: :class:`numpy.ndarray`</span>
+<span class="sd">        :param bool verbose: If set to True, the number of iterations required</span>
+<span class="sd">            for each plastic axis is printed to the terminal.</span>
 <span class="sd">        :return: The force equilibrium norm</span>
 <span class="sd">        :rtype: float</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2180,10 +2182,17 @@
         <span class="p">(</span><span class="n">f_top</span><span class="p">,</span> <span class="n">f_bot</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">calculate_plastic_force</span><span class="p">(</span><span class="n">element_list</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
 
-        <span class="c1"># return the force norm</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">f_top</span> <span class="o">-</span> <span class="n">f_bot</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">f_top</span> <span class="o">+</span> <span class="n">f_bot</span><span class="p">)</span></div>
+        <span class="c1"># calculate the force norm</span>
+        <span class="n">f_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_top</span> <span class="o">-</span> <span class="n">f_bot</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">f_top</span> <span class="o">+</span> <span class="n">f_bot</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PlasticSection.pc_algorithm"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.PlasticSection.pc_algorithm">[docs]</a>    <span class="k">def</span> <span class="nf">pc_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">dlim</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">pc_region</span><span class="p">):</span>
+        <span class="c1"># print verbose results</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;d = </span><span class="si">{0}</span><span class="s2">; f_norm = </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f_norm</span><span class="p">))</span>
+
+        <span class="c1"># return the force norm</span>
+        <span class="k">return</span> <span class="n">f_norm</span></div>
+
+<div class="viewcode-block" id="PlasticSection.pc_algorithm"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.PlasticSection.pc_algorithm">[docs]</a>    <span class="k">def</span> <span class="nf">pc_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">dlim</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">pc_region</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;An algorithm used for solving for the location of the plastic</span>
 <span class="sd">        centroid. The algorithm searches for the location of the axis, defined</span>
 <span class="sd">        by unit vector *u* and within limits *pc_region*, that satisfies force</span>
@@ -2199,6 +2208,8 @@
 <span class="sd">        :param pc_region: Region of cross-section in which to search for the</span>
 <span class="sd">            plastic centroids.</span>
 <span class="sd">        :type pc_region: list[float, float, float, float]</span>
+<span class="sd">        :param bool verbose: If set to True, the number of iterations required</span>
+<span class="sd">            for each plastic axis is printed to the terminal.</span>
 <span class="sd">        :return: The distance to the plastic centroid axis *d*, the result</span>
 <span class="sd">            object *r*, the force in the top of the section *f_top* and the</span>
 <span class="sd">            location of the centroids of the top and bottom areas *c_top* and</span>
@@ -2219,7 +2230,7 @@
         <span class="n">a</span> <span class="o">=</span> <span class="n">dlim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">D</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">dlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span> <span class="o">*</span> <span class="n">D</span>
 
-        <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluate_force_eq</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u_p</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluate_force_eq</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u_p</span><span class="p">,</span> <span class="n">verbose</span><span class="p">),</span>
                         <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_bot</span><span class="p">)</span></div>
@@ -2644,7 +2655,7 @@
         <span class="c1"># finish the plot</span>
         <span class="n">post</span><span class="o">.</span><span class="n">finish_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">pause</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.get_stress"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.get_stress">[docs]</a>    <span class="k">def</span> <span class="nf">get_stress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.get_stress"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.get_stress">[docs]</a>    <span class="k">def</span> <span class="nf">get_stress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns the stresses within each material belonging to the current</span>
 <span class="sd">        :class:`~sectionproperties.analysis.cross_section.StressPost` object.</span>
 
@@ -2761,7 +2772,7 @@
 
         <span class="k">return</span> <span class="n">stress</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_n_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_n_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_n_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_n_zz"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_n_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_n_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress :math:`\sigma_{zz,N}`</span>
 <span class="sd">        resulting from the axial load :math:`N`.</span>
 
@@ -2800,7 +2811,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_mxx_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mxx_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mxx_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_mxx_zz"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mxx_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mxx_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}`</span>
 <span class="sd">        resulting from the bending moment :math:`M_{xx}`.</span>
 
@@ -2839,7 +2850,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_myy_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_myy_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_myy_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_myy_zz"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_myy_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_myy_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}`</span>
 <span class="sd">        resulting from the bending moment :math:`M_{yy}`.</span>
 
@@ -2878,7 +2889,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_m11_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_m11_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_m11_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_m11_zz"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_m11_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_m11_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}`</span>
 <span class="sd">        resulting from the bending moment :math:`M_{11}`.</span>
 
@@ -2917,7 +2928,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_m22_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_m22_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_m22_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_m22_zz"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_m22_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_m22_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}`</span>
 <span class="sd">        resulting from the bending moment :math:`M_{22}`.</span>
 
@@ -2956,7 +2967,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_m_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_m_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_m_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_m_zz"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_m_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_m_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the normal stress</span>
 <span class="sd">        :math:`\sigma_{zz,\Sigma M}` resulting from all bending moments</span>
 <span class="sd">        :math:`M_{xx} + M_{yy} + M_{11} + M_{22}`.</span>
@@ -2998,7 +3009,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_mzz_zx"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mzz_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_mzz_zx"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mzz_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *x*-component of the shear stress</span>
 <span class="sd">        :math:`\sigma_{zx,Mzz}` resulting from the torsion moment</span>
 <span class="sd">        :math:`M_{zz}`.</span>
@@ -3039,7 +3050,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_mzz_zy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mzz_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_mzz_zy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mzz_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *y*-component of the shear stress</span>
 <span class="sd">        :math:`\sigma_{zy,Mzz}` resulting from the torsion moment</span>
 <span class="sd">        :math:`M_{zz}`.</span>
@@ -3080,7 +3091,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_mzz_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mzz_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_mzz_zxy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_mzz_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the resultant shear stress</span>
 <span class="sd">        :math:`\sigma_{zxy,Mzz}` resulting from the torsion moment</span>
 <span class="sd">        :math:`M_{zz}`.</span>
@@ -3121,7 +3132,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_vector_mzz_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_mzz_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_mzz_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_vector_mzz_zxy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_mzz_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_mzz_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a vector plot of the resultant shear stress</span>
 <span class="sd">        :math:`\sigma_{zxy,Mzz}` resulting from the torsion moment</span>
 <span class="sd">        :math:`M_{zz}`.</span>
@@ -3164,7 +3175,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_vector</span><span class="p">(</span><span class="n">sigxs</span><span class="p">,</span> <span class="n">sigys</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_vx_zx"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vx_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_vx_zx"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vx_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *x*-component of the shear stress</span>
 <span class="sd">        :math:`\sigma_{zx,Vx}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{x}`.</span>
@@ -3205,7 +3216,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_vx_zy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vx_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_vx_zy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vx_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *y*-component of the shear stress</span>
 <span class="sd">        :math:`\sigma_{zy,Vx}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{x}`.</span>
@@ -3246,7 +3257,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_vx_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vx_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_vx_zxy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vx_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the resultant shear stress</span>
 <span class="sd">        :math:`\sigma_{zxy,Vx}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{x}`.</span>
@@ -3287,7 +3298,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_vector_vx_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_vx_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_vx_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_vector_vx_zxy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_vx_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_vx_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a vector plot of the resultant shear stress</span>
 <span class="sd">        :math:`\sigma_{zxy,Vx}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{x}`.</span>
@@ -3330,7 +3341,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_vector</span><span class="p">(</span><span class="n">sigxs</span><span class="p">,</span> <span class="n">sigys</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_vy_zx"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vy_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_vy_zx"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vy_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *x*-component of the shear stress</span>
 <span class="sd">        :math:`\sigma_{zx,Vy}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{y}`.</span>
@@ -3371,7 +3382,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_vy_zy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vy_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_vy_zy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vy_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *y*-component of the shear stress</span>
 <span class="sd">        :math:`\sigma_{zy,Vy}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{y}`.</span>
@@ -3412,7 +3423,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_vy_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vy_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_vy_zxy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vy_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the resultant shear stress</span>
 <span class="sd">        :math:`\sigma_{zxy,Vy}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{y}`.</span>
@@ -3453,7 +3464,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_vector_vy_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_vy_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_vy_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_vector_vy_zxy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_vy_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_vy_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a vector plot of the resultant shear stress</span>
 <span class="sd">        :math:`\sigma_{zxy,Vy}` resulting from the shear force</span>
 <span class="sd">        :math:`V_{y}`.</span>
@@ -3496,7 +3507,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_vector</span><span class="p">(</span><span class="n">sigxs</span><span class="p">,</span> <span class="n">sigys</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_v_zx"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_v_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_v_zx"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_v_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *x*-component of the shear stress</span>
 <span class="sd">        :math:`\sigma_{zx,\Sigma V}` resulting from the sum of the applied</span>
 <span class="sd">        shear forces :math:`V_{x} + V_{y}`.</span>
@@ -3537,7 +3548,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_v_zy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_v_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_v_zy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_v_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *y*-component of the shear stress</span>
 <span class="sd">        :math:`\sigma_{zy,\Sigma V}` resulting from the sum of the applied</span>
 <span class="sd">        shear forces :math:`V_{x} + V_{y}`.</span>
@@ -3578,7 +3589,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_v_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_v_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_v_zxy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_v_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the resultant shear stress</span>
 <span class="sd">        :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the applied</span>
 <span class="sd">        shear forces :math:`V_{x} + V_{y}`.</span>
@@ -3619,7 +3630,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_vector_v_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_v_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_v_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_vector_v_zxy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_v_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_v_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a vector plot of the resultant shear stress</span>
 <span class="sd">        :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the  applied</span>
 <span class="sd">        shear forces :math:`V_{x} + V_{y}`.</span>
@@ -3662,7 +3673,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_vector</span><span class="p">(</span><span class="n">sigxs</span><span class="p">,</span> <span class="n">sigys</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_zz"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_zz"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zz">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the combined normal stress</span>
 <span class="sd">        :math:`\sigma_{zz}` resulting from all actions.</span>
 
@@ -3702,7 +3713,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_zx"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_zx"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zx">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *x*-component of the shear stress</span>
 <span class="sd">        :math:`\sigma_{zx}` resulting from all actions.</span>
 
@@ -3742,7 +3753,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_zy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_zy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the *y*-component of the shear stress</span>
 <span class="sd">        :math:`\sigma_{zy}` resulting from all actions.</span>
 
@@ -3782,7 +3793,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_zxy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the resultant shear stress</span>
 <span class="sd">        :math:`\sigma_{zxy}` resulting from all actions.</span>
 
@@ -3822,7 +3833,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_contour</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_vector_zxy"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_vector_zxy"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_vector_zxy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vector_zxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a vector plot of the resultant shear stress</span>
 <span class="sd">        :math:`\sigma_{zxy}` resulting from all actions.</span>
 
@@ -3864,7 +3875,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_stress_vector</span><span class="p">(</span><span class="n">sigxs</span><span class="p">,</span> <span class="n">sigys</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StressPost.plot_stress_vm"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vm">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="StressPost.plot_stress_vm"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.StressPost.plot_stress_vm">[docs]</a>    <span class="k">def</span> <span class="nf">plot_stress_vm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Produces a contour plot of the von Mises stress :math:`\sigma_{vM}`</span>
 <span class="sd">        resulting from all actions.</span>
 

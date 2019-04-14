@@ -44,6 +44,11 @@ ISection Class
   ..  autoclass:: sectionproperties.pre.sections.ISection
       :show-inheritance:
 
+MonoISection Class
+""""""""""""""""""
+  ..  autoclass:: sectionproperties.pre.sections.MonoISection
+      :show-inheritance:
+
 PfcSection Class
 """"""""""""""""
   ..  autoclass:: sectionproperties.pre.sections.PfcSection

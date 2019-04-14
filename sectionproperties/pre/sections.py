@@ -847,6 +847,133 @@ class ISection(Geometry):
         self.shift_section()
 
 
+class MonoISection(Geometry):
+    """Constructs a monosymmetric I-section centered at
+    *(max(b_t, b_b)/2, d/2)*, with depth *d*, top flange width *b_t*, bottom
+    flange width *b_b*, top flange thickness *t_ft*, top flange thickness
+    *t_fb*, web thickness *t_w*, and root radius *r*, using *n_r* points to
+    construct the root radius.
+
+    :param float d: Depth of the I-section
+    :param float b_t: Top flange width
+    :param float b_b: Bottom flange width
+    :param float t_ft: Top flange thickness of the I-section
+    :param float t_fb: Bottom flange thickness of the I-section
+    :param float t_w: Web thickness of the I-section
+    :param float r: Root radius of the I-section
+    :param int n_r: Number of points discretising the root radius
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+
+    The following example creates a monosymmetric I-section with a depth of
+    200, a top flange width of 50, a top flange thickness of 12, a bottom
+    flange width of 130, a bottom flange thickness of 8, a web thickness of
+    6 and a root radius of 8, using 16 points to discretise the root
+    radius. A mesh is generated with a maximum triangular area of 3.0::
+
+        import sectionproperties.pre.sections as sections
+
+        geometry = sections.MonoISection(d=200, b_t=50, b_b=130, t_ft=12, t_fb=8, t_w=6, r=8, n_r=16)
+        mesh = geometry.create_mesh(mesh_sizes=[3.0])
+
+    ..  figure:: ../images/sections/monoisection_geometry.png
+        :align: center
+        :scale: 75 %
+
+        I-section geometry.
+
+    ..  figure:: ../images/sections/monoisection_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, shift=[0, 0]):
+        """Inits the ISection class."""
+
+        # assign control point
+        control_points = [[max(b_t, b_b) * 0.5, d * 0.5]]
+
+        super().__init__(control_points, shift)
+
+        # calculate central axis
+        x_central = max(b_t, b_b) * 0.5
+
+        # add first three points
+        self.points.append([x_central - b_b * 0.5, 0])
+        self.points.append([x_central + b_b * 0.5, 0])
+        self.points.append([x_central + b_b * 0.5, t_fb])
+
+        # construct the bottom right radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 1.0 / 3)
+
+            # calculate the locations of the radius points
+            x = x_central + t_w * 0.5 + r + r * np.cos(theta)
+            y = t_fb + r + r * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # construct the top right radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 0.5)
+
+            # calculate the locations of the radius points
+            x = x_central + t_w * 0.5 + r + r * np.cos(theta)
+            y = d - t_ft - r + r * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # add the next four points
+        self.points.append([x_central + b_t * 0.5, d - t_ft])
+        self.points.append([x_central + b_t * 0.5, d])
+        self.points.append([x_central - b_t * 0.5, d])
+        self.points.append([x_central - b_t * 0.5, d - t_ft])
+
+        # construct the top left radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = np.pi * 0.5 * (1 - i * 1.0 / max(1, n_r - 1))
+
+            # calculate the locations of the radius points
+            x = x_central - t_w * 0.5 - r + r * np.cos(theta)
+            y = d - t_ft - r + r * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # construct the bottom left radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = -np.pi * i * 1.0 / max(1, n_r - 1) * 0.5
+
+            # calculate the locations of the radius points
+            x = x_central - t_w * 0.5 - r + r * np.cos(theta)
+            y = t_fb + r + r * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # add the last point
+        self.points.append([x_central - b_b * 0.5, t_fb])
+
+        # build the facet list
+        for i in range(len(self.points)):
+            # if we are not at the last point
+            if i != len(self.points) - 1:
+                self.facets.append((i, i + 1))
+            # if we are at the last point, complete the loop
+            else:
+                self.facets.append((len(self.points) - 1, 0))
+
+        self.shift_section()
+
+
 class PfcSection(Geometry):
     """Constructs a PFC section with the bottom left corner at the origin
     *(0, 0)*, with depth *d*, width *b*, flange thickness *t_f*, web  thickness
