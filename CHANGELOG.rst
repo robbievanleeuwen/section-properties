@@ -1,6 +1,14 @@
 Change Log:
 ===========
 
+v1.0.4:
+-------
+
+- Added a monosymmetric I-section class
+- Extend the plastic centroid search range to the entire section
+- Remove the pc_region variable from the plastic centroid calculation as it is no longer relevant
+- Better verbose output for the plastic centroid calculation
+
 v1.0.3:
 -------
 
