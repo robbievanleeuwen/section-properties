@@ -694,21 +694,13 @@ class CrossSection:
             self.section_props.iyy_c, self.section_props.ixy_c,
             self.section_props.j, self.section_props.phi)
 
-    def calculate_plastic_properties(self, pc_region=[0.95, 0.95, 0.95, 0.95],
-                                     time_info=False,
-                                     verbose=False, debug=False):
+    def calculate_plastic_properties(self, time_info=False, verbose=False,
+                                     debug=False):
         """Calculates the plastic properties of the cross-section and stores
         the, in the
         :class:`~sectionproperties.analysis.cross_section.SectionProperties`
         object contained in the ``section_props`` class variable.
 
-        :param pc_region: Region of cross-section in which to search for the
-            plastic centroids. The value represents the fraction of the depth
-            to search within perpendicular to the axis being considered
-            [x-axis, y-axis, 11-axis, 22-axis]. Ensure 0 < pc_region[i] < 1.
-            The default scheme searches 95% of the section depth (ie. centroid
-            :math:`\pm` 47.5%)
-        :type pc_region: list[float, float, float, float]
         :param bool time_info: If set to True, a detailed description of the
             computation and the time cost is printed to the terminal.
         :param bool verbose: If set to True, the number of iterations required
@@ -750,11 +742,11 @@ class CrossSection:
 
             # calculate plastic properties
             try:
-                plastic_section.calculate_plastic_properties(
-                    self, pc_region, verbose)
+                plastic_section.calculate_plastic_properties(self, verbose)
             except ValueError:
                 str = "Plastic section properties calculation failed. "
-                str += "Consider increasing pc_region bounds."
+                str += "Contact robbie.vanleeuwen@gmail.com "
+                str += "with your analysis parameters."
                 raise RuntimeError(str)
 
         if time_info:
@@ -1815,7 +1807,7 @@ class PlasticSection:
 
         return (qy / ea, qx / ea)
 
-    def calculate_plastic_properties(self, cross_section, pc_region, verbose):
+    def calculate_plastic_properties(self, cross_section, verbose):
         """Calculates the location of the plastic centroid with respect to the
         centroidal and principal bending axes, the plastic section moduli and
         shape factors and stores the results to the supplied
@@ -1825,9 +1817,6 @@ class PlasticSection:
             and materials specified in the class constructor
         :type cross_section:
             :class:`~sectionproperties.analysis.cross_section.CrossSection`
-        :param pc_region: Region of cross-section in which to search for the
-            plastic centroids.
-        :type pc_region: list[float, float, float, float]
         :param bool verbose: If set to True, the number of iterations required
             for each plastic axis is printed to the terminal.
         """
@@ -1838,7 +1827,7 @@ class PlasticSection:
 
         # 1a) Calculate x-axis plastic centroid
         (y_pc, r, f, c_top, c_bot) = self.pc_algorithm(
-            np.array([1, 0]), fibres[2:], 1, pc_region[1], verbose)
+            np.array([1, 0]), fibres[2:], 1, verbose)
 
         self.check_convergence(r, 'x-axis')
         cross_section.section_props.y_pc = y_pc
@@ -1849,7 +1838,7 @@ class PlasticSection:
 
         # 1b) Calculate y-axis plastic centroid
         (x_pc, r, f, c_top, c_bot) = self.pc_algorithm(
-            np.array([0, 1]), fibres[0:2], 2, pc_region[0], verbose)
+            np.array([0, 1]), fibres[0:2], 2, verbose)
 
         self.check_convergence(r, 'y-axis')
         cross_section.section_props.x_pc = x_pc
@@ -1872,7 +1861,7 @@ class PlasticSection:
 
         # 2a) Calculate 11-axis plastic centroid
         (y22_pc, r, f, c_top, c_bot) = self.pc_algorithm(
-            ux, fibres[2:], 1, pc_region[3], verbose)
+            ux, fibres[2:], 1, verbose)
 
         # calculate the centroids in the principal coordinate system
         c_top_p = fea.principal_coordinate(
@@ -1889,7 +1878,7 @@ class PlasticSection:
 
         # 2b) Calculate 22-axis plastic centroid
         (x11_pc, r, f, c_top, c_bot) = self.pc_algorithm(
-            uy, fibres[0:2], 2, pc_region[2], verbose)
+            uy, fibres[0:2], 2, verbose)
 
         # calculate the centroids in the principal coordinate system
         c_top_p = fea.principal_coordinate(
@@ -2036,10 +2025,10 @@ class PlasticSection:
         # return the force norm
         return f_norm
 
-    def pc_algorithm(self, u, dlim, axis, pc_region, verbose):
+    def pc_algorithm(self, u, dlim, axis, verbose):
         """An algorithm used for solving for the location of the plastic
         centroid. The algorithm searches for the location of the axis, defined
-        by unit vector *u* and within limits *pc_region*, that satisfies force
+        by unit vector *u* and within the section depth, that satisfies force
         equilibrium.
 
         :param u: Unit vector defining the direction of the axis
@@ -2049,9 +2038,6 @@ class PlasticSection:
         :type dlim: list[float, float]
         :param int axis: The current axis direction: 1 (e.g. x or 11) or
             2 (e.g. y or 22)
-        :param pc_region: Region of cross-section in which to search for the
-            plastic centroids.
-        :type pc_region: list[float, float, float, float]
         :param bool verbose: If set to True, the number of iterations required
             for each plastic axis is printed to the terminal.
         :return: The distance to the plastic centroid axis *d*, the result
@@ -2062,17 +2048,14 @@ class PlasticSection:
             list[float, float], list[float, float])
         """
 
-        D = dlim[1] - dlim[0]  # depth of the section perpendicular to the axis
-
         # calculate vector perpendicular to u
         if axis == 1:
             u_p = np.array([-u[1], u[0]])
         else:
             u_p = np.array([u[1], -u[0]])
 
-        x = (1 - pc_region) / 2
-        a = dlim[0] + x * D
-        b = dlim[1] - x * D
+        a = dlim[0]
+        b = dlim[1]
 
         (d, r) = brentq(self.evaluate_force_eq, a, b, args=(u, u_p, verbose),
                         full_output=True, disp=False, xtol=1e-6, rtol=1e-6)
@@ -2116,6 +2099,14 @@ class PlasticSection:
                 ea_bot += ea_el
                 qx_bot += qx_el
                 qy_bot += qy_el
+
+        # if there are no elements in the top/bottom prevent division by zero
+        # N.B. the algorithm will never converge at this point, this is purely
+        # done to ensure a 100% search range
+        if ea_top == 0:
+            ea_top = 1
+        if ea_bot == 0:
+            ea_bot = 1
 
         # calculate the centroid of the top and bottom segments and save
         self.c_top = [qy_top / ea_top, qx_top / ea_top]
@@ -2219,6 +2210,11 @@ class PlasticSection:
                         list(new_pt) not in [list(item) for item in int_pts]):
                     int_pts.append(new_pt)
                     fct_idx.append(idx)
+
+        # if less than 2 intersection points are found, we are at the edge of
+        # the section, therefore no line to add
+        if len(int_pts) < 2:
+            return
 
         # sort intersection points and facet list first by x, then by y
         int_pts = np.array(int_pts)

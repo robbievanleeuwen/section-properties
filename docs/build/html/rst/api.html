@@ -1728,7 +1728,7 @@ and section moduli are elastic modulus weighted.</p>
 
 <dl class="method">
 <dt id="sectionproperties.analysis.cross_section.CrossSection.calculate_plastic_properties">
-<code class="descname">calculate_plastic_properties</code><span class="sig-paren">(</span><em>pc_region=[0.95, 0.95, 0.95, 0.95], time_info=False, verbose=False, debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_plastic_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.calculate_plastic_properties" title="Permalink to this definition">¶</a></dt>
+<code class="descname">calculate_plastic_properties</code><span class="sig-paren">(</span><em>time_info=False</em>, <em>verbose=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_plastic_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.calculate_plastic_properties" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the plastic properties of the cross-section and stores
 the, in the
 <a class="reference internal" href="#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>
@@ -1738,12 +1738,6 @@ object contained in the <code class="docutils literal notranslate"><span class="
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>pc_region</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) – Region of cross-section in which to search for the
-plastic centroids. The value represents the fraction of the depth
-to search within perpendicular to the axis being considered
-[x-axis, y-axis, 11-axis, 22-axis]. Ensure 0 &lt; pc_region[i] &lt; 1.
-The default scheme searches 95% of the section depth (ie. centroid
-<span class="math notranslate nohighlight">\(\pm\)</span> 47.5%)</li>
 <li><strong>time_info</strong> (<em>bool</em>) – If set to True, a detailed description of the
 computation and the time cost is printed to the terminal.</li>
 <li><strong>verbose</strong> (<em>bool</em>) – If set to True, the number of iterations required
@@ -2724,7 +2718,7 @@ below the axis.</p>
 
 <dl class="method">
 <dt id="sectionproperties.analysis.cross_section.PlasticSection.calculate_plastic_properties">
-<code class="descname">calculate_plastic_properties</code><span class="sig-paren">(</span><em>cross_section</em>, <em>pc_region</em>, <em>verbose</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#PlasticSection.calculate_plastic_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.PlasticSection.calculate_plastic_properties" title="Permalink to this definition">¶</a></dt>
+<code class="descname">calculate_plastic_properties</code><span class="sig-paren">(</span><em>cross_section</em>, <em>verbose</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#PlasticSection.calculate_plastic_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.PlasticSection.calculate_plastic_properties" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the location of the plastic centroid with respect to the
 centroidal and principal bending axes, the plastic section moduli and
 shape factors and stores the results to the supplied
@@ -2736,8 +2730,6 @@ shape factors and stores the results to the supplied
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>cross_section</strong> (<a class="reference internal" href="#sectionproperties.analysis.cross_section.CrossSection" title="sectionproperties.analysis.cross_section.CrossSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossSection</span></code></a>) – Cross section object that uses the same geometry
 and materials specified in the class constructor</li>
-<li><strong>pc_region</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) – Region of cross-section in which to search for the
-plastic centroids.</li>
 <li><strong>verbose</strong> (<em>bool</em>) – If set to True, the number of iterations required
 for each plastic axis is printed to the terminal.</li>
 </ul>
@@ -2843,10 +2835,10 @@ list[<a class="reference internal" href="#sectionproperties.analysis.fea.Tri6" t
 
 <dl class="method">
 <dt id="sectionproperties.analysis.cross_section.PlasticSection.pc_algorithm">
-<code class="descname">pc_algorithm</code><span class="sig-paren">(</span><em>u</em>, <em>dlim</em>, <em>axis</em>, <em>pc_region</em>, <em>verbose</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#PlasticSection.pc_algorithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.PlasticSection.pc_algorithm" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pc_algorithm</code><span class="sig-paren">(</span><em>u</em>, <em>dlim</em>, <em>axis</em>, <em>verbose</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#PlasticSection.pc_algorithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.PlasticSection.pc_algorithm" title="Permalink to this definition">¶</a></dt>
 <dd><p>An algorithm used for solving for the location of the plastic
 centroid. The algorithm searches for the location of the axis, defined
-by unit vector <em>u</em> and within limits <em>pc_region</em>, that satisfies force
+by unit vector <em>u</em> and within the section depth, that satisfies force
 equilibrium.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2858,8 +2850,6 @@ equilibrium.</p>
 centroid to the extreme fibres perpendicular to the axis</li>
 <li><strong>axis</strong> (<em>int</em>) – The current axis direction: 1 (e.g. x or 11) or
 2 (e.g. y or 22)</li>
-<li><strong>pc_region</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) – Region of cross-section in which to search for the
-plastic centroids.</li>
 <li><strong>verbose</strong> (<em>bool</em>) – If set to True, the number of iterations required
 for each plastic axis is printed to the terminal.</li>
 </ul>

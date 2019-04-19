@@ -403,7 +403,7 @@ a plastic analysis is carried out.</p>
 </div>
 <dl class="method">
 <dt>
-<code class="descclassname">CrossSection.</code><code class="descname">calculate_plastic_properties</code><span class="sig-paren">(</span><em>pc_region=[0.95, 0.95, 0.95, 0.95], time_info=False, verbose=False, debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_plastic_properties"><span class="viewcode-link">[source]</span></a></dt>
+<code class="descclassname">CrossSection.</code><code class="descname">calculate_plastic_properties</code><span class="sig-paren">(</span><em>time_info=False</em>, <em>verbose=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.calculate_plastic_properties"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Calculates the plastic properties of the cross-section and stores
 the, in the
 <a class="reference internal" href="api.html#sectionproperties.analysis.cross_section.SectionProperties" title="sectionproperties.analysis.cross_section.SectionProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionProperties</span></code></a>
@@ -413,12 +413,6 @@ object contained in the <code class="docutils literal notranslate"><span class="
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>pc_region</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) – Region of cross-section in which to search for the
-plastic centroids. The value represents the fraction of the depth
-to search within perpendicular to the axis being considered
-[x-axis, y-axis, 11-axis, 22-axis]. Ensure 0 &lt; pc_region[i] &lt; 1.
-The default scheme searches 95% of the section depth (ie. centroid
-<span class="math notranslate nohighlight">\(\pm\)</span> 47.5%)</li>
 <li><strong>time_info</strong> (<em>bool</em>) – If set to True, a detailed description of the
 computation and the time cost is printed to the terminal.</li>
 <li><strong>verbose</strong> (<em>bool</em>) – If set to True, the number of iterations required
