@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sectionproperties.post.post &mdash; sectionproperties 1.0.3 documentation</title>
+  <title>sectionproperties.post.post &mdash; sectionproperties 1.0.4 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                1.0.3
+                1.0.4
               </div>
             
           
@@ -394,16 +394,22 @@
     <span class="p">(</span><span class="n">A_s11</span><span class="p">,</span> <span class="n">A_s22</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_As_p</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">A_s11</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s11</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">A_s11</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span>
-                    <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s22</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">A_s22</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span>
-                    <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s11</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_s11</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s22</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_s22</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s11</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">A_s11</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span>
+                <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s22</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">A_s22</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span>
+                <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s11</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_s11</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s22</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_s22</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="n">beta_x</span><span class="p">,</span> <span class="n">beta_y</span><span class="p">,</span> <span class="n">beta_11</span><span class="p">,</span> <span class="n">beta_22</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_beta</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">beta_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;beta_x</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beta_x</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;beta_y</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beta_y</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;beta_11</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beta_11</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;beta_22</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beta_22</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
 
     <span class="p">(</span><span class="n">x_pc</span><span class="p">,</span> <span class="n">y_pc</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_pc</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">x_pc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -483,7 +489,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.0.3',
+            VERSION:'1.0.4',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

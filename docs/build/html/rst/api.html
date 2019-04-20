@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python API Documentation &mdash; sectionproperties 1.0.3 documentation</title>
+  <title>Python API Documentation &mdash; sectionproperties 1.0.4 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                1.0.3
+                1.0.4
               </div>
             
           
@@ -1857,6 +1857,7 @@ method</li>
 <li>Shear centre</li>
 <li>Shear area</li>
 <li>Warping constant</li>
+<li>Monosymmetry constant</li>
 </ul>
 <p>If materials are specified, the values calculated for the torsion
 constant, warping constant and shear area are elastic modulus weighted.</p>
@@ -1991,6 +1992,28 @@ merged from two rectangles:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
 <span class="n">area</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_area</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_beta">
+<code class="descname">get_beta</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_beta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_beta" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Monosymmetry constant for bending about both global axes and
+both principal axes <em>(beta_x, beta_y, beta_11, beta_22)</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float, float)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="p">(</span><span class="n">beta_x</span><span class="p">,</span> <span class="n">beta_y</span><span class="p">,</span> <span class="n">beta_11</span><span class="p">,</span> <span class="n">beta_22</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_beta</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -4390,6 +4413,10 @@ stresses at the negative extreme value of the 11-axis</li>
 <li><strong>A_sxy</strong> (<em>float</em>) – Shear area about the xy-axis</li>
 <li><strong>A_s11</strong> (<em>float</em>) – Shear area about the 11 bending axis</li>
 <li><strong>A_s22</strong> (<em>float</em>) – Shear area about the 22 bending axis</li>
+<li><strong>beta_x</strong> (<em>float</em>) – Monosymmetry constant for bending about the x-axis</li>
+<li><strong>beta_y</strong> (<em>float</em>) – Monosymmetry constant for bending about the y-axis</li>
+<li><strong>beta_11</strong> (<em>float</em>) – Monosymmetry constant for bending about the 11-axis</li>
+<li><strong>beta_22</strong> (<em>float</em>) – Monosymmetry constant for bending about the 22-axis</li>
 <li><strong>x_pc</strong> (<em>float</em>) – X coordinate of the global plastic centroid</li>
 <li><strong>y_pc</strong> (<em>float</em>) – Y coordinate of the global plastic centroid</li>
 <li><strong>x11_pc</strong> (<em>float</em>) – 11 coordinate of the principal plastic centroid</li>
@@ -4539,6 +4566,26 @@ and shear moduli of the element: <em>(area, qx, qy, ixx, iyy, ixy, e,
 g)</em></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(float)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.analysis.fea.Tri6.monosymmetry_integrals">
+<code class="descname">monosymmetry_integrals</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/fea.html#Tri6.monosymmetry_integrals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.fea.Tri6.monosymmetry_integrals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the integrals used to evaluate the monosymmetry constant
+about both global axes and both prinicipal axes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>phi</strong> (<em>float</em>) – Principal bending axis angle</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Integrals used to evaluate the monosymmetry constants
+<em>(int_x, int_y, int_11, int_22)</em></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple(float, float, float, float)</td>
 </tr>
 </tbody>
 </table>
@@ -5135,7 +5182,7 @@ immediately after the window is rendered.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.0.3',
+            VERSION:'1.0.4',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -252,6 +252,49 @@ class Tri6:
 
         return (kappa_x, kappa_y, kappa_xy)
 
+    def monosymmetry_integrals(self, phi):
+        """Calculates the integrals used to evaluate the monosymmetry constant
+        about both global axes and both prinicipal axes.
+
+        :param float phi: Principal bending axis angle
+
+        :return: Integrals used to evaluate the monosymmetry constants
+            *(int_x, int_y, int_11, int_22)*
+        :rtype: tuple(float, float, float, float)
+        """
+
+        # initialise properties
+        int_x = 0
+        int_y = 0
+        int_11 = 0
+        int_22 = 0
+
+        # Gauss points for 6 point Gaussian integration
+        gps = gauss_points(6)
+
+        for gp in gps:
+            # determine shape function and jacobian
+            (N, _, j) = shape_function(self.coords, gp)
+
+            # determine x and y position at Gauss point
+            Nx = np.dot(N, np.transpose(self.coords[0, :]))
+            Ny = np.dot(N, np.transpose(self.coords[1, :]))
+
+            # determine 11 and 22 position at Gauss point
+            (Nx_11, Ny_22) = principal_coordinate(phi, Nx, Ny)
+
+            # weight the monosymmetry integrals by the section elastic modulus
+            int_x += (gp[0] * (Nx * Nx * Ny + Ny * Ny * Ny) * j *
+                      self.material.elastic_modulus)
+            int_y += (gp[0] * (Ny * Ny * Nx + Nx * Nx * Nx) * j *
+                      self.material.elastic_modulus)
+            int_11 += (gp[0] * (Nx_11 * Nx_11 * Ny_22 + Ny_22 * Ny_22 *
+                                Ny_22) * j * self.material.elastic_modulus)
+            int_22 += (gp[0] * (Ny_22 * Ny_22 * Nx_11 + Nx_11 * Nx_11 *
+                                Nx_11) * j * self.material.elastic_modulus)
+
+        return (int_x, int_y, int_11, int_22)
+
     def plastic_properties(self, u, p):
         """Calculates total force resisted by the element when subjected to a
         stress equal to the yield strength. Also returns the modulus weighted

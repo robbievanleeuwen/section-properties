@@ -138,6 +138,12 @@ Shear Area (Principal Axis)
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_As_p
     :noindex:
 
+Monosymmetry Constants
+^^^^^^^^^^^^^^^^^^^^^^
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_beta
+    :noindex:
+
 Plastic Centroid
 ^^^^^^^^^^^^^^^^
 

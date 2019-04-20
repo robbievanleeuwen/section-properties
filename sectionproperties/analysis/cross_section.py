@@ -295,6 +295,7 @@ class CrossSection:
         * Shear centre
         * Shear area
         * Warping constant
+        * Monosymmetry constant
 
         If materials are specified, the values calculated for the torsion
         constant, warping constant and shear area are elastic modulus weighted.
@@ -535,7 +536,6 @@ class CrossSection:
             text = "--Assembling shear deformation coefficients..."
             (kappa_x, kappa_y, kappa_xy) = (
                 solver.function_timer(text, assemble_shear_deformation))
-            print("")
         else:
             (kappa_x, kappa_y, kappa_xy) = assemble_shear_deformation()
 
@@ -561,6 +561,42 @@ class CrossSection:
         # recalculate the shear area based on the rotated alpha value
         self.section_props.A_s11 = self.section_props.area / rotatedAlpha[0, 0]
         self.section_props.A_s22 = self.section_props.area / rotatedAlpha[1, 1]
+
+        # calculate the monosymmetry consants
+        def calculate_monosymmetry_integrals():
+            int_x = 0
+            int_y = 0
+            int_11 = 0
+            int_22 = 0
+
+            for el in warping_section.elements:
+                (int_x_el, int_y_el, int_11_el,
+                 int_22_el) = el.monosymmetry_integrals(self.section_props.phi)
+
+                int_x += int_x_el
+                int_y += int_y_el
+                int_11 += int_11_el
+                int_22 += int_22_el
+
+            return (int_x, int_y, int_11, int_22)
+
+        if time_info:
+            text = "--Assembling monosymmetry integrals..."
+            (int_x, int_y, int_11, int_22) = solver.function_timer(
+                text, calculate_monosymmetry_integrals)
+            print("")
+        else:
+            (int_x, int_y, int_11, int_22) = calculate_monosymmetry_integrals()
+
+        # calculate the monosymmetry constants
+        self.section_props.beta_x = (
+            int_x / self.section_props.ixx_c - 2 * self.section_props.y_se)
+        self.section_props.beta_y = (
+            int_y / self.section_props.iyy_c - 2 * self.section_props.x_se)
+        self.section_props.beta_11 = (
+            int_11 / self.section_props.i11_c - 2 * self.section_props.y22_se)
+        self.section_props.beta_22 = (
+            int_22 / self.section_props.i22_c - 2 * self.section_props.x11_se)
 
     def calculate_frame_properties(self, time_info=False,
                                    solver_type='direct'):
@@ -1518,6 +1554,24 @@ class CrossSection:
         """
 
         return (self.section_props.A_s11, self.section_props.A_s22)
+
+    def get_beta(self):
+        """
+        :return: Monosymmetry constant for bending about both global axes and
+            both principal axes *(beta_x, beta_y, beta_11, beta_22)*
+        :rtype: tuple(float, float, float, float)
+
+        ::
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            (beta_x, beta_y, beta_11, beta_22) = section.get_beta()
+        """
+
+        return (
+            self.section_props.beta_x, self.section_props.beta_y,
+            self.section_props.beta_11, self.section_props.beta_22)
 
     def get_pc(self):
         """
@@ -3999,6 +4053,10 @@ class SectionProperties:
     :cvar float A_sxy: Shear area about the xy-axis
     :cvar float A_s11: Shear area about the 11 bending axis
     :cvar float A_s22: Shear area about the 22 bending axis
+    :cvar float beta_x: Monosymmetry constant for bending about the x-axis
+    :cvar float beta_y: Monosymmetry constant for bending about the y-axis
+    :cvar float beta_11: Monosymmetry constant for bending about the 11-axis
+    :cvar float beta_22: Monosymmetry constant for bending about the 22-axis
     :cvar float x_pc: X coordinate of the global plastic centroid
     :cvar float y_pc: Y coordinate of the global plastic centroid
     :cvar float x11_pc: 11 coordinate of the principal plastic centroid
@@ -4074,6 +4132,10 @@ class SectionProperties:
         self.A_sxy = None
         self.A_s11 = None
         self.A_s22 = None
+        self.beta_x = None
+        self.beta_y = None
+        self.beta_11 = None
+        self.beta_22 = None
         self.x_pc = None
         self.y_pc = None
         self.x11_pc = None

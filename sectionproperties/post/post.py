@@ -238,16 +238,22 @@ def print_results(cross_section, fmt):
     (A_s11, A_s22) = cross_section.get_As_p()
     if A_s11 is not None:
         if cross_section.materials is not None:
-            if cross_section.materials is not None:
-                print("A_s11\t = {:>{fmt}}".format(
-                    A_s11 * cross_section.section_props.area /
-                    cross_section.section_props.ea, fmt=fmt))
-                print("A_s22\t = {:>{fmt}}".format(
-                    A_s22 * cross_section.section_props.area /
-                    cross_section.section_props.ea, fmt=fmt))
-            else:
-                print("A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))
-                print("A_s22\t = {:>{fmt}}".format(A_s22, fmt=fmt))
+            print("A_s11\t = {:>{fmt}}".format(
+                A_s11 * cross_section.section_props.area /
+                cross_section.section_props.ea, fmt=fmt))
+            print("A_s22\t = {:>{fmt}}".format(
+                A_s22 * cross_section.section_props.area /
+                cross_section.section_props.ea, fmt=fmt))
+        else:
+            print("A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))
+            print("A_s22\t = {:>{fmt}}".format(A_s22, fmt=fmt))
+
+    (beta_x, beta_y, beta_11, beta_22) = cross_section.get_beta()
+    if beta_x is not None:
+        print("beta_x\t = {:>{fmt}}".format(beta_x, fmt=fmt))
+        print("beta_y\t = {:>{fmt}}".format(beta_y, fmt=fmt))
+        print("beta_11\t = {:>{fmt}}".format(beta_11, fmt=fmt))
+        print("beta_22\t = {:>{fmt}}".format(beta_22, fmt=fmt))
 
     (x_pc, y_pc) = cross_section.get_pc()
     if x_pc is not None:
