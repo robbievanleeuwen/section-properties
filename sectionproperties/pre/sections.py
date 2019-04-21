@@ -839,10 +839,10 @@ class ISection(Geometry):
         for i in range(len(self.points)):
             # if we are not at the last point
             if i != len(self.points) - 1:
-                self.facets.append((i, i + 1))
+                self.facets.append([i, i + 1])
             # if we are at the last point, complete the loop
             else:
-                self.facets.append((len(self.points) - 1, 0))
+                self.facets.append([len(self.points) - 1, 0])
 
         self.shift_section()
 
@@ -966,10 +966,10 @@ class MonoISection(Geometry):
         for i in range(len(self.points)):
             # if we are not at the last point
             if i != len(self.points) - 1:
-                self.facets.append((i, i + 1))
+                self.facets.append([i, i + 1])
             # if we are at the last point, complete the loop
             else:
-                self.facets.append((len(self.points) - 1, 0))
+                self.facets.append([len(self.points) - 1, 0])
 
         self.shift_section()
 
@@ -1057,10 +1057,10 @@ class PfcSection(Geometry):
         for i in range(len(self.points)):
             # if we are not at the last point
             if i != len(self.points) - 1:
-                self.facets.append((i, i + 1))
+                self.facets.append([i, i + 1])
             # if we are at the last point, complete the loop
             else:
-                self.facets.append((len(self.points) - 1, 0))
+                self.facets.append([len(self.points) - 1, 0])
 
         self.shift_section()
 
@@ -1148,10 +1148,10 @@ class TeeSection(Geometry):
         for i in range(len(self.points)):
             # if we are not at the last point
             if i != len(self.points) - 1:
-                self.facets.append((i, i + 1))
+                self.facets.append([i, i + 1])
             # if we are at the last point, complete the loop
             else:
-                self.facets.append((len(self.points) - 1, 0))
+                self.facets.append([len(self.points) - 1, 0])
 
         self.shift_section()
 
@@ -1246,10 +1246,10 @@ class AngleSection(Geometry):
         for i in range(len(self.points)):
             # if we are not at the last point
             if i != len(self.points) - 1:
-                self.facets.append((i, i + 1))
+                self.facets.append([i, i + 1])
             # if we are at the last point, complete the loop
             else:
-                self.facets.append((len(self.points) - 1, 0))
+                self.facets.append([len(self.points) - 1, 0])
 
         self.shift_section()
 
@@ -1407,10 +1407,10 @@ class CeeSection(Geometry):
         for i in range(len(self.points)):
             # if we are not at the last point
             if i != len(self.points) - 1:
-                self.facets.append((i, i + 1))
+                self.facets.append([i, i + 1])
             # if we are at the last point, complete the loop
             else:
-                self.facets.append((len(self.points) - 1, 0))
+                self.facets.append([len(self.points) - 1, 0])
 
         self.shift_section()
 
@@ -1570,10 +1570,10 @@ class ZedSection(Geometry):
         for i in range(len(self.points)):
             # if we are not at the last point
             if i != len(self.points) - 1:
-                self.facets.append((i, i + 1))
+                self.facets.append([i, i + 1])
             # if we are at the last point, complete the loop
             else:
-                self.facets.append((len(self.points) - 1, 0))
+                self.facets.append([len(self.points) - 1, 0])
 
         self.shift_section()
 
@@ -1688,10 +1688,10 @@ class CruciformSection(Geometry):
         for i in range(len(self.points)):
             # if we are not at the last point
             if i != len(self.points) - 1:
-                self.facets.append((i, i + 1))
+                self.facets.append([i, i + 1])
             # if we are at the last point, complete the loop
             else:
-                self.facets.append((len(self.points) - 1, 0))
+                self.facets.append([len(self.points) - 1, 0])
 
         self.shift_section()
 
