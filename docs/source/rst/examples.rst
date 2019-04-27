@@ -75,27 +75,29 @@ The following is printed to the terminal:
   --1 region
 
   --Calculating geometric section properties...
-  ----completed in 0.778143 seconds---
+  ----completed in 0.765906 seconds---
 
   --Assembing 2562x2562 stiffness matrix and load vector...
-  ----completed in 1.100330 seconds---
+  ----completed in 1.107300 seconds---
   --Solving for the warping function using the direct solver...
-  ----completed in 0.021251 seconds---
+  ----completed in 0.023138 seconds---
   --Computing the torsion constant...
-  ----completed in 0.000771 seconds---
+  ----completed in 0.000254 seconds---
   --Assembling shear function load vectors...
-  ----completed in 1.106719 seconds---
+  ----completed in 1.150968 seconds---
   --Solving for the shear functions using the direct solver...
-  ----completed in 0.139758 seconds---
+  ----completed in 0.136840 seconds---
   --Assembling shear centre and warping moment integrals...
-  ----completed in 0.693775 seconds---
+  ----completed in 0.688029 seconds---
   --Calculating shear centres...
-  ----completed in 0.000072 seconds---
+  ----completed in 0.000054 seconds---
   --Assembling shear deformation coefficients...
-  ----completed in 1.164286 seconds---
+  ----completed in 1.184013 seconds---
+  --Assembling monosymmetry integrals...
+  ----completed in 0.784923 seconds---
 
   --Calculating plastic properties...
-  ----completed in 0.814522 seconds---
+  ----completed in 0.669841 seconds---
 
   Section Properties:
   A	 = 1.960343e+03
@@ -134,6 +136,16 @@ The following is printed to the terminal:
   y2_se	 = -2.644033e-06
   A_sx	 = 1.680296e+03
   A_sy	 = 1.680296e+03
+  A_s11	 = 1.680296e+03
+  A_s22	 = 1.680296e+03
+  betax+ = -5.288066e-06
+  betax- = 5.288066e-06
+  betay+ = -1.757767e-05
+  betay- = 1.757767e-05
+  beta11+= -5.288066e-06
+  beta11-= 5.288066e-06
+  beta22+= -1.757767e-05
+  beta22-= 1.757767e-05
   x_pc	 = 5.313355e-15
   y_pc	 = 3.649671e-15
   Sxx	 = 2.078317e+04
@@ -647,83 +659,119 @@ The following is printed to the terminal:
   --2 regions
 
   --Calculating geometric section properties...
-  ----completed in 2.418322 seconds---
+  ----completed in 2.619151 seconds---
 
   --Assembing 8972x8972 stiffness matrix and load vector...
-  ----completed in 4.306457 seconds---
+  ----completed in 4.814592 seconds---
   --Solving for the warping function using the direct solver...
-  ----completed in 0.035624 seconds---
+  ----completed in 0.032710 seconds---
   --Computing the torsion constant...
-  ----completed in 0.001116 seconds---
+  ----completed in 0.000281 seconds---
   --Assembling shear function load vectors...
-  ----completed in 3.338536 seconds---
+  ----completed in 3.648590 seconds---
   --Solving for the shear functions using the direct solver...
-  ----completed in 0.066198 seconds---
+  ----completed in 0.073731 seconds---
   --Assembling shear centre and warping moment integrals...
-  ----completed in 2.072190 seconds---
+  ----completed in 2.288843 seconds---
   --Calculating shear centres...
-  ----completed in 0.000070 seconds---
+  ----completed in 0.000064 seconds---
   --Assembling shear deformation coefficients...
-  ----completed in 3.287468 seconds---
+  ----completed in 3.597728 seconds---
+  --Assembling monosymmetry integrals...
+  ----completed in 2.519333 seconds---
 
   --Calculating plastic properties...
+  d = -185.13088495027134; f_norm = 1.0
+  d = 168.86911504972866; f_norm = -1.0
+  d = -8.130884950271337; f_norm = 0.1396051884674814
+  d = 13.552166872240885; f_norm = 0.0983423820518053
+  d = 60.60270845168385; f_norm = 0.008805290832496546
+  d = 64.90008929872263; f_norm = 0.0006273832465500235
+  d = 65.22746216923525; f_norm = 4.393296044849056e-06
+  d = 65.22976962543858; f_norm = 2.2112746988930985e-09
+  d = 65.2298027403234; f_norm = -6.080628821651535e-08
   ---x-axis plastic centroid calculation converged at 6.52298e+01 in 8 iterations.
+  d = -300.0; f_norm = -1.0
+  d = 300.0; f_norm = 1.0
+  d = 0.0; f_norm = 2.1790636349700628e-16
+  d = -5e-07; f_norm = -4.7730935851751974e-08
   ---y-axis plastic centroid calculation converged at 0.00000e+00 in 3 iterations.
+  d = -185.13088495027134; f_norm = 1.0
+  d = 168.86911504972866; f_norm = -1.0
+  d = -8.130884950271337; f_norm = 0.1396051884674814
+  d = 13.552166872240885; f_norm = 0.0983423820518053
+  d = 60.60270845168385; f_norm = 0.008805290832496546
+  d = 64.90008929872263; f_norm = 0.0006273832465500235
+  d = 65.22746216923525; f_norm = 4.393296044849056e-06
+  d = 65.22976962543858; f_norm = 2.2112746988930985e-09
+  d = 65.2298027403234; f_norm = -6.080628821651535e-08
   ---11-axis plastic centroid calculation converged at 6.52298e+01 in 8 iterations.
+  d = -300.0; f_norm = -1.0
+  d = 300.0; f_norm = 1.0
+  d = 0.0; f_norm = 2.1790636349700628e-16
+  d = -5e-07; f_norm = -4.7730935851751974e-08
   ---22-axis plastic centroid calculation converged at 0.00000e+00 in 3 iterations.
-  ----completed in 0.825098 seconds---
+  ----completed in 0.794056 seconds---
 
   --Calculating cross-section stresses...
-  ----completed in 3.779055 seconds---
+  ----completed in 4.240446 seconds---
 
   Section Properties:
-  A         = 3.521094e+04
-  E.A       = 1.282187e+09
-  E.Qx      = 2.373725e+11
-  E.Qy      = 1.057805e+11
-  cx        = 8.250000e+01
-  cy        = 1.851309e+02
-  E.Ixx_g   = 6.740447e+13
-  E.Iyy_g   = 1.745613e+13
-  E.Ixy_g   = 1.958323e+13
-  E.Ixx_c   = 2.345949e+13
-  E.Iyy_c   = 8.729240e+12
-  E.Ixy_c   = -7.421875e-02
-  E.Zxx+    = 1.389212e+11
-  E.Zxx-    = 1.267184e+11
-  E.Zyy+    = 2.909747e+10
-  E.Zyy-    = 2.909747e+10
-  rx        = 1.352644e+02
-  ry        = 8.251112e+01
-  phi       = 0.000000e+00
-  E.I11_c   = 2.345949e+13
-  E.I22_c   = 8.729240e+12
-  E.Z11+    = 1.389212e+11
-  E.Z11-    = 1.267184e+11
-  E.Z22+    = 2.909747e+10
-  E.Z22-    = 2.909747e+10
-  r11       = 1.352644e+02
-  r22       = 8.251112e+01
-  G.J       = 1.439379e+11
-  G.Iw      = 2.554353e+16
-  x_se      = 8.250071e+01
-  y_se      = 2.863400e+02
-  x_st      = 8.250070e+01
-  y_st      = 2.857074e+02
-  x1_se     = 7.063407e-04
-  y2_se     = 1.012091e+02
-  A_sx      = 1.104723e+04
-  A_sy      = 1.021183e+04
-  A_s11     = 1.104723e+04
-  A_s22     = 1.021183e+04
-  x_pc      = 8.250000e+01
-  y_pc      = 2.503607e+02
-  M_p,xx    = 3.932543e+08
-  M_p,yy    = 1.610673e+08
-  x11_pc    = 8.250000e+01
-  y22_pc    = 2.503607e+02
-  M_p,11    = 3.932543e+08
-  M_p,22    = 1.610673e+08
+  A	 = 3.521094e+04
+  E.A	 = 1.282187e+09
+  E.Qx	 = 2.373725e+11
+  E.Qy	 = 1.057805e+11
+  cx	 = 8.250000e+01
+  cy	 = 1.851309e+02
+  E.Ixx_g= 6.740447e+13
+  E.Iyy_g= 1.745613e+13
+  E.Ixy_g= 1.958323e+13
+  E.Ixx_c= 2.345949e+13
+  E.Iyy_c= 8.729240e+12
+  E.Ixy_c= -7.421875e-02
+  E.Zxx+ = 1.389212e+11
+  E.Zxx- = 1.267184e+11
+  E.Zyy+ = 2.909747e+10
+  E.Zyy- = 2.909747e+10
+  rx	 = 1.352644e+02
+  ry	 = 8.251112e+01
+  phi	 = 0.000000e+00
+  E.I11_c= 2.345949e+13
+  E.I22_c= 8.729240e+12
+  E.Z11+ = 1.389212e+11
+  E.Z11- = 1.267184e+11
+  E.Z22+ = 2.909747e+10
+  E.Z22- = 2.909747e+10
+  r11	 = 1.352644e+02
+  r22	 = 8.251112e+01
+  G.J	 = 1.439379e+11
+  G.Iw	 = 2.554353e+16
+  x_se	 = 8.250071e+01
+  y_se	 = 2.863400e+02
+  x_st	 = 8.250070e+01
+  y_st	 = 2.857074e+02
+  x1_se	 = 7.063407e-04
+  y2_se	 = 1.012091e+02
+  A_sx	 = 1.104723e+04
+  A_sy	 = 1.021183e+04
+  A_s11	 = 1.104723e+04
+  A_s22	 = 1.021183e+04
+  betax+ = 2.039413e+02
+  betax- = -2.039413e+02
+  betay+ = 1.412681e-03
+  betay- = -1.412681e-03
+  beta11+= 2.039413e+02
+  beta11-= -2.039413e+02
+  beta22+= 1.412681e-03
+  beta22-= -1.412681e-03
+  x_pc	 = 8.250000e+01
+  y_pc	 = 2.503607e+02
+  M_p,xx = 3.932542e+08
+  M_p,yy = 1.610673e+08
+  x11_pc = 8.250000e+01
+  y22_pc = 2.503607e+02
+  M_p,11 = 3.932542e+08
+  M_p,22 = 1.610673e+08
 
 Frame Analysis Example
 ----------------------

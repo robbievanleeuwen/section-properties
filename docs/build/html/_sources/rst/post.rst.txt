@@ -36,16 +36,22 @@ section.
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_ea
     :noindex:
 
-First Moments of Area (Global Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+First Moments of Area
+^^^^^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_q
     :noindex:
 
-Second Moments of Area (Global Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Second Moments of Area
+^^^^^^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_ig
+    :noindex:
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_ic
+    :noindex:
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_ip
     :noindex:
 
 Elastic Centroid
@@ -54,29 +60,25 @@ Elastic Centroid
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_c
     :noindex:
 
-Second Moments of Area (Centroidal Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_ic
-    :noindex:
-
-Section Moduli (Centroidal Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Section Moduli
+^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_z
     :noindex:
 
-Radii of Gyration (Centroidal Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_zp
+    :noindex:
+
+Radii of Gyration
+^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_rc
     :noindex:
 
-Second Moments of Area (Principal Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_ip
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_rp
     :noindex:
+
 
 Principal Axis Angle
 ^^^^^^^^^^^^^^^^^^^^
@@ -84,17 +86,6 @@ Principal Axis Angle
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_phi
     :noindex:
 
-Section Moduli (Principal Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_zp
-    :noindex:
-
-Radii of Gyration (Principal Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_rp
-    :noindex:
 
 Torsion Constant
 ^^^^^^^^^^^^^^^^
@@ -102,20 +93,17 @@ Torsion Constant
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_j
     :noindex:
 
-Shear Centre (Global Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Shear Centre
+^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_sc
     :noindex:
 
-Shear Centre (Principal Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_sc_p
     :noindex:
 
-Trefftz's Shear Centre (Global Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Trefftz's Shear Centre
+^^^^^^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_sc_t
     :noindex:
@@ -126,14 +114,11 @@ Warping Constant
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_gamma
     :noindex:
 
-Shear Area (Global Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^
+Shear Area
+^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_As
     :noindex:
-
-Shear Area (Principal Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_As_p
     :noindex:
@@ -144,14 +129,14 @@ Monosymmetry Constants
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_beta
     :noindex:
 
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_beta_p
+    :noindex:
+
 Plastic Centroid
 ^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_pc
     :noindex:
-
-Plastic Centroid (Principal Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_pc_p
     :noindex:
@@ -162,9 +147,6 @@ Plastic Section Moduli
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_s
     :noindex:
 
-Plastic Section Moduli (Principal Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_sp
     :noindex:
 
@@ -174,9 +156,6 @@ Shape Factors
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_sf
     :noindex:
-
-Shape Factors (Principal Axis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_sf_p
     :noindex:

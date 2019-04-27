@@ -589,13 +589,21 @@ class CrossSection:
             (int_x, int_y, int_11, int_22) = calculate_monosymmetry_integrals()
 
         # calculate the monosymmetry constants
-        self.section_props.beta_x = (
+        self.section_props.beta_x_plus = (
+            -int_x / self.section_props.ixx_c + 2 * self.section_props.y_se)
+        self.section_props.beta_x_minus = (
             int_x / self.section_props.ixx_c - 2 * self.section_props.y_se)
-        self.section_props.beta_y = (
+        self.section_props.beta_y_plus = (
+            -int_y / self.section_props.iyy_c + 2 * self.section_props.x_se)
+        self.section_props.beta_y_minus = (
             int_y / self.section_props.iyy_c - 2 * self.section_props.x_se)
-        self.section_props.beta_11 = (
+        self.section_props.beta_11_plus = (
+            -int_11 / self.section_props.i11_c + 2 * self.section_props.y22_se)
+        self.section_props.beta_11_minus = (
             int_11 / self.section_props.i11_c - 2 * self.section_props.y22_se)
-        self.section_props.beta_22 = (
+        self.section_props.beta_22_plus = (
+            -int_22 / self.section_props.i22_c + 2 * self.section_props.x11_se)
+        self.section_props.beta_22_minus = (
             int_22 / self.section_props.i22_c - 2 * self.section_props.x11_se)
 
     def calculate_frame_properties(self, time_info=False,
@@ -1557,8 +1565,10 @@ class CrossSection:
 
     def get_beta(self):
         """
-        :return: Monosymmetry constant for bending about both global axes and
-            both principal axes *(beta_x, beta_y, beta_11, beta_22)*
+        :return: Monosymmetry constant for bending about both global axes
+            *(beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus)*. The
+            *plus* value relates to the top flange in compression and the
+            *minus* value relates to the bottom flange in compression.
         :rtype: tuple(float, float, float, float)
 
         ::
@@ -1566,12 +1576,32 @@ class CrossSection:
             section = CrossSection(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
-            (beta_x, beta_y, beta_11, beta_22) = section.get_beta()
+            (beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus) = section.get_beta()
         """
 
         return (
-            self.section_props.beta_x, self.section_props.beta_y,
-            self.section_props.beta_11, self.section_props.beta_22)
+            self.section_props.beta_x_plus, self.section_props.beta_x_minus,
+            self.section_props.beta_y_plus, self.section_props.beta_y_minus)
+
+    def get_beta_p(self):
+        """
+        :return: Monosymmetry constant for bending about both principal axes
+            *(beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus)*. The
+            *plus* value relates to the top flange in compression and the
+            *minus* value relates to the bottom flange in compression.
+        :rtype: tuple(float, float, float, float)
+
+        ::
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            (beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus) = section.get_beta_p()
+        """
+
+        return (
+            self.section_props.beta_11_plus, self.section_props.beta_11_minus,
+            self.section_props.beta_22_plus, self.section_props.beta_22_minus)
 
     def get_pc(self):
         """
@@ -4053,10 +4083,22 @@ class SectionProperties:
     :cvar float A_sxy: Shear area about the xy-axis
     :cvar float A_s11: Shear area about the 11 bending axis
     :cvar float A_s22: Shear area about the 22 bending axis
-    :cvar float beta_x: Monosymmetry constant for bending about the x-axis
-    :cvar float beta_y: Monosymmetry constant for bending about the y-axis
-    :cvar float beta_11: Monosymmetry constant for bending about the 11-axis
-    :cvar float beta_22: Monosymmetry constant for bending about the 22-axis
+    :cvar float beta_x_plus: Monosymmetry constant for bending about the
+        x-axis with the top flange in compression
+    :cvar float beta_x_minus: Monosymmetry constant for bending about the
+        x-axis with the bottom flange in compression
+    :cvar float beta_y_plus: Monosymmetry constant for bending about the
+        y-axis with the top flange in compression
+    :cvar float beta_y_minus: Monosymmetry constant for bending about the
+        y-axis with the bottom flange in compression
+    :cvar float beta_11_plus: Monosymmetry constant for bending about the
+        11-axis with the top flange in compression
+    :cvar float beta_11_minus: Monosymmetry constant for bending about the
+        11-axis with the bottom flange in compression
+    :cvar float beta_22_plus: Monosymmetry constant for bending about the
+        22-axis with the top flange in compression
+    :cvar float beta_22_minus: Monosymmetry constant for bending about the
+        22-axis with the bottom flange in compression
     :cvar float x_pc: X coordinate of the global plastic centroid
     :cvar float y_pc: Y coordinate of the global plastic centroid
     :cvar float x11_pc: 11 coordinate of the principal plastic centroid
@@ -4132,10 +4174,14 @@ class SectionProperties:
         self.A_sxy = None
         self.A_s11 = None
         self.A_s22 = None
-        self.beta_x = None
-        self.beta_y = None
-        self.beta_11 = None
-        self.beta_22 = None
+        self.beta_x_plus = None
+        self.beta_x_minus = None
+        self.beta_y_plus = None
+        self.beta_y_minus = None
+        self.beta_11_plus = None
+        self.beta_11_minus = None
+        self.beta_22_plus = None
+        self.beta_22_minus = None
         self.x_pc = None
         self.y_pc = None
         self.x11_pc = None

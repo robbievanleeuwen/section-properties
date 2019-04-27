@@ -692,7 +692,6 @@
             <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Assembling shear deformation coefficients...&quot;</span>
             <span class="p">(</span><span class="n">kappa_x</span><span class="p">,</span> <span class="n">kappa_y</span><span class="p">,</span> <span class="n">kappa_xy</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">assemble_shear_deformation</span><span class="p">))</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="p">(</span><span class="n">kappa_x</span><span class="p">,</span> <span class="n">kappa_y</span><span class="p">,</span> <span class="n">kappa_xy</span><span class="p">)</span> <span class="o">=</span> <span class="n">assemble_shear_deformation</span><span class="p">()</span>
 
@@ -741,17 +740,26 @@
             <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;--Assembling monosymmetry integrals...&quot;</span>
             <span class="p">(</span><span class="n">int_x</span><span class="p">,</span> <span class="n">int_y</span><span class="p">,</span> <span class="n">int_11</span><span class="p">,</span> <span class="n">int_22</span><span class="p">)</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">function_timer</span><span class="p">(</span>
                 <span class="n">text</span><span class="p">,</span> <span class="n">calculate_monosymmetry_integrals</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="p">(</span><span class="n">int_x</span><span class="p">,</span> <span class="n">int_y</span><span class="p">,</span> <span class="n">int_11</span><span class="p">,</span> <span class="n">int_22</span><span class="p">)</span> <span class="o">=</span> <span class="n">calculate_monosymmetry_integrals</span><span class="p">()</span>
 
         <span class="c1"># calculate the monosymmetry constants</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_x</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_x_plus</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">-</span><span class="n">int_x</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y_se</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_x_minus</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">int_x</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ixx_c</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y_se</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_y</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_y_plus</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">-</span><span class="n">int_y</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_se</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_y_minus</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">int_y</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">iyy_c</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x_se</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_11</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_11_plus</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">-</span><span class="n">int_11</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">i11_c</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y22_se</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_11_minus</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">int_11</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">i11_c</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">y22_se</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_22</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_22_plus</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">-</span><span class="n">int_22</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">i22_c</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x11_se</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_22_minus</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">int_22</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">i22_c</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">x11_se</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CrossSection.calculate_frame_properties"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.cross_section.CrossSection.calculate_frame_properties">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_frame_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_info</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1713,8 +1721,10 @@
 
 <div class="viewcode-block" id="CrossSection.get_beta"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_beta">[docs]</a>    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :return: Monosymmetry constant for bending about both global axes and</span>
-<span class="sd">            both principal axes *(beta_x, beta_y, beta_11, beta_22)*</span>
+<span class="sd">        :return: Monosymmetry constant for bending about both global axes</span>
+<span class="sd">            *(beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus)*. The</span>
+<span class="sd">            *plus* value relates to the top flange in compression and the</span>
+<span class="sd">            *minus* value relates to the bottom flange in compression.</span>
 <span class="sd">        :rtype: tuple(float, float, float, float)</span>
 
 <span class="sd">        ::</span>
@@ -1722,12 +1732,32 @@
 <span class="sd">            section = CrossSection(geometry, mesh)</span>
 <span class="sd">            section.calculate_geometric_properties()</span>
 <span class="sd">            section.calculate_warping_properties()</span>
-<span class="sd">            (beta_x, beta_y, beta_11, beta_22) = section.get_beta()</span>
+<span class="sd">            (beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus) = section.get_beta()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_y</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_11</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_22</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_x_plus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_x_minus</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_y_plus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_y_minus</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CrossSection.get_beta_p"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_beta_p">[docs]</a>    <span class="k">def</span> <span class="nf">get_beta_p</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: Monosymmetry constant for bending about both principal axes</span>
+<span class="sd">            *(beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus)*. The</span>
+<span class="sd">            *plus* value relates to the top flange in compression and the</span>
+<span class="sd">            *minus* value relates to the bottom flange in compression.</span>
+<span class="sd">        :rtype: tuple(float, float, float, float)</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            section = CrossSection(geometry, mesh)</span>
+<span class="sd">            section.calculate_geometric_properties()</span>
+<span class="sd">            section.calculate_warping_properties()</span>
+<span class="sd">            (beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus) = section.get_beta_p()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_11_plus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_11_minus</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_22_plus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">beta_22_minus</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CrossSection.get_pc"><a class="viewcode-back" href="../../../rst/post.html#sectionproperties.analysis.cross_section.CrossSection.get_pc">[docs]</a>    <span class="k">def</span> <span class="nf">get_pc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -4209,10 +4239,22 @@
 <span class="sd">    :cvar float A_sxy: Shear area about the xy-axis</span>
 <span class="sd">    :cvar float A_s11: Shear area about the 11 bending axis</span>
 <span class="sd">    :cvar float A_s22: Shear area about the 22 bending axis</span>
-<span class="sd">    :cvar float beta_x: Monosymmetry constant for bending about the x-axis</span>
-<span class="sd">    :cvar float beta_y: Monosymmetry constant for bending about the y-axis</span>
-<span class="sd">    :cvar float beta_11: Monosymmetry constant for bending about the 11-axis</span>
-<span class="sd">    :cvar float beta_22: Monosymmetry constant for bending about the 22-axis</span>
+<span class="sd">    :cvar float beta_x_plus: Monosymmetry constant for bending about the</span>
+<span class="sd">        x-axis with the top flange in compression</span>
+<span class="sd">    :cvar float beta_x_minus: Monosymmetry constant for bending about the</span>
+<span class="sd">        x-axis with the bottom flange in compression</span>
+<span class="sd">    :cvar float beta_y_plus: Monosymmetry constant for bending about the</span>
+<span class="sd">        y-axis with the top flange in compression</span>
+<span class="sd">    :cvar float beta_y_minus: Monosymmetry constant for bending about the</span>
+<span class="sd">        y-axis with the bottom flange in compression</span>
+<span class="sd">    :cvar float beta_11_plus: Monosymmetry constant for bending about the</span>
+<span class="sd">        11-axis with the top flange in compression</span>
+<span class="sd">    :cvar float beta_11_minus: Monosymmetry constant for bending about the</span>
+<span class="sd">        11-axis with the bottom flange in compression</span>
+<span class="sd">    :cvar float beta_22_plus: Monosymmetry constant for bending about the</span>
+<span class="sd">        22-axis with the top flange in compression</span>
+<span class="sd">    :cvar float beta_22_minus: Monosymmetry constant for bending about the</span>
+<span class="sd">        22-axis with the bottom flange in compression</span>
 <span class="sd">    :cvar float x_pc: X coordinate of the global plastic centroid</span>
 <span class="sd">    :cvar float y_pc: Y coordinate of the global plastic centroid</span>
 <span class="sd">    :cvar float x11_pc: 11 coordinate of the principal plastic centroid</span>
@@ -4288,10 +4330,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">A_sxy</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">A_s11</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">A_s22</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">beta_x</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">beta_y</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">beta_11</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">beta_22</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_x_plus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_x_minus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_y_plus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_y_minus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_11_plus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_11_minus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_22_plus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_22_minus</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x_pc</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y_pc</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x11_pc</span> <span class="o">=</span> <span class="kc">None</span>

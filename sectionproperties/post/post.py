@@ -248,12 +248,21 @@ def print_results(cross_section, fmt):
             print("A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))
             print("A_s22\t = {:>{fmt}}".format(A_s22, fmt=fmt))
 
-    (beta_x, beta_y, beta_11, beta_22) = cross_section.get_beta()
-    if beta_x is not None:
-        print("beta_x\t = {:>{fmt}}".format(beta_x, fmt=fmt))
-        print("beta_y\t = {:>{fmt}}".format(beta_y, fmt=fmt))
-        print("beta_11\t = {:>{fmt}}".format(beta_11, fmt=fmt))
-        print("beta_22\t = {:>{fmt}}".format(beta_22, fmt=fmt))
+    (beta_x_plus, beta_x_minus, beta_y_plus,
+     beta_y_minus) = cross_section.get_beta()
+    if beta_x_plus is not None:
+        print("betax+\t = {:>{fmt}}".format(beta_x_plus, fmt=fmt))
+        print("betax-\t = {:>{fmt}}".format(beta_x_minus, fmt=fmt))
+        print("betay+\t = {:>{fmt}}".format(beta_y_plus, fmt=fmt))
+        print("betay-\t = {:>{fmt}}".format(beta_y_minus, fmt=fmt))
+
+    (beta_11_plus, beta_11_minus, beta_22_plus,
+     beta_22_minus) = cross_section.get_beta_p()
+    if beta_x_plus is not None:
+        print("beta11+\t = {:>{fmt}}".format(beta_11_plus, fmt=fmt))
+        print("beta11-\t = {:>{fmt}}".format(beta_11_minus, fmt=fmt))
+        print("beta22+\t = {:>{fmt}}".format(beta_22_plus, fmt=fmt))
+        print("beta22-\t = {:>{fmt}}".format(beta_22_minus, fmt=fmt))
 
     (x_pc, y_pc) = cross_section.get_pc()
     if x_pc is not None:
