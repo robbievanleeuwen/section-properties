@@ -102,7 +102,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#rhs-class">Rhs Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#isection-class">ISection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#monoisection-class">MonoISection Class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#taperedflangeisection-class">TaperedFlangeISection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pfcsection-class">PfcSection Class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#taperedflangechannel-class">TaperedFlangeChannel Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#teesection-class">TeeSection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#anglesection-class">AngleSection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ceesection-class">CeeSection Class</a></li>
@@ -812,7 +814,8 @@ flange width of 130, a bottom flange thickness of 8, a web thickness of
 radius. A mesh is generated with a maximum triangular area of 3.0:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MonoISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">b_t</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b_b</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">t_ft</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">t_fb</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MonoISection</span><span class="p">(</span>
+    <span class="n">d</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">b_t</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b_b</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">t_ft</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">t_fb</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -822,6 +825,62 @@ radius. A mesh is generated with a maximum triangular area of 3.0:</p>
 </div>
 <div class="figure align-center" id="id16">
 <a class="reference internal image-reference" href="../_images/monoisection_mesh.png"><img alt="../_images/monoisection_mesh.png" src="../_images/monoisection_mesh.png" style="width: 207.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</div>
+<div class="section" id="taperedflangeisection-class">
+<h4>TaperedFlangeISection Class<a class="headerlink" href="#taperedflangeisection-class" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><dl class="class">
+<dt id="sectionproperties.pre.sections.TaperedFlangeISection">
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">TaperedFlangeISection</code><span class="sig-paren">(</span><em>d, b, t_f, t_w, r_r, r_f, alpha, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#TaperedFlangeISection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.TaperedFlangeISection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
+<p>Constructs a Tapered Flange I-section centered at <em>(b/2, d/2)</em>, with
+depth <em>d</em>, width <em>b</em>, mid-flange thickness <em>t_f</em>, web thickness <em>t_w</em>, root
+radius <em>r_r</em>, flange radius <em>r_f</em> and flange angle <em>alpha</em>, using <em>n_r</em>
+points to construct the radii.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>d</strong> (<em>float</em>) – Depth of the Tapered Flange I-section</li>
+<li><strong>b</strong> (<em>float</em>) – Width of the Tapered Flange I-section</li>
+<li><strong>t_f</strong> (<em>float</em>) – Mid-flange thickness of the Tapered Flange I-section
+(measured at the point equidistant from the face of the web to the edge
+of the flange)</li>
+<li><strong>t_w</strong> (<em>float</em>) – Web thickness of the Tapered Flange I-section</li>
+<li><strong>r_r</strong> (<em>float</em>) – Root radius of the Tapered Flange I-section</li>
+<li><strong>r_f</strong> (<em>float</em>) – Flange radius of the Tapered Flange I-section</li>
+<li><strong>alpha</strong> (<em>float</em>) – Flange angle of the Tapered Flange I-section (degrees)</li>
+<li><strong>n_r</strong> (<em>int</em>) – Number of points discretising the radii</li>
+<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates a Tapered Flange I-section with a depth of
+588, a width of 191, a mid-flange thickness of 27.2, a web thickness of
+15.2, a root radius of 17.8, a flange radius of 8.9 and a flange angle of
+8°, using 16 points to discretise the radii. A mesh is generated with a
+maximum triangular area of 20.0:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">TaperedFlangeISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">588</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">191</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">27.2</span><span class="p">,</span>
+    <span class="n">t_w</span><span class="o">=</span><span class="mf">15.2</span><span class="p">,</span> <span class="n">r_r</span><span class="o">=</span><span class="mf">17.8</span><span class="p">,</span> <span class="n">r_f</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">20.0</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id17">
+<a class="reference internal image-reference" href="../_images/taperedisection_geometry.png"><img alt="../_images/taperedisection_geometry.png" src="../_images/taperedisection_geometry.png" style="width: 245.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">I-section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id18">
+<a class="reference internal image-reference" href="../_images/taperedisection_mesh.png"><img alt="../_images/taperedisection_mesh.png" src="../_images/taperedisection_mesh.png" style="width: 133.5px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
@@ -865,12 +924,69 @@ with a maximum triangular area of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id17">
+<div class="figure align-center" id="id19">
 <a class="reference internal image-reference" href="../_images/pfc_geometry.png"><img alt="../_images/pfc_geometry.png" src="../_images/pfc_geometry.png" style="width: 250.5px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">PFC geometry.</span></p>
 </div>
-<div class="figure align-center" id="id18">
+<div class="figure align-center" id="id20">
 <a class="reference internal image-reference" href="../_images/pfc_mesh.png"><img alt="../_images/pfc_mesh.png" src="../_images/pfc_mesh.png" style="width: 138.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</div>
+<div class="section" id="taperedflangechannel-class">
+<h4>TaperedFlangeChannel Class<a class="headerlink" href="#taperedflangechannel-class" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><dl class="class">
+<dt id="sectionproperties.pre.sections.TaperedFlangeChannel">
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">TaperedFlangeChannel</code><span class="sig-paren">(</span><em>d, b, t_f, t_w, r_r, r_f, alpha, n_r, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#TaperedFlangeChannel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.TaperedFlangeChannel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
+<p>Constructs a Tapered Flange Channel section with the bottom left corner
+at the origin <em>(0, 0)</em>, with depth <em>d</em>, width <em>b</em>, mid-flange thickness
+<em>t_f</em>, web thickness <em>t_w</em>, root radius <em>r_r</em>, flange radius <em>r_f</em> and
+flange angle <em>alpha</em>, using <em>n_r</em> points to construct the radii.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>d</strong> (<em>float</em>) – Depth of the Tapered Flange Channel section</li>
+<li><strong>b</strong> (<em>float</em>) – Width of the Tapered Flange Channel section</li>
+<li><strong>t_f</strong> (<em>float</em>) – Mid-flange thickness of the Tapered Flange Channel
+section (measured at the point equidistant from the face of the web to
+the edge of the flange)</li>
+<li><strong>t_w</strong> (<em>float</em>) – Web thickness of the Tapered Flange Channel section</li>
+<li><strong>r_r</strong> (<em>float</em>) – Root radius of the Tapered Flange Channel section</li>
+<li><strong>r_f</strong> (<em>float</em>) – Flange radius of the Tapered Flange Channel section</li>
+<li><strong>alpha</strong> (<em>float</em>) – Flange angle of the Tapered Flange Channel section
+(degrees)</li>
+<li><strong>n_r</strong> (<em>int</em>) – Number of points discretising the radii</li>
+<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates a Tapered Flange Channel section with a depth
+of 10, a width of 3.5, a mid-flange thickness of 0.575, a web thickness of
+0.475, a root radius of 0.575, a flange radius of 0.4 and a flange angle of
+8°, using 16 points to discretise the radii. A mesh is generated with a
+maximum triangular area of 0.02:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">TaperedFlangeChannel</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">0.575</span><span class="p">,</span>
+    <span class="n">t_w</span><span class="o">=</span><span class="mf">0.475</span><span class="p">,</span> <span class="n">r_r</span><span class="o">=</span><span class="mf">0.575</span><span class="p">,</span> <span class="n">r_f</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.02</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id21">
+<a class="reference internal image-reference" href="../_images/taperedchannel_geometry.png"><img alt="../_images/taperedchannel_geometry.png" src="../_images/taperedchannel_geometry.png" style="width: 249.0px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">I-section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id22">
+<a class="reference internal image-reference" href="../_images/taperedchannel_mesh.png"><img alt="../_images/taperedchannel_mesh.png" src="../_images/taperedchannel_mesh.png" style="width: 129.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
 </dd></dl>
@@ -914,11 +1030,11 @@ with a maximum triangular area of 3.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id19">
+<div class="figure align-center" id="id23">
 <a class="reference internal image-reference" href="../_images/tee_geometry.png"><img alt="../_images/tee_geometry.png" src="../_images/tee_geometry.png" style="width: 288.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Tee section geometry.</span></p>
 </div>
-<div class="figure align-center" id="id20">
+<div class="figure align-center" id="id24">
 <a class="reference internal image-reference" href="../_images/tee_mesh.png"><img alt="../_images/tee_mesh.png" src="../_images/tee_mesh.png" style="width: 167.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -963,7 +1079,7 @@ triangular area of 2.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id21">
+<div class="figure align-center" id="id25">
 <a class="reference internal image-reference" href="../_images/angle_geometry.png"><img alt="../_images/angle_geometry.png" src="../_images/angle_geometry.png" style="width: 335.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Angle section geometry.</span></p>
 </div>
@@ -1011,7 +1127,7 @@ triangular area of 0.25:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id22">
+<div class="figure align-center" id="id26">
 <a class="reference internal image-reference" href="../_images/cee_geometry.png"><img alt="../_images/cee_geometry.png" src="../_images/cee_geometry.png" style="width: 261.0px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Cee section geometry.</span></p>
 </div>
@@ -1061,7 +1177,7 @@ A mesh is generated with a maximum triangular area of 0.15:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.15</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id23">
+<div class="figure align-center" id="id27">
 <a class="reference internal image-reference" href="../_images/zed_geometry.png"><img alt="../_images/zed_geometry.png" src="../_images/zed_geometry.png" style="width: 383.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Zed section geometry.</span></p>
 </div>
@@ -1108,7 +1224,7 @@ of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id24">
+<div class="figure align-center" id="id28">
 <a class="reference internal image-reference" href="../_images/cruciform_geometry.png"><img alt="../_images/cruciform_geometry.png" src="../_images/cruciform_geometry.png" style="width: 353.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Cruciform section geometry.</span></p>
 </div>
@@ -1151,7 +1267,7 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id25">
+<div class="figure align-center" id="id29">
 <a class="reference internal image-reference" href="../_images/merged_geometry.png"><img alt="../_images/merged_geometry.png" src="../_images/merged_geometry.png" style="width: 287.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Merged section geometry.</span></p>
 </div>
@@ -2545,7 +2661,7 @@ the centroids:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id26">
+<div class="figure align-center" id="id30">
 <a class="reference internal image-reference" href="../_images/pfc_centroids.png"><img alt="../_images/pfc_centroids.png" src="../_images/pfc_centroids.png" style="width: 435.0px; height: 492.0px;" /></a>
 <p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span></p>
 </div>
@@ -2565,7 +2681,7 @@ plot of the centroids:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id27">
+<div class="figure align-center" id="id31">
 <a class="reference internal image-reference" href="../_images/angle_centroids.png"><img alt="../_images/angle_centroids.png" src="../_images/angle_centroids.png" style="width: 428.25px; height: 396.75px;" /></a>
 <p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span></p>
 </div>
@@ -2621,7 +2737,7 @@ definition:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">materials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id28">
+<div class="figure align-center" id="id32">
 <a class="reference internal image-reference" href="../_images/composite_mesh.png"><img alt="../_images/composite_mesh.png" src="../_images/composite_mesh.png" style="width: 673.5px; height: 324.75px;" /></a>
 <p class="caption"><span class="caption-text">Finite element mesh generated by the above example.</span></p>
 </div>
@@ -3063,7 +3179,7 @@ resulting from the torsion moment</li>
 <li><em>‘sig_zxy_vx’</em>: Resultant shear stress <span class="math notranslate nohighlight">\(\sigma_{zxy,Vx}\)</span>
 resulting from the shear force <span class="math notranslate nohighlight">\(V_{x}\)</span></li>
 <li><em>‘sig_zx_vy’</em>: <em>x</em>-component of the shear stress
-<span class="math notranslate nohighlight">\(\sigma_{zy,Vx}\)</span> resulting from the shear force
+<span class="math notranslate nohighlight">\(\sigma_{zx,Vy}\)</span> resulting from the shear force
 <span class="math notranslate nohighlight">\(V_{y}\)</span></li>
 <li><em>‘sig_zy_vy’</em>: <em>y</em>-component of the shear stress
 <span class="math notranslate nohighlight">\(\sigma_{zy,Vy}\)</span> resulting from the shear force
@@ -3162,7 +3278,7 @@ section resulting from an bending moment about the 11-axis of 5 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m11_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id29">
+<div class="figure align-center" id="id33">
 <a class="reference internal image-reference" href="../_images/stress_m11_zz.png"><img alt="../_images/stress_m11_zz.png" src="../_images/stress_m11_zz.png" style="width: 527.25px; height: 477.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
@@ -3199,7 +3315,7 @@ section resulting from an bending moment about the 22-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m22_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id30">
+<div class="figure align-center" id="id34">
 <a class="reference internal image-reference" href="../_images/stress_m22_zz.png"><img alt="../_images/stress_m22_zz.png" src="../_images/stress_m22_zz.png" style="width: 506.25px; height: 424.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
@@ -3239,7 +3355,7 @@ bending moment about the y-axis of 2 kN.m and a bending moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id31">
+<div class="figure align-center" id="id35">
 <a class="reference internal image-reference" href="../_images/stress_m_zz.png"><img alt="../_images/stress_m_zz.png" src="../_images/stress_m_zz.png" style="width: 482.25px; height: 444.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
@@ -3276,7 +3392,7 @@ section resulting from an bending moment about the x-axis of 5 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mxx_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id32">
+<div class="figure align-center" id="id36">
 <a class="reference internal image-reference" href="../_images/stress_mxx_zz.png"><img alt="../_images/stress_mxx_zz.png" src="../_images/stress_mxx_zz.png" style="width: 503.25px; height: 452.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
@@ -3313,7 +3429,7 @@ section resulting from an bending moment about the y-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_myy_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id33">
+<div class="figure align-center" id="id37">
 <a class="reference internal image-reference" href="../_images/stress_myy_zz.png"><img alt="../_images/stress_myy_zz.png" src="../_images/stress_myy_zz.png" style="width: 537.0px; height: 471.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
@@ -3352,7 +3468,7 @@ a 150x90x12 UA section resulting from a torsion moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id34">
+<div class="figure align-center" id="id38">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zx.png"><img alt="../_images/stress_mzz_zx.png" src="../_images/stress_mzz_zx.png" style="width: 440.25px; height: 378.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3391,7 +3507,7 @@ of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id35">
+<div class="figure align-center" id="id39">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zxy.png"><img alt="../_images/stress_mzz_zxy.png" src="../_images/stress_mzz_zxy.png" style="width: 470.25px; height: 396.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3430,7 +3546,7 @@ a 150x90x12 UA section resulting from a torsion moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id36">
+<div class="figure align-center" id="id40">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zy.png"><img alt="../_images/stress_mzz_zy.png" src="../_images/stress_mzz_zy.png" style="width: 449.25px; height: 383.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3467,7 +3583,7 @@ section resulting from an axial force of 10 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_n_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id37">
+<div class="figure align-center" id="id41">
 <a class="reference internal image-reference" href="../_images/stress_n_zz.png"><img alt="../_images/stress_n_zz.png" src="../_images/stress_n_zz.png" style="width: 450.75px; height: 402.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the axial stress.</span></p>
 </div>
@@ -3506,7 +3622,7 @@ in the x-direction and 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id38">
+<div class="figure align-center" id="id42">
 <a class="reference internal image-reference" href="../_images/stress_v_zx.png"><img alt="../_images/stress_v_zx.png" src="../_images/stress_v_zx.png" style="width: 474.75px; height: 425.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3545,7 +3661,7 @@ within a 150x90x12 UA section resulting from ashear force of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id39">
+<div class="figure align-center" id="id43">
 <a class="reference internal image-reference" href="../_images/stress_v_zxy.png"><img alt="../_images/stress_v_zxy.png" src="../_images/stress_v_zxy.png" style="width: 448.5px; height: 406.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3584,7 +3700,7 @@ in the x-direction and 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id40">
+<div class="figure align-center" id="id44">
 <a class="reference internal image-reference" href="../_images/stress_v_zy.png"><img alt="../_images/stress_v_zy.png" src="../_images/stress_v_zy.png" style="width: 451.5px; height: 408.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3653,7 +3769,7 @@ immediately after the window is rendered.</td>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vm</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id41">
+<div class="figure align-center" id="id45">
 <a class="reference internal image-reference" href="../_images/stress_vm.png"><img alt="../_images/stress_vm.png" src="../_images/stress_vm.png" style="width: 491.25px; height: 406.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the von Mises stress.</span></p>
 </div>
@@ -3692,7 +3808,7 @@ x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id42">
+<div class="figure align-center" id="id46">
 <a class="reference internal image-reference" href="../_images/stress_vx_zx.png"><img alt="../_images/stress_vx_zx.png" src="../_images/stress_vx_zx.png" style="width: 453.0px; height: 387.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3731,7 +3847,7 @@ the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id43">
+<div class="figure align-center" id="id47">
 <a class="reference internal image-reference" href="../_images/stress_vx_zxy.png"><img alt="../_images/stress_vx_zxy.png" src="../_images/stress_vx_zxy.png" style="width: 440.25px; height: 369.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3770,7 +3886,7 @@ x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id44">
+<div class="figure align-center" id="id48">
 <a class="reference internal image-reference" href="../_images/stress_vx_zy.png"><img alt="../_images/stress_vx_zy.png" src="../_images/stress_vx_zy.png" style="width: 469.5px; height: 402.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3809,7 +3925,7 @@ y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id45">
+<div class="figure align-center" id="id49">
 <a class="reference internal image-reference" href="../_images/stress_vy_zx.png"><img alt="../_images/stress_vy_zx.png" src="../_images/stress_vy_zx.png" style="width: 462.0px; height: 397.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3848,7 +3964,7 @@ the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id46">
+<div class="figure align-center" id="id50">
 <a class="reference internal image-reference" href="../_images/stress_vy_zxy.png"><img alt="../_images/stress_vy_zxy.png" src="../_images/stress_vy_zxy.png" style="width: 466.5px; height: 424.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3887,7 +4003,7 @@ y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id47">
+<div class="figure align-center" id="id51">
 <a class="reference internal image-reference" href="../_images/stress_vy_zy.png"><img alt="../_images/stress_vy_zy.png" src="../_images/stress_vy_zy.png" style="width: 439.5px; height: 398.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3925,7 +4041,7 @@ shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id48">
+<div class="figure align-center" id="id52">
 <a class="reference internal image-reference" href="../_images/stress_zx.png"><img alt="../_images/stress_zx.png" src="../_images/stress_zx.png" style="width: 459.0px; height: 414.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3963,7 +4079,7 @@ and a shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id49">
+<div class="figure align-center" id="id53">
 <a class="reference internal image-reference" href="../_images/stress_zxy.png"><img alt="../_images/stress_zxy.png" src="../_images/stress_zxy.png" style="width: 495.75px; height: 447.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -4001,7 +4117,7 @@ shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id50">
+<div class="figure align-center" id="id54">
 <a class="reference internal image-reference" href="../_images/stress_zy.png"><img alt="../_images/stress_zy.png" src="../_images/stress_zy.png" style="width: 489.0px; height: 427.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -4039,7 +4155,7 @@ the x-axis of 5 kN.m and a bending moment about the y-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id51">
+<div class="figure align-center" id="id55">
 <a class="reference internal image-reference" href="../_images/stress_zz.png"><img alt="../_images/stress_zz.png" src="../_images/stress_zz.png" style="width: 432.75px; height: 403.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the normal stress.</span></p>
 </div>
@@ -4078,7 +4194,7 @@ of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_mzz_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id52">
+<div class="figure align-center" id="id56">
 <a class="reference internal image-reference" href="../_images/vector_mzz_zxy.png"><img alt="../_images/vector_mzz_zxy.png" src="../_images/vector_mzz_zxy.png" style="width: 489.0px; height: 441.75px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
@@ -4117,7 +4233,7 @@ within a 150x90x12 UA section resulting from ashear force of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_v_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id53">
+<div class="figure align-center" id="id57">
 <a class="reference internal image-reference" href="../_images/vector_v_zxy.png"><img alt="../_images/vector_v_zxy.png" src="../_images/vector_v_zxy.png" style="width: 467.25px; height: 410.25px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
@@ -4156,7 +4272,7 @@ the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_vx_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id54">
+<div class="figure align-center" id="id58">
 <a class="reference internal image-reference" href="../_images/vector_vx_zxy.png"><img alt="../_images/vector_vx_zxy.png" src="../_images/vector_vx_zxy.png" style="width: 506.25px; height: 432.0px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
@@ -4195,7 +4311,7 @@ the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_vy_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id55">
+<div class="figure align-center" id="id59">
 <a class="reference internal image-reference" href="../_images/vector_vy_zxy.png"><img alt="../_images/vector_vy_zxy.png" src="../_images/vector_vy_zxy.png" style="width: 434.25px; height: 408.0px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
@@ -4233,7 +4349,7 @@ and a shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id56">
+<div class="figure align-center" id="id60">
 <a class="reference internal image-reference" href="../_images/vector_zxy.png"><img alt="../_images/vector_zxy.png" src="../_images/vector_zxy.png" style="width: 453.75px; height: 444.75px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>

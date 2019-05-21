@@ -974,6 +974,190 @@ class MonoISection(Geometry):
         self.shift_section()
 
 
+class TaperedFlangeISection(Geometry):
+    """Constructs a Tapered Flange I-section centered at *(b/2, d/2)*, with
+    depth *d*, width *b*, mid-flange thickness *t_f*, web thickness *t_w*, root
+    radius *r_r*, flange radius *r_f* and flange angle *alpha*, using *n_r*
+    points to construct the radii.
+
+    :param float d: Depth of the Tapered Flange I-section
+    :param float b: Width of the Tapered Flange I-section
+    :param float t_f: Mid-flange thickness of the Tapered Flange I-section
+        (measured at the point equidistant from the face of the web to the edge
+        of the flange)
+    :param float t_w: Web thickness of the Tapered Flange I-section
+    :param float r_r: Root radius of the Tapered Flange I-section
+    :param float r_f: Flange radius of the Tapered Flange I-section
+    :param float alpha: Flange angle of the Tapered Flange I-section (degrees)
+    :param int n_r: Number of points discretising the radii
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+
+    The following example creates a Tapered Flange I-section with a depth of
+    588, a width of 191, a mid-flange thickness of 27.2, a web thickness of
+    15.2, a root radius of 17.8, a flange radius of 8.9 and a flange angle of
+    8°, using 16 points to discretise the radii. A mesh is generated with a
+    maximum triangular area of 20.0::
+
+        import sectionproperties.pre.sections as sections
+
+        geometry = sections.TaperedFlangeISection(d=588, b=191, t_f=27.2,
+            t_w=15.2, r_r=17.8, r_f=8.9, alpha=8, n_r=16)
+        mesh = geometry.create_mesh(mesh_sizes=[20.0])
+
+    ..  figure:: ../images/sections/taperedisection_geometry.png
+        :align: center
+        :scale: 75 %
+
+        I-section geometry.
+
+    ..  figure:: ../images/sections/taperedisection_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, d, b, t_f, t_w, r_r, r_f, alpha, n_r, shift=[0, 0]):
+        """Inits the ISection class."""
+
+        # assign control point
+        control_points = [[b * 0.5, d * 0.5]]
+
+        super().__init__(control_points, shift)
+
+        # calculate alpha in radians
+        alpha_rad = np.pi * alpha / 180
+
+        # calculate the height of the flange toe and dimensions of the straight
+        x1 = b * 0.25 - t_w * 0.25 - r_f * (1 - np.sin(alpha_rad))
+        y1 = x1 * np.tan(alpha_rad)
+        x2 = b * 0.25 - t_w * 0.25 - r_r * (1 - np.sin(alpha_rad))
+        y2 = x2 * np.tan(alpha_rad)
+        y_t = t_f - y1 - r_f * np.cos(alpha_rad)
+
+        # add first two points
+        self.points.append([0, 0])
+        self.points.append([b, 0])
+
+        # construct the bottom right flange toe radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
+
+            # calculate the locations of the radius points
+            x = b - r_f + r_f * np.cos(theta)
+            y = y_t + r_f * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # construct the bottom right root radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = (3.0 / 2 * np.pi - alpha_rad) - (
+                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
+
+            # calculate the locations of the radius points
+            x = b * 0.5 + t_w * 0.5 + r_r + r_r * np.cos(theta)
+            y = t_f + y2 + r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # construct the top right root radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = np.pi - i * 1.0 / max(1, n_r - 1) * (
+                np.pi * 0.5 - alpha_rad)
+
+            # calculate the locations of the radius points
+            x = b * 0.5 + t_w * 0.5 + r_r + r_r * np.cos(theta)
+            y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # construct the top right flange toe radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = (3.0 * np.pi / 2 + alpha_rad) + i * 1.0 / max(
+                1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
+
+            # calculate the locations of the radius points
+            x = b - r_f + r_f * np.cos(theta)
+            y = d - y_t + r_f * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # add the next two points
+        self.points.append([b, d])
+        self.points.append([0, d])
+
+        # construct the top left flange toe radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = np.pi + (
+                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
+
+            # calculate the locations of the radius points
+            x = r_f + r_f * np.cos(theta)
+            y = d - y_t + r_f * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # construct the top left root radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = (np.pi * 0.5 - alpha_rad) - (
+                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
+
+            # calculate the locations of the radius points
+            x = b * 0.5 - t_w * 0.5 - r_r + r_r * np.cos(theta)
+            y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # construct the bottom left root radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = -i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
+
+            # calculate the locations of the radius points
+            x = b * 0.5 - t_w * 0.5 - r_r + r_r * np.cos(theta)
+            y = t_f + y2 + r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # construct the bottom left flange toe radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = (np.pi * 0.5 + alpha_rad) + (
+                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
+
+            # calculate the locations of the radius points
+            x = r_f + r_f * np.cos(theta)
+            y = y_t + r_f * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # build the facet list
+        for i in range(len(self.points)):
+            # if we are not at the last point
+            if i != len(self.points) - 1:
+                self.facets.append([i, i + 1])
+            # if we are at the last point, complete the loop
+            else:
+                self.facets.append([len(self.points) - 1, 0])
+
+        self.shift_section()
+
+
 class PfcSection(Geometry):
     """Constructs a PFC section with the bottom left corner at the origin
     *(0, 0)*, with depth *d*, width *b*, flange thickness *t_f*, web  thickness
@@ -1050,6 +1234,140 @@ class PfcSection(Geometry):
 
         # add last three points
         self.points.append([b, d - t_f])
+        self.points.append([b, d])
+        self.points.append([0, d])
+
+        # build the facet list
+        for i in range(len(self.points)):
+            # if we are not at the last point
+            if i != len(self.points) - 1:
+                self.facets.append([i, i + 1])
+            # if we are at the last point, complete the loop
+            else:
+                self.facets.append([len(self.points) - 1, 0])
+
+        self.shift_section()
+
+
+class TaperedFlangeChannel(Geometry):
+    """Constructs a Tapered Flange Channel section with the bottom left corner
+    at the origin *(0, 0)*, with depth *d*, width *b*, mid-flange thickness
+    *t_f*, web thickness *t_w*, root radius *r_r*, flange radius *r_f* and
+    flange angle *alpha*, using *n_r* points to construct the radii.
+
+    :param float d: Depth of the Tapered Flange Channel section
+    :param float b: Width of the Tapered Flange Channel section
+    :param float t_f: Mid-flange thickness of the Tapered Flange Channel
+        section (measured at the point equidistant from the face of the web to
+        the edge of the flange)
+    :param float t_w: Web thickness of the Tapered Flange Channel section
+    :param float r_r: Root radius of the Tapered Flange Channel section
+    :param float r_f: Flange radius of the Tapered Flange Channel section
+    :param float alpha: Flange angle of the Tapered Flange Channel section
+        (degrees)
+    :param int n_r: Number of points discretising the radii
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+
+    The following example creates a Tapered Flange Channel section with a depth
+    of 10, a width of 3.5, a mid-flange thickness of 0.575, a web thickness of
+    0.475, a root radius of 0.575, a flange radius of 0.4 and a flange angle of
+    8°, using 16 points to discretise the radii. A mesh is generated with a
+    maximum triangular area of 0.02::
+
+        import sectionproperties.pre.sections as sections
+
+        geometry = sections.TaperedFlangeChannel(d=10, b=3.5, t_f=0.575,
+            t_w=0.475, r_r=0.575, r_f=0.4, alpha=8, n_r=16)
+        mesh = geometry.create_mesh(mesh_sizes=[0.02])
+
+    ..  figure:: ../images/sections/taperedchannel_geometry.png
+        :align: center
+        :scale: 75 %
+
+        I-section geometry.
+
+    ..  figure:: ../images/sections/taperedchannel_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, d, b, t_f, t_w, r_r, r_f, alpha, n_r, shift=[0, 0]):
+        """Inits the ISection class."""
+
+        # assign control point
+        control_points = [[t_w * 0.5, d * 0.5]]
+
+        super().__init__(control_points, shift)
+
+        # calculate alpha in radians
+        alpha_rad = np.pi * alpha / 180
+
+        # calculate the height of the flange toe and dimensions of the straight
+        x1 = b * 0.5 - t_w * 0.5 - r_f * (1 - np.sin(alpha_rad))
+        y1 = x1 * np.tan(alpha_rad)
+        x2 = b * 0.5 - t_w * 0.5 - r_r * (1 - np.sin(alpha_rad))
+        y2 = x2 * np.tan(alpha_rad)
+        y_t = t_f - y1 - r_f * np.cos(alpha_rad)
+
+        # add first two points
+        self.points.append([0, 0])
+        self.points.append([b, 0])
+
+        # construct the bottom right flange toe radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
+
+            # calculate the locations of the radius points
+            x = b - r_f + r_f * np.cos(theta)
+            y = y_t + r_f * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # construct the bottom right root radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = (3.0 / 2 * np.pi - alpha_rad) - (
+                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
+
+            # calculate the locations of the radius points
+            x = t_w + r_r + r_r * np.cos(theta)
+            y = t_f + y2 + r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # construct the top right root radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = np.pi - i * 1.0 / max(1, n_r - 1) * (
+                np.pi * 0.5 - alpha_rad)
+
+            # calculate the locations of the radius points
+            x = t_w + r_r + r_r * np.cos(theta)
+            y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # construct the top right flange toe radius
+        for i in range(n_r):
+            # determine polar angle
+            theta = (3.0 * np.pi / 2 + alpha_rad) + i * 1.0 / max(
+                1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
+
+            # calculate the locations of the radius points
+            x = b - r_f + r_f * np.cos(theta)
+            y = d - y_t + r_f * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x, y])
+
+        # add the final two points
         self.points.append([b, d])
         self.points.append([0, d])
 

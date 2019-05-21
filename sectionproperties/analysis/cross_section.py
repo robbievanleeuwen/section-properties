@@ -2618,7 +2618,7 @@ class StressPost:
         * *'sig_zxy_vx'*: Resultant shear stress :math:`\sigma_{zxy,Vx}`
           resulting from the shear force :math:`V_{x}`
         * *'sig_zx_vy'*: *x*-component of the shear stress
-          :math:`\sigma_{zy,Vx}` resulting from the shear force
+          :math:`\sigma_{zx,Vy}` resulting from the shear force
           :math:`V_{y}`
         * *'sig_zy_vy'*: *y*-component of the shear stress
           :math:`\sigma_{zy,Vy}` resulting from the shear force

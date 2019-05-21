@@ -49,9 +49,19 @@ MonoISection Class
   ..  autoclass:: sectionproperties.pre.sections.MonoISection
       :show-inheritance:
 
+TaperedFlangeISection Class
+"""""""""""""""""""""""""""
+  ..  autoclass:: sectionproperties.pre.sections.TaperedFlangeISection
+      :show-inheritance:
+
 PfcSection Class
 """"""""""""""""
   ..  autoclass:: sectionproperties.pre.sections.PfcSection
+      :show-inheritance:
+
+TaperedFlangeChannel Class
+""""""""""""""""""""""""""
+  ..  autoclass:: sectionproperties.pre.sections.TaperedFlangeChannel
       :show-inheritance:
 
 TeeSection Class

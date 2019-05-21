@@ -69,9 +69,21 @@ Monosymmetric I-Section
       :show-inheritance:
       :noindex:
 
+Tapered Flange I-Section
+^^^^^^^^^^^^^^^^^^^^^^^^
+  ..  autoclass:: sectionproperties.pre.sections.TaperedFlangeISection
+      :show-inheritance:
+      :noindex:
+
 Parallel Flange Channel (PFC) Section
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   ..  autoclass:: sectionproperties.pre.sections.PfcSection
+      :show-inheritance:
+      :noindex:
+
+Tapered Flange Channel Section
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ..  autoclass:: sectionproperties.pre.sections.TaperedFlangeChannel
       :show-inheritance:
       :noindex:
 
