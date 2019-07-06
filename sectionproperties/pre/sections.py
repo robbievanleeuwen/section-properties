@@ -546,7 +546,7 @@ class EllipticalSection(Geometry):
 
     The following example creates an elliptical cross-section with a vertical diameter of
     50 and horizontal diameter of 25, with 40 points, and generates a mesh with a maximum triangular area of
-    2.5:
+    1.0:
 
         import sectionproperties.pre.sections as sections
 
@@ -569,7 +569,7 @@ class EllipticalSection(Geometry):
     def __init__(self, d_y, d_x, n, shift=[0, 0]):
         """Inits the EllipticalSection class."""
 
-        # assign control point
+        # assign control point centred at zero
         control_points = [[0, 0]]
 
         super().__init__(control_points, shift)
@@ -598,7 +598,7 @@ class EllipticalSection(Geometry):
 
 class Ehs(Geometry):
     """Constructs an elliptical hollow section centered at the origin *(0, 0)*,
-    with outer vertical diameter *d_yo*, outer horizontal diameter *d_xo*, and 
+    with outer vertical diameter *d_y*, outer horizontal diameter *d_x*, and 
     thickness *t*, using *n* points to construct the inner and outer ellipses. 
     Note that the thickness of a hollow ellipse does not stay constant all
     throughout the section.
@@ -651,8 +651,8 @@ class Ehs(Geometry):
             # calculate location of outer and inner points
             x_outer = 0.5 * d_x * np.cos(theta)
             y_outer = 0.5 * d_y * np.sin(theta)
-            x_inner = (0.5 * d_x - t) * np.cos(theta)
-            y_inner = (0.5 * d_y - t) * np.sin(theta)
+            x_inner = ((0.5 * d_x) - t) * np.cos(theta)
+            y_inner = ((0.5 * d_y) - t) * np.sin(theta)
 
             # append the current points to the points list
             self.points.append([x_outer, y_outer])
