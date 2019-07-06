@@ -534,6 +534,142 @@ class CircularSection(Geometry):
         self.shift_section()
 
 
+class EllipticalSection(Geometry):
+    """Constructs a solid ellipse centered at the origin *(0, 0)* with vertical diameter
+    *d_y* and horizontal diameter *d_x*, using *n* points to construct the ellipse.
+
+    :param float d_y: Diameter of the ellipse in the y-dimension
+    :param float d_x: Diameter of the ellipse in the x-dimension
+    :param int n: Number of points discretising the ellipse
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+
+    The following example creates an elliptical cross-section with a vertical diameter of
+    50 and horizontal diameter of 25, with 40 points, and generates a mesh with a maximum triangular area of
+    2.5:
+
+        import sectionproperties.pre.sections as sections
+
+        geometry = sections.EllipticalSection(d_y=50, d_x=25, n=40)
+        mesh = geometry.create_mesh(mesh_sizes=[2.5])
+
+    ..  figure:: ../images/sections/ellipse_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Elliptical section geometry.
+
+    ..  figure:: ../images/sections/ellipse_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, d_y, d_x, n, shift=[0, 0]):
+        """Inits the EllipticalSection class."""
+
+        # assign control point
+        control_points = [[0, 0]]
+
+        super().__init__(control_points, shift)
+
+        # loop through each point on the ellipse
+        for i in range(n):
+            # determine polar angle
+            theta = i * 2 * np.pi * 1.0 / n
+
+            # calculate location of the point
+            x = 0.5 * d_x * np.cos(theta)
+            y = 0.5 * d_y * np.sin(theta)
+
+            # append the current point to the points list
+            self.points.append([x, y])
+
+            # if we are not at the last point
+            if i != n - 1:
+                self.facets.append([i, i + 1])
+            # if we are at the last point, complete the ellipse
+            else:
+                self.facets.append([i, 0])
+
+        self.shift_section()
+
+
+class Ehs(Geometry):
+    """Constructs an elliptical hollow section centered at the origin *(0, 0)*,
+    with outer vertical diameter *d_yo*, outer horizontal diameter *d_xo*, and 
+    thickness *t*, using *n* points to construct the inner and outer ellipses. 
+    Note that the thickness of a hollow ellipse does not stay constant all
+    throughout the section.
+
+    :param float d_y: Diameter of the ellipse in the y-dimension
+    :param float d_x: Diameter of the ellipse in the x-dimension
+    :param float t: Thickness of the EHS
+    :param int n: Number of points discretising the inner and outer ellipses
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+
+    The following example creates a EHS discretised with 30 points, with a
+    outer vertical diameter of 50, outer horizontal diameter of 25, and thickness of 5.0, 
+    and generates a mesh with a maximum triangular area of 1.0::
+
+        import sectionproperties.pre.sections as sections
+
+        geometry = sections.Ehs(d_y=50, d_x=25, t=5.0, n=30)
+        mesh = geometry.create_mesh(mesh_sizes=[1.0])
+
+    ..  figure:: ../images/sections/ehs_geometry.png
+        :align: center
+        :scale: 75 %
+
+        EHS geometry.
+
+    ..  figure:: ../images/sections/ehs_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, d_y, d_x, t, n, shift=[0, 0]):
+        """Inits the Ehs class."""
+
+        # assign control point
+        control_points = [[(d_x * 0.5) - (t * 0.5), 0]]
+
+        super().__init__(control_points, shift)
+
+        # specify a hole in the centre of the EHS
+        self.holes = [[0, 0]]
+
+        # loop through each point of the EHS
+        for i in range(n):
+            # determine polar angle
+            theta = i * 2 * np.pi * 1.0 / n
+
+            # calculate location of outer and inner points
+            x_outer = 0.5 * d_x * np.cos(theta)
+            y_outer = 0.5 * d_y * np.sin(theta)
+            x_inner = (0.5 * d_x - t) * np.cos(theta)
+            y_inner = (0.5 * d_y - t) * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x_outer, y_outer])
+            self.points.append([x_inner, y_inner])
+
+            # if we are not at the last point
+            if i != n - 1:
+                self.facets.append([i * 2, i * 2 + 2])
+                self.facets.append([i * 2 + 1, i * 2 + 3])
+            # if we are at the last point, complete the circle
+            else:
+                self.facets.append([i * 2, 0])
+                self.facets.append([i * 2 + 1, 1])
+
+        self.shift_section()
+
+
 class Chs(Geometry):
     """Constructs a circular hollow section centered at the origin *(0, 0)*,
     with diameter *d* and thickness *t*, using *n* points to construct the
