@@ -600,8 +600,6 @@ class Ehs(Geometry):
     """Constructs an elliptical hollow section centered at the origin *(0, 0)*,
     with outer vertical diameter *d_y*, outer horizontal diameter *d_x*, and 
     thickness *t*, using *n* points to construct the inner and outer ellipses. 
-    Note that the thickness of a hollow ellipse does not stay constant all
-    throughout the section.
 
     :param float d_y: Diameter of the ellipse in the y-dimension
     :param float d_x: Diameter of the ellipse in the x-dimension
