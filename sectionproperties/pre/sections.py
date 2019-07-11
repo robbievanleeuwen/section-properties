@@ -741,6 +741,158 @@ class Ehs(Geometry):
         self.shift_section()
 
 
+class PolygonSection(Geometry):
+    """Constructs a regular hollow polygon section centered at *(0, 0)*, with
+    a pitch circle diameter of bounding polygon *d*, thickness *t*, number of sides
+    *n_sides* and inner radius *r_in*, using *n_r* points to construct the inner
+    and outer radii (if radii is specified).
+    :param float d: pitch circle diameter of the outer bounding polygon
+    (i.e. diameter of circle that passes through all vertices of the outer polygon)
+    :param float t: Thickness of the polygon section wall
+    :param float r_in: Inner radius of the polygon corners, by default if not
+    specified, a polygon with no corner radii is generated
+    :param int n_r: Number of points discretising the inner and outer radii,
+    ignored if no inner radii is specified
+    :param rot: Initial counterclockwise rotation in degrees, by default
+    bottom face is aligned with x axis
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+    :raises Exception: number of sides in polygon must be greater than or equal to 3
+    The following example creates an Octagonal section (8 sides) with a diameter
+    of 200, a thickness of 6 and an inner radius of 20, using 12 points to
+    discretise the inner and outer radii. A mesh is generated with a maximum
+    triangular area of 5::
+        import sectionproperties.pre.sections as sections
+        geometry = sections.PolygonSection(d=200, t=6, n_sides=8, r_in=20, n_r=12)
+        mesh = geometry.create_mesh(mesh_sizes=[5])
+    ..  figure:: ../images/sections/polygon_geometry.png
+        :align: center
+        :scale: 75 %
+        Octagonal section geometry.
+    ..  figure:: ../images/sections/polygon_mesh.png
+        :align: center
+        :scale: 75 %
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, d, t, n_sides, r_in=0, n_r=1, rot=0, shift=[0, 0]):
+        """Inits the PolygonSection class."""
+
+        if n_sides < 3:
+            raise Exception('n_sides required to be greater than 3 for PolygonSection class')
+
+        # initial rotation
+        rot = rot * np.pi / 180  # radians
+
+        # determine triangular segment angle
+        alpha = 2 * np.pi / n_sides  # radians
+
+        # determine distance from origin to point perpendicular on face of side
+        a_out = d / 2 * np.cos(alpha / 2)
+        a_in = a_out - t
+
+        # determine side length for outer & inner faces neglecting radii
+        side_length_out = d * np.sin(alpha / 2)
+        side_length_in = a_in / a_out * side_length_out
+
+        # check limit on internal radii, if exceeded then radii merge to circle
+        if r_in > a_in:
+            r_in = a_in
+            circle = True
+        else:
+            circle = False
+
+        # calculate external radius, if r_in is zero, r_out also is zero
+        if r_in == 0:
+            r_out = 0
+            n_r = 1
+        else:
+            r_out = r_in + t
+
+        # equivalent side length of half the corner radii triangular segment
+        c_out = r_out * (side_length_out / 2) / a_out
+        c_in = r_in * (side_length_in / 2) / a_in
+
+        # determine straight side length between corner radii (if present)
+        side_length_straight_out = side_length_out - (2 * c_out)
+        side_length_straight_in = side_length_in - (2 * c_in)
+
+        # assign control point central on bottom side length & rotate to
+        # initial rotation specified
+        control_points = [self.rotate([0, -a_out + t / 2], rot)]
+
+        super().__init__(control_points, shift)
+
+        # temp list for repeating geometry
+        base_points = []
+
+        # specify a hole in the centre of the Polygon section
+        self.holes = [[0, 0]]
+
+        # start at bottom face, constructing one corner radii, then
+        # rotate by initial rotation + alpha and repeat for n_side
+        # number of times to form full section perimeter
+
+        # construct the first radius (bottom right)
+        for i in range(n_r):
+            # determine polar angle
+            theta = 1 / 2 * np.pi + i * 1.0 / max(1, n_r - 1) * alpha
+
+            # calculate location of inner and outer points
+            x_outer = side_length_straight_out / 2 - r_out * np.cos(theta)
+            y_outer = -a_out + r_out - r_out * np.sin(theta)
+            x_inner = side_length_straight_in / 2 - r_in * np.cos(theta)
+            y_inner = -a_in + r_in - r_in * np.sin(theta)
+
+            # append the current temporary points to the temporary points list
+            base_points.append([x_outer, y_outer])
+            base_points.append([x_inner, y_inner])
+
+        # if radii merged to circle with an outer diameter of a_out then
+        # skip last point as causes overlapping end points which causes
+        # meshing issues if geometry is not cleaned by user
+        if circle:
+            base_points = base_points[0:-2]
+
+        # iterate and add subsequent corner radii one point at a time for each side
+        for i in range(n_sides):
+
+            for point in base_points:
+                point_new = self.rotate(point, alpha * i + rot)
+                self.points.append(point_new)
+
+        # build the facet list
+        num_points = int(len(self.points) / 2)
+        for i in range(num_points):
+            # if we are not at the last point
+            if i != num_points - 1:
+                self.facets.append([i * 2, i * 2 + 2])
+                self.facets.append([i * 2 + 1, i * 2 + 3])
+            # if we are at the last point, complete the loop
+            else:
+                self.facets.append([i * 2, 0])
+                self.facets.append([i * 2 + 1, 1])
+
+        self.shift_section()
+
+    def rotate(self, point, angle):
+        """
+        Rotate a point counterclockwise by a given angle around origin [0, 0]
+        :param list point: point coordinates to be rotated
+        :param float angle: angle to rotate point coordinates
+        :return: coordinates of rotated point
+        :rtype: list[float, float]
+        """
+        pt_x, pt_y = point
+
+        c = np.cos(angle)
+        s = np.sin(angle)
+
+        new_x = c * pt_x - s * pt_y
+        new_y = s * pt_x + c * pt_y
+        return [new_x, new_y]
+
+
 class Rhs(Geometry):
     """Constructs a rectangular hollow section centered at *(b/2, d/2)*, with
     depth *d*, width *b*, thickness *t* and outer radius *r_out*, using *n_r*
