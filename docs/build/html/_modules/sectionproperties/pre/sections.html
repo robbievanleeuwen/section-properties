@@ -2306,6 +2306,173 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="PolygonSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.PolygonSection">[docs]</a><span class="k">class</span> <span class="nc">PolygonSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Constructs a regular hollow polygon section centered at *(0, 0)*, with</span>
+<span class="sd">    a pitch circle diameter of bounding polygon *d*, thickness *t*, number of</span>
+<span class="sd">    sides *n_sides* and an optional inner radius *r_in*, using *n_r* points to</span>
+<span class="sd">    construct the inner and outer radii (if radii is specified).</span>
+
+<span class="sd">    :param float d: Pitch circle diameter of the outer bounding polygon (i.e.</span>
+<span class="sd">        diameter of circle that passes through all vertices of the outer</span>
+<span class="sd">        polygon)</span>
+<span class="sd">    :param float t: Thickness of the polygon section wall</span>
+<span class="sd">    :param float r_in: Inner radius of the polygon corners. By default, if not</span>
+<span class="sd">        specified, a polygon with no corner radii is generated.</span>
+<span class="sd">    :param int n_r: Number of points discretising the inner and outer radii,</span>
+<span class="sd">        ignored if no inner radii is specified</span>
+<span class="sd">    :param rot: Initial counterclockwise rotation in degrees. By default</span>
+<span class="sd">        bottom face is aligned with x axis.</span>
+<span class="sd">    :param shift: Vector that shifts the cross-section by *(x, y)*</span>
+<span class="sd">    :type shift: list[float, float]</span>
+<span class="sd">    :raises Exception: Number of sides in polygon must be greater than or equal</span>
+<span class="sd">        to 3</span>
+
+<span class="sd">    The following example creates an Octagonal section (8 sides) with a</span>
+<span class="sd">    diameter of 200, a thickness of 6 and an inner radius of 20, using 12</span>
+<span class="sd">    points to discretise the inner and outer radii. A mesh is generated with a</span>
+<span class="sd">    maximum triangular area of 5::</span>
+
+<span class="sd">        import sectionproperties.pre.sections as sections</span>
+
+<span class="sd">        geometry = sections.PolygonSection(d=200, t=6, n_sides=8, r_in=20, n_r=12)</span>
+<span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[5])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/polygon_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Octagonal section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/polygon_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">n_sides</span><span class="p">,</span> <span class="n">r_in</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">rot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Inits the PolygonSection class.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">n_sides</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;n_sides required to be greater&#39;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="o">+</span> <span class="s1">&#39; than 3 for PolygonSection class&#39;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># initial rotation</span>
+        <span class="n">rot</span> <span class="o">=</span> <span class="n">rot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>  <span class="c1"># radians</span>
+
+        <span class="c1"># determine triangular segment angle</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">n_sides</span>  <span class="c1"># radians</span>
+
+        <span class="c1"># determine distance from origin to point perpendicular on face of side</span>
+        <span class="n">a_out</span> <span class="o">=</span> <span class="n">d</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">a_in</span> <span class="o">=</span> <span class="n">a_out</span> <span class="o">-</span> <span class="n">t</span>
+
+        <span class="c1"># determine side length for outer &amp; inner faces neglecting radii</span>
+        <span class="n">side_length_out</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">side_length_in</span> <span class="o">=</span> <span class="n">a_in</span> <span class="o">/</span> <span class="n">a_out</span> <span class="o">*</span> <span class="n">side_length_out</span>
+
+        <span class="c1"># check limit on internal radii, if exceeded then radii merge to circle</span>
+        <span class="k">if</span> <span class="n">r_in</span> <span class="o">&gt;</span> <span class="n">a_in</span><span class="p">:</span>
+            <span class="n">r_in</span> <span class="o">=</span> <span class="n">a_in</span>
+            <span class="n">circle</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">circle</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># calculate external radius, if r_in is zero, r_out also is zero</span>
+        <span class="k">if</span> <span class="n">r_in</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">r_out</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">n_r</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">r_out</span> <span class="o">=</span> <span class="n">r_in</span> <span class="o">+</span> <span class="n">t</span>
+
+        <span class="c1"># equivalent side length of half the corner radii triangular segment</span>
+        <span class="n">c_out</span> <span class="o">=</span> <span class="n">r_out</span> <span class="o">*</span> <span class="p">(</span><span class="n">side_length_out</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">a_out</span>
+        <span class="n">c_in</span> <span class="o">=</span> <span class="n">r_in</span> <span class="o">*</span> <span class="p">(</span><span class="n">side_length_in</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">a_in</span>
+
+        <span class="c1"># determine straight side length between corner radii (if present)</span>
+        <span class="n">side_length_straight_out</span> <span class="o">=</span> <span class="n">side_length_out</span> <span class="o">-</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">c_out</span><span class="p">)</span>
+        <span class="n">side_length_straight_in</span> <span class="o">=</span> <span class="n">side_length_in</span> <span class="o">-</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">c_in</span><span class="p">)</span>
+
+        <span class="c1"># assign control point central on bottom side length &amp; rotate to</span>
+        <span class="c1"># initial rotation specified</span>
+        <span class="n">control_points</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">a_out</span> <span class="o">+</span> <span class="n">t</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span> <span class="n">rot</span><span class="p">)]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">control_points</span><span class="p">,</span> <span class="n">shift</span><span class="p">)</span>
+
+        <span class="c1"># temp list for repeating geometry</span>
+        <span class="n">base_points</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># specify a hole in the centre of the Polygon section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">holes</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+
+        <span class="c1"># start at bottom face, constructing one corner radii, then rotate by</span>
+        <span class="c1"># initial rotation + alpha and repeat for n_side number of times to</span>
+        <span class="c1"># form full section perimeter</span>
+
+        <span class="c1"># construct the first radius (bottom right)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_r</span><span class="p">):</span>
+            <span class="c1"># determine polar angle</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_r</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha</span>
+
+            <span class="c1"># calculate location of inner and outer points</span>
+            <span class="n">x_outer</span> <span class="o">=</span> <span class="n">side_length_straight_out</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">r_out</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="n">y_outer</span> <span class="o">=</span> <span class="o">-</span><span class="n">a_out</span> <span class="o">+</span> <span class="n">r_out</span> <span class="o">-</span> <span class="n">r_out</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="n">x_inner</span> <span class="o">=</span> <span class="n">side_length_straight_in</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">r_in</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="n">y_inner</span> <span class="o">=</span> <span class="o">-</span><span class="n">a_in</span> <span class="o">+</span> <span class="n">r_in</span> <span class="o">-</span> <span class="n">r_in</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+            <span class="c1"># append the current temporary points to the temporary points list</span>
+            <span class="n">base_points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x_outer</span><span class="p">,</span> <span class="n">y_outer</span><span class="p">])</span>
+            <span class="n">base_points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x_inner</span><span class="p">,</span> <span class="n">y_inner</span><span class="p">])</span>
+
+        <span class="c1"># if radii merged to circle with an outer diameter of a_out then skip</span>
+        <span class="c1"># last point as causes overlapping end points which causes meshing</span>
+        <span class="c1"># issues if geometry is not cleaned by user</span>
+        <span class="k">if</span> <span class="n">circle</span><span class="p">:</span>
+            <span class="n">base_points</span> <span class="o">=</span> <span class="n">base_points</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="c1"># iterate and add subsequent corner radii one point at a time for each</span>
+        <span class="c1"># side</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_sides</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">base_points</span><span class="p">:</span>
+                <span class="n">point_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="n">rot</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point_new</span><span class="p">)</span>
+
+        <span class="c1"># build the facet list</span>
+        <span class="n">num_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_points</span><span class="p">):</span>
+            <span class="c1"># if we are not at the last point</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">num_points</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="p">])</span>
+            <span class="c1"># if we are at the last point, complete the loop</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rotate a point counterclockwise by a given angle around origin [0, 0]</span>
+
+<span class="sd">        :param list point: Point coordinates to be rotated</span>
+<span class="sd">        :param float angle: Angle to rotate point coordinates</span>
+<span class="sd">        :return: Coordinates of rotated point</span>
+<span class="sd">        :rtype: list[float, float]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">pt_x</span><span class="p">,</span> <span class="n">pt_y</span> <span class="o">=</span> <span class="n">point</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+
+        <span class="n">new_x</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">pt_x</span> <span class="o">-</span> <span class="n">s</span> <span class="o">*</span> <span class="n">pt_y</span>
+        <span class="n">new_y</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">pt_x</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">pt_y</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span><span class="p">]</span></div>
+
+
 <div class="viewcode-block" id="MergedSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.MergedSection">[docs]</a><span class="k">class</span> <span class="nc">MergedSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Merges a number of section geometries into one geometry. Note that for</span>
 <span class="sd">    the meshing algorithm to work, there needs to be connectivity between all</span>

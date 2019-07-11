@@ -129,6 +129,12 @@ Cruciform Section
       :show-inheritance:
       :noindex:
 
+Polygon Section
+^^^^^^^^^^^^^^^
+  ..  autoclass:: sectionproperties.pre.sections.PolygonSection
+      :show-inheritance:
+      :noindex:
+
 Arbitrary Cross-Section Geometries
 ----------------------------------
 

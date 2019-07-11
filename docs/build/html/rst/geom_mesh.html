@@ -106,6 +106,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#cee-section">Cee Section</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zed-section">Zed Section</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cruciform-section">Cruciform Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#polygon-section">Polygon Section</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#arbitrary-cross-section-geometries">Arbitrary Cross-Section Geometries</a></li>
@@ -1003,6 +1004,64 @@ of 5.0:</p>
 
 </div></blockquote>
 </div>
+<div class="section" id="polygon-section">
+<h3>Polygon Section<a class="headerlink" href="#polygon-section" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">PolygonSection</code><span class="sig-paren">(</span><em>d, t, n_sides, r_in=0, n_r=1, rot=0, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#PolygonSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
+<p>Constructs a regular hollow polygon section centered at <em>(0, 0)</em>, with
+a pitch circle diameter of bounding polygon <em>d</em>, thickness <em>t</em>, number of
+sides <em>n_sides</em> and an optional inner radius <em>r_in</em>, using <em>n_r</em> points to
+construct the inner and outer radii (if radii is specified).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>d</strong> (<em>float</em>) – Pitch circle diameter of the outer bounding polygon (i.e.
+diameter of circle that passes through all vertices of the outer
+polygon)</li>
+<li><strong>t</strong> (<em>float</em>) – Thickness of the polygon section wall</li>
+<li><strong>r_in</strong> (<em>float</em>) – Inner radius of the polygon corners. By default, if not
+specified, a polygon with no corner radii is generated.</li>
+<li><strong>n_r</strong> (<em>int</em>) – Number of points discretising the inner and outer radii,
+ignored if no inner radii is specified</li>
+<li><strong>rot</strong> – Initial counterclockwise rotation in degrees. By default
+bottom face is aligned with x axis.</li>
+<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Exception</strong> – Number of sides in polygon must be greater than or equal
+to 3</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates an Octagonal section (8 sides) with a
+diameter of 200, a thickness of 6 and an inner radius of 20, using 12
+points to discretise the inner and outer radii. A mesh is generated with a
+maximum triangular area of 5:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">PolygonSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">n_sides</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">r_in</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id29">
+<a class="reference internal image-reference" href="../_images/polygon_geometry.png"><img alt="../_images/polygon_geometry.png" src="../_images/polygon_geometry.png" style="width: 435.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Octagonal section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id30">
+<a class="reference internal image-reference" href="../_images/polygon_mesh.png"><img alt="../_images/polygon_mesh.png" src="../_images/polygon_mesh.png" style="width: 318.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</div>
 </div>
 <div class="section" id="arbitrary-cross-section-geometries">
 <h2>Arbitrary Cross-Section Geometries<a class="headerlink" href="#arbitrary-cross-section-geometries" title="Permalink to this headline">¶</a></h2>
@@ -1050,11 +1109,11 @@ generated with a maximum triangular area of 2.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id29">
+<div class="figure align-center" id="id31">
 <a class="reference internal image-reference" href="../_images/custom_geometry.png"><img alt="../_images/custom_geometry.png" src="../_images/custom_geometry.png" style="width: 699.0px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Custom section geometry.</span></p>
 </div>
-<div class="figure align-center" id="id30">
+<div class="figure align-center" id="id32">
 <a class="reference internal image-reference" href="../_images/custom_mesh.png"><img alt="../_images/custom_mesh.png" src="../_images/custom_mesh.png" style="width: 393.75px; height: 218.25px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -1109,7 +1168,7 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id31">
+<div class="figure align-center" id="id33">
 <a class="reference internal image-reference" href="../_images/merged_geometry.png"><img alt="../_images/merged_geometry.png" src="../_images/merged_geometry.png" style="width: 287.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Merged section geometry.</span></p>
 </div>
@@ -1181,7 +1240,7 @@ diameter of 48 and thickness of 3.2, and plots the geometry:</p>
 <span class="n">geometry</span><span class="o">.</span><span class="n">plot_geometry</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id32">
+<div class="figure align-center" id="id34">
 <a class="reference internal image-reference" href="../_images/chs_geometry1.png"><img alt="../_images/chs_geometry1.png" src="../_images/chs_geometry1.png" style="width: 429.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Geometry generated by the above example.</span></p>
 </div>
@@ -1222,7 +1281,7 @@ area of 2.5:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id33">
+<div class="figure align-center" id="id35">
 <a class="reference internal image-reference" href="../_images/circle_mesh.png"><img alt="../_images/circle_mesh.png" src="../_images/circle_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>

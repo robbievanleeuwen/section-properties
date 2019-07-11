@@ -112,6 +112,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#ceesection-class">CeeSection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#zedsection-class">ZedSection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#cruciformsection-class">CruciformSection Class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#polygonsection-class">PolygonSection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mergedsection-class">MergedSection Class</a></li>
 </ul>
 </li>
@@ -1324,6 +1325,64 @@ of 5.0:</p>
 
 </div></blockquote>
 </div>
+<div class="section" id="polygonsection-class">
+<h4>PolygonSection Class<a class="headerlink" href="#polygonsection-class" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><dl class="class">
+<dt id="sectionproperties.pre.sections.PolygonSection">
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">PolygonSection</code><span class="sig-paren">(</span><em>d, t, n_sides, r_in=0, n_r=1, rot=0, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#PolygonSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.PolygonSection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
+<p>Constructs a regular hollow polygon section centered at <em>(0, 0)</em>, with
+a pitch circle diameter of bounding polygon <em>d</em>, thickness <em>t</em>, number of
+sides <em>n_sides</em> and an optional inner radius <em>r_in</em>, using <em>n_r</em> points to
+construct the inner and outer radii (if radii is specified).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>d</strong> (<em>float</em>) – Pitch circle diameter of the outer bounding polygon (i.e.
+diameter of circle that passes through all vertices of the outer
+polygon)</li>
+<li><strong>t</strong> (<em>float</em>) – Thickness of the polygon section wall</li>
+<li><strong>r_in</strong> (<em>float</em>) – Inner radius of the polygon corners. By default, if not
+specified, a polygon with no corner radii is generated.</li>
+<li><strong>n_r</strong> (<em>int</em>) – Number of points discretising the inner and outer radii,
+ignored if no inner radii is specified</li>
+<li><strong>rot</strong> – Initial counterclockwise rotation in degrees. By default
+bottom face is aligned with x axis.</li>
+<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Exception</strong> – Number of sides in polygon must be greater than or equal
+to 3</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates an Octagonal section (8 sides) with a
+diameter of 200, a thickness of 6 and an inner radius of 20, using 12
+points to discretise the inner and outer radii. A mesh is generated with a
+maximum triangular area of 5:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">PolygonSection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">n_sides</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">r_in</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id33">
+<a class="reference internal image-reference" href="../_images/polygon_geometry.png"><img alt="../_images/polygon_geometry.png" src="../_images/polygon_geometry.png" style="width: 435.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Octagonal section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id34">
+<a class="reference internal image-reference" href="../_images/polygon_mesh.png"><img alt="../_images/polygon_mesh.png" src="../_images/polygon_mesh.png" style="width: 318.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</div>
 <div class="section" id="mergedsection-class">
 <h4>MergedSection Class<a class="headerlink" href="#mergedsection-class" title="Permalink to this headline">¶</a></h4>
 <blockquote>
@@ -1356,7 +1415,7 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id33">
+<div class="figure align-center" id="id35">
 <a class="reference internal image-reference" href="../_images/merged_geometry.png"><img alt="../_images/merged_geometry.png" src="../_images/merged_geometry.png" style="width: 287.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Merged section geometry.</span></p>
 </div>
@@ -2750,7 +2809,7 @@ the centroids:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id34">
+<div class="figure align-center" id="id36">
 <a class="reference internal image-reference" href="../_images/pfc_centroids.png"><img alt="../_images/pfc_centroids.png" src="../_images/pfc_centroids.png" style="width: 435.0px; height: 492.0px;" /></a>
 <p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span></p>
 </div>
@@ -2770,7 +2829,7 @@ plot of the centroids:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id35">
+<div class="figure align-center" id="id37">
 <a class="reference internal image-reference" href="../_images/angle_centroids.png"><img alt="../_images/angle_centroids.png" src="../_images/angle_centroids.png" style="width: 428.25px; height: 396.75px;" /></a>
 <p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span></p>
 </div>
@@ -2826,7 +2885,7 @@ definition:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">materials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id36">
+<div class="figure align-center" id="id38">
 <a class="reference internal image-reference" href="../_images/composite_mesh.png"><img alt="../_images/composite_mesh.png" src="../_images/composite_mesh.png" style="width: 673.5px; height: 324.75px;" /></a>
 <p class="caption"><span class="caption-text">Finite element mesh generated by the above example.</span></p>
 </div>
@@ -3367,7 +3426,7 @@ section resulting from an bending moment about the 11-axis of 5 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m11_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id37">
+<div class="figure align-center" id="id39">
 <a class="reference internal image-reference" href="../_images/stress_m11_zz.png"><img alt="../_images/stress_m11_zz.png" src="../_images/stress_m11_zz.png" style="width: 527.25px; height: 477.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
@@ -3404,7 +3463,7 @@ section resulting from an bending moment about the 22-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m22_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id38">
+<div class="figure align-center" id="id40">
 <a class="reference internal image-reference" href="../_images/stress_m22_zz.png"><img alt="../_images/stress_m22_zz.png" src="../_images/stress_m22_zz.png" style="width: 506.25px; height: 424.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
@@ -3444,7 +3503,7 @@ bending moment about the y-axis of 2 kN.m and a bending moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id39">
+<div class="figure align-center" id="id41">
 <a class="reference internal image-reference" href="../_images/stress_m_zz.png"><img alt="../_images/stress_m_zz.png" src="../_images/stress_m_zz.png" style="width: 482.25px; height: 444.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
@@ -3481,7 +3540,7 @@ section resulting from an bending moment about the x-axis of 5 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mxx_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id40">
+<div class="figure align-center" id="id42">
 <a class="reference internal image-reference" href="../_images/stress_mxx_zz.png"><img alt="../_images/stress_mxx_zz.png" src="../_images/stress_mxx_zz.png" style="width: 503.25px; height: 452.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
@@ -3518,7 +3577,7 @@ section resulting from an bending moment about the y-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_myy_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id41">
+<div class="figure align-center" id="id43">
 <a class="reference internal image-reference" href="../_images/stress_myy_zz.png"><img alt="../_images/stress_myy_zz.png" src="../_images/stress_myy_zz.png" style="width: 537.0px; height: 471.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the bending stress.</span></p>
 </div>
@@ -3557,7 +3616,7 @@ a 150x90x12 UA section resulting from a torsion moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id42">
+<div class="figure align-center" id="id44">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zx.png"><img alt="../_images/stress_mzz_zx.png" src="../_images/stress_mzz_zx.png" style="width: 440.25px; height: 378.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3596,7 +3655,7 @@ of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id43">
+<div class="figure align-center" id="id45">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zxy.png"><img alt="../_images/stress_mzz_zxy.png" src="../_images/stress_mzz_zxy.png" style="width: 470.25px; height: 396.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3635,7 +3694,7 @@ a 150x90x12 UA section resulting from a torsion moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id44">
+<div class="figure align-center" id="id46">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zy.png"><img alt="../_images/stress_mzz_zy.png" src="../_images/stress_mzz_zy.png" style="width: 449.25px; height: 383.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3672,7 +3731,7 @@ section resulting from an axial force of 10 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_n_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id45">
+<div class="figure align-center" id="id47">
 <a class="reference internal image-reference" href="../_images/stress_n_zz.png"><img alt="../_images/stress_n_zz.png" src="../_images/stress_n_zz.png" style="width: 450.75px; height: 402.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the axial stress.</span></p>
 </div>
@@ -3711,7 +3770,7 @@ in the x-direction and 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id46">
+<div class="figure align-center" id="id48">
 <a class="reference internal image-reference" href="../_images/stress_v_zx.png"><img alt="../_images/stress_v_zx.png" src="../_images/stress_v_zx.png" style="width: 474.75px; height: 425.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3750,7 +3809,7 @@ within a 150x90x12 UA section resulting from ashear force of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id47">
+<div class="figure align-center" id="id49">
 <a class="reference internal image-reference" href="../_images/stress_v_zxy.png"><img alt="../_images/stress_v_zxy.png" src="../_images/stress_v_zxy.png" style="width: 448.5px; height: 406.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3789,7 +3848,7 @@ in the x-direction and 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id48">
+<div class="figure align-center" id="id50">
 <a class="reference internal image-reference" href="../_images/stress_v_zy.png"><img alt="../_images/stress_v_zy.png" src="../_images/stress_v_zy.png" style="width: 451.5px; height: 408.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3858,7 +3917,7 @@ immediately after the window is rendered.</td>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vm</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id49">
+<div class="figure align-center" id="id51">
 <a class="reference internal image-reference" href="../_images/stress_vm.png"><img alt="../_images/stress_vm.png" src="../_images/stress_vm.png" style="width: 491.25px; height: 406.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the von Mises stress.</span></p>
 </div>
@@ -3897,7 +3956,7 @@ x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id50">
+<div class="figure align-center" id="id52">
 <a class="reference internal image-reference" href="../_images/stress_vx_zx.png"><img alt="../_images/stress_vx_zx.png" src="../_images/stress_vx_zx.png" style="width: 453.0px; height: 387.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3936,7 +3995,7 @@ the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id51">
+<div class="figure align-center" id="id53">
 <a class="reference internal image-reference" href="../_images/stress_vx_zxy.png"><img alt="../_images/stress_vx_zxy.png" src="../_images/stress_vx_zxy.png" style="width: 440.25px; height: 369.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -3975,7 +4034,7 @@ x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id52">
+<div class="figure align-center" id="id54">
 <a class="reference internal image-reference" href="../_images/stress_vx_zy.png"><img alt="../_images/stress_vx_zy.png" src="../_images/stress_vx_zy.png" style="width: 469.5px; height: 402.75px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -4014,7 +4073,7 @@ y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id53">
+<div class="figure align-center" id="id55">
 <a class="reference internal image-reference" href="../_images/stress_vy_zx.png"><img alt="../_images/stress_vy_zx.png" src="../_images/stress_vy_zx.png" style="width: 462.0px; height: 397.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -4053,7 +4112,7 @@ the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id54">
+<div class="figure align-center" id="id56">
 <a class="reference internal image-reference" href="../_images/stress_vy_zxy.png"><img alt="../_images/stress_vy_zxy.png" src="../_images/stress_vy_zxy.png" style="width: 466.5px; height: 424.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -4092,7 +4151,7 @@ y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id55">
+<div class="figure align-center" id="id57">
 <a class="reference internal image-reference" href="../_images/stress_vy_zy.png"><img alt="../_images/stress_vy_zy.png" src="../_images/stress_vy_zy.png" style="width: 439.5px; height: 398.25px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -4130,7 +4189,7 @@ shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id56">
+<div class="figure align-center" id="id58">
 <a class="reference internal image-reference" href="../_images/stress_zx.png"><img alt="../_images/stress_zx.png" src="../_images/stress_zx.png" style="width: 459.0px; height: 414.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -4168,7 +4227,7 @@ and a shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id57">
+<div class="figure align-center" id="id59">
 <a class="reference internal image-reference" href="../_images/stress_zxy.png"><img alt="../_images/stress_zxy.png" src="../_images/stress_zxy.png" style="width: 495.75px; height: 447.0px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -4206,7 +4265,7 @@ shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id58">
+<div class="figure align-center" id="id60">
 <a class="reference internal image-reference" href="../_images/stress_zy.png"><img alt="../_images/stress_zy.png" src="../_images/stress_zy.png" style="width: 489.0px; height: 427.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the shear stress.</span></p>
 </div>
@@ -4244,7 +4303,7 @@ the x-axis of 5 kN.m and a bending moment about the y-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id59">
+<div class="figure align-center" id="id61">
 <a class="reference internal image-reference" href="../_images/stress_zz.png"><img alt="../_images/stress_zz.png" src="../_images/stress_zz.png" style="width: 432.75px; height: 403.5px;" /></a>
 <p class="caption"><span class="caption-text">Contour plot of the normal stress.</span></p>
 </div>
@@ -4283,7 +4342,7 @@ of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_mzz_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id60">
+<div class="figure align-center" id="id62">
 <a class="reference internal image-reference" href="../_images/vector_mzz_zxy.png"><img alt="../_images/vector_mzz_zxy.png" src="../_images/vector_mzz_zxy.png" style="width: 489.0px; height: 441.75px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
@@ -4322,7 +4381,7 @@ within a 150x90x12 UA section resulting from ashear force of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_v_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id61">
+<div class="figure align-center" id="id63">
 <a class="reference internal image-reference" href="../_images/vector_v_zxy.png"><img alt="../_images/vector_v_zxy.png" src="../_images/vector_v_zxy.png" style="width: 467.25px; height: 410.25px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
@@ -4361,7 +4420,7 @@ the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_vx_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id62">
+<div class="figure align-center" id="id64">
 <a class="reference internal image-reference" href="../_images/vector_vx_zxy.png"><img alt="../_images/vector_vx_zxy.png" src="../_images/vector_vx_zxy.png" style="width: 506.25px; height: 432.0px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
@@ -4400,7 +4459,7 @@ the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_vy_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id63">
+<div class="figure align-center" id="id65">
 <a class="reference internal image-reference" href="../_images/vector_vy_zxy.png"><img alt="../_images/vector_vy_zxy.png" src="../_images/vector_vy_zxy.png" style="width: 434.25px; height: 408.0px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>
@@ -4438,7 +4497,7 @@ and a shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id64">
+<div class="figure align-center" id="id66">
 <a class="reference internal image-reference" href="../_images/vector_zxy.png"><img alt="../_images/vector_zxy.png" src="../_images/vector_zxy.png" style="width: 453.75px; height: 444.75px;" /></a>
 <p class="caption"><span class="caption-text">Vector plot of the shear stress.</span></p>
 </div>

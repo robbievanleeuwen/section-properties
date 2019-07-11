@@ -99,6 +99,11 @@ CruciformSection Class
   ..  autoclass:: sectionproperties.pre.sections.CruciformSection
       :show-inheritance:
 
+PolygonSection Class
+""""""""""""""""""""
+  ..  autoclass:: sectionproperties.pre.sections.PolygonSection
+      :show-inheritance:
+
 MergedSection Class
 """""""""""""""""""
   ..  autoclass:: sectionproperties.pre.sections.MergedSection
