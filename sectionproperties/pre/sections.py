@@ -2199,7 +2199,7 @@ class PolygonSection(Geometry):
 
         if n_sides < 3:
             msg = 'n_sides required to be greater'
-            msg = + ' than 3 for PolygonSection class'
+            msg += ' than 3 for PolygonSection class'
             raise Exception(msg)
 
         # initial rotation
