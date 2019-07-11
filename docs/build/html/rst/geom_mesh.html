@@ -93,6 +93,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#rectangular-section">Rectangular Section</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#circular-section">Circular Section</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#circular-hollow-section-chs">Circular Hollow Section (CHS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#elliptical-section">Elliptical Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#elliptical-hollow-section-ehs">Elliptical Hollow Section (EHS)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#rectangular-hollow-section-rhs">Rectangular Hollow Section (RHS)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#i-section">I-Section</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#monosymmetric-i-section">Monosymmetric I-Section</a></li>
@@ -360,6 +362,94 @@ triangular area of 1.0:</p>
 </dd></dl>
 
 </div>
+<div class="section" id="elliptical-section">
+<h3>Elliptical Section<a class="headerlink" href="#elliptical-section" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">EllipticalSection</code><span class="sig-paren">(</span><em>d_y, d_x, n, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#EllipticalSection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
+<p>Constructs a solid ellipse centered at the origin <em>(0, 0)</em> with vertical
+diameter <em>d_y</em> and horizontal diameter <em>d_x</em>, using <em>n</em> points to construct
+the ellipse.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>d_y</strong> (<em>float</em>) – Diameter of the ellipse in the y-dimension</li>
+<li><strong>d_x</strong> (<em>float</em>) – Diameter of the ellipse in the x-dimension</li>
+<li><strong>n</strong> (<em>int</em>) – Number of points discretising the ellipse</li>
+<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates an elliptical cross-section with a vertical
+diameter of 25 and horizontal diameter of 50, with 40 points, and generates
+a mesh with a maximum triangular area of 1.0:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">EllipticalSection</span><span class="p">(</span><span class="n">d_y</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">d_x</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id7">
+<a class="reference internal image-reference" href="../_images/ellipse_geometry.png"><img alt="../_images/ellipse_geometry.png" src="../_images/ellipse_geometry.png" style="width: 707.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Elliptical section geometry.</span></p>
+</div>
+<div class="figure align-center" id="id8">
+<a class="reference internal image-reference" href="../_images/ellipse_mesh.png"><img alt="../_images/ellipse_mesh.png" src="../_images/ellipse_mesh.png" style="width: 402.0px; height: 218.25px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="elliptical-hollow-section-ehs">
+<h3>Elliptical Hollow Section (EHS)<a class="headerlink" href="#elliptical-hollow-section-ehs" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">sectionproperties.pre.sections.</code><code class="descname">Ehs</code><span class="sig-paren">(</span><em>d_y, d_x, t, n, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Ehs"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
+<p>Constructs an elliptical hollow section centered at the origin <em>(0, 0)</em>,
+with outer vertical diameter <em>d_y</em>, outer horizontal diameter <em>d_x</em>, and
+thickness <em>t</em>, using <em>n</em> points to construct the inner and outer ellipses.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>d_y</strong> (<em>float</em>) – Diameter of the ellipse in the y-dimension</li>
+<li><strong>d_x</strong> (<em>float</em>) – Diameter of the ellipse in the x-dimension</li>
+<li><strong>t</strong> (<em>float</em>) – Thickness of the EHS</li>
+<li><strong>n</strong> (<em>int</em>) – Number of points discretising the inner and outer ellipses</li>
+<li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following example creates a EHS discretised with 30 points, with a
+outer vertical diameter of 25, outer horizontal diameter of 50, and
+thickness of 2.0, and generates a mesh with a maximum triangular area of
+0.5:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">Ehs</span><span class="p">(</span><span class="n">d_y</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">d_x</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id9">
+<a class="reference internal image-reference" href="../_images/ehs_geometry.png"><img alt="../_images/ehs_geometry.png" src="../_images/ehs_geometry.png" style="width: 706.5px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">EHS geometry.</span></p>
+</div>
+<div class="figure align-center" id="id10">
+<a class="reference internal image-reference" href="../_images/ehs_mesh.png"><img alt="../_images/ehs_mesh.png" src="../_images/ehs_mesh.png" style="width: 402.0px; height: 218.25px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
+</div>
+</dd></dl>
+
+</div>
 <div class="section" id="rectangular-hollow-section-rhs">
 <h3>Rectangular Hollow Section (RHS)<a class="headerlink" href="#rectangular-hollow-section-rhs" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
@@ -395,11 +485,11 @@ of 2.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id7">
+<div class="figure align-center" id="id11">
 <a class="reference internal image-reference" href="../_images/rhs_geometry.png"><img alt="../_images/rhs_geometry.png" src="../_images/rhs_geometry.png" style="width: 288.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">RHS geometry.</span></p>
 </div>
-<div class="figure align-center" id="id8">
+<div class="figure align-center" id="id12">
 <a class="reference internal image-reference" href="../_images/rhs_mesh.png"><img alt="../_images/rhs_mesh.png" src="../_images/rhs_mesh.png" style="width: 165.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -443,11 +533,11 @@ with a maximum triangular area of 3.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id9">
+<div class="figure align-center" id="id13">
 <a class="reference internal image-reference" href="../_images/isection_geometry.png"><img alt="../_images/isection_geometry.png" src="../_images/isection_geometry.png" style="width: 332.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">I-section geometry.</span></p>
 </div>
-<div class="figure align-center" id="id10">
+<div class="figure align-center" id="id14">
 <a class="reference internal image-reference" href="../_images/isection_mesh.png"><img alt="../_images/isection_mesh.png" src="../_images/isection_mesh.png" style="width: 209.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -493,16 +583,15 @@ flange width of 130, a bottom flange thickness of 8, a web thickness of
 radius. A mesh is generated with a maximum triangular area of 3.0:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MonoISection</span><span class="p">(</span>
-    <span class="n">d</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">b_t</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b_b</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">t_ft</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">t_fb</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">MonoISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">b_t</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b_b</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">t_ft</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">t_fb</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id11">
+<div class="figure align-center" id="id15">
 <a class="reference internal image-reference" href="../_images/monoisection_geometry.png"><img alt="../_images/monoisection_geometry.png" src="../_images/monoisection_geometry.png" style="width: 330.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">I-section geometry.</span></p>
 </div>
-<div class="figure align-center" id="id12">
+<div class="figure align-center" id="id16">
 <a class="reference internal image-reference" href="../_images/monoisection_mesh.png"><img alt="../_images/monoisection_mesh.png" src="../_images/monoisection_mesh.png" style="width: 207.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -554,11 +643,11 @@ maximum triangular area of 20.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">20.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id13">
+<div class="figure align-center" id="id17">
 <a class="reference internal image-reference" href="../_images/taperedisection_geometry.png"><img alt="../_images/taperedisection_geometry.png" src="../_images/taperedisection_geometry.png" style="width: 245.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">I-section geometry.</span></p>
 </div>
-<div class="figure align-center" id="id14">
+<div class="figure align-center" id="id18">
 <a class="reference internal image-reference" href="../_images/taperedisection_mesh.png"><img alt="../_images/taperedisection_mesh.png" src="../_images/taperedisection_mesh.png" style="width: 133.5px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -603,11 +692,11 @@ with a maximum triangular area of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id15">
+<div class="figure align-center" id="id19">
 <a class="reference internal image-reference" href="../_images/pfc_geometry.png"><img alt="../_images/pfc_geometry.png" src="../_images/pfc_geometry.png" style="width: 250.5px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">PFC geometry.</span></p>
 </div>
-<div class="figure align-center" id="id16">
+<div class="figure align-center" id="id20">
 <a class="reference internal image-reference" href="../_images/pfc_mesh.png"><img alt="../_images/pfc_mesh.png" src="../_images/pfc_mesh.png" style="width: 138.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -660,11 +749,11 @@ maximum triangular area of 0.02:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.02</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id17">
+<div class="figure align-center" id="id21">
 <a class="reference internal image-reference" href="../_images/taperedchannel_geometry.png"><img alt="../_images/taperedchannel_geometry.png" src="../_images/taperedchannel_geometry.png" style="width: 249.0px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">I-section geometry.</span></p>
 </div>
-<div class="figure align-center" id="id18">
+<div class="figure align-center" id="id22">
 <a class="reference internal image-reference" href="../_images/taperedchannel_mesh.png"><img alt="../_images/taperedchannel_mesh.png" src="../_images/taperedchannel_mesh.png" style="width: 129.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -709,11 +798,11 @@ with a maximum triangular area of 3.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id19">
+<div class="figure align-center" id="id23">
 <a class="reference internal image-reference" href="../_images/tee_geometry.png"><img alt="../_images/tee_geometry.png" src="../_images/tee_geometry.png" style="width: 288.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Tee section geometry.</span></p>
 </div>
-<div class="figure align-center" id="id20">
+<div class="figure align-center" id="id24">
 <a class="reference internal image-reference" href="../_images/tee_mesh.png"><img alt="../_images/tee_mesh.png" src="../_images/tee_mesh.png" style="width: 167.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -758,7 +847,7 @@ triangular area of 2.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id21">
+<div class="figure align-center" id="id25">
 <a class="reference internal image-reference" href="../_images/angle_geometry.png"><img alt="../_images/angle_geometry.png" src="../_images/angle_geometry.png" style="width: 335.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Angle section geometry.</span></p>
 </div>
@@ -806,7 +895,7 @@ triangular area of 0.25:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id22">
+<div class="figure align-center" id="id26">
 <a class="reference internal image-reference" href="../_images/cee_geometry.png"><img alt="../_images/cee_geometry.png" src="../_images/cee_geometry.png" style="width: 261.0px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Cee section geometry.</span></p>
 </div>
@@ -856,7 +945,7 @@ A mesh is generated with a maximum triangular area of 0.15:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.15</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id23">
+<div class="figure align-center" id="id27">
 <a class="reference internal image-reference" href="../_images/zed_geometry.png"><img alt="../_images/zed_geometry.png" src="../_images/zed_geometry.png" style="width: 383.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Zed section geometry.</span></p>
 </div>
@@ -903,7 +992,7 @@ of 5.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id24">
+<div class="figure align-center" id="id28">
 <a class="reference internal image-reference" href="../_images/cruciform_geometry.png"><img alt="../_images/cruciform_geometry.png" src="../_images/cruciform_geometry.png" style="width: 353.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Cruciform section geometry.</span></p>
 </div>
@@ -961,11 +1050,11 @@ generated with a maximum triangular area of 2.0:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id25">
+<div class="figure align-center" id="id29">
 <a class="reference internal image-reference" href="../_images/custom_geometry.png"><img alt="../_images/custom_geometry.png" src="../_images/custom_geometry.png" style="width: 699.0px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Custom section geometry.</span></p>
 </div>
-<div class="figure align-center" id="id26">
+<div class="figure align-center" id="id30">
 <a class="reference internal image-reference" href="../_images/custom_mesh.png"><img alt="../_images/custom_mesh.png" src="../_images/custom_mesh.png" style="width: 393.75px; height: 218.25px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
@@ -1020,7 +1109,7 @@ maximum triangle size of 5.0 for the I-section and 2.5 for the RHS:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id27">
+<div class="figure align-center" id="id31">
 <a class="reference internal image-reference" href="../_images/merged_geometry.png"><img alt="../_images/merged_geometry.png" src="../_images/merged_geometry.png" style="width: 287.25px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Merged section geometry.</span></p>
 </div>
@@ -1092,7 +1181,7 @@ diameter of 48 and thickness of 3.2, and plots the geometry:</p>
 <span class="n">geometry</span><span class="o">.</span><span class="n">plot_geometry</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id28">
+<div class="figure align-center" id="id32">
 <a class="reference internal image-reference" href="../_images/chs_geometry1.png"><img alt="../_images/chs_geometry1.png" src="../_images/chs_geometry1.png" style="width: 429.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Geometry generated by the above example.</span></p>
 </div>
@@ -1133,7 +1222,7 @@ area of 2.5:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id29">
+<div class="figure align-center" id="id33">
 <a class="reference internal image-reference" href="../_images/circle_mesh.png"><img alt="../_images/circle_mesh.png" src="../_images/circle_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>

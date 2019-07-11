@@ -761,6 +761,142 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="EllipticalSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.EllipticalSection">[docs]</a><span class="k">class</span> <span class="nc">EllipticalSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Constructs a solid ellipse centered at the origin *(0, 0)* with vertical</span>
+<span class="sd">    diameter *d_y* and horizontal diameter *d_x*, using *n* points to construct</span>
+<span class="sd">    the ellipse.</span>
+
+<span class="sd">    :param float d_y: Diameter of the ellipse in the y-dimension</span>
+<span class="sd">    :param float d_x: Diameter of the ellipse in the x-dimension</span>
+<span class="sd">    :param int n: Number of points discretising the ellipse</span>
+<span class="sd">    :param shift: Vector that shifts the cross-section by *(x, y)*</span>
+<span class="sd">    :type shift: list[float, float]</span>
+
+<span class="sd">    The following example creates an elliptical cross-section with a vertical</span>
+<span class="sd">    diameter of 25 and horizontal diameter of 50, with 40 points, and generates</span>
+<span class="sd">    a mesh with a maximum triangular area of 1.0::</span>
+
+<span class="sd">        import sectionproperties.pre.sections as sections</span>
+
+<span class="sd">        geometry = sections.EllipticalSection(d_y=25, d_x=50, n=40)</span>
+<span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[1.0])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/ellipse_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Elliptical section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/ellipse_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_y</span><span class="p">,</span> <span class="n">d_x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Inits the EllipticalSection class.&quot;&quot;&quot;</span>
+
+        <span class="c1"># assign control point centred at zero</span>
+        <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">control_points</span><span class="p">,</span> <span class="n">shift</span><span class="p">)</span>
+
+        <span class="c1"># loop through each point on the ellipse</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="c1"># determine polar angle</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">n</span>
+
+            <span class="c1"># calculate location of the point</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">d_x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">d_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+            <span class="c1"># append the current point to the points list</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+
+            <span class="c1"># if we are not at the last point</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="c1"># if we are at the last point, complete the ellipse</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Ehs"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.Ehs">[docs]</a><span class="k">class</span> <span class="nc">Ehs</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Constructs an elliptical hollow section centered at the origin *(0, 0)*,</span>
+<span class="sd">    with outer vertical diameter *d_y*, outer horizontal diameter *d_x*, and</span>
+<span class="sd">    thickness *t*, using *n* points to construct the inner and outer ellipses.</span>
+
+<span class="sd">    :param float d_y: Diameter of the ellipse in the y-dimension</span>
+<span class="sd">    :param float d_x: Diameter of the ellipse in the x-dimension</span>
+<span class="sd">    :param float t: Thickness of the EHS</span>
+<span class="sd">    :param int n: Number of points discretising the inner and outer ellipses</span>
+<span class="sd">    :param shift: Vector that shifts the cross-section by *(x, y)*</span>
+<span class="sd">    :type shift: list[float, float]</span>
+
+<span class="sd">    The following example creates a EHS discretised with 30 points, with a</span>
+<span class="sd">    outer vertical diameter of 25, outer horizontal diameter of 50, and</span>
+<span class="sd">    thickness of 2.0, and generates a mesh with a maximum triangular area of</span>
+<span class="sd">    0.5::</span>
+
+<span class="sd">        import sectionproperties.pre.sections as sections</span>
+
+<span class="sd">        geometry = sections.Ehs(d_y=25, d_x=50, t=2.0, n=64)</span>
+<span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[0.5])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/ehs_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        EHS geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/ehs_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_y</span><span class="p">,</span> <span class="n">d_x</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Inits the Ehs class.&quot;&quot;&quot;</span>
+
+        <span class="c1"># assign control point</span>
+        <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[(</span><span class="n">d_x</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">),</span> <span class="mi">0</span><span class="p">]]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">control_points</span><span class="p">,</span> <span class="n">shift</span><span class="p">)</span>
+
+        <span class="c1"># specify a hole in the centre of the EHS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">holes</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+
+        <span class="c1"># loop through each point of the EHS</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="c1"># determine polar angle</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">n</span>
+
+            <span class="c1"># calculate location of outer and inner points</span>
+            <span class="n">x_outer</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">d_x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="n">y_outer</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">d_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="n">x_inner</span> <span class="o">=</span> <span class="p">((</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">d_x</span><span class="p">)</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="n">y_inner</span> <span class="o">=</span> <span class="p">((</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">d_y</span><span class="p">)</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+            <span class="c1"># append the current points to the points list</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x_outer</span><span class="p">,</span> <span class="n">y_outer</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x_inner</span><span class="p">,</span> <span class="n">y_inner</span><span class="p">])</span>
+
+            <span class="c1"># if we are not at the last point</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="p">])</span>
+            <span class="c1"># if we are at the last point, complete the circle</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
+
+
 <div class="viewcode-block" id="Rhs"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.Rhs">[docs]</a><span class="k">class</span> <span class="nc">Rhs</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constructs a rectangular hollow section centered at *(b/2, d/2)*, with</span>
 <span class="sd">    depth *d*, width *b*, thickness *t* and outer radius *r_out*, using *n_r*</span>
@@ -1029,8 +1165,7 @@
 
 <span class="sd">        import sectionproperties.pre.sections as sections</span>
 
-<span class="sd">        geometry = sections.MonoISection(</span>
-<span class="sd">            d=200, b_t=50, b_b=130, t_ft=12, t_fb=8, t_w=6, r=8, n_r=16)</span>
+<span class="sd">        geometry = sections.MonoISection(d=200, b_t=50, b_b=130, t_ft=12, t_fb=8, t_w=6, r=8, n_r=16)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[3.0])</span>
 
 <span class="sd">    ..  figure:: ../images/sections/monoisection_geometry.png</span>

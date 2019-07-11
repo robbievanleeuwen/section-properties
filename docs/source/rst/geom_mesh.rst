@@ -51,6 +51,18 @@ Circular Hollow Section (CHS)
     :show-inheritance:
     :noindex:
 
+Elliptical Section
+^^^^^^^^^^^^^^^^^^
+..  autoclass:: sectionproperties.pre.sections.EllipticalSection
+    :show-inheritance:
+    :noindex:
+
+Elliptical Hollow Section (EHS)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..  autoclass:: sectionproperties.pre.sections.Ehs
+    :show-inheritance:
+    :noindex:
+
 Rectangular Hollow Section (RHS)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ..  autoclass:: sectionproperties.pre.sections.Rhs

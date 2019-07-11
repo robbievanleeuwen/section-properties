@@ -30,12 +30,22 @@ CircularSection Class
     :show-inheritance:
 
 Chs Class
-""""""""""""""""
+"""""""""
 ..  autoclass:: sectionproperties.pre.sections.Chs
     :show-inheritance:
 
+EllipticalSection Class
+"""""""""""""""""""""""
+..  autoclass:: sectionproperties.pre.sections.EllipticalSection
+    :show-inheritance:
+
+Ehs Class
+"""""""""
+..  autoclass:: sectionproperties.pre.sections.Ehs
+    :show-inheritance:
+
 Rhs Class
-""""""""""""""""
+"""""""""
 ..  autoclass:: sectionproperties.pre.sections.Rhs
     :show-inheritance:
 
