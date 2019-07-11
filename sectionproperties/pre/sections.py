@@ -632,6 +632,10 @@ class EllipticalSection(Geometry):
         Elliptical section geometry.
 
     ..  figure:: ../images/sections/ellipse_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
     """
 
     def __init__(self, d_y, d_x, n, shift=[0, 0]):
@@ -729,9 +733,12 @@ class Ehs(Geometry):
             if i != n - 1:
                 self.facets.append([i * 2, i * 2 + 2])
                 self.facets.append([i * 2 + 1, i * 2 + 3])
-
             # if we are at the last point, complete the circle
-== == == =
+            else:
+                self.facets.append([i * 2, 0])
+                self.facets.append([i * 2 + 1, 1])
+
+        self.shift_section()
 
 
 class PolygonSection(Geometry):
@@ -739,7 +746,6 @@ class PolygonSection(Geometry):
     a pitch circle diameter of bounding polygon *d*, thickness *t*, number of sides
     *n_sides* and inner radius *r_in*, using *n_r* points to construct the inner
     and outer radii (if radii is specified).
-
     :param float d: pitch circle diameter of the outer bounding polygon
     (i.e. diameter of circle that passes through all vertices of the outer polygon)
     :param float t: Thickness of the polygon section wall
@@ -752,27 +758,20 @@ class PolygonSection(Geometry):
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
     :raises Exception: number of sides in polygon must be greater than or equal to 3
-
     The following example creates an Octagonal section (8 sides) with a diameter
     of 200, a thickness of 6 and an inner radius of 20, using 12 points to
     discretise the inner and outer radii. A mesh is generated with a maximum
     triangular area of 5::
-
         import sectionproperties.pre.sections as sections
-
         geometry = sections.PolygonSection(d=200, t=6, n_sides=8, r_in=20, n_r=12)
         mesh = geometry.create_mesh(mesh_sizes=[5])
-
     ..  figure:: ../images/sections/polygon_geometry.png
         :align: center
         :scale: 75 %
-
         Octagonal section geometry.
-
     ..  figure:: ../images/sections/polygon_mesh.png
         :align: center
         :scale: 75 %
-
         Mesh generated from the above geometry.
     """
 
@@ -869,9 +868,7 @@ class PolygonSection(Geometry):
             if i != num_points - 1:
                 self.facets.append([i * 2, i * 2 + 2])
                 self.facets.append([i * 2 + 1, i * 2 + 3])
-
             # if we are at the last point, complete the loop
->>>>>> > 8000bfd93695f7cd7900431a799ac5c4829c3ba2
             else:
                 self.facets.append([i * 2, 0])
                 self.facets.append([i * 2 + 1, 1])
@@ -881,7 +878,6 @@ class PolygonSection(Geometry):
     def rotate(self, point, angle):
         """
         Rotate a point counterclockwise by a given angle around origin [0, 0]
-
         :param list point: point coordinates to be rotated
         :param float angle: angle to rotate point coordinates
         :return: coordinates of rotated point
