@@ -2155,64 +2155,76 @@ class CruciformSection(Geometry):
         self.points.append([t * 0.5, -d * 0.5])
 
         # construct the bottom right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+        if r == 0:
+            self.points.append([0.5 * t, -0.5 * t])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
 
-            # calculate the locations of the radius points
-            x = 0.5 * t + r + r * np.cos(theta)
-            y = -0.5 * t - r + r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = 0.5 * t + r + r * np.cos(theta)
+                y = -0.5 * t - r + r * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # add the next two points
         self.points.append([0.5 * b, -t * 0.5])
         self.points.append([0.5 * b, t * 0.5])
 
         # construct the top right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 1.5 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+        if r == 0:
+            self.points.append([0.5 * t, 0.5 * t])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = 1.5 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
 
-            # calculate the locations of the radius points
-            x = 0.5 * t + r + r * np.cos(theta)
-            y = 0.5 * t + r + r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = 0.5 * t + r + r * np.cos(theta)
+                y = 0.5 * t + r + r * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # add the next two points
         self.points.append([t * 0.5, 0.5 * d])
         self.points.append([-t * 0.5, 0.5 * d])
 
         # construct the top left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = -i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+        if r == 0:
+            self.points.append([-0.5 * t, 0.5 * t])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = -i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
 
-            # calculate the locations of the radius points
-            x = -0.5 * t - r + r * np.cos(theta)
-            y = 0.5 * t + r + r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = -0.5 * t - r + r * np.cos(theta)
+                y = 0.5 * t + r + r * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # add the next two points
         self.points.append([-0.5 * b, t * 0.5])
         self.points.append([-0.5 * b, -t * 0.5])
 
         # construct the bottom left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi * 0.5 - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+        if r == 0:
+            self.points.append([-0.5 * t, -0.5 * t])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = np.pi * 0.5 - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
 
-            # calculate the locations of the radius points
-            x = -0.5 * t - r + r * np.cos(theta)
-            y = -0.5 * t - r + r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = -0.5 * t - r + r * np.cos(theta)
+                y = -0.5 * t - r + r * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # build the facet list
         for i in range(len(self.points)):
