@@ -1724,40 +1724,50 @@ class AngleSection(Geometry):
         self.points.append([b, 0])
 
         # construct the bottom toe radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+        if r_t == 0:
+            self.points.append([b, t])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
 
-            # calculate the locations of the radius points
-            x = b - r_t + r_t * np.cos(theta)
-            y = t - r_t + r_t * np.sin(theta)
+                # calculate the locations of the radius points
+                x = b - r_t + r_t * np.cos(theta)
+                y = t - r_t + r_t * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # construct the root radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 1.0 / 3)
+        if r_r == 0:
+            self.points.append([t, t])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / max(
+                    1, n_r - 1) * 1.0 / 3)
 
-            # calculate the locations of the radius points
-            x = t + r_r + r_r * np.cos(theta)
-            y = t + r_r + r_r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = t + r_r + r_r * np.cos(theta)
+                y = t + r_r + r_r * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # construct the top toe radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+        if r_t == 0:
+            self.points.append([t, d])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
 
-            # calculate the locations of the radius points
-            x = t - r_t + r_t * np.cos(theta)
-            y = d - r_t + r_t * np.sin(theta)
+                # calculate the locations of the radius points
+                x = t - r_t + r_t * np.cos(theta)
+                y = d - r_t + r_t * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # add the next point
         self.points.append([0, d])
