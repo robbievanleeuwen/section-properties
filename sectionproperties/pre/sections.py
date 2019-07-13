@@ -744,7 +744,8 @@ class Ehs(Geometry):
 class Rhs(Geometry):
     """Constructs a rectangular hollow section centered at *(b/2, d/2)*, with
     depth *d*, width *b*, thickness *t* and outer radius *r_out*, using *n_r*
-    points to construct the inner and outer radii.
+    points to construct the inner and outer radii. If the outer radius is less
+    than the thickness of the RHS, the inner radius is set to zero.
 
     :param float d: Depth of the RHS
     :param float b: Width of the RHS
@@ -788,80 +789,67 @@ class Rhs(Geometry):
         # specify a hole in the centre of the RHS
         self.holes = [[b * 0.5, d * 0.5]]
 
-        r_in = r_out - t  # calculate internal radius
+        # calculate internal radius
+        r_in = max(r_out - t, 0)
 
-        # construct the bottom left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
+        # construct the outer radius points
+        self.draw_radius([r_out, r_out], r_out, np.pi, n_r)
+        self.draw_radius([b - r_out, r_out], r_out, 1.5 * np.pi, n_r)
+        self.draw_radius([b - r_out, d - r_out], r_out, 0, n_r)
+        self.draw_radius([r_out, d - r_out], r_out, 0.5 * np.pi, n_r)
 
-            # calculate location of inner and outer points
-            x_outer = r_out + r_out * np.cos(theta)
-            y_outer = r_out + r_out * np.sin(theta)
-            x_inner = r_out + r_in * np.cos(theta)
-            y_inner = r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
-            self.points.append([x_inner, y_inner])
-
-        # construct the bottom right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 3.0 / 2 * np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_outer = b - r_out + r_out * np.cos(theta)
-            y_outer = r_out + r_out * np.sin(theta)
-            x_inner = b - r_out + r_in * np.cos(theta)
-            y_inner = r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
-            self.points.append([x_inner, y_inner])
-
-        # construct the top right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_outer = b - r_out + r_out * np.cos(theta)
-            y_outer = d - r_out + r_out * np.sin(theta)
-            x_inner = b - r_out + r_in * np.cos(theta)
-            y_inner = d - r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
-            self.points.append([x_inner, y_inner])
-
-        # construct the top left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi * 0.5 + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_outer = r_out + r_out * np.cos(theta)
-            y_outer = d - r_out + r_out * np.sin(theta)
-            x_inner = r_out + r_in * np.cos(theta)
-            y_inner = d - r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
-            self.points.append([x_inner, y_inner])
-
-        # build the facet list
-        for i in range(int(len(self.points) / 2)):
+        # construct the outer radius facet list
+        n_outer = len(self.points)
+        for i in range(n_outer):
             # if we are not at the last point
-            if i != int(len(self.points) / 2 - 1):
-                self.facets.append([i * 2, i * 2 + 2])
-                self.facets.append([i * 2 + 1, i * 2 + 3])
+            if i != n_outer - 1:
+                self.facets.append([i, i + 1])
             # if we are at the last point, complete the loop
             else:
-                self.facets.append([i * 2, 0])
-                self.facets.append([i * 2 + 1, 1])
+                self.facets.append([i, 0])
+
+        # construct the inner radius points
+        self.draw_radius([t + r_in, t + r_in], r_in, np.pi, n_r)
+        self.draw_radius([b - t - r_in, t + r_in], r_in, 1.5 * np.pi, n_r)
+        self.draw_radius([b - t - r_in, d - t - r_in], r_in, 0, n_r)
+        self.draw_radius([t + r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r)
+
+        # construct the inner radius facet list
+        n_inner = len(self.points) - n_outer
+        for i in range(n_inner):
+            # if we are not at the last point
+            if i != n_inner - 1:
+                self.facets.append([i + n_outer, i + n_outer + 1])
+            # if we are at the last point, complete the loop
+            else:
+                self.facets.append([i + n_outer, n_outer])
 
         self.shift_section()
+
+    def draw_radius(self, pt, r, theta, n):
+        """Adds a radius of points to the points list - centered at point *pt*,
+        with radius *r*, starting at angle *theta*, with *n* points. If r = 0,
+        adds pt only.
+
+        :param pt: Centre of radius *(x,y)*
+        :type pt: list[float, float]
+        :param float r: Radius
+        :param float theta: Initial angle
+        :param int n: Number of points
+        """
+
+        if r == 0:
+            self.points.append(pt)
+            return
+
+        # calculate radius of points
+        for i in range(n):
+            # determine angle
+            t = theta + i * 1.0 / max(1, n - 1) * np.pi * 0.5
+
+            x = pt[0] + r * np.cos(t)
+            y = pt[1] + r * np.sin(t)
+            self.points.append([x, y])
 
 
 class ISection(Geometry):
