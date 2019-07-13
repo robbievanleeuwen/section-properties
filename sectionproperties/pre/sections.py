@@ -903,28 +903,35 @@ class ISection(Geometry):
         self.points.append([b, t_f])
 
         # construct the bottom right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 1.0 / 3)
+        if r == 0:
+            self.points.append([b * 0.5 + t_w * 0.5, t_f])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = 3.0 / 2 * np.pi * (
+                    1 - i * 1.0 / max(1, n_r - 1) * 1.0 / 3)
 
-            # calculate the locations of the radius points
-            x = b * 0.5 + t_w * 0.5 + r + r * np.cos(theta)
-            y = t_f + r + r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = b * 0.5 + t_w * 0.5 + r + r * np.cos(theta)
+                y = t_f + r + r * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # construct the top right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 0.5)
+        if r == 0:
+            self.points.append([b * 0.5 + t_w * 0.5, d - t_f])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 0.5)
 
-            # calculate the locations of the radius points
-            x = b * 0.5 + t_w * 0.5 + r + r * np.cos(theta)
-            y = d - t_f - r + r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = b * 0.5 + t_w * 0.5 + r + r * np.cos(theta)
+                y = d - t_f - r + r * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # add the next four points
         self.points.append([b, d - t_f])
@@ -933,28 +940,34 @@ class ISection(Geometry):
         self.points.append([0, d - t_f])
 
         # construct the top left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi * 0.5 * (1 - i * 1.0 / max(1, n_r - 1))
+        if r == 0:
+            self.points.append([b * 0.5 - t_w * 0.5, d - t_f])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = np.pi * 0.5 * (1 - i * 1.0 / max(1, n_r - 1))
 
-            # calculate the locations of the radius points
-            x = b * 0.5 - t_w * 0.5 - r + r * np.cos(theta)
-            y = d - t_f - r + r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = b * 0.5 - t_w * 0.5 - r + r * np.cos(theta)
+                y = d - t_f - r + r * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # construct the bottom left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = -np.pi * i * 1.0 / max(1, n_r - 1) * 0.5
+        if r == 0:
+            self.points.append([b * 0.5 - t_w * 0.5, t_f])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = -np.pi * i * 1.0 / max(1, n_r - 1) * 0.5
 
-            # calculate the locations of the radius points
-            x = b * 0.5 - t_w * 0.5 - r + r * np.cos(theta)
-            y = t_f + r + r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = b * 0.5 - t_w * 0.5 - r + r * np.cos(theta)
+                y = t_f + r + r * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # add the last point
         self.points.append([0, t_f])
