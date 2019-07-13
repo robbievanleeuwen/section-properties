@@ -1191,110 +1191,136 @@ class TaperedFlangeISection(Geometry):
         self.points.append([b, 0])
 
         # construct the bottom right flange toe radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
+        if r_f == 0:
+            self.points.append([b, y_t])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
 
-            # calculate the locations of the radius points
-            x = b - r_f + r_f * np.cos(theta)
-            y = y_t + r_f * np.sin(theta)
+                # calculate the locations of the radius points
+                x = b - r_f + r_f * np.cos(theta)
+                y = y_t + r_f * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # construct the bottom right root radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = (3.0 / 2 * np.pi - alpha_rad) - (
-                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
+        if r_r == 0:
+            self.points.append([b * 0.5 + t_w * 0.5, t_f + y2])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = (3.0 / 2 * np.pi - alpha_rad) - (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
 
-            # calculate the locations of the radius points
-            x = b * 0.5 + t_w * 0.5 + r_r + r_r * np.cos(theta)
-            y = t_f + y2 + r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = b * 0.5 + t_w * 0.5 + r_r + r_r * np.cos(theta)
+                y = t_f + y2 + r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # construct the top right root radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi - i * 1.0 / max(1, n_r - 1) * (
-                np.pi * 0.5 - alpha_rad)
+        if r_r == 0:
+            self.points.append([b * 0.5 + t_w * 0.5, d - t_f - y2])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = np.pi - i * 1.0 / max(1, n_r - 1) * (
+                    np.pi * 0.5 - alpha_rad)
 
-            # calculate the locations of the radius points
-            x = b * 0.5 + t_w * 0.5 + r_r + r_r * np.cos(theta)
-            y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = b * 0.5 + t_w * 0.5 + r_r + r_r * np.cos(theta)
+                y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(
+                    theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # construct the top right flange toe radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = (3.0 * np.pi / 2 + alpha_rad) + i * 1.0 / max(
-                1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
+        if r_f == 0:
+            self.points.append([b, d - y_t])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = (3.0 * np.pi / 2 + alpha_rad) + i * 1.0 / max(
+                    1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
 
-            # calculate the locations of the radius points
-            x = b - r_f + r_f * np.cos(theta)
-            y = d - y_t + r_f * np.sin(theta)
+                # calculate the locations of the radius points
+                x = b - r_f + r_f * np.cos(theta)
+                y = d - y_t + r_f * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # add the next two points
         self.points.append([b, d])
         self.points.append([0, d])
 
         # construct the top left flange toe radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi + (
-                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
+        if r_f == 0:
+            self.points.append([0, d - y_t])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = np.pi + (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
 
-            # calculate the locations of the radius points
-            x = r_f + r_f * np.cos(theta)
-            y = d - y_t + r_f * np.sin(theta)
+                # calculate the locations of the radius points
+                x = r_f + r_f * np.cos(theta)
+                y = d - y_t + r_f * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # construct the top left root radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = (np.pi * 0.5 - alpha_rad) - (
-                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
+        if r_r == 0:
+            self.points.append([b * 0.5 - t_w * 0.5, d - t_f - y2])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = (np.pi * 0.5 - alpha_rad) - (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
 
-            # calculate the locations of the radius points
-            x = b * 0.5 - t_w * 0.5 - r_r + r_r * np.cos(theta)
-            y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = b * 0.5 - t_w * 0.5 - r_r + r_r * np.cos(theta)
+                y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(
+                    theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # construct the bottom left root radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = -i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
+        if r_r == 0:
+            self.points.append([b * 0.5 - t_w * 0.5, t_f + y2])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = -i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
 
-            # calculate the locations of the radius points
-            x = b * 0.5 - t_w * 0.5 - r_r + r_r * np.cos(theta)
-            y = t_f + y2 + r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
+                # calculate the locations of the radius points
+                x = b * 0.5 - t_w * 0.5 - r_r + r_r * np.cos(theta)
+                y = t_f + y2 + r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # construct the bottom left flange toe radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = (np.pi * 0.5 + alpha_rad) + (
-                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
+        if r_f == 0:
+            self.points.append([0, y_t])
+        else:
+            for i in range(n_r):
+                # determine polar angle
+                theta = (np.pi * 0.5 + alpha_rad) + (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad))
 
-            # calculate the locations of the radius points
-            x = r_f + r_f * np.cos(theta)
-            y = y_t + r_f * np.sin(theta)
+                # calculate the locations of the radius points
+                x = r_f + r_f * np.cos(theta)
+                y = y_t + r_f * np.sin(theta)
 
-            # append the current points to the points list
-            self.points.append([x, y])
+                # append the current points to the points list
+                self.points.append([x, y])
 
         # build the facet list
         for i in range(len(self.points)):
