@@ -367,9 +367,9 @@ class Geometry:
         return (x_min, x_max, y_min, y_max)
 
     def draw_radius(self, pt, r, theta, n, anti=True):
-        """Adds a radius of points to the points list - centered at point *pt*,
-        with radius *r*, starting at angle *theta*, with *n* points. If r = 0,
-        adds pt only.
+        """Adds a quarter radius of points to the points list - centered at
+        point *pt*, with radius *r*, starting at angle *theta*, with *n*
+        points. If r = 0, adds pt only.
 
         :param pt: Centre of radius *(x,y)*
         :type pt: list[float, float]
@@ -909,35 +909,12 @@ class ISection(Geometry):
         self.points.append([b, t_f])
 
         # construct the bottom right radius
-        if r == 0:
-            self.points.append([b * 0.5 + t_w * 0.5, t_f])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = 3.0 / 2 * np.pi * (
-                    1 - i * 1.0 / max(1, n_r - 1) * 1.0 / 3)
-
-                # calculate the locations of the radius points
-                x = b * 0.5 + t_w * 0.5 + r + r * np.cos(theta)
-                y = t_f + r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [b * 0.5 + t_w * 0.5 + r, t_f + r]
+        self.draw_radius(pt, r, 1.5 * np.pi, n_r, False)
 
         # construct the top right radius
-        if r == 0:
-            self.points.append([b * 0.5 + t_w * 0.5, d - t_f])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 0.5)
-
-                # calculate the locations of the radius points
-                x = b * 0.5 + t_w * 0.5 + r + r * np.cos(theta)
-                y = d - t_f - r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [b * 0.5 + t_w * 0.5 + r, d - t_f - r]
+        self.draw_radius(pt, r, np.pi, n_r, False)
 
         # add the next four points
         self.points.append([b, d - t_f])
@@ -946,34 +923,12 @@ class ISection(Geometry):
         self.points.append([0, d - t_f])
 
         # construct the top left radius
-        if r == 0:
-            self.points.append([b * 0.5 - t_w * 0.5, d - t_f])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = np.pi * 0.5 * (1 - i * 1.0 / max(1, n_r - 1))
-
-                # calculate the locations of the radius points
-                x = b * 0.5 - t_w * 0.5 - r + r * np.cos(theta)
-                y = d - t_f - r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [b * 0.5 - t_w * 0.5 - r, d - t_f - r]
+        self.draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
         # construct the bottom left radius
-        if r == 0:
-            self.points.append([b * 0.5 - t_w * 0.5, t_f])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = -np.pi * i * 1.0 / max(1, n_r - 1) * 0.5
-
-                # calculate the locations of the radius points
-                x = b * 0.5 - t_w * 0.5 - r + r * np.cos(theta)
-                y = t_f + r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [b * 0.5 - t_w * 0.5 - r, t_f + r]
+        self.draw_radius(pt, r, 0, n_r, False)
 
         # add the last point
         self.points.append([0, t_f])
@@ -1049,35 +1004,12 @@ class MonoISection(Geometry):
         self.points.append([x_central + b_b * 0.5, t_fb])
 
         # construct the bottom right radius
-        if r == 0:
-            self.points.append([x_central + t_w * 0.5, t_fb])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = 3.0 / 2 * np.pi * (
-                    1 - i * 1.0 / max(1, n_r - 1) * 1.0 / 3)
-
-                # calculate the locations of the radius points
-                x = x_central + t_w * 0.5 + r + r * np.cos(theta)
-                y = t_fb + r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [x_central + t_w * 0.5 + r, t_fb + r]
+        self.draw_radius(pt, r, 1.5 * np.pi, n_r, False)
 
         # construct the top right radius
-        if r == 0:
-            self.points.append([x_central + t_w * 0.5, d - t_ft])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 0.5)
-
-                # calculate the locations of the radius points
-                x = x_central + t_w * 0.5 + r + r * np.cos(theta)
-                y = d - t_ft - r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [x_central + t_w * 0.5 + r, d - t_ft - r]
+        self.draw_radius(pt, r, np.pi, n_r, False)
 
         # add the next four points
         self.points.append([x_central + b_t * 0.5, d - t_ft])
@@ -1086,34 +1018,12 @@ class MonoISection(Geometry):
         self.points.append([x_central - b_t * 0.5, d - t_ft])
 
         # construct the top left radius
-        if r == 0:
-            self.points.append([x_central - t_w * 0.5, d - t_ft])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = np.pi * 0.5 * (1 - i * 1.0 / max(1, n_r - 1))
-
-                # calculate the locations of the radius points
-                x = x_central - t_w * 0.5 - r + r * np.cos(theta)
-                y = d - t_ft - r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [x_central - t_w * 0.5 - r, d - t_ft - r]
+        self.draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
         # construct the bottom left radius
-        if r == 0:
-            self.points.append([x_central - t_w * 0.5, t_fb])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = -np.pi * i * 1.0 / max(1, n_r - 1) * 0.5
-
-                # calculate the locations of the radius points
-                x = x_central - t_w * 0.5 - r + r * np.cos(theta)
-                y = t_fb + r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [x_central - t_w * 0.5 - r, t_fb + r]
+        self.draw_radius(pt, r, 0, n_r, False)
 
         # add the last point
         self.points.append([x_central - b_b * 0.5, t_fb])
@@ -1391,35 +1301,12 @@ class PfcSection(Geometry):
         self.points.append([b, t_f])
 
         # construct the bottom right radius
-        if r == 0:
-            self.points.append([t_w, t_f])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / max(
-                    1, n_r - 1) * 1.0 / 3)
-
-                # calculate the locations of the radius points
-                x = t_w + r + r * np.cos(theta)
-                y = t_f + r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [t_w + r, t_f + r]
+        self.draw_radius(pt, r, 1.5 * np.pi, n_r, False)
 
         # construct the top right radius
-        if r == 0:
-            self.points.append([t_w, d - t_f])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 0.5)
-
-                # calculate the locations of the radius points
-                x = t_w + r + r * np.cos(theta)
-                y = d - t_f - r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [t_w + r, d - t_f - r]
+        self.draw_radius(pt, r, np.pi, n_r, False)
 
         # add last three points
         self.points.append([b, d - t_f])
@@ -1635,19 +1522,8 @@ class TeeSection(Geometry):
         self.points.append([b * 0.5 + t_w * 0.5, 0])
 
         # construct the top right radius
-        if r == 0:
-            self.points.append([b * 0.5 + t_w * 0.5, d - t_f])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = np.pi * (1 - i * 1.0 / max(1, n_r - 1) * 0.5)
-
-                # calculate the locations of the radius points
-                x = b * 0.5 + t_w * 0.5 + r + r * np.cos(theta)
-                y = d - t_f - r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [b * 0.5 + t_w * 0.5 + r, d - t_f - r]
+        self.draw_radius(pt, r, np.pi, n_r, False)
 
         # add next four points
         self.points.append([b, d - t_f])
@@ -1656,19 +1532,8 @@ class TeeSection(Geometry):
         self.points.append([0, d - t_f])
 
         # construct the top left radius
-        if r == 0:
-            self.points.append([b * 0.5 - t_w * 0.5, d - t_f])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = np.pi * 0.5 * (1 - i * 1.0 / max(1, n_r - 1))
-
-                # calculate the locations of the radius points
-                x = b * 0.5 - t_w * 0.5 - r + r * np.cos(theta)
-                y = d - t_f - r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [b * 0.5 - t_w * 0.5 - r, d - t_f - r]
+        self.draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
         # build the facet list
         for i in range(len(self.points)):
@@ -1730,50 +1595,16 @@ class AngleSection(Geometry):
         self.points.append([b, 0])
 
         # construct the bottom toe radius
-        if r_t == 0:
-            self.points.append([b, t])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-                # calculate the locations of the radius points
-                x = b - r_t + r_t * np.cos(theta)
-                y = t - r_t + r_t * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [b - r_t, t - r_t]
+        self.draw_radius(pt, r_t, 0, n_r)
 
         # construct the root radius
-        if r_r == 0:
-            self.points.append([t, t])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = 3.0 / 2 * np.pi * (1 - i * 1.0 / max(
-                    1, n_r - 1) * 1.0 / 3)
-
-                # calculate the locations of the radius points
-                x = t + r_r + r_r * np.cos(theta)
-                y = t + r_r + r_r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [t + r_r, t + r_r]
+        self.draw_radius(pt, r_r, 1.5 * np.pi, n_r, False)
 
         # construct the top toe radius
-        if r_t == 0:
-            self.points.append([t, d])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-                # calculate the locations of the radius points
-                x = t - r_t + r_t * np.cos(theta)
-                y = d - r_t + r_t * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [t - r_t, d - r_t]
+        self.draw_radius(pt, r_t, 0, n_r)
 
         # add the next point
         self.points.append([0, d])
@@ -2039,76 +1870,32 @@ class CruciformSection(Geometry):
         self.points.append([t * 0.5, -d * 0.5])
 
         # construct the bottom right radius
-        if r == 0:
-            self.points.append([0.5 * t, -0.5 * t])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-                # calculate the locations of the radius points
-                x = 0.5 * t + r + r * np.cos(theta)
-                y = -0.5 * t - r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [0.5 * t + r, -0.5 * t - r]
+        self.draw_radius(pt, r, np.pi, n_r, False)
 
         # add the next two points
         self.points.append([0.5 * b, -t * 0.5])
         self.points.append([0.5 * b, t * 0.5])
 
         # construct the top right radius
-        if r == 0:
-            self.points.append([0.5 * t, 0.5 * t])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = 1.5 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-                # calculate the locations of the radius points
-                x = 0.5 * t + r + r * np.cos(theta)
-                y = 0.5 * t + r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [0.5 * t + r, 0.5 * t + r]
+        self.draw_radius(pt, r, 1.5 * np.pi, n_r, False)
 
         # add the next two points
         self.points.append([t * 0.5, 0.5 * d])
         self.points.append([-t * 0.5, 0.5 * d])
 
         # construct the top left radius
-        if r == 0:
-            self.points.append([-0.5 * t, 0.5 * t])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = -i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-                # calculate the locations of the radius points
-                x = -0.5 * t - r + r * np.cos(theta)
-                y = 0.5 * t + r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [-0.5 * t - r, 0.5 * t + r]
+        self.draw_radius(pt, r, 0, n_r, False)
 
         # add the next two points
         self.points.append([-0.5 * b, t * 0.5])
         self.points.append([-0.5 * b, -t * 0.5])
 
         # construct the bottom left radius
-        if r == 0:
-            self.points.append([-0.5 * t, -0.5 * t])
-        else:
-            for i in range(n_r):
-                # determine polar angle
-                theta = np.pi * 0.5 - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-                # calculate the locations of the radius points
-                x = -0.5 * t - r + r * np.cos(theta)
-                y = -0.5 * t - r + r * np.sin(theta)
-
-                # append the current points to the points list
-                self.points.append([x, y])
+        pt = [-0.5 * t - r, -0.5 * t - r]
+        self.draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
         # build the facet list
         for i in range(len(self.points)):
