@@ -1,6 +1,16 @@
 Change Log:
 ===========
 
+v1.0.5:
+-------
+
+- Added calculation of monosymmetric constants
+- Added tapered flange I-section and channel sections
+- Added solid elliptical and hollow elliptcal sections (BenjaminFraser)
+- Added polygonal section (Agent6-6-6)
+- Handle zero radius for all section classes; handle r_out < t for relevant sections
+- Update Cee and Zed sections to account for short lips
+
 v1.0.4:
 -------
 

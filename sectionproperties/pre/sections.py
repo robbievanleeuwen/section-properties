@@ -376,7 +376,7 @@ class Geometry:
         :param float r: Radius
         :param float theta: Initial angle
         :param int n: Number of points
-        :bool anti: Anticlockwise rotation?
+        :param bool anti: Anticlockwise rotation?
         """
 
         if r == 0:

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python API Documentation &mdash; sectionproperties 1.0.4 documentation</title>
+  <title>Python API Documentation &mdash; sectionproperties 1.0.5 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                1.0.4
+                1.0.5
               </div>
             
           
@@ -399,6 +399,29 @@ area of 2.5:</p>
 <a class="reference internal image-reference" href="../_images/circle_mesh.png"><img alt="../_images/circle_mesh.png" src="../_images/circle_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
 <p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span></p>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sectionproperties.pre.sections.Geometry.draw_radius">
+<code class="descname">draw_radius</code><span class="sig-paren">(</span><em>pt</em>, <em>r</em>, <em>theta</em>, <em>n</em>, <em>anti=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.draw_radius"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.draw_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a quarter radius of points to the points list - centered at
+point <em>pt</em>, with radius <em>r</em>, starting at angle <em>theta</em>, with <em>n</em>
+points. If r = 0, adds pt only.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pt</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Centre of radius <em>(x,y)</em></li>
+<li><strong>r</strong> (<em>float</em>) – Radius</li>
+<li><strong>theta</strong> (<em>float</em>) – Initial angle</li>
+<li><strong>n</strong> (<em>int</em>) – Number of points</li>
+<li><strong>anti</strong> (<em>bool</em>) – Anticlockwise rotation?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -780,7 +803,8 @@ thickness of 2.0, and generates a mesh with a maximum triangular area of
 <dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a rectangular hollow section centered at <em>(b/2, d/2)</em>, with
 depth <em>d</em>, width <em>b</em>, thickness <em>t</em> and outer radius <em>r_out</em>, using <em>n_r</em>
-points to construct the inner and outer radii.</p>
+points to construct the inner and outer radii. If the outer radius is less
+than the thickness of the RHS, the inner radius is set to zero.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1189,12 +1213,14 @@ triangular area of 2.0:</p>
 <dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a Cee section with the bottom left corner at the origin
 <em>(0, 0)</em>, with depth <em>d</em>, width <em>b</em>, lip <em>l</em>, thickness <em>t</em> and outer
-radius <em>r_out</em>, using <em>n_r</em> points to construct the radius.</p>
+radius <em>r_out</em>, using <em>n_r</em> points to construct the radius. If the outer
+radius is less than the thickness of the Cee Section, the inner radius is
+set to zero.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>d</strong> (<em>float</em>) – Depth of the Cee section</li>
 <li><strong>b</strong> (<em>float</em>) – Width of the Cee section</li>
 <li><strong>l</strong> (<em>float</em>) – Lip of the Cee section</li>
@@ -1203,6 +1229,9 @@ radius <em>r_out</em>, using <em>n_r</em> points to construct the radius.</p>
 <li><strong>n_r</strong> (<em>int</em>) – Number of points discretising the outer radius</li>
 <li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Exception</strong> – Lip length must be greater than the outer radius</p>
 </td>
 </tr>
 </tbody>
@@ -1238,12 +1267,13 @@ triangular area of 0.25:</p>
 <p>Constructs a Zed section with the bottom left corner at the origin
 <em>(0, 0)</em>, with depth <em>d</em>, left flange width <em>b_l</em>, right flange width
 <em>b_r</em>, lip <em>l</em>, thickness <em>t</em> and outer radius <em>r_out</em>, using <em>n_r</em> points
-to construct the radius.</p>
+to construct the radius. If the outer radius is less than the thickness of
+the Zed Section, the inner radius is set to zero.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>d</strong> (<em>float</em>) – Depth of the Zed section</li>
 <li><strong>b_l</strong> (<em>float</em>) – Left flange width of the Zed section</li>
 <li><strong>b_r</strong> (<em>float</em>) – Right flange width of the Zed section</li>
@@ -1253,6 +1283,9 @@ to construct the radius.</p>
 <li><strong>n_r</strong> (<em>int</em>) – Number of points discretising the outer radius</li>
 <li><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Exception</strong> – Lip length must be greater than the outer radius</p>
 </td>
 </tr>
 </tbody>
@@ -5484,7 +5517,7 @@ immediately after the window is rendered.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.0.4',
+            VERSION:'1.0.5',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
