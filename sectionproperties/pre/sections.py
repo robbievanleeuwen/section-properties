@@ -1805,6 +1805,7 @@ class CeeSection(Geometry):
     :param int n_r: Number of points discretising the outer radius
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
+    :raises Exception: Lip length must be greater than the outer radius
 
     The following example creates a Cee section with a depth of 125, a width
     of 50, a lip of 30, a thickness of 1.5 and an outer radius of 6, using 8
@@ -1830,6 +1831,10 @@ class CeeSection(Geometry):
     def __init__(self, d, b, l, t, r_out, n_r, shift=[0, 0]):
         """Inits the CeeSection class."""
 
+        # ensure the lip length is greater than the outer radius
+        if l < r_out:
+            raise Exception('Lip length must be greater than the outer radius')
+
         # assign control point
         control_points = [[t * 0.5, d * 0.5]]
 
@@ -1844,9 +1849,10 @@ class CeeSection(Geometry):
         # construct the outer bottom right radius
         self.draw_radius([b - r_out, r_out], r_out, 1.5 * np.pi, n_r)
 
-        # add next two points
-        self.points.append([b, l])
-        self.points.append([b - t, l])
+        if r_out != l:
+            # add next two points
+            self.points.append([b, l])
+            self.points.append([b - t, l])
 
         # construct the inner bottom right radius
         self.draw_radius([b - t - r_in, t + r_in], r_in, 0, n_r, False)
@@ -1861,9 +1867,10 @@ class CeeSection(Geometry):
         self.draw_radius(
             [b - t - r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
 
-        # add next two points
-        self.points.append([b - t, d - l])
-        self.points.append([b, d - l])
+        if r_out != l:
+            # add next two points
+            self.points.append([b - t, d - l])
+            self.points.append([b, d - l])
 
         # construct the outer top right radius
         self.draw_radius([b - r_out, d - r_out], r_out, 0, n_r)
@@ -1899,6 +1906,7 @@ class ZedSection(Geometry):
     :param int n_r: Number of points discretising the outer radius
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
+    :raises Exception: Lip length must be greater than the outer radius
 
     The following example creates a Zed section with a depth of 100, a left
     flange width of 40, a right flange width of 50, a lip of 20, a thickness of
@@ -1924,6 +1932,10 @@ class ZedSection(Geometry):
     def __init__(self, d, b_l, b_r, l, t, r_out, n_r, shift=[0, 0]):
         """Inits the ZedSection class."""
 
+        # ensure the lip length is greater than the outer radius
+        if l < r_out:
+            raise Exception('Lip length must be greater than the outer radius')
+
         # assign control point
         control_points = [[t * 0.5, d * 0.5]]
 
@@ -1938,9 +1950,10 @@ class ZedSection(Geometry):
         # construct the outer bottom right radius
         self.draw_radius([b_r - r_out, r_out], r_out, 1.5 * np.pi, n_r)
 
-        # add next two points
-        self.points.append([b_r, l])
-        self.points.append([b_r - t, l])
+        if r_out != l:
+            # add next two points
+            self.points.append([b_r, l])
+            self.points.append([b_r - t, l])
 
         # construct the inner bottom right radius
         self.draw_radius([b_r - t - r_in, t + r_in], r_in, 0, n_r, False)
@@ -1954,9 +1967,10 @@ class ZedSection(Geometry):
         # construct the outer top left radius
         self.draw_radius([t - b_l + r_out, d - r_out], r_out, 0.5 * np.pi, n_r)
 
-        # add the next two points
-        self.points.append([t - b_l, d - l])
-        self.points.append([t - b_l + t, d - l])
+        if r_out != l:
+            # add the next two points
+            self.points.append([t - b_l, d - l])
+            self.points.append([t - b_l + t, d - l])
 
         # construct the inner top left radius
         self.draw_radius(
