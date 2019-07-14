@@ -366,6 +366,37 @@ class Geometry:
 
         return (x_min, x_max, y_min, y_max)
 
+    def draw_radius(self, pt, r, theta, n, anti=True):
+        """Adds a radius of points to the points list - centered at point *pt*,
+        with radius *r*, starting at angle *theta*, with *n* points. If r = 0,
+        adds pt only.
+
+        :param pt: Centre of radius *(x,y)*
+        :type pt: list[float, float]
+        :param float r: Radius
+        :param float theta: Initial angle
+        :param int n: Number of points
+        :bool anti: Anticlockwise rotation?
+        """
+
+        if r == 0:
+            self.points.append(pt)
+            return
+
+        if anti:
+            mult = 1
+        else:
+            mult = -1
+
+        # calculate radius of points
+        for i in range(n):
+            # determine angle
+            t = theta + mult * i * 1.0 / max(1, n - 1) * np.pi * 0.5
+
+            x = pt[0] + r * np.cos(t)
+            y = pt[1] + r * np.sin(t)
+            self.points.append([x, y])
+
 
 class CustomSection(Geometry):
     """Constructs a cross-section from a list of points, facets, holes and a
@@ -825,31 +856,6 @@ class Rhs(Geometry):
                 self.facets.append([i + n_outer, n_outer])
 
         self.shift_section()
-
-    def draw_radius(self, pt, r, theta, n):
-        """Adds a radius of points to the points list - centered at point *pt*,
-        with radius *r*, starting at angle *theta*, with *n* points. If r = 0,
-        adds pt only.
-
-        :param pt: Centre of radius *(x,y)*
-        :type pt: list[float, float]
-        :param float r: Radius
-        :param float theta: Initial angle
-        :param int n: Number of points
-        """
-
-        if r == 0:
-            self.points.append(pt)
-            return
-
-        # calculate radius of points
-        for i in range(n):
-            # determine angle
-            t = theta + i * 1.0 / max(1, n - 1) * np.pi * 0.5
-
-            x = pt[0] + r * np.cos(t)
-            y = pt[1] + r * np.sin(t)
-            self.points.append([x, y])
 
 
 class ISection(Geometry):
@@ -1787,7 +1793,9 @@ class AngleSection(Geometry):
 class CeeSection(Geometry):
     """Constructs a Cee section with the bottom left corner at the origin
     *(0, 0)*, with depth *d*, width *b*, lip *l*, thickness *t* and outer
-    radius *r_out*, using *n_r* points to construct the radius.
+    radius *r_out*, using *n_r* points to construct the radius. If the outer
+    radius is less than the thickness of the Cee Section, the inner radius is
+    set to zero.
 
     :param float d: Depth of the Cee section
     :param float b: Width of the Cee section
@@ -1827,111 +1835,41 @@ class CeeSection(Geometry):
 
         super().__init__(control_points, shift)
 
-        r_in = r_out - t  # calculate internal radius
+        # calculate internal radius
+        r_in = max(r_out - t, 0)
 
         # construct the outer bottom left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_outer = r_out + r_out * np.cos(theta)
-            y_outer = r_out + r_out * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
+        self.draw_radius([r_out, r_out], r_out, np.pi, n_r)
 
         # construct the outer bottom right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 3.0 / 2 * np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_outer = b - r_out + r_out * np.cos(theta)
-            y_outer = r_out + r_out * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
+        self.draw_radius([b - r_out, r_out], r_out, 1.5 * np.pi, n_r)
 
         # add next two points
         self.points.append([b, l])
         self.points.append([b - t, l])
 
         # construct the inner bottom right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 2 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_inner = b - r_out + r_in * np.cos(theta)
-            y_inner = r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_inner, y_inner])
+        self.draw_radius([b - t - r_in, t + r_in], r_in, 0, n_r, False)
 
         # construct the inner bottom left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 3.0 / 2 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_inner = r_out + r_in * np.cos(theta)
-            y_inner = r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_inner, y_inner])
+        self.draw_radius([t + r_in, t + r_in], r_in, 1.5 * np.pi, n_r, False)
 
         # construct the inner top left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_inner = r_out + r_in * np.cos(theta)
-            y_inner = d - r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_inner, y_inner])
+        self.draw_radius([t + r_in, d - t - r_in], r_in, np.pi, n_r, False)
 
         # construct the inner top right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi * 0.5 - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_inner = b - r_out + r_in * np.cos(theta)
-            y_inner = d - r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_inner, y_inner])
+        self.draw_radius(
+            [b - t - r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
 
         # add next two points
         self.points.append([b - t, d - l])
         self.points.append([b, d - l])
 
         # construct the outer top right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_outer = b - r_out + r_out * np.cos(theta)
-            y_outer = d - r_out + r_out * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
+        self.draw_radius([b - r_out, d - r_out], r_out, 0, n_r)
 
         # construct the outer top left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 0.5 * np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_outer = r_out + r_out * np.cos(theta)
-            y_outer = d - r_out + r_out * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
+        self.draw_radius([r_out, d - r_out], r_out, 0.5 * np.pi, n_r)
 
         # build the facet list
         for i in range(len(self.points)):
@@ -1949,7 +1887,8 @@ class ZedSection(Geometry):
     """Constructs a Zed section with the bottom left corner at the origin
     *(0, 0)*, with depth *d*, left flange width *b_l*, right flange width
     *b_r*, lip *l*, thickness *t* and outer radius *r_out*, using *n_r* points
-    to construct the radius.
+    to construct the radius. If the outer radius is less than the thickness of
+    the Zed Section, the inner radius is set to zero.
 
     :param float d: Depth of the Zed section
     :param float b_l: Left flange width of the Zed section
@@ -1990,111 +1929,42 @@ class ZedSection(Geometry):
 
         super().__init__(control_points, shift)
 
-        r_in = r_out - t  # calculate internal radius
+        # calculate internal radius
+        r_in = max(r_out - t, 0)
 
         # construct the outer bottom left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_outer = r_out + r_out * np.cos(theta)
-            y_outer = r_out + r_out * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
+        self.draw_radius([r_out, r_out], r_out, np.pi, n_r)
 
         # construct the outer bottom right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 3.0 / 2 * np.pi + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_outer = b_r - r_out + r_out * np.cos(theta)
-            y_outer = r_out + r_out * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
+        self.draw_radius([b_r - r_out, r_out], r_out, 1.5 * np.pi, n_r)
 
         # add next two points
         self.points.append([b_r, l])
         self.points.append([b_r - t, l])
 
         # construct the inner bottom right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 2 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_inner = b_r - r_out + r_in * np.cos(theta)
-            y_inner = r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_inner, y_inner])
+        self.draw_radius([b_r - t - r_in, t + r_in], r_in, 0, n_r, False)
 
         # construct the inner bottom left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 3.0 / 2 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_inner = r_out + r_in * np.cos(theta)
-            y_inner = r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_inner, y_inner])
+        self.draw_radius([t + r_in, t + r_in], r_in, 1.5 * np.pi, n_r, False)
 
         # construct the outer top right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_outer = t - r_out + r_out * np.cos(theta)
-            y_outer = d - r_out + r_out * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
+        self.draw_radius([t - r_out, d - r_out], r_out, 0, n_r)
 
         # construct the outer top left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi * 0.5 + i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_outer = t - b_l + r_out + r_out * np.cos(theta)
-            y_outer = d - r_out + r_out * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
+        self.draw_radius([t - b_l + r_out, d - r_out], r_out, 0.5 * np.pi, n_r)
 
         # add the next two points
         self.points.append([t - b_l, d - l])
         self.points.append([t - b_l + t, d - l])
 
         # construct the inner top left radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_inner = t - b_l + r_out + r_in * np.cos(theta)
-            y_inner = d - r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_inner, y_inner])
+        self.draw_radius(
+            [2 * t - b_l + r_in, d - t - r_in], r_in, np.pi, n_r, False)
 
         # construct the inner top right radius
-        for i in range(n_r):
-            # determine polar angle
-            theta = 0.5 * np.pi - i * 1.0 / max(1, n_r - 1) * np.pi * 0.5
-
-            # calculate location of inner and outer points
-            x_inner = t - r_out + r_in * np.cos(theta)
-            y_inner = d - r_out + r_in * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_inner, y_inner])
+        self.draw_radius(
+            [-r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
 
         # build the facet list
         for i in range(len(self.points)):
@@ -2465,345 +2335,3 @@ class MergedSection(Geometry):
             for control_point in section.control_points:
                 self.control_points.append([control_point[0],
                                             control_point[1]])
-
-
-# def sectionParse(sectionTypes, sectionData, settings):
-#     """
-#     Generates the geometry for the structural cross-section to be analysed,
-#     defined by a number of different sectionTypes, containing various
-#     sectionData. Note that there must be connectivity between all sections
-#     (i.e. there cannot be isolated sections) or the meshing and/or
-#     cross-section analysis will not work.
-#     """
-#
-#     # initialise output variables
-#     points = []
-#     facets = []
-#     holes = []
-#     controlPoints = []
-#
-#     # initialise pointCount variable
-#     pointCount = 0
-#
-#     # loop through each section
-#     for (i, section) in enumerate(sectionTypes):
-#         # generate new section depending on section type
-#         if (section == "custom"):
-#             # load data from current sectionData
-#             try:
-#                 pointData = sectionData[i]["points"]
-#                 facetData = sectionData[i]["facets"]
-#                 holeData = sectionData[i]["holes"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#                 controlPointData = sectionData[i]["control-point"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # generate a new section
-#             newSection = generateCustom(pointData, facetData, holeData, x, y,
-#                                         controlPointData)
-#
-#         elif (section == "rectangle"):
-#             try:
-#                 # load data from current sectionData
-#                 d = sectionData[i]["d"]
-#                 b = sectionData[i]["b"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # if there is a control-point, load it
-#             try:
-#                 controlPointData = sectionData[i]["control-point"]
-#             # if there is no control-point, set it to None
-#             except KeyError:
-#                 controlPointData = None
-#
-#             # generate a new section
-#             newSection = generateRectangle(d, b, x, y, controlPointData)
-#
-#         elif (section == "circle"):
-#             # load data from current sectionData
-#             try:
-#                 d = sectionData[i]["d"]
-#                 n = sectionData[i]["n"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # if there is a control-point, load it
-#             try:
-#                 controlPointData = sectionData[i]["control-point"]
-#             # if there is no control-point, set it to None
-#             except KeyError:
-#                 controlPointData = None
-#
-#             # generate a new section
-#             newSection = generateCircle(d, n, x, y, controlPointData)
-#
-#         elif (section == "chs"):
-#             # load data from current sectionData
-#             try:
-#                 d = sectionData[i]["d"]
-#                 t = sectionData[i]["t"]
-#                 n = sectionData[i]["n"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # if there is a control-point, load it
-#             try:
-#                 controlPointData = sectionData[i]["control-point"]
-#             # if there is no control-point, set it to None
-#             except KeyError:
-#                 controlPointData = None
-#
-#             # generate a new section
-#             newSection = generateCHS(d, t, n, x, y, controlPointData)
-#
-#         elif (section == "rhs"):
-#             # load data from current sectionData
-#             try:
-#                 d = sectionData[i]["d"]
-#                 b = sectionData[i]["b"]
-#                 t = sectionData[i]["t"]
-#                 r_out = sectionData[i]["r_out"]
-#                 n_r = sectionData[i]["n_r"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # if there is a control-point, load it
-#             try:
-#                 controlPointData = sectionData[i]["control-point"]
-#             # if there is no control-point, set it to None
-#             except KeyError:
-#                 controlPointData = None
-#
-#             # generate a new section
-#             newSection = generateRHS(
-#                 d, b, t, r_out, n_r, x, y, controlPointData)
-#
-#         elif (section == "i-section"):
-#             # load data from current sectionData
-#             try:
-#                 d = sectionData[i]["d"]
-#                 b = sectionData[i]["b"]
-#                 tf = sectionData[i]["tf"]
-#                 tw = sectionData[i]["tw"]
-#                 r = sectionData[i]["r"]
-#                 n_r = sectionData[i]["n_r"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # if there is a control-point, load it
-#             try:
-#                 controlPointData = sectionData[i]["control-point"]
-#             # if there is no control-point, set it to None
-#             except KeyError:
-#                 controlPointData = None
-#
-#             # generate a new section
-#             newSection = generateISection(
-#                 d, b, tf, tw, r, n_r, x, y, controlPointData)
-#
-#         elif (section == "pfc"):
-#             # load data from current sectionData
-#             try:
-#                 d = sectionData[i]["d"]
-#                 b = sectionData[i]["b"]
-#                 tf = sectionData[i]["tf"]
-#                 tw = sectionData[i]["tw"]
-#                 r = sectionData[i]["r"]
-#                 n_r = sectionData[i]["n_r"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # if there is a control-point, load it
-#             try:
-#                 controlPointData = sectionData[i]["control-point"]
-#             # if there is no control-point, set it to None
-#             except KeyError:
-#                 controlPointData = None
-#
-#             # generate a new section
-#             newSection = generatePFCSection(
-#                 d, b, tf, tw, r, n_r, x, y, controlPointData)
-#
-#         elif (section == "tee"):
-#             # load data from current sectionData
-#             try:
-#                 d = sectionData[i]["d"]
-#                 b = sectionData[i]["b"]
-#                 tf = sectionData[i]["tf"]
-#                 tw = sectionData[i]["tw"]
-#                 r = sectionData[i]["r"]
-#                 n_r = sectionData[i]["n_r"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # if there is a control-point, load it
-#             try:
-#                 controlPointData = sectionData[i]["control-point"]
-#             # if there is no control-point, set it to None
-#             except KeyError:
-#                 controlPointData = None
-#
-#             # generate a new section
-#             newSection = generateTeeSection(
-#                 d, b, tf, tw, r, n_r, x, y, controlPointData)
-#
-#         elif (section == "angle"):
-#             # load data from current sectionData
-#             try:
-#                 d = sectionData[i]["d"]
-#                 b = sectionData[i]["b"]
-#                 t = sectionData[i]["t"]
-#                 r_root = sectionData[i]["r_root"]
-#                 r_toe = sectionData[i]["r_toe"]
-#                 n_r = sectionData[i]["n_r"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # if there is a control-point, load it
-#             try:
-#                 controlPointData = sectionData[i]["control-point"]
-#             # if there is no control-point, set it to None
-#             except KeyError:
-#                 controlPointData = None
-#
-#             # generate a new section
-#             newSection = generateAngleSection(
-#                 d, b, t, r_root, r_toe, n_r, x, y, controlPointData)
-#
-#         elif (section == "cee"):
-#             # load data from current sectionData
-#             try:
-#                 d = sectionData[i]["d"]
-#                 b = sectionData[i]["b"]
-#                 lip = sectionData[i]["l"]
-#                 t = sectionData[i]["t"]
-#                 r_out = sectionData[i]["r_out"]
-#                 n_r = sectionData[i]["n_r"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # if there is a control-point, load it
-#             try:
-#                 controlPointData = sectionData[i]["control-point"]
-#             # if there is no control-point, set it to None
-#             except KeyError:
-#                 controlPointData = None
-#
-#             # generate a new section
-#             newSection = generateCeeSection(
-#                 d, b, lip, t, r_out, n_r, x, y, controlPointData)
-#
-#         elif (section == "zed"):
-#             # load data from current sectionData
-#             try:
-#                 d = sectionData[i]["d"]
-#                 b1 = sectionData[i]["b1"]
-#                 b2 = sectionData[i]["b2"]
-#                 lip = sectionData[i]["l"]
-#                 t = sectionData[i]["t"]
-#                 r_out = sectionData[i]["r_out"]
-#                 n_r = sectionData[i]["n_r"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # if there is a control-point, load it
-#             try:
-#                 controlPointData = sectionData[i]["control-point"]
-#             # if there is no control-point, set it to None
-#             except KeyError:
-#                 controlPointData = None
-#
-#             # generate a new section
-#             newSection = generateZedSection(
-#                 d, b1, b2, lip, t, r_out, n_r, x, y, controlPointData)
-#
-#         elif (section == "cruciform"):
-#             # load data from current sectionData
-#             try:
-#                 d = sectionData[i]["d"]
-#                 b = sectionData[i]["b"]
-#                 t = sectionData[i]["t"]
-#                 r = sectionData[i]["r"]
-#                 n_r = sectionData[i]["n_r"]
-#                 x = sectionData[i]["x"]
-#                 y = sectionData[i]["y"]
-#             except KeyError as err:
-#                 handleKeyError(err, section)
-#
-#             # if there is a control-point, load it
-#             try:
-#                 controlPointData = sectionData[i]["control-point"]
-#             # if there is no control-point, set it to None
-#             except KeyError:
-#                 controlPointData = None
-#
-#             # generate a new section
-#             newSection = generateCruciform(
-#                 d, b, t, r, n_r, x, y, controlPointData)
-#
-#         else:
-#             print("Error: section type '{}' is not defined.".format(section))
-#             quit()
-#
-#         # get points, facets, holes and controlpoint from newSection
-#         (newPoints, newFacets, newHoles,
-#          newControlPoint) = newSection.returnSection()
-#
-#         # loop through the facets in the newSection and append to the list
-#         for f in newFacets:
-#             facets.append([f[0] + pointCount, f[1] + pointCount])
-#
-#         # loop through the points in the newSection and append to the list
-#         for p in newPoints:
-#             pointCount += 1
-#             points.append([p[0], p[1]])
-#
-#         # loop through the holes in the newSection and append to the list
-#         for h in newHoles:
-#             holes.append([h[0], h[1]])
-#
-#         # append the controlPoint from the newSection
-#         controlPoints.append([newControlPoint[0], newControlPoint[1]])
-#
-#     if (settings.outputLog):
-#         print("-- Loaded {0} points, {1} facets and {2} holes ".format(
-#             len(points), len(facets), len(holes)) +
-#             "from {0} sections.".format(len(sectionTypes)))
-#
-#     return (points, facets, holes, controlPoints)
-#
-#
-# def handleKeyError(err, section):
-#     """
-#     Displays an error message if the correct keys are not provided for the
-#     current section and quits the program.
-#     """
-#
-#     print(
-#         "Error: Required key {0} not found for section type '{1}'.".format(
-#             err, section) +
-#         " Refer to the documentation for the required keys.")
-#     quit()
