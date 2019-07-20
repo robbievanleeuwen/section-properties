@@ -245,8 +245,9 @@ class GeometryCleaner:
                         self.remove_duplicate_facets()
 
                         if self.verbose:
-                            str = "Removed overlapping facets... Rebuilt with "
-                            str += "points: {0}".format(pts)
+                            str = "Removed overlapping facets {0}...".format(
+                                idx_to_remove)
+                            str += "Rebuilt with points: {0}".format(pts)
                             print(str)
 
                         # break both loops and loop through all facets again
@@ -446,6 +447,9 @@ class GeometryCleaner:
 
         tol = 1e-3  # minimum angle tolerance (smaller is considered overlap)
         float_tol = 1e-12  # rounding error tolerance
+
+        # relativise tolerance by length of smallest vector
+        tol *= min(np.linalg.norm(r), np.linalg.norm(s))
 
         # are the line segments collinear?
         if abs(np.cross(r, s)) < tol:
