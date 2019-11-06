@@ -5,9 +5,9 @@ from sectionproperties.pre.sections import *
 
 class BarSection(Geometry):
     """
-    Constructs a rectangular section with the center at the
+    Constructs a BAR section with the center at the
     origin *(0, 0)*, with two parameters defining dimensions.
-    See Nastran documentation for definition of parameters.
+    See Nastran documentation[1] for definition of parameters.
 
     :param float DIM1: Width (x) of bar
     :param float DIM2: Depth (y) of bar
@@ -16,22 +16,22 @@ class BarSection(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a BAR cross-section with a depth of
+    1.5 and width of 2.0, and generates a mesh with a maximum triangular area of
+    0.001::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.BarSection(DIM1=2.0, DIM2=1.5)
+        mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/bar_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        BAR section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/bar_mesh.png
         :align: center
         :scale: 75 %
 
@@ -39,7 +39,7 @@ class BarSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the BarSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -62,7 +62,7 @@ class BoxSection(Geometry):
     """
     Constructs a rectangular box section with the center at the
     origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation for definition of parameters.
+    See Nastran documentation[1] for definition of parameters.
 
     :param float DIM1: Width (x) of box
     :param float DIM2: Depth (y) of box
@@ -73,22 +73,22 @@ class BoxSection(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a BOX cross-section with a depth of
+    3.0 and width of 4.0, and generates a mesh with a maximum triangular area of
+    0.001::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.BoxSection(DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5)
+        mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/box_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        BOX section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/box_mesh.png
         :align: center
         :scale: 75 %
 
@@ -125,35 +125,35 @@ class Box1Section(Geometry):
     """
     Constructs a Box1 section with the bottom web's middle center at
     the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation[1] for more details.
 
-    :param float DIM1:
-    :param float DIM2:
-    :param float DIM3:
-    :param float DIM4:
-    :param float DIM5:
-    :param float DIM6:
+    :param float DIM1: Width (x) of box
+    :param float DIM2: Depth (y) of box
+    :param float DIM3: Thickness of top wall
+    :param float DIM4: Thickness of bottom wall
+    :param float DIM5: Thickness of left wall
+    :param float DIM6: Thickness of right wall
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a BOX1 cross-section with a depth of
+    3.0 and width of 4.0, and generates a mesh with a maximum triangular area of
+    0.007::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.Box1Section(DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5, DIM5=0.25, DIM6=0.75)
+        mesh = geometry.create_mesh(mesh_sizes=[0.007])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/box1_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        BOX1 section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/box1_mesh.png
         :align: center
         :scale: 75 %
 
@@ -161,7 +161,7 @@ class Box1Section(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the Box1Section class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -191,40 +191,40 @@ class Box1Section(Geometry):
 class DBoxSection(Geometry):
     """
     Constructs a DBOX section with the bottom web's middle center at
-    the origin *(0, 0)*, with six parameters defining dimensions.
+    the origin *(0, 0)*, with ten parameters defining dimensions.
     See Nastran documentation for more details.
 
-    :param float DIM1:
-    :param float DIM2:
-    :param float DIM3:
-    :param float DIM4:
-    :param float DIM5:
-    :param float DIM6:
-    :param float DIM7:
-    :param float DIM8:
-    :param float DIM9:
-    :param float DIM10:
+    :param float DIM1: Width (x) of the DBOX-section
+    :param float DIM2: Depth (y) of the DBOX-section
+    :param float DIM3: Width (x) of left-side box.
+    :param float DIM4: Thickness of left wall
+    :param float DIM5: Thickness of center wall
+    :param float DIM6: Thickness of right wall
+    :param float DIM7: Thickness of top left wall
+    :param float DIM8: Thickness of bottom left wall
+    :param float DIM9: Thickness of top right wall
+    :param float DIM10: Thickness of bottom right wall
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
+    The following example creates a DBOX cross-section with a depth of
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/dbox_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        DBOX section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/dbox_mesh.png
         :align: center
         :scale: 75 %
 
@@ -232,7 +232,7 @@ class DBoxSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, DIM9, DIM10, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the DBoxSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -286,9 +286,9 @@ class HexaSection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -346,9 +346,9 @@ class ISection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -410,9 +410,9 @@ class I1Section(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -472,9 +472,9 @@ class TSection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -561,9 +561,9 @@ class T1Section(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -622,9 +622,9 @@ class T2Section(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -683,9 +683,9 @@ class LSection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -743,9 +743,9 @@ class ChanSection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -802,9 +802,9 @@ class Chan1Section(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -863,9 +863,9 @@ class Chan2Section(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -921,9 +921,9 @@ class RodSection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -991,9 +991,9 @@ class TubeSection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -1072,9 +1072,9 @@ class Tube2Section(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -1156,9 +1156,9 @@ class GBOXSection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -1224,9 +1224,9 @@ class HatSection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -1285,9 +1285,9 @@ class Hat1Section(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -1375,9 +1375,9 @@ class Hat1Section(Geometry):
         of 50 with 64 points, and generates a mesh with a maximum triangular
         area of 2.5::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.nastran_sections as nsections
 
-            geometry = sections.CircularSection(d=50, n=64)
+            geometry = nsections.CircularSection(d=50, n=64)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
 
         ..  figure:: ../images/sections/circle_mesh.png
@@ -1415,9 +1415,9 @@ class CruciformSection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -1476,9 +1476,9 @@ class HSection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -1539,9 +1539,9 @@ class ZSection(Geometry):
     100 and width of 50, and generates a mesh with a maximum triangular area of
     5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = sections.RectangularSection(d=100, b=50)
+        geometry = nsections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
@@ -1602,9 +1602,9 @@ class ZSection(Geometry):
 #     100 and width of 50, and generates a mesh with a maximum triangular area of
 #     5::
 #
-#         import sectionproperties.pre.sections as sections
+#         import sectionproperties.pre.nastran_sections as nsections
 #
-#         geometry = sections.RectangularSection(d=100, b=50)
+#         geometry = nsections.RectangularSection(d=100, b=50)
 #         mesh = geometry.create_mesh(mesh_sizes=[5])
 #
 #     ..  figure:: ../images/sections/rectangle_geometry.png
