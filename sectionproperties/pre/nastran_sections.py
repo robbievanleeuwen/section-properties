@@ -188,6 +188,86 @@ class Box1Section(Geometry):
         self.shift_section()
 
 
+class DBoxSection(Geometry):
+    """
+    Constructs a DBOX section with the bottom web's middle center at
+    the origin *(0, 0)*, with six parameters defining dimensions.
+    See Nastran documentation for more details.
+
+    :param float DIM1:
+    :param float DIM2:
+    :param float DIM3:
+    :param float DIM4:
+    :param float DIM5:
+    :param float DIM6:
+    :param float DIM7:
+    :param float DIM8:
+    :param float DIM9:
+    :param float DIM10:
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+
+    Added by JohnDN90.
+
+    The following example creates a rectangular cross-section with a depth of
+    100 and width of 50, and generates a mesh with a maximum triangular area of
+    5::
+
+        import sectionproperties.pre.sections as sections
+
+        geometry = sections.RectangularSection(d=100, b=50)
+        mesh = geometry.create_mesh(mesh_sizes=[5])
+
+    ..  figure:: ../images/sections/rectangle_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Rectangular section geometry.
+
+    ..  figure:: ../images/sections/rectangle_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, DIM9, DIM10, shift=[0, 0]):
+        """Inits the BoxSection class."""
+
+        # force dimensions to be floating point values
+        DIM1 *= 1.0
+        DIM2 *= 1.0
+        DIM3 *= 1.0
+        DIM4 *= 1.0
+        DIM5 *= 1.0
+        DIM6 *= 1.0
+        DIM7 *= 1.0
+        DIM8 *= 1.0
+        DIM9 *= 1.0
+        DIM10 *= 1.0
+
+        # assign control point
+        control_points = [[0.5*DIM3, 0.5*DIM8]]
+
+        shift = [-0.5*DIM1+shift[0], -0.5*DIM2+shift[1]]
+        super().__init__(control_points, shift)
+
+        # specify a hole in the centre of the Box
+        d2 = (DIM1 - DIM6 - DIM3 - DIM5 / 2.0) / 2.0
+        self.holes = [[DIM4 + (DIM3 - DIM4 - DIM5 / 2.) / 2., DIM8 + (DIM2 - DIM8 - DIM7) / 2.],
+                      [DIM3 + DIM5 / 2. + d2, DIM10 + (DIM2 - DIM10 - DIM9) / 2.]]
+
+        # construct the points and facets
+        self.points = [ [0.,0.], [DIM1, 0.], [DIM1, DIM2], [0., DIM2],
+                        [DIM4, DIM8], [DIM3-DIM5/2., DIM8], [DIM3 - DIM5/2., DIM2-DIM7], [DIM4, DIM2-DIM7],
+                        [DIM3+DIM5/2., DIM10], [DIM1-DIM6, DIM10], [DIM1-DIM6, DIM2-DIM9], [DIM3+DIM5/2., DIM2-DIM9]]
+        self.facets = [[0, 1], [1, 2], [2, 3], [3, 0],
+                       [4, 5], [5, 6], [6, 7], [7, 4],
+                       [8, 9], [9, 10], [10, 11], [11, 8]]
+
+        self.shift_section()
+
+
 class HexaSection(Geometry):
     """
     Constructs a Hexa section with the bottom web's middle center at
@@ -970,6 +1050,217 @@ class TubeSection(Geometry):
             else:
                 self.facets.append([i * 2, 0])
                 self.facets.append([i * 2 + 1, 1])
+
+        self.shift_section()
+
+
+class Tube2Section(Geometry):
+    """
+    Constructs a circular tube2 section with the center at
+    the origin *(0, 0)*, with one parameter defining dimensions.
+    See Nastran documentation for more details.
+
+    :param float DIM1: Outer radius of the circular tube section
+    :param float DIM2: Thickness of wall
+    :param int n: Number of points discretising the circle
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+
+    Added by JohnDN90.
+
+    The following example creates a rectangular cross-section with a depth of
+    100 and width of 50, and generates a mesh with a maximum triangular area of
+    5::
+
+        import sectionproperties.pre.sections as sections
+
+        geometry = sections.RectangularSection(d=100, b=50)
+        mesh = geometry.create_mesh(mesh_sizes=[5])
+
+    ..  figure:: ../images/sections/rectangle_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Rectangular section geometry.
+
+    ..  figure:: ../images/sections/rectangle_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, DIM1, DIM2, n, shift=[0, 0]):
+        """Inits the TubeSection class."""
+
+        # force dimensions to be floating point values
+        DIM1 *= 1.0
+        DIM2 *= 1.0
+
+        d = 2.0*DIM1
+        t = DIM2
+
+        # assign control point
+        control_points = [[d * 0.5 - t * 0.5, 0]]
+
+        super().__init__(control_points, shift)
+
+        # specify a hole in the centre of the section
+        self.holes = [[0., 0.]]
+
+        # loop through each point of the section
+        for i in range(n):
+            # determine polar angle
+            theta = i * 2 * np.pi * 1.0 / n
+
+            # calculate location of outer and inner points
+            x_outer = 0.5 * d * np.cos(theta)
+            y_outer = 0.5 * d * np.sin(theta)
+            x_inner = (0.5 * d - t) * np.cos(theta)
+            y_inner = (0.5 * d - t) * np.sin(theta)
+
+            # append the current points to the points list
+            self.points.append([x_outer, y_outer])
+            self.points.append([x_inner, y_inner])
+
+            # if we are not at the last point
+            if i != n - 1:
+                self.facets.append([i * 2, i * 2 + 2])
+                self.facets.append([i * 2 + 1, i * 2 + 3])
+            # if we are at the last point, complete the circle
+            else:
+                self.facets.append([i * 2, 0])
+                self.facets.append([i * 2 + 1, 1])
+
+        self.shift_section()
+
+
+class GBOXSection(Geometry):
+    """
+    Constructs a GBOX section with the center at the
+    origin *(0, 0)*, with six parameters defining dimensions.
+    See Nastran documentation for more details.
+
+    :param float DIM1: Width (x) of the GBOX-section
+    :param float DIM2: Depth (y) of the GBOX-section
+    :param float DIM3: Thickness of top flange
+    :param float DIM4: Thickness of bottom flange
+    :param float DIM5: Thickness of webs
+    :param float DIM6: Spacing between webs
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+
+    Added by JohnDN90.
+
+    The following example creates a rectangular cross-section with a depth of
+    100 and width of 50, and generates a mesh with a maximum triangular area of
+    5::
+
+        import sectionproperties.pre.sections as sections
+
+        geometry = sections.RectangularSection(d=100, b=50)
+        mesh = geometry.create_mesh(mesh_sizes=[5])
+
+    ..  figure:: ../images/sections/rectangle_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Rectangular section geometry.
+
+    ..  figure:: ../images/sections/rectangle_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=[0, 0]):
+        """Inits the GBOXSection class."""
+
+        # force dimensions to be floating point values
+        DIM1 *= 1.0
+        DIM2 *= 1.0
+        DIM3 *= 1.0
+        DIM4 *= 1.0
+        DIM5 *= 1.0
+        DIM6 *= 1.0
+
+        # assign control point
+        control_points = [[0.5*DIM1, 0.5*DIM4]]
+
+        shift = [-(0.5*DIM1)+shift[0], -(DIM4 + 0.5*(DIM2-DIM3-DIM4))+shift[1]]
+        super().__init__(control_points, shift)
+
+        # specify a hole in the centre of the GBOX
+        holes = [[0.5*DIM1, 0.5*DIM2]]
+
+        # construct the points and facets
+        d = (DIM1 - DIM6 - 2.0 * DIM5) / 2.0
+        self.points = [[0., 0.], [DIM1, 0.], [DIM1, DIM4], [d + 2. * DIM5 + DIM6, DIM4],
+                       [d + 2. * DIM5 + DIM6, DIM2 - DIM3], [DIM1, DIM2 - DIM3], [DIM1, DIM2], [0., DIM2],
+                       [0., DIM2 - DIM3], [d, DIM2 - DIM3], [d, DIM4], [0., DIM4],
+                       [d + DIM5, DIM4], [d + DIM5 + DIM6, DIM4], [d + DIM5 + DIM6, DIM2 - DIM3], [d + DIM5, DIM2 - DIM3]]
+        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 0], [12, 13], [13,14], [14,15], [15,12]]
+
+        self.shift_section()
+
+
+class HatSection(Geometry):
+    """
+    Constructs a Hat section with the bottom web's middle center at
+    the origin *(0, 0)*, with six parameters defining dimensions.
+    See Nastran documentation for more details.
+
+    :param float DIM1:
+    :param float DIM2:
+    :param float DIM3:
+    :param float DIM4:
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+
+    Added by JohnDN90.
+
+    The following example creates a rectangular cross-section with a depth of
+    100 and width of 50, and generates a mesh with a maximum triangular area of
+    5::
+
+        import sectionproperties.pre.sections as sections
+
+        geometry = sections.RectangularSection(d=100, b=50)
+        mesh = geometry.create_mesh(mesh_sizes=[5])
+
+    ..  figure:: ../images/sections/rectangle_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Rectangular section geometry.
+
+    ..  figure:: ../images/sections/rectangle_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+        """Inits the BoxSection class."""
+
+        # force dimensions to be floating point values
+        DIM1 *= 1.0
+        DIM2 *= 1.0
+        DIM3 *= 1.0
+        DIM4 *= 1.0
+
+        # assign control point
+        control_points = [[0.5*DIM4, 0.5*DIM2]]
+
+        shift = [-DIM4-0.5*DIM3+shift[0], -DIM1+0.5*DIM2+shift[1]]
+        super().__init__(control_points, shift)
+
+        # construct the points and facets
+        self.points = [[0.,0.], [DIM4+DIM2, 0.], [DIM4+DIM2, DIM1-DIM2], [DIM4+DIM3-DIM2, DIM1-DIM2], [DIM4+DIM3-DIM2, 0.], [2*DIM4+DIM3, 0.],
+                       [2.*DIM4+DIM3, DIM2], [DIM4+DIM3, DIM2], [DIM4+DIM3, DIM1], [DIM4, DIM1], [DIM4, DIM2], [0., DIM2]]
+        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10], [10,11], [11,0]]
 
         self.shift_section()
 
