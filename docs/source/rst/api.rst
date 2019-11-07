@@ -132,6 +132,143 @@ pre Functions
 
 ..  autofunction:: sectionproperties.pre.pre.create_mesh
 
+*nastran_sections* Module
+^^^^^^^^^^^^^^^^^^^^^^^^^
+This module contains cross-sections as defined by Nastran and Nastran-based programs,
+such as MYSTRAN and ASTROS.
+
+BARSection Class
+""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.BarSection
+    :members:
+
+BOXSection Class
+""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.BoxSection
+    :members:
+
+BOX1Section Class
+"""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.Box1Section
+    :members:
+
+CHANSection Class
+"""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.ChanSection
+    :members:
+
+CHAN1Section Class
+""""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.Chan1Section
+    :members:
+
+CHAN2Section Class
+""""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.Chan2Section
+    :members:
+
+DBoxSection Class
+"""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.DBoxSection
+    :members:
+
+GBOXSection Class
+"""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.GBOXSection
+    :members:
+
+HSection Class
+""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.HSection
+    :members:
+
+HatSection Class
+""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.HatSection
+    :members:
+
+Hat1Section Class
+"""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.Hat1Section
+    :members:
+
+HexaSection Class
+"""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.HexaSection
+    :members:
+
+NISection Class
+"""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.NISection
+    :members:
+
+I1Section Class
+"""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.I1Section
+    :members:
+
+LSection Class
+""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.LSection
+    :members:
+
+NCrossSection Class
+"""""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.NCrossSection
+    :members:
+
+RodSection Class
+""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.RodSection
+    :members:
+
+TSection Class
+""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.TSection
+    :members:
+
+T1Section Class
+"""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.T1Section
+    :members:
+
+T2Section Class
+"""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.T2Section
+    :members:
+
+TubeSection Class
+"""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.TubeSection
+    :members:
+
+Tube2Section Class
+""""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.Tube2Section
+    :members:
+
+ZSection Class
+""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.ZSection
+    :members:
+
+References
+""""""""""
+.. [1]  MSC Nastran Quick Reference Guide 2012,
+        PBEAML - Simple Beam Cross-Section Property, pp. 2890-2894
+        https://simcompanion.mscsoftware.com/infocenter/index?page=content&id=DOC10351
+.. [2]  Siemens NX Nastran 12 Quick Reference Guide,
+        PBEAML, pp. 16-59 - 16-62
+        https://docs.plm.automation.siemens.com/data_services/resources/nxnastran/12/help/tdoc/en_US/pdf/QRG.pdf
+.. [3]  Users Reference Manual for the MYSTRAN General Purpose Finite Element Structural Analysis Computer Program,
+        Jan. 2019, Section 6.4.1.53 - PBARL, pp. 154-156
+        https://www.mystran.com/Executable/MYSTRAN-Users-Manual.pdf
+.. [4]  AutoDesk Nastran Online Documentation, Nastran Reference Guide,
+        Section 4 - Bulk Data, PBEAML
+        http://help.autodesk.com/view/NSTRN/2018/ENU/?guid=GUID-B7044BA7-3C26-49DA-9EE7-DA7505FD4B2C
+.. [5]  Astros Enhancements - Volume III - Astros Theoretical Manual,
+        Section 5.1.3.2, pp. 56
+        https://apps.dtic.mil/dtic/tr/fulltext/u2/a308134.pdf
 
 Analysis Package
 ----------------

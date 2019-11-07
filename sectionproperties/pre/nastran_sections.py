@@ -7,7 +7,7 @@ class BarSection(Geometry):
     """
     Constructs a BAR section with the center at the
     origin *(0, 0)*, with two parameters defining dimensions.
-    See Nastran documentation[1] for definition of parameters.
+    See Nastran documentation [1]_ for definition of parameters.
 
     :param float DIM1: Width (x) of bar
     :param float DIM2: Depth (y) of bar
@@ -62,7 +62,7 @@ class BoxSection(Geometry):
     """
     Constructs a BOX section with the center at the
     origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation[1] for definition of parameters.
+    See Nastran documentation [1]_ for definition of parameters.
 
     :param float DIM1: Width (x) of box
     :param float DIM2: Depth (y) of box
@@ -125,7 +125,7 @@ class Box1Section(Geometry):
     """
     Constructs a BOX1 section with the center at
     the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation[1] for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Width (x) of box
     :param float DIM2: Depth (y) of box
@@ -192,7 +192,7 @@ class ChanSection(Geometry):
     """
     Constructs a CHAN (C-Channel) section with the web's middle
     center at the origin *(0, 0)*, with four parameters defining
-    dimensions. See Nastran documentation[1] for more details.
+    dimensions. See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Width (x) of the Chan section.
     :param float DIM2: Depth (y) of the Chan section.
@@ -252,7 +252,7 @@ class Chan1Section(Geometry):
     """
     Constructs a CHAN1 (C-Channel) section with the web's middle
     center at the origin *(0, 0)*, with four parameters defining
-    dimensions. See Nastran documentation[1] for more details.
+    dimensions. See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Width (x) of channels
     :param float DIM2: Thicknesss (x) of web
@@ -313,7 +313,7 @@ class Chan2Section(Geometry):
     """
     Constructs a CHAN2 (C-Channel) section with the bottom web's middle center at
     the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation[1] for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Thickness of channels
     :param float DIM2: Thickness of web
@@ -373,7 +373,7 @@ class DBoxSection(Geometry):
     """
     Constructs a DBOX section with the center at
     the origin *(0, 0)*, with ten parameters defining dimensions.
-    See Nastran documentation[1] for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Width (x) of the DBOX-section
     :param float DIM2: Depth (y) of the DBOX-section
@@ -529,7 +529,7 @@ class HSection(Geometry):
     """
     Constructs a H section with the middle web's middle center at
     the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation[1] for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Spacing between vertical flanges
     :param float DIM2: Twice the thickness of the vertical flanges
@@ -592,7 +592,7 @@ class HatSection(Geometry):
     """
     Constructs a Hat section with the top most section's middle center
     at the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation[1] for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Depth (y) of HAT-section.
     :param float DIM2: Thickness of HAT-section.
@@ -826,7 +826,7 @@ class NISection(Geometry):
     """
     Constructs Nastran's I section with the bottom flange's middle center at
     the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation[1] for definition of parameters.
+    See Nastran documentation [1]_ for definition of parameters.
 
     :param float DIM1: Depth(y) of the I-section
     :param float DIM2: Width (x) of bottom flange
@@ -894,7 +894,7 @@ class I1Section(Geometry):
     """
     Constructs a I1 section with the web's middle center at
     the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Twice distance from web end to flange end
     :param float DIM2: Thickness of web
@@ -957,7 +957,7 @@ class LSection(Geometry):
     """
     Constructs a L section with the intersection's center at
     the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Width (x) of the L-section.
     :param float DIM2: Depth (y) of the L-section.
@@ -1016,7 +1016,7 @@ class NCrossSection(Geometry):
     """
     Constructs a cruciform/cross section with the intersection's middle
     center at the origin *(0, 0)*, with four parameters defining
-    dimensions. See Nastran documentation for more details.
+    dimensions. See Nastran documentation [1]_ for more details.
 
     :param float DIM1:
     :param float DIM2:
@@ -1077,7 +1077,7 @@ class RodSection(Geometry):
     """
     Constructs a circular rod section with the center at
     the origin *(0, 0)*, with one parameter defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Radius of the circular rod section
     :param int n: Number of points discretising the circle
@@ -1146,7 +1146,7 @@ class TSection(Geometry):
     """
     Constructs a T section with the top flange's middle center at
     the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Width (x) of top flange
     :param float DIM2: Depth (y) of the T-section.
@@ -1235,7 +1235,7 @@ class T1Section(Geometry):
     """
     Constructs a T1 section with the right flange's middle center at
     the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1:
     :param float DIM2:
@@ -1296,7 +1296,7 @@ class T2Section(Geometry):
     """
     Constructs a T2 section with the bottom web's middle center at
     the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1:
     :param float DIM2:
@@ -1357,7 +1357,7 @@ class TubeSection(Geometry):
     """
     Constructs a circular tube section with the center at
     the origin *(0, 0)*, with one parameter defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Outer radius of the circular tube section
     :param float DIM2: Inner radius of the circular tube section
@@ -1438,7 +1438,7 @@ class Tube2Section(Geometry):
     """
     Constructs a circular tube2 section with the center at
     the origin *(0, 0)*, with one parameter defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Outer radius of the circular tube section
     :param float DIM2: Thickness of wall
@@ -1519,7 +1519,7 @@ class ZSection(Geometry):
     """
     Constructs a Z section with the bottom web's middle center at
     the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation [1]_ for more details.
 
     :param float DIM1:
     :param float DIM2:
@@ -1580,7 +1580,7 @@ class ZSection(Geometry):
 #     """
 #     Constructs a I section with the bottom web's middle center at
 #     the origin *(0, 0)*, with six parameters defining dimensions.
-#     See Nastran documentation for more details.
+#     See Nastran documentation [1]_ for more details.
 #
 #     :param float DIM1:
 #     :param float DIM2:
