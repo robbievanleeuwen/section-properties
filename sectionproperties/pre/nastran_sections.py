@@ -52,7 +52,7 @@ class BarSection(Geometry):
         super().__init__(control_points, shift)
 
         # construct the points and facets
-        self.points = [[-DIM1 / 2., -DIM2 / 2.], [DIM1 / 2., -DIM2 / 2.], [DIM1 / 2., DIM2 / 2.], [-DIM1 / 2., DIM2 / 2.]]
+        self.points = [[-0.5*DIM1, -0.5*DIM2], [0.5*DIM1, -0.5*DIM2], [0.5*DIM1, 0.5*DIM2], [-0.5*DIM1, 0.5*DIM2]]
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 0]]
 
         self.shift_section()
@@ -60,7 +60,7 @@ class BarSection(Geometry):
 
 class BoxSection(Geometry):
     """
-    Constructs a rectangular box section with the center at the
+    Constructs a BOX section with the center at the
     origin *(0, 0)*, with four parameters defining dimensions.
     See Nastran documentation[1] for definition of parameters.
 
@@ -105,7 +105,7 @@ class BoxSection(Geometry):
         DIM4 *= 1.0
 
         # assign control point
-        control_points = [[0., DIM2 / 2.0 - DIM3 / 2.0]]
+        control_points = [[0., 0.5*DIM2 - 0.5*DIM3]]
 
         super().__init__(control_points, shift)
 
@@ -113,9 +113,9 @@ class BoxSection(Geometry):
         self.holes = [[0., 0.]]
 
         # construct the points and facets
-        self.points = [[-DIM1 / 2., -DIM2 / 2.], [DIM1 / 2., -DIM2 / 2.], [DIM1 / 2., DIM2 / 2.], [-DIM1 / 2., DIM2 / 2.],
-                       [-DIM1 / 2. + DIM4, -DIM2 / 2. + DIM3], [DIM1 / 2. - DIM4, -DIM2 / 2. + DIM3],
-                       [DIM1 / 2. - DIM4, DIM2 / 2. - DIM3], [-DIM1 / 2. + DIM4, DIM2 / 2. - DIM3]]
+        self.points = [[-0.5*DIM1, -0.5*DIM2], [0.5*DIM1, -0.5*DIM2], [0.5*DIM1, 0.5*DIM2], [-0.5*DIM1, 0.5*DIM2],
+                       [-0.5*DIM1 + DIM4, -0.5*DIM2 + DIM3], [0.5*DIM1 - DIM4, -0.5*DIM2 + DIM3],
+                       [0.5*DIM1 - DIM4, 0.5*DIM2 - DIM3], [-0.5*DIM1 + DIM4, 0.5*DIM2 - DIM3]]
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4]]
 
         self.shift_section()
@@ -123,7 +123,7 @@ class BoxSection(Geometry):
 
 class Box1Section(Geometry):
     """
-    Constructs a Box1 section with the bottom web's middle center at
+    Constructs a BOX1 section with the center at
     the origin *(0, 0)*, with six parameters defining dimensions.
     See Nastran documentation[1] for more details.
 
@@ -191,8 +191,8 @@ class Box1Section(Geometry):
 class ChanSection(Geometry):
     """
     Constructs a CHAN (C-Channel) section with the web's middle
-    center at the origin *(0, 0)*, with six parameters defining
-    dimensions. See Nastran documentation for more details.
+    center at the origin *(0, 0)*, with four parameters defining
+    dimensions. See Nastran documentation[1] for more details.
 
     :param float DIM1: Width (x) of the Chan section.
     :param float DIM2: Depth (y) of the Chan section.
@@ -203,22 +203,22 @@ class ChanSection(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a CHAN cross-section with a depth of
+    4.0 and width of 2.0, and generates a mesh with a maximum triangular area of
+    0.003::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.ChanSection(DIM1=2.0, DIM2=4.0, DIM3=0.25, DIM4=0.5)
+        mesh = geometry.create_mesh(mesh_sizes=[0.003])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/chan_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        CHAN section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/chan_mesh.png
         :align: center
         :scale: 75 %
 
@@ -226,7 +226,7 @@ class ChanSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the ChanSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -241,7 +241,8 @@ class ChanSection(Geometry):
         super().__init__(control_points, shift)
 
         # construct the points and facets
-        self.points = [[0.,0.], [DIM1, 0.], [DIM1, DIM4], [DIM3, DIM4], [DIM3, DIM2-DIM4], [DIM1, DIM2-DIM4], [DIM1, DIM2], [0., DIM2]]
+        self.points = [[0.,0.], [DIM1, 0.], [DIM1, DIM4], [DIM3, DIM4],
+                       [DIM3, DIM2-DIM4], [DIM1, DIM2-DIM4], [DIM1, DIM2], [0., DIM2]]
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,0]]
 
         self.shift_section()
@@ -250,34 +251,34 @@ class ChanSection(Geometry):
 class Chan1Section(Geometry):
     """
     Constructs a CHAN1 (C-Channel) section with the web's middle
-    center at the origin *(0, 0)*, with six parameters defining
-    dimensions. See Nastran documentation for more details.
+    center at the origin *(0, 0)*, with four parameters defining
+    dimensions. See Nastran documentation[1] for more details.
 
-    :param float DIM1:
-    :param float DIM2:
-    :param float DIM3:
-    :param float DIM4:
+    :param float DIM1: Width (x) of channels
+    :param float DIM2: Thicknesss (x) of web
+    :param float DIM3: Spacing between channels
+    :param float DIM4: Depth (y) of CHAN1-section.
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a CHAN1 cross-section with a depth of
+    4.0 and width of 1.75, and generates a mesh with a maximum triangular area of
+    0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.Chan1Section(DIM1=0.75, DIM2=1.0, DIM3=3.5, DIM4=4.0)
+        mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/chan1_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        CHAN1 section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/chan1_mesh.png
         :align: center
         :scale: 75 %
 
@@ -310,35 +311,35 @@ class Chan1Section(Geometry):
 
 class Chan2Section(Geometry):
     """
-    Constructs a Chan2 section with the bottom web's middle center at
+    Constructs a CHAN2 (C-Channel) section with the bottom web's middle center at
     the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation[1] for more details.
 
-    :param float DIM1:
-    :param float DIM2:
-    :param float DIM3:
-    :param float DIM4:
+    :param float DIM1: Thickness of channels
+    :param float DIM2: Thickness of web
+    :param float DIM3: Depth (y) of CHAN2-section.
+    :param float DIM4: Width (x) of CHAN2-section.
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a CHAN2 cross-section with a depth of
+    2.0 and width of 4.0, and generates a mesh with a maximum triangular area of
+    0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.Chan2Section(DIM1=0.375, DIM2=0.5, DIM3=2.0, DIM4=4.0)
+        mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/chan2_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        CHAN2 section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/chan2_mesh.png
         :align: center
         :scale: 75 %
 
@@ -346,7 +347,7 @@ class Chan2Section(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the Chan2Section class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -370,9 +371,9 @@ class Chan2Section(Geometry):
 
 class DBoxSection(Geometry):
     """
-    Constructs a DBOX section with the bottom web's middle center at
+    Constructs a DBOX section with the center at
     the origin *(0, 0)*, with ten parameters defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation[1] for more details.
 
     :param float DIM1: Width (x) of the DBOX-section
     :param float DIM2: Depth (y) of the DBOX-section
@@ -390,13 +391,16 @@ class DBoxSection(Geometry):
     Added by JohnDN90.
 
     The following example creates a DBOX cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    3.0 and width of 8.0, and generates a mesh with a maximum triangular area of
+    0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.DBoxSection(DIM1=8.0, DIM2=3.0, DIM3=3.0,
+                                         DIM4=0.5, DIM5=0.625, DIM6=0.75,
+                                         DIM7=0.375, DIM8=0.25,
+                                         DIM9=0.5, DIM10=0.375)
+        mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/dbox_geometry.png
         :align: center
@@ -433,9 +437,9 @@ class DBoxSection(Geometry):
         super().__init__(control_points, shift)
 
         # specify a hole in the centre of the Box
-        d2 = (DIM1 - DIM6 - DIM3 - DIM5 / 2.0) / 2.0
-        self.holes = [[DIM4 + (DIM3 - DIM4 - DIM5 / 2.) / 2., DIM8 + (DIM2 - DIM8 - DIM7) / 2.],
-                      [DIM3 + DIM5 / 2. + d2, DIM10 + (DIM2 - DIM10 - DIM9) / 2.]]
+        d2 = 0.5*(DIM1 - DIM6 - DIM3 - 0.5*DIM5)
+        self.holes = [[DIM4 + 0.5*(DIM3 - DIM4 - 0.5*DIM5), DIM8 + 0.5*(DIM2 - DIM8 - DIM7)],
+                      [DIM3 + 0.5*DIM5 + d2, DIM10 + 0.5*(DIM2 - DIM10 - DIM9)]]
 
         # construct the points and facets
         self.points = [ [0.,0.], [DIM1, 0.], [DIM1, DIM2], [0., DIM2],
@@ -465,22 +469,23 @@ class GBOXSection(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a GBOX cross-section with a depth of
+    2.5 and width of 6.0, and generates a mesh with a maximum triangular area of
+    0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.GBOXSection(DIM1=6.0, DIM2=2.5, DIM3=0.375,
+                                         DIM4=0.25, DIM5=0.625, DIM6=1.0)
+        mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/gbox_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        GBOX section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/gbox_mesh.png
         :align: center
         :scale: 75 %
 
@@ -508,47 +513,49 @@ class GBOXSection(Geometry):
         self.holes = [[0.5*DIM1, 0.5*DIM2]]
 
         # construct the points and facets
-        d = (DIM1 - DIM6 - 2.0 * DIM5) / 2.0
+        d = 0.5*(DIM1 - DIM6 - 2.0 * DIM5)
         self.points = [[0., 0.], [DIM1, 0.], [DIM1, DIM4], [d + 2. * DIM5 + DIM6, DIM4],
                        [d + 2. * DIM5 + DIM6, DIM2 - DIM3], [DIM1, DIM2 - DIM3], [DIM1, DIM2], [0., DIM2],
                        [0., DIM2 - DIM3], [d, DIM2 - DIM3], [d, DIM4], [0., DIM4],
-                       [d + DIM5, DIM4], [d + DIM5 + DIM6, DIM4], [d + DIM5 + DIM6, DIM2 - DIM3], [d + DIM5, DIM2 - DIM3]]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 0], [12, 13], [13,14], [14,15], [15,12]]
+                       [d + DIM5, DIM4], [d + DIM5 + DIM6, DIM4], [d + DIM5 + DIM6, DIM2 - DIM3],
+                       [d + DIM5, DIM2 - DIM3]]
+        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9],
+                       [9, 10], [10, 11], [11, 0], [12, 13], [13,14], [14,15], [15,12]]
 
         self.shift_section()
 
 
 class HSection(Geometry):
     """
-    Constructs a H section with the bottom web's middle center at
-    the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation for more details.
+    Constructs a H section with the middle web's middle center at
+    the origin *(0, 0)*, with four parameters defining dimensions.
+    See Nastran documentation[1] for more details.
 
-    :param float DIM1:
-    :param float DIM2:
-    :param float DIM3:
-    :param float DIM4:
+    :param float DIM1: Spacing between vertical flanges
+    :param float DIM2: Twice the thickness of the vertical flanges
+    :param float DIM3: Depth (y) of the H-section.
+    :param float DIM4: Thickness of the middle web
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a H cross-section with a depth of
+    3.5 and width of 2.75, and generates a mesh with a maximum triangular area of
+    0.005::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.HSection(DIM1=2.0, DIM2=0.75, DIM3=3.5, DIM4=0.25)
+        mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/h_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        H section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/h_mesh.png
         :align: center
         :scale: 75 %
 
@@ -574,8 +581,8 @@ class HSection(Geometry):
         super().__init__(control_points, shift)
 
         # construct the points and facets
-        self.points = [[0,0], [d2,0], [d2,d1], [d2+DIM1, d1], [d2+DIM1,0], [DIM1+DIM2, 0],
-                       [DIM1+DIM2, DIM3], [DIM1+DIM2-d2, DIM3], [DIM1+DIM2-d2, d1+DIM4], [d2,d1+DIM4], [d2,DIM3], [0,DIM3]]
+        self.points = [[0,0], [d2,0], [d2,d1], [d2+DIM1, d1], [d2+DIM1,0], [DIM1+DIM2, 0], [DIM1+DIM2, DIM3],
+                       [DIM1+DIM2-d2, DIM3], [DIM1+DIM2-d2, d1+DIM4], [d2,d1+DIM4], [d2,DIM3], [0,DIM3]]
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10], [10,11], [11,0]]
 
         self.shift_section()
@@ -583,35 +590,35 @@ class HSection(Geometry):
 
 class HatSection(Geometry):
     """
-    Constructs a Hat section with the bottom web's middle center at
-    the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation for more details.
+    Constructs a Hat section with the top most section's middle center
+    at the origin *(0, 0)*, with four parameters defining dimensions.
+    See Nastran documentation[1] for more details.
 
-    :param float DIM1:
-    :param float DIM2:
-    :param float DIM3:
-    :param float DIM4:
+    :param float DIM1: Depth (y) of HAT-section.
+    :param float DIM2: Thickness of HAT-section.
+    :param float DIM3: Width (x) of top most section.
+    :param float DIM4: Width (x) of bottom sections.
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a HAT cross-section with a depth of
+    1.25 and width of 2.5, and generates a mesh with a maximum triangular area of
+    0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.HatSection(DIM1=1.25, DIM2=0.25, DIM3=1.5, DIM4=0.5)
+        mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/hat_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        HAT section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/hat_mesh.png
         :align: center
         :scale: 75 %
 
@@ -619,7 +626,7 @@ class HatSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the HatSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -634,8 +641,9 @@ class HatSection(Geometry):
         super().__init__(control_points, shift)
 
         # construct the points and facets
-        self.points = [[0.,0.], [DIM4+DIM2, 0.], [DIM4+DIM2, DIM1-DIM2], [DIM4+DIM3-DIM2, DIM1-DIM2], [DIM4+DIM3-DIM2, 0.], [2*DIM4+DIM3, 0.],
-                       [2.*DIM4+DIM3, DIM2], [DIM4+DIM3, DIM2], [DIM4+DIM3, DIM1], [DIM4, DIM1], [DIM4, DIM2], [0., DIM2]]
+        self.points = [[0.,0.], [DIM4+DIM2, 0.], [DIM4+DIM2, DIM1-DIM2], [DIM4+DIM3-DIM2, DIM1-DIM2],
+                       [DIM4+DIM3-DIM2, 0.], [2*DIM4+DIM3, 0.], [2.*DIM4+DIM3, DIM2], [DIM4+DIM3, DIM2],
+                       [DIM4+DIM3, DIM1], [DIM4, DIM1], [DIM4, DIM2], [0., DIM2]]
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10], [10,11], [11,0]]
 
         self.shift_section()
@@ -657,22 +665,22 @@ class Hat1Section(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a HAT1 cross-section with a depth of
+    2.0 and width of 4.0, and generates a mesh with a maximum triangular area of
+    0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.Hat1Section(DIM1=4.0, DIM2=2.0, DIM3=1.5, DIM4=0.1875, DIM5=0.375)
+        mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/hat1_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        HAT1 section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/hat1_mesh.png
         :align: center
         :scale: 75 %
 
@@ -697,20 +705,20 @@ class Hat1Section(Geometry):
         # create the hat stiffener
         d1 = DIM2 - DIM5
         d2 = DIM4
-        d4 = (DIM1 - DIM3) / 2
+        d4 = 0.5*(DIM1 - DIM3)
 
         # specify a hole in the combined plate and hat structure
-        holes = [[DIM1 / 2, DIM2 / 2]]
+        holes = [[0.5*DIM1, 0.5*DIM2]]
 
         # assign control point
-        control_points = [[d4 / 2, DIM5 + DIM4 / 2]]
+        control_points = [[0.5*d4, DIM5 + 0.5*DIM4]]
 
         super().__init__(control_points, shift)
 
         # construct the points and facets
-        points = [[0, DIM5 + 0], [d4 + d2, DIM5 + 0], [d4 + d2, DIM5 + d1 - d2], [d4 + DIM3 - d2, DIM5 + d1 - d2],
-                  [d4 + DIM3 - d2, DIM5 + 0], [2 * d4 + DIM3, DIM5 + 0],
-                  [2 * d4 + DIM3, DIM5 + d2], [d4 + DIM3, DIM5 + d2], [d4 + DIM3, DIM5 + d1], [d4, DIM5 + d1],
+        points = [[0., DIM5 + 0.], [d4 + d2, DIM5 + 0.], [d4 + d2, DIM5 + d1 - d2], [d4 + DIM3 - d2, DIM5 + d1 - d2],
+                  [d4 + DIM3 - d2, DIM5 + 0.], [2. * d4 + DIM3, DIM5 + 0.],
+                  [2. * d4 + DIM3, DIM5 + d2], [d4 + DIM3, DIM5 + d2], [d4 + DIM3, DIM5 + d1], [d4, DIM5 + d1],
                   [d4, DIM5 + d2], [0, DIM5 + d2]]
         facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 0]]
 
@@ -746,21 +754,6 @@ class Hat1Section(Geometry):
 
         :raises AssertionError: If the number of mesh sizes does not match the
             number of regions
-
-        The following example creates a circular cross-section with a diameter
-        of 50 with 64 points, and generates a mesh with a maximum triangular
-        area of 2.5::
-
-            import sectionproperties.pre.nastran_sections as nsections
-
-            geometry = nsections.CircularSection(d=50, n=64)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-
-        ..  figure:: ../images/sections/circle_mesh.png
-            :align: center
-            :scale: 75 %
-
-            Mesh generated from the above geometry.
         """
         mesh_sizes *= 2
         str = "Number of mesh_sizes ({0}), ".format(len(mesh_sizes))
@@ -774,34 +767,34 @@ class Hat1Section(Geometry):
 
 class HexaSection(Geometry):
     """
-    Constructs a Hexa section with the bottom web's middle center at
-    the origin *(0, 0)*, with six parameters defining dimensions.
+    Constructs a Hexa (hexagon) section with the center at the origin
+    *(0, 0)*, with three parameters defining dimensions.
     See Nastran documentation for more details.
 
-    :param float DIM1:
-    :param float DIM2:
-    :param float DIM3:
+    :param float DIM1: Spacing between bottom right point and right most point.
+    :param float DIM2: Width (x) of hexagon.
+    :param float DIM3: Depth (y) of hexagon.
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
     Added by JohnDN90.
 
     The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    1.5 and width of 2.0, and generates a mesh with a maximum triangular area of
+    0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.HexaSection(DIM1=0.5, DIM2=2.0, DIM3=1.5)
+        mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/hexa_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        HEXA section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/hexa_mesh.png
         :align: center
         :scale: 75 %
 
@@ -809,7 +802,7 @@ class HexaSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the HexaSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -829,11 +822,11 @@ class HexaSection(Geometry):
         self.shift_section()
 
 
-class ISection(Geometry):
+class NISection(Geometry):
     """
-    Constructs a I section with the bottom flange's middle center at
+    Constructs Nastran's I section with the bottom flange's middle center at
     the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation for definition of parameters.
+    See Nastran documentation[1] for definition of parameters.
 
     :param float DIM1: Depth(y) of the I-section
     :param float DIM2: Width (x) of bottom flange
@@ -846,22 +839,23 @@ class ISection(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a Nastran I cross-section with a depth of
+    5.0, and generates a mesh with a maximum triangular area of
+    0.005::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.NISection(DIM1=5.0, DIM2=2.0, DIM3=3.0,
+                                       DIM4=0.25, DIM5=0.375, DIM6=0.5)
+        mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/i_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        Nastran's I section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/i_mesh.png
         :align: center
         :scale: 75 %
 
@@ -869,7 +863,7 @@ class ISection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the NISection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -886,10 +880,11 @@ class ISection(Geometry):
         super().__init__(control_points, shift)
 
         # construct the points and facets
-        db = (DIM2 - DIM4) / 2
-        dt = (DIM3 - DIM4) / 2
-        self.points = [[0.,0.], [DIM2,0.], [DIM2, DIM5], [db+DIM4, DIM5], [db + DIM4, DIM1-DIM6], [db+DIM4+dt, DIM1-DIM6],
-                       [db+DIM4+dt, DIM1], [db-dt, DIM1], [db-dt, DIM1-DIM6], [db, DIM1-DIM6], [db, DIM5], [0, DIM5]]
+        db = 0.5*(DIM2 - DIM4)
+        dt = 0.5*(DIM3 - DIM4)
+        self.points = [[0.,0.], [DIM2,0.], [DIM2, DIM5], [db+DIM4, DIM5], [db + DIM4, DIM1-DIM6],
+                       [db+DIM4+dt, DIM1-DIM6], [db+DIM4+dt, DIM1], [db-dt, DIM1], [db-dt, DIM1-DIM6],
+                       [db, DIM1-DIM6], [db, DIM5], [0, DIM5]]
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10], [10,11], [11,0]]
 
         self.shift_section()
@@ -897,35 +892,35 @@ class ISection(Geometry):
 
 class I1Section(Geometry):
     """
-    Constructs a I1 section with the right flange's middle center at
+    Constructs a I1 section with the web's middle center at
     the origin *(0, 0)*, with four parameters defining dimensions.
     See Nastran documentation for more details.
 
-    :param float DIM1: Width (x) of top flange
-    :param float DIM2: Depth (y) of the T-section.
-    :param float DIM3: Thickness of top flange.
-    :param float DIM4: Thickness of web.
+    :param float DIM1: Twice distance from web end to flange end
+    :param float DIM2: Thickness of web
+    :param float DIM3: Length of web (spacing between flanges)
+    :param float DIM4: Depth (y) of the I1-section.
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a I1 cross-section with a depth of
+    5.0 and width of 1.75, and generates a mesh with a maximum triangular area of
+    0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.I1Section(DIM1=1.0, DIM2=0.75, DIM3=4.0, DIM4=5.0)
+        mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/i1_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        I1 section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/i1_mesh.png
         :align: center
         :scale: 75 %
 
@@ -949,9 +944,10 @@ class I1Section(Geometry):
         super().__init__(control_points, shift)
 
         # construct the points and facets
-        t = (DIM4 - DIM3) / 2
-        self.points = [[0,0], [DIM1+DIM2, 0], [DIM1+DIM2, t], [0.5*DIM1+DIM2, t], [0.5*DIM1+DIM2, t+DIM3],
-                       [DIM1+DIM2, t+DIM3], [DIM1+DIM2, DIM4], [0, DIM4], [0, t+DIM3], [0.5*DIM1, t+DIM3], [0.5*DIM1, t], [0, t]]
+        t = 0.5*(DIM4 - DIM3)
+        self.points = [[0.,0.], [DIM1+DIM2, 0.], [DIM1+DIM2, t], [0.5*DIM1+DIM2, t], [0.5*DIM1+DIM2, t+DIM3],
+                       [DIM1+DIM2, t+DIM3], [DIM1+DIM2, DIM4], [0., DIM4], [0., t+DIM3], [0.5*DIM1, t+DIM3],
+                       [0.5*DIM1, t], [0., t]]
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10], [10,11], [11,0]]
 
         self.shift_section()
