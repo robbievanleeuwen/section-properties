@@ -649,6 +649,27 @@ class HatSection(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Depth (y) of HAT-section.
+        :param float DIM2: Thickness of HAT-section.
+        :param float DIM3: Width (x) of top most section.
+        :param float DIM4: Width (x) of bottom sections.
+        :param shift: Vector that shifts the origin by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM3 - shift[0], 0.5*DIM2 - shift[1])
+        D = (0.5*DIM3 + DIM4 - shift[0], -DIM1 + DIM2 - shift[1])
+        E = (-0.5*DIM3 - DIM4 - shift[0], -DIM1 + DIM2 - shift[1])
+        F = (-0.5*DIM3 - shift[0], 0.5*DIM2 - shift[1])
+        return C, D, E, F
+
+
 class Hat1Section(Geometry):
     """
     Constructs a Hat1 section with the bottom plate's bottom center at
@@ -763,6 +784,28 @@ class Hat1Section(Geometry):
 
         return pre.create_mesh(self.points, self.facets, self.holes,
                                self.control_points, mesh_sizes)
+
+
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, DIM5, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width(x) of the Hat1-section
+        :param float DIM2: Depth (y) of the Hat1-section
+        :param float DIM3: Width (x) of hat's top flange.
+        :param float DIM4: Thickness of hat stiffener.
+        :param float DIM5: Thicknesss of bottom plate.
+        :param shift: Vector that shifts the origin by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (-0.5*DIM1 - shift[0], -shift[1])
+        D = (0.5*DIM1 - shift[0],  -shift[1])
+        E = (-0.5*DIM3 - shift[0], DIM2 - shift[1])
+        F = (0.5*DIM3 - shift[0], DIM2 - shift[1])
+        return C, D, E, F
 
 
 class HexaSection(Geometry):
@@ -1141,6 +1184,20 @@ class RodSection(Geometry):
 
         self.shift_section()
 
+    def getStressPoints(self, DIM1, relativeTo="shear_center"):
+        """
+        Returns the coordinates of thefour points at which stress is evaluated
+        with respect either the shear center or the centroid.
+
+        :param float DIM1: Radius of the circular rod section
+        :param str relativeTo: "shear_center" or "centroid", Default is "shear_cneter"
+        :return:
+        """
+        C = (0., DIM1)
+        D = (DIM1, 0.)
+        E = (0., -DIM1)
+        F = (-DIM1, 0.)
+        return C, D, E, F
 
 class TSection(Geometry):
     """
