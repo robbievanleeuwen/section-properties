@@ -48,7 +48,7 @@ class BarSection(Geometry):
         # assign control point
         control_points = [[0., 0.]]
 
-        shift = [-0.5*DIM1+shift[0], -0.5*DIM2+shift[1]]
+        # shift = [-0.5*DIM1+shift[0], -0.5*DIM2+shift[1]]
         super().__init__(control_points, shift)
 
         # construct the points and facets
@@ -56,6 +56,28 @@ class BarSection(Geometry):
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 0]]
 
         self.shift_section()
+
+
+    def getStressPoints(self, DIM1, DIM2, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width (x) of bar
+        :param float DIM2: Depth (y) of bar
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM1-shift[0], 0.5*DIM2-shift[1])
+        D = (0.5*DIM1-shift[0], -0.5*DIM2-shift[1])
+        E = (-0.5*DIM1-shift[0], -0.5*DIM2-shift[1])
+        F = (-0.5*DIM1-shift[0], 0.5*DIM2-shift[1])
+        return C, D, E, F
+
+
+
 
 
 class BoxSection(Geometry):
@@ -119,6 +141,27 @@ class BoxSection(Geometry):
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4]]
 
         self.shift_section()
+
+
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width (x) of box
+        :param float DIM2: Depth (y) of box
+        :param float DIM3: Thickness of box in y direction
+        :param float DIM4: Thickness of box in x direction
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM1-shift[0], 0.5*DIM2-shift[1])
+        D = (0.5*DIM1-shift[0], -0.5*DIM2-shift[1])
+        E = (-0.5*DIM1-shift[0], -0.5*DIM2-shift[1])
+        F = (-0.5*DIM1-shift[0], 0.5*DIM2-shift[1])
+        return C, D, E, F
 
 
 class Box1Section(Geometry):
@@ -188,6 +231,30 @@ class Box1Section(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width (x) of box
+        :param float DIM2: Depth (y) of box
+        :param float DIM3: Thickness of top wall
+        :param float DIM4: Thickness of bottom wall
+        :param float DIM5: Thickness of left wall
+        :param float DIM6: Thickness of right wall
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM1-shift[0], 0.5*DIM2-shift[1])
+        D = (0.5*DIM1-shift[0], -0.5*DIM2-shift[1])
+        E = (-0.5*DIM1-shift[0], -0.5*DIM2-shift[1])
+        F = (-0.5*DIM1-shift[0], 0.5*DIM2-shift[1])
+        return C, D, E, F
+
+
+
 class ChanSection(Geometry):
     """
     Constructs a CHAN (C-Channel) section with the web's middle
@@ -248,6 +315,28 @@ class ChanSection(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width (x) of the Chan section.
+        :param float DIM2: Depth (y) of the Chan section.
+        :param float DIM3: Thickness of web (vertical portion).
+        :param float DIM4: Thickness of flanges (top/bottom portion).
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (DIM1-0.5*DIM3-shift[0], 0.5*DIM2-shift[1])
+        D = (DIM1-0.5*DIM3-shift[0], -0.5*DIM2-shift[1])
+        E = (-0.5*DIM3-shift[0], -0.5*DIM2-shift[1])
+        F = (-0.5*DIM3-shift[0], 0.5*DIM2-shift[1])
+        return C, D, E, F
+
+
+
 class Chan1Section(Geometry):
     """
     Constructs a CHAN1 (C-Channel) section with the web's middle
@@ -256,7 +345,7 @@ class Chan1Section(Geometry):
 
     :param float DIM1: Width (x) of channels
     :param float DIM2: Thicknesss (x) of web
-    :param float DIM3: Spacing between channels
+    :param float DIM3: Spacing between channels (length of web)
     :param float DIM4: Depth (y) of CHAN1-section.
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
@@ -307,6 +396,27 @@ class Chan1Section(Geometry):
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,0]]
 
         self.shift_section()
+
+
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width (x) of channels
+        :param float DIM2: Thicknesss (x) of web
+        :param float DIM3: Spacing between channel (length of web)
+        :param float DIM4: Depth (y) of CHAN1-section.
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM2+DIM1-shift[0], 0.5*DIM4-shift[1])
+        D = (0.5*DIM2+DIM1-shift[0], -0.5*DIM4-shift[1])
+        E = (-0.5*DIM2-shift[0], -0.5*DIM4-shift[1])
+        F = (-0.5*DIM2-shift[0], 0.5*DIM4-shift[1])
+        return C, D, E, F
 
 
 class Chan2Section(Geometry):
@@ -367,6 +477,27 @@ class Chan2Section(Geometry):
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,0]]
 
         self.shift_section()
+
+
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Thickness of channels
+        :param float DIM2: Thickness of web
+        :param float DIM3: Depth (y) of CHAN2-section.
+        :param float DIM4: Width (x) of CHAN2-section.
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM4-shift[0], DIM3-0.5*DIM2-shift[1])
+        D = (0.5*DIM4-shift[0], -0.5*DIM2-shift[1])
+        E = (-0.5*DIM4-shift[0], -0.5*DIM2-shift[1])
+        F = (-0.5*DIM4-shift[0], DIM3-0.5*DIM2-shift[1])
+        return C, D, E, F
 
 
 class DBoxSection(Geometry):
@@ -452,6 +583,33 @@ class DBoxSection(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, DMI9, DIM10, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width (x) of the DBOX-section
+        :param float DIM2: Depth (y) of the DBOX-section
+        :param float DIM3: Width (x) of left-side box.
+        :param float DIM4: Thickness of left wall
+        :param float DIM5: Thickness of center wall
+        :param float DIM6: Thickness of right wall
+        :param float DIM7: Thickness of top left wall
+        :param float DIM8: Thickness of bottom left wall
+        :param float DIM9: Thickness of top right wall
+        :param float DIM10: Thickness of bottom right wall
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5 * DIM1 - shift[0], 0.5 * DIM2 - shift[1])
+        D = (0.5 * DIM1 - shift[0], -0.5 * DIM2 - shift[1])
+        E = (-0.5 * DIM1 - shift[0], -0.5 * DIM2 - shift[1])
+        F = (-0.5 * DIM1 - shift[0], 0.5 * DIM2 - shift[1])
+        return C, D, E, F
+
+
 class GBOXSection(Geometry):
     """
     Constructs a GBOX section with the center at the
@@ -525,6 +683,27 @@ class GBOXSection(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width (x) of channels
+        :param float DIM2: Thicknesss (x) of web
+        :param float DIM3: Spacing between channel (length of web)
+        :param float DIM4: Depth (y) of CHAN1-section.
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM1-shift[0], 0.5*DIM2-shift[1])
+        D = (0.5*DIM1-shift[0], -0.5*DIM2-shift[1])
+        E = (-0.5*DIM1-shift[0], -0.5*DIM2-shift[1])
+        F = (-0.5*DIM1-shift[0], 0.5*DIM2-shift[1])
+        return C, D, E, F
+
+
 class HSection(Geometry):
     """
     Constructs a H section with the middle web's middle center at
@@ -586,6 +765,27 @@ class HSection(Geometry):
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10], [10,11], [11,0]]
 
         self.shift_section()
+
+
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Spacing between vertical flanges
+        :param float DIM2: Twice the thickness of the vertical flanges
+        :param float DIM3: Depth (y) of the H-section.
+        :param float DIM4: Thickness of the middle web
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*(DIM1+DIM2)-shift[0], 0.5*DIM3-shift[1])
+        D = (0.5*(DIM1+DIM2)-shift[0], -0.5*DIM3-shift[1])
+        E = (-0.5*(DIM1+DIM2)-shift[0], -0.5*DIM3-shift[1])
+        F = (-0.5*(DIM1+DIM2)-shift[0], 0.5*DIM3-shift[1])
+        return C, D, E, F
 
 
 class HatSection(Geometry):
@@ -865,6 +1065,26 @@ class HexaSection(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, DIM3, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Spacing between bottom right point and right most point.
+        :param float DIM2: Width (x) of hexagon.
+        :param float DIM3: Depth (y) of hexagon.
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (-shift[0], 0.5*DIM3-shift[1])
+        D = (-shift[0], -0.5*DIM3-shift[1])
+        E = (0.5*DIM2-shift[0], -shift[1])
+        F = (-0.5*DIM2-shift[0], -shift[1])
+        return C, D, E, F
+
+
 class NISection(Geometry):
     """
     Constructs Nastran's I section with the bottom flange's middle center at
@@ -933,6 +1153,29 @@ class NISection(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Depth(y) of the I-section
+        :param float DIM2: Width (x) of bottom flange
+        :param float DIM3: Width (x) of top flange
+        :param float DIM4: Thickness of web
+        :param float DIM5: Thickness of bottom web
+        :param float DIM6: Thickness of top web
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM3-shift[0], 0.5*DIM1-shift[1])
+        D = (0.5*DIM3-shift[0], -0.5*DIM1-shift[1])
+        E = (-0.5*DIM3-shift[0], -0.5*DIM1-shift[1])
+        F = (-0.5*DIM3-shift[0], 0.5*DIM1-shift[1])
+        return C, D, E, F
+
+
 class I1Section(Geometry):
     """
     Constructs a I1 section with the web's middle center at
@@ -996,6 +1239,26 @@ class I1Section(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Spacing between bottom right point and right most point.
+        :param float DIM2: Width (x) of hexagon.
+        :param float DIM3: Depth (y) of hexagon.
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*(DIM1+DIM2)-shift[0], 0.5*DIM4-shift[1])
+        D = (0.5*(DIM1+DIM2)-shift[0], -0.5*DIM4-shift[1])
+        E = (-0.5*(DIM1+DIM2)-shift[0], -0.5*DIM4-shift[1])
+        F = (-0.5*(DIM1+DIM2)-shift[0], 0.5*DIM4-shift[1])
+        return C, D, E, F
+
+
 class LSection(Geometry):
     """
     Constructs a L section with the intersection's center at
@@ -1055,16 +1318,37 @@ class LSection(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width (x) of the L-section.
+        :param float DIM2: Depth (y) of the L-section.
+        :param float DIM3: Thickness of flange (horizontal portion).
+        :param float DIM4: Thickness of web (vertical portion).
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM4-shift[0], DIM2-0.5*DIM3-shift[1])
+        D = (DIM1-0.5*DIM4-shift[0], -0.5*DIM3-shift[1])
+        E = (-0.5*DIM4-shift[0], -0.5*DIM3-shift[1])
+        F = (-0.5*DIM4-shift[0], DIM2-0.5*DIM3-shift[1])
+        return C, D, E, F
+
+
 class NCrossSection(Geometry):
     """
     Constructs a cruciform/cross section with the intersection's middle
     center at the origin *(0, 0)*, with four parameters defining
     dimensions. See Nastran documentation [1]_ for more details.
 
-    :param float DIM1:
-    :param float DIM2:
-    :param float DIM3:
-    :param float DIM4:
+    :param float DIM1: Twice the width of horizontal member portruding from the vertical center member
+    :param float DIM2: Thickness of the vertical member
+    :param float DIM3: Depth (y) of the NCross-section
+    :param float DIM4: Thickness of the horizontal members
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
@@ -1114,6 +1398,27 @@ class NCrossSection(Geometry):
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10], [10,11], [11,0]]
 
         self.shift_section()
+
+
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Twice the width of horizontal member portruding from the vertical center member
+        :param float DIM2: Thickness of the vertical member
+        :param float DIM3: Depth (y) of the NCross-section
+        :param float DIM4: Thickness of the horizontal members
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (-shift[0], 0.5*DIM3-shift[1])
+        D = (0.5*(DIM1+DIM2)-shift[0], -shift[1])
+        E = (-shift[0], -0.5*DIM3-shift[1])
+        F = (-0.5*(DIM1+DIM2)-shift[0], -shift[1])
+        return C, D, E, F
 
 
 class RodSection(Geometry):
@@ -1184,20 +1489,24 @@ class RodSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, DIM1, relativeTo="shear_center"):
+
+    def getStressPoints(self, DIM1, shift=(0., 0.)):
         """
-        Returns the coordinates of thefour points at which stress is evaluated
-        with respect either the shear center or the centroid.
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
 
         :param float DIM1: Radius of the circular rod section
-        :param str relativeTo: "shear_center" or "centroid", Default is "shear_cneter"
-        :return:
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
-        C = (0., DIM1)
-        D = (DIM1, 0.)
-        E = (0., -DIM1)
-        F = (-DIM1, 0.)
+        C = (-shift[0], DIM1-shift[1])
+        D = (DIM1-shift[0], -shift[1])
+        E = (-shift[0], -DIM1-shift[1])
+        F = (-DIM1-shift[0], -shift[1])
         return C, D, E, F
+
 
 class TSection(Geometry):
     """
@@ -1288,16 +1597,37 @@ class TSection(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width (x) of top flange
+        :param float DIM2: Depth (y) of the T-section.
+        :param float DIM3: Thickness of top flange.
+        :param float DIM4: Thickness of web.
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (-shift[0], 0.5*DIM3-shift[1])
+        D = (0.5*DIM1-shift[0], 0.5*DIM3-shift[1])
+        E = (-shift[0], 0.5*DIM3-DIM2-shift[1])
+        F = (-0.5*DIM1-shift[0], 0.5*DIM3-shift[1])
+        return C, D, E, F
+
+
 class T1Section(Geometry):
     """
     Constructs a T1 section with the right flange's middle center at
     the origin *(0, 0)*, with four parameters defining dimensions.
     See Nastran documentation [1]_ for more details.
 
-    :param float DIM1:
-    :param float DIM2:
-    :param float DIM3:
-    :param float DIM4:
+    :param float DIM1: Depth (y) of T1-section
+    :param float DIM2: Length (x) of web
+    :param float DIM3: Thickness of right flange
+    :param float DIM4: Thickness of web
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
@@ -1349,16 +1679,37 @@ class T1Section(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Depth (y) of T1-section
+        :param float DIM2: Length (x) of web
+        :param float DIM3: Thickness of right flange
+        :param float DIM4: Thickness of web
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM3-shift[0], -shift[1])
+        D = (0.5*DIM3-shift[0], -0.5*DIM1-shift[1])
+        E = (-0.5*DIM3-DIM2-shift[0], -shift[1])
+        F = (0.5*DIM3-shift[0], 0.5*DIM1-shift[1])
+        return C, D, E, F
+
+
 class T2Section(Geometry):
     """
     Constructs a T2 section with the bottom web's middle center at
     the origin *(0, 0)*, with six parameters defining dimensions.
     See Nastran documentation [1]_ for more details.
 
-    :param float DIM1:
-    :param float DIM2:
-    :param float DIM3:
-    :param float DIM4:
+    :param float DIM1: Width (x) of T2-section
+    :param float DIM2: Depth (y) of T2-section
+    :param float DIM3: Thickness of bottom flange
+    :param float DIM4: Thickness of web
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
@@ -1408,6 +1759,27 @@ class T2Section(Geometry):
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,0]]
 
         self.shift_section()
+
+
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width (x) of T2-section
+        :param float DIM2: Depth (y) of T2-section
+        :param float DIM3: Thickness of bottom flange
+        :param float DIM4: Thickness of web
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM4-shift[0], DIM2-0.5*DIM3-shift[1])
+        D = (0.5*DIM1-shift[0], -0.5*DIM3-shift[1])
+        E = (-0.5*DIM1-shift[0], -0.5*DIM3-shift[1])
+        F = (-0.5*DIM4-shift[0], DIM2-0.5*DIM3-shift[1])
+        return C, D, E, F
 
 
 class TubeSection(Geometry):
@@ -1491,6 +1863,25 @@ class TubeSection(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Outer radius of the circular tube section
+        :param float DIM2: Inner radius of the circular tube section
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (-shift[0], DIM1-shift[1])
+        D = (DIM1-shift[0], -shift[1])
+        E = (-shift[0], -DIM1-shift[1])
+        F = (-DIM1-shift[0], -shift[1])
+        return C, D, E, F
+
+
 class Tube2Section(Geometry):
     """
     Constructs a circular tube2 section with the center at
@@ -1572,16 +1963,35 @@ class Tube2Section(Geometry):
         self.shift_section()
 
 
+    def getStressPoints(self, DIM1, DIM2, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Outer radius of the circular tube section
+        :param float DIM2: Thickness of wall
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (-shift[0], DIM1-shift[1])
+        D = (DIM1-shift[0], -shift[1])
+        E = (-shift[0], -DIM1-shift[1])
+        F = (-DIM1-shift[0], -shift[1])
+        return C, D, E, F
+
+
 class ZSection(Geometry):
     """
     Constructs a Z section with the bottom web's middle center at
     the origin *(0, 0)*, with six parameters defining dimensions.
     See Nastran documentation [1]_ for more details.
 
-    :param float DIM1:
-    :param float DIM2:
-    :param float DIM3:
-    :param float DIM4:
+    :param float DIM1: Width (x) of horizontal members
+    :param float DIM2: Thickness of web
+    :param float DIM3: Spacing between horizontal members (length of web)
+    :param float DIM4: Depth (y) of Z-section
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
@@ -1631,6 +2041,27 @@ class ZSection(Geometry):
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,0]]
 
         self.shift_section()
+
+
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Width (x) of horizontal members
+        :param float DIM2: Thickness of web
+        :param float DIM3: Spacing between horizontal members (length of web)
+        :param float DIM4: Depth (y) of Z-section
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (0.5*DIM2-shift[0], 0.5*DIM4-shift[1])
+        D = (0.5*DIM2+DIM1-shift[0], -0.5*DIM4-shift[1])
+        E = (-0.5*DIM2-shift[0], -0.5*DIM4-shift[1])
+        F = (-0.5*DIM2-DIM1-shift[0], 0.5*DIM4-shift[1])
+        return C, D, E, F
 
 
 # class Section(Geometry):
