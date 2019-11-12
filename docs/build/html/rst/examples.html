@@ -94,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="post.html">Viewing the Results</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#simple-example">Simple Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-nastran-section">Creating a Nastran Section</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#creating-custom-geometry">Creating Custom Geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#creating-a-merged-section">Creating a Merged Section</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mirroring-and-rotating-geometry">Mirroring and Rotating Geometry</a></li>
@@ -325,6 +326,159 @@ J = 611623.214
 </pre></div>
 </div>
 </div>
+<div class="section" id="creating-a-nastran-section">
+<h2>Creating a Nastran Section<a class="headerlink" href="#creating-a-nastran-section" title="Permalink to this headline">¶</a></h2>
+<p>The following example demonstrates how to create a cross-section defined in
+a Nastran-based finite element analysis program. The following creates a
+HAT1 cross-section and calculates the geometric, warping and plastic properties.
+The HAT1 cross-section is meshed with a maximum elemental area of 0.005.</p>
+<p>The geometry and mesh are plotted, and the mesh information printed to the terminal
+before the analysis is carried out. Detailed time information is printed to the
+terminal during the cross-section analysis stage. Once the analysis is complete,
+the cross-section properties are printed to the terminal. The centroidal
+axis second moments of area and torsion constant are saved to variables and it
+is shown that, for non-circular sections, the torsion constant is not equal to the
+sum of the second moments of area:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.nastran_sections</span> <span class="k">as</span> <span class="nn">nsections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="k">import</span> <span class="n">CrossSection</span>
+
+<span class="c1"># create a HAT1 section</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">nsections</span><span class="o">.</span><span class="n">HAT1Section</span><span class="p">(</span><span class="n">DIM1</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">DIM2</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">DIM3</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">DIM4</span><span class="o">=</span><span class="mf">0.1875</span><span class="p">,</span> <span class="n">DIM5</span><span class="o">=</span><span class="mf">0.375</span><span class="p">)</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">plot_geometry</span><span class="p">()</span>  <span class="c1"># plot the geometry</span>
+
+<span class="c1"># create a mesh with a maximum elemental area of 0.005</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">])</span>
+
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>  <span class="c1"># create a CrossSection object</span>
+<span class="n">section</span><span class="o">.</span><span class="n">display_mesh_info</span><span class="p">()</span>  <span class="c1"># display the mesh information</span>
+<span class="n">section</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">()</span>  <span class="c1"># plot the generated mesh`</span>
+
+<span class="c1"># perform a geometric, warping and plastic anaylsis, displaying the time info</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">(</span><span class="n">time_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">(</span><span class="n">time_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_plastic_properties</span><span class="p">(</span><span class="n">time_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># print the results to the terminal</span>
+<span class="n">section</span><span class="o">.</span><span class="n">display_results</span><span class="p">()</span>
+
+<span class="c1"># get the second moments of area and the torsion constant</span>
+<span class="p">(</span><span class="n">ixx_c</span><span class="p">,</span> <span class="n">iyy_c</span><span class="p">,</span> <span class="n">ixy_c</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_ic</span><span class="p">()</span>
+<span class="n">j</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_j</span><span class="p">()</span>
+
+<span class="c1"># print the sum of the second moments of area and the torsion constant</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ixx + Iyy = </span><span class="si">{0:.3f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ixx_c</span> <span class="o">+</span> <span class="n">iyy_c</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;J = </span><span class="si">{0:.3f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The following plots are generated by the above example:</p>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/hat1_geometry.png"><img alt="../_images/hat1_geometry.png" src="../_images/hat1_geometry.png" style="width: 466.5px; height: 197.25px;" /></a>
+<p class="caption"><span class="caption-text">Circular section geometry.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/hat1_mesh.png"><img alt="../_images/hat1_mesh.png" src="../_images/hat1_mesh.png" style="width: 473.25px; height: 258.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>The following is printed to the terminal:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Mesh Statistics:
+--2038 nodes
+--926 elements
+--2 regions
+
+--Calculating geometric section properties...
+----completed in 0.367074 seconds---
+
+--Assembing 2038x2038 stiffness matrix and load vector...
+----completed in 0.515934 seconds---
+--Solving for the warping function using the direct solver...
+----completed in 0.005604 seconds---
+--Computing the torsion constant...
+----completed in 0.000104 seconds---
+--Assembling shear function load vectors...
+----completed in 0.525532 seconds---
+--Solving for the shear functions using the direct solver...
+----completed in 0.064247 seconds---
+--Assembling shear centre and warping moment integrals...
+----completed in 0.331969 seconds---
+--Calculating shear centres...
+----completed in 0.000043 seconds---
+--Assembling shear deformation coefficients...
+----completed in 0.511631 seconds---
+--Assembling monosymmetry integrals...
+----completed in 0.389498 seconds---
+
+--Calculating plastic properties...
+----completed in 0.131321 seconds---
+
+Section Properties:
+A    = 2.789062e+00
+Qx   = 1.626709e+00
+Qy   = -1.424642e-16
+cx   = -5.107959e-17
+cy   = 5.832458e-01
+Ixx_g        = 1.935211e+00
+Iyy_g        = 3.233734e+00
+Ixy_g        = -1.801944e-16
+Ixx_c        = 9.864400e-01
+Iyy_c        = 3.233734e+00
+Ixy_c        = -9.710278e-17
+Zxx+         = 6.962676e-01
+Zxx-         = 1.691294e+00
+Zyy+         = 1.616867e+00
+Zyy-         = 1.616867e+00
+rx   = 5.947113e-01
+ry   = 1.076770e+00
+phi  = -9.000000e+01
+I11_c        = 3.233734e+00
+I22_c        = 9.864400e-01
+Z11+         = 1.616867e+00
+Z11-         = 1.616867e+00
+Z22+         = 1.691294e+00
+Z22-         = 6.962676e-01
+r11  = 1.076770e+00
+r22  = 5.947113e-01
+J    = 9.878443e-01
+Iw   = 1.160810e-01
+x_se         = 4.822719e-05
+y_se         = 4.674792e-01
+x_st         = 4.822719e-05
+y_st         = 4.674792e-01
+x1_se        = 1.157666e-01
+y2_se        = 4.822719e-05
+A_sx         = 1.648312e+00
+A_sy         = 6.979733e-01
+A_s11        = 6.979733e-01
+A_s22        = 1.648312e+00
+betax+       = -2.746928e-01
+betax-       = 2.746928e-01
+betay+       = 9.645438e-05
+betay-       = -9.645438e-05
+beta11+      = 9.645438e-05
+beta11-      = -9.645438e-05
+beta22+      = 2.746928e-01
+beta22-      = -2.746928e-01
+x_pc         = -5.107959e-17
+y_pc         = 3.486328e-01
+Sxx  = 1.140530e+00
+Syy  = 2.603760e+00
+SF_xx+       = 1.638062e+00
+SF_xx-       = 6.743533e-01
+SF_yy+       = 1.610373e+00
+SF_yy-       = 1.610373e+00
+x11_pc       = -3.671369e-17
+y22_pc       = 3.486328e-01
+S11  = 2.603760e+00
+S22  = 1.140530e+00
+SF_11+       = 1.610374e+00
+SF_11-       = 1.610374e+00
+SF_22+       = 6.743539e-01
+SF_22-       = 1.638064e+00
+
+Ixx + Iyy = 4.220
+J = 0.988
+</pre></div>
+</div>
+</div>
 <div class="section" id="creating-custom-geometry">
 <h2>Creating Custom Geometry<a class="headerlink" href="#creating-custom-geometry" title="Permalink to this headline">¶</a></h2>
 <p>The following example demonstrates how geometry objects can be created from a
@@ -376,17 +530,17 @@ analysis is complete, a plot of the various calculated centroids is generated:</
 </pre></div>
 </div>
 <p>The following plots are generated by the above example:</p>
-<div class="figure align-center" id="id3">
-<a class="reference internal image-reference" href="../_images/custom_geometry1.png"><img alt="../_images/custom_geometry1.png" src="../_images/custom_geometry1.png" style="width: 420.0px; height: 318.0px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the generated geometry object.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
-<div class="figure align-center" id="id4">
-<a class="reference internal image-reference" href="../_images/custom_mesh1.png"><img alt="../_images/custom_mesh1.png" src="../_images/custom_mesh1.png" style="width: 302.25px; height: 314.25px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id5">
+<a class="reference internal image-reference" href="../_images/custom_geometry1.png"><img alt="../_images/custom_geometry1.png" src="../_images/custom_geometry1.png" style="width: 420.0px; height: 318.0px;" /></a>
+<p class="caption"><span class="caption-text">Plot of the generated geometry object.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id6">
+<a class="reference internal image-reference" href="../_images/custom_mesh1.png"><img alt="../_images/custom_mesh1.png" src="../_images/custom_mesh1.png" style="width: 302.25px; height: 314.25px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id7">
 <a class="reference internal image-reference" href="../_images/custom_centroids.png"><img alt="../_images/custom_centroids.png" src="../_images/custom_centroids.png" style="width: 469.5px; height: 320.25px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the centroids and the principal axis.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Plot of the centroids and the principal axis.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="creating-a-merged-section">
@@ -454,17 +608,17 @@ the centroids are plotted:</p>
 </pre></div>
 </div>
 <p>The following plots are generated by the above example:</p>
-<div class="figure align-center" id="id6">
-<a class="reference internal image-reference" href="../_images/merged_geometry1.png"><img alt="../_images/merged_geometry1.png" src="../_images/merged_geometry1.png" style="width: 428.25px; height: 309.75px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the generated geometry object.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
-</div>
-<div class="figure align-center" id="id7">
-<a class="reference internal image-reference" href="../_images/merged_mesh1.png"><img alt="../_images/merged_mesh1.png" src="../_images/merged_mesh1.png" style="width: 305.25px; height: 309.75px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id8">
+<a class="reference internal image-reference" href="../_images/merged_geometry1.png"><img alt="../_images/merged_geometry1.png" src="../_images/merged_geometry1.png" style="width: 428.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Plot of the generated geometry object.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id9">
+<a class="reference internal image-reference" href="../_images/merged_mesh1.png"><img alt="../_images/merged_mesh1.png" src="../_images/merged_mesh1.png" style="width: 305.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id10">
 <a class="reference internal image-reference" href="../_images/merged_centroids.png"><img alt="../_images/merged_centroids.png" src="../_images/merged_centroids.png" style="width: 476.25px; height: 309.75px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the centroids and the principal axis.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Plot of the centroids and the principal axis.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
 </div>
 <p>The following is printed to the terminal:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Removed overlapping facets... Rebuilt with points: [30, 67, 93, 32]
@@ -557,17 +711,17 @@ calculated centroids is generated:</p>
 </pre></div>
 </div>
 <p>The following plots are generated by the above example:</p>
-<div class="figure align-center" id="id9">
-<a class="reference internal image-reference" href="../_images/mirr_rot_geometry.png"><img alt="../_images/mirr_rot_geometry.png" src="../_images/mirr_rot_geometry.png" style="width: 471.0px; height: 324.75px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the generated geometry object.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
-</div>
-<div class="figure align-center" id="id10">
-<a class="reference internal image-reference" href="../_images/mirr_rot_mesh.png"><img alt="../_images/mirr_rot_mesh.png" src="../_images/mirr_rot_mesh.png" style="width: 351.75px; height: 324.0px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id11">
+<a class="reference internal image-reference" href="../_images/mirr_rot_geometry.png"><img alt="../_images/mirr_rot_geometry.png" src="../_images/mirr_rot_geometry.png" style="width: 471.0px; height: 324.75px;" /></a>
+<p class="caption"><span class="caption-text">Plot of the generated geometry object.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id12">
+<a class="reference internal image-reference" href="../_images/mirr_rot_mesh.png"><img alt="../_images/mirr_rot_mesh.png" src="../_images/mirr_rot_mesh.png" style="width: 351.75px; height: 324.0px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id13">
 <a class="reference internal image-reference" href="../_images/mirr_rot_centroids.png"><img alt="../_images/mirr_rot_centroids.png" src="../_images/mirr_rot_centroids.png" style="width: 527.25px; height: 323.25px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the centroids and the principal axis.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Plot of the centroids and the principal axis.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
 </div>
 <p>The following is printed to the terminal:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Removed overlapping facets... Rebuilt with points: [21, 43, 22, 0]
@@ -644,25 +798,25 @@ and shear about the y-axis with a torsion moment.</p>
 </pre></div>
 </div>
 <p>The following plots are generated by the above example:</p>
-<div class="figure align-center" id="id12">
-<a class="reference internal image-reference" href="../_images/stress_m.png"><img alt="../_images/stress_m.png" src="../_images/stress_m.png" style="width: 444.0px; height: 285.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress for case 1.</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
-</div>
-<div class="figure align-center" id="id13">
-<a class="reference internal image-reference" href="../_images/stress_mzz.png"><img alt="../_images/stress_mzz.png" src="../_images/stress_mzz.png" style="width: 441.0px; height: 285.0px;" /></a>
-<p class="caption"><span class="caption-text">Vector plot of the torsion stress for case 1.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id14">
-<a class="reference internal image-reference" href="../_images/stress_v.png"><img alt="../_images/stress_v.png" src="../_images/stress_v.png" style="width: 440.25px; height: 285.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress for case 2.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/stress_m.png"><img alt="../_images/stress_m.png" src="../_images/stress_m.png" style="width: 444.0px; height: 285.0px;" /></a>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress for case 1.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
 </div>
 <div class="figure align-center" id="id15">
-<a class="reference internal image-reference" href="../_images/stress_vm1.png"><img alt="../_images/stress_vm1.png" src="../_images/stress_vm1.png" style="width: 440.25px; height: 285.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the von Mises stress for case 1.</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/stress_mzz.png"><img alt="../_images/stress_mzz.png" src="../_images/stress_mzz.png" style="width: 441.0px; height: 285.0px;" /></a>
+<p class="caption"><span class="caption-text">Vector plot of the torsion stress for case 1.</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
 </div>
 <div class="figure align-center" id="id16">
+<a class="reference internal image-reference" href="../_images/stress_v.png"><img alt="../_images/stress_v.png" src="../_images/stress_v.png" style="width: 440.25px; height: 285.0px;" /></a>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress for case 2.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id17">
+<a class="reference internal image-reference" href="../_images/stress_vm1.png"><img alt="../_images/stress_vm1.png" src="../_images/stress_vm1.png" style="width: 440.25px; height: 285.0px;" /></a>
+<p class="caption"><span class="caption-text">Contour plot of the von Mises stress for case 1.</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id18">
 <a class="reference internal image-reference" href="../_images/stress_vm2.png"><img alt="../_images/stress_vm2.png" src="../_images/stress_vm2.png" style="width: 441.0px; height: 285.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the von Mises stress for case 2.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the von Mises stress for case 2.</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="creating-a-composite-cross-section">
@@ -728,29 +882,29 @@ to the terminal and a plot of the centroids and cross-section stresses generated
 </pre></div>
 </div>
 <p>The following plots are generated by the above example:</p>
-<div class="figure align-center" id="id17">
-<a class="reference internal image-reference" href="../_images/composite_geometry.png"><img alt="../_images/composite_geometry.png" src="../_images/composite_geometry.png" style="width: 620.25px; height: 309.75px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the generated geometry object.</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
-</div>
-<div class="figure align-center" id="id18">
-<a class="reference internal image-reference" href="../_images/composite_mesh1.png"><img alt="../_images/composite_mesh1.png" src="../_images/composite_mesh1.png" style="width: 576.75px; height: 309.75px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id19">
-<a class="reference internal image-reference" href="../_images/composite_centroids.png"><img alt="../_images/composite_centroids.png" src="../_images/composite_centroids.png" style="width: 669.0px; height: 309.75px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the centroids and the principal axis.</span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/composite_geometry.png"><img alt="../_images/composite_geometry.png" src="../_images/composite_geometry.png" style="width: 620.25px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Plot of the generated geometry object.</span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
 </div>
 <div class="figure align-center" id="id20">
-<a class="reference internal image-reference" href="../_images/composite_stress_n.png"><img alt="../_images/composite_stress_n.png" src="../_images/composite_stress_n.png" style="width: 444.0px; height: 285.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the axial stress.</span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/composite_mesh1.png"><img alt="../_images/composite_mesh1.png" src="../_images/composite_mesh1.png" style="width: 576.75px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
 </div>
 <div class="figure align-center" id="id21">
-<a class="reference internal image-reference" href="../_images/composite_stress_m.png"><img alt="../_images/composite_stress_m.png" src="../_images/composite_stress_m.png" style="width: 444.0px; height: 285.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id21" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/composite_centroids.png"><img alt="../_images/composite_centroids.png" src="../_images/composite_centroids.png" style="width: 669.0px; height: 309.75px;" /></a>
+<p class="caption"><span class="caption-text">Plot of the centroids and the principal axis.</span><a class="headerlink" href="#id21" title="Permalink to this image">¶</a></p>
 </div>
 <div class="figure align-center" id="id22">
+<a class="reference internal image-reference" href="../_images/composite_stress_n.png"><img alt="../_images/composite_stress_n.png" src="../_images/composite_stress_n.png" style="width: 444.0px; height: 285.0px;" /></a>
+<p class="caption"><span class="caption-text">Contour plot of the axial stress.</span><a class="headerlink" href="#id22" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id23">
+<a class="reference internal image-reference" href="../_images/composite_stress_m.png"><img alt="../_images/composite_stress_m.png" src="../_images/composite_stress_m.png" style="width: 444.0px; height: 285.0px;" /></a>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id24">
 <a class="reference internal image-reference" href="../_images/composite_stress_v.png"><img alt="../_images/composite_stress_v.png" src="../_images/composite_stress_v.png" style="width: 441.0px; height: 285.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id22" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
 </div>
 <p>The following is printed to the terminal:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Mesh Statistics:
@@ -924,9 +1078,9 @@ accuracy of the result compared with the time taken to obtain the solution:</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id23">
+<div class="figure align-center" id="id25">
 <a class="reference internal image-reference" href="../_images/frame_graph.png"><img alt="../_images/frame_graph.png" src="../_images/frame_graph.png" style="width: 421.5px; height: 313.5px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the torsion constant as a function of the solution time.</span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Plot of the torsion constant as a function of the solution time.</span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="advanced-example">
@@ -979,9 +1133,9 @@ the aspect ratio is then plotted:</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id24">
+<div class="figure align-center" id="id26">
 <a class="reference internal image-reference" href="../_images/advanced.png"><img alt="../_images/advanced.png" src="../_images/advanced.png" style="width: 480.0px; height: 360.0px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the torsion constant as a function of the aspect ratio.</span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Plot of the torsion constant as a function of the aspect ratio.</span><a class="headerlink" href="#id26" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 </div>
