@@ -1,5 +1,6 @@
-from sectionproperties.pre.sections import *
-
+from sectionproperties.pre.sections import Geometry, RectangularSection, CustomSection, MergedSection
+from sectionproperties.pre.pre import create_mesh
+import numpy as np
 
 class BARSection(Geometry):
     """
@@ -19,7 +20,7 @@ class BARSection(Geometry):
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.BarSection(DIM1=2.0, DIM2=1.5)
+        geometry = nsections.BARSection(DIM1=2.0, DIM2=1.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/bar_geometry.png
@@ -94,7 +95,7 @@ class BOXSection(Geometry):
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.BoxSection(DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5)
+        geometry = nsections.BOXSection(DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/box_geometry.png
@@ -179,7 +180,7 @@ class BOX1Section(Geometry):
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.Box1Section(DIM1=4.0, DIM2=3.0, DIM3=0.375,
+        geometry = nsections.BOX1Section(DIM1=4.0, DIM2=3.0, DIM3=0.375,
                                          DIM4=0.5, DIM5=0.25, DIM6=0.75)
         mesh = geometry.create_mesh(mesh_sizes=[0.007])
 
@@ -251,25 +252,24 @@ class CHANSection(Geometry):
     """
     Constructs a CHAN (C-Channel) section with the web's middle
     center at the origin *(0, 0)*, with four parameters defining
-    dimensions. See Nastran documentation [1]_ for more details.
+    dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_
+    for more details. Added by JohnDN90.
 
-    :param float DIM1: Width (x) of the Chan section.
-    :param float DIM2: Depth (y) of the Chan section.
-    :param float DIM3: Thickness of web (vertical portion).
-    :param float DIM4: Thickness of flanges (top/bottom portion).
+    :param float DIM1: Width (x) of the CHAN-section
+    :param float DIM2: Depth (y) of the CHAN-section
+    :param float DIM3: Thickness of web (vertical portion)
+    :param float DIM4: Thickness of flanges (top/bottom portion)
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    Added by JohnDN90.
-
     The following example creates a CHAN cross-section with a depth of
     4.0 and width of 2.0, and generates a mesh with a maximum triangular area of
-    0.003::
+    0.008::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.ChanSection(DIM1=2.0, DIM2=4.0, DIM3=0.25, DIM4=0.5)
-        mesh = geometry.create_mesh(mesh_sizes=[0.003])
+        geometry = nsections.CHANSection(DIM1=2.0, DIM2=4.0, DIM3=0.25, DIM4=0.5)
+        mesh = geometry.create_mesh(mesh_sizes=[0.008])
 
     ..  figure:: ../images/sections/chan_geometry.png
         :align: center
@@ -285,7 +285,7 @@ class CHANSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the ChanSection class."""
+        """Inits the CHANSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -313,10 +313,10 @@ class CHANSection(Geometry):
         of the cross-section. The shift parameter can be used to make the coordinates
         relative to the centroid or the shear center.
 
-        :param float DIM1: Width (x) of the Chan section.
-        :param float DIM2: Depth (y) of the Chan section.
-        :param float DIM3: Thickness of web (vertical portion).
-        :param float DIM4: Thickness of flanges (top/bottom portion).
+        :param float DIM1: Width (x) of the CHAN-section
+        :param float DIM2: Depth (y) of the CHAN-section
+        :param float DIM3: Thickness of web (vertical portion)
+        :param float DIM4: Thickness of flanges (top/bottom portion)
         :param shift: Vector that shifts the cross-section by *(x, y)*
         :type shift: tuple(float, float)
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
@@ -332,25 +332,24 @@ class CHAN1Section(Geometry):
     """
     Constructs a CHAN1 (C-Channel) section with the web's middle
     center at the origin *(0, 0)*, with four parameters defining
-    dimensions. See Nastran documentation [1]_ for more details.
+    dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_
+    for more details. Added by JohnDN90.
 
     :param float DIM1: Width (x) of channels
     :param float DIM2: Thicknesss (x) of web
     :param float DIM3: Spacing between channels (length of web)
-    :param float DIM4: Depth (y) of CHAN1-section.
+    :param float DIM4: Depth (y) of CHAN1-section
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    Added by JohnDN90.
-
     The following example creates a CHAN1 cross-section with a depth of
     4.0 and width of 1.75, and generates a mesh with a maximum triangular area of
-    0.001::
+    0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.Chan1Section(DIM1=0.75, DIM2=1.0, DIM3=3.5, DIM4=4.0)
-        mesh = geometry.create_mesh(mesh_sizes=[0.001])
+        geometry = nsections.CHAN1Section(DIM1=0.75, DIM2=1.0, DIM3=3.5, DIM4=4.0)
+        mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/chan1_geometry.png
         :align: center
@@ -366,7 +365,7 @@ class CHAN1Section(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the Chan1Section class."""
+        """Inits the CHAN1Section class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -398,7 +397,7 @@ class CHAN1Section(Geometry):
         :param float DIM1: Width (x) of channels
         :param float DIM2: Thicknesss (x) of web
         :param float DIM3: Spacing between channel (length of web)
-        :param float DIM4: Depth (y) of CHAN1-section.
+        :param float DIM4: Depth (y) of CHAN1-section
         :param shift: Vector that shifts the cross-section by *(x, y)*
         :type shift: tuple(float, float)
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
@@ -413,26 +412,25 @@ class CHAN1Section(Geometry):
 class CHAN2Section(Geometry):
     """
     Constructs a CHAN2 (C-Channel) section with the bottom web's middle center at
-    the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    the origin *(0, 0)*, with four parameters defining dimensions.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
+    Added by JohnDN90.
 
     :param float DIM1: Thickness of channels
     :param float DIM2: Thickness of web
-    :param float DIM3: Depth (y) of CHAN2-section.
-    :param float DIM4: Width (x) of CHAN2-section.
+    :param float DIM3: Depth (y) of CHAN2-section
+    :param float DIM4: Width (x) of CHAN2-section
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    Added by JohnDN90.
-
     The following example creates a CHAN2 cross-section with a depth of
     2.0 and width of 4.0, and generates a mesh with a maximum triangular area of
-    0.001::
+    0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.Chan2Section(DIM1=0.375, DIM2=0.5, DIM3=2.0, DIM4=4.0)
-        mesh = geometry.create_mesh(mesh_sizes=[0.001])
+        geometry = nsections.CHAN2Section(DIM1=0.375, DIM2=0.5, DIM3=2.0, DIM4=4.0)
+        mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/chan2_geometry.png
         :align: center
@@ -448,7 +446,7 @@ class CHAN2Section(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the Chan2Section class."""
+        """Inits the CHAN2Section class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -478,8 +476,8 @@ class CHAN2Section(Geometry):
 
         :param float DIM1: Thickness of channels
         :param float DIM2: Thickness of web
-        :param float DIM3: Depth (y) of CHAN2-section.
-        :param float DIM4: Width (x) of CHAN2-section.
+        :param float DIM3: Depth (y) of CHAN2-section
+        :param float DIM4: Width (x) of CHAN2-section
         :param shift: Vector that shifts the cross-section by *(x, y)*
         :type shift: tuple(float, float)
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
@@ -491,15 +489,97 @@ class CHAN2Section(Geometry):
         return C, D, E, F
 
 
-class DBoxSection(Geometry):
+class CROSSSection(Geometry):
+    """
+    Constructs Nastran's cruciform/cross section with the intersection's
+    middle center at the origin *(0, 0)*, with four parameters defining
+    dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
+    details. Added by JohnDN90.
+
+    :param float DIM1: Twice the width of horizontal member protruding from the vertical center member
+    :param float DIM2: Thickness of the vertical member
+    :param float DIM3: Depth (y) of the CROSS-section
+    :param float DIM4: Thickness of the horizontal members
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+
+    The following example creates a rectangular cross-section with a depth of
+    3.0 and width of 1.875, and generates a mesh with a maximum triangular area of
+    0.008::
+
+        import sectionproperties.pre.nastran_sections as nsections
+
+        geometry = nsections.CROSSSection(DIM1=1.5, DIM2=0.375, DIM3=3.0, DIM4=0.25)
+        mesh = geometry.create_mesh(mesh_sizes=[0.008])
+
+    ..  figure:: ../images/sections/cross_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Cruciform/cross section geometry.
+
+    ..  figure:: ../images/sections/cross_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+        """Inits the CROSSSection class."""
+
+        # force dimensions to be floating point values
+        DIM1 *= 1.0
+        DIM2 *= 1.0
+        DIM3 *= 1.0
+        DIM4 *= 1.0
+
+        # assign control point
+        control_points = [[0.5*DIM1+0.5*DIM2, 0.5*DIM3]]
+
+        shift = [-(0.5*DIM1+0.5*DIM2)+shift[0], -(0.5*DIM3)+shift[1]]
+        super().__init__(control_points, shift)
+
+        # construct the points and facets
+        d = 0.5*(DIM3 - DIM4)
+        self.points = [[0.5*DIM1, 0], [0.5*DIM1+DIM2, 0], [0.5*DIM1+DIM2, d], [DIM1+DIM2, d], [DIM1+DIM2, d+DIM4], [0.5*DIM1+DIM2, d+DIM4],
+                       [0.5*DIM1+DIM2, DIM3], [0.5*DIM1, DIM3], [0.5*DIM1, d+DIM4], [0, d+DIM4], [0, d], [0.5*DIM1, d]]
+        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10], [10,11], [11,0]]
+
+        self.shift_section()
+
+
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Twice the width of horizontal member protruding from the vertical center member
+        :param float DIM2: Thickness of the vertical member
+        :param float DIM3: Depth (y) of the CROSS-section
+        :param float DIM4: Thickness of the horizontal members
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: tuple(float, float)
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (-shift[0], 0.5*DIM3-shift[1])
+        D = (0.5*(DIM1+DIM2)-shift[0], -shift[1])
+        E = (-shift[0], -0.5*DIM3-shift[1])
+        F = (-0.5*(DIM1+DIM2)-shift[0], -shift[1])
+        return C, D, E, F
+
+
+class DBOXSection(Geometry):
     """
     Constructs a DBOX section with the center at
     the origin *(0, 0)*, with ten parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See MSC Nastran documentation [1]_ for more details. Added by
+    JohnDN90.
 
     :param float DIM1: Width (x) of the DBOX-section
     :param float DIM2: Depth (y) of the DBOX-section
-    :param float DIM3: Width (x) of left-side box.
+    :param float DIM3: Width (x) of left-side box
     :param float DIM4: Thickness of left wall
     :param float DIM5: Thickness of center wall
     :param float DIM6: Thickness of right wall
@@ -510,15 +590,13 @@ class DBoxSection(Geometry):
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    Added by JohnDN90.
-
     The following example creates a DBOX cross-section with a depth of
     3.0 and width of 8.0, and generates a mesh with a maximum triangular area of
     0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.DBoxSection(DIM1=8.0, DIM2=3.0, DIM3=3.0,
+        geometry = nsections.DBOXSection(DIM1=8.0, DIM2=3.0, DIM3=3.0,
                                          DIM4=0.5, DIM5=0.625, DIM6=0.75,
                                          DIM7=0.375, DIM8=0.25,
                                          DIM9=0.5, DIM10=0.375)
@@ -538,7 +616,7 @@ class DBoxSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, DIM9, DIM10, shift=[0, 0]):
-        """Inits the DBoxSection class."""
+        """Inits the DBOXSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -582,7 +660,7 @@ class DBoxSection(Geometry):
 
         :param float DIM1: Width (x) of the DBOX-section
         :param float DIM2: Depth (y) of the DBOX-section
-        :param float DIM3: Width (x) of left-side box.
+        :param float DIM3: Width (x) of left-side box
         :param float DIM4: Thickness of left wall
         :param float DIM5: Thickness of center wall
         :param float DIM6: Thickness of right wall
@@ -605,7 +683,8 @@ class GBOXSection(Geometry):
     """
     Constructs a GBOX section with the center at the
     origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation for more details.
+    See ASTROS documentation [5]_ for more details. Added by
+    JohnDN90.
 
     :param float DIM1: Width (x) of the GBOX-section
     :param float DIM2: Depth (y) of the GBOX-section
@@ -615,8 +694,6 @@ class GBOXSection(Geometry):
     :param float DIM6: Spacing between webs
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a GBOX cross-section with a depth of
     2.5 and width of 6.0, and generates a mesh with a maximum triangular area of
@@ -680,10 +757,12 @@ class GBOXSection(Geometry):
         of the cross-section. The shift parameter can be used to make the coordinates
         relative to the centroid or the shear center.
 
-        :param float DIM1: Width (x) of channels
-        :param float DIM2: Thicknesss (x) of web
-        :param float DIM3: Spacing between channel (length of web)
-        :param float DIM4: Depth (y) of CHAN1-section.
+        :param float DIM1: Width (x) of the GBOX-section
+        :param float DIM2: Depth (y) of the GBOX-section
+        :param float DIM3: Thickness of top flange
+        :param float DIM4: Thickness of bottom flange
+        :param float DIM5: Thickness of webs
+        :param float DIM6: Spacing between webs
         :param shift: Vector that shifts the cross-section by *(x, y)*
         :type shift: tuple(float, float)
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
@@ -699,16 +778,15 @@ class HSection(Geometry):
     """
     Constructs a H section with the middle web's middle center at
     the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
+    Added by JohnDN90.
 
-    :param float DIM1: Spacing between vertical flanges
+    :param float DIM1: Spacing between vertical flanges (length of web)
     :param float DIM2: Twice the thickness of the vertical flanges
-    :param float DIM3: Depth (y) of the H-section.
+    :param float DIM3: Depth (y) of the H-section
     :param float DIM4: Thickness of the middle web
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a H cross-section with a depth of
     3.5 and width of 2.75, and generates a mesh with a maximum triangular area of
@@ -764,9 +842,9 @@ class HSection(Geometry):
         of the cross-section. The shift parameter can be used to make the coordinates
         relative to the centroid or the shear center.
 
-        :param float DIM1: Spacing between vertical flanges
+        :param float DIM1: Spacing between vertical flanges (length of web)
         :param float DIM2: Twice the thickness of the vertical flanges
-        :param float DIM3: Depth (y) of the H-section.
+        :param float DIM3: Depth (y) of the H-section
         :param float DIM4: Thickness of the middle web
         :param shift: Vector that shifts the cross-section by *(x, y)*
         :type shift: tuple(float, float)
@@ -779,20 +857,20 @@ class HSection(Geometry):
         return C, D, E, F
 
 
-class HatSection(Geometry):
+class HATSection(Geometry):
     """
     Constructs a Hat section with the top most section's middle center
     at the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
+    Note that HAT in ASTROS is actually HAT1 in this code.
+    Added by JohnDN90.
 
-    :param float DIM1: Depth (y) of HAT-section.
-    :param float DIM2: Thickness of HAT-section.
-    :param float DIM3: Width (x) of top most section.
-    :param float DIM4: Width (x) of bottom sections.
+    :param float DIM1: Depth (y) of HAT-section
+    :param float DIM2: Thickness of HAT-section
+    :param float DIM3: Width (x) of top most section
+    :param float DIM4: Width (x) of bottom sections
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a HAT cross-section with a depth of
     1.25 and width of 2.5, and generates a mesh with a maximum triangular area of
@@ -800,7 +878,7 @@ class HatSection(Geometry):
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.HatSection(DIM1=1.25, DIM2=0.25, DIM3=1.5, DIM4=0.5)
+        geometry = nsections.HATSection(DIM1=1.25, DIM2=0.25, DIM3=1.5, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/hat_geometry.png
@@ -817,7 +895,7 @@ class HatSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the HatSection class."""
+        """Inits the HATSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -846,10 +924,10 @@ class HatSection(Geometry):
         of the cross-section. The shift parameter can be used to make the coordinates
         relative to the centroid or the shear center.
 
-        :param float DIM1: Depth (y) of HAT-section.
-        :param float DIM2: Thickness of HAT-section.
-        :param float DIM3: Width (x) of top most section.
-        :param float DIM4: Width (x) of bottom sections.
+        :param float DIM1: Depth (y) of HAT-section
+        :param float DIM2: Thickness of HAT-section
+        :param float DIM3: Width (x) of top most section
+        :param float DIM4: Width (x) of bottom sections
         :param shift: Vector that shifts the origin by *(x, y)*
         :type shift: tuple(float, float)
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
@@ -861,30 +939,30 @@ class HatSection(Geometry):
         return C, D, E, F
 
 
-class Hat1Section(Geometry):
+class HAT1Section(Geometry):
     """
-    Constructs a Hat1 section with the bottom plate's bottom center at
+    Constructs a HAT1 section with the bottom plate's bottom center at
     the origin *(0, 0)*, with five parameters defining dimensions.
-    See Nastran documentation for definition of parameters.
+    See Nastran documentation [1]_ [2]_ [3]_ [5]_ for definition of
+    parameters. Note that in ASTROS, HAT1 is called HAT. Added by
+    JohnDN90.
 
-    :param float DIM1: Width(x) of the Hat1-section
-    :param float DIM2: Depth (y) of the Hat1-section
-    :param float DIM3: Width (x) of hat's top flange.
-    :param float DIM4: Thickness of hat stiffener.
-    :param float DIM5: Thicknesss of bottom plate.
+    :param float DIM1: Width(x) of the HAT1-section
+    :param float DIM2: Depth (y) of the HAT1-section
+    :param float DIM3: Width (x) of hat's top flange
+    :param float DIM4: Thickness of hat stiffener
+    :param float DIM5: Thicknesss of bottom plate
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    Added by JohnDN90.
-
     The following example creates a HAT1 cross-section with a depth of
     2.0 and width of 4.0, and generates a mesh with a maximum triangular area of
-    0.001::
+    0.005::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.Hat1Section(DIM1=4.0, DIM2=2.0, DIM3=1.5, DIM4=0.1875, DIM5=0.375)
-        mesh = geometry.create_mesh(mesh_sizes=[0.001])
+        geometry = nsections.HAT1Section(DIM1=4.0, DIM2=2.0, DIM3=1.5, DIM4=0.1875, DIM5=0.375)
+        mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/hat1_geometry.png
         :align: center
@@ -900,7 +978,7 @@ class Hat1Section(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, shift=[0, 0]):
-        """Inits the Hat1Section class."""
+        """Inits the HAT1Section class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -973,8 +1051,8 @@ class Hat1Section(Geometry):
         str += "({0}).".format(len(self.control_points))
         assert(len(mesh_sizes) == len(self.control_points)), str
 
-        return pre.create_mesh(self.points, self.facets, self.holes,
-                               self.control_points, mesh_sizes)
+        return create_mesh(self.points, self.facets, self.holes,
+                           self.control_points, mesh_sizes)
 
 
     def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, DIM5, shift=(0., 0.)):
@@ -983,11 +1061,11 @@ class Hat1Section(Geometry):
         of the cross-section. The shift parameter can be used to make the coordinates
         relative to the centroid or the shear center.
 
-        :param float DIM1: Width(x) of the Hat1-section
-        :param float DIM2: Depth (y) of the Hat1-section
-        :param float DIM3: Width (x) of hat's top flange.
-        :param float DIM4: Thickness of hat stiffener.
-        :param float DIM5: Thicknesss of bottom plate.
+        :param float DIM1: Width(x) of the HAT1-section
+        :param float DIM2: Depth (y) of the HAT1-section
+        :param float DIM3: Width (x) of hat's top flange
+        :param float DIM4: Thickness of hat stiffener
+        :param float DIM5: Thicknesss of bottom plate
         :param shift: Vector that shifts the origin by *(x, y)*
         :type shift: tuple(float, float)
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
@@ -999,28 +1077,27 @@ class Hat1Section(Geometry):
         return C, D, E, F
 
 
-class HexaSection(Geometry):
+class HEXASection(Geometry):
     """
-    Constructs a Hexa (hexagon) section with the center at the origin
+    Constructs a HEXA (hexagon) section with the center at the origin
     *(0, 0)*, with three parameters defining dimensions.
-    See Nastran documentation for more details.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
+    Added by JohnDN90.
 
-    :param float DIM1: Spacing between bottom right point and right most point.
-    :param float DIM2: Width (x) of hexagon.
-    :param float DIM3: Depth (y) of hexagon.
+    :param float DIM1: Spacing between bottom right point and right most point
+    :param float DIM2: Width (x) of hexagon
+    :param float DIM3: Depth (y) of hexagon
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    Added by JohnDN90.
-
     The following example creates a rectangular cross-section with a depth of
     1.5 and width of 2.0, and generates a mesh with a maximum triangular area of
-    0.001::
+    0.005::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.HexaSection(DIM1=0.5, DIM2=2.0, DIM3=1.5)
-        mesh = geometry.create_mesh(mesh_sizes=[0.001])
+        geometry = nsections.HEXASection(DIM1=0.5, DIM2=2.0, DIM3=1.5)
+        mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/hexa_geometry.png
         :align: center
@@ -1036,7 +1113,7 @@ class HexaSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, shift=[0, 0]):
-        """Inits the HexaSection class."""
+        """Inits the HEXASection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -1062,9 +1139,9 @@ class HexaSection(Geometry):
         of the cross-section. The shift parameter can be used to make the coordinates
         relative to the centroid or the shear center.
 
-        :param float DIM1: Spacing between bottom right point and right most point.
-        :param float DIM2: Width (x) of hexagon.
-        :param float DIM3: Depth (y) of hexagon.
+        :param float DIM1: Spacing between bottom right point and right most point
+        :param float DIM2: Width (x) of hexagon
+        :param float DIM3: Depth (y) of hexagon
         :param shift: Vector that shifts the cross-section by *(x, y)*
         :type shift: tuple(float, float)
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
@@ -1080,7 +1157,8 @@ class NISection(Geometry):
     """
     Constructs Nastran's I section with the bottom flange's middle center at
     the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation [1]_ for definition of parameters.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for definition of parameters.
+    Added by JohnDN90.
 
     :param float DIM1: Depth(y) of the I-section
     :param float DIM2: Width (x) of bottom flange
@@ -1091,17 +1169,15 @@ class NISection(Geometry):
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    Added by JohnDN90.
-
     The following example creates a Nastran I cross-section with a depth of
     5.0, and generates a mesh with a maximum triangular area of
-    0.005::
+    0.008::
 
         import sectionproperties.pre.nastran_sections as nsections
 
         geometry = nsections.NISection(DIM1=5.0, DIM2=2.0, DIM3=3.0,
                                        DIM4=0.25, DIM5=0.375, DIM6=0.5)
-        mesh = geometry.create_mesh(mesh_sizes=[0.005])
+        mesh = geometry.create_mesh(mesh_sizes=[0.008])
 
     ..  figure:: ../images/sections/i_geometry.png
         :align: center
@@ -1171,25 +1247,24 @@ class I1Section(Geometry):
     """
     Constructs a I1 section with the web's middle center at
     the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
+    Added by JohnDN90.
 
     :param float DIM1: Twice distance from web end to flange end
     :param float DIM2: Thickness of web
     :param float DIM3: Length of web (spacing between flanges)
-    :param float DIM4: Depth (y) of the I1-section.
+    :param float DIM4: Depth (y) of the I1-section
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    Added by JohnDN90.
-
     The following example creates a I1 cross-section with a depth of
     5.0 and width of 1.75, and generates a mesh with a maximum triangular area of
-    0.001::
+    0.02::
 
         import sectionproperties.pre.nastran_sections as nsections
 
         geometry = nsections.I1Section(DIM1=1.0, DIM2=0.75, DIM3=4.0, DIM4=5.0)
-        mesh = geometry.create_mesh(mesh_sizes=[0.001])
+        mesh = geometry.create_mesh(mesh_sizes=[0.02])
 
     ..  figure:: ../images/sections/i1_geometry.png
         :align: center
@@ -1236,9 +1311,10 @@ class I1Section(Geometry):
         of the cross-section. The shift parameter can be used to make the coordinates
         relative to the centroid or the shear center.
 
-        :param float DIM1: Spacing between bottom right point and right most point.
-        :param float DIM2: Width (x) of hexagon.
-        :param float DIM3: Depth (y) of hexagon.
+        :param float DIM1: Twice distance from web end to flange end
+        :param float DIM2: Thickness of web
+        :param float DIM3: Length of web (spacing between flanges)
+        :param float DIM4: Depth (y) of the I1-section
         :param shift: Vector that shifts the cross-section by *(x, y)*
         :type shift: tuple(float, float)
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
@@ -1254,16 +1330,15 @@ class LSection(Geometry):
     """
     Constructs a L section with the intersection's center at
     the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See Nastran documentation [1]_ [2]_ [3]_ for more details.
+    Added by JohnDN90.
 
-    :param float DIM1: Width (x) of the L-section.
-    :param float DIM2: Depth (y) of the L-section.
-    :param float DIM3: Thickness of flange (horizontal portion).
-    :param float DIM4: Thickness of web (vertical portion).
+    :param float DIM1: Width (x) of the L-section
+    :param float DIM2: Depth (y) of the L-section
+    :param float DIM3: Thickness of flange (horizontal portion)
+    :param float DIM4: Thickness of web (vertical portion)
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a L cross-section with a depth of
     6.0 and width of 3.0, and generates a mesh with a maximum triangular area of
@@ -1315,10 +1390,10 @@ class LSection(Geometry):
         of the cross-section. The shift parameter can be used to make the coordinates
         relative to the centroid or the shear center.
 
-        :param float DIM1: Width (x) of the L-section.
-        :param float DIM2: Depth (y) of the L-section.
-        :param float DIM3: Thickness of flange (horizontal portion).
-        :param float DIM4: Thickness of web (vertical portion).
+        :param float DIM1: Width (x) of the L-section
+        :param float DIM2: Depth (y) of the L-section
+        :param float DIM3: Thickness of flange (horizontal portion)
+        :param float DIM4: Thickness of web (vertical portion)
         :param shift: Vector that shifts the cross-section by *(x, y)*
         :type shift: tuple(float, float)
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
@@ -1330,100 +1405,17 @@ class LSection(Geometry):
         return C, D, E, F
 
 
-class NCrossSection(Geometry):
-    """
-    Constructs a cruciform/cross section with the intersection's middle
-    center at the origin *(0, 0)*, with four parameters defining
-    dimensions. See Nastran documentation [1]_ for more details.
-
-    :param float DIM1: Twice the width of horizontal member protruding from the vertical center member
-    :param float DIM2: Thickness of the vertical member
-    :param float DIM3: Depth (y) of the NCross-section
-    :param float DIM4: Thickness of the horizontal members
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
-
-    Added by JohnDN90.
-
-    The following example creates a rectangular cross-section with a depth of
-    3.0 and width of 1.875, and generates a mesh with a maximum triangular area of
-    0.001::
-
-        import sectionproperties.pre.nastran_sections as nsections
-
-        geometry = nsections.NCrossSection(DIM1=1.5, DIM2=0.375, DIM3=3.0, DIM4=0.25)
-        mesh = geometry.create_mesh(mesh_sizes=[0.001])
-
-    ..  figure:: ../images/sections/ncross_geometry.png
-        :align: center
-        :scale: 75 %
-
-        Cruciform/cross section geometry.
-
-    ..  figure:: ../images/sections/ncross_mesh.png
-        :align: center
-        :scale: 75 %
-
-        Mesh generated from the above geometry.
-    """
-
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the NCrossSection class."""
-
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-
-        # assign control point
-        control_points = [[0.5*DIM1+0.5*DIM2, 0.5*DIM3]]
-
-        shift = [-(0.5*DIM1+0.5*DIM2)+shift[0], -(0.5*DIM3)+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        d = 0.5*(DIM3 - DIM4)
-        self.points = [[0.5*DIM1, 0], [0.5*DIM1+DIM2, 0], [0.5*DIM1+DIM2, d], [DIM1+DIM2, d], [DIM1+DIM2, d+DIM4], [0.5*DIM1+DIM2, d+DIM4],
-                       [0.5*DIM1+DIM2, DIM3], [0.5*DIM1, DIM3], [0.5*DIM1, d+DIM4], [0, d+DIM4], [0, d], [0.5*DIM1, d]]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10], [10,11], [11,0]]
-
-        self.shift_section()
-
-
-    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, shift=(0., 0.)):
-        """
-        Returns the coordinates of the stress evaluation points relative to the origin
-        of the cross-section. The shift parameter can be used to make the coordinates
-        relative to the centroid or the shear center.
-
-        :param float DIM1: Twice the width of horizontal member portruding from the vertical center member
-        :param float DIM2: Thickness of the vertical member
-        :param float DIM3: Depth (y) of the NCross-section
-        :param float DIM4: Thickness of the horizontal members
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-        C = (-shift[0], 0.5*DIM3-shift[1])
-        D = (0.5*(DIM1+DIM2)-shift[0], -shift[1])
-        E = (-shift[0], -0.5*DIM3-shift[1])
-        F = (-0.5*(DIM1+DIM2)-shift[0], -shift[1])
-        return C, D, E, F
-
-
-class RodSection(Geometry):
+class RODSection(Geometry):
     """
     Constructs a circular rod section with the center at
     the origin *(0, 0)*, with one parameter defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
+    Added by JohnDN90.
 
     :param float DIM1: Radius of the circular rod section
     :param int n: Number of points discretising the circle
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a circular rod with a radius of 3.0 and 50
     points discretizing the boundary, and generates a mesh with a maximum
@@ -1431,7 +1423,7 @@ class RodSection(Geometry):
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RodSection(DIM1=3.0, n=50)
+        geometry = nsections.RODSection(DIM1=3.0, n=50)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/rod_geometry.png
@@ -1448,7 +1440,7 @@ class RodSection(Geometry):
     """
 
     def __init__(self, DIM1, n, shift=[0, 0]):
-        """Inits the RodSection class."""
+        """Inits the RODSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -1503,16 +1495,15 @@ class TSection(Geometry):
     """
     Constructs a T section with the top flange's middle center at
     the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for more
+    details. Added by JohnDN90.
 
     :param float DIM1: Width (x) of top flange
-    :param float DIM2: Depth (y) of the T-section.
-    :param float DIM3: Thickness of top flange.
-    :param float DIM4: Thickness of web.
+    :param float DIM2: Depth (y) of the T-section
+    :param float DIM3: Thickness of top flange
+    :param float DIM4: Thickness of web
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a T cross-section with a depth of
     4.0 and width of 3.0, and generates a mesh with a maximum triangular area of
@@ -1595,9 +1586,9 @@ class TSection(Geometry):
         relative to the centroid or the shear center.
 
         :param float DIM1: Width (x) of top flange
-        :param float DIM2: Depth (y) of the T-section.
-        :param float DIM3: Thickness of top flange.
-        :param float DIM4: Thickness of web.
+        :param float DIM2: Depth (y) of the T-section
+        :param float DIM3: Thickness of top flange
+        :param float DIM4: Thickness of web
         :param shift: Vector that shifts the cross-section by *(x, y)*
         :type shift: tuple(float, float)
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
@@ -1613,7 +1604,8 @@ class T1Section(Geometry):
     """
     Constructs a T1 section with the right flange's middle center at
     the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
+    Added by JohnDN90.
 
     :param float DIM1: Depth (y) of T1-section
     :param float DIM2: Length (x) of web
@@ -1621,8 +1613,6 @@ class T1Section(Geometry):
     :param float DIM4: Thickness of web
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a T1 cross-section with a depth of
     3.0 and width of 3.875, and generates a mesh with a maximum triangular area of
@@ -1693,9 +1683,10 @@ class T1Section(Geometry):
 
 class T2Section(Geometry):
     """
-    Constructs a T2 section with the bottom web's middle center at
+    Constructs a T2 section with the bottom flange's middle center at
     the origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
+    Added by JohnDN90.
 
     :param float DIM1: Width (x) of T2-section
     :param float DIM2: Depth (y) of T2-section
@@ -1703,8 +1694,6 @@ class T2Section(Geometry):
     :param float DIM4: Thickness of web
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a T2 cross-section with a depth of
     4.0 and width of 3.0, and generates a mesh with a maximum triangular area of
@@ -1773,19 +1762,18 @@ class T2Section(Geometry):
         return C, D, E, F
 
 
-class TubeSection(Geometry):
+class TUBESection(Geometry):
     """
     Constructs a circular tube section with the center at
     the origin *(0, 0)*, with two parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
+    Added by JohnDN90.
 
     :param float DIM1: Outer radius of the circular tube section
     :param float DIM2: Inner radius of the circular tube section
     :param int n: Number of points discretising the circle
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a circular tube cross-section with an outer
     radius of 3.0 and an inner radius of 2.5, and generates a mesh with
@@ -1794,7 +1782,7 @@ class TubeSection(Geometry):
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.TubeSection(DIM1=3.0, DIM2=2.5, n=37)
+        geometry = nsections.TUBESection(DIM1=3.0, DIM2=2.5, n=37)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/tube_geometry.png
@@ -1811,7 +1799,7 @@ class TubeSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, n, shift=[0, 0]):
-        """Inits the TubeSection class."""
+        """Inits the TUBESection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -1874,19 +1862,18 @@ class TubeSection(Geometry):
         return C, D, E, F
 
 
-class Tube2Section(Geometry):
+class TUBE2Section(Geometry):
     """
-    Constructs a circular tube2 section with the center at
+    Constructs a circular TUBE2 section with the center at
     the origin *(0, 0)*, with two parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See MSC Nastran documentation [1]_ for more details. Added
+    by JohnDN90.
 
     :param float DIM1: Outer radius of the circular tube section
     :param float DIM2: Thickness of wall
     :param int n: Number of points discretising the circle
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a ciruclar TUBE2 cross-section with an outer
     radius of 3.0 and a wall thickness of 0.5, and generates a mesh with 37
@@ -1895,7 +1882,7 @@ class Tube2Section(Geometry):
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.Tube2Section(DIM1=3.0, DIM2=0.5, n=37)
+        geometry = nsections.TUBE2Section(DIM1=3.0, DIM2=0.5, n=37)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/tube2_geometry.png
@@ -1912,7 +1899,7 @@ class Tube2Section(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, n, shift=[0, 0]):
-        """Inits the Tube2Section class."""
+        """Inits the TUBE2Section class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -1977,9 +1964,10 @@ class Tube2Section(Geometry):
 
 class ZSection(Geometry):
     """
-    Constructs a Z section with the bottom web's middle center at
-    the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    Constructs a Z section with the web's middle center at
+    the origin *(0, 0)*, with four parameters defining dimensions.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
+    Added by JohnDN90.
 
     :param float DIM1: Width (x) of horizontal members
     :param float DIM2: Thickness of web
@@ -1987,8 +1975,6 @@ class ZSection(Geometry):
     :param float DIM4: Depth (y) of Z-section
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a rectangular cross-section with a depth of
     4.0 and width of 2.75, and generates a mesh with a maximum triangular area of
@@ -2055,66 +2041,3 @@ class ZSection(Geometry):
         E = (-0.5*DIM2-shift[0], -0.5*DIM4-shift[1])
         F = (-0.5*DIM2-DIM1-shift[0], 0.5*DIM4-shift[1])
         return C, D, E, F
-
-
-# class Section(Geometry):
-#     """
-#     Constructs a I section with the bottom web's middle center at
-#     the origin *(0, 0)*, with six parameters defining dimensions.
-#     See Nastran documentation [1]_ for more details.
-#
-#     :param float DIM1:
-#     :param float DIM2:
-#     :param float DIM3:
-#     :param float DIM4:
-#     :param float DIM5:
-#     :param float DIM6:
-#     :param shift: Vector that shifts the cross-section by *(x, y)*
-#     :type shift: list[float, float]
-#
-#     Added by JohnDN90.
-#
-#     The following example creates a rectangular cross-section with a depth of
-#     100 and width of 50, and generates a mesh with a maximum triangular area of
-#     5::
-#
-#         import sectionproperties.pre.nastran_sections as nsections
-#
-#         geometry = nsections.RectangularSection(d=100, b=50)
-#         mesh = geometry.create_mesh(mesh_sizes=[5])
-#
-#     ..  figure:: ../images/sections/rectangle_geometry.png
-#         :align: center
-#         :scale: 75 %
-#
-#         Rectangular section geometry.
-#
-#     ..  figure:: ../images/sections/rectangle_mesh.png
-#         :align: center
-#         :scale: 75 %
-#
-#         Mesh generated from the above geometry.
-#     """
-#
-#     def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=[0, 0]):
-#         """Inits the BoxSection class."""
-#
-#         # force dimensions to be floating point values
-#         DIM1 *= 1.0
-#         DIM2 *= 1.0
-#         DIM3 *= 1.0
-#         DIM4 *= 1.0
-#         DIM5 *= 1.0
-#         DIM6 *= 1.0
-#
-#         # assign control point
-#         control_points =
-#
-#         shift = [+shift[0], +shift[1]]
-#         super().__init__(control_points, shift)
-#
-#         # construct the points and facets
-#         self.points =
-#         self.facets =
-#
-#         self.shift_section()
