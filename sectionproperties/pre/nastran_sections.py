@@ -1,20 +1,17 @@
 from sectionproperties.pre.sections import *
 
 
-#TODO Update documentation.
-
-class BarSection(Geometry):
+class BARSection(Geometry):
     """
     Constructs a BAR section with the center at the
     origin *(0, 0)*, with two parameters defining dimensions.
-    See Nastran documentation [1]_ for definition of parameters.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for definition of parameters.
+    Added by JohnDN90.
 
     :param float DIM1: Width (x) of bar
     :param float DIM2: Depth (y) of bar
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a BAR cross-section with a depth of
     1.5 and width of 2.0, and generates a mesh with a maximum triangular area of
@@ -39,7 +36,7 @@ class BarSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, shift=[0, 0]):
-        """Inits the BarSection class."""
+        """Inits the BARSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -77,14 +74,12 @@ class BarSection(Geometry):
         return C, D, E, F
 
 
-
-
-
-class BoxSection(Geometry):
+class BOXSection(Geometry):
     """
     Constructs a BOX section with the center at the
     origin *(0, 0)*, with four parameters defining dimensions.
-    See Nastran documentation [1]_ for definition of parameters.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for definition
+    of parameters. Added by JohnDN90.
 
     :param float DIM1: Width (x) of box
     :param float DIM2: Depth (y) of box
@@ -92,8 +87,6 @@ class BoxSection(Geometry):
     :param float DIM4: Thickness of box in x direction
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
-
-    Added by JohnDN90.
 
     The following example creates a BOX cross-section with a depth of
     3.0 and width of 4.0, and generates a mesh with a maximum triangular area of
@@ -118,7 +111,7 @@ class BoxSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the BOXSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -164,11 +157,12 @@ class BoxSection(Geometry):
         return C, D, E, F
 
 
-class Box1Section(Geometry):
+class BOX1Section(Geometry):
     """
     Constructs a BOX1 section with the center at
     the origin *(0, 0)*, with six parameters defining dimensions.
-    See Nastran documentation [1]_ for more details.
+    See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
+    Added by JohnDN90.
 
     :param float DIM1: Width (x) of box
     :param float DIM2: Depth (y) of box
@@ -179,15 +173,14 @@ class Box1Section(Geometry):
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    Added by JohnDN90.
-
     The following example creates a BOX1 cross-section with a depth of
     3.0 and width of 4.0, and generates a mesh with a maximum triangular area of
     0.007::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.Box1Section(DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5, DIM5=0.25, DIM6=0.75)
+        geometry = nsections.Box1Section(DIM1=4.0, DIM2=3.0, DIM3=0.375,
+                                         DIM4=0.5, DIM5=0.25, DIM6=0.75)
         mesh = geometry.create_mesh(mesh_sizes=[0.007])
 
     ..  figure:: ../images/sections/box1_geometry.png
@@ -254,8 +247,7 @@ class Box1Section(Geometry):
         return C, D, E, F
 
 
-
-class ChanSection(Geometry):
+class CHANSection(Geometry):
     """
     Constructs a CHAN (C-Channel) section with the web's middle
     center at the origin *(0, 0)*, with four parameters defining
@@ -336,8 +328,7 @@ class ChanSection(Geometry):
         return C, D, E, F
 
 
-
-class Chan1Section(Geometry):
+class CHAN1Section(Geometry):
     """
     Constructs a CHAN1 (C-Channel) section with the web's middle
     center at the origin *(0, 0)*, with four parameters defining
@@ -419,7 +410,7 @@ class Chan1Section(Geometry):
         return C, D, E, F
 
 
-class Chan2Section(Geometry):
+class CHAN2Section(Geometry):
     """
     Constructs a CHAN2 (C-Channel) section with the bottom web's middle center at
     the origin *(0, 0)*, with six parameters defining dimensions.
@@ -1214,7 +1205,7 @@ class I1Section(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the T1section class."""
+        """Inits the I1section class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -1274,22 +1265,22 @@ class LSection(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a L cross-section with a depth of
+    6.0 and width of 3.0, and generates a mesh with a maximum triangular area of
+    0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.LSection(DIM1=3.0, DIM2=6.0, DIM3=0.375, DIM4=0.625)
+        mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/l_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        L section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/l_mesh.png
         :align: center
         :scale: 75 %
 
@@ -1297,7 +1288,7 @@ class LSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the LSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -1345,7 +1336,7 @@ class NCrossSection(Geometry):
     center at the origin *(0, 0)*, with four parameters defining
     dimensions. See Nastran documentation [1]_ for more details.
 
-    :param float DIM1: Twice the width of horizontal member portruding from the vertical center member
+    :param float DIM1: Twice the width of horizontal member protruding from the vertical center member
     :param float DIM2: Thickness of the vertical member
     :param float DIM3: Depth (y) of the NCross-section
     :param float DIM4: Thickness of the horizontal members
@@ -1355,21 +1346,21 @@ class NCrossSection(Geometry):
     Added by JohnDN90.
 
     The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    3.0 and width of 1.875, and generates a mesh with a maximum triangular area of
+    0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.NCrossSection(DIM1=1.5, DIM2=0.375, DIM3=3.0, DIM4=0.25)
+        mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/ncross_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        Cruciform/cross section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/ncross_mesh.png
         :align: center
         :scale: 75 %
 
@@ -1377,7 +1368,7 @@ class NCrossSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the NCrossSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -1434,22 +1425,22 @@ class RodSection(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a circular rod with a radius of 3.0 and 50
+    points discretizing the boundary, and generates a mesh with a maximum
+    triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.RodSection(DIM1=3.0, n=50)
+        mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/rod_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        Rod section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/rod_mesh.png
         :align: center
         :scale: 75 %
 
@@ -1457,7 +1448,7 @@ class RodSection(Geometry):
     """
 
     def __init__(self, DIM1, n, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the RodSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -1523,22 +1514,22 @@ class TSection(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a T cross-section with a depth of
+    4.0 and width of 3.0, and generates a mesh with a maximum triangular area of
+    0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.TSection(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.25)
+        mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/t_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        T section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/t_mesh.png
         :align: center
         :scale: 75 %
 
@@ -1546,7 +1537,7 @@ class TSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the TSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -1633,22 +1624,22 @@ class T1Section(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a T1 cross-section with a depth of
+    3.0 and width of 3.875, and generates a mesh with a maximum triangular area of
+    0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.T1Section(DIM1=3.0, DIM2=3.5, DIM3=0.375, DIM4=0.25)
+        mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/t1_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        T1 section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/t1_mesh.png
         :align: center
         :scale: 75 %
 
@@ -1703,7 +1694,7 @@ class T1Section(Geometry):
 class T2Section(Geometry):
     """
     Constructs a T2 section with the bottom web's middle center at
-    the origin *(0, 0)*, with six parameters defining dimensions.
+    the origin *(0, 0)*, with four parameters defining dimensions.
     See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Width (x) of T2-section
@@ -1715,22 +1706,22 @@ class T2Section(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a T2 cross-section with a depth of
+    4.0 and width of 3.0, and generates a mesh with a maximum triangular area of
+    0.005::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.T2Section(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.5)
+        mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/t2_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        T2 section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/t2_mesh.png
         :align: center
         :scale: 75 %
 
@@ -1738,7 +1729,7 @@ class T2Section(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the T2Section class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -1785,7 +1776,7 @@ class T2Section(Geometry):
 class TubeSection(Geometry):
     """
     Constructs a circular tube section with the center at
-    the origin *(0, 0)*, with one parameter defining dimensions.
+    the origin *(0, 0)*, with two parameters defining dimensions.
     See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Outer radius of the circular tube section
@@ -1796,22 +1787,23 @@ class TubeSection(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a circular tube cross-section with an outer
+    radius of 3.0 and an inner radius of 2.5, and generates a mesh with
+    37 points discretizing the boundaries and a maximum triangular area of
+    0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.TubeSection(DIM1=3.0, DIM2=2.5, n=37)
+        mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/tube_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        TUBE section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/tube_mesh.png
         :align: center
         :scale: 75 %
 
@@ -1885,7 +1877,7 @@ class TubeSection(Geometry):
 class Tube2Section(Geometry):
     """
     Constructs a circular tube2 section with the center at
-    the origin *(0, 0)*, with one parameter defining dimensions.
+    the origin *(0, 0)*, with two parameters defining dimensions.
     See Nastran documentation [1]_ for more details.
 
     :param float DIM1: Outer radius of the circular tube section
@@ -1896,22 +1888,23 @@ class Tube2Section(Geometry):
 
     Added by JohnDN90.
 
-    The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    The following example creates a ciruclar TUBE2 cross-section with an outer
+    radius of 3.0 and a wall thickness of 0.5, and generates a mesh with 37
+    point discritizing the boundary and a maximum triangular area of
+    0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.Tube2Section(DIM1=3.0, DIM2=0.5, n=37)
+        mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/tube2_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        TUBE2 section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/tube2_mesh.png
         :align: center
         :scale: 75 %
 
@@ -1919,7 +1912,7 @@ class Tube2Section(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, n, shift=[0, 0]):
-        """Inits the TubeSection class."""
+        """Inits the Tube2Section class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
@@ -1998,21 +1991,21 @@ class ZSection(Geometry):
     Added by JohnDN90.
 
     The following example creates a rectangular cross-section with a depth of
-    100 and width of 50, and generates a mesh with a maximum triangular area of
-    5::
+    4.0 and width of 2.75, and generates a mesh with a maximum triangular area of
+    0.005::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry = nsections.ZSection(DIM1=1.125, DIM2=0.5, DIM3=3.5, DIM4=4.0)
+        mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
-    ..  figure:: ../images/sections/rectangle_geometry.png
+    ..  figure:: ../images/sections/z_geometry.png
         :align: center
         :scale: 75 %
 
-        Rectangular section geometry.
+        Z section geometry.
 
-    ..  figure:: ../images/sections/rectangle_mesh.png
+    ..  figure:: ../images/sections/z_mesh.png
         :align: center
         :scale: 75 %
 
@@ -2020,7 +2013,7 @@ class ZSection(Geometry):
     """
 
     def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the BoxSection class."""
+        """Inits the ZSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
