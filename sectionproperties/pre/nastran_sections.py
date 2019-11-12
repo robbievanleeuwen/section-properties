@@ -1179,13 +1179,13 @@ class NISection(Geometry):
                                        DIM4=0.25, DIM5=0.375, DIM6=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.008])
 
-    ..  figure:: ../images/sections/i_geometry.png
+    ..  figure:: ../images/sections/ni_geometry.png
         :align: center
         :scale: 75 %
 
         Nastran's I section geometry.
 
-    ..  figure:: ../images/sections/i_mesh.png
+    ..  figure:: ../images/sections/ni_mesh.png
         :align: center
         :scale: 75 %
 
