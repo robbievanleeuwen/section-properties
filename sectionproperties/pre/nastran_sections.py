@@ -120,6 +120,10 @@ class BOXSection(Geometry):
         DIM3 *= 1.0
         DIM4 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(2.0*DIM4<DIM1, "Invalid geometry specified.")
+        np.testing.assert_(2.0*DIM3<DIM2, "Invalid geometry specified.")
+
         # assign control point
         control_points = [[0., 0.5*DIM2 - 0.5*DIM3]]
 
@@ -208,6 +212,10 @@ class BOX1Section(Geometry):
         DIM5 *= 1.0
         DIM6 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM5+DIM6<DIM1, "Invalid geometry specified.")
+        np.testing.assert_(DIM3+DIM4<DIM2, "Invalid geometry specified.")
+
         # assign control point
         control_points = [[0.5*DIM1, 0.5*DIM4]]
 
@@ -293,6 +301,10 @@ class CHANSection(Geometry):
         DIM3 *= 1.0
         DIM4 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(2.0*DIM4<DIM2, "Invalid geometry specified.")
+        np.testing.assert_(DIM3<DIM1, "Invalid geometry specified.")
+
         # assign control point
         control_points = [[0.5*DIM1, 0.5*DIM4]]
 
@@ -372,6 +384,9 @@ class CHAN1Section(Geometry):
         DIM2 *= 1.0
         DIM3 *= 1.0
         DIM4 *= 1.0
+
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM4>DIM3, "Invalid geometry specified.")
 
         # assign control point
         control_points = [[0.5*DIM1, 0.5*DIM4]]
@@ -454,6 +469,10 @@ class CHAN2Section(Geometry):
         DIM3 *= 1.0
         DIM4 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM4 > 2.0*DIM1, "Invalid geometry specified.")
+        np.testing.assert_(DIM3 >  DIM2, "Invalid geometry specified.")
+
         # assign control point
         control_points = [[0.5*DIM4, 0.5*DIM2]]
 
@@ -533,6 +552,9 @@ class CROSSSection(Geometry):
         DIM2 *= 1.0
         DIM3 *= 1.0
         DIM4 *= 1.0
+
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM4 < DIM3, "Invalid geometry specified.")
 
         # assign control point
         control_points = [[0.5*DIM1+0.5*DIM2, 0.5*DIM3]]
@@ -629,6 +651,12 @@ class DBOXSection(Geometry):
         DIM8 *= 1.0
         DIM9 *= 1.0
         DIM10 *= 1.0
+
+        # Ensure dimensions are physically relevant
+        np.testing.assert_((DIM4+DIM5+DIM6)<DIM1, "Invalid geometry specified.")
+        np.testing.assert_((DIM4+0.5*DIM5)<DIM3, "Invalid geometry specified.")
+        np.testing.assert_((DIM7+DIM8)<DIM2, "Invalid geometry specified.")
+        np.testing.assert_((DIM9+DIM10)<DIM2, "Invalid geometry specified.")
 
         # assign control point
         control_points = [[0.5*DIM3, 0.5*DIM8]]
@@ -729,6 +757,10 @@ class GBOXSection(Geometry):
         DIM5 *= 1.0
         DIM6 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_((DIM3+DIM4) < DIM2, "Invalid geometry specified.")
+        np.testing.assert_((2.0*DIM5+DIM6) < DIM1, "Invalid geometry specified.")
+
         # assign control point
         control_points = [[0.5*DIM1, 0.5*DIM4]]
 
@@ -819,6 +851,9 @@ class HSection(Geometry):
         DIM3 *= 1.0
         DIM4 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM4 < DIM3, "Invalid geometry specified.")
+
         d1 = 0.5 * (DIM3 - DIM4)
         d2 = 0.5 * DIM2
 
@@ -903,6 +938,9 @@ class HATSection(Geometry):
         DIM3 *= 1.0
         DIM4 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(2.0*DIM2 < DIM1, "Invalid geometry specified.")
+
         # assign control point
         control_points = [[0.5*DIM4, 0.5*DIM2]]
 
@@ -986,6 +1024,10 @@ class HAT1Section(Geometry):
         DIM3 *= 1.0
         DIM4 *= 1.0
         DIM5 *= 1.0
+
+        # Ensure dimensions are physically relevant
+        np.testing.assert_((2.0*DIM4+DIM5) < DIM2, "Invalid geometry specified.")
+        np.testing.assert_(DIM3 < DIM1, "Invalid geometry specified.")
 
         shift = [-0.5*DIM1+shift[0], shift[1]]
 
@@ -1120,6 +1162,9 @@ class HEXASection(Geometry):
         DIM2 *= 1.0
         DIM3 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM2 > DIM1, "Invalid geometry specified.")
+
         # assign control point
         control_points = [[0.5*DIM2, 0.5*DIM3]]
 
@@ -1202,6 +1247,11 @@ class NISection(Geometry):
         DIM4 *= 1.0
         DIM5 *= 1.0
         DIM6 *= 1.0
+
+        # Ensure dimensions are physically relevant
+        np.testing.assert_((DIM5 + DIM6) < DIM1, "Invalid geometry specified.")
+        np.testing.assert_(DIM4<DIM3, "Invalid geometry specified.")
+        np.testing.assert_(DIM4<DIM2, "Invalid geometry specified.")
 
         # assign control point
         control_points = [[0.5*DIM2, 0.5*DIM5]]
@@ -1288,6 +1338,9 @@ class I1Section(Geometry):
         DIM3 *= 1.0
         DIM4 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
+
         shift = [-0.5*(DIM1+DIM2)+shift[0], -0.5*DIM4+shift[1]]
 
         # assign control point
@@ -1370,6 +1423,10 @@ class LSection(Geometry):
         DIM2 *= 1.0
         DIM3 *= 1.0
         DIM4 *= 1.0
+
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
+        np.testing.assert_(DIM3 < DIM2, "Invalid geometry specified.")
 
         # assign control point
         control_points = [[0.5*DIM1, 0.5*DIM3]]
@@ -1536,6 +1593,10 @@ class TSection(Geometry):
         DIM3 *= 1.0
         DIM4 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
+        np.testing.assert_(DIM3 < DIM2, "Invalid geometry specified.")
+
         d = DIM2
         b = DIM1
         t_f = DIM3
@@ -1645,6 +1706,9 @@ class T1Section(Geometry):
         DIM3 *= 1.0
         DIM4 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
+
         shift = [-0.5*DIM3+shift[0], -0.5*DIM1+shift[1]]
 
         # assign control point
@@ -1726,6 +1790,10 @@ class T2Section(Geometry):
         DIM3 *= 1.0
         DIM4 *= 1.0
 
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
+        np.testing.assert_(DIM3 < DIM2, "Invalid geometry specified.")
+
         # assign control point
         control_points = [[0.5*DIM1, 0.5*DIM3]]
 
@@ -1804,6 +1872,9 @@ class TUBESection(Geometry):
         # force dimensions to be floating point values
         DIM1 *= 1.0
         DIM2 *= 1.0
+
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM2 < DIM1, "Invalid geometry specified.")
 
         d = 2.0*DIM1
         t = DIM1-DIM2
@@ -1904,6 +1975,9 @@ class TUBE2Section(Geometry):
         # force dimensions to be floating point values
         DIM1 *= 1.0
         DIM2 *= 1.0
+
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM2 < DIM1, "Invalid geometry specified.")
 
         d = 2.0*DIM1
         t = DIM2
@@ -2006,6 +2080,9 @@ class ZSection(Geometry):
         DIM2 *= 1.0
         DIM3 *= 1.0
         DIM4 *= 1.0
+
+        # Ensure dimensions are physically relevant
+        np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
 
         # assign control point
         control_points = [[DIM1+0.5*DIM2, 0.5*DIM4]]
