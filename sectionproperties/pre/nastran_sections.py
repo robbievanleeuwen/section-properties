@@ -1431,7 +1431,7 @@ class LSection(Geometry):
         # assign control point
         control_points = [[0.5*DIM1, 0.5*DIM3]]
 
-        shift = [-0.5*DIM4+shift[0], -DIM3/3.0+shift[1]]
+        shift = [-0.5*DIM4+shift[0], -0.5*DIM3+shift[1]]
         super().__init__(control_points, shift)
 
         # construct the points and facets
