@@ -592,6 +592,114 @@ class CROSSSection(Geometry):
         return C, D, E, F
 
 
+class FCROSSSection(Geometry):
+    """
+    Constructs a flanged cruciform/cross section with the intersection's
+    middle center at the origin *(0, 0)*, with eight parameters defining
+    dimensions. Added by JohnDN90.
+
+    :param float DIM1: Depth (y) of flanged cruciform
+    :param float DIM2: Width (x) of flanged cruciform
+    :param float DIM3: Thickness of vertical web
+    :param float DIM4: Thickness of horizontal web
+    :param float DIM5: Length of flange attached to vertical web
+    :param float DIM6: Thickness of flange attached to vertical web
+    :param float DIM7: Length of flange attached to horizontal web
+    :param float DIM8: Thickness of flange attached to horizontal web
+    :param shift: Vector that shifts the cross-section by *(x, y)*
+    :type shift: list[float, float]
+
+    The following example demonstrates the creation of a flanged cross section::
+
+        import sectionproperties.pre.nastran_sections as nsections
+
+        geometry = nsections.FCROSSSection(DIM1=9.0, DIM2=6.0, DIM3=0.75, DIM4=0.625, DIM5=2.1, DIM6=0.375, DIM7=4.5, DIM8=0.564)
+        mesh = geometry.create_mesh(mesh_sizes=[0.03])
+
+    ..  figure:: ../images/sections/fcross_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Flanged Cruciform/cross section geometry.
+
+    ..  figure:: ../images/sections/fcross_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, shift=[0, 0]):
+        """Inits the FCROSSSection class."""
+
+        # force dimensions to be floating point values
+        DIM1 *= 1.0
+        DIM2 *= 1.0
+        DIM3 *= 1.0
+        DIM4 *= 1.0
+        DIM5 *= 1.0
+        DIM6 *= 1.0
+        DIM7 *= 1.0
+        DIM8 *= 1.0
+
+        # Ensure dimensions are physically relevant
+        # TODO: Finish dimension checks.
+        np.testing.assert_(DIM5>DIM3, "Invalid geometry specified.")
+        np.testing.assert_(DIM7>DIM4, "Invalid geometry specified.")
+        np.testing.assert_(DIM7<DIM1, "Invalid geometry specified.")
+        np.testing.assert_(DIM5<DIM2, "Invalid geometry specified.")
+        np.testing.assert_(DIM8<(0.5*DIM2-0.5*DIM3), "Invalid geometry specified.")
+        np.testing.assert_(DIM6<(0.5*DIM1-0.5*DIM4), "Invalid geometry specified.")
+
+        # assign control point
+        control_points = [[0.0, 0.0]]
+
+        shift = [shift[0], shift[1]]
+        super().__init__(control_points, shift)
+
+        # construct the points and facets
+        self.points = [[0.5*DIM3, -0.5*DIM4],       [0.5*DIM2-DIM8, -0.5*DIM4],     [0.5*DIM2-DIM8, -0.5*DIM7],
+                       [0.5*DIM2, -0.5*DIM7],       [0.5*DIM2, 0.5*DIM7],           [0.5*DIM2-DIM8, 0.5*DIM7],
+                       [0.5*DIM2-DIM8, 0.5*DIM4],   [0.5*DIM3, 0.5*DIM4],           [0.5*DIM3, 0.5*DIM1-DIM6],
+                       [0.5*DIM5, 0.5*DIM1-DIM6],   [0.5*DIM5, 0.5*DIM1],           [-0.5*DIM5, 0.5*DIM1],
+                       [-0.5*DIM5, 0.5*DIM1-DIM6],  [-0.5*DIM3, 0.5*DIM1-DIM6],     [-0.5*DIM3, 0.5*DIM4],
+                       [-0.5*DIM2+DIM8, 0.5*DIM4],  [-0.5*DIM2+DIM8, 0.5*DIM7],     [-0.5*DIM2, 0.5*DIM7],
+                       [-0.5*DIM2, -0.5*DIM7],      [-0.5*DIM2+DIM8, -0.5*DIM7],    [-0.5*DIM2+DIM8, -0.5*DIM4],
+                       [-0.5*DIM3, -0.5*DIM4],      [-0.5*DIM3, -0.5*DIM1+DIM6],    [-0.5*DIM5, -0.5*DIM1+DIM6],
+                       [-0.5*DIM5, -0.5*DIM1],      [0.5*DIM5, -0.5*DIM1],          [0.5*DIM5, -0.5*DIM1+DIM6],
+                       [0.5*DIM3, -0.5*DIM1+DIM6]]
+        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11],
+                       [11, 12], [12, 13], [13, 14], [14, 15], [15, 16], [16, 17], [17, 18], [18, 19], [19, 20],
+                       [20, 21], [21, 22], [22, 23], [23, 24], [24, 25], [25, 26], [26, 27], [27, 0]]
+
+        self.shift_section()
+
+
+    def getStressPoints(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, shift=(0., 0.)):
+        """
+        Returns the coordinates of the stress evaluation points relative to the origin
+        of the cross-section. The shift parameter can be used to make the coordinates
+        relative to the centroid or the shear center.
+
+        :param float DIM1: Depth (y) of flanged cruciform
+        :param float DIM2: Width (x) of flanged cruciform
+        :param float DIM3: Thickness of vertical web
+        :param float DIM4: Thickness of horizontal web
+        :param float DIM5: Length of flange attached to vertical web
+        :param float DIM6: Thickness of flange attached to vertical web
+        :param float DIM7: Length of flange attached to horizontal web
+        :param float DIM8: Thickness of flange attached to horizontal web
+        :param shift: Vector that shifts the cross-section by *(x, y)*
+        :type shift: list[float, float]
+        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
+        """
+        C = (-shift[0], 0.5*DIM1-shift[1])
+        D = (0.5*DIM2-shift[0], -shift[1])
+        E = (-shift[0], -0.5*DIM1-shift[1])
+        F = (-0.5*DIM2-shift[0], -shift[1])
+        return C, D, E, F
+
+
 class DBOXSection(Geometry):
     """
     Constructs a DBOX section with the center at

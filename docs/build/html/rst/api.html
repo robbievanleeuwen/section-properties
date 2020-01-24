@@ -133,6 +133,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#chan2section-class">CHAN2Section Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#crosssection-class">CROSSSection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dboxsection-class">DBOXSection Class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fcrosssection-class">FCROSSSection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gboxsection-class">GBOXSection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#hsection-class">HSection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#hatsection-class">HATSection Class</a></li>
@@ -2226,6 +2227,74 @@ relative to the centroid or the shear center.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="fcrosssection-class">
+<h4>FCROSSSection Class<a class="headerlink" href="#fcrosssection-class" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="sectionproperties.pre.nastran_sections.FCROSSSection">
+<em class="property">class </em><code class="sig-prename descclassname">sectionproperties.pre.nastran_sections.</code><code class="sig-name descname">FCROSSSection</code><span class="sig-paren">(</span><em class="sig-param">DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, shift=[0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#FCROSSSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.FCROSSSection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
+<p>Constructs a flanged cruciform/cross section with the intersection’s
+middle center at the origin <em>(0, 0)</em>, with eight parameters defining
+dimensions. Added by JohnDN90.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>DIM1</strong> (<em>float</em>) – Depth (y) of flanged cruciform</p></li>
+<li><p><strong>DIM2</strong> (<em>float</em>) – Width (x) of flanged cruciform</p></li>
+<li><p><strong>DIM3</strong> (<em>float</em>) – Thickness of vertical web</p></li>
+<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of horizontal web</p></li>
+<li><p><strong>DIM5</strong> (<em>float</em>) – Length of flange attached to vertical web</p></li>
+<li><p><strong>DIM6</strong> (<em>float</em>) – Thickness of flange attached to vertical web</p></li>
+<li><p><strong>DIM7</strong> (<em>float</em>) – Length of flange attached to horizontal web</p></li>
+<li><p><strong>DIM8</strong> (<em>float</em>) – Thickness of flange attached to horizontal web</p></li>
+<li><p><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
+</ul>
+</dd>
+</dl>
+<p>The following example demonstrates the creation of a flanged cross section:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.nastran_sections</span> <span class="k">as</span> <span class="nn">nsections</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">nsections</span><span class="o">.</span><span class="n">FCROSSSection</span><span class="p">(</span><span class="n">DIM1</span><span class="o">=</span><span class="mf">9.0</span><span class="p">,</span> <span class="n">DIM2</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span> <span class="n">DIM3</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">DIM4</span><span class="o">=</span><span class="mf">0.625</span><span class="p">,</span> <span class="n">DIM5</span><span class="o">=</span><span class="mf">2.1</span><span class="p">,</span> <span class="n">DIM6</span><span class="o">=</span><span class="mf">0.375</span><span class="p">,</span> <span class="n">DIM7</span><span class="o">=</span><span class="mf">4.5</span><span class="p">,</span> <span class="n">DIM8</span><span class="o">=</span><span class="mf">0.564</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.03</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id143">
+<a class="reference internal image-reference" href="../_images/fcross_geometry.png"><img alt="../_images/fcross_geometry.png" src="../_images/fcross_geometry.png" style="width: 357.75px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">Flanged Cruciform/cross section geometry.</span><a class="headerlink" href="#id143" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id144">
+<a class="reference internal image-reference" href="../_images/fcross_mesh.png"><img alt="../_images/fcross_mesh.png" src="../_images/fcross_mesh.png" style="width: 234.75px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id144" title="Permalink to this image">¶</a></p>
+</div>
+<dl class="method">
+<dt id="sectionproperties.pre.nastran_sections.FCROSSSection.getStressPoints">
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param">DIM1</em>, <em class="sig-param">DIM2</em>, <em class="sig-param">DIM3</em>, <em class="sig-param">DIM4</em>, <em class="sig-param">DIM5</em>, <em class="sig-param">DIM6</em>, <em class="sig-param">DIM7</em>, <em class="sig-param">DIM8</em>, <em class="sig-param">shift=(0.0</em>, <em class="sig-param">0.0)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#FCROSSSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.FCROSSSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the coordinates of the stress evaluation points relative to the origin
+of the cross-section. The shift parameter can be used to make the coordinates
+relative to the centroid or the shear center.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>DIM1</strong> (<em>float</em>) – Depth (y) of flanged cruciform</p></li>
+<li><p><strong>DIM2</strong> (<em>float</em>) – Width (x) of flanged cruciform</p></li>
+<li><p><strong>DIM3</strong> (<em>float</em>) – Thickness of vertical web</p></li>
+<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of horizontal web</p></li>
+<li><p><strong>DIM5</strong> (<em>float</em>) – Length of flange attached to vertical web</p></li>
+<li><p><strong>DIM6</strong> (<em>float</em>) – Thickness of flange attached to vertical web</p></li>
+<li><p><strong>DIM7</strong> (<em>float</em>) – Length of flange attached to horizontal web</p></li>
+<li><p><strong>DIM8</strong> (<em>float</em>) – Thickness of flange attached to horizontal web</p></li>
+<li><p><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="gboxsection-class">
 <h4>GBOXSection Class<a class="headerlink" href="#gboxsection-class" title="Permalink to this headline">¶</a></h4>
 <dl class="class">
@@ -2259,13 +2328,13 @@ JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id143">
+<div class="figure align-center" id="id145">
 <a class="reference internal image-reference" href="../_images/gbox_geometry.png"><img alt="../_images/gbox_geometry.png" src="../_images/gbox_geometry.png" style="width: 466.5px; height: 168.0px;" /></a>
-<p class="caption"><span class="caption-text">GBOX section geometry.</span><a class="headerlink" href="#id143" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">GBOX section geometry.</span><a class="headerlink" href="#id145" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id144">
+<div class="figure align-center" id="id146">
 <a class="reference internal image-reference" href="../_images/gbox_mesh.png"><img alt="../_images/gbox_mesh.png" src="../_images/gbox_mesh.png" style="width: 466.5px; height: 219.0px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id144" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id146" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.GBOXSection.getStressPoints">
@@ -2324,13 +2393,13 @@ Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id145">
+<div class="figure align-center" id="id147">
 <a class="reference internal image-reference" href="../_images/h_geometry.png"><img alt="../_images/h_geometry.png" src="../_images/h_geometry.png" style="width: 403.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">H section geometry.</span><a class="headerlink" href="#id145" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">H section geometry.</span><a class="headerlink" href="#id147" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id146">
+<div class="figure align-center" id="id148">
 <a class="reference internal image-reference" href="../_images/h_mesh.png"><img alt="../_images/h_mesh.png" src="../_images/h_mesh.png" style="width: 288.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id146" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id148" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.HSection.getStressPoints">
@@ -2388,13 +2457,13 @@ Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.001</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id147">
+<div class="figure align-center" id="id149">
 <a class="reference internal image-reference" href="../_images/hat_geometry.png"><img alt="../_images/hat_geometry.png" src="../_images/hat_geometry.png" style="width: 466.5px; height: 192.75px;" /></a>
-<p class="caption"><span class="caption-text">HAT section geometry.</span><a class="headerlink" href="#id147" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">HAT section geometry.</span><a class="headerlink" href="#id149" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id148">
+<div class="figure align-center" id="id150">
 <a class="reference internal image-reference" href="../_images/hat_mesh.png"><img alt="../_images/hat_mesh.png" src="../_images/hat_mesh.png" style="width: 466.5px; height: 254.25px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id148" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id150" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.HATSection.getStressPoints">
@@ -2453,13 +2522,13 @@ JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id149">
+<div class="figure align-center" id="id151">
 <a class="reference internal image-reference" href="../_images/hat1_geometry.png"><img alt="../_images/hat1_geometry.png" src="../_images/hat1_geometry.png" style="width: 466.5px; height: 197.25px;" /></a>
-<p class="caption"><span class="caption-text">HAT1 section geometry.</span><a class="headerlink" href="#id149" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">HAT1 section geometry.</span><a class="headerlink" href="#id151" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id150">
+<div class="figure align-center" id="id152">
 <a class="reference internal image-reference" href="../_images/hat1_mesh.png"><img alt="../_images/hat1_mesh.png" src="../_images/hat1_mesh.png" style="width: 473.25px; height: 258.75px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id150" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id152" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.HAT1Section.create_mesh">
@@ -2540,13 +2609,13 @@ Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id151">
+<div class="figure align-center" id="id153">
 <a class="reference internal image-reference" href="../_images/hexa_geometry.png"><img alt="../_images/hexa_geometry.png" src="../_images/hexa_geometry.png" style="width: 468.75px; height: 270.0px;" /></a>
-<p class="caption"><span class="caption-text">HEXA section geometry.</span><a class="headerlink" href="#id151" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">HEXA section geometry.</span><a class="headerlink" href="#id153" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id152">
+<div class="figure align-center" id="id154">
 <a class="reference internal image-reference" href="../_images/hexa_mesh.png"><img alt="../_images/hexa_mesh.png" src="../_images/hexa_mesh.png" style="width: 447.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id152" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id154" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.HEXASection.getStressPoints">
@@ -2605,13 +2674,13 @@ Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.008</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id153">
+<div class="figure align-center" id="id155">
 <a class="reference internal image-reference" href="../_images/ni_geometry.png"><img alt="../_images/ni_geometry.png" src="../_images/ni_geometry.png" style="width: 337.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Nastran’s I section geometry.</span><a class="headerlink" href="#id153" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Nastran’s I section geometry.</span><a class="headerlink" href="#id155" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id154">
+<div class="figure align-center" id="id156">
 <a class="reference internal image-reference" href="../_images/ni_mesh.png"><img alt="../_images/ni_mesh.png" src="../_images/ni_mesh.png" style="width: 214.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id154" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id156" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.NISection.getStressPoints">
@@ -2670,13 +2739,13 @@ Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.02</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id155">
+<div class="figure align-center" id="id157">
 <a class="reference internal image-reference" href="../_images/i1_geometry.png"><img alt="../_images/i1_geometry.png" src="../_images/i1_geometry.png" style="width: 261.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">I1 section geometry.</span><a class="headerlink" href="#id155" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">I1 section geometry.</span><a class="headerlink" href="#id157" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id156">
+<div class="figure align-center" id="id158">
 <a class="reference internal image-reference" href="../_images/i1_mesh.png"><img alt="../_images/i1_mesh.png" src="../_images/i1_mesh.png" style="width: 148.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id156" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id158" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.I1Section.getStressPoints">
@@ -2733,13 +2802,13 @@ Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id157">
+<div class="figure align-center" id="id159">
 <a class="reference internal image-reference" href="../_images/l_geometry.png"><img alt="../_images/l_geometry.png" src="../_images/l_geometry.png" style="width: 298.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">L section geometry.</span><a class="headerlink" href="#id157" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">L section geometry.</span><a class="headerlink" href="#id159" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id158">
+<div class="figure align-center" id="id160">
 <a class="reference internal image-reference" href="../_images/l_mesh.png"><img alt="../_images/l_mesh.png" src="../_images/l_mesh.png" style="width: 175.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id158" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id160" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.LSection.getStressPoints">
@@ -2794,13 +2863,13 @@ triangular area of 0.01:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id159">
+<div class="figure align-center" id="id161">
 <a class="reference internal image-reference" href="../_images/rod_geometry.png"><img alt="../_images/rod_geometry.png" src="../_images/rod_geometry.png" style="width: 459.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Rod section geometry.</span><a class="headerlink" href="#id159" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Rod section geometry.</span><a class="headerlink" href="#id161" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id160">
+<div class="figure align-center" id="id162">
 <a class="reference internal image-reference" href="../_images/rod_mesh.png"><img alt="../_images/rod_mesh.png" src="../_images/rod_mesh.png" style="width: 336.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id160" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id162" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.RODSection.getStressPoints">
@@ -2854,13 +2923,13 @@ details. Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.001</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id161">
+<div class="figure align-center" id="id163">
 <a class="reference internal image-reference" href="../_images/t_geometry.png"><img alt="../_images/t_geometry.png" src="../_images/t_geometry.png" style="width: 393.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">T section geometry.</span><a class="headerlink" href="#id161" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">T section geometry.</span><a class="headerlink" href="#id163" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id162">
+<div class="figure align-center" id="id164">
 <a class="reference internal image-reference" href="../_images/t_mesh.png"><img alt="../_images/t_mesh.png" src="../_images/t_mesh.png" style="width: 270.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id162" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id164" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.TSection.getStressPoints">
@@ -2917,13 +2986,13 @@ Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.001</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id163">
+<div class="figure align-center" id="id165">
 <a class="reference internal image-reference" href="../_images/t1_geometry.png"><img alt="../_images/t1_geometry.png" src="../_images/t1_geometry.png" style="width: 480.75px; height: 286.5px;" /></a>
-<p class="caption"><span class="caption-text">T1 section geometry.</span><a class="headerlink" href="#id163" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">T1 section geometry.</span><a class="headerlink" href="#id165" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id164">
+<div class="figure align-center" id="id166">
 <a class="reference internal image-reference" href="../_images/t1_mesh.png"><img alt="../_images/t1_mesh.png" src="../_images/t1_mesh.png" style="width: 435.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id164" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id166" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.T1Section.getStressPoints">
@@ -2980,13 +3049,13 @@ Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id165">
+<div class="figure align-center" id="id167">
 <a class="reference internal image-reference" href="../_images/t2_geometry.png"><img alt="../_images/t2_geometry.png" src="../_images/t2_geometry.png" style="width: 384.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">T2 section geometry.</span><a class="headerlink" href="#id165" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">T2 section geometry.</span><a class="headerlink" href="#id167" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id166">
+<div class="figure align-center" id="id168">
 <a class="reference internal image-reference" href="../_images/t2_mesh.png"><img alt="../_images/t2_mesh.png" src="../_images/t2_mesh.png" style="width: 261.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id166" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id168" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.T2Section.getStressPoints">
@@ -3043,13 +3112,13 @@ radius of 3.0 and an inner radius of 2.5, and generates a mesh with
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id167">
+<div class="figure align-center" id="id169">
 <a class="reference internal image-reference" href="../_images/tube_geometry.png"><img alt="../_images/tube_geometry.png" src="../_images/tube_geometry.png" style="width: 459.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">TUBE section geometry.</span><a class="headerlink" href="#id167" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">TUBE section geometry.</span><a class="headerlink" href="#id169" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id168">
+<div class="figure align-center" id="id170">
 <a class="reference internal image-reference" href="../_images/tube_mesh.png"><img alt="../_images/tube_mesh.png" src="../_images/tube_mesh.png" style="width: 336.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id168" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id170" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.TUBESection.getStressPoints">
@@ -3104,13 +3173,13 @@ point discritizing the boundary and a maximum triangular area of
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id169">
+<div class="figure align-center" id="id171">
 <a class="reference internal image-reference" href="../_images/tube2_geometry.png"><img alt="../_images/tube2_geometry.png" src="../_images/tube2_geometry.png" style="width: 459.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">TUBE2 section geometry.</span><a class="headerlink" href="#id169" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">TUBE2 section geometry.</span><a class="headerlink" href="#id171" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id170">
+<div class="figure align-center" id="id172">
 <a class="reference internal image-reference" href="../_images/tube2_mesh.png"><img alt="../_images/tube2_mesh.png" src="../_images/tube2_mesh.png" style="width: 336.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id170" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id172" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.TUBE2Section.getStressPoints">
@@ -3165,13 +3234,13 @@ Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id171">
+<div class="figure align-center" id="id173">
 <a class="reference internal image-reference" href="../_images/z_geometry.png"><img alt="../_images/z_geometry.png" src="../_images/z_geometry.png" style="width: 374.25px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Z section geometry.</span><a class="headerlink" href="#id171" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Z section geometry.</span><a class="headerlink" href="#id173" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure align-center" id="id172">
+<div class="figure align-center" id="id174">
 <a class="reference internal image-reference" href="../_images/z_mesh.png"><img alt="../_images/z_mesh.png" src="../_images/z_mesh.png" style="width: 251.25px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id172" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id174" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="method">
 <dt id="sectionproperties.pre.nastran_sections.ZSection.getStressPoints">
@@ -4158,9 +4227,9 @@ the centroids:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id173">
+<div class="figure align-center" id="id175">
 <a class="reference internal image-reference" href="../_images/pfc_centroids.png"><img alt="../_images/pfc_centroids.png" src="../_images/pfc_centroids.png" style="width: 435.0px; height: 492.0px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span><a class="headerlink" href="#id173" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span><a class="headerlink" href="#id175" title="Permalink to this image">¶</a></p>
 </div>
 <p>The following example analyses a 150x90x12 UA section and displays a
 plot of the centroids:</p>
@@ -4178,9 +4247,9 @@ plot of the centroids:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id174">
+<div class="figure align-center" id="id176">
 <a class="reference internal image-reference" href="../_images/angle_centroids.png"><img alt="../_images/angle_centroids.png" src="../_images/angle_centroids.png" style="width: 428.25px; height: 396.75px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span><a class="headerlink" href="#id174" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span><a class="headerlink" href="#id176" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4230,9 +4299,9 @@ definition:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">materials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id175">
+<div class="figure align-center" id="id177">
 <a class="reference internal image-reference" href="../_images/composite_mesh.png"><img alt="../_images/composite_mesh.png" src="../_images/composite_mesh.png" style="width: 673.5px; height: 324.75px;" /></a>
-<p class="caption"><span class="caption-text">Finite element mesh generated by the above example.</span><a class="headerlink" href="#id175" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Finite element mesh generated by the above example.</span><a class="headerlink" href="#id177" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4714,9 +4783,9 @@ section resulting from an bending moment about the 11-axis of 5 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m11_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id176">
+<div class="figure align-center" id="id178">
 <a class="reference internal image-reference" href="../_images/stress_m11_zz.png"><img alt="../_images/stress_m11_zz.png" src="../_images/stress_m11_zz.png" style="width: 527.25px; height: 477.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id176" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id178" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4748,9 +4817,9 @@ section resulting from an bending moment about the 22-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m22_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id177">
+<div class="figure align-center" id="id179">
 <a class="reference internal image-reference" href="../_images/stress_m22_zz.png"><img alt="../_images/stress_m22_zz.png" src="../_images/stress_m22_zz.png" style="width: 506.25px; height: 424.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id177" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id179" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4785,9 +4854,9 @@ bending moment about the y-axis of 2 kN.m and a bending moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id178">
+<div class="figure align-center" id="id180">
 <a class="reference internal image-reference" href="../_images/stress_m_zz.png"><img alt="../_images/stress_m_zz.png" src="../_images/stress_m_zz.png" style="width: 482.25px; height: 444.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id178" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id180" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4819,9 +4888,9 @@ section resulting from an bending moment about the x-axis of 5 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mxx_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id179">
+<div class="figure align-center" id="id181">
 <a class="reference internal image-reference" href="../_images/stress_mxx_zz.png"><img alt="../_images/stress_mxx_zz.png" src="../_images/stress_mxx_zz.png" style="width: 503.25px; height: 452.25px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id179" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id181" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4853,9 +4922,9 @@ section resulting from an bending moment about the y-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_myy_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id180">
+<div class="figure align-center" id="id182">
 <a class="reference internal image-reference" href="../_images/stress_myy_zz.png"><img alt="../_images/stress_myy_zz.png" src="../_images/stress_myy_zz.png" style="width: 537.0px; height: 471.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id180" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id182" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4889,9 +4958,9 @@ a 150x90x12 UA section resulting from a torsion moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id181">
+<div class="figure align-center" id="id183">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zx.png"><img alt="../_images/stress_mzz_zx.png" src="../_images/stress_mzz_zx.png" style="width: 440.25px; height: 378.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id181" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id183" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4925,9 +4994,9 @@ of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id182">
+<div class="figure align-center" id="id184">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zxy.png"><img alt="../_images/stress_mzz_zxy.png" src="../_images/stress_mzz_zxy.png" style="width: 470.25px; height: 396.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id182" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id184" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4961,9 +5030,9 @@ a 150x90x12 UA section resulting from a torsion moment of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id183">
+<div class="figure align-center" id="id185">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zy.png"><img alt="../_images/stress_mzz_zy.png" src="../_images/stress_mzz_zy.png" style="width: 449.25px; height: 383.25px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id183" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id185" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4995,9 +5064,9 @@ section resulting from an axial force of 10 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_n_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id184">
+<div class="figure align-center" id="id186">
 <a class="reference internal image-reference" href="../_images/stress_n_zz.png"><img alt="../_images/stress_n_zz.png" src="../_images/stress_n_zz.png" style="width: 450.75px; height: 402.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the axial stress.</span><a class="headerlink" href="#id184" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the axial stress.</span><a class="headerlink" href="#id186" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5031,9 +5100,9 @@ in the x-direction and 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id185">
+<div class="figure align-center" id="id187">
 <a class="reference internal image-reference" href="../_images/stress_v_zx.png"><img alt="../_images/stress_v_zx.png" src="../_images/stress_v_zx.png" style="width: 474.75px; height: 425.25px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id185" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id187" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5067,9 +5136,9 @@ within a 150x90x12 UA section resulting from ashear force of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id186">
+<div class="figure align-center" id="id188">
 <a class="reference internal image-reference" href="../_images/stress_v_zxy.png"><img alt="../_images/stress_v_zxy.png" src="../_images/stress_v_zxy.png" style="width: 448.5px; height: 406.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id186" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id188" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5103,9 +5172,9 @@ in the x-direction and 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id187">
+<div class="figure align-center" id="id189">
 <a class="reference internal image-reference" href="../_images/stress_v_zy.png"><img alt="../_images/stress_v_zy.png" src="../_images/stress_v_zy.png" style="width: 451.5px; height: 408.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id187" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id189" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5165,9 +5234,9 @@ immediately after the window is rendered.</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vm</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id188">
+<div class="figure align-center" id="id190">
 <a class="reference internal image-reference" href="../_images/stress_vm.png"><img alt="../_images/stress_vm.png" src="../_images/stress_vm.png" style="width: 491.25px; height: 406.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the von Mises stress.</span><a class="headerlink" href="#id188" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the von Mises stress.</span><a class="headerlink" href="#id190" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5201,9 +5270,9 @@ x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id189">
+<div class="figure align-center" id="id191">
 <a class="reference internal image-reference" href="../_images/stress_vx_zx.png"><img alt="../_images/stress_vx_zx.png" src="../_images/stress_vx_zx.png" style="width: 453.0px; height: 387.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id189" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id191" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5237,9 +5306,9 @@ the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id190">
+<div class="figure align-center" id="id192">
 <a class="reference internal image-reference" href="../_images/stress_vx_zxy.png"><img alt="../_images/stress_vx_zxy.png" src="../_images/stress_vx_zxy.png" style="width: 440.25px; height: 369.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id190" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id192" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5273,9 +5342,9 @@ x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id191">
+<div class="figure align-center" id="id193">
 <a class="reference internal image-reference" href="../_images/stress_vx_zy.png"><img alt="../_images/stress_vx_zy.png" src="../_images/stress_vx_zy.png" style="width: 469.5px; height: 402.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id191" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id193" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5309,9 +5378,9 @@ y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id192">
+<div class="figure align-center" id="id194">
 <a class="reference internal image-reference" href="../_images/stress_vy_zx.png"><img alt="../_images/stress_vy_zx.png" src="../_images/stress_vy_zx.png" style="width: 462.0px; height: 397.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id192" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id194" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5345,9 +5414,9 @@ the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id193">
+<div class="figure align-center" id="id195">
 <a class="reference internal image-reference" href="../_images/stress_vy_zxy.png"><img alt="../_images/stress_vy_zxy.png" src="../_images/stress_vy_zxy.png" style="width: 466.5px; height: 424.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id193" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id195" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5381,9 +5450,9 @@ y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id194">
+<div class="figure align-center" id="id196">
 <a class="reference internal image-reference" href="../_images/stress_vy_zy.png"><img alt="../_images/stress_vy_zy.png" src="../_images/stress_vy_zy.png" style="width: 439.5px; height: 398.25px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id194" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id196" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5416,9 +5485,9 @@ shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id195">
+<div class="figure align-center" id="id197">
 <a class="reference internal image-reference" href="../_images/stress_zx.png"><img alt="../_images/stress_zx.png" src="../_images/stress_zx.png" style="width: 459.0px; height: 414.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id195" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id197" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5451,9 +5520,9 @@ and a shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id196">
+<div class="figure align-center" id="id198">
 <a class="reference internal image-reference" href="../_images/stress_zxy.png"><img alt="../_images/stress_zxy.png" src="../_images/stress_zxy.png" style="width: 495.75px; height: 447.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id196" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id198" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5486,9 +5555,9 @@ shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id197">
+<div class="figure align-center" id="id199">
 <a class="reference internal image-reference" href="../_images/stress_zy.png"><img alt="../_images/stress_zy.png" src="../_images/stress_zy.png" style="width: 489.0px; height: 427.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id197" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id199" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5521,9 +5590,9 @@ the x-axis of 5 kN.m and a bending moment about the y-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id198">
+<div class="figure align-center" id="id200">
 <a class="reference internal image-reference" href="../_images/stress_zz.png"><img alt="../_images/stress_zz.png" src="../_images/stress_zz.png" style="width: 432.75px; height: 403.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the normal stress.</span><a class="headerlink" href="#id198" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the normal stress.</span><a class="headerlink" href="#id200" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5557,9 +5626,9 @@ of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_mzz_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id199">
+<div class="figure align-center" id="id201">
 <a class="reference internal image-reference" href="../_images/vector_mzz_zxy.png"><img alt="../_images/vector_mzz_zxy.png" src="../_images/vector_mzz_zxy.png" style="width: 489.0px; height: 441.75px;" /></a>
-<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id199" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id201" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5593,9 +5662,9 @@ within a 150x90x12 UA section resulting from ashear force of
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_v_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id200">
+<div class="figure align-center" id="id202">
 <a class="reference internal image-reference" href="../_images/vector_v_zxy.png"><img alt="../_images/vector_v_zxy.png" src="../_images/vector_v_zxy.png" style="width: 467.25px; height: 410.25px;" /></a>
-<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id200" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id202" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5629,9 +5698,9 @@ the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_vx_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id201">
+<div class="figure align-center" id="id203">
 <a class="reference internal image-reference" href="../_images/vector_vx_zxy.png"><img alt="../_images/vector_vx_zxy.png" src="../_images/vector_vx_zxy.png" style="width: 506.25px; height: 432.0px;" /></a>
-<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id201" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id203" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5665,9 +5734,9 @@ the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_vy_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id202">
+<div class="figure align-center" id="id204">
 <a class="reference internal image-reference" href="../_images/vector_vy_zxy.png"><img alt="../_images/vector_vy_zxy.png" src="../_images/vector_vy_zxy.png" style="width: 434.25px; height: 408.0px;" /></a>
-<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id202" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id204" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5700,9 +5769,9 @@ and a shear force of 30 kN in the y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id203">
+<div class="figure align-center" id="id205">
 <a class="reference internal image-reference" href="../_images/vector_zxy.png"><img alt="../_images/vector_zxy.png" src="../_images/vector_zxy.png" style="width: 453.75px; height: 444.75px;" /></a>
-<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id203" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id205" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 

@@ -185,6 +185,12 @@ DBOXSection Class
     :show-inheritance:
     :members:
 
+FCROSSSection Class
+"""""""""""""""""""
+..  autoclass:: sectionproperties.pre.nastran_sections.FCROSSSection
+    :show-inheritance:
+    :members:
+
 GBOXSection Class
 """""""""""""""""
 ..  autoclass:: sectionproperties.pre.nastran_sections.GBOXSection

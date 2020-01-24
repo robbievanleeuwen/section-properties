@@ -278,6 +278,10 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">DIM4</span><span class="o">&lt;</span><span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">DIM3</span><span class="o">&lt;</span><span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">]]</span>
 
@@ -366,6 +370,10 @@
         <span class="n">DIM5</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM6</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM5</span><span class="o">+</span><span class="n">DIM6</span><span class="o">&lt;</span><span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM3</span><span class="o">+</span><span class="n">DIM4</span><span class="o">&lt;</span><span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">]]</span>
 
@@ -451,6 +459,10 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">DIM4</span><span class="o">&lt;</span><span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM3</span><span class="o">&lt;</span><span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">]]</span>
 
@@ -530,6 +542,9 @@
         <span class="n">DIM2</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span><span class="o">&gt;</span><span class="n">DIM3</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
 
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">]]</span>
@@ -612,6 +627,10 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span> <span class="o">&gt;</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM3</span> <span class="o">&gt;</span>  <span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="p">]]</span>
 
@@ -692,6 +711,9 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span> <span class="o">&lt;</span> <span class="n">DIM3</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">]]</span>
 
@@ -725,6 +747,114 @@
         <span class="n">D</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">DIM1</span><span class="o">+</span><span class="n">DIM2</span><span class="p">)</span><span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">E</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">F</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">DIM1</span><span class="o">+</span><span class="n">DIM2</span><span class="p">)</span><span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span></div></div>
+
+
+<div class="viewcode-block" id="FCROSSSection"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.nastran_sections.FCROSSSection">[docs]</a><span class="k">class</span> <span class="nc">FCROSSSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Constructs a flanged cruciform/cross section with the intersection&#39;s</span>
+<span class="sd">    middle center at the origin *(0, 0)*, with eight parameters defining</span>
+<span class="sd">    dimensions. Added by JohnDN90.</span>
+
+<span class="sd">    :param float DIM1: Depth (y) of flanged cruciform</span>
+<span class="sd">    :param float DIM2: Width (x) of flanged cruciform</span>
+<span class="sd">    :param float DIM3: Thickness of vertical web</span>
+<span class="sd">    :param float DIM4: Thickness of horizontal web</span>
+<span class="sd">    :param float DIM5: Length of flange attached to vertical web</span>
+<span class="sd">    :param float DIM6: Thickness of flange attached to vertical web</span>
+<span class="sd">    :param float DIM7: Length of flange attached to horizontal web</span>
+<span class="sd">    :param float DIM8: Thickness of flange attached to horizontal web</span>
+<span class="sd">    :param shift: Vector that shifts the cross-section by *(x, y)*</span>
+<span class="sd">    :type shift: list[float, float]</span>
+
+<span class="sd">    The following example demonstrates the creation of a flanged cross section::</span>
+
+<span class="sd">        import sectionproperties.pre.nastran_sections as nsections</span>
+
+<span class="sd">        geometry = nsections.FCROSSSection(DIM1=9.0, DIM2=6.0, DIM3=0.75, DIM4=0.625, DIM5=2.1, DIM6=0.375, DIM7=4.5, DIM8=0.564)</span>
+<span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[0.03])</span>
+
+<span class="sd">    ..  figure:: ../images/sections/fcross_geometry.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Flanged Cruciform/cross section geometry.</span>
+
+<span class="sd">    ..  figure:: ../images/sections/fcross_mesh.png</span>
+<span class="sd">        :align: center</span>
+<span class="sd">        :scale: 75 %</span>
+
+<span class="sd">        Mesh generated from the above geometry.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">DIM1</span><span class="p">,</span> <span class="n">DIM2</span><span class="p">,</span> <span class="n">DIM3</span><span class="p">,</span> <span class="n">DIM4</span><span class="p">,</span> <span class="n">DIM5</span><span class="p">,</span> <span class="n">DIM6</span><span class="p">,</span> <span class="n">DIM7</span><span class="p">,</span> <span class="n">DIM8</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Inits the FCROSSSection class.&quot;&quot;&quot;</span>
+
+        <span class="c1"># force dimensions to be floating point values</span>
+        <span class="n">DIM1</span> <span class="o">*=</span> <span class="mf">1.0</span>
+        <span class="n">DIM2</span> <span class="o">*=</span> <span class="mf">1.0</span>
+        <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
+        <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
+        <span class="n">DIM5</span> <span class="o">*=</span> <span class="mf">1.0</span>
+        <span class="n">DIM6</span> <span class="o">*=</span> <span class="mf">1.0</span>
+        <span class="n">DIM7</span> <span class="o">*=</span> <span class="mf">1.0</span>
+        <span class="n">DIM8</span> <span class="o">*=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="c1"># TODO: Finish dimension checks.</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM5</span><span class="o">&gt;</span><span class="n">DIM3</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM7</span><span class="o">&gt;</span><span class="n">DIM4</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM7</span><span class="o">&lt;</span><span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM5</span><span class="o">&lt;</span><span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM8</span><span class="o">&lt;</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">),</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM6</span><span class="o">&lt;</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">),</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># assign control point</span>
+        <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
+
+        <span class="n">shift</span> <span class="o">=</span> <span class="p">[</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">control_points</span><span class="p">,</span> <span class="n">shift</span><span class="p">)</span>
+
+        <span class="c1"># construct the points and facets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">],</span>       <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="o">-</span><span class="n">DIM8</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">],</span>     <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="o">-</span><span class="n">DIM8</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM7</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM7</span><span class="p">],</span>       <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM7</span><span class="p">],</span>           <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="o">-</span><span class="n">DIM8</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM7</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="o">-</span><span class="n">DIM8</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">],</span>   <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">],</span>           <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">-</span><span class="n">DIM6</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM5</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">-</span><span class="n">DIM6</span><span class="p">],</span>   <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM5</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="p">],</span>           <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM5</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="p">],</span>
+                       <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM5</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">-</span><span class="n">DIM6</span><span class="p">],</span>  <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">-</span><span class="n">DIM6</span><span class="p">],</span>     <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">],</span>
+                       <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="o">+</span><span class="n">DIM8</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">],</span>  <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="o">+</span><span class="n">DIM8</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM7</span><span class="p">],</span>     <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM7</span><span class="p">],</span>
+                       <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM7</span><span class="p">],</span>      <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="o">+</span><span class="n">DIM8</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM7</span><span class="p">],</span>    <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="o">+</span><span class="n">DIM8</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">],</span>
+                       <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">],</span>      <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">+</span><span class="n">DIM6</span><span class="p">],</span>    <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">+</span><span class="n">DIM6</span><span class="p">],</span>
+                       <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="p">],</span>      <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="p">],</span>          <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">+</span><span class="n">DIM6</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">+</span><span class="n">DIM6</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">],</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">],</span> <span class="p">[</span><span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">],</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">],</span> <span class="p">[</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">],</span> <span class="p">[</span><span class="mi">18</span><span class="p">,</span> <span class="mi">19</span><span class="p">],</span> <span class="p">[</span><span class="mi">19</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">21</span><span class="p">],</span> <span class="p">[</span><span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">],</span> <span class="p">[</span><span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">],</span> <span class="p">[</span><span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">],</span> <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">25</span><span class="p">],</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">26</span><span class="p">],</span> <span class="p">[</span><span class="mi">26</span><span class="p">,</span> <span class="mi">27</span><span class="p">],</span> <span class="p">[</span><span class="mi">27</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="FCROSSSection.getStressPoints"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.nastran_sections.FCROSSSection.getStressPoints">[docs]</a>    <span class="k">def</span> <span class="nf">getStressPoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">DIM1</span><span class="p">,</span> <span class="n">DIM2</span><span class="p">,</span> <span class="n">DIM3</span><span class="p">,</span> <span class="n">DIM4</span><span class="p">,</span> <span class="n">DIM5</span><span class="p">,</span> <span class="n">DIM6</span><span class="p">,</span> <span class="n">DIM7</span><span class="p">,</span> <span class="n">DIM8</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the coordinates of the stress evaluation points relative to the origin</span>
+<span class="sd">        of the cross-section. The shift parameter can be used to make the coordinates</span>
+<span class="sd">        relative to the centroid or the shear center.</span>
+
+<span class="sd">        :param float DIM1: Depth (y) of flanged cruciform</span>
+<span class="sd">        :param float DIM2: Width (x) of flanged cruciform</span>
+<span class="sd">        :param float DIM3: Thickness of vertical web</span>
+<span class="sd">        :param float DIM4: Thickness of horizontal web</span>
+<span class="sd">        :param float DIM5: Length of flange attached to vertical web</span>
+<span class="sd">        :param float DIM6: Thickness of flange attached to vertical web</span>
+<span class="sd">        :param float DIM7: Length of flange attached to horizontal web</span>
+<span class="sd">        :param float DIM8: Thickness of flange attached to horizontal web</span>
+<span class="sd">        :param shift: Vector that shifts the cross-section by *(x, y)*</span>
+<span class="sd">        :type shift: list[float, float]</span>
+<span class="sd">        :returns: Stress evaluation points relative to shifted origin - C, D, E, F</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">F</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span></div></div>
 
 
@@ -787,6 +917,12 @@
         <span class="n">DIM8</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM9</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM10</span> <span class="o">*=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">((</span><span class="n">DIM4</span><span class="o">+</span><span class="n">DIM5</span><span class="o">+</span><span class="n">DIM6</span><span class="p">)</span><span class="o">&lt;</span><span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">((</span><span class="n">DIM4</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM5</span><span class="p">)</span><span class="o">&lt;</span><span class="n">DIM3</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">((</span><span class="n">DIM7</span><span class="o">+</span><span class="n">DIM8</span><span class="p">)</span><span class="o">&lt;</span><span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">((</span><span class="n">DIM9</span><span class="o">+</span><span class="n">DIM10</span><span class="p">)</span><span class="o">&lt;</span><span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
 
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM8</span><span class="p">]]</span>
@@ -887,6 +1023,10 @@
         <span class="n">DIM5</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM6</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">((</span><span class="n">DIM3</span><span class="o">+</span><span class="n">DIM4</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">((</span><span class="mf">2.0</span><span class="o">*</span><span class="n">DIM5</span><span class="o">+</span><span class="n">DIM6</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">]]</span>
 
@@ -977,6 +1117,9 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span> <span class="o">&lt;</span> <span class="n">DIM3</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="n">d1</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">DIM3</span> <span class="o">-</span> <span class="n">DIM4</span><span class="p">)</span>
         <span class="n">d2</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">DIM2</span>
 
@@ -1061,6 +1204,9 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">DIM2</span> <span class="o">&lt;</span> <span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="p">]]</span>
 
@@ -1144,6 +1290,10 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM5</span> <span class="o">*=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">((</span><span class="mf">2.0</span><span class="o">*</span><span class="n">DIM4</span><span class="o">+</span><span class="n">DIM5</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM3</span> <span class="o">&lt;</span> <span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
 
         <span class="n">shift</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">+</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
@@ -1278,6 +1428,9 @@
         <span class="n">DIM2</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM2</span> <span class="o">&gt;</span> <span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">]]</span>
 
@@ -1360,6 +1513,11 @@
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM5</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM6</span> <span class="o">*=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">((</span><span class="n">DIM5</span> <span class="o">+</span> <span class="n">DIM6</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span><span class="o">&lt;</span><span class="n">DIM3</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span><span class="o">&lt;</span><span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
 
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM5</span><span class="p">]]</span>
@@ -1446,6 +1604,9 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span> <span class="o">&gt;</span> <span class="n">DIM3</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="n">shift</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">DIM1</span><span class="o">+</span><span class="n">DIM2</span><span class="p">)</span><span class="o">+</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="o">+</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
         <span class="c1"># assign control point</span>
@@ -1529,10 +1690,14 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span> <span class="o">&lt;</span> <span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM3</span> <span class="o">&lt;</span> <span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">]]</span>
 
-        <span class="n">shift</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="o">+</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">DIM3</span><span class="o">/</span><span class="mf">3.0</span><span class="o">+</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="o">+</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="o">+</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">control_points</span><span class="p">,</span> <span class="n">shift</span><span class="p">)</span>
 
         <span class="c1"># construct the points and facets</span>
@@ -1694,6 +1859,10 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span> <span class="o">&lt;</span> <span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM3</span> <span class="o">&lt;</span> <span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="n">d</span> <span class="o">=</span> <span class="n">DIM2</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">DIM1</span>
         <span class="n">t_f</span> <span class="o">=</span> <span class="n">DIM3</span>
@@ -1803,6 +1972,9 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span> <span class="o">&lt;</span> <span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="n">shift</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="o">+</span><span class="n">shift</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="o">+</span><span class="n">shift</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
         <span class="c1"># assign control point</span>
@@ -1884,6 +2056,10 @@
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span> <span class="o">&lt;</span> <span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM3</span> <span class="o">&lt;</span> <span class="n">DIM2</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
+
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM1</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM3</span><span class="p">]]</span>
 
@@ -1962,6 +2138,9 @@
         <span class="c1"># force dimensions to be floating point values</span>
         <span class="n">DIM1</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM2</span> <span class="o">*=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM2</span> <span class="o">&lt;</span> <span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
 
         <span class="n">d</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">DIM1</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">DIM1</span><span class="o">-</span><span class="n">DIM2</span>
@@ -2062,6 +2241,9 @@
         <span class="c1"># force dimensions to be floating point values</span>
         <span class="n">DIM1</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM2</span> <span class="o">*=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM2</span> <span class="o">&lt;</span> <span class="n">DIM1</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
 
         <span class="n">d</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">DIM1</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">DIM2</span>
@@ -2164,6 +2346,9 @@
         <span class="n">DIM2</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM3</span> <span class="o">*=</span> <span class="mf">1.0</span>
         <span class="n">DIM4</span> <span class="o">*=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Ensure dimensions are physically relevant</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_</span><span class="p">(</span><span class="n">DIM4</span> <span class="o">&gt;</span> <span class="n">DIM3</span><span class="p">,</span> <span class="s2">&quot;Invalid geometry specified.&quot;</span><span class="p">)</span>
 
         <span class="c1"># assign control point</span>
         <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="n">DIM1</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="n">DIM2</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">DIM4</span><span class="p">]]</span>
