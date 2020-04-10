@@ -17,33 +17,35 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -158,14 +160,12 @@
 <span class="kn">import</span> <span class="nn">meshpy.triangle</span> <span class="k">as</span> <span class="nn">triangle</span>
 
 
-<div class="viewcode-block" id="Material"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.pre.Material">[docs]</a><span class="k">class</span> <span class="nc">Material</span><span class="p">:</span>
+<div class="viewcode-block" id="Material"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.Material">[docs]</a><span class="k">class</span> <span class="nc">Material</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class for structural materials.</span>
 
-<span class="sd">    Provides a way of storing material properties related to a specific</span>
-<span class="sd">    material. The color can be a multitude of different formats, refer to</span>
-<span class="sd">    https://matplotlib.org/api/colors_api.html and</span>
-<span class="sd">    https://matplotlib.org/examples/color/named_colors.html for more</span>
-<span class="sd">    information.</span>
+<span class="sd">    Provides a way of storing material properties related to a specific material. The color can be</span>
+<span class="sd">    a multitude of different formats, refer to https://matplotlib.org/api/colors_api.html and</span>
+<span class="sd">    https://matplotlib.org/examples/color/named_colors.html for more information.</span>
 
 <span class="sd">    :param string name: Material name</span>
 <span class="sd">    :param float elastic_modulus: Material modulus of elasticity</span>
@@ -177,8 +177,8 @@
 <span class="sd">    :cvar string name: Material name</span>
 <span class="sd">    :cvar float elastic_modulus: Material modulus of elasticity</span>
 <span class="sd">    :cvar float poissons_ratio: Material Poisson&#39;s ratio</span>
-<span class="sd">    :cvar float shear_modulus: Material shear modulus, derived from the elastic</span>
-<span class="sd">        modulus and Poisson&#39;s ratio assuming an isotropic material</span>
+<span class="sd">    :cvar float shear_modulus: Material shear modulus, derived from the elastic modulus and</span>
+<span class="sd">        Poisson&#39;s ratio assuming an isotropic material</span>
 <span class="sd">    :cvar float yield_strength: Material yield strength</span>
 <span class="sd">    :cvar color: Material color for rendering</span>
 <span class="sd">    :vartype color: :class:`matplotlib.colors`</span>
@@ -187,15 +187,21 @@
 
 <span class="sd">        from sectionproperties.pre.pre import Material</span>
 
-<span class="sd">        concrete = Material(name=&#39;Concrete&#39;, elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,</span>
-<span class="sd">                            color=&#39;lightgrey&#39;)</span>
-<span class="sd">        steel = Material(name=&#39;Steel&#39;, elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,</span>
-<span class="sd">                         color=&#39;grey&#39;)</span>
-<span class="sd">        timber = Material(name=&#39;Timber&#39;, elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,</span>
-<span class="sd">                          color=&#39;burlywood&#39;)</span>
+<span class="sd">        concrete = Material(</span>
+<span class="sd">            name=&#39;Concrete&#39;, elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,</span>
+<span class="sd">                color=&#39;lightgrey&#39;</span>
+<span class="sd">        )</span>
+<span class="sd">        steel = Material(</span>
+<span class="sd">            name=&#39;Steel&#39;, elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,</span>
+<span class="sd">                color=&#39;grey&#39;</span>
+<span class="sd">        )</span>
+<span class="sd">        timber = Material(</span>
+<span class="sd">            name=&#39;Timber&#39;, elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,</span>
+<span class="sd">                color=&#39;burlywood&#39;</span>
+<span class="sd">        )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="p">,</span> <span class="n">yield_strength</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elastic_modulus</span><span class="p">,</span> <span class="n">poissons_ratio</span><span class="p">,</span> <span class="n">yield_strength</span><span class="p">,</span>
                  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Inits the Material class&quot;&quot;&quot;</span>
 
@@ -208,42 +214,36 @@
 
 
 <div class="viewcode-block" id="GeometryCleaner"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner">[docs]</a><span class="k">class</span> <span class="nc">GeometryCleaner</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Class for cleaning :class:`~sectionproperties.pre.sections.Geometry`</span>
-<span class="sd">    objects.</span>
+    <span class="sd">&quot;&quot;&quot;Class for cleaning :class:`~sectionproperties.pre.sections.Geometry` objects.</span>
 
 <span class="sd">    :param geometry: Geometry object to clean</span>
 <span class="sd">    :type geometry: :class:`~sectionproperties.pre.sections.Geometry`</span>
-<span class="sd">    :param bool verbose: If set to true, information related to the geometry</span>
-<span class="sd">        cleaning process is printed to the terminal.</span>
+<span class="sd">    :param bool verbose: If set to true, information related to the geometry cleaning process is</span>
+<span class="sd">        printed to the terminal.</span>
 
 <span class="sd">    Provides methods to clean various aspects of the geometry including:</span>
 
-<span class="sd">    * Zipping nodes - Find nodes that are close together (relative and absolute</span>
-<span class="sd">      tolerance) and deletes one of the nodes and rejoins the facets to the</span>
-<span class="sd">      remaining node.</span>
-<span class="sd">    * Removing zero length facets - Removes facets that start and end at the</span>
-<span class="sd">      same point.</span>
-<span class="sd">    * Remove duplicate facets - Removes facets that have the same starting</span>
-<span class="sd">      and ending point as an existing facet.</span>
-<span class="sd">    * Removing overlapping facets - Searches for facets that overlap each</span>
-<span class="sd">      other, given a tolerance angle, and reconstructs a unique set of facets</span>
-<span class="sd">      along the overlapping region.</span>
-<span class="sd">    * Remove unused points - Removes points that are not connected to any</span>
-<span class="sd">      facets.</span>
-<span class="sd">    * Intersect facets - Searches for intersections between two facets and adds</span>
-<span class="sd">      the intersection point to the points list and splits the intersected</span>
-<span class="sd">      facets.</span>
+<span class="sd">    * Zipping nodes - Find nodes that are close together (relative and absolute tolerance) and</span>
+<span class="sd">      deletes one of the nodes and rejoins the facets to the remaining node.</span>
+<span class="sd">    * Removing zero length facets - Removes facets that start and end at the same point.</span>
+<span class="sd">    * Remove duplicate facets - Removes facets that have the same starting and ending point as an</span>
+<span class="sd">      existing facet.</span>
+<span class="sd">    * Removing overlapping facets - Searches for facets that overlap each other, given a tolerance</span>
+<span class="sd">      angle, and reconstructs a unique set of facets along the overlapping region.</span>
+<span class="sd">    * Remove unused points - Removes points that are not connected to any facets.</span>
+<span class="sd">    * Intersect facets - Searches for intersections between two facets and adds the intersection</span>
+<span class="sd">      point to the points list and splits the intersected facets.</span>
 
 <span class="sd">    Note that a geometry cleaning method is provided to all</span>
 <span class="sd">    :class:`~sectionproperties.pre.sections.Geometry` objects.</span>
 
 <span class="sd">    :cvar geometry: Geometry object to clean</span>
 <span class="sd">    :vartype geometry: :class:`~sectionproperties.pre.sections.Geometry`</span>
-<span class="sd">    :cvar bool verbose: If set to true, information related to the geometry</span>
-<span class="sd">        cleaning process is printed to the terminal.</span>
+<span class="sd">    :cvar bool verbose: If set to true, information related to the geometry cleaning process is</span>
+<span class="sd">        printed to the terminal.</span>
 
-<span class="sd">    The following example creates a back-to-back 200PFC geometry, rotates the</span>
-<span class="sd">    geometry by 30 degrees, and cleans the geometry before meshing::</span>
+<span class="sd">    The following example creates a back-to-back 200PFC geometry, rotates the geometry by 30</span>
+<span class="sd">    degrees, and cleans the geometry before meshing::</span>
 
 <span class="sd">        import sectionproperties.pre.sections as sections</span>
 
@@ -255,14 +255,13 @@
 <span class="sd">        geometry.clean_geometry(verbose=True)</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[5, 5])</span>
 
-<span class="sd">    ..  warning:: If the geometry were not cleaned in the previous example, the</span>
-<span class="sd">      meshing algorithm would crash (most likely return a segment error).</span>
-<span class="sd">      Cleaning the geometry is always recommended when creating a merged</span>
-<span class="sd">      section which may result in overlapping or intersecting facets, or</span>
+<span class="sd">    ..  warning:: If the geometry were not cleaned in the previous example, the meshing algorithm</span>
+<span class="sd">      would crash (most likely return a segment error). Cleaning the geometry is always recommended</span>
+<span class="sd">      when creating a merged section, which may result in overlapping or intersecting facets, or</span>
 <span class="sd">      duplicate nodes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Inits the GeometryCleaner class.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span>
@@ -281,16 +280,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span></div>
 
 <div class="viewcode-block" id="GeometryCleaner.zip_points"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.zip_points">[docs]</a>    <span class="k">def</span> <span class="nf">zip_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Zips points that are close to each other. Searches through the point</span>
-<span class="sd">        list and merges two points if there are deemed to be sufficiently</span>
-<span class="sd">        close. The average value of the coordinates is used for the new point.</span>
-<span class="sd">        One of the points is deleted from the point list and the facet list is</span>
-<span class="sd">        updated to remove references to the old points and renumber the</span>
-<span class="sd">        remaining point indices in the facet list.</span>
+        <span class="sd">&quot;&quot;&quot;Zips points that are close to each other. Searches through the point list and merges two</span>
+<span class="sd">        points if there are deemed to be sufficiently close. The average value of the coordinates</span>
+<span class="sd">        is used for the new point. One of the points is deleted from the point list and the facet</span>
+<span class="sd">        list is updated to remove references to the old points and renumber the remaining point</span>
+<span class="sd">        indices in the facet list.</span>
 
 <span class="sd">        :param float atol: Absolute tolerance for point zipping</span>
-<span class="sd">        :param float rtol: Relative tolerance (to geometry extents) for point</span>
-<span class="sd">            zipping</span>
+<span class="sd">        :param float rtol: Relative tolerance (to geometry extents) for point zipping</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
@@ -309,13 +306,10 @@
                 <span class="n">idx_2</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
 
                 <span class="c1"># determine distance between two points</span>
-                <span class="n">dist</span> <span class="o">=</span> <span class="p">((</span><span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-                        <span class="p">(</span><span class="n">pt2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="p">((</span><span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">pt2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
 
-                <span class="c1"># if the points are sufficiently close together...</span>
-                <span class="c1"># and the point has not already been removed</span>
-                <span class="k">if</span> <span class="p">((</span><span class="n">dist</span> <span class="o">&lt;</span> <span class="n">atol</span> <span class="ow">or</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="n">rel_tol</span><span class="p">)</span> <span class="ow">and</span>
-                        <span class="n">idx_2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">):</span>
+                <span class="c1"># if the points are close together and the point has not already been removed</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">dist</span> <span class="o">&lt;</span> <span class="n">atol</span> <span class="ow">or</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="n">rel_tol</span><span class="p">)</span> <span class="ow">and</span> <span class="n">idx_2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
                     <span class="c1"># update point1 (average of point1 + point2)</span>
                     <span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                     <span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -327,20 +321,18 @@
                     <span class="n">idx_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_2</span><span class="p">)</span>
 
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                        <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Zipped point </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_2</span><span class="p">)</span>
-                        <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot; to point </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_1</span><span class="p">)</span>
+                        <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Zipped point </span><span class="si">{0}</span><span class="s2"> to point </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_2</span><span class="p">,</span> <span class="n">idx_1</span><span class="p">)</span>
                         <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
-        <span class="c1"># sort list of indices to remove in reverse order so as not to</span>
-        <span class="c1"># comprimise the indices</span>
+        <span class="c1"># sort list of indices to remove in reverse order so as not to comprimise the indices</span>
         <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">idx_to_remove</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_point_id</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GeometryCleaner.remove_zero_length_facets"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.remove_zero_length_facets">[docs]</a>    <span class="k">def</span> <span class="nf">remove_zero_length_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Searches through all facets and removes those that have the same</span>
-<span class="sd">        starting and ending point.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Searches through all facets and removes those that have the same starting and ending</span>
+<span class="sd">        point.&quot;&quot;&quot;</span>
 
         <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -349,8 +341,7 @@
             <span class="k">if</span> <span class="n">fct</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">fct</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                 <span class="n">idx_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
 
-        <span class="c1"># sort list of indices to remove in reverse order so as not to</span>
-        <span class="c1"># comprimise the indices</span>
+        <span class="c1"># sort list of indices to remove in reverse order so as not to comprimise the indices</span>
         <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">idx_to_remove</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
@@ -360,8 +351,8 @@
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Removed zero length facet </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="GeometryCleaner.remove_overlapping_facets"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.remove_overlapping_facets">[docs]</a>    <span class="k">def</span> <span class="nf">remove_overlapping_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Searches through all facet combinations and fixes facets that</span>
-<span class="sd">        overlap within a tolerance.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Searches through all facet combinations and fixes facets that overlap within a</span>
+<span class="sd">        tolerance.&quot;&quot;&quot;</span>
 
         <span class="n">cleaning</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -401,8 +392,8 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">remove_duplicate_facets</span><span class="p">()</span>
 
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                            <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Removed overlapping facets... Rebuilt with &quot;</span>
-                            <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot;points: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+                            <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Removed overlapping facets </span><span class="si">{0}</span><span class="s2">...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_to_remove</span><span class="p">)</span>
+                            <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot;Rebuilt with points: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
                             <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
                         <span class="c1"># break both loops and loop through all facets again</span>
@@ -417,8 +408,7 @@
                 <span class="n">cleaning</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="GeometryCleaner.remove_unused_points"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.remove_unused_points">[docs]</a>    <span class="k">def</span> <span class="nf">remove_unused_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Searches through all facets and removes points that are not</span>
-<span class="sd">        connected to any facets.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Searches through all facets and removes points that are not connected to any facets.&quot;&quot;&quot;</span>
 
         <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">facet_flattened</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">fct</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">fct</span><span class="p">]</span>
@@ -431,17 +421,15 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Removed unused point </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pt</span><span class="p">))</span>
 
-        <span class="c1"># sort list of indices to remove in reverse order so as not to</span>
-        <span class="c1"># comprimise the indices</span>
+        <span class="c1"># sort list of indices to remove in reverse order so as not to comprimise the indices</span>
         <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">idx_to_remove</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_point_id</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GeometryCleaner.intersect_facets"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.intersect_facets">[docs]</a>    <span class="k">def</span> <span class="nf">intersect_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Searches through all facet combinations and finds facets that</span>
-<span class="sd">        intersect each other. The intersection point is added and the facets</span>
-<span class="sd">        rebuilt.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Searches through all facet combinations and finds facets that intersect each other. The</span>
+<span class="sd">        intersection point is added and the facets rebuilt.&quot;&quot;&quot;</span>
 
         <span class="n">cleaning</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -503,8 +491,7 @@
                 <span class="n">cleaning</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="GeometryCleaner.replace_point_id"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.replace_point_id">[docs]</a>    <span class="k">def</span> <span class="nf">replace_point_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_old</span><span class="p">,</span> <span class="n">id_new</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Searches all facets and replaces references to point id_old with</span>
-<span class="sd">        id_new.</span>
+        <span class="sd">&quot;&quot;&quot;Searches all facets and replaces references to point id_old with id_new.</span>
 
 <span class="sd">        :param int id_old: Point index to be replaced</span>
 <span class="sd">        :param int id_new: Point index to replace point id_old</span>
@@ -518,8 +505,8 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facets</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">id_new</span></div>
 
 <div class="viewcode-block" id="GeometryCleaner.remove_point_id"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.remove_point_id">[docs]</a>    <span class="k">def</span> <span class="nf">remove_point_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes point point_id from the points list and renumbers the</span>
-<span class="sd">        references to points after point_id in the facet list.</span>
+        <span class="sd">&quot;&quot;&quot;Removes point point_id from the points list and renumbers the references to points after</span>
+<span class="sd">        point_id in the facet list.</span>
 
 <span class="sd">        :param int point_id: Index of point to be removed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -554,8 +541,8 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="GeometryCleaner.is_intersect"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.is_intersect">[docs]</a>    <span class="k">def</span> <span class="nf">is_intersect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Determines if the line segment p-&gt;p+r intersects q-&gt;q+s. Implements</span>
-<span class="sd">        Gareth Rees&#39;s answer: https://stackoverflow.com/questions/563198.</span>
+        <span class="sd">&quot;&quot;&quot;Determines if the line segment p-&gt;p+r intersects q-&gt;q+s. Implements Gareth Rees&#39;s</span>
+<span class="sd">        answer: https://stackoverflow.com/questions/563198.</span>
 
 <span class="sd">        :param p: Starting point of the first line segment</span>
 <span class="sd">        :type p: :class:`numpy.ndarray` [float, float]</span>
@@ -565,8 +552,8 @@
 <span class="sd">        :type r: :class:`numpy.ndarray` [float, float]</span>
 <span class="sd">        :param s: Vector of the second line segment</span>
 <span class="sd">        :type s: :class:`numpy.ndarray` [float, float]</span>
-<span class="sd">        :returns: The intersection point of the line segments. If there is no</span>
-<span class="sd">            intersection, returns None.</span>
+<span class="sd">        :returns: The intersection point of the line segments. If there is no intersection, returns</span>
+<span class="sd">            None.</span>
 <span class="sd">        :rtype: :class:`numpy.ndarray` [float, float]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -575,16 +562,15 @@
             <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
             <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
 
-            <span class="c1"># modify from closed inequality (&lt;=) to open (&lt;) so end...</span>
-            <span class="c1"># intersections are not picked up</span>
+            <span class="c1"># modify from closed inequality (&lt;=) to open (&lt;) so end intersections are not picked up</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">u</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">u</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">p</span> <span class="o">+</span> <span class="n">t</span> <span class="o">*</span> <span class="n">r</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="GeometryCleaner.is_overlap"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.is_overlap">[docs]</a>    <span class="k">def</span> <span class="nf">is_overlap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">fct1</span><span class="p">,</span> <span class="n">fct2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Determines if the line segment p-&gt;p+r overlaps q-&gt;q+s. Implements</span>
-<span class="sd">        Gareth Rees&#39;s answer: https://stackoverflow.com/questions/563198.</span>
+        <span class="sd">&quot;&quot;&quot;Determines if the line segment p-&gt;p+r overlaps q-&gt;q+s. Implements Gareth Rees&#39;s answer:</span>
+<span class="sd">        https://stackoverflow.com/questions/563198.</span>
 
 <span class="sd">        :param p: Starting point of the first line segment</span>
 <span class="sd">        :type p: :class:`numpy.ndarray` [float, float]</span>
@@ -595,20 +581,23 @@
 <span class="sd">        :param s: Vector of the second line segment</span>
 <span class="sd">        :type s: :class:`numpy.ndarray` [float, float]</span>
 <span class="sd">        :param fct1: sadkjas;dkas;dj</span>
-<span class="sd">        :returns: A list containing the points required for facet rebuilding.</span>
-<span class="sd">            If there is no rebuild to be done, returns None.</span>
+<span class="sd">        :returns: A list containing the points required for facet rebuilding. If there is no</span>
+<span class="sd">            rebuild to be done, returns None.</span>
 <span class="sd">        :rtype: list[list[float, float]]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-3</span>  <span class="c1"># minimum angle tolerance (smaller is considered overlap)</span>
         <span class="n">float_tol</span> <span class="o">=</span> <span class="mf">1e-12</span>  <span class="c1"># rounding error tolerance</span>
 
+        <span class="c1"># relativise tolerance by length of smallest vector</span>
+        <span class="n">tol</span> <span class="o">*=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+
         <span class="c1"># are the line segments collinear?</span>
         <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
                 <span class="c1"># CASE 1: two line segments are collinear</span>
-                <span class="c1"># calculate end points of second segment in terms of the...</span>
-                <span class="c1"># equation of the first line segment (p + t * r)</span>
+                <span class="c1"># calculate end points of second segment in terms of the equation of the first line</span>
+                <span class="c1"># segment (p + t * r)</span>
                 <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">t0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
                     <span class="n">t1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">q</span> <span class="o">+</span> <span class="n">s</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
@@ -644,8 +633,8 @@
                 <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="GeometryCleaner.remove_duplicate_facets"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.GeometryCleaner.remove_duplicate_facets">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Searches through all facets and removes facets that are duplicates,</span>
-<span class="sd">        independent of the point order.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Searches through all facets and removes facets that are duplicates, independent of the</span>
+<span class="sd">        point order.&quot;&quot;&quot;</span>
 
         <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -667,8 +656,7 @@
                         <span class="nb">str</span> <span class="o">+=</span> <span class="s2">&quot; (identical to facet: </span><span class="si">{0}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx_1</span><span class="p">)</span>
                         <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
-        <span class="c1"># sort list of indices to remove in reverse order so as not to</span>
-        <span class="c1"># comprimise the indices</span>
+        <span class="c1"># sort list of indices to remove in reverse order so as not to comprimise the indices</span>
         <span class="n">idx_to_remove</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">idx_to_remove</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_to_remove</span><span class="p">:</span>
@@ -676,25 +664,20 @@
 
 
 <div class="viewcode-block" id="create_mesh"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.pre.create_mesh">[docs]</a><span class="k">def</span> <span class="nf">create_mesh</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">,</span> <span class="n">mesh_sizes</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a quadratic triangular mesh using the meshpy module, which</span>
-<span class="sd">    utilises the code &#39;Triangle&#39;, by Jonathan Shewchuk.</span>
+    <span class="sd">&quot;&quot;&quot;Creates a quadratic triangular mesh using the meshpy module, which utilises the code</span>
+<span class="sd">    &#39;Triangle&#39;, by Jonathan Shewchuk.</span>
 
-<span class="sd">    :param points: List of points *(x, y)* defining the vertices of the</span>
-<span class="sd">        cross-section</span>
+<span class="sd">    :param points: List of points *(x, y)* defining the vertices of the cross-section</span>
 <span class="sd">    :type points: list[list[float, float]]</span>
-<span class="sd">    :param facets: List of point index pairs *(p1, p2)* defining the edges of</span>
-<span class="sd">        the cross-section</span>
+<span class="sd">    :param facets: List of point index pairs *(p1, p2)* defining the edges of the cross-section</span>
 <span class="sd">    :type points: list[list[int, int]]</span>
-<span class="sd">    :param holes: List of points *(x, y)* defining the locations of holes</span>
-<span class="sd">        within the cross-section. If there are no holes, provide an empty list</span>
-<span class="sd">        [].</span>
+<span class="sd">    :param holes: List of points *(x, y)* defining the locations of holes within the cross-section.</span>
+<span class="sd">        If there are no holes, provide an empty list [].</span>
 <span class="sd">    :type holes: list[list[float, float]]</span>
-<span class="sd">    :param control_points: A list of points *(x, y)* that define different</span>
-<span class="sd">        regions of the cross-section. A control point is an arbitrary point</span>
-<span class="sd">        within a region enclosed by facets.</span>
+<span class="sd">    :param control_points: A list of points *(x, y)* that define different regions of the</span>
+<span class="sd">        cross-section. A control point is an arbitrary point within a region enclosed by facets.</span>
 <span class="sd">    :type control_points: list[list[float, float]]</span>
-<span class="sd">    :param mesh_sizes: List of maximum element areas for each region defined by</span>
-<span class="sd">        a control point</span>
+<span class="sd">    :param mesh_sizes: List of maximum element areas for each region defined by a control point</span>
 <span class="sd">    :type mesh_sizes: list[float]</span>
 
 <span class="sd">    :return: Object containing generated mesh data</span>
@@ -719,178 +702,6 @@
         <span class="n">attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">volume_constraints</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">mesh</span></div>
-
-
-<span class="c1"># class LoadData:</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This class parses the input load data and stores the load values.</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#     def __init__(self, loads):</span>
-<span class="c1">#         self.containsLoads = False</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             self.Nzz = loads[&quot;nzz&quot;]</span>
-<span class="c1">#             self.containsLoads = True</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             self.Nzz = 0.0</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             self.Vx = loads[&quot;vx&quot;]</span>
-<span class="c1">#             self.containsLoads = True</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             self.Vx = 0.0</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             self.Vy = loads[&quot;vy&quot;]</span>
-<span class="c1">#             self.containsLoads = True</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             self.Vy = 0.0</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             self.Mxx = loads[&quot;mxx&quot;]</span>
-<span class="c1">#             self.containsLoads = True</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             self.Mxx = 0.0</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             self.Myy = loads[&quot;myy&quot;]</span>
-<span class="c1">#             self.containsLoads = True</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             self.Myy = 0.0</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             self.M11 = loads[&quot;m11&quot;]</span>
-<span class="c1">#             self.containsLoads = True</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             self.M11 = 0.0</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             self.M22 = loads[&quot;m22&quot;]</span>
-<span class="c1">#             self.containsLoads = True</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             self.M22 = 0.0</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             self.Mzz = loads[&quot;mzz&quot;]</span>
-<span class="c1">#             self.containsLoads = True</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             self.Mzz = 0.0</span>
-<span class="c1">#</span>
-<span class="c1">#</span>
-<span class="c1"># class CrossSectionSettings:</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This class contains the settings used for the cross-section analysis.</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#     def __init__(self, settings):</span>
-<span class="c1">#         # load default settings</span>
-<span class="c1">#         self.checkGeometry = True</span>
-<span class="c1">#         self.checkMesh = True</span>
-<span class="c1">#         self.outputLog = True</span>
-<span class="c1">#         self.outputSettings = True</span>
-<span class="c1">#         self.outputResults = True</span>
-<span class="c1">#         self.plasticAnalysis = True</span>
-<span class="c1">#         self.numberFormat = &quot;.2f&quot;</span>
-<span class="c1">#         self.solverType = &quot;cgs&quot;</span>
-<span class="c1">#         self.tol = 1e-5</span>
-<span class="c1">#         self.plots = []</span>
-<span class="c1">#</span>
-<span class="c1">#         # load custom settings</span>
-<span class="c1">#         self.applySettings(settings)</span>
-<span class="c1">#</span>
-<span class="c1">#     def applySettings(self, settings):</span>
-<span class="c1">#         # read all valid settings from the dictionary settings</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;check-geometry&quot;].lower() in</span>
-<span class="c1">#                         [&quot;true&quot;])</span>
-<span class="c1">#             self.checkGeometry = testBool</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             pass</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;check-mesh&quot;].lower() in</span>
-<span class="c1">#                         [&quot;true&quot;])</span>
-<span class="c1">#             self.checkMesh = testBool</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             pass</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;output-log&quot;].lower() in</span>
-<span class="c1">#                         [&quot;true&quot;])</span>
-<span class="c1">#             self.outputLog = testBool</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             pass</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;output-settings&quot;].lower() in</span>
-<span class="c1">#                         [&quot;true&quot;])</span>
-<span class="c1">#             self.outputSettings = testBool</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             pass</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;output-results&quot;].lower() in</span>
-<span class="c1">#                         [&quot;true&quot;])</span>
-<span class="c1">#             self.outputResults = testBool</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             pass</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             testBool = (settings[&quot;general&quot;][&quot;plastic-analysis&quot;].lower() in</span>
-<span class="c1">#                         [&quot;true&quot;])</span>
-<span class="c1">#             self.plasticAnalysis = testBool</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             pass</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             width = int(settings[&quot;number-format&quot;][&quot;width&quot;])</span>
-<span class="c1">#             precision = int(settings[&quot;number-format&quot;][&quot;precision&quot;])</span>
-<span class="c1">#             numType = str(settings[&quot;number-format&quot;][&quot;type&quot;])</span>
-<span class="c1">#             self.numberFormat = str(width) + &quot;.&quot; + str(precision) + numType</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             pass</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             solverType = settings[&quot;solver&quot;][&quot;type&quot;]</span>
-<span class="c1">#</span>
-<span class="c1">#             if (solverType.lower() == &quot;cgs&quot;):</span>
-<span class="c1">#                 self.solverType = &quot;cgs&quot;</span>
-<span class="c1">#             elif (solverType.lower() == &quot;direct&quot;):</span>
-<span class="c1">#                 self.solverType = &quot;direct&quot;</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             pass</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             self.tol = settings[&quot;solver&quot;][&quot;tol&quot;]</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             pass</span>
-<span class="c1">#</span>
-<span class="c1">#         try:</span>
-<span class="c1">#             self.plots = settings[&quot;plots&quot;]</span>
-<span class="c1">#         except KeyError:</span>
-<span class="c1">#             pass</span>
-<span class="c1">#</span>
-<span class="c1">#     def printSettings(self):</span>
-<span class="c1">#         &quot;&quot;&quot;</span>
-<span class="c1">#         This method prints the current settings to the console.</span>
-<span class="c1">#         &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#         print(&quot;\n-----------------------------&quot;)</span>
-<span class="c1">#         print(&quot;Program Settings&quot;)</span>
-<span class="c1">#         print(&quot;-----------------------------&quot;)</span>
-<span class="c1">#         print(&quot;General Settings:&quot;)</span>
-<span class="c1">#         print(&quot;\tcheck-geometry:\t{}&quot;.format(self.checkGeometry))</span>
-<span class="c1">#         print(&quot;\tcheck-mesh:\t{}&quot;.format(self.checkMesh))</span>
-<span class="c1">#         print(&quot;\toutput-log:\t{}&quot;.format(self.outputLog))</span>
-<span class="c1">#         print(&quot;\toutput-setting:\t{}&quot;.format(self.outputSettings))</span>
-<span class="c1">#         print(&quot;\toutput-results:\t{}&quot;.format(self.outputResults))</span>
-<span class="c1">#         print(&quot;Output Settings:&quot;)</span>
-<span class="c1">#         print(&quot;\tnumber-format:\t{}&quot;.format(self.numberFormat))</span>
-<span class="c1">#         print(&quot;Solver Settings:&quot;)</span>
-<span class="c1">#         print(&quot;\ttype:\t\t{}&quot;.format(self.solverType))</span>
-<span class="c1">#         print(&quot;\ttol:\t\t{}&quot;.format(self.tol))</span>
-<span class="c1">#         print(&quot;Plot Settings:&quot;)</span>
-<span class="c1">#         print(&quot;\tplots:\t\t{}\n&quot;.format(self.plots))</span>
 </pre></div>
 
            </div>
@@ -903,7 +714,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Robbie van Leeuwen.
+        &copy; Copyright 2019, Robbie van Leeuwen
 
     </p>
   </div>
@@ -920,36 +731,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'1.0.5',
-            LANGUAGE:'en',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

@@ -17,33 +17,35 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -163,9 +165,8 @@
 
 <span class="sd">    :param ax: Axes object on which to plot</span>
 <span class="sd">    :type ax: :class:`matplotlib.axes.Axes`</span>
-<span class="sd">    :param bool pause: If set to true, the figure pauses the script until</span>
-<span class="sd">        the window is closed. If set to false, the script continues</span>
-<span class="sd">        immediately after the window is rendered.</span>
+<span class="sd">    :param bool pause: If set to true, the figure pauses the script until the window is closed. If</span>
+<span class="sd">        set to false, the script continues immediately after the window is rendered.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">pause</span><span class="p">:</span>
@@ -180,9 +181,8 @@
 
 <span class="sd">    :param ax: Axes object on which to plot</span>
 <span class="sd">    :type ax: :class:`matplotlib.axes.Axes`</span>
-<span class="sd">    :param bool pause: If set to true, the figure pauses the script until</span>
-<span class="sd">        the window is closed. If set to false, the script continues</span>
-<span class="sd">        immediately after the window is rendered.</span>
+<span class="sd">    :param bool pause: If set to true, the figure pauses the script until the window is closed. If</span>
+<span class="sd">        set to false, the script continues immediately after the window is rendered.</span>
 <span class="sd">    :param string title: Plot title</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -228,18 +228,16 @@
             <span class="n">vec</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 
     <span class="k">def</span> <span class="nf">get_prinicipal_points</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">lims</span><span class="p">,</span> <span class="n">centroid</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Determines the intersections of the prinicpal axis with the four</span>
-<span class="sd">        lines defining a bounding box around the limits of the cross-section.</span>
-<span class="sd">        The middle two intersection points are returned for plotting.</span>
+        <span class="sd">&quot;&quot;&quot;Determines the intersections of the prinicpal axis with the four lines defining a</span>
+<span class="sd">        bounding box around the limits of the cross-section. The middle two intersection points are</span>
+<span class="sd">        returned for plotting.</span>
 
-<span class="sd">        :param basis: Basis (unit) vector in the direction of the principal</span>
-<span class="sd">            axis</span>
+<span class="sd">        :param basis: Basis (unit) vector in the direction of the principal axis</span>
 <span class="sd">        :type basis: :class:`numpy.ndarray`</span>
-<span class="sd">        :param lims: Tuple containing the axis limits</span>
-<span class="sd">            *(xmin, xmax, ymin, ymax)*</span>
+<span class="sd">        :param lims: Tuple containing the axis limits *(xmin, xmax, ymin, ymax)*</span>
 <span class="sd">        :type lims: tuple(float, float, float, float)</span>
-<span class="sd">        :param centroid: Centroid *(cx, cy)* of the cross-section, through</span>
-<span class="sd">            which the principal axis passes</span>
+<span class="sd">        :param centroid: Centroid *(cx, cy)* of the cross-section, through which the principal axis</span>
+<span class="sd">            passes</span>
 <span class="sd">        :type centroid: list[float, float]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -274,8 +272,7 @@
     <span class="sd">&quot;&quot;&quot;Prints the results that have been calculated to the terminal.</span>
 
 <span class="sd">    :param cross_section: Structural cross-section object</span>
-<span class="sd">    :type cross_section:</span>
-<span class="sd">        :class:`~sectionproperties.analysis.cross_section.CrossSection`</span>
+<span class="sd">    :type cross_section: :class:`~sectionproperties.analysis.cross_section.CrossSection`</span>
 <span class="sd">    :param string fmt: Number format</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -350,16 +347,20 @@
     <span class="n">j</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_j</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;G.J</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">j</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">nu_eff</span><span class="p">)),</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;G.J</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">j</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">nu_eff</span><span class="p">)),</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;J</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
 
     <span class="n">gamma</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_gamma</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">gamma</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;G.Iw</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="mi">1</span> <span class="o">+</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">nu_eff</span><span class="p">)),</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;G.Iw</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">nu_eff</span><span class="p">)),</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Iw</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
 
@@ -381,12 +382,16 @@
     <span class="p">(</span><span class="n">A_sx</span><span class="p">,</span> <span class="n">A_sy</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_As</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">A_sx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_sx</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">A_sx</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span>
-                <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_sy</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">A_sy</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span>
-                <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;A_sx</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">A_sx</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span>
+                    <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;A_sy</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">A_sy</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span>
+                    <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_sx</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_sx</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_sy</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_sy</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
@@ -394,26 +399,28 @@
     <span class="p">(</span><span class="n">A_s11</span><span class="p">,</span> <span class="n">A_s22</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_As_p</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">A_s11</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">materials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s11</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">A_s11</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span>
-                <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s22</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">A_s22</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span>
-                <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;A_s11</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">A_s11</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span>
+                    <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;A_s22</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">A_s22</span> <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">section_props</span><span class="o">.</span><span class="n">ea</span><span class="p">,</span>
+                    <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s11</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_s11</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A_s22</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A_s22</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
 
-    <span class="p">(</span><span class="n">beta_x_plus</span><span class="p">,</span> <span class="n">beta_x_minus</span><span class="p">,</span> <span class="n">beta_y_plus</span><span class="p">,</span>
-     <span class="n">beta_y_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_beta</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">beta_x_plus</span><span class="p">,</span> <span class="n">beta_x_minus</span><span class="p">,</span> <span class="n">beta_y_plus</span><span class="p">,</span> <span class="n">beta_y_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_beta</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">beta_x_plus</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;betax+</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beta_x_plus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;betax-</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beta_x_minus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;betay+</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beta_y_plus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;betay-</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beta_y_minus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
 
-    <span class="p">(</span><span class="n">beta_11_plus</span><span class="p">,</span> <span class="n">beta_11_minus</span><span class="p">,</span> <span class="n">beta_22_plus</span><span class="p">,</span>
-     <span class="n">beta_22_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_beta_p</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">beta_11_plus</span><span class="p">,</span> <span class="n">beta_11_minus</span><span class="p">,</span> <span class="n">beta_22_plus</span><span class="p">,</span> <span class="n">beta_22_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_beta_p</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">beta_x_plus</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;beta11+</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beta_11_plus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;beta11-</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beta_11_minus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
@@ -455,8 +462,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;S11</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s11</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;S22</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s22</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
 
-    <span class="p">(</span><span class="n">sf_11_plus</span><span class="p">,</span> <span class="n">sf_11_minus</span><span class="p">,</span>
-     <span class="n">sf_22_plus</span><span class="p">,</span> <span class="n">sf_22_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_sf_p</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">sf_11_plus</span><span class="p">,</span> <span class="n">sf_11_minus</span><span class="p">,</span> <span class="n">sf_22_plus</span><span class="p">,</span> <span class="n">sf_22_minus</span><span class="p">)</span> <span class="o">=</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">get_sf_p</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">sf_11_plus</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SF_11+</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sf_11_plus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SF_11-</span><span class="se">\t</span><span class="s2"> = {:&gt;</span><span class="si">{fmt}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sf_11_minus</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
@@ -476,7 +482,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Robbie van Leeuwen.
+        &copy; Copyright 2019, Robbie van Leeuwen
 
     </p>
   </div>
@@ -493,36 +499,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'1.0.5',
-            LANGUAGE:'en',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

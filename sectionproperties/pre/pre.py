@@ -5,11 +5,9 @@ import meshpy.triangle as triangle
 class Material:
     """Class for structural materials.
 
-    Provides a way of storing material properties related to a specific
-    material. The color can be a multitude of different formats, refer to
-    https://matplotlib.org/api/colors_api.html and
-    https://matplotlib.org/examples/color/named_colors.html for more
-    information.
+    Provides a way of storing material properties related to a specific material. The color can be
+    a multitude of different formats, refer to https://matplotlib.org/api/colors_api.html and
+    https://matplotlib.org/examples/color/named_colors.html for more information.
 
     :param string name: Material name
     :param float elastic_modulus: Material modulus of elasticity
@@ -21,8 +19,8 @@ class Material:
     :cvar string name: Material name
     :cvar float elastic_modulus: Material modulus of elasticity
     :cvar float poissons_ratio: Material Poisson's ratio
-    :cvar float shear_modulus: Material shear modulus, derived from the elastic
-        modulus and Poisson's ratio assuming an isotropic material
+    :cvar float shear_modulus: Material shear modulus, derived from the elastic modulus and
+        Poisson's ratio assuming an isotropic material
     :cvar float yield_strength: Material yield strength
     :cvar color: Material color for rendering
     :vartype color: :class:`matplotlib.colors`
@@ -31,12 +29,18 @@ class Material:
 
         from sectionproperties.pre.pre import Material
 
-        concrete = Material(name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
-                            color='lightgrey')
-        steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
-                         color='grey')
-        timber = Material(name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
-                          color='burlywood')
+        concrete = Material(
+            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
+                color='lightgrey'
+        )
+        steel = Material(
+            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
+                color='grey'
+        )
+        timber = Material(
+            name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
+                color='burlywood'
+        )
     """
 
     def __init__(self, name, elastic_modulus, poissons_ratio, yield_strength,
@@ -52,42 +56,36 @@ class Material:
 
 
 class GeometryCleaner:
-    """Class for cleaning :class:`~sectionproperties.pre.sections.Geometry`
-    objects.
+    """Class for cleaning :class:`~sectionproperties.pre.sections.Geometry` objects.
 
     :param geometry: Geometry object to clean
     :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
-    :param bool verbose: If set to true, information related to the geometry
-        cleaning process is printed to the terminal.
+    :param bool verbose: If set to true, information related to the geometry cleaning process is
+        printed to the terminal.
 
     Provides methods to clean various aspects of the geometry including:
 
-    * Zipping nodes - Find nodes that are close together (relative and absolute
-      tolerance) and deletes one of the nodes and rejoins the facets to the
-      remaining node.
-    * Removing zero length facets - Removes facets that start and end at the
-      same point.
-    * Remove duplicate facets - Removes facets that have the same starting
-      and ending point as an existing facet.
-    * Removing overlapping facets - Searches for facets that overlap each
-      other, given a tolerance angle, and reconstructs a unique set of facets
-      along the overlapping region.
-    * Remove unused points - Removes points that are not connected to any
-      facets.
-    * Intersect facets - Searches for intersections between two facets and adds
-      the intersection point to the points list and splits the intersected
-      facets.
+    * Zipping nodes - Find nodes that are close together (relative and absolute tolerance) and
+      deletes one of the nodes and rejoins the facets to the remaining node.
+    * Removing zero length facets - Removes facets that start and end at the same point.
+    * Remove duplicate facets - Removes facets that have the same starting and ending point as an
+      existing facet.
+    * Removing overlapping facets - Searches for facets that overlap each other, given a tolerance
+      angle, and reconstructs a unique set of facets along the overlapping region.
+    * Remove unused points - Removes points that are not connected to any facets.
+    * Intersect facets - Searches for intersections between two facets and adds the intersection
+      point to the points list and splits the intersected facets.
 
     Note that a geometry cleaning method is provided to all
     :class:`~sectionproperties.pre.sections.Geometry` objects.
 
     :cvar geometry: Geometry object to clean
     :vartype geometry: :class:`~sectionproperties.pre.sections.Geometry`
-    :cvar bool verbose: If set to true, information related to the geometry
-        cleaning process is printed to the terminal.
+    :cvar bool verbose: If set to true, information related to the geometry cleaning process is
+        printed to the terminal.
 
-    The following example creates a back-to-back 200PFC geometry, rotates the
-    geometry by 30 degrees, and cleans the geometry before meshing::
+    The following example creates a back-to-back 200PFC geometry, rotates the geometry by 30
+    degrees, and cleans the geometry before meshing::
 
         import sectionproperties.pre.sections as sections
 
@@ -99,10 +97,9 @@ class GeometryCleaner:
         geometry.clean_geometry(verbose=True)
         mesh = geometry.create_mesh(mesh_sizes=[5, 5])
 
-    ..  warning:: If the geometry were not cleaned in the previous example, the
-      meshing algorithm would crash (most likely return a segment error).
-      Cleaning the geometry is always recommended when creating a merged
-      section which may result in overlapping or intersecting facets, or
+    ..  warning:: If the geometry were not cleaned in the previous example, the meshing algorithm
+      would crash (most likely return a segment error). Cleaning the geometry is always recommended
+      when creating a merged section, which may result in overlapping or intersecting facets, or
       duplicate nodes.
     """
 
@@ -125,16 +122,14 @@ class GeometryCleaner:
         return self.geometry
 
     def zip_points(self, atol=1e-8, rtol=1e-5):
-        """Zips points that are close to each other. Searches through the point
-        list and merges two points if there are deemed to be sufficiently
-        close. The average value of the coordinates is used for the new point.
-        One of the points is deleted from the point list and the facet list is
-        updated to remove references to the old points and renumber the
-        remaining point indices in the facet list.
+        """Zips points that are close to each other. Searches through the point list and merges two
+        points if there are deemed to be sufficiently close. The average value of the coordinates
+        is used for the new point. One of the points is deleted from the point list and the facet
+        list is updated to remove references to the old points and renumber the remaining point
+        indices in the facet list.
 
         :param float atol: Absolute tolerance for point zipping
-        :param float rtol: Relative tolerance (to geometry extents) for point
-            zipping
+        :param float rtol: Relative tolerance (to geometry extents) for point zipping
         """
 
         idx_to_remove = []
@@ -153,13 +148,10 @@ class GeometryCleaner:
                 idx_2 = i + j + 1
 
                 # determine distance between two points
-                dist = ((pt2[0] - pt1[0]) ** 2 +
-                        (pt2[1] - pt1[1]) ** 2) ** 0.5
+                dist = ((pt2[0] - pt1[0]) ** 2 + (pt2[1] - pt1[1]) ** 2) ** 0.5
 
-                # if the points are sufficiently close together...
-                # and the point has not already been removed
-                if ((dist < atol or dist < rel_tol) and
-                        idx_2 not in idx_to_remove):
+                # if the points are close together and the point has not already been removed
+                if (dist < atol or dist < rel_tol) and idx_2 not in idx_to_remove:
                     # update point1 (average of point1 + point2)
                     pt1[0] = 0.5 * (pt1[0] + pt2[0])
                     pt1[1] = 0.5 * (pt1[1] + pt2[1])
@@ -171,20 +163,18 @@ class GeometryCleaner:
                     idx_to_remove.append(idx_2)
 
                     if self.verbose:
-                        str = "Zipped point {0}".format(idx_2)
-                        str += " to point {0}".format(idx_1)
+                        str = "Zipped point {0} to point {1}".format(idx_2, idx_1)
                         print(str)
 
-        # sort list of indices to remove in reverse order so as not to
-        # comprimise the indices
+        # sort list of indices to remove in reverse order so as not to comprimise the indices
         idx_to_remove = sorted(idx_to_remove, reverse=True)
 
         for idx in idx_to_remove:
             self.remove_point_id(idx)
 
     def remove_zero_length_facets(self):
-        """Searches through all facets and removes those that have the same
-        starting and ending point."""
+        """Searches through all facets and removes those that have the same starting and ending
+        point."""
 
         idx_to_remove = []
 
@@ -193,8 +183,7 @@ class GeometryCleaner:
             if fct[0] == fct[1]:
                 idx_to_remove.append(idx)
 
-        # sort list of indices to remove in reverse order so as not to
-        # comprimise the indices
+        # sort list of indices to remove in reverse order so as not to comprimise the indices
         idx_to_remove = sorted(idx_to_remove, reverse=True)
 
         for idx in idx_to_remove:
@@ -204,8 +193,8 @@ class GeometryCleaner:
                 print("Removed zero length facet {0}".format(idx))
 
     def remove_overlapping_facets(self):
-        """Searches through all facet combinations and fixes facets that
-        overlap within a tolerance."""
+        """Searches through all facet combinations and fixes facets that overlap within a
+        tolerance."""
 
         cleaning = True
 
@@ -245,8 +234,7 @@ class GeometryCleaner:
                         self.remove_duplicate_facets()
 
                         if self.verbose:
-                            str = "Removed overlapping facets {0}...".format(
-                                idx_to_remove)
+                            str = "Removed overlapping facets {0}...".format(idx_to_remove)
                             str += "Rebuilt with points: {0}".format(pts)
                             print(str)
 
@@ -262,8 +250,7 @@ class GeometryCleaner:
                 cleaning = False
 
     def remove_unused_points(self):
-        """Searches through all facets and removes points that are not
-        connected to any facets."""
+        """Searches through all facets and removes points that are not connected to any facets."""
 
         idx_to_remove = []
         facet_flattened = [i for fct in self.geometry.facets for i in fct]
@@ -276,17 +263,15 @@ class GeometryCleaner:
                 if self.verbose:
                     print("Removed unused point {0}".format(pt))
 
-        # sort list of indices to remove in reverse order so as not to
-        # comprimise the indices
+        # sort list of indices to remove in reverse order so as not to comprimise the indices
         idx_to_remove = sorted(idx_to_remove, reverse=True)
 
         for idx in idx_to_remove:
             self.remove_point_id(idx)
 
     def intersect_facets(self):
-        """Searches through all facet combinations and finds facets that
-        intersect each other. The intersection point is added and the facets
-        rebuilt."""
+        """Searches through all facet combinations and finds facets that intersect each other. The
+        intersection point is added and the facets rebuilt."""
 
         cleaning = True
 
@@ -348,8 +333,7 @@ class GeometryCleaner:
                 cleaning = False
 
     def replace_point_id(self, id_old, id_new):
-        """Searches all facets and replaces references to point id_old with
-        id_new.
+        """Searches all facets and replaces references to point id_old with id_new.
 
         :param int id_old: Point index to be replaced
         :param int id_new: Point index to replace point id_old
@@ -363,8 +347,8 @@ class GeometryCleaner:
                     self.geometry.facets[i][j] = id_new
 
     def remove_point_id(self, point_id):
-        """Removes point point_id from the points list and renumbers the
-        references to points after point_id in the facet list.
+        """Removes point point_id from the points list and renumbers the references to points after
+        point_id in the facet list.
 
         :param int point_id: Index of point to be removed
         """
@@ -399,8 +383,8 @@ class GeometryCleaner:
             return False
 
     def is_intersect(self, p, q, r, s):
-        """Determines if the line segment p->p+r intersects q->q+s. Implements
-        Gareth Rees's answer: https://stackoverflow.com/questions/563198.
+        """Determines if the line segment p->p+r intersects q->q+s. Implements Gareth Rees's
+        answer: https://stackoverflow.com/questions/563198.
 
         :param p: Starting point of the first line segment
         :type p: :class:`numpy.ndarray` [float, float]
@@ -410,8 +394,8 @@ class GeometryCleaner:
         :type r: :class:`numpy.ndarray` [float, float]
         :param s: Vector of the second line segment
         :type s: :class:`numpy.ndarray` [float, float]
-        :returns: The intersection point of the line segments. If there is no
-            intersection, returns None.
+        :returns: The intersection point of the line segments. If there is no intersection, returns
+            None.
         :rtype: :class:`numpy.ndarray` [float, float]
         """
 
@@ -420,16 +404,15 @@ class GeometryCleaner:
             t = np.cross(q - p, s) / np.cross(r, s)
             u = np.cross(p - q, r) / np.cross(s, r)
 
-            # modify from closed inequality (<=) to open (<) so end...
-            # intersections are not picked up
+            # modify from closed inequality (<=) to open (<) so end intersections are not picked up
             if (t > 0 and t < 1) and (u > 0 and u < 1):
                 return p + t * r
             else:
                 return None
 
     def is_overlap(self, p, q, r, s, fct1, fct2):
-        """Determines if the line segment p->p+r overlaps q->q+s. Implements
-        Gareth Rees's answer: https://stackoverflow.com/questions/563198.
+        """Determines if the line segment p->p+r overlaps q->q+s. Implements Gareth Rees's answer:
+        https://stackoverflow.com/questions/563198.
 
         :param p: Starting point of the first line segment
         :type p: :class:`numpy.ndarray` [float, float]
@@ -440,8 +423,8 @@ class GeometryCleaner:
         :param s: Vector of the second line segment
         :type s: :class:`numpy.ndarray` [float, float]
         :param fct1: sadkjas;dkas;dj
-        :returns: A list containing the points required for facet rebuilding.
-            If there is no rebuild to be done, returns None.
+        :returns: A list containing the points required for facet rebuilding. If there is no
+            rebuild to be done, returns None.
         :rtype: list[list[float, float]]
         """
 
@@ -455,8 +438,8 @@ class GeometryCleaner:
         if abs(np.cross(r, s)) < tol:
             if abs(np.cross(q - p, r)) < tol:
                 # CASE 1: two line segments are collinear
-                # calculate end points of second segment in terms of the...
-                # equation of the first line segment (p + t * r)
+                # calculate end points of second segment in terms of the equation of the first line
+                # segment (p + t * r)
                 if np.dot(s, r) >= 0:
                     t0 = np.dot(q - p, r) / np.dot(r, r)
                     t1 = np.dot(q + s - p, r) / np.dot(r, r)
@@ -492,8 +475,8 @@ class GeometryCleaner:
                 return None
 
     def remove_duplicate_facets(self):
-        """Searches through all facets and removes facets that are duplicates,
-        independent of the point order."""
+        """Searches through all facets and removes facets that are duplicates, independent of the
+        point order."""
 
         idx_to_remove = []
 
@@ -515,8 +498,7 @@ class GeometryCleaner:
                         str += " (identical to facet: {0})".format(idx_1)
                         print(str)
 
-        # sort list of indices to remove in reverse order so as not to
-        # comprimise the indices
+        # sort list of indices to remove in reverse order so as not to comprimise the indices
         idx_to_remove = sorted(idx_to_remove, reverse=True)
 
         for idx in idx_to_remove:
@@ -524,25 +506,20 @@ class GeometryCleaner:
 
 
 def create_mesh(points, facets, holes, control_points, mesh_sizes):
-    """Creates a quadratic triangular mesh using the meshpy module, which
-    utilises the code 'Triangle', by Jonathan Shewchuk.
+    """Creates a quadratic triangular mesh using the meshpy module, which utilises the code
+    'Triangle', by Jonathan Shewchuk.
 
-    :param points: List of points *(x, y)* defining the vertices of the
-        cross-section
+    :param points: List of points *(x, y)* defining the vertices of the cross-section
     :type points: list[list[float, float]]
-    :param facets: List of point index pairs *(p1, p2)* defining the edges of
-        the cross-section
+    :param facets: List of point index pairs *(p1, p2)* defining the edges of the cross-section
     :type points: list[list[int, int]]
-    :param holes: List of points *(x, y)* defining the locations of holes
-        within the cross-section. If there are no holes, provide an empty list
-        [].
+    :param holes: List of points *(x, y)* defining the locations of holes within the cross-section.
+        If there are no holes, provide an empty list [].
     :type holes: list[list[float, float]]
-    :param control_points: A list of points *(x, y)* that define different
-        regions of the cross-section. A control point is an arbitrary point
-        within a region enclosed by facets.
+    :param control_points: A list of points *(x, y)* that define different regions of the
+        cross-section. A control point is an arbitrary point within a region enclosed by facets.
     :type control_points: list[list[float, float]]
-    :param mesh_sizes: List of maximum element areas for each region defined by
-        a control point
+    :param mesh_sizes: List of maximum element areas for each region defined by a control point
     :type mesh_sizes: list[float]
 
     :return: Object containing generated mesh data
@@ -567,175 +544,3 @@ def create_mesh(points, facets, holes, control_points, mesh_sizes):
         attributes=True, volume_constraints=True)
 
     return mesh
-
-
-# class LoadData:
-#     """
-#     This class parses the input load data and stores the load values.
-#     """
-#
-#     def __init__(self, loads):
-#         self.containsLoads = False
-#         try:
-#             self.Nzz = loads["nzz"]
-#             self.containsLoads = True
-#         except KeyError:
-#             self.Nzz = 0.0
-#
-#         try:
-#             self.Vx = loads["vx"]
-#             self.containsLoads = True
-#         except KeyError:
-#             self.Vx = 0.0
-#
-#         try:
-#             self.Vy = loads["vy"]
-#             self.containsLoads = True
-#         except KeyError:
-#             self.Vy = 0.0
-#
-#         try:
-#             self.Mxx = loads["mxx"]
-#             self.containsLoads = True
-#         except KeyError:
-#             self.Mxx = 0.0
-#
-#         try:
-#             self.Myy = loads["myy"]
-#             self.containsLoads = True
-#         except KeyError:
-#             self.Myy = 0.0
-#
-#         try:
-#             self.M11 = loads["m11"]
-#             self.containsLoads = True
-#         except KeyError:
-#             self.M11 = 0.0
-#
-#         try:
-#             self.M22 = loads["m22"]
-#             self.containsLoads = True
-#         except KeyError:
-#             self.M22 = 0.0
-#
-#         try:
-#             self.Mzz = loads["mzz"]
-#             self.containsLoads = True
-#         except KeyError:
-#             self.Mzz = 0.0
-#
-#
-# class CrossSectionSettings:
-#     """
-#     This class contains the settings used for the cross-section analysis.
-#     """
-#
-#     def __init__(self, settings):
-#         # load default settings
-#         self.checkGeometry = True
-#         self.checkMesh = True
-#         self.outputLog = True
-#         self.outputSettings = True
-#         self.outputResults = True
-#         self.plasticAnalysis = True
-#         self.numberFormat = ".2f"
-#         self.solverType = "cgs"
-#         self.tol = 1e-5
-#         self.plots = []
-#
-#         # load custom settings
-#         self.applySettings(settings)
-#
-#     def applySettings(self, settings):
-#         # read all valid settings from the dictionary settings
-#         try:
-#             testBool = (settings["general"]["check-geometry"].lower() in
-#                         ["true"])
-#             self.checkGeometry = testBool
-#         except KeyError:
-#             pass
-#
-#         try:
-#             testBool = (settings["general"]["check-mesh"].lower() in
-#                         ["true"])
-#             self.checkMesh = testBool
-#         except KeyError:
-#             pass
-#
-#         try:
-#             testBool = (settings["general"]["output-log"].lower() in
-#                         ["true"])
-#             self.outputLog = testBool
-#         except KeyError:
-#             pass
-#
-#         try:
-#             testBool = (settings["general"]["output-settings"].lower() in
-#                         ["true"])
-#             self.outputSettings = testBool
-#         except KeyError:
-#             pass
-#
-#         try:
-#             testBool = (settings["general"]["output-results"].lower() in
-#                         ["true"])
-#             self.outputResults = testBool
-#         except KeyError:
-#             pass
-#
-#         try:
-#             testBool = (settings["general"]["plastic-analysis"].lower() in
-#                         ["true"])
-#             self.plasticAnalysis = testBool
-#         except KeyError:
-#             pass
-#
-#         try:
-#             width = int(settings["number-format"]["width"])
-#             precision = int(settings["number-format"]["precision"])
-#             numType = str(settings["number-format"]["type"])
-#             self.numberFormat = str(width) + "." + str(precision) + numType
-#         except KeyError:
-#             pass
-#
-#         try:
-#             solverType = settings["solver"]["type"]
-#
-#             if (solverType.lower() == "cgs"):
-#                 self.solverType = "cgs"
-#             elif (solverType.lower() == "direct"):
-#                 self.solverType = "direct"
-#         except KeyError:
-#             pass
-#
-#         try:
-#             self.tol = settings["solver"]["tol"]
-#         except KeyError:
-#             pass
-#
-#         try:
-#             self.plots = settings["plots"]
-#         except KeyError:
-#             pass
-#
-#     def printSettings(self):
-#         """
-#         This method prints the current settings to the console.
-#         """
-#
-#         print("\n-----------------------------")
-#         print("Program Settings")
-#         print("-----------------------------")
-#         print("General Settings:")
-#         print("\tcheck-geometry:\t{}".format(self.checkGeometry))
-#         print("\tcheck-mesh:\t{}".format(self.checkMesh))
-#         print("\toutput-log:\t{}".format(self.outputLog))
-#         print("\toutput-setting:\t{}".format(self.outputSettings))
-#         print("\toutput-results:\t{}".format(self.outputResults))
-#         print("Output Settings:")
-#         print("\tnumber-format:\t{}".format(self.numberFormat))
-#         print("Solver Settings:")
-#         print("\ttype:\t\t{}".format(self.solverType))
-#         print("\ttol:\t\t{}".format(self.tol))
-#         print("Plot Settings:")
-#         print("\tplots:\t\t{}\n".format(self.plots))

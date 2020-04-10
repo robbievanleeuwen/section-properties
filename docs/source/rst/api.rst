@@ -104,6 +104,11 @@ PolygonSection Class
   ..  autoclass:: sectionproperties.pre.sections.PolygonSection
       :show-inheritance:
 
+BoxGirderSection Class
+""""""""""""""""""""""
+  ..  autoclass:: sectionproperties.pre.sections.BoxGirderSection
+      :show-inheritance:
+
 MergedSection Class
 """""""""""""""""""
   ..  autoclass:: sectionproperties.pre.sections.MergedSection

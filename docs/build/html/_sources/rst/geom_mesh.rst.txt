@@ -135,6 +135,12 @@ Polygon Section
       :show-inheritance:
       :noindex:
 
+Box Girder Section
+^^^^^^^^^^^^^^^^^^
+  ..  autoclass:: sectionproperties.pre.sections.BoxGirderSection
+      :show-inheritance:
+      :noindex:
+
 Arbitrary Cross-Section Geometries
 ----------------------------------
 

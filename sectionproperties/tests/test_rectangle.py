@@ -22,52 +22,33 @@ class TestRectangle(unittest.TestCase):
         val_list.append({"prop": "ea", "val": 1 * 100 * 50, "tol": None})
         val_list.append({"prop": "qx", "val": 100 * 50 * 50, "tol": None})
         val_list.append({"prop": "qy", "val": 100 * 50 * 25, "tol": None})
-        val_list.append({"prop": "ixx_g", "val": 50 * 100 ** 3 / 3,
-                         "tol": None})
-        val_list.append({"prop": "iyy_g", "val": 100 * 50 ** 3 / 3,
-                         "tol": None})
-        val_list.append({"prop": "ixy_g", "val": 100 * 50 * 50 * 25,
-                         "tol": None})
+        val_list.append({"prop": "ixx_g", "val": 50 * 100 ** 3 / 3, "tol": None})
+        val_list.append({"prop": "iyy_g", "val": 100 * 50 ** 3 / 3, "tol": None})
+        val_list.append({"prop": "ixy_g", "val": 100 * 50 * 50 * 25, "tol": None})
         val_list.append({"prop": "cx", "val": 50 / 2, "tol": None})
         val_list.append({"prop": "cy", "val": 100 / 2, "tol": None})
-        val_list.append({"prop": "ixx_c", "val": 50 * 100 ** 3 / 12,
-                         "tol": None})
-        val_list.append({"prop": "iyy_c", "val": 100 * 50 ** 3 / 12,
-                         "tol": None})
+        val_list.append({"prop": "ixx_c", "val": 50 * 100 ** 3 / 12, "tol": None})
+        val_list.append({"prop": "iyy_c", "val": 100 * 50 ** 3 / 12, "tol": None})
         val_list.append({"prop": "ixy_c", "val": 0, "tol": None})
-        val_list.append({"prop": "zxx_plus", "val": 50 * 100 ** 2 / 6,
-                         "tol": None})
-        val_list.append({"prop": "zxx_minus", "val": 50 * 100 ** 2 / 6,
-                         "tol": None})
-        val_list.append({"prop": "zyy_plus", "val": 100 * 50 ** 2 / 6,
-                         "tol": None})
-        val_list.append({"prop": "zyy_minus", "val": 100 * 50 ** 2 / 6,
-                         "tol": None})
-        val_list.append({"prop": "rx",
-                         "val": (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5,
-                         "tol": None})
-        val_list.append({"prop": "ry",
-                         "val": (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5,
-                         "tol": None})
-        val_list.append({"prop": "i11_c", "val": 50 * 100 ** 3 / 12,
-                         "tol": None})
-        val_list.append({"prop": "i22_c", "val": 100 * 50 ** 3 / 12,
-                         "tol": None})
+        val_list.append({"prop": "zxx_plus", "val": 50 * 100 ** 2 / 6, "tol": None})
+        val_list.append({"prop": "zxx_minus", "val": 50 * 100 ** 2 / 6, "tol": None})
+        val_list.append({"prop": "zyy_plus", "val": 100 * 50 ** 2 / 6, "tol": None})
+        val_list.append({"prop": "zyy_minus", "val": 100 * 50 ** 2 / 6, "tol": None})
+        val_list.append({"prop": "rx", "val": (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None})
+        val_list.append({"prop": "ry", "val": (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None})
+        val_list.append({"prop": "i11_c", "val": 50 * 100 ** 3 / 12, "tol": None})
+        val_list.append({"prop": "i22_c", "val": 100 * 50 ** 3 / 12, "tol": None})
         val_list.append({"prop": "phi", "val": 0, "tol": None})
-        val_list.append({"prop": "z11_plus", "val": 50 * 100 ** 2 / 6,
-                         "tol": None})
-        val_list.append({"prop": "z11_minus", "val": 50 * 100 ** 2 / 6,
-                         "tol": None})
-        val_list.append({"prop": "z22_plus", "val": 100 * 50 ** 2 / 6,
-                         "tol": None})
-        val_list.append({"prop": "z22_minus", "val": 100 * 50 ** 2 / 6,
-                         "tol": None})
-        val_list.append({"prop": "r11",
-                         "val": (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5,
-                         "tol": None})
-        val_list.append({"prop": "r22",
-                         "val": (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5,
-                         "tol": None})
+        val_list.append({"prop": "z11_plus", "val": 50 * 100 ** 2 / 6, "tol": None})
+        val_list.append({"prop": "z11_minus", "val": 50 * 100 ** 2 / 6, "tol": None})
+        val_list.append({"prop": "z22_plus", "val": 100 * 50 ** 2 / 6, "tol": None})
+        val_list.append({"prop": "z22_minus", "val": 100 * 50 ** 2 / 6, "tol": None})
+        val_list.append(
+            {"prop": "r11", "val": (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None}
+        )
+        val_list.append(
+            {"prop": "r22", "val": (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None}
+        )
 
         validate_properties(self, val_list, self.section)
 
@@ -102,8 +83,7 @@ class TestRectangle(unittest.TestCase):
         val_list = []
         val_list.append({"prop": "j", "val": 2861002, "tol": 0.04})  # roark's
         val_list.append({"prop": "j", "val": 2.85852e6, "tol": 2e-5})  # st7
-        val_list.append({"prop": "gamma", "val": 3.17542e8,
-                         "tol": None})  # st7
+        val_list.append({"prop": "gamma", "val": 3.17542e8, "tol": None})  # st7
         val_list.append({"prop": "x_se", "val": 50 / 2, "tol": None})
         val_list.append({"prop": "y_se", "val": 100 / 2, "tol": None})
         val_list.append({"prop": "x11_se", "val": 0, "tol": None})
@@ -112,10 +92,8 @@ class TestRectangle(unittest.TestCase):
         val_list.append({"prop": "y_st", "val": 100 / 2, "tol": None})
         val_list.append({"prop": "A_sx", "val": 5 / 6 * 100 * 50, "tol": None})
         val_list.append({"prop": "A_sy", "val": 5 / 6 * 100 * 50, "tol": None})
-        val_list.append({"prop": "A_s11", "val": 5 / 6 * 100 * 50,
-                         "tol": None})
-        val_list.append({"prop": "A_s22", "val": 5 / 6 * 100 * 50,
-                         "tol": None})
+        val_list.append({"prop": "A_s11", "val": 5 / 6 * 100 * 50, "tol": None})
+        val_list.append({"prop": "A_s22", "val": 5 / 6 * 100 * 50, "tol": None})
 
 
 if __name__ == "__main__":

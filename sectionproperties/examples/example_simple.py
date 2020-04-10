@@ -10,7 +10,7 @@ mesh = geometry.create_mesh(mesh_sizes=[2.5])
 
 section = CrossSection(geometry, mesh)  # create a CrossSection object
 section.display_mesh_info()  # display the mesh information
-section.plot_mesh()  # plot the generated mesh`
+section.plot_mesh()  # plot the generated mesh
 
 # perform a geometric, warping and plastic anaylsis, displaying the time info
 section.calculate_geometric_properties(time_info=True)

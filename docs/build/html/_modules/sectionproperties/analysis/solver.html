@@ -17,33 +17,35 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -156,23 +158,20 @@
   <h1>Source code for sectionproperties.analysis.solver</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="k">import</span> <span class="n">linalg</span>
-<span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="k">import</span> <span class="n">spsolve</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">linalg</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">import</span> <span class="n">spsolve</span>
 
 
 <div class="viewcode-block" id="solve_cgs"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.solver.solve_cgs">[docs]</a><span class="k">def</span> <span class="nf">solve_cgs</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Solves a linear system of equations (Ku = f) using the CGS iterative</span>
-<span class="sd">    method.</span>
+    <span class="sd">&quot;&quot;&quot;Solves a linear system of equations (Ku = f) using the CGS iterative method.</span>
 
 <span class="sd">    :param k: N x N matrix of the linear system</span>
 <span class="sd">    :type k: :class:`scipy.sparse.csc_matrix`</span>
 <span class="sd">    :param f: N x 1 right hand side of the linear system</span>
 <span class="sd">    :type f: :class:`numpy.ndarray`</span>
-<span class="sd">    :param float tol: Tolerance for the solver to acheieve. The algorithm</span>
-<span class="sd">        terminates when either the relative or the absolute residual is below</span>
-<span class="sd">        tol.</span>
-<span class="sd">    :param m: Preconditioner for the linear matrix approximating the inverse</span>
-<span class="sd">        of k</span>
+<span class="sd">    :param float tol: Tolerance for the solver to acheieve. The algorithm terminates when either</span>
+<span class="sd">        the relative or the absolute residual is below tol.</span>
+<span class="sd">    :param m: Preconditioner for the linear matrix approximating the inverse of k</span>
 <span class="sd">    :type m: :class:`scipy.linalg.LinearOperator`</span>
 
 <span class="sd">    :return: The solution vector to the linear system of equations</span>
@@ -190,25 +189,23 @@
 
 
 <div class="viewcode-block" id="solve_cgs_lagrange"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.solver.solve_cgs_lagrange">[docs]</a><span class="k">def</span> <span class="nf">solve_cgs_lagrange</span><span class="p">(</span><span class="n">k_lg</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Solves a linear system of equations (Ku = f) using the CGS iterative</span>
-<span class="sd">    method and the Lagrangian multiplier method.</span>
+    <span class="sd">&quot;&quot;&quot;Solves a linear system of equations (Ku = f) using the CGS iterative method and the</span>
+<span class="sd">    Lagrangian multiplier method.</span>
 
 <span class="sd">    :param k: (N+1) x (N+1) Lagrangian multiplier matrix of the linear system</span>
 <span class="sd">    :type k: :class:`scipy.sparse.csc_matrix`</span>
 <span class="sd">    :param f: N x 1 right hand side of the linear system</span>
 <span class="sd">    :type f: :class:`numpy.ndarray`</span>
-<span class="sd">    :param float tol: Tolerance for the solver to acheieve. The algorithm</span>
-<span class="sd">        terminates when either the relative or the absolute residual is below</span>
-<span class="sd">        tol.</span>
-<span class="sd">    :param m: Preconditioner for the linear matrix approximating the inverse</span>
-<span class="sd">        of k</span>
+<span class="sd">    :param float tol: Tolerance for the solver to acheieve. The algorithm terminates when either</span>
+<span class="sd">        the relative or the absolute residual is below tol.</span>
+<span class="sd">    :param m: Preconditioner for the linear matrix approximating the inverse of k</span>
 <span class="sd">    :type m: :class:`scipy.linalg.LinearOperator`</span>
 
 <span class="sd">    :return: The solution vector to the linear system of equations</span>
 <span class="sd">    :rtype: :class:`numpy.ndarray`</span>
 
-<span class="sd">    :raises RuntimeError: If the CGS iterative method does not converge or the</span>
-<span class="sd">        error from the Lagrangian multiplier method exceeds the tolerance</span>
+<span class="sd">    :raises RuntimeError: If the CGS iterative method does not converge or the error from the</span>
+<span class="sd">        Lagrangian multiplier method exceeds the tolerance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">exit</span><span class="p">)</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">cgs</span><span class="p">(</span><span class="n">k_lg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">m</span><span class="p">)</span>
@@ -227,8 +224,7 @@
 
 
 <div class="viewcode-block" id="solve_direct"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.solver.solve_direct">[docs]</a><span class="k">def</span> <span class="nf">solve_direct</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Solves a linear system of equations (Ku = f) using the direct solver</span>
-<span class="sd">    method.</span>
+    <span class="sd">&quot;&quot;&quot;Solves a linear system of equations (Ku = f) using the direct solver method.</span>
 
 <span class="sd">    :param k: N x N matrix of the linear system</span>
 <span class="sd">    :type k: :class:`scipy.sparse.csc_matrix`</span>
@@ -243,8 +239,8 @@
 
 
 <div class="viewcode-block" id="solve_direct_lagrange"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.solver.solve_direct_lagrange">[docs]</a><span class="k">def</span> <span class="nf">solve_direct_lagrange</span><span class="p">(</span><span class="n">k_lg</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Solves a linear system of equations (Ku = f) using the direct solver</span>
-<span class="sd">    method and the Lagrangian multiplier method.</span>
+    <span class="sd">&quot;&quot;&quot;Solves a linear system of equations (Ku = f) using the direct solver method and the</span>
+<span class="sd">    Lagrangian multiplier method.</span>
 
 <span class="sd">    :param k: (N+1) x (N+1) Lagrangian multiplier matrix of the linear system</span>
 <span class="sd">    :type k: :class:`scipy.sparse.csc_matrix`</span>
@@ -254,8 +250,7 @@
 <span class="sd">    :return: The solution vector to the linear system of equations</span>
 <span class="sd">    :rtype: :class:`numpy.ndarray`</span>
 
-<span class="sd">    :raises RuntimeError: If the Lagrangian multiplier method exceeds a</span>
-<span class="sd">        tolerance of 1e-5</span>
+<span class="sd">    :raises RuntimeError: If the Lagrangian multiplier method exceeds a tolerance of 1e-5</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">u</span> <span class="o">=</span> <span class="n">spsolve</span><span class="p">(</span><span class="n">k_lg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
@@ -271,9 +266,8 @@
 
 
 <div class="viewcode-block" id="function_timer"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.solver.function_timer">[docs]</a><span class="k">def</span> <span class="nf">function_timer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Displays the message *text* and returns the time taken for a</span>
-<span class="sd">    function, with arguments *args*, to execute. The value returned by the</span>
-<span class="sd">    timed function is also returned.</span>
+    <span class="sd">&quot;&quot;&quot;Displays the message *text* and returns the time taken for a function, with arguments</span>
+<span class="sd">    *args*, to execute. The value returned by the timed function is also returned.</span>
 
 <span class="sd">    :param string text: Message to display</span>
 <span class="sd">    :param function: Function to time and execute</span>
@@ -306,7 +300,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Robbie van Leeuwen.
+        &copy; Copyright 2019, Robbie van Leeuwen
 
     </p>
   </div>
@@ -323,36 +317,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'1.0.5',
-            LANGUAGE:'en',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

@@ -116,6 +116,7 @@ def validate_properties(test, validation_list, section):
         else:
             calc_tol = val - entry["val"]
 
-        test.assertTrue(np.isclose(val, entry["val"], rtol=tol),
-                        msg="Prop: {0}; Tol: {1:.5e}".format(
-                        entry["prop"], calc_tol))
+        test.assertTrue(
+            np.isclose(val, entry["val"], rtol=tol), msg="Prop: {0}; Tol: {1:.5e}".format(
+                entry["prop"], calc_tol)
+        )

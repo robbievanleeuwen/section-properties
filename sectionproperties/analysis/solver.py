@@ -5,18 +5,15 @@ from scipy.sparse.linalg import spsolve
 
 
 def solve_cgs(k, f, m=None, tol=1e-5):
-    """Solves a linear system of equations (Ku = f) using the CGS iterative
-    method.
+    """Solves a linear system of equations (Ku = f) using the CGS iterative method.
 
     :param k: N x N matrix of the linear system
     :type k: :class:`scipy.sparse.csc_matrix`
     :param f: N x 1 right hand side of the linear system
     :type f: :class:`numpy.ndarray`
-    :param float tol: Tolerance for the solver to acheieve. The algorithm
-        terminates when either the relative or the absolute residual is below
-        tol.
-    :param m: Preconditioner for the linear matrix approximating the inverse
-        of k
+    :param float tol: Tolerance for the solver to acheieve. The algorithm terminates when either
+        the relative or the absolute residual is below tol.
+    :param m: Preconditioner for the linear matrix approximating the inverse of k
     :type m: :class:`scipy.linalg.LinearOperator`
 
     :return: The solution vector to the linear system of equations
@@ -34,25 +31,23 @@ def solve_cgs(k, f, m=None, tol=1e-5):
 
 
 def solve_cgs_lagrange(k_lg, f, tol=1e-5, m=None):
-    """Solves a linear system of equations (Ku = f) using the CGS iterative
-    method and the Lagrangian multiplier method.
+    """Solves a linear system of equations (Ku = f) using the CGS iterative method and the
+    Lagrangian multiplier method.
 
     :param k: (N+1) x (N+1) Lagrangian multiplier matrix of the linear system
     :type k: :class:`scipy.sparse.csc_matrix`
     :param f: N x 1 right hand side of the linear system
     :type f: :class:`numpy.ndarray`
-    :param float tol: Tolerance for the solver to acheieve. The algorithm
-        terminates when either the relative or the absolute residual is below
-        tol.
-    :param m: Preconditioner for the linear matrix approximating the inverse
-        of k
+    :param float tol: Tolerance for the solver to acheieve. The algorithm terminates when either
+        the relative or the absolute residual is below tol.
+    :param m: Preconditioner for the linear matrix approximating the inverse of k
     :type m: :class:`scipy.linalg.LinearOperator`
 
     :return: The solution vector to the linear system of equations
     :rtype: :class:`numpy.ndarray`
 
-    :raises RuntimeError: If the CGS iterative method does not converge or the
-        error from the Lagrangian multiplier method exceeds the tolerance
+    :raises RuntimeError: If the CGS iterative method does not converge or the error from the
+        Lagrangian multiplier method exceeds the tolerance
     """
 
     (u, exit) = linalg.cgs(k_lg, np.append(f, 0), tol=tol, M=m)
@@ -71,8 +66,7 @@ def solve_cgs_lagrange(k_lg, f, tol=1e-5, m=None):
 
 
 def solve_direct(k, f):
-    """Solves a linear system of equations (Ku = f) using the direct solver
-    method.
+    """Solves a linear system of equations (Ku = f) using the direct solver method.
 
     :param k: N x N matrix of the linear system
     :type k: :class:`scipy.sparse.csc_matrix`
@@ -87,8 +81,8 @@ def solve_direct(k, f):
 
 
 def solve_direct_lagrange(k_lg, f):
-    """Solves a linear system of equations (Ku = f) using the direct solver
-    method and the Lagrangian multiplier method.
+    """Solves a linear system of equations (Ku = f) using the direct solver method and the
+    Lagrangian multiplier method.
 
     :param k: (N+1) x (N+1) Lagrangian multiplier matrix of the linear system
     :type k: :class:`scipy.sparse.csc_matrix`
@@ -98,8 +92,7 @@ def solve_direct_lagrange(k_lg, f):
     :return: The solution vector to the linear system of equations
     :rtype: :class:`numpy.ndarray`
 
-    :raises RuntimeError: If the Lagrangian multiplier method exceeds a
-        tolerance of 1e-5
+    :raises RuntimeError: If the Lagrangian multiplier method exceeds a tolerance of 1e-5
     """
 
     u = spsolve(k_lg, np.append(f, 0))
@@ -115,9 +108,8 @@ def solve_direct_lagrange(k_lg, f):
 
 
 def function_timer(text, function, *args):
-    """Displays the message *text* and returns the time taken for a
-    function, with arguments *args*, to execute. The value returned by the
-    timed function is also returned.
+    """Displays the message *text* and returns the time taken for a function, with arguments
+    *args*, to execute. The value returned by the timed function is also returned.
 
     :param string text: Message to display
     :param function: Function to time and execute

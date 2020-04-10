@@ -5,6 +5,7 @@ before_install:
 
 python:
   - "3.6"
+  - "3.7"
 
 install:
   - python setup.py install

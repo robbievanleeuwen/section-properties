@@ -17,33 +17,35 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -160,13 +162,12 @@
 <div class="viewcode-block" id="Tri6"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6">[docs]</a><span class="k">class</span> <span class="nc">Tri6</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class for a six noded quadratic triangular element.</span>
 
-<span class="sd">    Provides methods for the calculation of section properties based on the</span>
-<span class="sd">    finite element method.</span>
+<span class="sd">    Provides methods for the calculation of section properties based on the finite element method.</span>
 
 <span class="sd">    :param int el_id: Unique element id</span>
-<span class="sd">    :param coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The</span>
-<span class="sd">        first three columns relate to the vertices of the triangle and the</span>
-<span class="sd">        last three columns correspond to the mid-nodes.</span>
+<span class="sd">    :param coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The first three columns</span>
+<span class="sd">        relate to the vertices of the triangle and the last three columns correspond to the</span>
+<span class="sd">        mid-nodes.</span>
 <span class="sd">    :type coords: :class:`numpy.ndarray`</span>
 <span class="sd">    :param node_ids: A list of the global node ids for the current element</span>
 <span class="sd">    :type node_ids: list[int]</span>
@@ -174,9 +175,9 @@
 <span class="sd">    :type material: :class:`~sectionproperties.pre.pre.Material`</span>
 
 <span class="sd">    :cvar int el_id: Unique element id</span>
-<span class="sd">    :cvar coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The</span>
-<span class="sd">        first three columns relate to the vertices of the triangle and the last</span>
-<span class="sd">        three columns correspond to the mid-nodes.</span>
+<span class="sd">    :cvar coords: A 2 x 6 array of the coordinates of the tri-6 nodes. The first three columns</span>
+<span class="sd">        relate to the vertices of the triangle and the last three columns correspond to the</span>
+<span class="sd">        mid-nodes.</span>
 <span class="sd">    :vartype coords: :class:`numpy.ndarray`</span>
 <span class="sd">    :cvar node_ids: A list of the global node ids for the current element</span>
 <span class="sd">    :vartype node_ids: list[int]</span>
@@ -184,7 +185,7 @@
 <span class="sd">    :vartype material: :class:`~sectionproperties.pre.pre.Material`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el_id</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">material</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el_id</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">material</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Inits the Tri6 class.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">el_id</span> <span class="o">=</span> <span class="n">el_id</span>
@@ -195,9 +196,8 @@
 <div class="viewcode-block" id="Tri6.geometric_properties"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.geometric_properties">[docs]</a>    <span class="k">def</span> <span class="nf">geometric_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculates the geometric properties for the current finite element.</span>
 
-<span class="sd">        :return: Tuple containing the geometric properties and the elastic</span>
-<span class="sd">            and shear moduli of the element: *(area, qx, qy, ixx, iyy, ixy, e,</span>
-<span class="sd">            g)*</span>
+<span class="sd">        :return: Tuple containing the geometric properties and the elastic and shear moduli of the</span>
+<span class="sd">            element: *(area, qx, qy, ixx, iyy, ixy, e, g)*</span>
 <span class="sd">        :rtype: tuple(float)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -222,18 +222,20 @@
             <span class="n">qy</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">*</span> <span class="n">j</span>
             <span class="n">ixx</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span>
             <span class="n">iyy</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span>
-            <span class="n">ixy</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
-                <span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="n">ixy</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                    <span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">*</span> <span class="n">j</span>
+            <span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">qx</span><span class="p">,</span> <span class="n">qy</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">shear_modulus</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">area</span><span class="p">,</span> <span class="n">qx</span><span class="p">,</span> <span class="n">qy</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">shear_modulus</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Tri6.torsion_properties"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.torsion_properties">[docs]</a>    <span class="k">def</span> <span class="nf">torsion_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the element stiffness matrix used for warping analysis</span>
-<span class="sd">        and the torsion load vector.</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the element stiffness matrix used for warping analysis and the torsion load</span>
+<span class="sd">        vector.</span>
 
-<span class="sd">        :return: Element stiffness matrix *(k_el)* and element torsion load</span>
-<span class="sd">            vector *(f_el)*</span>
+<span class="sd">        :return: Element stiffness matrix *(k_el)* and element torsion load vector *(f_el)*</span>
 <span class="sd">        :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -253,16 +255,16 @@
             <span class="n">Ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span>
 
             <span class="c1"># calculated modulus weighted stiffness matrix and load vector</span>
-            <span class="n">k_el</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">),</span> <span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span><span class="p">)</span>
-            <span class="n">f_el</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">Ny</span><span class="p">,</span> <span class="o">-</span><span class="n">Nx</span><span class="p">])))</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="n">k_el</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">),</span> <span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span><span class="p">)</span>
+            <span class="n">f_el</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Ny</span><span class="p">,</span> <span class="o">-</span><span class="n">Nx</span><span class="p">])))</span> <span class="o">*</span>
+                <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">k_el</span><span class="p">,</span> <span class="n">f_el</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Tri6.shear_load_vectors"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.shear_load_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">shear_load_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="n">nu</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the element shear load vectors used to evaluate the shear</span>
-<span class="sd">        functions.</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the element shear load vectors used to evaluate the shear functions.</span>
 
 <span class="sd">        :param float ixx: Second moment of area about the centroidal x-axis</span>
 <span class="sd">        :param float iyy: Second moment of area about the centroidal y-axis</span>
@@ -296,18 +298,22 @@
             <span class="n">h1</span> <span class="o">=</span> <span class="o">-</span><span class="n">ixy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="n">iyy</span> <span class="o">*</span> <span class="n">q</span>
             <span class="n">h2</span> <span class="o">=</span> <span class="o">-</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">q</span>
 
-            <span class="n">f_psi</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">d1</span><span class="p">],</span> <span class="p">[</span><span class="n">d2</span><span class="p">]])))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
-                <span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">))</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
-            <span class="n">f_phi</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">h1</span><span class="p">],</span> <span class="p">[</span><span class="n">h2</span><span class="p">]])))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
-                <span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Nx</span><span class="p">))</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="n">f_psi</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">d1</span><span class="p">],</span> <span class="p">[</span><span class="n">d2</span><span class="p">]])))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>
+                         <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">))</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="p">)</span>
+            <span class="n">f_phi</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">h1</span><span class="p">],</span> <span class="p">[</span><span class="n">h2</span><span class="p">]])))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>
+                         <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Nx</span><span class="p">))</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">f_psi</span><span class="p">,</span> <span class="n">f_phi</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Tri6.shear_warping_integrals"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.shear_warping_integrals">[docs]</a>    <span class="k">def</span> <span class="nf">shear_warping_integrals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the element shear centre and warping integrals required</span>
-<span class="sd">        for shear analysis of the cross-section.</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the element shear centre and warping integrals required for shear analysis of</span>
+<span class="sd">        the cross-section.</span>
 
 <span class="sd">        :param float ixx: Second moment of area about the centroidal x-axis</span>
 <span class="sd">        :param float iyy: Second moment of area about the centroidal y-axis</span>
@@ -315,9 +321,8 @@
 <span class="sd">        :param omega: Values of the warping function at the element nodes</span>
 <span class="sd">        :type omega: :class:`numpy.ndarray`</span>
 
-<span class="sd">        :return: Shear centre integrals about the x and y-axes *(sc_xint,</span>
-<span class="sd">            sc_yint)*, warping integrals</span>
-<span class="sd">            *(q_omega, i_omega, i_xomega, i_yomega)*</span>
+<span class="sd">        :return: Shear centre integrals about the x and y-axes *(sc_xint, sc_yint)*, warping</span>
+<span class="sd">            integrals *(q_omega, i_omega, i_xomega, i_yomega)*</span>
 <span class="sd">        :rtype: tuple(float, float, float, float, float, float)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -341,10 +346,14 @@
             <span class="n">Ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span>
             <span class="n">Nomega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">omega</span><span class="p">))</span>
 
-            <span class="n">sc_xint</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">+</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">Ny</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> \
+            <span class="n">sc_xint</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">+</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">Ny</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span>
                 <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
-            <span class="n">sc_yint</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">+</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Nx</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">Ny</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> \
+            <span class="p">)</span>
+            <span class="n">sc_yint</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">+</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">Nx</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">Ny</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span>
                 <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="p">)</span>
             <span class="n">q_omega</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">Nomega</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
             <span class="n">i_omega</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">Nomega</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
             <span class="n">i_xomega</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Nomega</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
@@ -353,8 +362,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">sc_xint</span><span class="p">,</span> <span class="n">sc_yint</span><span class="p">,</span> <span class="n">q_omega</span><span class="p">,</span> <span class="n">i_omega</span><span class="p">,</span> <span class="n">i_xomega</span><span class="p">,</span> <span class="n">i_yomega</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Tri6.shear_coefficients"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.shear_coefficients">[docs]</a>    <span class="k">def</span> <span class="nf">shear_coefficients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="n">psi_shear</span><span class="p">,</span> <span class="n">phi_shear</span><span class="p">,</span> <span class="n">nu</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the variables used to determine the shear</span>
-<span class="sd">        deformation coefficients.</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the variables used to determine the shear deformation coefficients.</span>
 
 <span class="sd">        :param float ixx: Second moment of area about the centroidal x-axis</span>
 <span class="sd">        :param float iyy: Second moment of area about the centroidal y-axis</span>
@@ -393,29 +401,32 @@
             <span class="n">h1</span> <span class="o">=</span> <span class="o">-</span><span class="n">ixy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="n">iyy</span> <span class="o">*</span> <span class="n">q</span>
             <span class="n">h2</span> <span class="o">=</span> <span class="o">-</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">q</span>
 
-            <span class="n">kappa_x</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="n">psi_shear</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">))</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">psi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                        <span class="p">[</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
-            <span class="n">kappa_y</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="n">phi_shear</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">))</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">]))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">phi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                        <span class="p">[</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">]))</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
-            <span class="n">kappa_xy</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="n">psi_shear</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">))</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">phi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                        <span class="p">[</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">]))</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="n">kappa_x</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">psi_shear</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">))</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                    <span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">psi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="p">)</span>
+            <span class="n">kappa_y</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">phi_shear</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">))</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">]))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                    <span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">phi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">]))</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="p">)</span>
+            <span class="n">kappa_xy</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">psi_shear</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">B</span><span class="p">))</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                    <span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">phi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">]))</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">kappa_x</span><span class="p">,</span> <span class="n">kappa_y</span><span class="p">,</span> <span class="n">kappa_xy</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Tri6.monosymmetry_integrals"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.monosymmetry_integrals">[docs]</a>    <span class="k">def</span> <span class="nf">monosymmetry_integrals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the integrals used to evaluate the monosymmetry constant</span>
-<span class="sd">        about both global axes and both prinicipal axes.</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the integrals used to evaluate the monosymmetry constant about both global</span>
+<span class="sd">        axes and both prinicipal axes.</span>
 
 <span class="sd">        :param float phi: Principal bending axis angle</span>
 
-<span class="sd">        :return: Integrals used to evaluate the monosymmetry constants</span>
-<span class="sd">            *(int_x, int_y, int_11, int_22)*</span>
+<span class="sd">        :return: Integrals used to evaluate the monosymmetry constants *(int_x, int_y, int_11,</span>
+<span class="sd">            int_22)*</span>
 <span class="sd">        :rtype: tuple(float, float, float, float)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -440,31 +451,32 @@
             <span class="p">(</span><span class="n">Nx_11</span><span class="p">,</span> <span class="n">Ny_22</span><span class="p">)</span> <span class="o">=</span> <span class="n">principal_coordinate</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span>
 
             <span class="c1"># weight the monosymmetry integrals by the section elastic modulus</span>
-            <span class="n">int_x</span> <span class="o">+=</span> <span class="p">(</span><span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nx</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">+</span> <span class="n">Ny</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span><span class="p">)</span>
-            <span class="n">int_y</span> <span class="o">+=</span> <span class="p">(</span><span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">Ny</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">+</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Nx</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span><span class="p">)</span>
-            <span class="n">int_11</span> <span class="o">+=</span> <span class="p">(</span><span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nx_11</span> <span class="o">*</span> <span class="n">Nx_11</span> <span class="o">*</span> <span class="n">Ny_22</span> <span class="o">+</span> <span class="n">Ny_22</span> <span class="o">*</span> <span class="n">Ny_22</span> <span class="o">*</span>
-                                <span class="n">Ny_22</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span><span class="p">)</span>
-            <span class="n">int_22</span> <span class="o">+=</span> <span class="p">(</span><span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">Ny_22</span> <span class="o">*</span> <span class="n">Ny_22</span> <span class="o">*</span> <span class="n">Nx_11</span> <span class="o">+</span> <span class="n">Nx_11</span> <span class="o">*</span> <span class="n">Nx_11</span> <span class="o">*</span>
-                                <span class="n">Nx_11</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span><span class="p">)</span>
+            <span class="n">int_x</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nx</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">+</span> <span class="n">Ny</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="n">int_y</span> <span class="o">+=</span> <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">Ny</span> <span class="o">*</span> <span class="n">Ny</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">+</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Nx</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="n">int_11</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nx_11</span> <span class="o">*</span> <span class="n">Nx_11</span> <span class="o">*</span> <span class="n">Ny_22</span> <span class="o">+</span> <span class="n">Ny_22</span> <span class="o">*</span> <span class="n">Ny_22</span> <span class="o">*</span> <span class="n">Ny_22</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="p">)</span>
+            <span class="n">int_22</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">gp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">Ny_22</span> <span class="o">*</span> <span class="n">Ny_22</span> <span class="o">*</span> <span class="n">Nx_11</span> <span class="o">+</span> <span class="n">Nx_11</span> <span class="o">*</span> <span class="n">Nx_11</span> <span class="o">*</span> <span class="n">Nx_11</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">int_x</span><span class="p">,</span> <span class="n">int_y</span><span class="p">,</span> <span class="n">int_11</span><span class="p">,</span> <span class="n">int_22</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Tri6.plastic_properties"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.plastic_properties">[docs]</a>    <span class="k">def</span> <span class="nf">plastic_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates total force resisted by the element when subjected to a</span>
-<span class="sd">        stress equal to the yield strength. Also returns the modulus weighted</span>
-<span class="sd">        area and first moments of area, and determines whether or not the</span>
-<span class="sd">        element is above or below the line defined by the unit vector *u* and</span>
-<span class="sd">        point *p*.</span>
+        <span class="sd">&quot;&quot;&quot;Calculates total force resisted by the element when subjected to a stress equal to the</span>
+<span class="sd">        yield strength. Also returns the modulus weighted area and first moments of area, and</span>
+<span class="sd">        determines whether or not the element is above or below the line defined by the unit</span>
+<span class="sd">        vector *u* and point *p*.</span>
 
 <span class="sd">        :param u: Unit vector in the direction of the line</span>
 <span class="sd">        :type u: :class:`numpy.ndarray`</span>
 <span class="sd">        :param p: Point on the line</span>
 <span class="sd">        :type p: :class:`numpy.ndarray`</span>
 
-<span class="sd">        :return: Element force *(force)*, modulus weighted area properties</span>
-<span class="sd">            *(ea, e.qx, e.qy)* and whether or not the element is above the line</span>
+<span class="sd">        :return: Element force *(force)*, modulus weighted area properties *(ea, e.qx, e.qy)* and</span>
+<span class="sd">            whether or not the element is above the line</span>
 <span class="sd">        :rtype: tuple(float, float, float, float, bool)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -496,11 +508,10 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">force</span><span class="p">,</span> <span class="n">area</span> <span class="o">*</span> <span class="n">e</span><span class="p">,</span> <span class="n">qx</span> <span class="o">*</span> <span class="n">e</span><span class="p">,</span> <span class="n">qy</span> <span class="o">*</span> <span class="n">e</span><span class="p">,</span> <span class="n">is_above</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tri6.element_stress"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.element_stress">[docs]</a>    <span class="k">def</span> <span class="nf">element_stress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">Mxx</span><span class="p">,</span> <span class="n">Myy</span><span class="p">,</span> <span class="n">M11</span><span class="p">,</span> <span class="n">M22</span><span class="p">,</span> <span class="n">Mzz</span><span class="p">,</span> <span class="n">Vx</span><span class="p">,</span> <span class="n">Vy</span><span class="p">,</span> <span class="n">ea</span><span class="p">,</span> <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span>
-                       <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="n">i11</span><span class="p">,</span> <span class="n">i22</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">psi_shear</span><span class="p">,</span>
-                       <span class="n">phi_shear</span><span class="p">,</span> <span class="n">Delta_s</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the stress within an element resulting from a specified</span>
-<span class="sd">        loading. Also returns the shape function weights.</span>
+<div class="viewcode-block" id="Tri6.element_stress"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.element_stress">[docs]</a>    <span class="k">def</span> <span class="nf">element_stress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">Mxx</span><span class="p">,</span> <span class="n">Myy</span><span class="p">,</span> <span class="n">M11</span><span class="p">,</span> <span class="n">M22</span><span class="p">,</span> <span class="n">Mzz</span><span class="p">,</span> <span class="n">Vx</span><span class="p">,</span> <span class="n">Vy</span><span class="p">,</span> <span class="n">ea</span><span class="p">,</span> <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">ixx</span><span class="p">,</span> <span class="n">iyy</span><span class="p">,</span> <span class="n">ixy</span><span class="p">,</span> <span class="n">i11</span><span class="p">,</span>
+                       <span class="n">i22</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">psi_shear</span><span class="p">,</span> <span class="n">phi_shear</span><span class="p">,</span> <span class="n">Delta_s</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the stress within an element resulting from a specified loading. Also returns</span>
+<span class="sd">        the shape function weights.</span>
 
 <span class="sd">        :param float N: Axial force</span>
 <span class="sd">        :param float Mxx: Bending moment about the centroidal xx-axis</span>
@@ -578,31 +589,33 @@
             <span class="n">h2</span> <span class="o">=</span> <span class="o">-</span><span class="n">iyy</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">*</span> <span class="n">q</span>
 
             <span class="c1"># calculate element stresses</span>
-            <span class="n">sig_zz_mxx_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="o">-</span><span class="p">(</span><span class="n">ixy</span> <span class="o">*</span> <span class="n">Mxx</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">+</span> <span class="p">(</span>
-                    <span class="n">iyy</span> <span class="o">*</span> <span class="n">Mxx</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">))</span>
-            <span class="n">sig_zz_myy_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="o">-</span><span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">Myy</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">+</span> <span class="p">(</span>
-                    <span class="n">ixy</span> <span class="o">*</span> <span class="n">Myy</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">))</span>
-            <span class="n">sig_zz_m11_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="n">M11</span> <span class="o">/</span> <span class="n">i11</span> <span class="o">*</span> <span class="n">Ny_22</span><span class="p">)</span>
-            <span class="n">sig_zz_m22_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="o">-</span><span class="n">M22</span> <span class="o">/</span> <span class="n">i22</span> <span class="o">*</span> <span class="n">Nx_11</span><span class="p">)</span>
+            <span class="n">sig_zz_mxx_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">ixy</span> <span class="o">*</span> <span class="n">Mxx</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">+</span> <span class="p">(</span>
+                    <span class="n">iyy</span> <span class="o">*</span> <span class="n">Mxx</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">sig_zz_myy_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">Myy</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">+</span> <span class="p">(</span>
+                    <span class="n">ixy</span> <span class="o">*</span> <span class="n">Myy</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ixx</span> <span class="o">*</span> <span class="n">iyy</span> <span class="o">-</span> <span class="n">ixy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">sig_zz_m11_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="n">M11</span> <span class="o">/</span> <span class="n">i11</span> <span class="o">*</span> <span class="n">Ny_22</span>
+            <span class="n">sig_zz_m22_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="o">-</span><span class="n">M22</span> <span class="o">/</span> <span class="n">i22</span> <span class="o">*</span> <span class="n">Nx_11</span>
 
             <span class="k">if</span> <span class="n">Mzz</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">sig_zxy_mzz_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="n">Mzz</span> <span class="o">/</span> <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
-                        <span class="n">omega</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Ny</span><span class="p">,</span> <span class="o">-</span><span class="n">Nx</span><span class="p">])))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="n">Mzz</span> <span class="o">/</span> <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Ny</span><span class="p">,</span> <span class="o">-</span><span class="n">Nx</span><span class="p">]))</span>
+                <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">Vx</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">sig_zxy_vx_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="n">Vx</span> <span class="o">/</span> <span class="n">Delta_s</span> <span class="o">*</span> <span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
-                        <span class="n">psi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">])))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="n">Vx</span> <span class="o">/</span> <span class="n">Delta_s</span> <span class="o">*</span> <span class="p">(</span>
+                        <span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">psi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span>
+                <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">Vy</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">sig_zxy_vy_gp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="n">Vy</span> <span class="o">/</span> <span class="n">Delta_s</span> <span class="o">*</span> <span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
-                        <span class="n">phi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">])))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">elastic_modulus</span> <span class="o">*</span> <span class="n">Vy</span> <span class="o">/</span> <span class="n">Delta_s</span> <span class="o">*</span> <span class="p">(</span>
+                        <span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">phi_shear</span><span class="p">)</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">]))</span>
+                <span class="p">)</span>
 
         <span class="c1"># extrapolate results to nodes</span>
         <span class="n">sig_zz_mxx</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zz_mxx_gp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
@@ -616,9 +629,8 @@
         <span class="n">sig_zx_vy</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zxy_vy_gp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
         <span class="n">sig_zy_vy</span> <span class="o">=</span> <span class="n">extrapolate_to_nodes</span><span class="p">(</span><span class="n">sig_zxy_vy_gp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="p">(</span><span class="n">sig_zz_n</span><span class="p">,</span> <span class="n">sig_zz_mxx</span><span class="p">,</span> <span class="n">sig_zz_myy</span><span class="p">,</span> <span class="n">sig_zz_m11</span><span class="p">,</span> <span class="n">sig_zz_m22</span><span class="p">,</span>
-                <span class="n">sig_zx_mzz</span><span class="p">,</span> <span class="n">sig_zy_mzz</span><span class="p">,</span> <span class="n">sig_zx_vx</span><span class="p">,</span> <span class="n">sig_zy_vx</span><span class="p">,</span> <span class="n">sig_zx_vy</span><span class="p">,</span>
-                <span class="n">sig_zy_vy</span><span class="p">,</span> <span class="n">gps</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">sig_zz_n</span><span class="p">,</span> <span class="n">sig_zz_mxx</span><span class="p">,</span> <span class="n">sig_zz_myy</span><span class="p">,</span> <span class="n">sig_zz_m11</span><span class="p">,</span> <span class="n">sig_zz_m22</span><span class="p">,</span> <span class="n">sig_zx_mzz</span><span class="p">,</span> <span class="n">sig_zy_mzz</span><span class="p">,</span>
+                <span class="n">sig_zx_vx</span><span class="p">,</span> <span class="n">sig_zy_vx</span><span class="p">,</span> <span class="n">sig_zx_vy</span><span class="p">,</span> <span class="n">sig_zy_vy</span><span class="p">,</span> <span class="n">gps</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="Tri6.point_within_element"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.Tri6.point_within_element">[docs]</a>    <span class="k">def</span> <span class="nf">point_within_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pt</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Determines whether a point lies within the current element.</span>
@@ -641,10 +653,14 @@
         <span class="n">y3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
 
         <span class="c1"># compute variables alpha, beta and gamma</span>
-        <span class="n">alpha</span> <span class="o">=</span> <span class="p">(((</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">px</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x3</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">py</span> <span class="o">-</span> <span class="n">y3</span><span class="p">))</span> <span class="o">/</span>
-                 <span class="p">((</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x3</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)))</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="p">(((</span><span class="n">y3</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">px</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">py</span> <span class="o">-</span> <span class="n">y3</span><span class="p">))</span> <span class="o">/</span>
-                <span class="p">((</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x3</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)))</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">((</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">px</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x3</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">py</span> <span class="o">-</span> <span class="n">y3</span><span class="p">))</span> <span class="o">/</span>
+            <span class="p">((</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x3</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y3</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">((</span><span class="n">y3</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">px</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">py</span> <span class="o">-</span> <span class="n">y3</span><span class="p">))</span> <span class="o">/</span>
+            <span class="p">((</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x3</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x3</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y3</span><span class="p">))</span>
+        <span class="p">)</span>
         <span class="n">gamma</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">-</span> <span class="n">beta</span>
 
         <span class="c1"># if the point lies within an element</span>
@@ -655,12 +671,12 @@
 
 
 <div class="viewcode-block" id="gauss_points"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.gauss_points">[docs]</a><span class="k">def</span> <span class="nf">gauss_points</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the Gaussian weights and locations for *n* point Gaussian</span>
-<span class="sd">    integration of a quadratic triangular element.</span>
+    <span class="sd">&quot;&quot;&quot;Returns the Gaussian weights and locations for *n* point Gaussian integration of a quadratic</span>
+<span class="sd">    triangular element.</span>
 
 <span class="sd">    :param int n: Number of Gauss points (1, 3 or 6)</span>
-<span class="sd">    :return: An *n x 4* matrix consisting of the integration weight and the</span>
-<span class="sd">        eta, xi and zeta locations for *n* Gauss points</span>
+<span class="sd">    :return: An *n x 4* matrix consisting of the integration weight and the eta, xi and zeta</span>
+<span class="sd">        locations for *n* Gauss points</span>
 <span class="sd">    :rtype: :class:`numpy.ndarray`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -670,9 +686,11 @@
 
     <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
         <span class="c1"># three point gaussian integration</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">],</span>
-                         <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">],</span>
-                         <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">],</span>
+            <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">],</span>
+            <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="p">])</span>
     <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
         <span class="c1"># six point gaussian integration</span>
         <span class="n">g1</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">18</span> <span class="o">*</span> <span class="p">(</span><span class="mi">8</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">38</span> <span class="o">-</span> <span class="mi">44</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">/</span> <span class="mi">5</span><span class="p">)))</span>
@@ -680,28 +698,27 @@
         <span class="n">w1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">620</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">213125</span> <span class="o">-</span> <span class="mi">53320</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span> <span class="o">/</span> <span class="mi">3720</span>
         <span class="n">w2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">620</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">213125</span> <span class="o">-</span> <span class="mi">53320</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span> <span class="o">/</span> <span class="mi">3720</span>
 
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">w2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">],</span>
-                         <span class="p">[</span><span class="n">w2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">],</span>
-                         <span class="p">[</span><span class="n">w2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g2</span><span class="p">],</span>
-                         <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g1</span><span class="p">],</span>
-                         <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">],</span>
-                         <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">]])</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="p">[</span><span class="n">w2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">w2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">w2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g2</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g1</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g1</span><span class="p">]</span>
+        <span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="shape_function"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.shape_function">[docs]</a><span class="k">def</span> <span class="nf">shape_function</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">gauss_point</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes shape functions, shape function derivatives and the determinant</span>
-<span class="sd">    of the Jacobian matrix for a tri 6 element at a given Gauss point.</span>
+    <span class="sd">&quot;&quot;&quot;Computes shape functions, shape function derivatives and the determinant of the Jacobian</span>
+<span class="sd">    matrix for a tri 6 element at a given Gauss point.</span>
 
-<span class="sd">    :param coords: Global coordinates of the quadratic triangle vertices</span>
-<span class="sd">        [2 x 6]</span>
+<span class="sd">    :param coords: Global coordinates of the quadratic triangle vertices [2 x 6]</span>
 <span class="sd">    :type coords: :class:`numpy.ndarray`</span>
-<span class="sd">    :param gauss_point: Gaussian weight and isoparametric location of the Gauss</span>
-<span class="sd">        point</span>
+<span class="sd">    :param gauss_point: Gaussian weight and isoparametric location of the Gauss point</span>
 <span class="sd">    :type gauss_point: :class:`numpy.ndarray`</span>
-<span class="sd">    :return: The value of the shape functions *N(i)* at the given Gauss point</span>
-<span class="sd">        [1 x 6], the derivative of the shape functions in the j-th global</span>
-<span class="sd">        direction *B(i,j)* [2 x 6] and the determinant of the Jacobian matrix</span>
-<span class="sd">        *j*</span>
+<span class="sd">    :return: The value of the shape functions *N(i)* at the given Gauss point [1 x 6], the</span>
+<span class="sd">        derivative of the shape functions in the j-th global direction *B(i,j)* [2 x 6] and the</span>
+<span class="sd">        determinant of the Jacobian matrix *j*</span>
 <span class="sd">    :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`, float)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -711,17 +728,21 @@
     <span class="n">zeta</span> <span class="o">=</span> <span class="n">gauss_point</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
 
     <span class="c1"># value of the shape functions</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">eta</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
-                  <span class="n">xi</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">xi</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
-                  <span class="n">zeta</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">zeta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
-                  <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">*</span> <span class="n">xi</span><span class="p">,</span>
-                  <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span> <span class="o">*</span> <span class="n">zeta</span><span class="p">,</span>
-                  <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">*</span> <span class="n">zeta</span><span class="p">])</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">eta</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">xi</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">xi</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">zeta</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">zeta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">*</span> <span class="n">xi</span><span class="p">,</span>
+        <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span> <span class="o">*</span> <span class="n">zeta</span><span class="p">,</span>
+        <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">*</span> <span class="n">zeta</span>
+    <span class="p">])</span>
 
     <span class="c1"># derivatives of the shape functions wrt the isoparametric co-ordinates</span>
-    <span class="n">B_iso</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">zeta</span><span class="p">],</span>
-                      <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">zeta</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                      <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">zeta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span><span class="p">]])</span>
+    <span class="n">B_iso</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">zeta</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">zeta</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">zeta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">xi</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">eta</span><span class="p">]</span>
+    <span class="p">])</span>
 
     <span class="c1"># form Jacobian matrix</span>
     <span class="n">J_upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
@@ -745,8 +766,7 @@
 
 
 <div class="viewcode-block" id="extrapolate_to_nodes"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.extrapolate_to_nodes">[docs]</a><span class="k">def</span> <span class="nf">extrapolate_to_nodes</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Extrapolates results at six Gauss points to the six noes of a quadratic</span>
-<span class="sd">    triangular element.</span>
+    <span class="sd">&quot;&quot;&quot;Extrapolates results at six Gauss points to the six noes of a quadratic triangular element.</span>
 
 <span class="sd">    :param w: Result at the six Gauss points [1 x 6]</span>
 <span class="sd">    :type w: :class:`numpy.ndarray`</span>
@@ -754,19 +774,20 @@
 <span class="sd">    :rtype: :class:`numpy.ndarray`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">H_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="p">[[</span><span class="mf">1.87365927351160</span><span class="p">,</span>	<span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">0.138559587411935</span><span class="p">,</span>
-          <span class="o">-</span><span class="mf">0.638559587411936</span><span class="p">,</span> <span class="mf">0.126340726488397</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">],</span>
-         <span class="p">[</span><span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">1.87365927351160</span><span class="p">,</span> <span class="mf">0.138559587411935</span><span class="p">,</span>
-          <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">,</span> <span class="mf">0.126340726488397</span><span class="p">],</span>
-         <span class="p">[</span><span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">1.87365927351160</span><span class="p">,</span>
-          <span class="mf">0.126340726488396</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">],</span>
-         <span class="p">[</span><span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.180053080734478</span><span class="p">,</span>
-          <span class="mf">1.36051633430762</span><span class="p">,</span>	<span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">],</span>
-         <span class="p">[</span><span class="mf">0.180053080734478</span><span class="p">,</span> <span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.0749010751157440</span><span class="p">,</span>
-          <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="mf">1.36051633430762</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">],</span>
-         <span class="p">[</span><span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.180053080734478</span><span class="p">,</span>  <span class="mf">0.0749010751157440</span><span class="p">,</span>
-          <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="mf">1.36051633430762</span><span class="p">]])</span>
+    <span class="n">H_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="mf">1.87365927351160</span><span class="p">,</span>	<span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">0.138559587411935</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">0.638559587411936</span><span class="p">,</span> <span class="mf">0.126340726488397</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">1.87365927351160</span><span class="p">,</span> <span class="mf">0.138559587411935</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">,</span> <span class="mf">0.126340726488397</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">0.138559587411935</span><span class="p">,</span> <span class="mf">1.87365927351160</span><span class="p">,</span>
+         <span class="mf">0.126340726488396</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.638559587411935</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.180053080734478</span><span class="p">,</span>
+         <span class="mf">1.36051633430762</span><span class="p">,</span>	<span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.180053080734478</span><span class="p">,</span> <span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.0749010751157440</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="mf">1.36051633430762</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.0749010751157440</span><span class="p">,</span> <span class="mf">0.180053080734478</span><span class="p">,</span>  <span class="mf">0.0749010751157440</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.345185782636792</span><span class="p">,</span> <span class="mf">1.36051633430762</span><span class="p">]</span>
+    <span class="p">])</span>
 
     <span class="k">return</span> <span class="n">H_inv</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">)</span></div>
 
@@ -786,8 +807,10 @@
     <span class="n">phi_rad</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
 
     <span class="c1"># form rotation matrix</span>
-    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)],</span>
-                  <span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)]])</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)],</span>
+        <span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)]</span>
+    <span class="p">])</span>
 
     <span class="c1"># calculate rotated x and y coordinates</span>
     <span class="n">x_rotated</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]))</span>
@@ -796,8 +819,8 @@
 
 
 <div class="viewcode-block" id="global_coordinate"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.global_coordinate">[docs]</a><span class="k">def</span> <span class="nf">global_coordinate</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">x11</span><span class="p">,</span> <span class="n">y22</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Determines the global coordinates of the principal axis point *(x1, y2)*</span>
-<span class="sd">    given principal axis rotation angle phi.</span>
+    <span class="sd">&quot;&quot;&quot;Determines the global coordinates of the principal axis point *(x1, y2)* given principal</span>
+<span class="sd">    axis rotation angle phi.</span>
 
 <span class="sd">    :param float phi: Prinicpal bending axis angle (degrees)</span>
 <span class="sd">    :param float x11: 11 coordinate in the principal axis</span>
@@ -810,8 +833,10 @@
     <span class="n">phi_rad</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
 
     <span class="c1"># form transposed rotation matrix</span>
-    <span class="n">R</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)],</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span>
-                                                         <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)]]))</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)],</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)]</span>
+    <span class="p">])</span>
     <span class="c1"># calculate rotated x_1 and y_2 coordinates</span>
     <span class="n">x_rotated</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x11</span><span class="p">,</span> <span class="n">y22</span><span class="p">]))</span>
 
@@ -819,8 +844,8 @@
 
 
 <div class="viewcode-block" id="point_above_line"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.analysis.fea.point_above_line">[docs]</a><span class="k">def</span> <span class="nf">point_above_line</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">px</span><span class="p">,</span> <span class="n">py</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Determines whether a point *(x, y)* is a above or below the line defined</span>
-<span class="sd">    by the parallel unit vector *u* and the point *(px, py)*.</span>
+    <span class="sd">&quot;&quot;&quot;Determines whether a point *(x, y)* is a above or below the line defined by the parallel</span>
+<span class="sd">    unit vector *u* and the point *(px, py)*.</span>
 
 <span class="sd">    :param u: Unit vector parallel to the line [1 x 2]</span>
 <span class="sd">    :type u: :class:`numpy.ndarray`</span>
@@ -828,8 +853,8 @@
 <span class="sd">    :param float py: y coordinate of a point on the line</span>
 <span class="sd">    :param float x: x coordinate of the point to be tested</span>
 <span class="sd">    :param float y: y coordinate of the point to be tested</span>
-<span class="sd">    :return: This method returns *True* if the point is above the line or</span>
-<span class="sd">        *False* if the point is below the line</span>
+<span class="sd">    :return: This method returns *True* if the point is above the line or *False* if the point is</span>
+<span class="sd">        below the line</span>
 <span class="sd">    :rtype: bool</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -848,7 +873,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Robbie van Leeuwen.
+        &copy; Copyright 2019, Robbie van Leeuwen
 
     </p>
   </div>
@@ -865,36 +890,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'1.0.5',
-            LANGUAGE:'en',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

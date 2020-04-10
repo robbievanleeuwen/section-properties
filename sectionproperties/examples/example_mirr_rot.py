@@ -3,8 +3,7 @@ from sectionproperties.analysis.cross_section import CrossSection
 
 # create a 200PFC and a 150PFC
 pfc1 = sections.PfcSection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-pfc2 = sections.PfcSection(d=150, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8,
-                           shift=[0, 26.5])
+pfc2 = sections.PfcSection(d=150, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8, shift=[0, 26.5])
 
 # mirror the 200 PFC about the y-axis
 pfc1.mirror_section(axis='y', mirror_point=[0, 0])
@@ -27,8 +26,8 @@ section = CrossSection(geometry, mesh)
 section.display_mesh_info()  # display the mesh information
 section.plot_mesh()  # plot the generated mesh
 
-# perform a geometric, warping and plastic anaylsis, displaying the time info
-# and the iteration info for the plastic analysis
+# perform a geometric, warping and plastic anaylsis, displaying the time info and the iteration
+# info for the plastic analysis
 section.calculate_geometric_properties(time_info=True)
 section.calculate_warping_properties(time_info=True)
 section.calculate_plastic_properties(time_info=True, verbose=True)
