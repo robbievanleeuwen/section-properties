@@ -100,7 +100,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#performing-a-stress-analysis">Performing a Stress Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#creating-a-composite-cross-section">Creating a Composite Cross-Section</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#frame-analysis-example">Frame Analysis Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#advanced-example">Advanced Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-examples">Advanced Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torsion-constant-of-a-rectangle">Torsion Constant of a Rectangle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mesh-refinement">Mesh Refinement</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">Python API Documentation</a></li>
@@ -929,13 +933,14 @@ accuracy of the result compared with the time taken to obtain the solution:</p>
 <p class="caption"><span class="caption-text">Plot of the torsion constant as a function of the solution time.</span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
 </div>
 </div>
-<div class="section" id="advanced-example">
-<h2>Advanced Example<a class="headerlink" href="#advanced-example" title="Permalink to this headline">¶</a></h2>
-<p>The following example demonstrates an example in which <em>sectionproperties</em> can
-be used for more academic purposes. In this example, the aspect ratio of a
-rectangular section is varied whilst keeping a constant cross-sectional area
-and the torsion constant calculated. The variation of the torsion constant with
-the aspect ratio is then plotted:</p>
+<div class="section" id="advanced-examples">
+<h2>Advanced Examples<a class="headerlink" href="#advanced-examples" title="Permalink to this headline">¶</a></h2>
+<p>The following examples demonstrates how <em>sectionproperties</em> can be used for more academic purposes.</p>
+<div class="section" id="torsion-constant-of-a-rectangle">
+<h3>Torsion Constant of a Rectangle<a class="headerlink" href="#torsion-constant-of-a-rectangle" title="Permalink to this headline">¶</a></h3>
+<p>In this example, the aspect ratio of a rectangular section is varied whilst keeping a constant
+cross-sectional area and the torsion constant calculated. The variation of the torsion constant
+with the aspect ratio is then plotted:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
@@ -980,8 +985,86 @@ the aspect ratio is then plotted:</p>
 </pre></div>
 </div>
 <div class="figure align-center" id="id24">
-<a class="reference internal image-reference" href="../_images/advanced.png"><img alt="../_images/advanced.png" src="../_images/advanced.png" style="width: 480.0px; height: 360.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/advanced1.png"><img alt="../_images/advanced1.png" src="../_images/advanced1.png" style="width: 480.0px; height: 360.0px;" /></a>
 <p class="caption"><span class="caption-text">Plot of the torsion constant as a function of the aspect ratio.</span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="mesh-refinement">
+<h3>Mesh Refinement<a class="headerlink" href="#mesh-refinement" title="Permalink to this headline">¶</a></h3>
+<p>In this example the convergence of the torsion constant is investigated through an analysis of an
+I-section. The mesh is refined both by modifying the mesh size and by specifying the number of
+points making up the root radius. The figure below the example code shows that mesh refinement
+adjacent to the root radius is a far more efficient method in obtaining fast convergence when
+compared to reducing the mesh area size for the entire section:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="kn">import</span> <span class="n">CrossSection</span>
+
+<span class="c1"># define mesh sizes</span>
+<span class="n">mesh_size_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">nr_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">]</span>
+
+<span class="c1"># initialise result lists</span>
+<span class="n">mesh_results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">mesh_elements</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">nr_results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">nr_elements</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># calculate reference solution</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">])</span>  <span class="c1"># create mesh</span>
+<span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>  <span class="c1"># create a CrossSection object</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+<span class="n">j_reference</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_j</span><span class="p">()</span>  <span class="c1"># get the torsion constant</span>
+
+<span class="c1"># run through mesh_sizes with n_r = 16</span>
+<span class="k">for</span> <span class="n">mesh_size</span> <span class="ow">in</span> <span class="n">mesh_size_list</span><span class="p">:</span>
+    <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="n">mesh_size</span><span class="p">])</span>  <span class="c1"># create mesh</span>
+    <span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>  <span class="c1"># create a CrossSection object</span>
+    <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+    <span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+
+    <span class="n">mesh_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">elements</span><span class="p">))</span>
+    <span class="n">mesh_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">get_j</span><span class="p">())</span>
+
+<span class="c1"># run through n_r with mesh_size = 3</span>
+<span class="k">for</span> <span class="n">n_r</span> <span class="ow">in</span> <span class="n">nr_list</span><span class="p">:</span>
+    <span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="n">n_r</span><span class="p">)</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># create mesh</span>
+    <span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>  <span class="c1"># create a CrossSection object</span>
+    <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+    <span class="n">section</span><span class="o">.</span><span class="n">calculate_warping_properties</span><span class="p">()</span>
+
+    <span class="n">nr_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">elements</span><span class="p">))</span>
+    <span class="n">nr_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">get_j</span><span class="p">())</span>
+
+<span class="c1"># convert results to a numpy array</span>
+<span class="n">mesh_results</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mesh_results</span><span class="p">)</span>
+<span class="n">nr_results</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nr_results</span><span class="p">)</span>
+
+<span class="c1"># compute the error</span>
+<span class="n">mesh_error_vals</span> <span class="o">=</span> <span class="p">(</span><span class="n">mesh_results</span> <span class="o">-</span> <span class="n">j_reference</span><span class="p">)</span> <span class="o">/</span> <span class="n">mesh_results</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">nr_error_vals</span> <span class="o">=</span> <span class="p">(</span><span class="n">nr_results</span> <span class="o">-</span> <span class="n">j_reference</span><span class="p">)</span> <span class="o">/</span> <span class="n">nr_results</span> <span class="o">*</span> <span class="mi">100</span>
+
+<span class="c1"># plot the results</span>
+<span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">mesh_elements</span><span class="p">,</span> <span class="n">mesh_error_vals</span><span class="p">,</span> <span class="s1">&#39;kx-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Mesh Size Refinement&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">nr_elements</span><span class="p">,</span> <span class="n">nr_error_vals</span><span class="p">,</span> <span class="s1">&#39;rx-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Root Radius Refinement&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Number of Elements&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Torsion Constant Error [%]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center left&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id25">
+<a class="reference internal image-reference" href="../_images/advanced2.png"><img alt="../_images/advanced2.png" src="../_images/advanced2.png" style="width: 584.25px; height: 343.5px;" /></a>
+<p class="caption"><span class="caption-text">Plot of the torsion constant error as a function of number of elements used in the analysis for
+both general mesh refinement and root radius refinement.</span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
+</div>
 </div>
 </div>
 </div>

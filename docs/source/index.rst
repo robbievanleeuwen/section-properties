@@ -11,11 +11,10 @@
 Documentation
 =============
 
-*sectionproperties* is a python package for the analysis of arbitrary cross-sections
-using the finite element method written by Robbie van Leeuwen. *sectionproperties*
-can be used to determine section properties to be used in structural design and
-visualise cross-sectional stresses resulting from combinations of applied forces and
-bending moments.
+*sectionproperties* is a python package for the analysis of arbitrary cross-sections using the
+finite element method written by Robbie van Leeuwen. *sectionproperties* can be used to determine
+section properties to be used in structural design and visualise cross-sectional stresses resulting
+from combinations of applied forces and bending moments.
 
 A list of the `current features of the package and implementation goals for future releases
 <https://github.com/robbievanleeuwen/section-properties/tree/master/README.md>`_
