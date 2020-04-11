@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 
 def setup_plot(ax, pause):
-    """Exectues code required to set up a matplotlib figure.
+    """Executes code required to set up a matplotlib figure.
 
     :param ax: Axes object on which to plot
     :type ax: :class:`matplotlib.axes.Axes`
@@ -13,6 +13,7 @@ def setup_plot(ax, pause):
 
     if not pause:
         plt.ion()
+        plt.tight_layout()
         plt.show()
     else:
         plt.ioff()
@@ -32,6 +33,7 @@ def finish_plot(ax, pause, title=''):
     ax.set_aspect('equal', anchor='C')
 
     if pause:
+        plt.tight_layout()
         plt.show()
     else:
         plt.draw()
