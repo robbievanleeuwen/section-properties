@@ -12,6 +12,8 @@ def validate_properties(test, validation_list, section):
 
         if entry["prop"] == "area":
             val = section.get_area()
+        elif entry["prop"] == "perimeter":
+            val = section.get_perimeter()
         elif entry["prop"] == "ea":
             val = section.get_ea()
         elif entry["prop"] == "qx":

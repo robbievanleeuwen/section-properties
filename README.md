@@ -53,6 +53,7 @@ $ pip install sectionproperties
 ### Cross-Section Analysis:
 - [x] Global axis geometric section properties:
   - [x] Area
+  - [x] Perimeter
   - [x] First moments of area
   - [x] Second moments of area
   - [x] Elastic centroid

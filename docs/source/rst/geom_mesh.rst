@@ -158,6 +158,9 @@ defined by a list of points (nodes), facets (node connectivities) and hole locat
   likely not treat distinct areas within the :class:`~sectionproperties.pre.sections.CustomSection`
   as a separate regions and mesh refinements may not work as anticipated.
 
+..  note:: In order to calculate the perimeter of the cross-section be sure to enter the facet
+  indices that correspond to the perimeter of your cross-section.
+
 Merging Geometries
 ------------------
 
@@ -165,13 +168,17 @@ If you wish to merge multiple :class:`~sectionproperties.pre.sections.Geometry`
 objects into a single object, you can use the :class:`~sectionproperties.pre.sections.MergedSection`
 class:
 
+..  autoclass:: sectionproperties.pre.sections.MergedSection
+    :show-inheritance:
+    :noindex:
+
 ..  note:: There must be connectivity between the :class:`~sectionproperties.pre.sections.Geometry`
   objects that you wish to merge. It is currently not possible to analyse a cross-section
   that is composed of two or more unconnected domains.
 
-..  autoclass:: sectionproperties.pre.sections.MergedSection
-    :show-inheritance:
-    :noindex:
+..  note:: You may need to overwrite the perimeter facets list if predefined sections are used.
+  Enabling labels while plotting the geometry is an easy way to manually identify the facet indices
+  that make up the perimeter of the cross-section.
 
 Cleaning the Geometry
 ---------------------

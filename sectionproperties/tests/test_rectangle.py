@@ -19,6 +19,7 @@ class TestRectangle(unittest.TestCase):
 
         val_list = []
         val_list.append({"prop": "area", "val": 100 * 50, "tol": None})
+        val_list.append({"prop": "perimeter", "val": 100 * 2 + 50 * 2, "tol": None})
         val_list.append({"prop": "ea", "val": 1 * 100 * 50, "tol": None})
         val_list.append({"prop": "qx", "val": 100 * 50 * 50, "tol": None})
         val_list.append({"prop": "qy", "val": 100 * 50 * 25, "tol": None})

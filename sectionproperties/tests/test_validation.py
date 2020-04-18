@@ -9,14 +9,14 @@ class TestValidation(unittest.TestCase):
         """Section properties are validated against results from the Strand7
         beam section utility."""
 
-        geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5,
-                                         n_r=8)
+        geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
         mesh = geometry.create_mesh(mesh_sizes=[2.5])
 
         section = CrossSection(geometry, mesh)
 
         val_list = []
         val_list.append({"prop": "area", "val": 2746.73, "tol": 2e-4})
+        val_list.append({"prop": "perimeter", "val": 471, "tol": 1e-3})
         val_list.append({"prop": "cx", "val": 21.2255, "tol": 2e-4})
         val_list.append({"prop": "cy", "val": 50.9893, "tol": 2e-4})
         val_list.append({"prop": "ixx_g", "val": 1.3428e7, "tol": 2e-4})

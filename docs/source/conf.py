@@ -20,7 +20,7 @@ autodoc_mock_imports = ['pybind11', 'meshpy']
 # -- Project information -----------------------------------------------------
 
 project = 'sectionproperties'
-copyright = '2019, Robbie van Leeuwen'
+copyright = '2020, Robbie van Leeuwen'
 author = 'Robbie van Leeuwen'
 
 # The short X.Y version

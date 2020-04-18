@@ -275,6 +275,7 @@ If there are no holes, provide an empty list [].</p></li>
 <li><p><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>(x, y)</em> that define different regions of the
 cross-section. A control point is an arbitrary point within a region enclosed by facets.</p></li>
 <li><p><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
+<li><p><strong>perimeter</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – List of facet indices defining the perimeter of the cross-section</p></li>
 </ul>
 </dd>
 </dl>
@@ -357,6 +358,38 @@ point id.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>tuple(float, float, float, float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sectionproperties.pre.sections.Geometry.calculate_facet_length">
+<code class="sig-name descname">calculate_facet_length</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">facet</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.calculate_facet_length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.calculate_facet_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the length of the facet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>facet</strong> – Point index pair <em>(p1, p2)</em> defining a facet</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Facet length</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sectionproperties.pre.sections.Geometry.calculate_perimeter">
+<code class="sig-name descname">calculate_perimeter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.calculate_perimeter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.calculate_perimeter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the perimeter of the cross-section by summing the length of all facets in the
+<code class="docutils literal notranslate"><span class="pre">perimeter</span></code> class variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Cross-section perimeter, returns 0 if there is no perimeter defined</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -518,7 +551,7 @@ to a counter-clockwise rotation.</p></li>
 <h4>CustomSection Class<a class="headerlink" href="#customsection-class" title="Permalink to this headline">¶</a></h4>
 <dl class="py class">
 <dt id="sectionproperties.pre.sections.CustomSection">
-<em class="property">class </em><code class="sig-prename descclassname">sectionproperties.pre.sections.</code><code class="sig-name descname">CustomSection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span></em>, <em class="sig-param"><span class="n">facets</span></em>, <em class="sig-param"><span class="n">holes</span></em>, <em class="sig-param"><span class="n">control_points</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">[0, 0]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CustomSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.CustomSection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">sectionproperties.pre.sections.</code><code class="sig-name descname">CustomSection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span></em>, <em class="sig-param"><span class="n">facets</span></em>, <em class="sig-param"><span class="n">holes</span></em>, <em class="sig-param"><span class="n">control_points</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">[0, 0]</span></em>, <em class="sig-param"><span class="n">perimeter</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CustomSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.CustomSection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a cross-section from a list of points, facets, holes and a user specified control
 point.</p>
@@ -532,6 +565,7 @@ If there are no holes, provide an empty list [].</p></li>
 <li><p><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>(x, y)</em> that define different regions of the
 cross-section. A control point is an arbitrary point within a region enclosed by facets.</p></li>
 <li><p><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
+<li><p><strong>perimeter</strong> – List of facet indices defining the perimeter of the cross-section</p></li>
 </ul>
 </dd>
 </dl>
@@ -544,8 +578,11 @@ height of 50 and a wall thickness of 10. A mesh is generated with a maximum tria
 <span class="n">facets</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
 <span class="n">holes</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">25</span><span class="p">]]</span>
 <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span>
+<span class="n">perimeter</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CustomSection</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CustomSection</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">,</span> <span class="n">perimeter</span><span class="o">=</span><span class="n">perimeter</span>
+<span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -1731,17 +1768,13 @@ generates a mesh with a maximum triangular area of 0.001:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.BARSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#BARSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.BARSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#BARSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.BARSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width (x) of bar</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Depth (y) of bar</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -1790,19 +1823,13 @@ generates a mesh with a maximum triangular area of 0.001:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.BOXSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#BOXSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.BOXSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#BOXSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.BOXSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width (x) of box</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Depth (y) of box</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Thickness of box in y direction</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of box in x direction</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -1855,21 +1882,13 @@ generates a mesh with a maximum triangular area of 0.007:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.BOX1Section.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#BOX1Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.BOX1Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#BOX1Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.BOX1Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width (x) of box</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Depth (y) of box</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Thickness of top wall</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of bottom wall</p></li>
-<li><p><strong>DIM5</strong> (<em>float</em>) – Thickness of left wall</p></li>
-<li><p><strong>DIM6</strong> (<em>float</em>) – Thickness of right wall</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -1918,19 +1937,13 @@ generates a mesh with a maximum triangular area of 0.008:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.CHANSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#CHANSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.CHANSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#CHANSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.CHANSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width (x) of the CHAN-section</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Depth (y) of the CHAN-section</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Thickness of web (vertical portion)</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of flanges (top/bottom portion)</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -1979,19 +1992,13 @@ generates a mesh with a maximum triangular area of 0.01:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.CHAN1Section.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#CHAN1Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.CHAN1Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#CHAN1Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.CHAN1Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width (x) of channels</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Thicknesss (x) of web</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Spacing between channel (length of web)</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Depth (y) of CHAN1-section</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2040,19 +2047,13 @@ generates a mesh with a maximum triangular area of 0.01:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.CHAN2Section.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#CHAN2Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.CHAN2Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#CHAN2Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.CHAN2Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Thickness of channels</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Thickness of web</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Depth (y) of CHAN2-section</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Width (x) of CHAN2-section</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2102,20 +2103,13 @@ member</p></li>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.CROSSSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#CROSSSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.CROSSSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#CROSSSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.CROSSSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Twice the width of horizontal member protruding from the vertical center
-member</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Thickness of the vertical member</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Depth (y) of the CROSS-section</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of the horizontal members</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2172,25 +2166,13 @@ generates a mesh with a maximum triangular area of 0.01:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.DBOXSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">DIM5</span></em>, <em class="sig-param"><span class="n">DIM6</span></em>, <em class="sig-param"><span class="n">DIM7</span></em>, <em class="sig-param"><span class="n">DIM8</span></em>, <em class="sig-param"><span class="n">DMI9</span></em>, <em class="sig-param"><span class="n">DIM10</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#DBOXSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.DBOXSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#DBOXSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.DBOXSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width (x) of the DBOX-section</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Depth (y) of the DBOX-section</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Width (x) of left-side box</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of left wall</p></li>
-<li><p><strong>DIM5</strong> (<em>float</em>) – Thickness of center wall</p></li>
-<li><p><strong>DIM6</strong> (<em>float</em>) – Thickness of right wall</p></li>
-<li><p><strong>DIM7</strong> (<em>float</em>) – Thickness of top left wall</p></li>
-<li><p><strong>DIM8</strong> (<em>float</em>) – Thickness of bottom left wall</p></li>
-<li><p><strong>DIM9</strong> (<em>float</em>) – Thickness of top right wall</p></li>
-<li><p><strong>DIM10</strong> (<em>float</em>) – Thickness of bottom right wall</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2243,23 +2225,13 @@ origin <em>(0, 0)</em>, with eight parameters defining dimensions. Added by John
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.FCROSSSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">DIM5</span></em>, <em class="sig-param"><span class="n">DIM6</span></em>, <em class="sig-param"><span class="n">DIM7</span></em>, <em class="sig-param"><span class="n">DIM8</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#FCROSSSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.FCROSSSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#FCROSSSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.FCROSSSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Depth (y) of flanged cruciform</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Width (x) of flanged cruciform</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Thickness of vertical web</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of horizontal web</p></li>
-<li><p><strong>DIM5</strong> (<em>float</em>) – Length of flange attached to vertical web</p></li>
-<li><p><strong>DIM6</strong> (<em>float</em>) – Thickness of flange attached to vertical web</p></li>
-<li><p><strong>DIM7</strong> (<em>float</em>) – Length of flange attached to horizontal web</p></li>
-<li><p><strong>DIM8</strong> (<em>float</em>) – Thickness of flange attached to horizontal web</p></li>
-<li><p><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2311,21 +2283,13 @@ generates a mesh with a maximum triangular area of 0.01:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.GBOXSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">DIM5</span></em>, <em class="sig-param"><span class="n">DIM6</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#GBOXSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.GBOXSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#GBOXSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.GBOXSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width (x) of the GBOX-section</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Depth (y) of the GBOX-section</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Thickness of top flange</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of bottom flange</p></li>
-<li><p><strong>DIM5</strong> (<em>float</em>) – Thickness of webs</p></li>
-<li><p><strong>DIM6</strong> (<em>float</em>) – Spacing between webs</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2374,19 +2338,13 @@ generates a mesh with a maximum triangular area of 0.005:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.HSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#HSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.HSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#HSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.HSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Spacing between vertical flanges (length of web)</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Twice the thickness of the vertical flanges</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Depth (y) of the H-section</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of the middle web</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2435,19 +2393,13 @@ generates a mesh with a maximum triangular area of 0.001:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.HATSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#HATSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.HATSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#HATSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.HATSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Depth (y) of HAT-section</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Thickness of HAT-section</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Width (x) of top most section</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Width (x) of bottom sections</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the origin by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the origin by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2519,20 +2471,13 @@ cross-section geometry.</p>
 
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.HAT1Section.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">DIM5</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#HAT1Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.HAT1Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#HAT1Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.HAT1Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width(x) of the HAT1-section</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Depth (y) of the HAT1-section</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Width (x) of hat’s top flange</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of hat stiffener</p></li>
-<li><p><strong>DIM5</strong> (<em>float</em>) – Thicknesss of bottom plate</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the origin by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the origin by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2580,18 +2525,13 @@ and generates a mesh with a maximum triangular area of 0.005:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.HEXASection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#HEXASection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.HEXASection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#HEXASection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.HEXASection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Spacing between bottom right point and right most point</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Width (x) of hexagon</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Depth (y) of hexagon</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2644,21 +2584,13 @@ mesh with a maximum triangular area of 0.008:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.NISection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">DIM5</span></em>, <em class="sig-param"><span class="n">DIM6</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#NISection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.NISection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#NISection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.NISection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Depth(y) of the I-section</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Width (x) of bottom flange</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Width (x) of top flange</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of web</p></li>
-<li><p><strong>DIM5</strong> (<em>float</em>) – Thickness of bottom web</p></li>
-<li><p><strong>DIM6</strong> (<em>float</em>) – Thickness of top web</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2708,19 +2640,13 @@ Added by JohnDN90.</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.I1Section.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#I1Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.I1Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#I1Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.I1Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Twice distance from web end to flange end</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Thickness of web</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Length of web (spacing between flanges)</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Depth (y) of the I1-section</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2769,19 +2695,13 @@ generates a mesh with a maximum triangular area of 0.01:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.LSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#LSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.LSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#LSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.LSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width (x) of the L-section</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Depth (y) of the L-section</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Thickness of flange (horizontal portion)</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of web (vertical portion)</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2828,7 +2748,7 @@ the boundary, and generates a mesh with a maximum triangular area of 0.01:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.RODSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#RODSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.RODSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#RODSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.RODSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
@@ -2886,19 +2806,13 @@ generates a mesh with a maximum triangular area of 0.001:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.TSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#TSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.TSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#TSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.TSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin
 of the cross-section. The shift parameter can be used to make the coordinates
 relative to the centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width (x) of top flange</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Depth (y) of the T-section</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Thickness of top flange</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of web</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -2947,19 +2861,13 @@ generates a mesh with a maximum triangular area of 0.001:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.T1Section.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#T1Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.T1Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#T1Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.T1Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Depth (y) of T1-section</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Length (x) of web</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Thickness of right flange</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of web</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -3008,19 +2916,13 @@ generates a mesh with a maximum triangular area of 0.005:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.T2Section.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#T2Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.T2Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#T2Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.T2Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width (x) of T2-section</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Depth (y) of T2-section</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Thickness of bottom flange</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Thickness of web</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -3069,17 +2971,13 @@ maximum triangular area of 0.01:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.TUBESection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#TUBESection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.TUBESection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#TUBESection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.TUBESection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Outer radius of the circular tube section</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Inner radius of the circular tube section</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -3128,17 +3026,13 @@ maximum triangular area of 0.01:</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.TUBE2Section.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#TUBE2Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.TUBE2Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#TUBE2Section.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.TUBE2Section.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Outer radius of the circular tube section</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Thickness of wall</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -3187,19 +3081,13 @@ Added by JohnDN90.</p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.ZSection.getStressPoints">
-<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DIM1</span></em>, <em class="sig-param"><span class="n">DIM2</span></em>, <em class="sig-param"><span class="n">DIM3</span></em>, <em class="sig-param"><span class="n">DIM4</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#ZSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.ZSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getStressPoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/nastran_sections.html#ZSection.getStressPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.nastran_sections.ZSection.getStressPoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of the stress evaluation points relative to the origin of the
 cross-section. The shift parameter can be used to make the coordinates relative to the
 centroid or the shear center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>DIM1</strong> (<em>float</em>) – Width (x) of horizontal members</p></li>
-<li><p><strong>DIM2</strong> (<em>float</em>) – Thickness of web</p></li>
-<li><p><strong>DIM3</strong> (<em>float</em>) – Spacing between horizontal members (length of web)</p></li>
-<li><p><strong>DIM4</strong> (<em>float</em>) – Depth (y) of Z-section</p></li>
-<li><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
-</ul>
+<dd class="field-odd"><p><strong>shift</strong> (<em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stress evaluation points relative to shifted origin - C, D, E, F</p>
@@ -3405,6 +3293,7 @@ time cost is printed to the terminal.</p>
 <p>The following geometric section properties are calculated:</p>
 <ul class="simple">
 <li><p>Cross-sectional area</p></li>
+<li><p>Cross-sectional perimeter</p></li>
 <li><p>Modulus weighted area (axial rigidity)</p></li>
 <li><p>First moments of area</p></li>
 <li><p>Second moments of area about the global axis</p></li>
@@ -3859,6 +3748,24 @@ compression.</p>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
 <span class="n">section</span><span class="o">.</span><span class="n">calculate_plastic_properties</span><span class="p">()</span>
 <span class="p">(</span><span class="n">x11_pc</span><span class="p">,</span> <span class="n">y22_pc</span><span class="p">)</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_pc_p</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sectionproperties.analysis.cross_section.CrossSection.get_perimeter">
+<code class="sig-name descname">get_perimeter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/analysis/cross_section.html#CrossSection.get_perimeter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.analysis.cross_section.CrossSection.get_perimeter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Cross-section perimeter</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+<span class="n">section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">perimeter</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_perimeter</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -5725,6 +5632,7 @@ entirely derived from other section properties.</p>
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>area</strong> (<em>float</em>) – Cross-sectional area</p></li>
+<li><p><strong>perimeter</strong> (<em>float</em>) – Cross-sectional perimeter</p></li>
 <li><p><strong>ea</strong> (<em>float</em>) – Modulus weighted area (axial rigidity)</p></li>
 <li><p><strong>ga</strong> (<em>float</em>) – Modulus weighted product of shear modulus and area</p></li>
 <li><p><strong>nu_eff</strong> (<em>float</em>) – Effective Poisson’s ratio</p></li>
@@ -6345,7 +6253,7 @@ Lagrangian multiplier method.</p>
 <dl class="py function">
 <dt id="sectionproperties.post.post.setup_plot">
 <code class="sig-prename descclassname">sectionproperties.post.post.</code><code class="sig-name descname">setup_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">pause</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/post/post.html#setup_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.post.post.setup_plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exectues code required to set up a matplotlib figure.</p>
+<dd><p>Executes code required to set up a matplotlib figure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

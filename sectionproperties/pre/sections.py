@@ -23,6 +23,8 @@ class Geometry:
     :vartype control_points: list[list[float, float]]
     :cvar shift: Vector that shifts the cross-section by *(x, y)*
     :vartype shift: list[float, float]
+    :cvar perimeter: List of facet indices defining the perimeter of the cross-section
+    :vartype perimeter: list[int]
     """
 
     def __init__(self, control_points, shift):
@@ -33,6 +35,7 @@ class Geometry:
         self.points = []
         self.facets = []
         self.holes = []
+        self.perimeter = []
 
     def create_mesh(self, mesh_sizes):
         """Creates a quadratic triangular mesh from the Geometry object.
@@ -242,7 +245,7 @@ class Geometry:
 
         self = pre.GeometryCleaner(self, verbose).clean_geometry()
 
-    def plot_geometry(self, ax=None, pause=True, labels=False):
+    def plot_geometry(self, ax=None, pause=True, labels=False, perimeter=False):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
         figure and axis is created.
 
@@ -251,6 +254,7 @@ class Geometry:
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
         :param bool labels: If set to true, node and facet labels are displayed
+        :param bool perimeter: If set to true, boldens the perimeter of the cross-section
 
         The following example creates a CHS discretised with 64 points, with a diameter of 48 and
         thickness of 3.2, and plots the geometry::
@@ -276,15 +280,23 @@ class Geometry:
             ax_supplied = True
 
         for (i, f) in enumerate(self.facets):
+            if perimeter:
+                if i in self.perimeter:
+                    linewidth = 3
+                else:
+                    linewidth = 1.5
+            else:
+                linewidth = 1.5
+
             # plot the points and facets
             if i == 0:
                 ax.plot([self.points[f[0]][0], self.points[f[1]][0]],
                         [self.points[f[0]][1], self.points[f[1]][1]],
-                        'ko-', markersize=2, label='Points & Facets')
+                        'ko-', markersize=2, linewidth=linewidth, label='Points & Facets')
             else:
                 ax.plot([self.points[f[0]][0], self.points[f[1]][0]],
                         [self.points[f[0]][1], self.points[f[1]][1]],
-                        'ko-', markersize=2)
+                        'ko-', markersize=2, linewidth=linewidth)
 
         for (i, h) in enumerate(self.holes):
             # plot the holes
@@ -379,6 +391,44 @@ class Geometry:
             y = pt[1] + r * np.sin(t)
             self.points.append([x, y])
 
+    def calculate_facet_length(self, facet):
+        """Calculates the length of the facet.
+
+        :param facet: Point index pair *(p1, p2)* defining a facet
+        :vartype facets: list[int, int]
+
+        :return: Facet length
+        :rtype: float
+        """
+
+        # get facet points
+        p1 = self.points[facet[0]]
+        p2 = self.points[facet[1]]
+
+        # calculate distance between two points
+        return np.sqrt((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2)
+
+    def calculate_perimeter(self):
+        """Calculates the perimeter of the cross-section by summing the length of all facets in the
+        ``perimeter`` class variable.
+
+        :return: Cross-section perimeter, returns 0 if there is no perimeter defined
+        :rtype: float
+        """
+
+        # check to see if there are any facets in the perimeter variable
+        if len(self.perimeter) == 0:
+            return 0
+
+        # initialise perimeter variable
+        perimeter = 0
+
+        # loop through all the facets along the perimeter
+        for facet_idx in self.perimeter:
+            perimeter += self.calculate_facet_length(self.facets[facet_idx])
+
+        return perimeter
+
 
 class CustomSection(Geometry):
     """Constructs a cross-section from a list of points, facets, holes and a user specified control
@@ -396,6 +446,8 @@ class CustomSection(Geometry):
     :type control_points: list[list[float, float]]
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
+    :param perimeter: List of facet indices defining the perimeter of the cross-section
+    :vartype perimeter: list[int]
 
     The following example creates a hollow trapezium with a base width of 100, top width of 50,
     height of 50 and a wall thickness of 10. A mesh is generated with a maximum triangular area of
@@ -407,8 +459,11 @@ class CustomSection(Geometry):
         facets = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4]]
         holes = [[50, 25]]
         control_points = [[5, 5]]
+        perimeter = [0, 1, 2, 3]
 
-        geometry = sections.CustomSection(points, facets, holes, control_points)
+        geometry = sections.CustomSection(
+            points, facets, holes, control_points, perimeter=perimeter
+        )
         mesh = geometry.create_mesh(mesh_sizes=[2.0])
 
     ..  figure:: ../images/sections/custom_geometry.png
@@ -424,7 +479,7 @@ class CustomSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, points, facets, holes, control_points, shift=[0, 0]):
+    def __init__(self, points, facets, holes, control_points, shift=[0, 0], perimeter=[]):
         """Inits the CustomSection class."""
 
         super().__init__(control_points, shift)
@@ -432,6 +487,7 @@ class CustomSection(Geometry):
         self.points = points
         self.facets = facets
         self.holes = holes
+        self.perimeter = perimeter
 
         self.shift_section()
 
@@ -477,6 +533,7 @@ class RectangularSection(Geometry):
         # construct the points and facets
         self.points = [[0, 0], [b, 0], [b, d], [0, d]]
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 0]]
+        self.perimeter = list(range(len(self.facets)))
 
         self.shift_section()
 
@@ -537,6 +594,8 @@ class CircularSection(Geometry):
             # if we are at the last point, complete the circle
             else:
                 self.facets.append([i, 0])
+
+        self.perimeter = list(range(len(self.facets)))
 
         self.shift_section()
 
@@ -607,6 +666,8 @@ class Chs(Geometry):
                 self.facets.append([i * 2, 0])
                 self.facets.append([i * 2 + 1, 1])
 
+        self.perimeter = list(range(0, len(self.facets), 2))
+
         self.shift_section()
 
 
@@ -668,6 +729,8 @@ class EllipticalSection(Geometry):
             # if we are at the last point, complete the ellipse
             else:
                 self.facets.append([i, 0])
+
+        self.perimeter = list(range(len(self.facets)))
 
         self.shift_section()
 
@@ -740,6 +803,8 @@ class Ehs(Geometry):
             else:
                 self.facets.append([i * 2, 0])
                 self.facets.append([i * 2 + 1, 1])
+
+        self.perimeter = list(range(0, len(self.facets), 2))
 
         self.shift_section()
 
@@ -826,6 +891,8 @@ class Rhs(Geometry):
             else:
                 self.facets.append([i + n_outer, n_outer])
 
+        self.perimeter = list(range(int(len(self.facets) / 2)))
+
         self.shift_section()
 
 
@@ -911,6 +978,8 @@ class ISection(Geometry):
             # if we are at the last point, complete the loop
             else:
                 self.facets.append([len(self.points) - 1, 0])
+
+        self.perimeter = list(range(len(self.facets)))
 
         self.shift_section()
 
@@ -1006,6 +1075,8 @@ class MonoISection(Geometry):
             # if we are at the last point, complete the loop
             else:
                 self.facets.append([len(self.points) - 1, 0])
+
+        self.perimeter = list(range(len(self.facets)))
 
         self.shift_section()
 
@@ -1219,6 +1290,8 @@ class TaperedFlangeISection(Geometry):
             else:
                 self.facets.append([len(self.points) - 1, 0])
 
+        self.perimeter = list(range(len(self.facets)))
+
         self.shift_section()
 
 
@@ -1292,6 +1365,8 @@ class PfcSection(Geometry):
             # if we are at the last point, complete the loop
             else:
                 self.facets.append([len(self.points) - 1, 0])
+
+        self.perimeter = list(range(len(self.facets)))
 
         self.shift_section()
 
@@ -1441,6 +1516,8 @@ class TaperedFlangeChannel(Geometry):
             else:
                 self.facets.append([len(self.points) - 1, 0])
 
+        self.perimeter = list(range(len(self.facets)))
+
         self.shift_section()
 
 
@@ -1515,6 +1592,8 @@ class TeeSection(Geometry):
             else:
                 self.facets.append([len(self.points) - 1, 0])
 
+        self.perimeter = list(range(len(self.facets)))
+
         self.shift_section()
 
 
@@ -1587,6 +1666,8 @@ class AngleSection(Geometry):
             # if we are at the last point, complete the loop
             else:
                 self.facets.append([len(self.points) - 1, 0])
+
+        self.perimeter = list(range(len(self.facets)))
 
         self.shift_section()
 
@@ -1686,6 +1767,8 @@ class CeeSection(Geometry):
             else:
                 self.facets.append([len(self.points) - 1, 0])
 
+        self.perimeter = list(range(len(self.facets)))
+
         self.shift_section()
 
 
@@ -1770,12 +1853,10 @@ class ZedSection(Geometry):
             self.points.append([t - b_l + t, d - l])
 
         # construct the inner top left radius
-        self.draw_radius(
-            [2 * t - b_l + r_in, d - t - r_in], r_in, np.pi, n_r, False)
+        self.draw_radius([2 * t - b_l + r_in, d - t - r_in], r_in, np.pi, n_r, False)
 
         # construct the inner top right radius
-        self.draw_radius(
-            [-r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
+        self.draw_radius([-r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
 
         # build the facet list
         for i in range(len(self.points)):
@@ -1785,6 +1866,8 @@ class ZedSection(Geometry):
             # if we are at the last point, complete the loop
             else:
                 self.facets.append([len(self.points) - 1, 0])
+
+        self.perimeter = list(range(len(self.facets)))
 
         self.shift_section()
 
@@ -1870,6 +1953,8 @@ class CruciformSection(Geometry):
             else:
                 self.facets.append([len(self.points) - 1, 0])
 
+        self.perimeter = list(range(len(self.facets)))
+
         self.shift_section()
 
 
@@ -1918,8 +2003,7 @@ class PolygonSection(Geometry):
         """Inits the PolygonSection class."""
 
         if n_sides < 3:
-            msg = 'n_sides required to be greater'
-            msg += ' than 3 for PolygonSection class'
+            msg = 'n_sides required to be greater than 3 for PolygonSection class'
             raise Exception(msg)
 
         # initial rotation
@@ -2009,6 +2093,8 @@ class PolygonSection(Geometry):
             else:
                 self.facets.append([i * 2, 0])
                 self.facets.append([i * 2 + 1, 1])
+
+        self.perimeter = list(range(0, len(self.facets), 2))
 
         self.shift_section()
 
@@ -2110,6 +2196,7 @@ class BoxGirderSection(Geometry):
 
         # build facet list
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4]]
+        self.perimeter = [0, 1, 2, 3]
 
         self.shift_section()
 

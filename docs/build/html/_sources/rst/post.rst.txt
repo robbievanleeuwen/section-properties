@@ -27,6 +27,12 @@ Cross-Section Area
 ..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_area
     :noindex:
 
+Cross-Section Perimeter
+^^^^^^^^^^^^^^^^^^^^^^^
+
+..  automethod:: sectionproperties.analysis.cross_section.CrossSection.get_perimeter
+    :noindex:
+
 Axial Rigidity
 ^^^^^^^^^^^^^^
 

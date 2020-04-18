@@ -130,6 +130,10 @@ def print_results(cross_section, fmt):
         print("Section Properties:")
         print("A\t = {:>{fmt}}".format(area, fmt=fmt))
 
+    perimeter = cross_section.get_perimeter()
+    if perimeter is not None:
+        print("Perimeter\t = {:>{fmt}}".format(perimeter, fmt=fmt))
+
     if cross_section.materials is not None:
         ea = cross_section.get_ea()
         if ea is not None:

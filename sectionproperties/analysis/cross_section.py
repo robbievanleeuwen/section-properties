@@ -209,6 +209,7 @@ class CrossSection:
         The following geometric section properties are calculated:
 
         * Cross-sectional area
+        * Cross-sectional perimeter
         * Modulus weighted area (axial rigidity)
         * First moments of area
         * Second moments of area about the global axis
@@ -230,6 +231,7 @@ class CrossSection:
         def calculate_geom():
             # initialise properties
             self.section_props.area = 0
+            self.section_props.perimeter = 0
             self.section_props.ea = 0
             self.section_props.ga = 0
             self.section_props.qx = 0
@@ -237,6 +239,9 @@ class CrossSection:
             self.section_props.ixx_g = 0
             self.section_props.iyy_g = 0
             self.section_props.ixy_g = 0
+
+            # caclulate perimeter
+            self.section_props.perimeter = self.geometry.calculate_perimeter()
 
             # calculate global geometric properties
             for el in self.elements:
@@ -1243,6 +1248,20 @@ class CrossSection:
         """
 
         return self.section_props.area
+
+    def get_perimeter(self):
+        """
+        :return: Cross-section perimeter
+        :rtype: float
+
+        ::
+
+            section = CrossSection(geometry, mesh)
+            section.calculate_geometric_properties()
+            perimeter = section.get_perimeter()
+        """
+
+        return self.section_props.perimeter
 
     def get_ea(self):
         """
@@ -3884,6 +3903,7 @@ class SectionProperties:
     entirely derived from other section properties.
 
     :cvar float area: Cross-sectional area
+    :cvar float perimeter: Cross-sectional perimeter
     :cvar float ea: Modulus weighted area (axial rigidity)
     :cvar float ga: Modulus weighted product of shear modulus and area
     :cvar float nu_eff: Effective Poisson's ratio
@@ -3984,6 +4004,7 @@ class SectionProperties:
         """Inits the SectionProperties class."""
 
         self.area = None
+        self.perimeter = None
         self.ea = None
         self.ga = None
         self.nu_eff = None

@@ -181,6 +181,8 @@
 <span class="sd">    :vartype control_points: list[list[float, float]]</span>
 <span class="sd">    :cvar shift: Vector that shifts the cross-section by *(x, y)*</span>
 <span class="sd">    :vartype shift: list[float, float]</span>
+<span class="sd">    :cvar perimeter: List of facet indices defining the perimeter of the cross-section</span>
+<span class="sd">    :vartype perimeter: list[int]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_points</span><span class="p">,</span> <span class="n">shift</span><span class="p">):</span>
@@ -191,6 +193,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">holes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="Geometry.create_mesh"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.Geometry.create_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">create_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh_sizes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Creates a quadratic triangular mesh from the Geometry object.</span>
@@ -535,7 +538,45 @@
 
             <span class="n">x</span> <span class="o">=</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
             <span class="n">y</span> <span class="o">=</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Geometry.calculate_facet_length"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.calculate_facet_length">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_facet_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">facet</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the length of the facet.</span>
+
+<span class="sd">        :param facet: Point index pair *(p1, p2)* defining a facet</span>
+<span class="sd">        :vartype facets: list[int, int]</span>
+
+<span class="sd">        :return: Facet length</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get facet points</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">facet</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">facet</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+        <span class="c1"># calculate distance between two points</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geometry.calculate_perimeter"><a class="viewcode-back" href="../../../rst/api.html#sectionproperties.pre.sections.Geometry.calculate_perimeter">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_perimeter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the perimeter of the cross-section by summing the length of all facets in the</span>
+<span class="sd">        ``perimeter`` class variable.</span>
+
+<span class="sd">        :return: Cross-section perimeter, returns 0 if there is no perimeter defined</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># check to see if there are any facets in the perimeter variable</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="c1"># initialise perimeter variable</span>
+        <span class="n">perimeter</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># loop through all the facets along the perimeter</span>
+        <span class="k">for</span> <span class="n">facet_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span><span class="p">:</span>
+            <span class="n">perimeter</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_facet_length</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">[</span><span class="n">facet_idx</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">perimeter</span></div></div>
 
 
 <div class="viewcode-block" id="CustomSection"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.CustomSection">[docs]</a><span class="k">class</span> <span class="nc">CustomSection</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
@@ -554,6 +595,8 @@
 <span class="sd">    :type control_points: list[list[float, float]]</span>
 <span class="sd">    :param shift: Vector that shifts the cross-section by *(x, y)*</span>
 <span class="sd">    :type shift: list[float, float]</span>
+<span class="sd">    :param perimeter: List of facet indices defining the perimeter of the cross-section</span>
+<span class="sd">    :vartype perimeter: list[int]</span>
 
 <span class="sd">    The following example creates a hollow trapezium with a base width of 100, top width of 50,</span>
 <span class="sd">    height of 50 and a wall thickness of 10. A mesh is generated with a maximum triangular area of</span>
@@ -565,8 +608,11 @@
 <span class="sd">        facets = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4]]</span>
 <span class="sd">        holes = [[50, 25]]</span>
 <span class="sd">        control_points = [[5, 5]]</span>
+<span class="sd">        perimeter = [0, 1, 2, 3]</span>
 
-<span class="sd">        geometry = sections.CustomSection(points, facets, holes, control_points)</span>
+<span class="sd">        geometry = sections.CustomSection(</span>
+<span class="sd">            points, facets, holes, control_points, perimeter=perimeter</span>
+<span class="sd">        )</span>
 <span class="sd">        mesh = geometry.create_mesh(mesh_sizes=[2.0])</span>
 
 <span class="sd">    ..  figure:: ../images/sections/custom_geometry.png</span>
@@ -582,7 +628,7 @@
 <span class="sd">        Mesh generated from the above geometry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">perimeter</span><span class="o">=</span><span class="p">[]):</span>
         <span class="sd">&quot;&quot;&quot;Inits the CustomSection class.&quot;&quot;&quot;</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">control_points</span><span class="p">,</span> <span class="n">shift</span><span class="p">)</span>
@@ -590,6 +636,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="n">facets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">holes</span> <span class="o">=</span> <span class="n">holes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="n">perimeter</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
@@ -635,6 +682,7 @@
         <span class="c1"># construct the points and facets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">d</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
@@ -1928,12 +1976,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">t</span> <span class="o">-</span> <span class="n">b_l</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span> <span class="n">d</span> <span class="o">-</span> <span class="n">l</span><span class="p">])</span>
 
         <span class="c1"># construct the inner top left radius</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">draw_radius</span><span class="p">(</span>
-            <span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">t</span> <span class="o">-</span> <span class="n">b_l</span> <span class="o">+</span> <span class="n">r_in</span><span class="p">,</span> <span class="n">d</span> <span class="o">-</span> <span class="n">t</span> <span class="o">-</span> <span class="n">r_in</span><span class="p">],</span> <span class="n">r_in</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_radius</span><span class="p">([</span><span class="mi">2</span> <span class="o">*</span> <span class="n">t</span> <span class="o">-</span> <span class="n">b_l</span> <span class="o">+</span> <span class="n">r_in</span><span class="p">,</span> <span class="n">d</span> <span class="o">-</span> <span class="n">t</span> <span class="o">-</span> <span class="n">r_in</span><span class="p">],</span> <span class="n">r_in</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># construct the inner top right radius</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">draw_radius</span><span class="p">(</span>
-            <span class="p">[</span><span class="o">-</span><span class="n">r_in</span><span class="p">,</span> <span class="n">d</span> <span class="o">-</span> <span class="n">t</span> <span class="o">-</span> <span class="n">r_in</span><span class="p">],</span> <span class="n">r_in</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_radius</span><span class="p">([</span><span class="o">-</span><span class="n">r_in</span><span class="p">,</span> <span class="n">d</span> <span class="o">-</span> <span class="n">t</span> <span class="o">-</span> <span class="n">r_in</span><span class="p">],</span> <span class="n">r_in</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n_r</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># build the facet list</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)):</span>

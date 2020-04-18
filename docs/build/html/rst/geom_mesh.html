@@ -217,6 +217,7 @@ If there are no holes, provide an empty list [].</p></li>
 <li><p><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>(x, y)</em> that define different regions of the
 cross-section. A control point is an arbitrary point within a region enclosed by facets.</p></li>
 <li><p><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
+<li><p><strong>perimeter</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – List of facet indices defining the perimeter of the cross-section</p></li>
 </ul>
 </dd>
 </dl>
@@ -1028,7 +1029,7 @@ thickness of 8. A mesh is generated with a maximum triangular area of 5.0:</p>
 defined by a list of points (nodes), facets (node connectivities) and hole locations:</p>
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">sectionproperties.pre.sections.</code><code class="sig-name descname">CustomSection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span></em>, <em class="sig-param"><span class="n">facets</span></em>, <em class="sig-param"><span class="n">holes</span></em>, <em class="sig-param"><span class="n">control_points</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">[0, 0]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CustomSection"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">sectionproperties.pre.sections.</code><code class="sig-name descname">CustomSection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span></em>, <em class="sig-param"><span class="n">facets</span></em>, <em class="sig-param"><span class="n">holes</span></em>, <em class="sig-param"><span class="n">control_points</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">[0, 0]</span></em>, <em class="sig-param"><span class="n">perimeter</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CustomSection"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">sectionproperties.pre.sections.Geometry</span></code></a></p>
 <p>Constructs a cross-section from a list of points, facets, holes and a user specified control
 point.</p>
@@ -1042,6 +1043,7 @@ If there are no holes, provide an empty list [].</p></li>
 <li><p><strong>control_points</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – A list of points <em>(x, y)</em> that define different regions of the
 cross-section. A control point is an arbitrary point within a region enclosed by facets.</p></li>
 <li><p><strong>shift</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Vector that shifts the cross-section by <em>(x, y)</em></p></li>
+<li><p><strong>perimeter</strong> – List of facet indices defining the perimeter of the cross-section</p></li>
 </ul>
 </dd>
 </dl>
@@ -1054,8 +1056,11 @@ height of 50 and a wall thickness of 10. A mesh is generated with a maximum tria
 <span class="n">facets</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
 <span class="n">holes</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">25</span><span class="p">]]</span>
 <span class="n">control_points</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span>
+<span class="n">perimeter</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
 
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CustomSection</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">CustomSection</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">holes</span><span class="p">,</span> <span class="n">control_points</span><span class="p">,</span> <span class="n">perimeter</span><span class="o">=</span><span class="n">perimeter</span>
+<span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -1077,18 +1082,17 @@ are outside the region, on an edge or within a hole, the meshing algorithm will
 likely not treat distinct areas within the <a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a>
 as a separate regions and mesh refinements may not work as anticipated.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In order to calculate the perimeter of the cross-section be sure to enter the facet
+indices that correspond to the perimeter of your cross-section.</p>
+</div>
 </div>
 <div class="section" id="merging-geometries">
 <h2>Merging Geometries<a class="headerlink" href="#merging-geometries" title="Permalink to this headline">¶</a></h2>
 <p>If you wish to merge multiple <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
 objects into a single object, you can use the <a class="reference internal" href="api.html#sectionproperties.pre.sections.MergedSection" title="sectionproperties.pre.sections.MergedSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">MergedSection</span></code></a>
 class:</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>There must be connectivity between the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
-objects that you wish to merge. It is currently not possible to analyse a cross-section
-that is composed of two or more unconnected domains.</p>
-</div>
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">sectionproperties.pre.sections.</code><code class="sig-name descname">MergedSection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sections</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#MergedSection"><span class="viewcode-link">[source]</span></a></dt>
@@ -1124,6 +1128,18 @@ I-section and 2.5 for the RHS:</p>
 </div>
 </dd></dl>
 
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There must be connectivity between the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+objects that you wish to merge. It is currently not possible to analyse a cross-section
+that is composed of two or more unconnected domains.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You may need to overwrite the perimeter facets list if predefined sections are used.
+Enabling labels while plotting the geometry is an easy way to manually identify the facet indices
+that make up the perimeter of the cross-section.</p>
+</div>
 </div>
 <div class="section" id="cleaning-the-geometry">
 <h2>Cleaning the Geometry<a class="headerlink" href="#cleaning-the-geometry" title="Permalink to this headline">¶</a></h2>
