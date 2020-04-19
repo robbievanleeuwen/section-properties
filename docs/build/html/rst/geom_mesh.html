@@ -115,6 +115,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#arbitrary-cross-section-geometries">Arbitrary Cross-Section Geometries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#merging-geometries">Merging Geometries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cleaning-the-geometry">Cleaning the Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#perimeter-offset">Perimeter Offset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#visualising-the-geometry">Visualising the Geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generating-a-mesh">Generating a Mesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#defining-material-properties">Defining Material Properties</a></li>
@@ -191,15 +192,14 @@
             
   <div class="section" id="creating-a-geometry-mesh-and-material-properties">
 <span id="label-geom-mesh"></span><h1>Creating a Geometry, Mesh and Material Properties<a class="headerlink" href="#creating-a-geometry-mesh-and-material-properties" title="Permalink to this headline">¶</a></h1>
-<p>Before performing a cross-section analysis, the geometry of the cross-section and
-a finite element mesh must be created. Optionally, material properties can be
-applied to different regions of the cross-section.</p>
+<p>Before performing a cross-section analysis, the geometry of the cross-section and a finite element
+mesh must be created. Optionally, material properties can be applied to different regions of the
+cross-section.</p>
 <div class="section" id="cross-section-geometry">
 <h2>Cross-Section Geometry<a class="headerlink" href="#cross-section-geometry" title="Permalink to this headline">¶</a></h2>
-<p>The geometry of a cross-section defines its dimensions and shape and involves
-the creation of a <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> object.
-This geometry object stores all the information needed to create a finite
-element mesh.</p>
+<p>The geometry of a cross-section defines its dimensions and shape and involves the creation of a
+<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> object. This geometry object stores all the
+information needed to create a finite element mesh.</p>
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">sectionproperties.pre.sections.</code><code class="sig-name descname">Geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_points</span></em>, <em class="sig-param"><span class="n">shift</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry"><span class="viewcode-link">[source]</span></a></dt>
@@ -223,18 +223,17 @@ cross-section. A control point is an arbitrary point within a region enclosed by
 </dl>
 </dd></dl>
 
-<p>Different regions of the geometry can be specified by defining a list of <code class="docutils literal notranslate"><span class="pre">control_points</span></code>,
-which are located within unique enclosed areas of the geometry. Different regions
-can be used to specify different mesh sizes and/or different material properties
-within the structural cross-section. See the <a class="reference internal" href="examples.html#label-examples"><span class="std std-ref">Examples</span></a> for some example
-scripts in which different regions are specified through a list of control points.</p>
+<p>Different regions of the geometry can be specified by defining a list of <code class="docutils literal notranslate"><span class="pre">control_points</span></code>, which
+are located within unique enclosed areas of the geometry. Different regions can be used to specify
+different mesh sizes and/or different material properties within the structural cross-section. See
+the <a class="reference internal" href="examples.html#label-examples"><span class="std std-ref">Examples</span></a> for some example scripts in which different regions are specified through
+a list of control points.</p>
 </div>
 <div class="section" id="creating-common-structural-geometries">
 <h2>Creating Common Structural Geometries<a class="headerlink" href="#creating-common-structural-geometries" title="Permalink to this headline">¶</a></h2>
-<p>In order to make your life easier, there are a number of built-in classes that generate
-typical structural cross-sections that inherit from the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
-class. Note that these classes automatically assign a <code class="docutils literal notranslate"><span class="pre">control_point</span></code> to the geometry
-object.</p>
+<p>In order to make your life easier, there are a number of built-in classes that generate typical
+structural cross-sections that inherit from the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+class. Note that these classes automatically assign a <code class="docutils literal notranslate"><span class="pre">control_point</span></code> to the geometry object.</p>
 <div class="section" id="rectangular-section">
 <h3>Rectangular Section<a class="headerlink" href="#rectangular-section" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
@@ -1025,8 +1024,8 @@ thickness of 8. A mesh is generated with a maximum triangular area of 5.0:</p>
 <div class="section" id="arbitrary-cross-section-geometries">
 <h2>Arbitrary Cross-Section Geometries<a class="headerlink" href="#arbitrary-cross-section-geometries" title="Permalink to this headline">¶</a></h2>
 <p>If none of the above classes gives you what you need, you can create a
-<a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a> geometry object, which is
-defined by a list of points (nodes), facets (node connectivities) and hole locations:</p>
+<a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a> geometry object, which is defined by a list
+of points (nodes), facets (node connectivities) and hole locations:</p>
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">sectionproperties.pre.sections.</code><code class="sig-name descname">CustomSection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span></em>, <em class="sig-param"><span class="n">facets</span></em>, <em class="sig-param"><span class="n">holes</span></em>, <em class="sig-param"><span class="n">control_points</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">[0, 0]</span></em>, <em class="sig-param"><span class="n">perimeter</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#CustomSection"><span class="viewcode-link">[source]</span></a></dt>
@@ -1077,10 +1076,10 @@ height of 50 and a wall thickness of 10. A mesh is generated with a maximum tria
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Ensure that the <code class="docutils literal notranslate"><span class="pre">control_points</span></code> you choose lie within the
-<a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a>. If any of the <code class="docutils literal notranslate"><span class="pre">control_points</span></code>
-are outside the region, on an edge or within a hole, the meshing algorithm will
-likely not treat distinct areas within the <a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a>
-as a separate regions and mesh refinements may not work as anticipated.</p>
+<a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a>. If any of the <code class="docutils literal notranslate"><span class="pre">control_points</span></code> are
+outside the region, on an edge or within a hole, the meshing algorithm will likely not treat
+distinct areas within the <a class="reference internal" href="api.html#sectionproperties.pre.sections.CustomSection" title="sectionproperties.pre.sections.CustomSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSection</span></code></a> as a separate
+regions and mesh refinements may not work as anticipated.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1090,9 +1089,8 @@ indices that correspond to the perimeter of your cross-section.</p>
 </div>
 <div class="section" id="merging-geometries">
 <h2>Merging Geometries<a class="headerlink" href="#merging-geometries" title="Permalink to this headline">¶</a></h2>
-<p>If you wish to merge multiple <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
-objects into a single object, you can use the <a class="reference internal" href="api.html#sectionproperties.pre.sections.MergedSection" title="sectionproperties.pre.sections.MergedSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">MergedSection</span></code></a>
-class:</p>
+<p>If you wish to merge multiple <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a> objects into a
+single object, you can use the <a class="reference internal" href="api.html#sectionproperties.pre.sections.MergedSection" title="sectionproperties.pre.sections.MergedSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">MergedSection</span></code></a> class:</p>
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">sectionproperties.pre.sections.</code><code class="sig-name descname">MergedSection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sections</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#MergedSection"><span class="viewcode-link">[source]</span></a></dt>
@@ -1131,8 +1129,8 @@ I-section and 2.5 for the RHS:</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>There must be connectivity between the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
-objects that you wish to merge. It is currently not possible to analyse a cross-section
-that is composed of two or more unconnected domains.</p>
+objects that you wish to merge. It is currently not possible to analyse a cross-section that is
+composed of two or more unconnected domains.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1143,12 +1141,11 @@ that make up the perimeter of the cross-section.</p>
 </div>
 <div class="section" id="cleaning-the-geometry">
 <h2>Cleaning the Geometry<a class="headerlink" href="#cleaning-the-geometry" title="Permalink to this headline">¶</a></h2>
-<p>When creating a merged section often there are overlapping facets or duplicate
-nodes. These geometry artefacts can cause difficulty for the meshing algorithm.
-It is therefore recommended to clean the geometry after merging sections which
-may result in overlapping or intersecting facets, or duplicate nodes. Cleaning
-the geometry can be carried out by using the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry.clean_geometry" title="sectionproperties.pre.sections.Geometry.clean_geometry"><code class="xref py py-func docutils literal notranslate"><span class="pre">clean_geometry()</span></code></a>
-method:</p>
+<p>When creating a merged section often there are overlapping facets or duplicate nodes. These
+geometry artefacts can cause difficulty for the meshing algorithm. It is therefore recommended to
+clean the geometry after merging sections which may result in overlapping or intersecting facets,
+or duplicate nodes. Cleaning the geometry can be carried out by using the
+<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry.clean_geometry" title="sectionproperties.pre.sections.Geometry.clean_geometry"><code class="xref py py-func docutils literal notranslate"><span class="pre">clean_geometry()</span></code></a> method:</p>
 <dl class="py method">
 <dt>
 <code class="sig-prename descclassname">Geometry.</code><code class="sig-name descname">clean_geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.clean_geometry"><span class="viewcode-link">[source]</span></a></dt>
@@ -1167,13 +1164,92 @@ which may result in overlapping or intersecting facets, or duplicate nodes.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="perimeter-offset">
+<h2>Perimeter Offset<a class="headerlink" href="#perimeter-offset" title="Permalink to this headline">¶</a></h2>
+<p>The perimeter of a cross-section geometry can be offset by using the
+<a class="reference internal" href="api.html#sectionproperties.pre.offset.offset_perimeter" title="sectionproperties.pre.offset.offset_perimeter"><code class="xref py py-func docutils literal notranslate"><span class="pre">offset_perimeter()</span></code></a> method:</p>
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">sectionproperties.pre.offset.</code><code class="sig-name descname">offset_perimeter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">geometry</span></em>, <em class="sig-param"><span class="n">offset</span></em>, <em class="sig-param"><span class="n">side</span><span class="o">=</span><span class="default_value">'left'</span></em>, <em class="sig-param"><span class="n">plot_offset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/offset.html#offset_perimeter"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Offsets the perimeter of a geometry of a <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+object by a certain distance. Note that the perimeter facet list must be entered in a
+consecutive order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geometry</strong> (<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>) – Cross-section geometry object</p></li>
+<li><p><strong>offset</strong> (<em>float</em>) – Offset distance for the perimeter</p></li>
+<li><p><strong>side</strong> (<em>string</em>) – Side of the perimeter offset, either ‘left’ or ‘right’. E.g. ‘left’ for a
+counter-clockwise offsets the perimeter inwards.</p></li>
+<li><p><strong>plot_offset</strong> (<em>bool</em>) – If set to True, generates a plot comparing the old and new geometry</p></li>
+</ul>
+</dd>
+</dl>
+<p>The following example ‘corrodes’ a 200UB25 I-section by 1.5 mm and compares a few of the
+section properties:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.pre.offset</span> <span class="kn">import</span> <span class="n">offset_perimeter</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="kn">import</span> <span class="n">CrossSection</span>
+
+<span class="c1"># calculate original section properties</span>
+<span class="n">original_geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">original_mesh</span> <span class="o">=</span> <span class="n">original_geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
+<span class="n">original_section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">original_geometry</span><span class="p">,</span> <span class="n">original_mesh</span><span class="p">)</span>
+<span class="n">original_section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">original_area</span> <span class="o">=</span> <span class="n">original_section</span><span class="o">.</span><span class="n">get_area</span><span class="p">()</span>
+<span class="p">(</span><span class="n">original_ixx</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">original_section</span><span class="o">.</span><span class="n">get_ic</span><span class="p">()</span>
+
+<span class="c1"># calculate corroded section properties</span>
+<span class="n">corroded_geometry</span> <span class="o">=</span> <span class="n">offset_perimeter</span><span class="p">(</span><span class="n">original_geometry</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">plot_offset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">corroded_mesh</span> <span class="o">=</span> <span class="n">corroded_geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
+<span class="n">corroded_section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">corroded_geometry</span><span class="p">,</span> <span class="n">corroded_mesh</span><span class="p">)</span>
+<span class="n">corroded_section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">corroded_area</span> <span class="o">=</span> <span class="n">corroded_section</span><span class="o">.</span><span class="n">get_area</span><span class="p">()</span>
+<span class="p">(</span><span class="n">corroded_ixx</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">corroded_section</span><span class="o">.</span><span class="n">get_ic</span><span class="p">()</span>
+
+<span class="c1"># compare section properties</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Area reduction = </span><span class="si">{0:.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">original_area</span> <span class="o">-</span> <span class="n">corroded_area</span><span class="p">)</span> <span class="o">/</span> <span class="n">original_area</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ixx reduction = </span><span class="si">{0:.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="mi">100</span> <span class="o">*</span><span class="p">(</span><span class="n">original_ixx</span> <span class="o">-</span> <span class="n">corroded_ixx</span><span class="p">)</span> <span class="o">/</span> <span class="n">original_ixx</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The following plot is generated by the above example:</p>
+<div class="figure align-center" id="id36">
+<a class="reference internal image-reference" href="../_images/offset_example.png"><img alt="../_images/offset_example.png" src="../_images/offset_example.png" style="width: 489.75px; height: 534.75px;" /></a>
+<p class="caption"><span class="caption-text">200UB25 with 1.5 mm corrosion.</span><a class="headerlink" href="#id36" title="Permalink to this image">¶</a></p>
+</div>
+<p>The following is printed to the terminal:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Area reduction = 41.97%
+Ixx reduction = 39.20%
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All the built-in sections in the <code class="docutils literal notranslate"><span class="pre">sections</span></code> module are built using an anti-clockwise
+facet direction. As a result, side=’left’ will reduce the cross-section, while side=’right’ will
+increase the cross-section.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">control_points</span></code> may need to be manually re-assigned if reducing the cross-section
+moves the control_point outside the geometry.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This feature is a <em>beta</em> addition and as a result may produce some errors if the
+offsetting drastically changes the geometry.</p>
+</div>
+</div>
 <div class="section" id="visualising-the-geometry">
 <h2>Visualising the Geometry<a class="headerlink" href="#visualising-the-geometry" title="Permalink to this headline">¶</a></h2>
-<p>Geometry objects can be visualised by using the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry.plot_geometry" title="sectionproperties.pre.sections.Geometry.plot_geometry"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_geometry()</span></code></a>
-method:</p>
+<p>Geometry objects can be visualised by using the
+<a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry.plot_geometry" title="sectionproperties.pre.sections.Geometry.plot_geometry"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_geometry()</span></code></a> method:</p>
 <dl class="py method">
 <dt>
-<code class="sig-prename descclassname">Geometry.</code><code class="sig-name descname">plot_geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pause</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.plot_geometry"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">Geometry.</code><code class="sig-name descname">plot_geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pause</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">perimeter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.plot_geometry"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Plots the geometry defined by the input section. If no axes object is supplied a new
 figure and axis is created.</p>
 <dl class="field-list simple">
@@ -1183,6 +1259,7 @@ figure and axis is created.</p>
 <li><p><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until the window is closed.
 If set to false, the script continues immediately after the window is rendered.</p></li>
 <li><p><strong>labels</strong> (<em>bool</em>) – If set to true, node and facet labels are displayed</p></li>
+<li><p><strong>perimeter</strong> (<em>bool</em>) – If set to true, boldens the perimeter of the cross-section</p></li>
 </ul>
 </dd>
 </dl>
@@ -1194,18 +1271,17 @@ thickness of 3.2, and plots the geometry:</p>
 <span class="n">geometry</span><span class="o">.</span><span class="n">plot_geometry</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id36">
+<div class="figure align-center" id="id37">
 <a class="reference internal image-reference" href="../_images/chs_geometry.png"><img alt="../_images/chs_geometry.png" src="../_images/chs_geometry.png" style="width: 429.75px; height: 309.75px;" /></a>
-<p class="caption"><span class="caption-text">Geometry generated by the above example.</span><a class="headerlink" href="#id36" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Geometry generated by the above example.</span><a class="headerlink" href="#id37" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
 </div>
 <div class="section" id="generating-a-mesh">
 <h2>Generating a Mesh<a class="headerlink" href="#generating-a-mesh" title="Permalink to this headline">¶</a></h2>
-<p>A finite element mesh is required to perform a cross-section analysis. A finite
-element mesh can be created by using the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry.create_mesh" title="sectionproperties.pre.sections.Geometry.create_mesh"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_mesh()</span></code></a>
-method:</p>
+<p>A finite element mesh is required to perform a cross-section analysis. A finite element mesh can
+be created by using the <a class="reference internal" href="api.html#sectionproperties.pre.sections.Geometry.create_mesh" title="sectionproperties.pre.sections.Geometry.create_mesh"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_mesh()</span></code></a> method:</p>
 <dl class="py method">
 <dt>
 <code class="sig-prename descclassname">Geometry.</code><code class="sig-name descname">create_mesh</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mesh_sizes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.create_mesh"><span class="viewcode-link">[source]</span></a></dt>
@@ -1233,9 +1309,9 @@ points, and generates a mesh with a maximum triangular area of 2.5:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">2.5</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id37">
+<div class="figure align-center" id="id38">
 <a class="reference internal image-reference" href="../_images/circle_mesh.png"><img alt="../_images/circle_mesh.png" src="../_images/circle_mesh.png" style="width: 306.75px; height: 309.75px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id37" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id38" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -1247,9 +1323,9 @@ in the geometry object.</p>
 </div>
 <div class="section" id="defining-material-properties">
 <h2>Defining Material Properties<a class="headerlink" href="#defining-material-properties" title="Permalink to this headline">¶</a></h2>
-<p>Composite cross-sections can be analysed by specifying different material
-properties for each section of the mesh. Materials are defined in <em>sectionproperties</em>
-by creating a <a class="reference internal" href="api.html#sectionproperties.pre.pre.Material" title="sectionproperties.pre.pre.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">Material</span></code></a> object:</p>
+<p>Composite cross-sections can be analysed by specifying different material properties for each
+section of the mesh. Materials are defined in <em>sectionproperties</em> by creating a
+<a class="reference internal" href="api.html#sectionproperties.pre.pre.Material" title="sectionproperties.pre.pre.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">Material</span></code></a> object:</p>
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">sectionproperties.pre.pre.</code><code class="sig-name descname">Material</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">elastic_modulus</span></em>, <em class="sig-param"><span class="n">poissons_ratio</span></em>, <em class="sig-param"><span class="n">yield_strength</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">'w'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/pre.html#Material"><span class="viewcode-link">[source]</span></a></dt>
@@ -1322,7 +1398,7 @@ Poisson’s ratio assuming an isotropic material</p></li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Robbie van Leeuwen
+        &copy; Copyright 2020, Robbie van Leeuwen
 
     </p>
   </div>

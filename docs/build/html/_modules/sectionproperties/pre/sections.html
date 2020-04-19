@@ -403,7 +403,7 @@
 
         <span class="bp">self</span> <span class="o">=</span> <span class="n">pre</span><span class="o">.</span><span class="n">GeometryCleaner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span><span class="o">.</span><span class="n">clean_geometry</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Geometry.plot_geometry"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.Geometry.plot_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">plot_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Geometry.plot_geometry"><a class="viewcode-back" href="../../../rst/geom_mesh.html#sectionproperties.pre.sections.Geometry.plot_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">plot_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">perimeter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plots the geometry defined by the input section. If no axes object is supplied a new</span>
 <span class="sd">        figure and axis is created.</span>
 
@@ -412,6 +412,7 @@
 <span class="sd">        :param bool pause: If set to true, the figure pauses the script until the window is closed.</span>
 <span class="sd">            If set to false, the script continues immediately after the window is rendered.</span>
 <span class="sd">        :param bool labels: If set to true, node and facet labels are displayed</span>
+<span class="sd">        :param bool perimeter: If set to true, boldens the perimeter of the cross-section</span>
 
 <span class="sd">        The following example creates a CHS discretised with 64 points, with a diameter of 48 and</span>
 <span class="sd">        thickness of 3.2, and plots the geometry::</span>
@@ -437,15 +438,23 @@
             <span class="n">ax_supplied</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">perimeter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span><span class="p">:</span>
+                    <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">3</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">linewidth</span> <span class="o">=</span> <span class="mf">1.5</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">linewidth</span> <span class="o">=</span> <span class="mf">1.5</span>
+
             <span class="c1"># plot the points and facets</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">]],</span>
                         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">1</span><span class="p">]],</span>
-                        <span class="s1">&#39;ko-&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Points &amp; Facets&#39;</span><span class="p">)</span>
+                        <span class="s1">&#39;ko-&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Points &amp; Facets&#39;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">]],</span>
                         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">1</span><span class="p">]],</span>
-                        <span class="s1">&#39;ko-&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                        <span class="s1">&#39;ko-&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">holes</span><span class="p">):</span>
             <span class="c1"># plot the holes</span>
@@ -744,6 +753,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
@@ -813,6 +824,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
@@ -874,6 +887,8 @@
             <span class="c1"># if we are at the last point, complete the ellipse</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
@@ -946,6 +961,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
@@ -1032,6 +1049,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">+</span> <span class="n">n_outer</span><span class="p">,</span> <span class="n">n_outer</span><span class="p">])</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
@@ -1117,6 +1136,8 @@
             <span class="c1"># if we are at the last point, complete the loop</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
@@ -1212,6 +1233,8 @@
             <span class="c1"># if we are at the last point, complete the loop</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
@@ -1425,6 +1448,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
@@ -1498,6 +1523,8 @@
             <span class="c1"># if we are at the last point, complete the loop</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
@@ -1647,6 +1674,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
@@ -1721,6 +1750,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
@@ -1793,6 +1824,8 @@
             <span class="c1"># if we are at the last point, complete the loop</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
@@ -1892,6 +1925,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
@@ -1990,6 +2025,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
@@ -2074,6 +2111,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
 
@@ -2122,8 +2161,7 @@
         <span class="sd">&quot;&quot;&quot;Inits the PolygonSection class.&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">n_sides</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;n_sides required to be greater&#39;</span>
-            <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39; than 3 for PolygonSection class&#39;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;n_sides required to be greater than 3 for PolygonSection class&#39;</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># initial rotation</span>
@@ -2213,6 +2251,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span>
 
@@ -2314,6 +2354,7 @@
 
         <span class="c1"># build facet list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shift_section</span><span class="p">()</span></div>
 
@@ -2388,7 +2429,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Robbie van Leeuwen
+        &copy; Copyright 2020, Robbie van Leeuwen
 
     </p>
   </div>

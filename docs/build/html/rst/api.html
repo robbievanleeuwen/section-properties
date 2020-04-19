@@ -125,6 +125,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#pre-functions">pre Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#offset-module"><em>offset</em> Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nastran-sections-module"><em>nastran_sections</em> Module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#barsection-class">BARSection Class</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#boxsection-class">BOXSection Class</a></li>
@@ -487,7 +488,7 @@ mirrors the geometry about the first control point in the list of control points
 
 <dl class="py method">
 <dt id="sectionproperties.pre.sections.Geometry.plot_geometry">
-<code class="sig-name descname">plot_geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pause</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.plot_geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.plot_geometry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">plot_geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pause</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">perimeter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/sections.html#Geometry.plot_geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.sections.Geometry.plot_geometry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots the geometry defined by the input section. If no axes object is supplied a new
 figure and axis is created.</p>
 <dl class="field-list simple">
@@ -497,6 +498,7 @@ figure and axis is created.</p>
 <li><p><strong>pause</strong> (<em>bool</em>) – If set to true, the figure pauses the script until the window is closed.
 If set to false, the script continues immediately after the window is rendered.</p></li>
 <li><p><strong>labels</strong> (<em>bool</em>) – If set to true, node and facet labels are displayed</p></li>
+<li><p><strong>perimeter</strong> (<em>bool</em>) – If set to true, boldens the perimeter of the cross-section</p></li>
 </ul>
 </dd>
 </dl>
@@ -1728,6 +1730,67 @@ cross-section. A control point is an arbitrary point within a region enclosed by
 
 </div>
 </div>
+<div class="section" id="offset-module">
+<h3><em>offset</em> Module<a class="headerlink" href="#offset-module" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="sectionproperties.pre.offset.offset_perimeter">
+<code class="sig-prename descclassname">sectionproperties.pre.offset.</code><code class="sig-name descname">offset_perimeter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">geometry</span></em>, <em class="sig-param"><span class="n">offset</span></em>, <em class="sig-param"><span class="n">side</span><span class="o">=</span><span class="default_value">'left'</span></em>, <em class="sig-param"><span class="n">plot_offset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sectionproperties/pre/offset.html#offset_perimeter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sectionproperties.pre.offset.offset_perimeter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Offsets the perimeter of a geometry of a <a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>
+object by a certain distance. Note that the perimeter facet list must be entered in a
+consecutive order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geometry</strong> (<a class="reference internal" href="#sectionproperties.pre.sections.Geometry" title="sectionproperties.pre.sections.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a>) – Cross-section geometry object</p></li>
+<li><p><strong>offset</strong> (<em>float</em>) – Offset distance for the perimeter</p></li>
+<li><p><strong>side</strong> (<em>string</em>) – Side of the perimeter offset, either ‘left’ or ‘right’. E.g. ‘left’ for a
+counter-clockwise offsets the perimeter inwards.</p></li>
+<li><p><strong>plot_offset</strong> (<em>bool</em>) – If set to True, generates a plot comparing the old and new geometry</p></li>
+</ul>
+</dd>
+</dl>
+<p>The following example ‘corrodes’ a 200UB25 I-section by 1.5 mm and compares a few of the
+section properties:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sectionproperties.pre.sections</span> <span class="k">as</span> <span class="nn">sections</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.pre.offset</span> <span class="kn">import</span> <span class="n">offset_perimeter</span>
+<span class="kn">from</span> <span class="nn">sectionproperties.analysis.cross_section</span> <span class="kn">import</span> <span class="n">CrossSection</span>
+
+<span class="c1"># calculate original section properties</span>
+<span class="n">original_geometry</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">ISection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">203</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">133</span><span class="p">,</span> <span class="n">t_f</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span> <span class="n">t_w</span><span class="o">=</span><span class="mf">5.8</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">8.9</span><span class="p">,</span> <span class="n">n_r</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">original_mesh</span> <span class="o">=</span> <span class="n">original_geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
+<span class="n">original_section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">original_geometry</span><span class="p">,</span> <span class="n">original_mesh</span><span class="p">)</span>
+<span class="n">original_section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">original_area</span> <span class="o">=</span> <span class="n">original_section</span><span class="o">.</span><span class="n">get_area</span><span class="p">()</span>
+<span class="p">(</span><span class="n">original_ixx</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">original_section</span><span class="o">.</span><span class="n">get_ic</span><span class="p">()</span>
+
+<span class="c1"># calculate corroded section properties</span>
+<span class="n">corroded_geometry</span> <span class="o">=</span> <span class="n">offset_perimeter</span><span class="p">(</span><span class="n">original_geometry</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">plot_offset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">corroded_mesh</span> <span class="o">=</span> <span class="n">corroded_geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
+<span class="n">corroded_section</span> <span class="o">=</span> <span class="n">CrossSection</span><span class="p">(</span><span class="n">corroded_geometry</span><span class="p">,</span> <span class="n">corroded_mesh</span><span class="p">)</span>
+<span class="n">corroded_section</span><span class="o">.</span><span class="n">calculate_geometric_properties</span><span class="p">()</span>
+<span class="n">corroded_area</span> <span class="o">=</span> <span class="n">corroded_section</span><span class="o">.</span><span class="n">get_area</span><span class="p">()</span>
+<span class="p">(</span><span class="n">corroded_ixx</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">corroded_section</span><span class="o">.</span><span class="n">get_ic</span><span class="p">()</span>
+
+<span class="c1"># compare section properties</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Area reduction = </span><span class="si">{0:.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">original_area</span> <span class="o">-</span> <span class="n">corroded_area</span><span class="p">)</span> <span class="o">/</span> <span class="n">original_area</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ixx reduction = </span><span class="si">{0:.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="mi">100</span> <span class="o">*</span><span class="p">(</span><span class="n">original_ixx</span> <span class="o">-</span> <span class="n">corroded_ixx</span><span class="p">)</span> <span class="o">/</span> <span class="n">original_ixx</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The following plot is generated by the above example:</p>
+<div class="figure align-center" id="id129">
+<a class="reference internal image-reference" href="../_images/offset_example.png"><img alt="../_images/offset_example.png" src="../_images/offset_example.png" style="width: 489.75px; height: 534.75px;" /></a>
+<p class="caption"><span class="caption-text">200UB25 with 1.5 mm corrosion.</span><a class="headerlink" href="#id129" title="Permalink to this image">¶</a></p>
+</div>
+<p>The following is printed to the terminal:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Area reduction = 41.97%
+Ixx reduction = 39.20%
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
 <div class="section" id="nastran-sections-module">
 <h3><em>nastran_sections</em> Module<a class="headerlink" href="#nastran-sections-module" title="Permalink to this headline">¶</a></h3>
 <p>This module contains cross-sections as defined by Nastran and Nastran-based programs,
@@ -1758,13 +1821,13 @@ generates a mesh with a maximum triangular area of 0.001:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.001</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id129">
-<a class="reference internal image-reference" href="../_images/bar_geometry.png"><img alt="../_images/bar_geometry.png" src="../_images/bar_geometry.png" style="width: 468.75px; height: 270.0px;" /></a>
-<p class="caption"><span class="caption-text">BAR section geometry.</span><a class="headerlink" href="#id129" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id130">
+<a class="reference internal image-reference" href="../_images/bar_geometry.png"><img alt="../_images/bar_geometry.png" src="../_images/bar_geometry.png" style="width: 468.75px; height: 270.0px;" /></a>
+<p class="caption"><span class="caption-text">BAR section geometry.</span><a class="headerlink" href="#id130" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id131">
 <a class="reference internal image-reference" href="../_images/bar_mesh.png"><img alt="../_images/bar_mesh.png" src="../_images/bar_mesh.png" style="width: 447.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id130" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id131" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.BARSection.getStressPoints">
@@ -1813,13 +1876,13 @@ generates a mesh with a maximum triangular area of 0.001:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.001</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id131">
-<a class="reference internal image-reference" href="../_images/box_geometry.png"><img alt="../_images/box_geometry.png" src="../_images/box_geometry.png" style="width: 468.75px; height: 270.0px;" /></a>
-<p class="caption"><span class="caption-text">BOX section geometry.</span><a class="headerlink" href="#id131" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id132">
+<a class="reference internal image-reference" href="../_images/box_geometry.png"><img alt="../_images/box_geometry.png" src="../_images/box_geometry.png" style="width: 468.75px; height: 270.0px;" /></a>
+<p class="caption"><span class="caption-text">BOX section geometry.</span><a class="headerlink" href="#id132" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id133">
 <a class="reference internal image-reference" href="../_images/box_mesh.png"><img alt="../_images/box_mesh.png" src="../_images/box_mesh.png" style="width: 447.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id132" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id133" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.BOXSection.getStressPoints">
@@ -1872,13 +1935,13 @@ generates a mesh with a maximum triangular area of 0.007:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.007</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id133">
-<a class="reference internal image-reference" href="../_images/box1_geometry.png"><img alt="../_images/box1_geometry.png" src="../_images/box1_geometry.png" style="width: 468.75px; height: 270.0px;" /></a>
-<p class="caption"><span class="caption-text">BOX1 section geometry.</span><a class="headerlink" href="#id133" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id134">
+<a class="reference internal image-reference" href="../_images/box1_geometry.png"><img alt="../_images/box1_geometry.png" src="../_images/box1_geometry.png" style="width: 468.75px; height: 270.0px;" /></a>
+<p class="caption"><span class="caption-text">BOX1 section geometry.</span><a class="headerlink" href="#id134" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id135">
 <a class="reference internal image-reference" href="../_images/box1_mesh.png"><img alt="../_images/box1_mesh.png" src="../_images/box1_mesh.png" style="width: 447.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id134" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id135" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.BOX1Section.getStressPoints">
@@ -1927,13 +1990,13 @@ generates a mesh with a maximum triangular area of 0.008:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.008</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id135">
-<a class="reference internal image-reference" href="../_images/chan_geometry.png"><img alt="../_images/chan_geometry.png" src="../_images/chan_geometry.png" style="width: 316.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">CHAN section geometry.</span><a class="headerlink" href="#id135" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id136">
+<a class="reference internal image-reference" href="../_images/chan_geometry.png"><img alt="../_images/chan_geometry.png" src="../_images/chan_geometry.png" style="width: 316.5px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">CHAN section geometry.</span><a class="headerlink" href="#id136" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id137">
 <a class="reference internal image-reference" href="../_images/chan_mesh.png"><img alt="../_images/chan_mesh.png" src="../_images/chan_mesh.png" style="width: 193.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id136" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id137" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.CHANSection.getStressPoints">
@@ -1982,13 +2045,13 @@ generates a mesh with a maximum triangular area of 0.01:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id137">
-<a class="reference internal image-reference" href="../_images/chan1_geometry.png"><img alt="../_images/chan1_geometry.png" src="../_images/chan1_geometry.png" style="width: 297.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">CHAN1 section geometry.</span><a class="headerlink" href="#id137" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id138">
+<a class="reference internal image-reference" href="../_images/chan1_geometry.png"><img alt="../_images/chan1_geometry.png" src="../_images/chan1_geometry.png" style="width: 297.75px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">CHAN1 section geometry.</span><a class="headerlink" href="#id138" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id139">
 <a class="reference internal image-reference" href="../_images/chan1_mesh.png"><img alt="../_images/chan1_mesh.png" src="../_images/chan1_mesh.png" style="width: 174.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id138" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id139" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.CHAN1Section.getStressPoints">
@@ -2037,13 +2100,13 @@ generates a mesh with a maximum triangular area of 0.01:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id139">
-<a class="reference internal image-reference" href="../_images/chan2_geometry.png"><img alt="../_images/chan2_geometry.png" src="../_images/chan2_geometry.png" style="width: 466.5px; height: 197.25px;" /></a>
-<p class="caption"><span class="caption-text">CHAN2 section geometry.</span><a class="headerlink" href="#id139" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id140">
+<a class="reference internal image-reference" href="../_images/chan2_geometry.png"><img alt="../_images/chan2_geometry.png" src="../_images/chan2_geometry.png" style="width: 466.5px; height: 197.25px;" /></a>
+<p class="caption"><span class="caption-text">CHAN2 section geometry.</span><a class="headerlink" href="#id140" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id141">
 <a class="reference internal image-reference" href="../_images/chan2_mesh.png"><img alt="../_images/chan2_mesh.png" src="../_images/chan2_mesh.png" style="width: 481.5px; height: 258.75px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id140" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id141" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.CHAN2Section.getStressPoints">
@@ -2093,13 +2156,13 @@ member</p></li>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.008</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id141">
-<a class="reference internal image-reference" href="../_images/cross_geometry.png"><img alt="../_images/cross_geometry.png" src="../_images/cross_geometry.png" style="width: 354.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Cruciform/cross section geometry.</span><a class="headerlink" href="#id141" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id142">
+<a class="reference internal image-reference" href="../_images/cross_geometry.png"><img alt="../_images/cross_geometry.png" src="../_images/cross_geometry.png" style="width: 354.75px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">Cruciform/cross section geometry.</span><a class="headerlink" href="#id142" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id143">
 <a class="reference internal image-reference" href="../_images/cross_mesh.png"><img alt="../_images/cross_mesh.png" src="../_images/cross_mesh.png" style="width: 237.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id142" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id143" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.CROSSSection.getStressPoints">
@@ -2156,13 +2219,13 @@ generates a mesh with a maximum triangular area of 0.01:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id143">
-<a class="reference internal image-reference" href="../_images/dbox_geometry.png"><img alt="../_images/dbox_geometry.png" src="../_images/dbox_geometry.png" style="width: 466.5px; height: 159.0px;" /></a>
-<p class="caption"><span class="caption-text">DBOX section geometry.</span><a class="headerlink" href="#id143" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id144">
+<a class="reference internal image-reference" href="../_images/dbox_geometry.png"><img alt="../_images/dbox_geometry.png" src="../_images/dbox_geometry.png" style="width: 466.5px; height: 159.0px;" /></a>
+<p class="caption"><span class="caption-text">DBOX section geometry.</span><a class="headerlink" href="#id144" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id145">
 <a class="reference internal image-reference" href="../_images/dbox_mesh.png"><img alt="../_images/dbox_mesh.png" src="../_images/dbox_mesh.png" style="width: 476.25px; height: 204.75px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id144" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id145" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.DBOXSection.getStressPoints">
@@ -2215,13 +2278,13 @@ origin <em>(0, 0)</em>, with eight parameters defining dimensions. Added by John
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.03</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id145">
-<a class="reference internal image-reference" href="../_images/fcross_geometry.png"><img alt="../_images/fcross_geometry.png" src="../_images/fcross_geometry.png" style="width: 357.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Flanged Cruciform/cross section geometry.</span><a class="headerlink" href="#id145" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id146">
+<a class="reference internal image-reference" href="../_images/fcross_geometry.png"><img alt="../_images/fcross_geometry.png" src="../_images/fcross_geometry.png" style="width: 357.75px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">Flanged Cruciform/cross section geometry.</span><a class="headerlink" href="#id146" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id147">
 <a class="reference internal image-reference" href="../_images/fcross_mesh.png"><img alt="../_images/fcross_mesh.png" src="../_images/fcross_mesh.png" style="width: 234.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id146" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id147" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.FCROSSSection.getStressPoints">
@@ -2273,13 +2336,13 @@ generates a mesh with a maximum triangular area of 0.01:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id147">
-<a class="reference internal image-reference" href="../_images/gbox_geometry.png"><img alt="../_images/gbox_geometry.png" src="../_images/gbox_geometry.png" style="width: 466.5px; height: 168.0px;" /></a>
-<p class="caption"><span class="caption-text">GBOX section geometry.</span><a class="headerlink" href="#id147" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id148">
+<a class="reference internal image-reference" href="../_images/gbox_geometry.png"><img alt="../_images/gbox_geometry.png" src="../_images/gbox_geometry.png" style="width: 466.5px; height: 168.0px;" /></a>
+<p class="caption"><span class="caption-text">GBOX section geometry.</span><a class="headerlink" href="#id148" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id149">
 <a class="reference internal image-reference" href="../_images/gbox_mesh.png"><img alt="../_images/gbox_mesh.png" src="../_images/gbox_mesh.png" style="width: 466.5px; height: 219.0px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id148" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id149" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.GBOXSection.getStressPoints">
@@ -2328,13 +2391,13 @@ generates a mesh with a maximum triangular area of 0.005:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id149">
-<a class="reference internal image-reference" href="../_images/h_geometry.png"><img alt="../_images/h_geometry.png" src="../_images/h_geometry.png" style="width: 403.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">H section geometry.</span><a class="headerlink" href="#id149" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id150">
+<a class="reference internal image-reference" href="../_images/h_geometry.png"><img alt="../_images/h_geometry.png" src="../_images/h_geometry.png" style="width: 403.5px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">H section geometry.</span><a class="headerlink" href="#id150" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id151">
 <a class="reference internal image-reference" href="../_images/h_mesh.png"><img alt="../_images/h_mesh.png" src="../_images/h_mesh.png" style="width: 288.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id150" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id151" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.HSection.getStressPoints">
@@ -2383,13 +2446,13 @@ generates a mesh with a maximum triangular area of 0.001:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.001</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id151">
-<a class="reference internal image-reference" href="../_images/hat_geometry.png"><img alt="../_images/hat_geometry.png" src="../_images/hat_geometry.png" style="width: 466.5px; height: 192.75px;" /></a>
-<p class="caption"><span class="caption-text">HAT section geometry.</span><a class="headerlink" href="#id151" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id152">
+<a class="reference internal image-reference" href="../_images/hat_geometry.png"><img alt="../_images/hat_geometry.png" src="../_images/hat_geometry.png" style="width: 466.5px; height: 192.75px;" /></a>
+<p class="caption"><span class="caption-text">HAT section geometry.</span><a class="headerlink" href="#id152" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id153">
 <a class="reference internal image-reference" href="../_images/hat_mesh.png"><img alt="../_images/hat_mesh.png" src="../_images/hat_mesh.png" style="width: 466.5px; height: 254.25px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id152" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id153" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.HATSection.getStressPoints">
@@ -2439,13 +2502,13 @@ generates a mesh with a maximum triangular area of 0.005:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id153">
-<a class="reference internal image-reference" href="../_images/hat1_geometry.png"><img alt="../_images/hat1_geometry.png" src="../_images/hat1_geometry.png" style="width: 466.5px; height: 197.25px;" /></a>
-<p class="caption"><span class="caption-text">HAT1 section geometry.</span><a class="headerlink" href="#id153" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id154">
+<a class="reference internal image-reference" href="../_images/hat1_geometry.png"><img alt="../_images/hat1_geometry.png" src="../_images/hat1_geometry.png" style="width: 466.5px; height: 197.25px;" /></a>
+<p class="caption"><span class="caption-text">HAT1 section geometry.</span><a class="headerlink" href="#id154" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id155">
 <a class="reference internal image-reference" href="../_images/hat1_mesh.png"><img alt="../_images/hat1_mesh.png" src="../_images/hat1_mesh.png" style="width: 473.25px; height: 258.75px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id154" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id155" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.HAT1Section.create_mesh">
@@ -2515,13 +2578,13 @@ and generates a mesh with a maximum triangular area of 0.005:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id155">
-<a class="reference internal image-reference" href="../_images/hexa_geometry.png"><img alt="../_images/hexa_geometry.png" src="../_images/hexa_geometry.png" style="width: 468.75px; height: 270.0px;" /></a>
-<p class="caption"><span class="caption-text">HEXA section geometry.</span><a class="headerlink" href="#id155" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id156">
+<a class="reference internal image-reference" href="../_images/hexa_geometry.png"><img alt="../_images/hexa_geometry.png" src="../_images/hexa_geometry.png" style="width: 468.75px; height: 270.0px;" /></a>
+<p class="caption"><span class="caption-text">HEXA section geometry.</span><a class="headerlink" href="#id156" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id157">
 <a class="reference internal image-reference" href="../_images/hexa_mesh.png"><img alt="../_images/hexa_mesh.png" src="../_images/hexa_mesh.png" style="width: 447.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id156" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id157" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.HEXASection.getStressPoints">
@@ -2574,13 +2637,13 @@ mesh with a maximum triangular area of 0.008:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.008</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id157">
-<a class="reference internal image-reference" href="../_images/ni_geometry.png"><img alt="../_images/ni_geometry.png" src="../_images/ni_geometry.png" style="width: 337.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Nastran’s I section geometry.</span><a class="headerlink" href="#id157" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id158">
+<a class="reference internal image-reference" href="../_images/ni_geometry.png"><img alt="../_images/ni_geometry.png" src="../_images/ni_geometry.png" style="width: 337.5px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">Nastran’s I section geometry.</span><a class="headerlink" href="#id158" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id159">
 <a class="reference internal image-reference" href="../_images/ni_mesh.png"><img alt="../_images/ni_mesh.png" src="../_images/ni_mesh.png" style="width: 214.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id158" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id159" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.NISection.getStressPoints">
@@ -2630,13 +2693,13 @@ Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.02</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id159">
-<a class="reference internal image-reference" href="../_images/i1_geometry.png"><img alt="../_images/i1_geometry.png" src="../_images/i1_geometry.png" style="width: 261.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">I1 section geometry.</span><a class="headerlink" href="#id159" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id160">
+<a class="reference internal image-reference" href="../_images/i1_geometry.png"><img alt="../_images/i1_geometry.png" src="../_images/i1_geometry.png" style="width: 261.0px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">I1 section geometry.</span><a class="headerlink" href="#id160" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id161">
 <a class="reference internal image-reference" href="../_images/i1_mesh.png"><img alt="../_images/i1_mesh.png" src="../_images/i1_mesh.png" style="width: 148.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id160" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id161" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.I1Section.getStressPoints">
@@ -2685,13 +2748,13 @@ generates a mesh with a maximum triangular area of 0.01:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id161">
-<a class="reference internal image-reference" href="../_images/l_geometry.png"><img alt="../_images/l_geometry.png" src="../_images/l_geometry.png" style="width: 298.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">L section geometry.</span><a class="headerlink" href="#id161" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id162">
+<a class="reference internal image-reference" href="../_images/l_geometry.png"><img alt="../_images/l_geometry.png" src="../_images/l_geometry.png" style="width: 298.5px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">L section geometry.</span><a class="headerlink" href="#id162" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id163">
 <a class="reference internal image-reference" href="../_images/l_mesh.png"><img alt="../_images/l_mesh.png" src="../_images/l_mesh.png" style="width: 175.5px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id162" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id163" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.LSection.getStressPoints">
@@ -2738,13 +2801,13 @@ the boundary, and generates a mesh with a maximum triangular area of 0.01:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id163">
-<a class="reference internal image-reference" href="../_images/rod_geometry.png"><img alt="../_images/rod_geometry.png" src="../_images/rod_geometry.png" style="width: 459.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Rod section geometry.</span><a class="headerlink" href="#id163" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id164">
+<a class="reference internal image-reference" href="../_images/rod_geometry.png"><img alt="../_images/rod_geometry.png" src="../_images/rod_geometry.png" style="width: 459.75px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">Rod section geometry.</span><a class="headerlink" href="#id164" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id165">
 <a class="reference internal image-reference" href="../_images/rod_mesh.png"><img alt="../_images/rod_mesh.png" src="../_images/rod_mesh.png" style="width: 336.75px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id164" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id165" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.RODSection.getStressPoints">
@@ -2796,13 +2859,13 @@ generates a mesh with a maximum triangular area of 0.001:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.001</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id165">
-<a class="reference internal image-reference" href="../_images/t_geometry.png"><img alt="../_images/t_geometry.png" src="../_images/t_geometry.png" style="width: 393.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">T section geometry.</span><a class="headerlink" href="#id165" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id166">
+<a class="reference internal image-reference" href="../_images/t_geometry.png"><img alt="../_images/t_geometry.png" src="../_images/t_geometry.png" style="width: 393.0px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">T section geometry.</span><a class="headerlink" href="#id166" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id167">
 <a class="reference internal image-reference" href="../_images/t_mesh.png"><img alt="../_images/t_mesh.png" src="../_images/t_mesh.png" style="width: 270.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id166" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id167" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.TSection.getStressPoints">
@@ -2851,13 +2914,13 @@ generates a mesh with a maximum triangular area of 0.001:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.001</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id167">
-<a class="reference internal image-reference" href="../_images/t1_geometry.png"><img alt="../_images/t1_geometry.png" src="../_images/t1_geometry.png" style="width: 480.75px; height: 286.5px;" /></a>
-<p class="caption"><span class="caption-text">T1 section geometry.</span><a class="headerlink" href="#id167" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id168">
+<a class="reference internal image-reference" href="../_images/t1_geometry.png"><img alt="../_images/t1_geometry.png" src="../_images/t1_geometry.png" style="width: 480.75px; height: 286.5px;" /></a>
+<p class="caption"><span class="caption-text">T1 section geometry.</span><a class="headerlink" href="#id168" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id169">
 <a class="reference internal image-reference" href="../_images/t1_mesh.png"><img alt="../_images/t1_mesh.png" src="../_images/t1_mesh.png" style="width: 435.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id168" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id169" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.T1Section.getStressPoints">
@@ -2906,13 +2969,13 @@ generates a mesh with a maximum triangular area of 0.005:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id169">
-<a class="reference internal image-reference" href="../_images/t2_geometry.png"><img alt="../_images/t2_geometry.png" src="../_images/t2_geometry.png" style="width: 384.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">T2 section geometry.</span><a class="headerlink" href="#id169" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id170">
+<a class="reference internal image-reference" href="../_images/t2_geometry.png"><img alt="../_images/t2_geometry.png" src="../_images/t2_geometry.png" style="width: 384.0px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">T2 section geometry.</span><a class="headerlink" href="#id170" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id171">
 <a class="reference internal image-reference" href="../_images/t2_mesh.png"><img alt="../_images/t2_mesh.png" src="../_images/t2_mesh.png" style="width: 261.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id170" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id171" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.T2Section.getStressPoints">
@@ -2961,13 +3024,13 @@ maximum triangular area of 0.01:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id171">
-<a class="reference internal image-reference" href="../_images/tube_geometry.png"><img alt="../_images/tube_geometry.png" src="../_images/tube_geometry.png" style="width: 459.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">TUBE section geometry.</span><a class="headerlink" href="#id171" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id172">
+<a class="reference internal image-reference" href="../_images/tube_geometry.png"><img alt="../_images/tube_geometry.png" src="../_images/tube_geometry.png" style="width: 459.0px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">TUBE section geometry.</span><a class="headerlink" href="#id172" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id173">
 <a class="reference internal image-reference" href="../_images/tube_mesh.png"><img alt="../_images/tube_mesh.png" src="../_images/tube_mesh.png" style="width: 336.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id172" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id173" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.TUBESection.getStressPoints">
@@ -3016,13 +3079,13 @@ maximum triangular area of 0.01:</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id173">
-<a class="reference internal image-reference" href="../_images/tube2_geometry.png"><img alt="../_images/tube2_geometry.png" src="../_images/tube2_geometry.png" style="width: 459.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">TUBE2 section geometry.</span><a class="headerlink" href="#id173" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id174">
+<a class="reference internal image-reference" href="../_images/tube2_geometry.png"><img alt="../_images/tube2_geometry.png" src="../_images/tube2_geometry.png" style="width: 459.0px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">TUBE2 section geometry.</span><a class="headerlink" href="#id174" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id175">
 <a class="reference internal image-reference" href="../_images/tube2_mesh.png"><img alt="../_images/tube2_mesh.png" src="../_images/tube2_mesh.png" style="width: 336.0px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id174" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id175" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.TUBE2Section.getStressPoints">
@@ -3071,13 +3134,13 @@ Added by JohnDN90.</p>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id175">
-<a class="reference internal image-reference" href="../_images/z_geometry.png"><img alt="../_images/z_geometry.png" src="../_images/z_geometry.png" style="width: 374.25px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Z section geometry.</span><a class="headerlink" href="#id175" title="Permalink to this image">¶</a></p>
-</div>
 <div class="figure align-center" id="id176">
+<a class="reference internal image-reference" href="../_images/z_geometry.png"><img alt="../_images/z_geometry.png" src="../_images/z_geometry.png" style="width: 374.25px; height: 346.5px;" /></a>
+<p class="caption"><span class="caption-text">Z section geometry.</span><a class="headerlink" href="#id176" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id177">
 <a class="reference internal image-reference" href="../_images/z_mesh.png"><img alt="../_images/z_mesh.png" src="../_images/z_mesh.png" style="width: 251.25px; height: 346.5px;" /></a>
-<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id176" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Mesh generated from the above geometry.</span><a class="headerlink" href="#id177" title="Permalink to this image">¶</a></p>
 </div>
 <dl class="py method">
 <dt id="sectionproperties.pre.nastran_sections.ZSection.getStressPoints">
@@ -4045,9 +4108,9 @@ the centroids:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id177">
+<div class="figure align-center" id="id178">
 <a class="reference internal image-reference" href="../_images/pfc_centroids.png"><img alt="../_images/pfc_centroids.png" src="../_images/pfc_centroids.png" style="width: 435.0px; height: 492.0px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span><a class="headerlink" href="#id177" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span><a class="headerlink" href="#id178" title="Permalink to this image">¶</a></p>
 </div>
 <p>The following example analyses a 150x90x12 UA section and displays a plot of the
 centroids:</p>
@@ -4065,9 +4128,9 @@ centroids:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_centroids</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id178">
+<div class="figure align-center" id="id179">
 <a class="reference internal image-reference" href="../_images/angle_centroids.png"><img alt="../_images/angle_centroids.png" src="../_images/angle_centroids.png" style="width: 428.25px; height: 396.75px;" /></a>
-<p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span><a class="headerlink" href="#id178" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Plot of the centroids generated by the above example.</span><a class="headerlink" href="#id179" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4117,9 +4180,9 @@ definition:</p>
 <span class="n">section</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">materials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id179">
+<div class="figure align-center" id="id180">
 <a class="reference internal image-reference" href="../_images/composite_mesh.png"><img alt="../_images/composite_mesh.png" src="../_images/composite_mesh.png" style="width: 673.5px; height: 324.75px;" /></a>
-<p class="caption"><span class="caption-text">Finite element mesh generated by the above example.</span><a class="headerlink" href="#id179" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Finite element mesh generated by the above example.</span><a class="headerlink" href="#id180" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4572,9 +4635,9 @@ a bending moment about the 11-axis of 5 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m11_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id180">
+<div class="figure align-center" id="id181">
 <a class="reference internal image-reference" href="../_images/stress_m11_zz.png"><img alt="../_images/stress_m11_zz.png" src="../_images/stress_m11_zz.png" style="width: 527.25px; height: 477.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id180" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id181" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4605,9 +4668,9 @@ a bending moment about the 22-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m22_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id181">
+<div class="figure align-center" id="id182">
 <a class="reference internal image-reference" href="../_images/stress_m22_zz.png"><img alt="../_images/stress_m22_zz.png" src="../_images/stress_m22_zz.png" style="width: 506.25px; height: 424.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id181" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id182" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4639,9 +4702,9 @@ and a bending moment of 3 kN.m about the 11-axis:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_m_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id182">
+<div class="figure align-center" id="id183">
 <a class="reference internal image-reference" href="../_images/stress_m_zz.png"><img alt="../_images/stress_m_zz.png" src="../_images/stress_m_zz.png" style="width: 482.25px; height: 444.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id182" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id183" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4672,9 +4735,9 @@ a bending moment about the x-axis of 5 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mxx_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id183">
+<div class="figure align-center" id="id184">
 <a class="reference internal image-reference" href="../_images/stress_mxx_zz.png"><img alt="../_images/stress_mxx_zz.png" src="../_images/stress_mxx_zz.png" style="width: 503.25px; height: 452.25px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id183" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id184" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4705,9 +4768,9 @@ a bending moment about the y-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_myy_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id184">
+<div class="figure align-center" id="id185">
 <a class="reference internal image-reference" href="../_images/stress_myy_zz.png"><img alt="../_images/stress_myy_zz.png" src="../_images/stress_myy_zz.png" style="width: 537.0px; height: 471.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id184" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the bending stress.</span><a class="headerlink" href="#id185" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4738,9 +4801,9 @@ section resulting from a torsion moment of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id185">
+<div class="figure align-center" id="id186">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zx.png"><img alt="../_images/stress_mzz_zx.png" src="../_images/stress_mzz_zx.png" style="width: 440.25px; height: 378.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id185" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id186" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4771,9 +4834,9 @@ section resulting from a torsion moment of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id186">
+<div class="figure align-center" id="id187">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zxy.png"><img alt="../_images/stress_mzz_zxy.png" src="../_images/stress_mzz_zxy.png" style="width: 470.25px; height: 396.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id186" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id187" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4804,9 +4867,9 @@ section resulting from a torsion moment of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_mzz_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id187">
+<div class="figure align-center" id="id188">
 <a class="reference internal image-reference" href="../_images/stress_mzz_zy.png"><img alt="../_images/stress_mzz_zy.png" src="../_images/stress_mzz_zy.png" style="width: 449.25px; height: 383.25px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id187" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id188" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4837,9 +4900,9 @@ an axial force of 10 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_n_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id188">
+<div class="figure align-center" id="id189">
 <a class="reference internal image-reference" href="../_images/stress_n_zz.png"><img alt="../_images/stress_n_zz.png" src="../_images/stress_n_zz.png" style="width: 450.75px; height: 402.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the axial stress.</span><a class="headerlink" href="#id188" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the axial stress.</span><a class="headerlink" href="#id189" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4872,9 +4935,9 @@ y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id189">
+<div class="figure align-center" id="id190">
 <a class="reference internal image-reference" href="../_images/stress_v_zx.png"><img alt="../_images/stress_v_zx.png" src="../_images/stress_v_zx.png" style="width: 474.75px; height: 425.25px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id189" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id190" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4907,9 +4970,9 @@ y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id190">
+<div class="figure align-center" id="id191">
 <a class="reference internal image-reference" href="../_images/stress_v_zxy.png"><img alt="../_images/stress_v_zxy.png" src="../_images/stress_v_zxy.png" style="width: 448.5px; height: 406.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id190" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id191" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -4942,9 +5005,9 @@ y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_v_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id191">
+<div class="figure align-center" id="id192">
 <a class="reference internal image-reference" href="../_images/stress_v_zy.png"><img alt="../_images/stress_v_zy.png" src="../_images/stress_v_zy.png" style="width: 451.5px; height: 408.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id191" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id192" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5002,9 +5065,9 @@ resulting from the following actions:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vm</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id192">
+<div class="figure align-center" id="id193">
 <a class="reference internal image-reference" href="../_images/stress_vm.png"><img alt="../_images/stress_vm.png" src="../_images/stress_vm.png" style="width: 491.25px; height: 406.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the von Mises stress.</span><a class="headerlink" href="#id192" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the von Mises stress.</span><a class="headerlink" href="#id193" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5035,9 +5098,9 @@ section resulting from a shear force in the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id193">
+<div class="figure align-center" id="id194">
 <a class="reference internal image-reference" href="../_images/stress_vx_zx.png"><img alt="../_images/stress_vx_zx.png" src="../_images/stress_vx_zx.png" style="width: 453.0px; height: 387.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id193" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id194" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5068,9 +5131,9 @@ section resulting from a shear force in the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id194">
+<div class="figure align-center" id="id195">
 <a class="reference internal image-reference" href="../_images/stress_vx_zxy.png"><img alt="../_images/stress_vx_zxy.png" src="../_images/stress_vx_zxy.png" style="width: 440.25px; height: 369.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id194" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id195" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5101,9 +5164,9 @@ section resulting from a shear force in the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vx_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id195">
+<div class="figure align-center" id="id196">
 <a class="reference internal image-reference" href="../_images/stress_vx_zy.png"><img alt="../_images/stress_vx_zy.png" src="../_images/stress_vx_zy.png" style="width: 469.5px; height: 402.75px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id195" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id196" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5134,9 +5197,9 @@ section resulting from a shear force in the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id196">
+<div class="figure align-center" id="id197">
 <a class="reference internal image-reference" href="../_images/stress_vy_zx.png"><img alt="../_images/stress_vy_zx.png" src="../_images/stress_vy_zx.png" style="width: 462.0px; height: 397.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id196" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id197" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5167,9 +5230,9 @@ section resulting from a shear force in the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id197">
+<div class="figure align-center" id="id198">
 <a class="reference internal image-reference" href="../_images/stress_vy_zxy.png"><img alt="../_images/stress_vy_zxy.png" src="../_images/stress_vy_zxy.png" style="width: 466.5px; height: 424.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id197" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id198" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5200,9 +5263,9 @@ section resulting from a shear force in the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_vy_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id198">
+<div class="figure align-center" id="id199">
 <a class="reference internal image-reference" href="../_images/stress_vy_zy.png"><img alt="../_images/stress_vy_zy.png" src="../_images/stress_vy_zy.png" style="width: 439.5px; height: 398.25px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id198" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id199" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5234,9 +5297,9 @@ y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zx</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id199">
+<div class="figure align-center" id="id200">
 <a class="reference internal image-reference" href="../_images/stress_zx.png"><img alt="../_images/stress_zx.png" src="../_images/stress_zx.png" style="width: 459.0px; height: 414.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id199" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id200" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5268,9 +5331,9 @@ y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id200">
+<div class="figure align-center" id="id201">
 <a class="reference internal image-reference" href="../_images/stress_zxy.png"><img alt="../_images/stress_zxy.png" src="../_images/stress_zxy.png" style="width: 495.75px; height: 447.0px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id200" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id201" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5302,9 +5365,9 @@ y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id201">
+<div class="figure align-center" id="id202">
 <a class="reference internal image-reference" href="../_images/stress_zy.png"><img alt="../_images/stress_zy.png" src="../_images/stress_zy.png" style="width: 489.0px; height: 427.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id201" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the shear stress.</span><a class="headerlink" href="#id202" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5336,9 +5399,9 @@ about the y-axis of 2 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_stress_zz</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id202">
+<div class="figure align-center" id="id203">
 <a class="reference internal image-reference" href="../_images/stress_zz.png"><img alt="../_images/stress_zz.png" src="../_images/stress_zz.png" style="width: 432.75px; height: 403.5px;" /></a>
-<p class="caption"><span class="caption-text">Contour plot of the normal stress.</span><a class="headerlink" href="#id202" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Contour plot of the normal stress.</span><a class="headerlink" href="#id203" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5369,9 +5432,9 @@ section resulting from a torsion moment of 1 kN.m:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_mzz_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id203">
+<div class="figure align-center" id="id204">
 <a class="reference internal image-reference" href="../_images/vector_mzz_zxy.png"><img alt="../_images/vector_mzz_zxy.png" src="../_images/vector_mzz_zxy.png" style="width: 489.0px; height: 441.75px;" /></a>
-<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id203" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id204" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5404,9 +5467,9 @@ y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_v_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id204">
+<div class="figure align-center" id="id205">
 <a class="reference internal image-reference" href="../_images/vector_v_zxy.png"><img alt="../_images/vector_v_zxy.png" src="../_images/vector_v_zxy.png" style="width: 467.25px; height: 410.25px;" /></a>
-<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id204" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id205" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5437,9 +5500,9 @@ section resulting from a shear force in the x-direction of 15 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_vx_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id205">
+<div class="figure align-center" id="id206">
 <a class="reference internal image-reference" href="../_images/vector_vx_zxy.png"><img alt="../_images/vector_vx_zxy.png" src="../_images/vector_vx_zxy.png" style="width: 506.25px; height: 432.0px;" /></a>
-<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id205" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id206" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5470,9 +5533,9 @@ section resulting from a shear force in the y-direction of 30 kN:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_vy_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id206">
+<div class="figure align-center" id="id207">
 <a class="reference internal image-reference" href="../_images/vector_vy_zxy.png"><img alt="../_images/vector_vy_zxy.png" src="../_images/vector_vy_zxy.png" style="width: 434.25px; height: 408.0px;" /></a>
-<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id206" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id207" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -5504,9 +5567,9 @@ y-direction:</p>
 <span class="n">stress_post</span><span class="o">.</span><span class="n">plot_vector_zxy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="id207">
+<div class="figure align-center" id="id208">
 <a class="reference internal image-reference" href="../_images/vector_zxy.png"><img alt="../_images/vector_zxy.png" src="../_images/vector_zxy.png" style="width: 453.75px; height: 444.75px;" /></a>
-<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id207" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Vector plot of the shear stress.</span><a class="headerlink" href="#id208" title="Permalink to this image">¶</a></p>
 </div>
 </dd></dl>
 
@@ -6336,7 +6399,7 @@ set to false, the script continues immediately after the window is rendered.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Robbie van Leeuwen
+        &copy; Copyright 2020, Robbie van Leeuwen
 
     </p>
   </div>

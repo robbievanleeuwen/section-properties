@@ -44,6 +44,7 @@ $ pip install sectionproperties
 - [x] Custom section geometry input
 - [x] Common section geometry generators
 - [x] Multiple geometry merging
+- [x] Perimeter offset tool
 - [x] Geometry cleaning
 - [ ] JSON input file
 - [ ] .dxf import

@@ -14,10 +14,10 @@ def readme():
         return f.read()
 
 
-if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 5:
-    sys.exit('Sorry, Python < 3.5 is not supported')
+if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 6:
+    sys.exit('Sorry, Python < 3.6 is not supported')
 
-install_requires = ['numpy', 'scipy', 'matplotlib']
+install_requires = ['numpy', 'scipy', 'matplotlib', 'shapely']
 
 if not (sys.platform == 'win32' or sys.platform == 'cygwin'):
     install_requires.append('pybind11')

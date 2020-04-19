@@ -137,6 +137,13 @@ pre Functions
 
 ..  autofunction:: sectionproperties.pre.pre.create_mesh
 
+
+*offset* Module
+^^^^^^^^^^^^^^^
+
+..  autofunction:: sectionproperties.pre.offset.offset_perimeter
+
+
 *nastran_sections* Module
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 This module contains cross-sections as defined by Nastran and Nastran-based programs,
