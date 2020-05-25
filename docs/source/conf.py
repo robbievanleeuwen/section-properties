@@ -15,7 +15,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
-autodoc_mock_imports = ['pybind11', 'meshpy']
+autodoc_mock_imports = ['pybind11', 'meshpy', 'shapely']
 
 # -- Project information -----------------------------------------------------
 
