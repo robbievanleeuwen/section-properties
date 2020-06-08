@@ -13,3 +13,6 @@
 
 # Pycharm IDE file folder
 /.idea/
+
+# mac
+.DS_Store

@@ -1,6 +1,17 @@
 Change Log:
 ===========
 
+v1.0.6:
+-------
+
+- Fix bug with geometry cleaning algorithm resulting in an infinite loop
+- Added NASTRAN sections (JohnDN90)
+- Added tight_layout to plots (Nils Wagner)
+- Added BoxGirderSection class
+- Added cross-section perimeter calculation
+- Added perimeter offset method (BETA)
+- Added mesh refinement example to docs
+
 v1.0.5:
 -------
 
