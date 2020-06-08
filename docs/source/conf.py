@@ -24,9 +24,9 @@ copyright = '2020, Robbie van Leeuwen'
 author = 'Robbie van Leeuwen'
 
 # The short X.Y version
-version = '1.0.6'
+version = '1.0.7'
 # The full version, including alpha/beta/rc tags
-release = '1.0.6'
+release = '1.0.7'
 
 
 # -- General configuration ---------------------------------------------------
