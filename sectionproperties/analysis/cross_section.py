@@ -1177,6 +1177,8 @@ class CrossSection:
         # finish the plot
         post.finish_plot(ax, pause, title='Centroids')
 
+        return fig, ax
+
     def display_mesh_info(self):
         """Prints mesh statistics (number of nodes, elements and regions) to the command window.
 
