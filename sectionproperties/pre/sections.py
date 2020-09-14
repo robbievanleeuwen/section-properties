@@ -256,6 +256,9 @@ class Geometry:
         :param bool labels: If set to true, node and facet labels are displayed
         :param bool perimeter: If set to true, boldens the perimeter of the cross-section
 
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
+
         The following example creates a CHS discretised with 64 points, with a diameter of 48 and
         thickness of 3.2, and plots the geometry::
 
@@ -333,6 +336,8 @@ class Geometry:
         # if no axes object is supplied, finish the plot
         if not ax_supplied:
             post.finish_plot(ax, pause, title='Cross-Section Geometry')
+
+        return (fig, ax)
 
     def calculate_extents(self):
         """Calculates the minimum and maximum x and y-values amongst the list of points.
