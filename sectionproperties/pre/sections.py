@@ -336,8 +336,7 @@ class Geometry:
         # if no axes object is supplied, finish the plot
         if not ax_supplied:
             post.finish_plot(ax, pause, title='Cross-Section Geometry')
-
-        return (fig, ax)
+            return (fig, ax)
 
     def calculate_extents(self):
         """Calculates the minimum and maximum x and y-values amongst the list of points.

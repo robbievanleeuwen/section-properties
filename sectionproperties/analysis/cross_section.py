@@ -1084,8 +1084,7 @@ class CrossSection:
         # if no axes object is supplied, finish the plot
         if not ax_supplied:
             post.finish_plot(ax, pause, title='Finite Element Mesh')
-
-        return (fig, ax)
+            return (fig, ax)
 
     def plot_centroids(self, pause=True):
         """Plots the elastic centroid, the shear centre, the plastic centroids and the principal
