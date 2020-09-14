@@ -33,4 +33,4 @@ section.calculate_warping_properties()
 section.calculate_plastic_properties()
 
 # plot the centroids
-section.plot_centroids()
+fig, ax = section.plot_centroids()
