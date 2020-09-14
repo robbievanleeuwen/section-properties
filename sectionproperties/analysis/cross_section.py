@@ -1002,6 +1002,9 @@ class CrossSection:
         :param mask: Mask array, of length ``num_nodes``, to mask out triangles
         :type mask: list[bool]
 
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
+
         The following example plots the mesh generated for the second example
         listed under the :class:`~sectionproperties.analysis.cross_section.CrossSection` object
         definition::
@@ -1082,12 +1085,17 @@ class CrossSection:
         if not ax_supplied:
             post.finish_plot(ax, pause, title='Finite Element Mesh')
 
+        return (fig, ax)
+
     def plot_centroids(self, pause=True):
         """Plots the elastic centroid, the shear centre, the plastic centroids and the principal
         axis, if they have been calculated, on top of the finite element mesh.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example analyses a 200 PFC section and displays a plot of
         the centroids::
@@ -1179,7 +1187,7 @@ class CrossSection:
         # finish the plot
         post.finish_plot(ax, pause, title='Centroids')
 
-        return fig, ax
+        return (fig, ax)
 
     def display_mesh_info(self):
         """Prints mesh statistics (number of nodes, elements and regions) to the command window.
@@ -2424,6 +2432,9 @@ class StressPost:
         :param string title: Plot title
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
         """
 
         # create plot and setup the plot
@@ -2471,6 +2482,8 @@ class StressPost:
         # finish the plot
         post.finish_plot(ax, pause, title)
 
+        return (fig, ax)
+
     def plot_stress_vector(self, sigxs, sigys, title, pause):
         """Plots stress vectors over the finite element mesh.
 
@@ -2481,6 +2494,9 @@ class StressPost:
         :param string title: Plot title
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
         """
 
         # create plot and setup the plot
@@ -2532,6 +2548,8 @@ class StressPost:
 
         # finish the plot
         post.finish_plot(ax, pause, title=title)
+
+        return (fig, ax)
 
     def get_stress(self):
         """Returns the stresses within each material belonging to the current
@@ -2648,6 +2666,9 @@ class StressPost:
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
 
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
+
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         an axial force of 10 kN::
 
@@ -2677,7 +2698,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_n)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_mxx_zz(self, pause=True):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}` resulting from the
@@ -2685,6 +2706,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         a bending moment about the x-axis of 5 kN.m::
@@ -2715,7 +2739,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_mxx)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_myy_zz(self, pause=True):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}` resulting from the
@@ -2723,6 +2747,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         a bending moment about the y-axis of 2 kN.m::
@@ -2753,7 +2780,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_myy)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_m11_zz(self, pause=True):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}` resulting from the
@@ -2761,6 +2788,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         a bending moment about the 11-axis of 5 kN.m::
@@ -2791,7 +2821,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_m11)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_m22_zz(self, pause=True):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}` resulting from the
@@ -2799,6 +2829,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         a bending moment about the 22-axis of 2 kN.m::
@@ -2829,7 +2862,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_m22)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_m_zz(self, pause=True):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,\Sigma M}` resulting from
@@ -2837,6 +2870,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         a bending moment about the x-axis of 5 kN.m, a bending moment about the y-axis of 2 kN.m
@@ -2868,7 +2904,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_m)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_mzz_zx(self, pause=True):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Mzz}`
@@ -2876,6 +2912,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the x-component of the shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m::
@@ -2906,7 +2945,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zx_mzz)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_mzz_zy(self, pause=True):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Mzz}`
@@ -2914,6 +2953,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the y-component of the shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m::
@@ -2944,7 +2986,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zy_mzz)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_mzz_zxy(self, pause=True):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
@@ -2952,6 +2994,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots a contour of the resultant shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m::
@@ -2982,7 +3027,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zxy_mzz)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_vector_mzz_zxy(self, pause=True):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
@@ -2990,6 +3035,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example generates a vector plot of the shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m::
@@ -3022,7 +3070,7 @@ class StressPost:
             sigxs.append(group.stress_result.sig_zx_mzz)
             sigys.append(group.stress_result.sig_zy_mzz)
 
-        self.plot_stress_vector(sigxs, sigys, title, pause)
+        return self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_vx_zx(self, pause=True):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vx}`
@@ -3030,6 +3078,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the x-component of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the x-direction of 15 kN::
@@ -3060,7 +3111,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zx_vx)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_vx_zy(self, pause=True):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vx}`
@@ -3068,6 +3119,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the y-component of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the x-direction of 15 kN::
@@ -3098,7 +3152,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zy_vx)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_vx_zxy(self, pause=True):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
@@ -3106,6 +3160,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots a contour of the resultant shear stress within a 150x90x12 UA
         section resulting from a shear force in the x-direction of 15 kN::
@@ -3136,7 +3193,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zxy_vx)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_vector_vx_zxy(self, pause=True):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
@@ -3144,6 +3201,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example generates a vector plot of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the x-direction of 15 kN::
@@ -3176,7 +3236,7 @@ class StressPost:
             sigxs.append(group.stress_result.sig_zx_vx)
             sigys.append(group.stress_result.sig_zy_vx)
 
-        self.plot_stress_vector(sigxs, sigys, title, pause)
+        return self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_vy_zx(self, pause=True):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vy}`
@@ -3184,6 +3244,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the x-component of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the y-direction of 30 kN::
@@ -3214,7 +3277,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zx_vy)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_vy_zy(self, pause=True):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vy}`
@@ -3222,6 +3285,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the y-component of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the y-direction of 30 kN::
@@ -3252,7 +3318,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zy_vy)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_vy_zxy(self, pause=True):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
@@ -3260,6 +3326,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots a contour of the resultant shear stress within a 150x90x12 UA
         section resulting from a shear force in the y-direction of 30 kN::
@@ -3290,7 +3359,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zxy_vy)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_vector_vy_zxy(self, pause=True):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
@@ -3298,6 +3367,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example generates a vector plot of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the y-direction of 30 kN::
@@ -3330,7 +3402,7 @@ class StressPost:
             sigxs.append(group.stress_result.sig_zx_vy)
             sigys.append(group.stress_result.sig_zy_vy)
 
-        self.plot_stress_vector(sigxs, sigys, title, pause)
+        return self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_v_zx(self, pause=True):
         """Produces a contour plot of the *x*-component of the shear stress
@@ -3339,6 +3411,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the x-component of the shear stress within a 150x90x12 UA
         section resulting from a shear force of 15 kN in the x-direction and 30 kN in the
@@ -3370,7 +3445,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zx_v)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_v_zy(self, pause=True):
         """Produces a contour plot of the *y*-component of the shear stress
@@ -3379,6 +3454,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the y-component of the shear stress within a 150x90x12 UA
         section resulting from a shear force of 15 kN in the x-direction and 30 kN in the
@@ -3410,7 +3488,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zy_v)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_v_zxy(self, pause=True):
         """Produces a contour plot of the resultant shear stress
@@ -3419,6 +3497,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots a contour of the resultant shear stress within a 150x90x12 UA
         section resulting from a shear force of 15 kN in the x-direction and 30 kN in the
@@ -3450,7 +3531,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zxy_v)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_vector_v_zxy(self, pause=True):
         """Produces a vector plot of the resultant shear stress
@@ -3459,6 +3540,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example generates a vector plot of the shear stress within a 150x90x12 UA
         section resulting from a shear force of 15 kN in the x-direction and 30 kN in the
@@ -3492,7 +3576,7 @@ class StressPost:
             sigxs.append(group.stress_result.sig_zx_v)
             sigys.append(group.stress_result.sig_zy_v)
 
-        self.plot_stress_vector(sigxs, sigys, title, pause)
+        return self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_zz(self, pause=True):
         """Produces a contour plot of the combined normal stress :math:`\sigma_{zz}` resulting from
@@ -3500,6 +3584,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         an axial force of 100 kN, a bending moment about the x-axis of 5 kN.m and a bending moment
@@ -3531,7 +3618,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_zx(self, pause=True):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx}`
@@ -3539,6 +3626,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the x-component of the shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m and a shear force of 30 kN in the
@@ -3570,7 +3660,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zx)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_zy(self, pause=True):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy}`
@@ -3578,6 +3668,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the y-component of the shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m and a shear force of 30 kN in the
@@ -3609,7 +3702,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zy)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_zxy(self, pause=True):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
@@ -3617,6 +3710,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots a contour of the resultant shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m and a shear force of 30 kN in the
@@ -3648,7 +3744,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zxy)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
     def plot_vector_zxy(self, pause=True):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
@@ -3656,6 +3752,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example generates a vector plot of the shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m and a shear force of 30 kN in the
@@ -3689,7 +3788,7 @@ class StressPost:
             sigxs.append(group.stress_result.sig_zx)
             sigys.append(group.stress_result.sig_zy)
 
-        self.plot_stress_vector(sigxs, sigys, title, pause)
+        return self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_vm(self, pause=True):
         """Produces a contour plot of the von Mises stress :math:`\sigma_{vM}` resulting from all
@@ -3697,6 +3796,9 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots a contour of the von Mises stress within a 150x90x12 UA section
         resulting from the following actions:
@@ -3738,7 +3840,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_vm)
 
-        self.plot_stress_contour(sigs, title, pause)
+        return self.plot_stress_contour(sigs, title, pause)
 
 
 class MaterialGroup:

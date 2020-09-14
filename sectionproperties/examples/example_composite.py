@@ -44,7 +44,7 @@ stress_post = section.calculate_stress(N=-100e3, Mxx=-120e6, Vy=-75e3, time_info
 section.display_results()
 
 # plot the centroids
-fig, ax = section.plot_centroids()
+section.plot_centroids()
 
 stress_post.plot_stress_n_zz(pause=False)  # plot the axial stress
 stress_post.plot_stress_m_zz(pause=False)  # plot the bending stress

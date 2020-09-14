@@ -39,4 +39,4 @@ section.calculate_warping_properties(time_info=True)
 section.calculate_plastic_properties(time_info=True, verbose=True)
 
 # plot the centroids
-fig, ax = section.plot_centroids()
+section.plot_centroids()
