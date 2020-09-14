@@ -63,11 +63,13 @@ class CrossSection:
 
         mesh = geometry.create_mesh(mesh_sizes=[5, 10])
 
-        steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3,
-            yield_strength=250, color='grey'
+        steel = Material(
+            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
+            color='grey'
         )
-        timber = Material(name='Timber', elastic_modulus=8e3, poissons_ratio=0.35,
-            yield_strength=20, color='burlywood'
+        timber = Material(
+            name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
+            color='burlywood'
         )
 
         section = CrossSection(geometry, mesh, [steel, timber])
@@ -363,8 +365,8 @@ class CrossSection:
         # determine the torsion constant
         def j_func():
             return (
-                self.section_props.ixx_c + self.section_props.iyy_c -
-                omega.dot(k.dot(np.transpose(omega)))
+                self.section_props.ixx_c + self.section_props.iyy_c
+                - omega.dot(k.dot(np.transpose(omega)))
             )
 
         if time_info:
@@ -452,29 +454,29 @@ class CrossSection:
             # calculate shear centres (elasticity approach)
             Delta_s = (
                 2 * (1 + self.section_props.nu_eff) * (
-                    self.section_props.ixx_c * self.section_props.iyy_c -
-                    self.section_props.ixy_c ** 2)
+                    self.section_props.ixx_c * self.section_props.iyy_c
+                    - self.section_props.ixy_c ** 2)
             )
             x_se = (
-                (1 / Delta_s) * ((self.section_props.nu_eff / 2 *
-                                  sc_xint) - f_torsion.dot(phi_shear))
+                (1 / Delta_s) * ((self.section_props.nu_eff / 2
+                                  * sc_xint) - f_torsion.dot(phi_shear))
             )
             y_se = (
-                (1 / Delta_s) * ((self.section_props.nu_eff / 2 *
-                                  sc_yint) + f_torsion.dot(psi_shear))
+                (1 / Delta_s) * ((self.section_props.nu_eff / 2
+                                  * sc_yint) + f_torsion.dot(psi_shear))
             )
             (x11_se, y22_se) = fea.principal_coordinate(self.section_props.phi, x_se, y_se)
 
             # calculate shear centres (Trefftz's approach)
             x_st = (
                 (self.section_props.ixy_c * i_xomega - self.section_props.iyy_c * i_yomega) / (
-                    self.section_props.ixx_c * self.section_props.iyy_c -
-                    self.section_props.ixy_c ** 2)
+                    self.section_props.ixx_c * self.section_props.iyy_c
+                    - self.section_props.ixy_c ** 2)
             )
             y_st = (
                 (self.section_props.ixx_c * i_xomega - self.section_props.ixy_c * i_yomega) / (
-                    self.section_props.ixx_c * self.section_props.iyy_c -
-                    self.section_props.ixy_c ** 2)
+                    self.section_props.ixx_c * self.section_props.iyy_c
+                    - self.section_props.ixy_c ** 2)
             )
 
             return (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st)
@@ -538,7 +540,7 @@ class CrossSection:
         # rotate the tensor by the principal axis angle
         phi_rad = self.section_props.phi * np.pi / 180
         R = np.array([
-            [np.cos(phi_rad),  np.sin(phi_rad)],
+            [np.cos(phi_rad), np.sin(phi_rad)],
             [-np.sin(phi_rad), np.cos(phi_rad)]
         ])
 
@@ -674,14 +676,14 @@ class CrossSection:
                 self.section_props.iyy_g - self.section_props.qy ** 2 / self.section_props.ea
             )
             self.section_props.ixy_c = (
-                self.section_props.ixy_g - self.section_props.qx * self.section_props.qy /
-                self.section_props.ea
+                self.section_props.ixy_g - self.section_props.qx * self.section_props.qy
+                / self.section_props.ea
             )
 
             # calculate the principal axis angle
             Delta = (
-                ((self.section_props.ixx_c - self.section_props.iyy_c) / 2) ** 2 +
-                self.section_props.ixy_c ** 2
+                ((self.section_props.ixx_c - self.section_props.iyy_c) / 2) ** 2
+                + self.section_props.ixy_c ** 2
             ) ** 0.5
 
             i11_c = (
@@ -981,7 +983,7 @@ class CrossSection:
         col = np.hstack((col, N))
         data = np.hstack((data, 0))
 
-        k_lg = coo_matrix((data, (row, col)), shape=(N+1, N+1))
+        k_lg = coo_matrix((data, (row, col)), shape=(N + 1, N + 1))
 
         return (csc_matrix(k), csc_matrix(k_lg), f_torsion)
 
@@ -1890,8 +1892,7 @@ class PlasticSection:
         fibres = self.calculate_extreme_fibres(0)
 
         # 1a) Calculate x-axis plastic centroid
-        (y_pc, r, f, c_top, c_bot) = self.pc_algorithm(
-            np.array([1, 0]), fibres[2:], 1, verbose)
+        (y_pc, r, f, c_top, c_bot) = self.pc_algorithm(np.array([1, 0]), fibres[2:], 1, verbose)
 
         self.check_convergence(r, 'x-axis')
         cross_section.section_props.y_pc = y_pc
@@ -2270,7 +2271,7 @@ class PlasticSection:
         # add new facets by looping from the second facet index to the end
         for (i, idx) in enumerate(fct_idx[1:]):
             # get mid-point of proposed new facet
-            mid_pt = 0.5 * (int_pts[i] + int_pts[i+1])
+            mid_pt = 0.5 * (int_pts[i] + int_pts[i + 1])
 
             # check to see if the mid-point is not in a hole
             # add the facet
@@ -2332,12 +2333,12 @@ class PlasticSection:
 
             # compute variables alpha, beta and gamma
             alpha = (
-                ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) /
-                ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
+                ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3))
+                / ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
             )
             beta = (
-                ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) /
-                ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
+                ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3))
+                / ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
             )
             gamma = 1.0 - alpha - beta
 

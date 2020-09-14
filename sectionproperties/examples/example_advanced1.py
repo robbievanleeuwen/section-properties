@@ -29,7 +29,7 @@ for b in b_list:
 
     # get the torsion constant
     j = section.get_j()
-    print("d/b = {0:.3f}; J = {1:.5e}".format(d/b, j))
+    print("d/b = {0:.3f}; J = {1:.5e}".format(d / b, j))
     j_list.append(j)
 
 # plot the torsion constant as a function of the aspect ratio

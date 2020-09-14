@@ -99,8 +99,8 @@ class Tri6:
             # calculated modulus weighted stiffness matrix and load vector
             k_el += gp[0] * np.dot(np.transpose(B), B) * j * (self.material.elastic_modulus)
             f_el += (
-                gp[0] * np.dot(np.transpose(B), np.transpose(np.array([Ny, -Nx]))) *
-                j * self.material.elastic_modulus
+                gp[0] * np.dot(np.transpose(B), np.transpose(np.array([Ny, -Nx])))
+                * j * self.material.elastic_modulus
             )
 
         return (k_el, f_el)
@@ -141,14 +141,14 @@ class Tri6:
             h2 = -iyy * r - ixy * q
 
             f_psi += (
-                gp[0] * (nu / 2 * np.transpose(np.transpose(B).dot(np.array([[d1], [d2]])))[0] +
-                         2 * (1 + nu) * np.transpose(N) * (ixx * Nx - ixy * Ny)) * j *
-                self.material.elastic_modulus
+                gp[0] * (nu / 2 * np.transpose(np.transpose(B).dot(np.array([[d1], [d2]])))[0]
+                         + 2 * (1 + nu) * np.transpose(N) * (ixx * Nx - ixy * Ny)) * j
+                * self.material.elastic_modulus
             )
             f_phi += (
-                gp[0] * (nu / 2 * np.transpose(np.transpose(B).dot(np.array([[h1], [h2]])))[0] +
-                         2 * (1 + nu) * np.transpose(N) * (iyy * Ny - ixy * Nx)) * j *
-                self.material.elastic_modulus
+                gp[0] * (nu / 2 * np.transpose(np.transpose(B).dot(np.array([[h1], [h2]])))[0]
+                         + 2 * (1 + nu) * np.transpose(N) * (iyy * Ny - ixy * Nx)) * j
+                * self.material.elastic_modulus
             )
 
         return (f_psi, f_phi)
@@ -189,12 +189,12 @@ class Tri6:
             Nomega = np.dot(N, np.transpose(omega))
 
             sc_xint += (
-                gp[0] * (iyy * Nx + ixy * Ny) * (Nx ** 2 + Ny ** 2) *
-                j * self.material.elastic_modulus
+                gp[0] * (iyy * Nx + ixy * Ny) * (Nx ** 2 + Ny ** 2)
+                * j * self.material.elastic_modulus
             )
             sc_yint += (
-                gp[0] * (ixx * Ny + ixy * Nx) * (Nx ** 2 + Ny ** 2) *
-                j * self.material.elastic_modulus
+                gp[0] * (ixx * Ny + ixy * Nx) * (Nx ** 2 + Ny ** 2)
+                * j * self.material.elastic_modulus
             )
             q_omega += gp[0] * Nomega * j * self.material.elastic_modulus
             i_omega += gp[0] * Nomega ** 2 * j * self.material.elastic_modulus
@@ -245,18 +245,18 @@ class Tri6:
 
             kappa_x += (
                 gp[0] * (psi_shear.dot(np.transpose(B)) - nu / 2 * np.array([d1, d2])).dot(
-                    B.dot(psi_shear) - nu / 2 * np.array([d1, d2])) * j *
-                self.material.elastic_modulus
+                    B.dot(psi_shear) - nu / 2 * np.array([d1, d2])) * j
+                * self.material.elastic_modulus
             )
             kappa_y += (
                 gp[0] * (phi_shear.dot(np.transpose(B)) - nu / 2 * np.array([h1, h2])).dot(
-                    B.dot(phi_shear) - nu / 2 * np.array([h1, h2])) * j *
-                self.material.elastic_modulus
+                    B.dot(phi_shear) - nu / 2 * np.array([h1, h2])) * j
+                * self.material.elastic_modulus
             )
             kappa_xy += (
                 gp[0] * (psi_shear.dot(np.transpose(B)) - nu / 2 * np.array([d1, d2])).dot(
-                    B.dot(phi_shear) - nu / 2 * np.array([h1, h2])) * j *
-                self.material.elastic_modulus
+                    B.dot(phi_shear) - nu / 2 * np.array([h1, h2])) * j
+                * self.material.elastic_modulus
             )
 
         return (kappa_x, kappa_y, kappa_xy)
@@ -296,12 +296,12 @@ class Tri6:
             int_x += gp[0] * (Nx * Nx * Ny + Ny * Ny * Ny) * j * self.material.elastic_modulus
             int_y += gp[0] * (Ny * Ny * Nx + Nx * Nx * Nx) * j * self.material.elastic_modulus
             int_11 += (
-                gp[0] * (Nx_11 * Nx_11 * Ny_22 + Ny_22 * Ny_22 * Ny_22) * j *
-                self.material.elastic_modulus
+                gp[0] * (Nx_11 * Nx_11 * Ny_22 + Ny_22 * Ny_22 * Ny_22) * j
+                * self.material.elastic_modulus
             )
             int_22 += (
-                gp[0] * (Ny_22 * Ny_22 * Nx_11 + Nx_11 * Nx_11 * Nx_11) * j *
-                self.material.elastic_modulus
+                gp[0] * (Ny_22 * Ny_22 * Nx_11 + Nx_11 * Nx_11 * Nx_11) * j
+                * self.material.elastic_modulus
             )
 
         return (int_x, int_y, int_11, int_22)
@@ -496,12 +496,12 @@ class Tri6:
 
         # compute variables alpha, beta and gamma
         alpha = (
-            ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) /
-            ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
+            ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3))
+            / ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
         )
         beta = (
-            ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) /
-            ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
+            ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3))
+            / ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
         )
         gamma = 1.0 - alpha - beta
 
@@ -617,17 +617,17 @@ def extrapolate_to_nodes(w):
     """
 
     H_inv = np.array([
-        [1.87365927351160,	0.138559587411935, 0.138559587411935,
+        [1.87365927351160, 0.138559587411935, 0.138559587411935,
          -0.638559587411936, 0.126340726488397, -0.638559587411935],
         [0.138559587411935, 1.87365927351160, 0.138559587411935,
          -0.638559587411935, -0.638559587411935, 0.126340726488397],
         [0.138559587411935, 0.138559587411935, 1.87365927351160,
          0.126340726488396, -0.638559587411935, -0.638559587411935],
         [0.0749010751157440, 0.0749010751157440, 0.180053080734478,
-         1.36051633430762,	-0.345185782636792, -0.345185782636792],
+         1.36051633430762, -0.345185782636792, -0.345185782636792],
         [0.180053080734478, 0.0749010751157440, 0.0749010751157440,
          -0.345185782636792, 1.36051633430762, -0.345185782636792],
-        [0.0749010751157440, 0.180053080734478,  0.0749010751157440,
+        [0.0749010751157440, 0.180053080734478, 0.0749010751157440,
          -0.345185782636792, -0.345185782636792, 1.36051633430762]
     ])
 

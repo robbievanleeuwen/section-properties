@@ -489,8 +489,8 @@ class GeometryCleaner:
                 idx_2 = i + j + 1
 
                 # check for a duplicate facet that has not already been deleted
-                if (self.is_duplicate_facet(fct1, fct2) and
-                        idx_2 not in idx_to_remove):
+                if (self.is_duplicate_facet(fct1, fct2)
+                        and idx_2 not in idx_to_remove):
                     idx_to_remove.append(idx_2)
 
                     if self.verbose:
