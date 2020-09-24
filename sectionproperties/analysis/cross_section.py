@@ -695,7 +695,7 @@ class CrossSection:
                 self.section_props.phi = 0
             else:
                 self.section_props.phi = np.arctan2(
-                    self.section_props.ixx_c - self.section_props.i11_c,
+                    self.section_props.ixx_c - i11_c,
                     self.section_props.ixy_c
                 ) * 180 / np.pi
 
