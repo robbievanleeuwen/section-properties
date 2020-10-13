@@ -2290,20 +2290,20 @@ class ImportDXF(Geometry):
             auditor.print_error_report()
 
         if(doc.header['$INSUNITS']==0):
-            UnitFact=1
+            conversion_factor=1
         elif(doc.header['$INSUNITS']==1): #en pouce
-            UnitFact=1*25.4/1000
+            conversion_factor=1*25.4/1000
 
         elif(doc.header['$INSUNITS']==2): #en feet
-            UnitFact=1*12*25.4/1000
+            conversion_factor=1*12*25.4/1000
         elif(doc.header['$INSUNITS']==4): #en mm
-            UnitFact=1/1000
+            conversion_factor=1/1000
         elif(doc.header['$INSUNITS']==5): #en cm
-            UnitFact=1/100
+            conversion_factor=1/100
         elif(doc.header['$INSUNITS']==6): #en m
-            UnitFact=1
+            conversion_factor=1
         else:
-            UnitFact=1
+            conversion_factor=1
 
         msp = doc.modelspace()
 
@@ -2311,8 +2311,8 @@ class ImportDXF(Geometry):
         facets = []
 
         for e in msp.query('LINE'):
-            points.append([e.dxf.start[0] * UnitFact, e.dxf.start[1] * UnitFact])
-            points.append([e.dxf.end[0] * UnitFact, e.dxf.end[1] * UnitFact])
+            points.append([e.dxf.start[0] * conversion_factor, e.dxf.start[1] * conversion_factor])
+            points.append([e.dxf.end[0] * conversion_factor, e.dxf.end[1] * conversion_factor])
             facets.append([len(points) - 2, len(points) - 1])
 
         self.points = points
@@ -2321,13 +2321,13 @@ class ImportDXF(Geometry):
         holes = []
         if 'holes' in doc.layers:
             for e in msp.query('POINT[layer=="holes"]'):
-                holes.append([e.dxf.location[0] * UnitFact, e.dxf.location[1] * UnitFact])
+                holes.append([e.dxf.location[0] * conversion_factor, e.dxf.location[1] * conversion_factor])
         self.holes = holes
 
         control_points = []
         if 'control_points' in doc.layers:
             for e in msp.query('POINT[layer=="control_points"]'):
-                control_points.append([e.dxf.location[0] * UnitFact, e.dxf.location[1] * UnitFact])
+                control_points.append([e.dxf.location[0] * conversion_factor, e.dxf.location[1] * conversion_factor])
             if not control_points:
                 err = "control_points layer does not contain any point. Check your *dxf file."
                 raise RuntimeError(err)
@@ -2340,8 +2340,8 @@ class ImportDXF(Geometry):
 
         for e in msp.query('ARC'):
 
-            self.draw_arc([e.dxf.center[0]*UnitFact, e.dxf.center[1]*UnitFact],
-                          e.dxf.radius*UnitFact,
+            self.draw_arc([e.dxf.center[0]*conversion_factor, e.dxf.center[1]*conversion_factor],
+                          e.dxf.radius*conversion_factor,
                           e.dxf.start_angle*np.pi/180,
                           e.dxf.end_angle*np.pi/180,
                           n=5)
