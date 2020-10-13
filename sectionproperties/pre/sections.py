@@ -1,8 +1,10 @@
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
 import sectionproperties.post.post as post
 import ezdxf
+import ezdxf.recover as recover
 
 
 class Geometry:
@@ -2274,7 +2276,18 @@ class ImportDXF(Geometry):
 
         super().__init__(control_points, shift)
 
-        doc = ezdxf.readfile(File)
+        try:
+            doc, auditor = recover.readfile(File)
+        except IOError:
+            print(f'Not a DXF file or a generic I/O error.')
+            sys.exit(1)
+        except ezdxf.DXFStructureError:
+            print(f'Invalid or corrupted DXF file.')
+            sys.exit(2)
+
+        # DXF file can still have unrecoverable errors
+        if auditor.has_errors:
+            auditor.print_error_report()
 
         if(doc.header['$INSUNITS']==0):
             UnitFact=1
