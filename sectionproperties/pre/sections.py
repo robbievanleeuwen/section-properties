@@ -2383,3 +2383,25 @@ class ImportDXF(Geometry):
                     self.points.append([x_global, y_global])
 
                     self.facets.append([len(self.points) - 2, len(self.points) - 1])
+
+        if msp.query('CIRCLE') is not None:
+            for e in msp.query('CIRCLE'):
+
+                radius = e.dxf.radius * conversion_factor
+
+                ocs = e.ocs()
+                center = ocs.to_wcs(e.dxf.center) * conversion_factor
+
+                x = center[0] + radius * np.cos(0.0)
+                y = center[1] + radius * np.sin(0.0)
+                self.points.append([x, y])
+
+                for i in range(1, number_of_subdivisions + 1):
+
+                    current_angle = i * 2.0 * np.pi / number_of_subdivisions
+
+                    x = center[0] + radius * np.cos(current_angle)
+                    y = center[1] + radius * np.sin(current_angle)
+
+                    self.points.append([x, y])
+                    self.facets.append([len(self.points) - 2, len(self.points) - 1])
