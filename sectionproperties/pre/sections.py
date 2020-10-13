@@ -5,6 +5,7 @@ import sectionproperties.pre.pre as pre
 import sectionproperties.post.post as post
 import ezdxf
 import ezdxf.recover as recover
+from ezdxf.math import Vector
 
 
 class Geometry:
@@ -2271,13 +2272,15 @@ class MergedSection(Geometry):
 class ImportDXF(Geometry):
 
 
-    def __init__(self, File,control_points=[[0,0]], shift=[0, 0]):
+    def __init__(self, file, number_of_subdivisions):
         """Inits the ImportDXF class."""
 
-        super().__init__(control_points, shift)
+        control_points = [[0, 0]]
+
+        super().__init__(control_points, shift = [0, 0])
 
         try:
-            doc, auditor = recover.readfile(File)
+            doc, auditor = recover.readfile(file)
         except IOError:
             print(f'Not a DXF file or a generic I/O error.')
             sys.exit(1)
@@ -2338,10 +2341,45 @@ class ImportDXF(Geometry):
 
         self.shift_section()
 
-        for e in msp.query('ARC'):
+        if msp.query('ARC') is not None:
+            for e in msp.query('ARC'):
 
-            self.draw_arc([e.dxf.center[0]*conversion_factor, e.dxf.center[1]*conversion_factor],
-                          e.dxf.radius*conversion_factor,
-                          e.dxf.start_angle*np.pi/180,
-                          e.dxf.end_angle*np.pi/180,
-                          n=5)
+                radius = e.dxf.radius * conversion_factor
+
+                local_center = e.dxf.center * conversion_factor
+                local_start_angle = np.radians(e.dxf.start_angle)
+                internal_angle = np.radians(np.abs(e.dxf.start_angle - e.dxf.end_angle))
+
+                # Extrusion vector normalization should not be necessary, but don't rely on any DXF
+                Az = Vector(e.dxf.extrusion).normalize()
+                if (abs(Az.x) < 1 / 64.) and (abs(Az.y) < 1 / 64.):
+                    Ax = Vector(0, 1, 0).cross(Az).normalize()
+                else:
+                    Ax = Vector(0, 0, 1).cross(Az).normalize()
+                Ay = Az.cross(Ax).normalize()
+
+                # Points are calculated in the local ocs and then converted to global wcs
+                Wx = Vector(Ax.x, Ay.x, 0.)
+                Wy = Vector(Ax.y, Ay.y, 0.)
+
+                x = local_center[0] + radius * np.cos(local_start_angle)
+                y = local_center[1] + radius * np.sin(local_start_angle)
+
+                x_global = x * Wx.x + y * Wx.y
+                y_global = x * Wy.x + y * Wy.y
+
+                self.points.append([x_global, y_global])
+
+                for i in range(1, number_of_subdivisions + 1):
+
+                    current_angle = local_start_angle + i * internal_angle / number_of_subdivisions
+
+                    x = local_center[0] + radius * np.cos(current_angle)
+                    y = local_center[1] + radius * np.sin(current_angle)
+
+                    x_global = x * Wx.x + y * Wx.y
+                    y_global = x * Wy.x + y * Wy.y
+
+                    self.points.append([x_global, y_global])
+
+                    self.facets.append([len(self.points) - 2, len(self.points) - 1])
