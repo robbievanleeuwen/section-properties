@@ -2270,7 +2270,15 @@ class MergedSection(Geometry):
 
 
 class ImportDXF(Geometry):
+    """Import all the LINE, ARC and CIRCLE entities contained in one *.dxf file into one geometry.
+    Note that a layer "control_points" must be defined and must contains all the necessary control
+    points. In the same way holes control points, if any, must be defined in layer "holes".
+    Note that for the meshing algorithm to work, there needs to be connectivity between all
+    regions of the provided geometries. Overlapping of geometries is permitted.
 
+    :file: path/to/file.dxf
+    :integer number_of_subdivisions: number of segments in which ARC and CIRCLE are subdivided
+    """
 
     def __init__(self, file, number_of_subdivisions):
         """Inits the ImportDXF class."""
