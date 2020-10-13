@@ -2289,21 +2289,21 @@ class ImportDXF(Geometry):
         if auditor.has_errors:
             auditor.print_error_report()
 
-        if(doc.header['$INSUNITS']==0):
-            conversion_factor=1
-        elif(doc.header['$INSUNITS']==1): #en pouce
-            conversion_factor=1*25.4/1000
-
-        elif(doc.header['$INSUNITS']==2): #en feet
-            conversion_factor=1*12*25.4/1000
-        elif(doc.header['$INSUNITS']==4): #en mm
-            conversion_factor=1/1000
-        elif(doc.header['$INSUNITS']==5): #en cm
-            conversion_factor=1/100
-        elif(doc.header['$INSUNITS']==6): #en m
-            conversion_factor=1
+        if(doc.header['$INSUNITS'] == 0):
+            conversion_factor = 1.
+        elif(doc.header['$INSUNITS'] == 1):
+            conversion_factor = 1. * 25.4
+        elif(doc.header['$INSUNITS'] == 2):
+            conversion_factor = 1. * 12 * 25.4
+        elif(doc.header['$INSUNITS'] == 4):
+            conversion_factor = 1.
+        elif(doc.header['$INSUNITS'] == 5):
+            conversion_factor = 10.
+        elif(doc.header['$INSUNITS'] == 6):
+            conversion_factor = 1000.
         else:
-            conversion_factor=1
+            print("WARNING: current unit of measure is not yet supported. Conversion factor set to 1!")
+            conversion_factor = 1.
 
         msp = doc.modelspace()
 
