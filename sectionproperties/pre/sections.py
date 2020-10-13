@@ -2269,7 +2269,6 @@ class MergedSection(Geometry):
 class ImportDXF(Geometry):
 
 
-    # def __init__(self, points, facets, holes, control_points, shift=[0, 0]):
     def __init__(self, File,control_points=[[0,0]], shift=[0, 0]):
         """Inits the ImportDXF class."""
 
@@ -2301,7 +2300,6 @@ class ImportDXF(Geometry):
         facets=[]
 
         for e in msp.query('LINE'):
-            # print('posx:'+str(e.dxf.start[0])+'   posy:'+str(e.dxf.end))
             points.append([e.dxf.start[0]*UnitFact,e.dxf.start[1]*UnitFact])
             points.append([e.dxf.end[0]*UnitFact,e.dxf.end[1]*UnitFact])
             facets.append([len(points)-2,len(points)-1])
@@ -2312,26 +2310,10 @@ class ImportDXF(Geometry):
 
         self.shift_section()
 
-
-        """Adds a quarter radius of points to the points list - centered at
-        point *pt*, with radius *r*, starting at angle *theta*, with *n*
-        points. If r = 0, adds pt only.
-
-        :param pt: Centre of radius *(x,y)*
-        :type pt: list[float, float]
-        :param float r: Radius
-        :param float theta: Initial angle
-        :param int n: Number of points
-        :param bool anti: Anticlockwise rotation?
-        """
-        # self.plot_geometry()
         for e in msp.query('ARC'):
-            # print('start:'+str(e.dxf.start_angle)+'   stop:'+str(e.dxf.end_angle))
-
 
             self.draw_arc([e.dxf.center[0]*UnitFact, e.dxf.center[1]*UnitFact],
                           e.dxf.radius*UnitFact,
                           e.dxf.start_angle*np.pi/180,
                           e.dxf.end_angle*np.pi/180,
                           n=5)
-            # self.plot_geometry()
