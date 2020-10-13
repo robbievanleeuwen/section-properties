@@ -2263,3 +2263,4 @@ class MergedSection(Geometry):
             # add control points
             for control_point in section.control_points:
                 self.control_points.append([control_point[0], control_point[1]])
+                # test
