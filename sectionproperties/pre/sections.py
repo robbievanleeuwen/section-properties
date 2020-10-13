@@ -2280,7 +2280,7 @@ class ImportDXF(Geometry):
     :integer number_of_subdivisions: number of segments in which ARC and CIRCLE are subdivided
     """
 
-    def __init__(self, file, number_of_subdivisions):
+    def __init__(self, file, number_of_subdivisions = 2):
         """Inits the ImportDXF class."""
 
         control_points = [[0, 0]]
