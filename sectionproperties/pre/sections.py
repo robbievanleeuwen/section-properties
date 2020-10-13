@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
 import sectionproperties.post.post as post
+import ezdxf
 
 
 class Geometry:
@@ -2263,3 +2264,74 @@ class MergedSection(Geometry):
             # add control points
             for control_point in section.control_points:
                 self.control_points.append([control_point[0], control_point[1]])
+
+
+class ImportDXF(Geometry):
+
+
+    # def __init__(self, points, facets, holes, control_points, shift=[0, 0]):
+    def __init__(self, File,control_points=[[0,0]], shift=[0, 0]):
+        """Inits the ImportDXF class."""
+
+        super().__init__(control_points, shift)
+
+        doc = ezdxf.readfile(File)
+
+        if(doc.header['$INSUNITS']==0):
+            UnitFact=1
+        elif(doc.header['$INSUNITS']==1): #en pouce
+            UnitFact=1*25.4/1000
+
+        elif(doc.header['$INSUNITS']==2): #en feet
+            UnitFact=1*12*25.4/1000
+        elif(doc.header['$INSUNITS']==4): #en mm
+            UnitFact=1/1000
+        elif(doc.header['$INSUNITS']==5): #en cm
+            UnitFact=1/100
+        elif(doc.header['$INSUNITS']==6): #en m
+            UnitFact=1
+        else:
+            UnitFact=1
+
+
+
+        msp = doc.modelspace()
+
+        points=[]
+        facets=[]
+
+        for e in msp.query('LINE'):
+            # print('posx:'+str(e.dxf.start[0])+'   posy:'+str(e.dxf.end))
+            points.append([e.dxf.start[0]*UnitFact,e.dxf.start[1]*UnitFact])
+            points.append([e.dxf.end[0]*UnitFact,e.dxf.end[1]*UnitFact])
+            facets.append([len(points)-2,len(points)-1])
+
+        self.points = points
+        self.facets = facets
+        self.holes = []
+
+        self.shift_section()
+
+
+        """Adds a quarter radius of points to the points list - centered at
+        point *pt*, with radius *r*, starting at angle *theta*, with *n*
+        points. If r = 0, adds pt only.
+
+        :param pt: Centre of radius *(x,y)*
+        :type pt: list[float, float]
+        :param float r: Radius
+        :param float theta: Initial angle
+        :param int n: Number of points
+        :param bool anti: Anticlockwise rotation?
+        """
+        # self.plot_geometry()
+        for e in msp.query('ARC'):
+            # print('start:'+str(e.dxf.start_angle)+'   stop:'+str(e.dxf.end_angle))
+
+
+            self.draw_arc([e.dxf.center[0]*UnitFact, e.dxf.center[1]*UnitFact],
+                          e.dxf.radius*UnitFact,
+                          e.dxf.start_angle*np.pi/180,
+                          e.dxf.end_angle*np.pi/180,
+                          n=5)
+            # self.plot_geometry()
