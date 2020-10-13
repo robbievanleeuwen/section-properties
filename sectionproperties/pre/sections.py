@@ -2305,21 +2305,36 @@ class ImportDXF(Geometry):
         else:
             UnitFact=1
 
-
-
         msp = doc.modelspace()
 
-        points=[]
-        facets=[]
+        points = []
+        facets = []
 
         for e in msp.query('LINE'):
-            points.append([e.dxf.start[0]*UnitFact,e.dxf.start[1]*UnitFact])
-            points.append([e.dxf.end[0]*UnitFact,e.dxf.end[1]*UnitFact])
-            facets.append([len(points)-2,len(points)-1])
+            points.append([e.dxf.start[0] * UnitFact, e.dxf.start[1] * UnitFact])
+            points.append([e.dxf.end[0] * UnitFact, e.dxf.end[1] * UnitFact])
+            facets.append([len(points) - 2, len(points) - 1])
 
         self.points = points
         self.facets = facets
-        self.holes = []
+
+        holes = []
+        if 'holes' in doc.layers:
+            for e in msp.query('POINT[layer=="holes"]'):
+                holes.append([e.dxf.location[0] * UnitFact, e.dxf.location[1] * UnitFact])
+        self.holes = holes
+
+        control_points = []
+        if 'control_points' in doc.layers:
+            for e in msp.query('POINT[layer=="control_points"]'):
+                control_points.append([e.dxf.location[0] * UnitFact, e.dxf.location[1] * UnitFact])
+            if not control_points:
+                err = "control_points layer does not contain any point. Check your *dxf file."
+                raise RuntimeError(err)
+        else:
+            err = "control_points layer not found. Check your *dxf file."
+            raise RuntimeError(err)
+        self.control_points = control_points
 
         self.shift_section()
 
