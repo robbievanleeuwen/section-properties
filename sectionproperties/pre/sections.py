@@ -304,17 +304,17 @@ class Geometry:
         for (i, h) in enumerate(self.holes):
             # plot the holes
             if i == 0:
-                ax.plot(h[0], h[1], 'rx', markerSize=5, label='Holes')
+                ax.plot(h[0], h[1], 'rx', markersize=5, label='Holes')
             else:
-                ax.plot(h[0], h[1], 'rx', markerSize=5)
+                ax.plot(h[0], h[1], 'rx', markersize=5)
 
         for (i, cp) in enumerate(self.control_points):
             # plot the control points
             if i == 0:
-                ax.plot(cp[0], cp[1], 'bo', markerSize=5,
+                ax.plot(cp[0], cp[1], 'bo', markersize=5,
                         label='Control Points')
             else:
-                ax.plot(cp[0], cp[1], 'bo', markerSize=5)
+                ax.plot(cp[0], cp[1], 'bo', markersize=5)
 
         # display the legend
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
