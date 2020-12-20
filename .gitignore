@@ -16,3 +16,10 @@
 
 # mac
 .DS_Store
+
+# Jupyter notebooks
+.ipynb
+/.ipynb_checkpoints/
+
+# Shapely whl (Used with Poetry)
+.whl
