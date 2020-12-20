@@ -1,5 +1,11 @@
+import os
+import importlib.util
+import sys
+
 import numpy as np
 import matplotlib.pyplot as plt
+import shapely
+
 import sectionproperties.pre.pre as pre
 import sectionproperties.post.post as post
 
@@ -494,6 +500,46 @@ class CustomSection(Geometry):
         self.perimeter = perimeter
 
         self.shift_section()
+
+    
+    @staticmethod
+    def from_dxf(filename):
+        """
+            Import any-old-shape in dxf format for analysis
+        """
+        c2s = None
+        try:
+            import cad_to_shapely as c2s # type: ignore
+        except ImportError as e:
+            print ("To use from_dxf you need to 'pip install cad_to_shapely'")
+            exit()
+
+        #TODO avoid step of making a temp file locally
+        my_dxf  = c2s.dxf.DxfImporter(filename)
+        my_dxf.process()
+        my_dxf.cleanup()
+
+        polygons = my_dxf.polygons
+        new_polygons = c2s.utils.find_holes(polygons)
+
+        hole_cps = [] # control points for holes
+        for hole in new_polygons.interiors:
+            p = c2s.utils.point_in_polygon(shapely.geometry.Polygon(hole))
+            hole_cps.append([p.x,p.y])
+
+        # create the custom geometry object
+        points = [list(elem) for elem in list(zip(new_polygons.exterior.xy[0],new_polygons.exterior.xy[1]))]
+        cp = c2s.utils.point_in_polygon(new_polygons)
+
+        for hole_lr in new_polygons.interiors:
+            pts = [list(elem) for elem in list(zip(hole_lr.xy[0],hole_lr.xy[1]))]
+            points.extend(pts)
+
+        facets = c2s.utils.facets(new_polygons,inc_holes=True)
+
+        return CustomSection(points = points, facets=facets, holes =hole_cps, control_points=[[cp.x,cp.y]] )
+
+
 
 
 class RectangularSection(Geometry):

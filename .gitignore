@@ -1,3 +1,11 @@
+
+#virtual environment
+.venv/
+venv/
+env
+env/
+
+
 # Compiled python modules.
 *.pyc
 
@@ -11,8 +19,12 @@
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
 
-# Pycharm IDE file folder
-/.idea/
+# IDE-specific file folder
+/.idea/ 
+.vscode/
 
 # mac
 .DS_Store
+
+
+
