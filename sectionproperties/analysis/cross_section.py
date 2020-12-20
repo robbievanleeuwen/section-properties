@@ -91,7 +91,7 @@ class CrossSection:
     :cvar materials: List of materials
     :type materials: list[:class:`~sectionproperties.pre.pre.Material`]
     :cvar material_groups: List of objects containing the elements in each defined material
-    :type materials_groups: list[:class:`~sectionproperties.pre.pre.MaterialGroup`]
+    :type material_groups: list[:class:`~sectionproperties.pre.pre.MaterialGroup`]
     :cvar section_props: Class to store calculated section properties
     :vartype section_props: :class:`~sectionproperties.analysis.cross_section.SectionProperties`
 
