@@ -18,8 +18,15 @@
 .DS_Store
 
 # Jupyter notebooks
-.ipynb
+*.ipynb
 /.ipynb_checkpoints/
 
 # Shapely whl (Used with Poetry)
-.whl
+*.whl
+
+# Poetry files
+pyproject.toml
+poetry.lock
+
+# Shapely JSON files (experiments)
+/sections/*.json
