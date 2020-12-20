@@ -17,7 +17,7 @@ def readme():
 if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 6:
     sys.exit('Sorry, Python < 3.6 is not supported')
 
-install_requires = ['numpy', 'scipy', 'matplotlib', 'shapely']
+install_requires = ['numpy', 'scipy<=1.5', 'matplotlib', 'shapely']
 
 if not (sys.platform == 'win32' or sys.platform == 'cygwin'):
     install_requires.append('pybind11')
@@ -25,7 +25,7 @@ if not (sys.platform == 'win32' or sys.platform == 'cygwin'):
 
 setup(
     name='sectionproperties',
-    version='1.0.7',
+    version='1.0.8',
     description=description_text(),
     long_description=readme(),
     long_description_content_type='text/markdown',
