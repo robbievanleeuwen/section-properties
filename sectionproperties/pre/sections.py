@@ -1,4 +1,8 @@
+from typing import List, Optional, Union
+import more_itertools
 import numpy as np
+from shapely.geometry import Polygon, LinearRing, box
+import shapely
 import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
 import sectionproperties.post.post as post
@@ -27,17 +31,43 @@ class Geometry:
     :vartype perimeter: list[int]
     """
 
-    def __init__(self, control_points, shift):
-        """Inits the Geometry class."""
+    # Design questions: 
+    # 1. Should a Geometery instance by immutable? Should changes to the underlying
+    #    shapely geometry return a new Geometry instance instead of mutating self.geom?
 
-        self.control_points = control_points
-        self.shift = shift
-        self.points = []
-        self.facets = []
+
+    def __init__(self, geom: shapely.geometry.Polygon):
+        """Inits the Geometry class.
+        Old args; control_points, shift
+        """
+        #Sectionproperties is used to dealing with hole geometry on it's own to know
+        # areas NOT to mesh. Needs to send hole data to the meshing algorithm.
+        # Control points in holes allows it sectionproperties to know where the holes are within
+        # an embedded geometry.
+        # Control points are still necessary for embedded sections with differing materials (e.g. concrete + rebar)
+
+        self.geom = geom
+        self.control_points = [] # Given upon instantiation
+        self.shift = [] # Given upon instantiation
+        self.points = [] # Previously empty list
+        self.facets = [] # Previously empty list
+        self.holes = [] # Previously empty list
+        self.perimeter = [] # Previously empty list
+
+        self.mesh = None # Previously not a property
+
+
+    def create_facets_and_control_points(self):
+        self.points, self.facets = create_points_and_facets(self.geom)
+        self.control_points = list(self.geom.representative_point().coords)
         self.holes = []
-        self.perimeter = []
+        self.perimeter = list(range(len(self.geom.exterior.coords)))
+        for hole in self.geom.interiors:
+            hole_polygon = Polygon(hole)
+            self.holes.append(list(hole_polygon.representative_point().coords)[0])
 
-    def create_mesh(self, mesh_sizes):
+
+    def create_mesh(self, mesh_sizes: Union[float, list]):
         """Creates a quadratic triangular mesh from the Geometry object.
 
         :param mesh_sizes: A list of maximum element areas corresponding to each region within the
@@ -45,7 +75,7 @@ class Geometry:
         :type mesh_size: list[float]
 
         :return: Object containing generated mesh data
-        :rtype: :class:`meshpy.triangle.MeshInfo`
+        :rtype: :class:`meshapelyy.triangle.MeshInfo`
 
         :raises AssertionError: If the number of mesh sizes does not match the number of regions
 
@@ -63,39 +93,47 @@ class Geometry:
 
             Mesh generated from the above geometry.
         """
+        self.create_facets_and_control_points()
+        if isinstance(mesh_sizes, float): mesh_sizes = [mesh_sizes]
 
-        str = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
+        error_str = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
             len(mesh_sizes), len(self.control_points)
         )
-        assert(len(mesh_sizes) == len(self.control_points)), str
+        assert(len(mesh_sizes) == len(self.control_points)), error_str
 
-        return pre.create_mesh(
+        self.mesh = pre.create_mesh(
             self.points, self.facets, self.holes, self.control_points, mesh_sizes)
+        return self.mesh
 
-    def shift_section(self):
+    def shift_section(self, x_offset=0., y_offset=0.,):
         """Shifts the cross-section parameters by the class variable vector *shift*."""
 
-        for point in self.points:
-            point[0] += self.shift[0]
-            point[1] += self.shift[1]
+        self.geom = shapely.affinity.translate(self.geom, x_offset, y_offset)
+        self.control_points = self.geom.representative_point() if self.control_points else None
 
-        for hole in self.holes:
-            hole[0] += self.shift[0]
-            hole[1] += self.shift[1]
 
-        for cp in self.control_points:
-            cp[0] += self.shift[0]
-            cp[1] += self.shift[1]
+        # for point in self.points:
+        #     point[0] += self.shift[0]
+        #     point[1] += self.shift[1]
 
-    def rotate_section(self, angle, rot_point=None):
+        # for hole in self.holes:
+        #     hole[0] += self.shift[0]
+        #     hole[1] += self.shift[1]
+
+        # for cp in self.control_points:
+        #     cp[0] += self.shift[0]
+        #     cp[1] += self.shift[1]
+
+    def rotate_section(self, angle, rot_point=None, use_radians=False):
         """Rotates the geometry and specified angle about a point. If the rotation point is not
         provided, rotates the section about the first control point in the list of control points
         of the :class:`~sectionproperties.pre.sections.Geometry` object.
 
-        :param float angle: Angle (degrees) by which to rotate the section. A positive angle leads
+        :param float angle: Angle (degrees by default) by which to rotate the section. A positive angle leads
             to a counter-clockwise rotation.
         :param rot_point: Point *(x, y)* about which to rotate the section
         :type rot_point: list[float, float]
+        :param use_radians: Boolean to indicate whether 'angle' is in degrees or radians. If True, 'angle' is interpreted as radians.
 
         The following example rotates a 200UB25 section clockwise by 30 degrees::
 
@@ -104,53 +142,59 @@ class Geometry:
             geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
             geometry.rotate_section(angle=-30)
         """
+        self.geom = shapely.affinity.rotate(self.geom, angle, rot_point, use_radians)
 
-        # convert angle to radians
-        rot_phi = angle * np.pi / 180
+        # # convert angle to radians
+        # rot_phi = angle * np.pi / 180
 
-        def get_r(pt1, pt2):
-            """Returns the distance between two points."""
+        # def get_r(pt1, pt2):
+        #     """Returns the distance between two points."""
 
-            return ((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2) ** 0.5
+        #     return ((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2) ** 0.5
 
-        def get_phi(pt1, pt2):
-            """Returns the angle between two points."""
+        # def get_phi(pt1, pt2):
+        #     """Returns the angle between two points."""
 
-            return np.arctan2(pt1[1] - pt2[1], pt1[0] - pt2[0])
+        #     return np.arctan2(pt1[1] - pt2[1], pt1[0] - pt2[0])
 
-        def rotate_point(pt, rot_point, rot_phi):
-            """Rotates a point given a rotation point and rotation angle."""
+        # def rotate_point(pt, rot_point, rot_phi):
+        #     """Rotates a point given a rotation point and rotation angle."""
+        #     r = get_r(pt, rot_point)
+        #     phi = get_phi(pt, rot_point)
 
-            r = get_r(pt, rot_point)
-            phi = get_phi(pt, rot_point)
+        #     pt[0] = r * np.cos(phi + rot_phi) + rot_point[0]
+        #     pt[1] = r * np.sin(phi + rot_phi) + rot_point[1]
 
-            pt[0] = r * np.cos(phi + rot_phi) + rot_point[0]
-            pt[1] = r * np.sin(phi + rot_phi) + rot_point[1]
+        # # use the first control point if no rotation point is specified
+        # if rot_point is None:
+        #     rot_point = self.control_points[0]
 
-        # use the first control point if no rotation point is specified
-        if rot_point is None:
-            rot_point = self.control_points[0]
+        # # rotate all the points
+        # for point in self.points:
+        #     rotate_point(point, rot_point, rot_phi)
 
-        # rotate all the points
-        for point in self.points:
-            rotate_point(point, rot_point, rot_phi)
+        # # rotate all the holes
+        # for hole in self.holes:
+        #     rotate_point(hole, rot_point, rot_phi)
 
-        # rotate all the holes
-        for hole in self.holes:
-            rotate_point(hole, rot_point, rot_phi)
+        # # rotate all the control points
+        # for cp in self.control_points:
+        #     rotate_point(cp, rot_point, rot_phi)
 
-        # rotate all the control points
-        for cp in self.control_points:
-            rotate_point(cp, rot_point, rot_phi)
-
-    def mirror_section(self, axis='x', mirror_point=None):
-        """Mirrors the geometry about a point on either the x or y-axis. If no point is provided,
-        mirrors the geometry about the first control point in the list of control points of the
-        :class:`~sectionproperties.pre.sections.Geometry` object.
+    def mirror_section(self, axis='x', mirror_point: Union[List[float], str] = 'center'):
+        """Mirrors the geometry about a point on either the x or y-axis. 
+        
+        Proposed change of behaviour to match shapely: 
+        No longer: 
+            If no point is provided,
+            mirrors the geometry about the first control point in the list of control points of the
+            :class:`~sectionproperties.pre.sections.Geometry` object.
+        Instead:
+            If no point is provided, mirrors the geometry about the centroid of the shape's bounding box.
 
         :param string axis: Axis about which to mirror the geometry, *'x'* or *'y'*
-        :param mirror_point: Point about which to mirror the geometry *(x, y)*
-        :type mirror_point: list[float, float]
+        :param mirror_point: Point about which to mirror the geometry *(x, y)*. 
+        :type mirror_point: Union[list[float, float], str]
 
         The following example mirrors a 200PFC section about the y-axis and the point (0, 0)::
 
@@ -159,30 +203,35 @@ class Geometry:
             geometry = sections.PfcSection(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             geometry.mirror_section(axis='y', mirror_point=[0, 0])
         """
+        x_mirror = 1
+        y_mirror = 1
+        if axis == "x": x_mirror = -x_mirror
+        elif axis == "y": y_mirror = -y_mirror
+        self.geom = shapely.affinity.scale(x_mirror, y_mirror, mirror_point)
 
-        # use the first control point if no mirror point is specified
-        if mirror_point is None:
-            mirror_point = self.control_points[0]
+        # # use the first control point if no mirror point is specified
+        # if mirror_point is None:
+        #     mirror_point = self.control_points[0]
 
-        # select the axis to mirror
-        if axis == 'x':
-            i = 1
-        elif axis == 'y':
-            i = 0
-        else:
-            raise RuntimeError("Enter a valid axis: 'x' or 'y'")
+        # # select the axis to mirror
+        # if axis == 'x':
+        #     i = 1
+        # elif axis == 'y':
+        #     i = 0
+        # else:
+        #     raise RuntimeError("Enter a valid axis: 'x' or 'y'")
 
-        # mirror all points
-        for point in self.points:
-            point[i] = 2 * mirror_point[i] - point[i]
+        # # mirror all points
+        # for point in self.points:
+        #     point[i] = 2 * mirror_point[i] - point[i]
 
-        # mirror all holes
-        for hole in self.holes:
-            hole[i] = 2 * mirror_point[i] - hole[i]
+        # # mirror all holes
+        # for hole in self.holes:
+        #     hole[i] = 2 * mirror_point[i] - hole[i]
 
-        # mirror all control points
-        for cp in self.control_points:
-            cp[i] = 2 * mirror_point[i] - cp[i]
+        # # mirror all control points
+        # for cp in self.control_points:
+        #     cp[i] = 2 * mirror_point[i] - cp[i]
 
     def add_point(self, point):
         """Adds a point to the geometry and returns the added point id.
@@ -192,6 +241,7 @@ class Geometry:
         :return: Point id
         :rtype: int
         """
+        # Where is this used? Is it to provide the user with an ability to build adhoc geometry on the fly?
 
         self.points.append(point)
         return len(self.points) - 1
@@ -204,7 +254,7 @@ class Geometry:
         :return: Facet id
         :rtype: int
         """
-
+        # Where is this used? Is it to provide the user with an ability to build adhoc geometry on the fly?
         self.facets.append(facet)
         return len(self.facets) - 1
 
@@ -216,7 +266,7 @@ class Geometry:
         :return: Hole id
         :rtype: int
         """
-
+        # Where is this used? Is it to provide the user with an ability to build adhoc geometry on the fly?
         self.holes.append(hole)
         return len(self.holes) - 1
 
@@ -229,21 +279,33 @@ class Geometry:
         :return: Control point id
         :rtype: int
         """
-
+        # Where is this used? Is it to provide the user with an ability to build adhoc geometry on the fly?
         self.control_points.append(control_point)
         return len(self.control_points) - 1
 
-    def clean_geometry(self, verbose=False):
+    def clean_geometry(self, tolerance: float = 1e-6):
         """Peforms a full clean on the geometry.
 
-        :param bool verbose: If set to true, information related to the geometry cleaning process
-            is printed to the terminal.
+        :param float tolerance: If any two points are of a distance apart less than 'tolerance'
+        then the two points are "buffered" to a single point. The first point is kept and the second discarded.
 
         ..  note:: Cleaning the geometry is always recommended when creating a merged section,
           which may result in overlapping or intersecting facets, or duplicate nodes.
         """
+        if self.geom.is_valid:
+            clean_at_tol = self.geom.buffer(tolerance)
+            clean_at_zero = self.geom.buffer(0)
+            if clean_at_tol.is_valid: self.geom = clean_at_tol
+            elif clean_at_zero.is_valid: self.geom = clean_at_zero
 
-        self = pre.GeometryCleaner(self, verbose).clean_geometry()
+        else:
+            clean_with_union = shapely.ops.unary_union(self.geom)
+            if clean_with_union.is_valid: self.geom = clean_with_union
+            else:
+                raise ValueError("Geometry is invalid after attempting shapely.ops.unary_union. Please review geometry.")
+            
+
+        # self = pre.GeometryCleaner(self, verbose).clean_geometry()
 
     def plot_geometry(self, ax=None, pause=True, labels=False, perimeter=False):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
@@ -273,8 +335,8 @@ class Geometry:
 
             Geometry generated by the above example.
         """
-
         # if no axes object is supplied, create and setup the plot
+        self.create_facets_and_control_points()
         if ax is None:
             ax_supplied = False
             (fig, ax) = plt.subplots()
@@ -336,6 +398,7 @@ class Geometry:
         # if no axes object is supplied, finish the plot
         if not ax_supplied:
             post.finish_plot(ax, pause, title='Cross-Section Geometry')
+            print(self.holes)
             return (fig, ax)
 
     def calculate_extents(self):
@@ -344,73 +407,49 @@ class Geometry:
         :return: Minimum and maximum x and y-values *(x_min, x_max, y_min, y_max)*
         :rtype: tuple(float, float, float, float)
         """
+        min_x, min_y, max_x, max_y = self.geom.bounds
+        return (min_x, max_x, min_y, max_y)
 
-        # loop through all points
-        for (i, pt) in enumerate(self.points):
-            x = pt[0]
-            y = pt[1]
+        # # loop through all points
+        # for (i, pt) in enumerate(self.points):
+        #     x = pt[0]
+        #     y = pt[1]
 
-            # initialise min, max variables
-            if i == 0:
-                x_min = x
-                x_max = x
-                y_min = y
-                y_max = y
+        #     # initialise min, max variables
+        #     if i == 0:
+        #         x_min = x
+        #         x_max = x
+        #         y_min = y
+        #         y_max = y
 
-            # update the mins and maxs where necessary
-            x_min = min(x_min, x)
-            x_max = max(x_max, x)
-            y_min = min(y_min, y)
-            y_max = max(y_max, y)
+        #     # update the mins and maxs where necessary
+        #     x_min = min(x_min, x)
+        #     x_max = max(x_max, x)
+        #     y_min = min(y_min, y)
+        #     y_max = max(y_max, y)
 
-        return (x_min, x_max, y_min, y_max)
+        # return (x_min, x_max, y_min, y_max)
 
-    def draw_radius(self, pt, r, theta, n, anti=True):
-        """Adds a quarter radius of points to the points list - centered at point *pt*, with radius
-        *r*, starting at angle *theta*, with *n* points. If r = 0, adds pt only.
+    # Geometry generation - Standalone function?
 
-        :param pt: Centre of radius *(x,y)*
-        :type pt: list[float, float]
-        :param float r: Radius
-        :param float theta: Initial angle
-        :param int n: Number of points
-        :param bool anti: Anticlockwise rotation?
-        """
 
-        if r == 0:
-            self.points.append(pt)
-            return
+    # This method is no longer necessary for calculating perimeter (only place calculate_facet_length is used)       
+    # def calculate_facet_length(self, facet):
+    #     """Calculates the length of the facet.
 
-        if anti:
-            mult = 1
-        else:
-            mult = -1
+    #     :param facet: Point index pair *(p1, p2)* defining a facet
+    #     :vartype facets: list[int, int]
 
-        # calculate radius of points
-        for i in range(n):
-            # determine angle
-            t = theta + mult * i * 1.0 / max(1, n - 1) * np.pi * 0.5
+    #     :return: Facet length
+    #     :rtype: float
+    #     """
 
-            x = pt[0] + r * np.cos(t)
-            y = pt[1] + r * np.sin(t)
-            self.points.append([x, y])
+    #     # get facet points
+    #     p1 = self.points[facet[0]]
+    #     p2 = self.points[facet[1]]
 
-    def calculate_facet_length(self, facet):
-        """Calculates the length of the facet.
-
-        :param facet: Point index pair *(p1, p2)* defining a facet
-        :vartype facets: list[int, int]
-
-        :return: Facet length
-        :rtype: float
-        """
-
-        # get facet points
-        p1 = self.points[facet[0]]
-        p2 = self.points[facet[1]]
-
-        # calculate distance between two points
-        return np.sqrt((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2)
+    #     # calculate distance between two points
+    #     return np.sqrt((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2)
 
     def calculate_perimeter(self):
         """Calculates the perimeter of the cross-section by summing the length of all facets in the
@@ -419,84 +458,181 @@ class Geometry:
         :return: Cross-section perimeter, returns 0 if there is no perimeter defined
         :rtype: float
         """
+        perimeter = self.geom.length
+        
+        # # check to see if there are any facets in the perimeter variable
+        # if len(self.perimeter) == 0:
+        #     return 0
 
-        # check to see if there are any facets in the perimeter variable
-        if len(self.perimeter) == 0:
-            return 0
+        # # initialise perimeter variable
+        # perimeter = 0
 
-        # initialise perimeter variable
-        perimeter = 0
-
-        # loop through all the facets along the perimeter
-        for facet_idx in self.perimeter:
-            perimeter += self.calculate_facet_length(self.facets[facet_idx])
+        # # loop through all the facets along the perimeter
+        # for facet_idx in self.perimeter:
+        #     perimeter += self.calculate_facet_length(self.facets[facet_idx])
 
         return perimeter
 
 
-class CustomSection(Geometry):
-    """Constructs a cross-section from a list of points, facets, holes and a user specified control
-    point.
+### Helper functions for Geometry
 
-    :param points: List of points *(x, y)* defining the vertices of the cross-section
-    :type points: list[list[float, float]]
-    :param facets: List of point index pairs *(p1, p2)* defining the edges of the cross-section
-    :type facets: list[list[int, int]]
-    :param holes: List of points *(x, y)* defining the locations of holes within the cross-section.
-        If there are no holes, provide an empty list [].
-    :type holes: list[list[float, float]]
-    :param control_points: A list of points *(x, y)* that define different regions of the
-        cross-section. A control point is an arbitrary point within a region enclosed by facets.
-    :type control_points: list[list[float, float]]
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
-    :param perimeter: List of facet indices defining the perimeter of the cross-section
-    :vartype perimeter: list[int]
-
-    The following example creates a hollow trapezium with a base width of 100, top width of 50,
-    height of 50 and a wall thickness of 10. A mesh is generated with a maximum triangular area of
-    2.0::
-
-        import sectionproperties.pre.sections as sections
-
-        points = [[0, 0], [100, 0], [75, 50], [25, 50], [15, 10], [85, 10], [70, 40], [30, 40]]
-        facets = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4]]
-        holes = [[50, 25]]
-        control_points = [[5, 5]]
-        perimeter = [0, 1, 2, 3]
-
-        geometry = sections.CustomSection(
-            points, facets, holes, control_points, perimeter=perimeter
-        )
-        mesh = geometry.create_mesh(mesh_sizes=[2.0])
-
-    ..  figure:: ../images/sections/custom_geometry.png
-        :align: center
-        :scale: 75 %
-
-        Custom section geometry.
-
-    ..  figure:: ../images/sections/custom_mesh.png
-        :align: center
-        :scale: 75 %
-
-        Mesh generated from the above geometry.
+def create_facets(loc: list, connect_back: bool = False, offset: int = 0) -> list:
     """
+    Returns a list of lists of integers representing the "facets" connecting
+    the list of coordinates in 'loc'. It is assumed that 'loc' coordinates are 
+    already in their order of connectivity.
+    
+    'loc': a list of coordinates
+    'connect_back': if True, then the last facet pair will be [len(loc), 0]
+    'offset': an integer representing the value that the facets should begin incrementing from.
+    """
+    idx_peeker = more_itertools.peekable([idx+offset for idx, coords in enumerate(loc)])
+    facets = [[item, idx_peeker.peek(0)] for item in idx_peeker]
+    if connect_back:
+        return facets
+    return facets[:-1]
 
-    def __init__(self, points, facets, holes, control_points, shift=[0, 0], perimeter=[]):
-        """Inits the CustomSection class."""
+def create_exterior_points(shape: Polygon) -> list:
+    """
+    Return a list of lists representing x,y pairs of the exterior
+    perimeter of `polygon`.
+    """
+    acc = [list(coord) for coord in shape.exterior.coords]
+    return acc
 
-        super().__init__(control_points, shift)
+def create_interior_points(lr: LinearRing) -> list:
+    """
+    Return a list of lists representing x,y pairs of the exterior
+    perimeter of `polygon`.
+    """
+    acc = [list(coord) for coord in lr.coords]
+    return acc
 
-        self.points = points
-        self.facets = facets
-        self.holes = holes
-        self.perimeter = perimeter
 
-        self.shift_section()
+def create_points_and_facets(shape: Polygon) -> list:
+    """
+    Return a list of lists representing x,y pairs of the exterior
+    perimeter of `polygon`.
+    """
+    master_count = 0
+    points = []
+    facets = []
+
+    # Shape perimeter
+    for coords in list(shape.exterior.coords):
+        points.append(list(coords))
+        master_count += 1
+    facets += create_facets(points)
+    exterior_count = master_count # Because increment after last iteration assumes another iteration
+    
+    # Holes
+    for idx, hole in enumerate(shape.interiors):
+        break_count = master_count
+        int_points = []
+        for coords in hole.coords:
+            int_points.append(list(coords))
+            master_count += 1
+        
+        offset = break_count*(idx > 0) + exterior_count*(idx < 1) # (idx > 0) is like a 'step function'
+        facets += create_facets(int_points, offset = offset)
+        points += int_points
+        
+    return points, facets
+
+def draw_radius(pt: float, r: float, theta: float, n, ccw: bool = True): # Changed 'anti' to ccw to match shapely
+    """Adds a quarter radius of points to the points list - centered at point *pt*, with radius
+    *r*, starting at angle *theta*, with *n* points. If r = 0, adds pt only.
+
+    :param pt: Centre of radius *(x,y)*
+    :type pt: list[float, float]
+    :param float r: Radius
+    :param float theta: Initial angle
+    :param int n: Number of points
+    :param bool ccw: Counter-clockwise rotation?
+    """
+    points = []
+    if r == 0:
+        points.append(pt)
+        return
+
+    if ccw:
+        mult = 1
+    else:
+        mult = -1
+
+    # calculate radius of points
+    for i in range(n):
+        # determine angle
+        t = theta + mult * i * 1.0 / max(1, n - 1) * np.pi * 0.5
+
+        x = pt[0] + r * np.cos(t)
+        y = pt[1] + r * np.sin(t)
+        points.append([x, y])
+    return points
+
+# class CustomSection(Geometry):
+#     """Constructs a cross-section from a list of points, facets, holes and a user specified control
+#     point.
+
+#     :param points: List of points *(x, y)* defining the vertices of the cross-section
+#     :type points: list[list[float, float]]
+#     :param facets: List of point index pairs *(p1, p2)* defining the edges of the cross-section
+#     :type facets: list[list[int, int]]
+#     :param holes: List of points *(x, y)* defining the locations of holes within the cross-section.
+#         If there are no holes, provide an empty list [].
+#     :type holes: list[list[float, float]]
+#     :param control_points: A list of points *(x, y)* that define different regions of the
+#         cross-section. A control point is an arbitrary point within a region enclosed by facets.
+#     :type control_points: list[list[float, float]]
+#     :param shift: Vector that shifts the cross-section by *(x, y)*
+#     :type shift: list[float, float]
+#     :param perimeter: List of facet indices defining the perimeter of the cross-section
+#     :vartype perimeter: list[int]
+
+#     The following example creates a hollow trapezium with a base width of 100, top width of 50,
+#     height of 50 and a wall thickness of 10. A mesh is generated with a maximum triangular area of
+#     2.0::
+
+#         import sectionproperties.pre.sections as sections
+
+#         points = [[0, 0], [100, 0], [75, 50], [25, 50], [15, 10], [85, 10], [70, 40], [30, 40]]
+#         facets = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4]]
+#         holes = [[50, 25]]
+#         control_points = [[5, 5]]
+#         perimeter = [0, 1, 2, 3]
+
+#         geometry = sections.CustomSection(
+#             points, facets, holes, control_points, perimeter=perimeter
+#         )
+#         mesh = geometry.create_mesh(mesh_sizes=[2.0])
+
+#     ..  figure:: ../images/sections/custom_geometry.png
+#         :align: center
+#         :scale: 75 %
+
+#         Custom section geometry.
+
+#     ..  figure:: ../images/sections/custom_mesh.png
+#         :align: center
+#         :scale: 75 %
+
+#         Mesh generated from the above geometry.
+#     """
+
+#     def __init__(self, points, facets, holes, control_points, shift=[0, 0], perimeter=[]):
+#         """Inits the CustomSection class."""
+
+#         super().__init__(control_points, shift)
+
+#         self.points = points
+        # self.facets = facets
+        # self.holes = holes
+        # self.perimeter = perimeter
+
+        # self.shift_section()
 
 
-class RectangularSection(Geometry):
+def rectangular_section(b, d):
     """Constructs a rectangular section with the bottom left corner at the origin *(0, 0)*, with
     depth *d* and width *b*.
 
@@ -525,24 +661,16 @@ class RectangularSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    min_x = 0 - b/2
+    min_y = 0 - d/2
+    max_x = b/2
+    max_y = d/2
 
-    def __init__(self, d, b, shift=[0, 0]):
-        """Inits the RectangularSection class."""
-
-        # assign control point
-        control_points = [[0.5 * b, 0.5 * d]]
-
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        self.points = [[0, 0], [b, 0], [b, d], [0, d]]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 0]]
-        self.perimeter = list(range(len(self.facets)))
-
-        self.shift_section()
+    rectangle = box(min_x, min_y, max_x, max_y)
+    return Geometry(rectangle)
 
 
-class CircularSection(Geometry):
+def circular_section(d: float, n: int):
     """Constructs a solid circle centered at the origin *(0, 0)* with diameter *d* and using *n*
     points to construct the circle.
 
@@ -571,40 +699,24 @@ class CircularSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    points = []
+    # loop through each point on the circle
+    for i in range(n):
+        # determine polar angle
+        theta = i * 2 * np.pi * 1.0 / n
 
-    def __init__(self, d, n, shift=[0, 0]):
-        """Inits the CircularSection class."""
+        # calculate location of the point
+        x = 0.5 * d * np.cos(theta)
+        y = 0.5 * d * np.sin(theta)
 
-        # assign control point
-        control_points = [[0, 0]]
+        # append the current point to the points list
+        points.append([x, y])
 
-        super().__init__(control_points, shift)
-
-        # loop through each point on the circle
-        for i in range(n):
-            # determine polar angle
-            theta = i * 2 * np.pi * 1.0 / n
-
-            # calculate location of the point
-            x = 0.5 * d * np.cos(theta)
-            y = 0.5 * d * np.sin(theta)
-
-            # append the current point to the points list
-            self.points.append([x, y])
-
-            # if we are not at the last point
-            if i != n - 1:
-                self.facets.append([i, i + 1])
-            # if we are at the last point, complete the circle
-            else:
-                self.facets.append([i, 0])
-
-        self.perimeter = list(range(len(self.facets)))
-
-        self.shift_section()
+    circle = Polygon(points)
+    return Geometry(circle)
 
 
-class Chs(Geometry):
+def circular_hollow_section(d: float, t: float, n: int):
     """Constructs a circular hollow section centered at the origin *(0, 0)*, with diameter *d* and
     thickness *t*, using *n* points to construct the inner and outer circles.
 
@@ -634,48 +746,37 @@ class Chs(Geometry):
 
         Mesh generated from the above geometry.
     """
+    points_inner = []
+    points_outer = []
+    # loop through each point of the CHS
+    for i in range(n):
+        # determine polar angle
+        theta = i * 2 * np.pi * 1.0 / n
 
-    def __init__(self, d, t, n, shift=[0, 0]):
-        """Inits the Chs class."""
+        # calculate location of outer and inner points
+        x_outer = 0.5 * d * np.cos(theta)
+        y_outer = 0.5 * d * np.sin(theta)
+        x_inner = (0.5 * d - t) * np.cos(theta)
+        y_inner = (0.5 * d - t) * np.sin(theta)
 
-        # assign control point
-        control_points = [[d * 0.5 - t * 0.5, 0]]
+        # append the current points to the points list
+        points_outer.append([x_outer, y_outer])
+        points_inner.append([x_inner, y_inner])
 
-        super().__init__(control_points, shift)
-
-        # specify a hole in the centre of the CHS
-        self.holes = [[0, 0]]
-
-        # loop through each point of the CHS
-        for i in range(n):
-            # determine polar angle
-            theta = i * 2 * np.pi * 1.0 / n
-
-            # calculate location of outer and inner points
-            x_outer = 0.5 * d * np.cos(theta)
-            y_outer = 0.5 * d * np.sin(theta)
-            x_inner = (0.5 * d - t) * np.cos(theta)
-            y_inner = (0.5 * d - t) * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
-            self.points.append([x_inner, y_inner])
-
-            # if we are not at the last point
-            if i != n - 1:
-                self.facets.append([i * 2, i * 2 + 2])
-                self.facets.append([i * 2 + 1, i * 2 + 3])
-            # if we are at the last point, complete the circle
-            else:
-                self.facets.append([i * 2, 0])
-                self.facets.append([i * 2 + 1, 1])
-
-        self.perimeter = list(range(0, len(self.facets), 2))
-
-        self.shift_section()
+        # # if we are not at the last point
+        # if i != n - 1:
+        #     self.facets.append([i * 2, i * 2 + 2])
+        #     self.facets.append([i * 2 + 1, i * 2 + 3])
+        # # if we are at the last point, complete the circle
+        # else:
+        #     self.facets.append([i * 2, 0])
+        #     self.facets.append([i * 2 + 1, 1])
+    inner_circle = Polygon(points_inner)
+    outer_circle = Polygon(points_outer)
+    return Geometry(outer_circle - inner_circle)
 
 
-class EllipticalSection(Geometry):
+def elliptical_section(d_y: float, d_x: float, n: int):
     """Constructs a solid ellipse centered at the origin *(0, 0)* with vertical diameter *d_y* and
     horizontal diameter *d_x*, using *n* points to construct the ellipse.
 
@@ -706,40 +807,35 @@ class EllipticalSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    points = []
 
-    def __init__(self, d_y, d_x, n, shift=[0, 0]):
-        """Inits the EllipticalSection class."""
+    # loop through each point on the ellipse
+    for i in range(n):
+        # determine polar angle
+        theta = i * 2 * np.pi * 1.0 / n
 
-        # assign control point centered at zero
-        control_points = [[0, 0]]
+        # calculate location of the point
+        x = 0.5 * d_x * np.cos(theta)
+        y = 0.5 * d_y * np.sin(theta)
 
-        super().__init__(control_points, shift)
+        # append the current point to the points list
+        points.append([x, y])
 
-        # loop through each point on the ellipse
-        for i in range(n):
-            # determine polar angle
-            theta = i * 2 * np.pi * 1.0 / n
+        # # if we are not at the last point
+        # if i != n - 1:
+        #     self.facets.append([i, i + 1])
+        # # if we are at the last point, complete the ellipse
+        # else:
+        #     self.facets.append([i, 0])
 
-            # calculate location of the point
-            x = 0.5 * d_x * np.cos(theta)
-            y = 0.5 * d_y * np.sin(theta)
+    # self.perimeter = list(range(len(self.facets)))
 
-            # append the current point to the points list
-            self.points.append([x, y])
-
-            # if we are not at the last point
-            if i != n - 1:
-                self.facets.append([i, i + 1])
-            # if we are at the last point, complete the ellipse
-            else:
-                self.facets.append([i, 0])
-
-        self.perimeter = list(range(len(self.facets)))
-
-        self.shift_section()
+    # self.shift_section()
+    ellipse = Polygon(points)
+    return Geometry(ellipse)    
 
 
-class Ehs(Geometry):
+def elliptical_hollow_section(d_y:float, d_x:float, t:float, n:int):
     """Constructs an elliptical hollow section centered at the origin *(0, 0)*, with outer vertical
     diameter *d_y*, outer horizontal diameter *d_x*, and thickness *t*, using *n* points to
     construct the inner and outer ellipses.
@@ -772,48 +868,42 @@ class Ehs(Geometry):
 
         Mesh generated from the above geometry.
     """
+    points_inner = []
+    points_outer = []
+    # loop through each point of the EHS
+    for i in range(n):
+        # determine polar angle
+        theta = i * 2 * np.pi * 1.0 / n
 
-    def __init__(self, d_y, d_x, t, n, shift=[0, 0]):
-        """Inits the Ehs class."""
+        # calculate location of outer and inner points
+        x_outer = 0.5 * d_x * np.cos(theta)
+        y_outer = 0.5 * d_y * np.sin(theta)
+        x_inner = ((0.5 * d_x) - t) * np.cos(theta)
+        y_inner = ((0.5 * d_y) - t) * np.sin(theta)
 
-        # assign control point
-        control_points = [[(d_x * 0.5) - (t * 0.5), 0]]
+        # append the current points to the points list
+        points_outer.append([x_outer, y_outer])
+        points_inner.append([x_inner, y_inner])
 
-        super().__init__(control_points, shift)
+    #     # if we are not at the last point
+    #     if i != n - 1:
+    #         self.facets.append([i * 2, i * 2 + 2])
+    #         self.facets.append([i * 2 + 1, i * 2 + 3])
+    #     # if we are at the last point, complete the circle
+    #     else:
+    #         self.facets.append([i * 2, 0])
+    #         self.facets.append([i * 2 + 1, 1])
 
-        # specify a hole in the centre of the EHS
-        self.holes = [[0, 0]]
+    # self.perimeter = list(range(0, len(self.facets), 2))
 
-        # loop through each point of the EHS
-        for i in range(n):
-            # determine polar angle
-            theta = i * 2 * np.pi * 1.0 / n
-
-            # calculate location of outer and inner points
-            x_outer = 0.5 * d_x * np.cos(theta)
-            y_outer = 0.5 * d_y * np.sin(theta)
-            x_inner = ((0.5 * d_x) - t) * np.cos(theta)
-            y_inner = ((0.5 * d_y) - t) * np.sin(theta)
-
-            # append the current points to the points list
-            self.points.append([x_outer, y_outer])
-            self.points.append([x_inner, y_inner])
-
-            # if we are not at the last point
-            if i != n - 1:
-                self.facets.append([i * 2, i * 2 + 2])
-                self.facets.append([i * 2 + 1, i * 2 + 3])
-            # if we are at the last point, complete the circle
-            else:
-                self.facets.append([i * 2, 0])
-                self.facets.append([i * 2 + 1, 1])
-
-        self.perimeter = list(range(0, len(self.facets), 2))
-
-        self.shift_section()
+    # self.shift_section()
+    outer = Polygon(points_outer)
+    inner = Polygon(points_inner)
+    return Geometry(outer - inner)
 
 
-class Rhs(Geometry):
+
+def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: int):
     """Constructs a rectangular hollow section centered at *(b/2, d/2)*, with depth *d*, width *b*,
     thickness *t* and outer radius *r_out*, using *n_r* points to construct the inner and outer
     radii. If the outer radius is less than the thickness of the RHS, the inner radius is set to
@@ -848,59 +938,52 @@ class Rhs(Geometry):
 
         Mesh generated from the above geometry.
     """
+    points_inner = []
+    points_outer = []
+    # calculate internal radius
+    r_in = max(r_out - t, 0)
 
-    def __init__(self, d, b, t, r_out, n_r, shift=[0, 0]):
-        """Inits the Rhs class."""
+    # construct the outer radius points
+    points_outer += draw_radius([r_out, r_out], r_out, np.pi, n_r)
+    points_outer += draw_radius([b - r_out, r_out], r_out, 1.5 * np.pi, n_r)
+    points_outer += draw_radius([b - r_out, d - r_out], r_out, 0, n_r)
+    points_outer += draw_radius([r_out, d - r_out], r_out, 0.5 * np.pi, n_r)
 
-        # assign control point
-        control_points = [[b - t * 0.5, d * 0.5]]
+    # # construct the outer radius facet list
+    # n_outer = len(self.points)
+    # for i in range(n_outer):
+    #     # if we are not at the last point
+    #     if i != n_outer - 1:
+    #         self.facets.append([i, i + 1])
+    #     # if we are at the last point, complete the loop
+    #     else:
+    #         self.facets.append([i, 0])
 
-        super().__init__(control_points, shift)
+    # construct the inner radius points
+    points_inner += draw_radius([t + r_in, t + r_in], r_in, np.pi, n_r)
+    points_inner += draw_radius([b - t - r_in, t + r_in], r_in, 1.5 * np.pi, n_r)
+    points_inner += draw_radius([b - t - r_in, d - t - r_in], r_in, 0, n_r)
+    points_inner += draw_radius([t + r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r)
 
-        # specify a hole in the centre of the RHS
-        self.holes = [[b * 0.5, d * 0.5]]
+    # # construct the inner radius facet list
+    # n_inner = len(self.points) - n_outer
+    # for i in range(n_inner):
+    #     # if we are not at the last point
+    #     if i != n_inner - 1:
+    #         self.facets.append([i + n_outer, i + n_outer + 1])
+    #     # if we are at the last point, complete the loop
+    #     else:
+    #         self.facets.append([i + n_outer, n_outer])
 
-        # calculate internal radius
-        r_in = max(r_out - t, 0)
+    # self.perimeter = list(range(int(len(self.facets) / 2)))
 
-        # construct the outer radius points
-        self.draw_radius([r_out, r_out], r_out, np.pi, n_r)
-        self.draw_radius([b - r_out, r_out], r_out, 1.5 * np.pi, n_r)
-        self.draw_radius([b - r_out, d - r_out], r_out, 0, n_r)
-        self.draw_radius([r_out, d - r_out], r_out, 0.5 * np.pi, n_r)
-
-        # construct the outer radius facet list
-        n_outer = len(self.points)
-        for i in range(n_outer):
-            # if we are not at the last point
-            if i != n_outer - 1:
-                self.facets.append([i, i + 1])
-            # if we are at the last point, complete the loop
-            else:
-                self.facets.append([i, 0])
-
-        # construct the inner radius points
-        self.draw_radius([t + r_in, t + r_in], r_in, np.pi, n_r)
-        self.draw_radius([b - t - r_in, t + r_in], r_in, 1.5 * np.pi, n_r)
-        self.draw_radius([b - t - r_in, d - t - r_in], r_in, 0, n_r)
-        self.draw_radius([t + r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r)
-
-        # construct the inner radius facet list
-        n_inner = len(self.points) - n_outer
-        for i in range(n_inner):
-            # if we are not at the last point
-            if i != n_inner - 1:
-                self.facets.append([i + n_outer, i + n_outer + 1])
-            # if we are at the last point, complete the loop
-            else:
-                self.facets.append([i + n_outer, n_outer])
-
-        self.perimeter = list(range(int(len(self.facets) / 2)))
-
-        self.shift_section()
+    # self.shift_section()
+    outer = Polygon(points_outer)
+    inner = Polygon(points_inner)
+    return Geometry(outer-inner)
 
 
-class ISection(Geometry):
+def wide_flange_section(d: float, b: float, t_f: float, t_w: float, r: float, n_r: int): # More specific description and less ambiguous? e.g. not an "S" section.
     """Constructs an I-section centered at *(b/2, d/2)*, with depth *d*, width *b*, flange
     thickness *t_f*, web thickness *t_w*, and root radius *r*, using *n_r* points to construct the
     root radius.
@@ -935,57 +1018,40 @@ class ISection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    points = []
 
-    def __init__(self, d, b, t_f, t_w, r, n_r, shift=[0, 0]):
-        """Inits the ISection class."""
+    # add first three points
+    points.append([0, 0])
+    points.append([b, 0])
+    points.append([b, t_f])
 
-        # assign control point
-        control_points = [[b * 0.5, d * 0.5]]
+    # construct the bottom right radius
+    pt = [b * 0.5 + t_w * 0.5 + r, t_f + r]
+    points += draw_radius(pt, r, 1.5 * np.pi, n_r, False)
 
-        super().__init__(control_points, shift)
+    # construct the top right radius
+    pt = [b * 0.5 + t_w * 0.5 + r, d - t_f - r]
+    points += draw_radius(pt, r, np.pi, n_r, False)
 
-        # add first three points
-        self.points.append([0, 0])
-        self.points.append([b, 0])
-        self.points.append([b, t_f])
+    # add the next four points
+    points.append([b, d - t_f])
+    points.append([b, d])
+    points.append([0, d])
+    points.append([0, d - t_f])
 
-        # construct the bottom right radius
-        pt = [b * 0.5 + t_w * 0.5 + r, t_f + r]
-        self.draw_radius(pt, r, 1.5 * np.pi, n_r, False)
+    # construct the top left radius
+    pt = [b * 0.5 - t_w * 0.5 - r, d - t_f - r]
+    points += draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
-        # construct the top right radius
-        pt = [b * 0.5 + t_w * 0.5 + r, d - t_f - r]
-        self.draw_radius(pt, r, np.pi, n_r, False)
+    # construct the bottom left radius
+    pt = [b * 0.5 - t_w * 0.5 - r, t_f + r]
+    points += draw_radius(pt, r, 0, n_r, False)
 
-        # add the next four points
-        self.points.append([b, d - t_f])
-        self.points.append([b, d])
-        self.points.append([0, d])
-        self.points.append([0, d - t_f])
+    # # add the last point
+    points.append([0, t_f])
+    w_section = Polygon(points)
+    return Geometry(w_section)
 
-        # construct the top left radius
-        pt = [b * 0.5 - t_w * 0.5 - r, d - t_f - r]
-        self.draw_radius(pt, r, 0.5 * np.pi, n_r, False)
-
-        # construct the bottom left radius
-        pt = [b * 0.5 - t_w * 0.5 - r, t_f + r]
-        self.draw_radius(pt, r, 0, n_r, False)
-
-        # add the last point
-        self.points.append([0, t_f])
-
-        # build the facet list
-        for i in range(len(self.points)):
-            # if we are not at the last point
-            if i != len(self.points) - 1:
-                self.facets.append([i, i + 1])
-            # if we are at the last point, complete the loop
-            else:
-                self.facets.append([len(self.points) - 1, 0])
-
-        self.perimeter = list(range(len(self.facets)))
-
-        self.shift_section()
 
 
 class MonoISection(Geometry):
