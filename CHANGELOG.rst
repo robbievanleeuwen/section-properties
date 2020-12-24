@@ -1,6 +1,12 @@
 Change Log:
 ===========
 
+v1.0.8:
+-------
+
+- All plots now return figure and axes objects
+- Fix bug in frame_properties causing the program to crash under certain circumstances
+
 v1.0.7:
 -------
 
