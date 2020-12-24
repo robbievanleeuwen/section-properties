@@ -6,6 +6,7 @@ import sectionproperties.post.post as post
 import ezdxf
 import ezdxf.recover as recover
 from ezdxf.math import Vector
+import math
 
 
 class Geometry:
@@ -2355,8 +2356,24 @@ class ImportDXF(Geometry):
                 radius = e.dxf.radius * conversion_factor
 
                 local_center = e.dxf.center * conversion_factor
-                local_start_angle = np.radians(e.dxf.start_angle)
-                internal_angle = np.radians(np.abs(e.dxf.start_angle - e.dxf.end_angle))
+                start_angle = e.dxf.start_angle
+                end_angle = e.dxf.end_angle
+
+                if math.isclose(start_angle, end_angle):
+                    internal_angle = 0.0
+                else:
+                    # Special treatment for end angle == 360 deg:
+                    if not math.isclose(end_angle, 360.0):
+                        end_angle %= 360.0
+
+                    start_angle %= 360.0
+                    if end_angle < start_angle:
+                        end_angle += 360.0
+                    internal_angle = end_angle - start_angle
+
+                start_angle = np.radians(start_angle)
+                end_angle = np.radians(end_angle)
+                internal_angle = np.radians(internal_angle)
 
                 # Extrusion vector normalization should not be necessary, but don't rely on any DXF
                 Az = Vector(e.dxf.extrusion).normalize()
@@ -2370,8 +2387,8 @@ class ImportDXF(Geometry):
                 Wx = Vector(Ax.x, Ay.x, 0.)
                 Wy = Vector(Ax.y, Ay.y, 0.)
 
-                x = local_center[0] + radius * np.cos(local_start_angle)
-                y = local_center[1] + radius * np.sin(local_start_angle)
+                x = local_center[0] + radius * np.cos(start_angle)
+                y = local_center[1] + radius * np.sin(start_angle)
 
                 x_global = x * Wx.x + y * Wx.y
                 y_global = x * Wy.x + y * Wy.y
@@ -2380,7 +2397,7 @@ class ImportDXF(Geometry):
 
                 for i in range(1, number_of_subdivisions + 1):
 
-                    current_angle = local_start_angle + i * internal_angle / number_of_subdivisions
+                    current_angle = start_angle + i * internal_angle / number_of_subdivisions
 
                     x = local_center[0] + radius * np.cos(current_angle)
                     y = local_center[1] + radius * np.sin(current_angle)
