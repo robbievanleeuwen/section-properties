@@ -511,7 +511,7 @@ class GeometryCleaner:
             self.geometry.facets.pop(idx)
 
 
-def check_geometry(points, facets, holes, control_points, tolerance=1.0e-7):
+def check_geometry(points, facets, holes, control_points, atol=1.0e-8):
     """Check that holes and control points do not lie on a facet line.
 
     :param points: List of points *(x, y)* defining the vertices of the cross-section
@@ -524,8 +524,8 @@ def check_geometry(points, facets, holes, control_points, tolerance=1.0e-7):
     :param control_points: A list of points *(x, y)* that define different regions of the
         cross-section. A control point is an arbitrary point within a region enclosed by facets.
     :type control_points: list[list[float, float]]
-    :param tolerance: minimum permissable distance from facet
-    :type tolerance: float
+    :param atol: minimum permissable point distance from any section facet
+    :type atol: float
 
     General method was adapted from:
     https://stackoverflow.com/a/54442561
@@ -543,8 +543,7 @@ def check_geometry(points, facets, holes, control_points, tolerance=1.0e-7):
     facet_vectors = end - start
     lengths = np.sqrt(np.einsum('ij,ij->i', facet_vectors, facet_vectors))
     if np.any(lengths == 0.0):
-        # if a length is zero, then a facet had the same starting and ending
-        # point
+        # if a length is zero, then a facet had the same starting and ending point
         facet_indices = np.nonzero(lengths == 0)[0]
         offending_facets = facet_points[facet_indices]
         facet_point_indices = np.array(facets)[facet_indices]
@@ -553,8 +552,7 @@ def check_geometry(points, facets, holes, control_points, tolerance=1.0e-7):
             facet_indices, offending_facets, facet_point_indices
         ):
             message += (
-                f'\nFacet {index} with points {point_indices.tolist()} at '
-                f'{facet.tolist()}'
+                f'\nFacet {index} with points {point_indices.tolist()} at ' f'{facet.tolist()}'
             )
         raise GeometryError(
             f'{offending_facets.shape[0]} facets have the same starting and '
@@ -572,11 +570,7 @@ def check_geometry(points, facets, holes, control_points, tolerance=1.0e-7):
 
     # clamped parallel distance
     clamped_distances = np.maximum.reduce(
-        [
-            signed_parallel_vec1,
-            signed_parallel_vec2,
-            np.zeros_like(signed_parallel_vec1),
-        ]
+        [signed_parallel_vec1, signed_parallel_vec2, np.zeros_like(signed_parallel_vec1)]
     )
 
     # calculate the cross product to get the perpendicular distance
@@ -587,24 +581,20 @@ def check_geometry(points, facets, holes, control_points, tolerance=1.0e-7):
 
     # make sure that the closest distance is not within the allowed tolerance
     if np.min(minimum_distances) < tolerance:
-        # select the offending points and type of point, then raise an
-        # exception with that information
+        # select the offending points and point type, then raise an exception with that information
         distance_check = (minimum_distances < tolerance).sum(axis=0)
-        point_types = np.array(
-            ['Hole'] * len(holes) + ['Control Point'] * len(control_points)
-        )
+        point_types = np.array(['Hole'] * len(holes) + ['Control Point'] * len(control_points))
         offending_types = point_types[distance_check > 0]
         offending_coords = check_points[distance_check > 0]
         message = ''
         for point_type, coordinates in zip(offending_types, offending_coords):
             message += f'\n{point_type} @ {coordinates}'
         raise GeometryError(
-            f'{offending_coords.shape[0]} points are too close to a facet:'
-            f'{message}'
+            f'{offending_coords.shape[0]} points are too close to a facet:' f'{message}'
         )
 
 
-def create_mesh(points, facets, holes, control_points, mesh_sizes, tolerance=1.0e-7):
+def create_mesh(points, facets, holes, control_points, mesh_sizes, atol=1.0e-8):
     """Creates a quadratic triangular mesh using the meshpy module, which utilises the code
     'Triangle', by Jonathan Shewchuk.
 
@@ -620,12 +610,14 @@ def create_mesh(points, facets, holes, control_points, mesh_sizes, tolerance=1.0
     :type control_points: list[list[float, float]]
     :param mesh_sizes: List of maximum element areas for each region defined by a control point
     :type mesh_sizes: list[float]
+    :param atol: minimum permissable point distance from any section facet
+    :type atol: float
 
     :return: Object containing generated mesh data
     :rtype: :class:`meshpy.triangle.MeshInfo`
     """
 
-    check_geometry(points, facets, holes, control_points, tolerance=tolerance)
+    check_geometry(points, facets, holes, control_points, atol=atol)
 
     mesh = triangle.MeshInfo()  # create mesh info object
     mesh.set_points(points)  # set points
