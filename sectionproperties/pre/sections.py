@@ -45,13 +45,16 @@ class Geometry:
 
 
     def create_facets_and_control_points(self):
-        self.points, self.facets = create_points_and_facets(self.geom)
-        self.control_points = list(self.geom.representative_point().coords)
+		if isinstance(self.geom, MultiPolygon): polygons = list(self.geom.geoms)
+		else: polygons = [self.geom]
+		for polygon in polygons:
+            self.points, self.facets = create_points_and_facets(polygon)
+            self.control_points = list(polygon.representative_point().coords)
         self.holes = []
         self.perimeter = list(range(len(self.geom.exterior.coords)))
-        for hole in self.geom.interiors:
+        for hole in polygon.interiors:
             hole_polygon = Polygon(hole)
-            self.holes.append(list(hole_polygon.representative_point().coords)[0])
+					self.holes.append(list(hole_polygon.representative_point().coords)[0])
 
 
     # def create_mesh(self, mesh_sizes: Union[float, list]):
@@ -325,7 +328,7 @@ def create_interior_points(lr: LinearRing) -> list:
     return acc
 
 
-def create_points_and_facets(shape: Polygon) -> list:
+def create_points_and_facets(shape: Polygon) -> tuple:
     """
     Return a list of lists representing x,y pairs of the exterior
     perimeter of `polygon`.
@@ -333,6 +336,8 @@ def create_points_and_facets(shape: Polygon) -> list:
     master_count = 0
     points = []
     facets = []
+    
+    
 
     # Shape perimeter
     for coords in list(shape.exterior.coords):
