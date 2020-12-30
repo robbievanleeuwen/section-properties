@@ -1,3 +1,4 @@
+from typing import Union
 import copy
 import numpy as np
 from scipy.sparse import csc_matrix, coo_matrix, linalg
@@ -9,6 +10,7 @@ import matplotlib.patches as mpatches
 from matplotlib.colors import ListedColormap
 import meshpy.triangle as triangle
 import sectionproperties.pre.pre as pre
+import sectionproperties.pre.sections as sections
 import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
@@ -98,10 +100,14 @@ class CrossSection:
     :raises AssertionError: If the number of materials does not equal the number of regions
     """
 
-    def __init__(self, geometry, mesh, materials=None, time_info=False):
+    def __init__(self, geometry: Union[sections.Geometry, sections.CompoundGeometry], materials=None, mesh_size=1, time_info=False):
         """Inits the CrossSection class."""
+        self.geometry = geometry
+        self.materials = materials
+        self.time_info = time_info
+        self.mesh_size = mesh_size
 
-        def init():
+        def init(mesh):
             self.geometry = geometry  # save geometry data
 
             # extract mesh data
@@ -121,8 +127,8 @@ class CrossSection:
             # if materials are specified, check that the right number of material properties are
             # specified and then populate material_groups list
             if materials is not None:
-                str = "Number of materials ({0}), ".format(len(materials))
-                str += "should match the number of regions ({0}).".format(
+                info_str = "Number of materials ({0}), ".format(len(materials))
+                info_str += "should match the number of regions ({0}).".format(
                     max(attributes) + 1)
                 assert(len(materials) == max(attributes) + 1), str
 
@@ -198,7 +204,7 @@ class CrossSection:
             solver.function_timer(text, init)
             print("")
         else:
-            init()
+            init(self.geometry.create_mesh(self.mesh_size))
 
     def calculate_geometric_properties(self, time_info=False):
         """Calculates the geometric properties of the cross-section and stores them in the
@@ -417,7 +423,7 @@ class CrossSection:
         self.section_props.phi_shear = phi_shear
 
         # assemble shear centre and warping moment integrals
-        def assemle_sc_warping_integrals():
+        def assemble_sc_warping_integrals():
             sc_xint = 0
             sc_yint = 0
             q_omega = 0
@@ -705,8 +711,8 @@ class CrossSection:
 
             # shift the coordinates of each element N.B. the mesh class attribute remains unshifted
             for el in warping_section.elements:
-                el.coords[0, :] -= self.section_props.cx
-                el.coords[1, :] -= self.section_props.cy
+                el.coords[0, :] -= self.section_props.cx # Does this assume an origin location?
+                el.coords[1, :] -= self.section_props.cy # Does this assume an origin location?
 
             (k, _, f) = warping_section.assemble_torsion(lg=False)
 
@@ -784,9 +790,9 @@ class CrossSection:
             try:
                 plastic_section.calculate_plastic_properties(self, verbose)
             except ValueError:
-                str = "Plastic section properties calculation failed. Contact "
-                str += "robbie.vanleeuwen@gmail.com with your analysis parameters."
-                raise RuntimeError(str)
+                info_str = "Plastic section properties calculation failed. Contact "
+                info_str += "robbie.vanleeuwen@gmail.com with your analysis parameters."
+                raise RuntimeError(info_str)
 
         if time_info:
             text = "--Calculating plastic properties..."
@@ -1997,11 +2003,11 @@ class PlasticSection:
         """
 
         if not root_result.converged:
-            str = "Plastic centroid calculation about the {0}".format(axis)
-            str += " failed. Contact robbie.vanleeuwen@gmail.com with your"
-            str += " analysis parameters. Termination flag: {0}".format(root_result.flag)
+            info_str = "Plastic centroid calculation about the {0}".format(axis)
+            info_str += " failed. Contact robbie.vanleeuwen@gmail.com with your"
+            info_str += " analysis parameters. Termination flag: {0}".format(root_result.flag)
 
-            raise RuntimeError(str)
+            raise RuntimeError(info_str)
 
     def print_verbose(self, d, root_result, axis):
         """Prints information related to the function solver convergence to the terminal.
@@ -2012,9 +2018,9 @@ class PlasticSection:
         :param string axis: Axis being considered by the function sovler
         """
 
-        str = "---{0} plastic centroid calculation converged at ".format(axis)
-        str += "{0:.5e} in {1} iterations.".format(d, root_result.iterations)
-        print(str)
+        info_str = "---{0} plastic centroid calculation converged at ".format(axis)
+        info_str += "{0:.5e} in {1} iterations.".format(d, root_result.iterations)
+        print(info_str)
 
     def calculate_extreme_fibres(self, angle):
         """Calculates the locations of the extreme fibres along and perpendicular to the axis

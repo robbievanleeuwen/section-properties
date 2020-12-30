@@ -30,7 +30,7 @@ class Geometry:
     :cvar perimeter: List of facet indices defining the perimeter of the cross-section
     :vartype perimeter: list[int]
     """
-    def __init__(self, geom: Union[shapely.geometry.Polygon, shapely.geometry.MultiPolygon]):
+    def __init__(self, geom: shapely.geometry.Polygon):
         """Inits the Geometry class.
         Old args; control_points, shift
         """
@@ -44,63 +44,75 @@ class Geometry:
         # self.mesh = None # Previously not a property
 
 
+    def _repr_svg_(self):
+        print("sectionproperties.pre.sections.Geometry")
+        print(f"object at: {hex(id(self))}")
+        return self.geom._repr_svg_()
+
+
     def create_facets_and_control_points(self):
-		if isinstance(self.geom, MultiPolygon): polygons = list(self.geom.geoms)
-		else: polygons = [self.geom]
-		for polygon in polygons:
-            self.points, self.facets = create_points_and_facets(polygon)
-            self.control_points = list(polygon.representative_point().coords)
+        self.perimeter = None
+        if not isinstance(self.geom, list):
+            self.perimeter = list(range(len(self.geom.exterior.coords)))
         self.holes = []
-        self.perimeter = list(range(len(self.geom.exterior.coords)))
-        for hole in polygon.interiors:
+        self.points = []
+        self.facets = []
+        self.points, self.facets = create_points_and_facets(self.geom)
+        self.control_points = list(self.geom.representative_point().coords)
+
+        for hole in self.geom.interiors:
             hole_polygon = Polygon(hole)
-					self.holes.append(list(hole_polygon.representative_point().coords)[0])
+            self.holes += list(hole_polygon.representative_point().coords)
+        return
 
+    def compile_geometry(self): # Alias
+        self.create_facets_and_control_points()
 
-    # def create_mesh(self, mesh_sizes: Union[float, list]):
-    #     """Creates a quadratic triangular mesh from the Geometry object.
+    def create_mesh(self, mesh_sizes: Union[float, list]):
+        """Creates a quadratic triangular mesh from the Geometry object.
 
-    #     :param mesh_sizes: A list of maximum element areas corresponding to each region within the
-    #         cross-section geometry.
-    #     :type mesh_size: list[float]
+        :param mesh_sizes: A list of maximum element areas corresponding to each region within the
+            cross-section geometry.
+        :type mesh_size: list[float]
 
-    #     :return: Object containing generated mesh data
-    #     :rtype: :class:`mesh.triangle.MeshInfo`
+        :return: Object containing generated mesh data
+        :rtype: :class:`mesh.triangle.MeshInfo`
 
-    #     :raises AssertionError: If the number of mesh sizes does not match the number of regions
+        :raises AssertionError: If the number of mesh sizes does not match the number of regions
 
-    #     The following example creates a circular cross-section with a diameter of 50 with 64
-    #     points, and generates a mesh with a maximum triangular area of 2.5::
+        The following example creates a circular cross-section with a diameter of 50 with 64
+        points, and generates a mesh with a maximum triangular area of 2.5::
 
-    #         import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.sections as sections
 
-    #         geometry = sections.CircularSection(d=50, n=64)
-    #         mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            geometry = sections.CircularSection(d=50, n=64)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
 
-    #     ..  figure:: ../images/sections/circle_mesh.png
-    #         :align: center
-    #         :scale: 75 %
+        ..  figure:: ../images/sections/circle_mesh.png
+            :align: center
+            :scale: 75 %
 
-    #         Mesh generated from the above geometry.
-    #     """
-    #     self.create_facets_and_control_points()
-    #     if isinstance(mesh_sizes, float): mesh_sizes = [mesh_sizes]
+            Mesh generated from the above geometry.
+        """
+        self.compile_geometry()
+        if isinstance(mesh_sizes, (float, int)): mesh_sizes = [mesh_sizes]*len(self.control_points)
 
-    #     error_str = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
-    #         len(mesh_sizes), len(self.control_points)
-    #     )
-    #     assert(len(mesh_sizes) == len(self.control_points)), error_str
+        error_str = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
+            len(mesh_sizes), len(self.control_points)
+        )
+        assert(len(mesh_sizes) == len(self.control_points)), error_str
 
-    #     self.mesh = pre.create_mesh(
-    #         self.points, self.facets, self.holes, self.control_points, mesh_sizes)
-    #     return self.mesh
+        self.mesh = pre.create_mesh(
+            self.points, self.facets, self.holes, self.control_points, mesh_sizes)
+        return self.mesh
+
 
     def shift_section(self, x_offset=0., y_offset=0.,):
         """Shifts the cross-section parameters by the class variable vector *shift*."""
 
-        self.geom = shapely.affinity.translate(self.geom, x_offset, y_offset)
-        self.control_points = self.geom.representative_point() if self.control_points else None
-        return self.geom
+        new_geom = Geometry(shapely.affinity.translate(self.geom, x_offset, y_offset))
+        # self.control_points = self.geom.representative_point() if self.control_points else None
+        return new_geom
 
 
     def rotate_section(self, angle, rot_point=None, use_radians=False):
@@ -121,8 +133,9 @@ class Geometry:
             geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
             geometry.rotate_section(angle=-30)
         """
-        self.geom = shapely.affinity.rotate(self.geom, angle, rot_point, use_radians)
-        return self.geom
+        new_geom = Geometry(shapely.affinity.rotate(self.geom, angle, rot_point, use_radians))
+        # self.control_points = self.geom.representative_point() if self.control_points else None
+        return new_geom
 
 
     def mirror_section(self, axis='x', mirror_point: Union[List[float], str] = 'center'):
@@ -151,8 +164,8 @@ class Geometry:
         y_mirror = 1
         if axis == "x": x_mirror = -x_mirror
         elif axis == "y": y_mirror = -y_mirror
-        self.geom = shapely.affinity.scale(x_mirror, y_mirror, mirror_point)
-        return self.geom
+        new_geom = Geometry(shapely.affinity.scale(self.geom, x_mirror, y_mirror, mirror_point))
+        return new_geom
 
 
     def offset_section_perimeter(self, amount:float = 0, resolution: float = 12):
@@ -171,12 +184,12 @@ class Geometry:
             geometry = sections.pfc_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             geometry.erode_section(amount=-3)
         """
-        self.geom = self.geom.buffer(
+        new_geom = self.geom.buffer(
             distance=amount, 
             join_style=1, 
             resolution=resolution
             )
-        return self.geom
+        return Geometry(new_geom)
 
 
     def plot_geometry(self, ax=None, pause=True, labels=False, perimeter=False):
@@ -208,7 +221,8 @@ class Geometry:
             Geometry generated by the above example.
         """
         # if no axes object is supplied, create and setup the plot
-        self.create_facets_and_control_points()
+        self.compile_geometry()
+        fig = None
         if ax is None:
             ax_supplied = False
             (fig, ax) = plt.subplots()
@@ -250,28 +264,31 @@ class Geometry:
             else:
                 ax.plot(cp[0], cp[1], 'bo', markerSize=5)
 
-        # display the legend
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
         # display the labels
         if labels:
-            # plot node labels
-            for (i, pt) in enumerate(self.points):
-                ax.annotate(str(i), xy=pt, color='r')
+            # plot control_point labels
+            # With shapely, it will be useful to have numbered regions
+            # to match with lists of Materials
+            for (i, pt) in enumerate(self.control_points):
+                ax.annotate(str(i), xy=pt, color='b')
 
-            # plot facet labels
-            for (i, fct) in enumerate(self.facets):
-                pt1 = self.points[fct[0]]
-                pt2 = self.points[fct[1]]
-                xy = [(pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2]
+            # for (i, pt) in enumerate(self.points):
+            #     ax.annotate(str(i), xy=pt, color='r')
 
-                ax.annotate(str(i), xy=xy, color='b')
+            # # plot facet labels
+            # for (i, fct) in enumerate(self.facets):
+            #     pt1 = self.points[fct[0]]
+            #     pt2 = self.points[fct[1]]
+            #     xy = [(pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2]
+
+            #     ax.annotate(str(i), xy=xy, color='b')
 
         # if no axes object is supplied, finish the plot
         if not ax_supplied:
             post.finish_plot(ax, pause, title='Cross-Section Geometry')
-            print(self.holes)
             return (fig, ax)
+        return (fig, ax)
 
     def calculate_extents(self):
         """Calculates the minimum and maximum x and y-values amongst the list of points.
@@ -291,6 +308,143 @@ class Geometry:
         """
         perimeter = self.geom.exterior.length
         return perimeter
+
+    def __or__(self, other):
+        try:
+            new_polygon = self.geom | other.geom
+            if isinstance(new_polygon, MultiPolygon): 
+                return CompoundGeometry([Geometry(polygon) for polygon in new_polygon.geoms])
+            return Geometry(new_polygon)
+        except:
+            raise ValueError(
+        f"Cannot perform 'union' on these two Geometry instances: {self} | {other}"
+        )
+
+    def __xor__(self, other):
+        try:
+            new_polygon = self.geom ^ other.geom
+            if isinstance(new_polygon, MultiPolygon): 
+                return CompoundGeometry([Geometry(polygon) for polygon in new_polygon.geoms])
+            return Geometry(new_polygon)
+        except:
+            raise ValueError(
+        f"Cannot perform 'symmetric difference' on these two Geometry instances: {self} ^ {other}"
+        )
+
+    def __sub__(self, other):
+        # try:
+        new_polygon = self.geom - other.geom
+        if isinstance(new_polygon, MultiPolygon): 
+            return CompoundGeometry([Geometry(polygon) for polygon in new_polygon.geoms])
+        return Geometry(new_polygon)
+        # except:
+        #     raise ValueError(
+        # f"Cannot perform 'difference' on these two Geometry instances: {self} - {other}"
+        # )
+
+    def __and__(self, other):
+        try:
+            new_polygon = self.geom & other.geom
+            if isinstance(new_polygon, MultiPolygon): 
+                return CompoundGeometry([Geometry(polygon) for polygon in new_polygon.geoms])
+            return Geometry(new_polygon)
+        except:
+            raise ValueError(
+        f"Cannot perform 'intersection' on these two Geometry instances: {self} & {other}"
+        )
+
+### 
+class CompoundGeometry(Geometry):
+    def __init__(self, geoms: Union[MultiPolygon, List[Geometry]]):
+        if isinstance(geoms, MultiPolygon):
+            self.geoms = [Geometry(geom) for geom in geoms.geoms]
+            self.geom = geoms
+        elif isinstance(geoms, list):
+            self.geoms = geoms
+            self.geom = MultiPolygon([geom.geom for geom in geoms])
+        # self.geom = geoms
+        # self.geoms = MultiPolygon([geom for geom in self.geom])
+        self.control_points = []
+        self.points = [] 
+        self.facets = [] 
+        self.holes = [] 
+        self.perimeter = [] 
+        # self.mesh = None # Previously not a property
+
+    def _repr_svg_(self):
+        print("sectionproperties.pre.sections.CompoundGeometry")
+        print(f"object at: {hex(id(self))}")
+        return self.geom._repr_svg_()
+
+    # def plot_geometry(self, ax=None, pause=True, labels=False, perimeter=False):
+    #     if ax is None:
+    #         fig, ax = plt.subplots()
+    #         post.setup_plot(ax, pause)
+    #     for geom in self.geoms:
+    #         fig, ax = geom.plot_geometry(ax=ax, pause=pause, labels=labels, perimeter=perimeter)
+    #     post.finish_plot(ax, pause, title='Cross-Section Geometry')
+    #     return fig, ax
+
+    def shift_section(self, x_offset: float = 0, y_offset: float = 0):
+        geoms_acc = []
+        for geom in self.geoms:
+            geoms_acc.append(geom.shift_section(x_offset=x_offset, y_offset=y_offset))
+        new_geom = CompoundGeometry(geoms_acc)
+        return new_geom
+
+    def rotate_section(self, angle, rot_point=None, use_radians=False):
+        geoms_acc = []
+        for geom in self.geoms:
+            geoms_acc.append(geom.rotate_section(angle, rot_point, use_radians))
+        new_geom = CompoundGeometry(geoms_acc)
+        return new_geom
+
+    def mirror_section(self, axis='x', mirror_point: Union[List[float], str] = 'center'):
+        geoms_acc = []
+        for geom in self.geoms:
+            geoms_acc.append(geom.mirror_section(axis, mirror_point))
+        new_geom = CompoundGeometry(geoms_acc)
+        return new_geom
+
+    def offset_section_perimeter(self, amount:float = 0, resolution: float = 12):
+        geoms_acc = []
+        for geom in self.geoms:
+            geoms_acc.append(geom.offset_section_perimeter(amount, resolution))
+        new_geom = CompoundGeometry(geoms_acc)
+        return new_geom
+
+    def compile_geometry(self):
+        point_count = 0
+        self.points = []
+        self.facets = []
+        self.control_points = []
+        self.holes = []
+
+        # loop through all sections
+        for geom in self.geoms:
+            if not all([geom.points, geom.facets, geom.control_points]):
+                geom.create_facets_and_control_points() # If not previously done
+
+            # add facets
+            for facet in geom.facets:
+                self.facets.append([facet[0] + point_count, facet[1] + point_count])
+
+            # add points and count points
+            for point in geom.points:
+                self.points.append([point[0], point[1]])
+                point_count += 1
+
+            # add holes
+            for hole in geom.holes:
+                self.holes.append([hole[0], hole[1]])
+
+            # add control points
+            for control_point in geom.control_points:
+                self.control_points.append([control_point[0], control_point[1]])
+
+
+    
+
 
 
 ### Helper functions for Geometry
@@ -337,8 +491,6 @@ def create_points_and_facets(shape: Polygon) -> tuple:
     points = []
     facets = []
     
-    
-
     # Shape perimeter
     for coords in list(shape.exterior.coords):
         points.append(list(coords))
