@@ -68,6 +68,7 @@ class Geometry:
     def compile_geometry(self): # Alias
         self.create_facets_and_control_points()
 
+
     def create_mesh(self, mesh_sizes: Union[float, list]):
         """Creates a quadratic triangular mesh from the Geometry object.
 
@@ -94,7 +95,6 @@ class Geometry:
 
             Mesh generated from the above geometry.
         """
-        self.compile_geometry()
         if isinstance(mesh_sizes, (float, int)): mesh_sizes = [mesh_sizes]*len(self.control_points)
 
         error_str = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
@@ -105,6 +105,67 @@ class Geometry:
         self.mesh = pre.create_mesh(
             self.points, self.facets, self.holes, self.control_points, mesh_sizes)
         return self.mesh
+
+    def align_left(self, align_to):
+        """
+        Aligns the "right-most" point of 'self' to the "left-most" point of 'align_to'
+        """
+        self_extents = self.calculate_extents()
+        align_to_extents = align_to.calculate_extents()
+        self_max_x = self_extents[1]
+        align_to_min_x = align_to_extents[0]
+        x_offset = align_to_min_x - self_max_x
+        return self.shift_section(x_offset=x_offset)
+
+
+    def align_top(self, align_to):
+        """
+        Aligns the "bottom-most" point of 'self' to the "top-most" point of 'align_to'
+        """
+        self_extents = self.calculate_extents()
+        align_to_extents = align_to.calculate_extents()
+        self_min_y = self_extents[2]
+        align_to_max_y = align_to_extents[3]
+        y_offset = align_to_max_y - self_min_y
+        return self.shift_section(y_offset=y_offset)
+
+
+    def align_right(self, align_to):
+        """
+        Aligns the "left-most" point of 'self' to the "right-most" point of 'align_to'
+        """
+        self_extents = self.calculate_extents()
+        align_to_extents = align_to.calculate_extents()
+        self_min_x = self_extents[0]
+        align_to_max_x = align_to_extents[1]
+        x_offset = align_to_max_x - self_min_x
+        return self.shift_section(x_offset=x_offset)
+
+
+    def align_bottom(self, align_to):
+        """
+        Aligns the "top-most" point of 'self' to the "bottom-most" point of 'align_to'
+        """
+        self_extents = self.calculate_extents()
+        align_to_extents = align_to.calculate_extents()
+        self_max_y = self_extents[3]
+        align_to_min_y = align_to_extents[2]
+        y_offset = align_to_min_y - self_max_y
+        return self.shift_section(y_offset=y_offset)
+
+    def align_center(self, align_to):
+        """
+        Aligns the "bottom-most" point of 'self' to the "top-most" point of 'align_to'
+        """
+        self_extents = self.calculate_extents()
+        align_to_extents = align_to.calculate_extents()
+        self_center_x = (self_extents[1] - self_extents[0])/2 + self_extents[0]
+        self_center_y = (self_extents[3] - self_extents[2])/2 + self_extents[2]
+        align_to_center_x = (align_to_extents[1] - align_to_extents[0])/2 + align_to_extents[0]
+        align_to_center_y = (align_to_extents[3] - align_to_extents[2])/2 + align_to_extents[2]
+        x_offset = (align_to_center_x - self_center_x)
+        y_offset = (align_to_center_y - self_center_y)
+        return self.shift_section(x_offset=x_offset, y_offset=y_offset)
 
 
     def shift_section(self, x_offset=0., y_offset=0.,):
@@ -442,6 +503,10 @@ class CompoundGeometry(Geometry):
             for control_point in geom.control_points:
                 self.control_points.append([control_point[0], control_point[1]])
 
+    def calculate_perimeter(self):
+        return self.geom.convex_hull.exterior.length
+
+
 
     
 
@@ -581,7 +646,7 @@ def rectangular_section(b, d):
     return Geometry(rectangle)
 
 
-def circular_section(d: float, n: int):
+def circular_section(d: float, n: int, center: List[float] = [0,0]):
     """Constructs a solid circle centered at the origin *(0, 0)* with diameter *d* and using *n*
     points to construct the circle.
 
@@ -610,6 +675,7 @@ def circular_section(d: float, n: int):
 
         Mesh generated from the above geometry.
     """
+    x_off, y_off = center
     points = []
     # loop through each point on the circle
     for i in range(n):
@@ -617,8 +683,8 @@ def circular_section(d: float, n: int):
         theta = i * 2 * np.pi * 1.0 / n
 
         # calculate location of the point
-        x = 0.5 * d * np.cos(theta)
-        y = 0.5 * d * np.sin(theta)
+        x = 0.5 * d * np.cos(theta) - x_off*2
+        y = 0.5 * d * np.sin(theta) - y_off*2
 
         # append the current point to the points list
         points.append([x, y])
@@ -1939,3 +2005,31 @@ def box_girder_section(d, b_t, b_b, t_ft, t_fb, t_w):
     inner_polygon = Polygon(inner_points)
 
     return Geometry(outer_polygon - inner_polygon)
+
+def dowel_array(b: int, d: int, bars_x: int, bars_y: int, cover: float, bar_diam: float, n_r: int = 20, perimeter_only: bool = False):
+    total_x = b - 2*cover
+    total_y = d - 2*cover
+    spacing_x = total_x / bars_x
+    spacing_y = total_y / bars_y
+    bars_acc = []
+    for x_pos in range(bars_x):
+        for y_pos in range(bars_y):
+            if perimeter_only: # Use circular section from Robbie with optional center location
+                if (0 < x_pos < bars_x - 1):
+                    if (0 < y_pos < bars_y - 1):
+                        continue
+                    else:
+                        bars_acc.append(
+                            circular_section(bar_diam, n_r, [cover + spacing_x*x_pos, cover + spacing_y*y_pos])
+                        )
+                else:
+                    bars_acc.append(
+                        circular_section(bar_diam, n_r, [cover + spacing_x*x_pos, cover + spacing_y*y_pos])
+                    )
+
+                    
+            else:
+                bars_acc.append(
+                    circular_section(bar_diam, 20, [cover + spacing_x*x_pos, cover + spacing_y*y_pos])
+                )
+    return CompoundGeometry(bars_acc)

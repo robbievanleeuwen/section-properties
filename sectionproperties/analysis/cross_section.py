@@ -100,14 +100,15 @@ class CrossSection:
     :raises AssertionError: If the number of materials does not equal the number of regions
     """
 
-    def __init__(self, geometry: Union[sections.Geometry, sections.CompoundGeometry], materials=None, mesh_size=1, time_info=False):
+    def __init__(self, geometry: Union[sections.Geometry, sections.CompoundGeometry], materials: list = None, time_info=False):
         """Inits the CrossSection class."""
         self.geometry = geometry
         self.materials = materials
         self.time_info = time_info
-        self.mesh_size = mesh_size
+        self.mesh = geometry.mesh
+        mesh = self.mesh
 
-        def init(mesh):
+        def init():
             self.geometry = geometry  # save geometry data
 
             # extract mesh data
@@ -204,7 +205,7 @@ class CrossSection:
             solver.function_timer(text, init)
             print("")
         else:
-            init(self.geometry.create_mesh(self.mesh_size))
+            init()
 
     def calculate_geometric_properties(self, time_info=False):
         """Calculates the geometric properties of the cross-section and stores them in the
@@ -314,7 +315,7 @@ class CrossSection:
 
         # create a new CrossSection with the origin shifted to the centroid for calculation of the
         # warping properties such that the Lagrangian multiplier approach can be utilised
-        warping_section = CrossSection(self.geometry, self.mesh, self.materials)
+        warping_section = CrossSection(self.geometry, self.materials)
 
         # shift the coordinates of each element N.B. the mesh class attribute remains unshifted!
         for el in warping_section.elements:
@@ -450,10 +451,10 @@ class CrossSection:
         if time_info:
             text = "--Assembling shear centre and warping moment integrals..."
             (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = (
-                solver.function_timer(text, assemle_sc_warping_integrals))
+                solver.function_timer(text, assemble_sc_warping_integrals))
         else:
             (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = (
-                assemle_sc_warping_integrals())
+                assemble_sc_warping_integrals())
 
         # calculate shear centres
         def shear_centres():
@@ -707,7 +708,7 @@ class CrossSection:
 
             # create a new CrossSection with the origin shifted to the centroid for calculation of
             # the warping properties
-            warping_section = CrossSection(self.geometry, self.mesh, self.materials)
+            warping_section = CrossSection(self.geometry, self.materials)
 
             # shift the coordinates of each element N.B. the mesh class attribute remains unshifted
             for el in warping_section.elements:
