@@ -131,7 +131,7 @@ class CrossSection:
                 info_str = "Number of materials ({0}), ".format(len(materials))
                 info_str += "should match the number of regions ({0}).".format(
                     max(attributes) + 1)
-                assert(len(materials) == max(attributes) + 1), str
+                assert(len(materials) == max(attributes) + 1), info_str
 
                 # add a MaterialGroup object to the material_groups list for each uniquely
                 # encountered material

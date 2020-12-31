@@ -95,6 +95,7 @@ class Geometry:
 
             Mesh generated from the above geometry.
         """
+        self.compile_geometry()
         if isinstance(mesh_sizes, (float, int)): mesh_sizes = [mesh_sizes]*len(self.control_points)
 
         error_str = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
@@ -330,7 +331,8 @@ class Geometry:
         if labels:
             # plot control_point labels
             # With shapely, it will be useful to have numbered regions
-            # to match with lists of Materials
+            # to match with lists of mesh_sizes and Materials
+            # With shapely, enumerated points and facets becomes less useful
             for (i, pt) in enumerate(self.control_points):
                 ax.annotate(str(i), xy=pt, color='b')
 
@@ -393,15 +395,24 @@ class Geometry:
         )
 
     def __sub__(self, other):
-        # try:
-        new_polygon = self.geom - other.geom
-        if isinstance(new_polygon, MultiPolygon): 
-            return CompoundGeometry([Geometry(polygon) for polygon in new_polygon.geoms])
-        return Geometry(new_polygon)
-        # except:
-        #     raise ValueError(
-        # f"Cannot perform 'difference' on these two Geometry instances: {self} - {other}"
-        # )
+        try:
+            new_polygon = self.geom - other.geom
+            if isinstance(new_polygon, MultiPolygon): 
+                return CompoundGeometry([Geometry(polygon) for polygon in new_polygon.geoms])
+            return Geometry(new_polygon)
+        except:
+            raise ValueError(
+        f"Cannot perform 'difference' on these two Geometry instances: {self} - {other}"
+        )
+
+    def __add__(self, other):
+        try:
+            return CompoundGeometry([self, other])
+        except:
+            raise ValueError(
+            f"Cannot create new CompoundGeometry with these objects: {self} + {other}"
+        )
+
 
     def __and__(self, other):
         try:
@@ -421,10 +432,16 @@ class CompoundGeometry(Geometry):
             self.geoms = [Geometry(geom) for geom in geoms.geoms]
             self.geom = geoms
         elif isinstance(geoms, list):
-            self.geoms = geoms
-            self.geom = MultiPolygon([geom.geom for geom in geoms])
-        # self.geom = geoms
-        # self.geoms = MultiPolygon([geom for geom in self.geom])
+            processed_geoms = []
+            for item in geoms:
+                if isinstance(item, CompoundGeometry):
+                    # Add the list of component Geometry objects to this instance
+                    processed_geoms += item.geoms 
+                elif isinstance(item, Geometry):
+                    processed_geoms.append(item)
+            self.geoms = processed_geoms
+            self.geom = MultiPolygon([geom.geom for geom in processed_geoms])
+
         self.control_points = []
         self.points = [] 
         self.facets = [] 
@@ -436,15 +453,6 @@ class CompoundGeometry(Geometry):
         print("sectionproperties.pre.sections.CompoundGeometry")
         print(f"object at: {hex(id(self))}")
         return self.geom._repr_svg_()
-
-    # def plot_geometry(self, ax=None, pause=True, labels=False, perimeter=False):
-    #     if ax is None:
-    #         fig, ax = plt.subplots()
-    #         post.setup_plot(ax, pause)
-    #     for geom in self.geoms:
-    #         fig, ax = geom.plot_geometry(ax=ax, pause=pause, labels=labels, perimeter=perimeter)
-    #     post.finish_plot(ax, pause, title='Cross-Section Geometry')
-    #     return fig, ax
 
     def shift_section(self, x_offset: float = 0, y_offset: float = 0):
         geoms_acc = []
@@ -683,8 +691,8 @@ def circular_section(d: float, n: int, center: List[float] = [0,0]):
         theta = i * 2 * np.pi * 1.0 / n
 
         # calculate location of the point
-        x = 0.5 * d * np.cos(theta) - x_off*2
-        y = 0.5 * d * np.sin(theta) - y_off*2
+        x = 0.5 * d * np.cos(theta) + x_off
+        y = 0.5 * d * np.sin(theta) + y_off
 
         # append the current point to the points list
         points.append([x, y])
@@ -2007,29 +2015,22 @@ def box_girder_section(d, b_t, b_b, t_ft, t_fb, t_w):
     return Geometry(outer_polygon - inner_polygon)
 
 def dowel_array(b: int, d: int, bars_x: int, bars_y: int, cover: float, bar_diam: float, n_r: int = 20, perimeter_only: bool = False):
-    total_x = b - 2*cover
-    total_y = d - 2*cover
-    spacing_x = total_x / bars_x
-    spacing_y = total_y / bars_y
+    total_x = b - 2*cover - bar_diam
+    total_y = d - 2*cover - bar_diam
+    spacing_x = total_x / (bars_x - 1)
+    spacing_y = total_y / (bars_y - 1)
     bars_acc = []
     for x_pos in range(bars_x):
         for y_pos in range(bars_y):
             if perimeter_only: # Use circular section from Robbie with optional center location
-                if (0 < x_pos < bars_x - 1):
-                    if (0 < y_pos < bars_y - 1):
+                if (0 < x_pos < bars_x - 1) and (0 < y_pos < bars_y - 1):
                         continue
-                    else:
-                        bars_acc.append(
-                            circular_section(bar_diam, n_r, [cover + spacing_x*x_pos, cover + spacing_y*y_pos])
-                        )
                 else:
                     bars_acc.append(
-                        circular_section(bar_diam, n_r, [cover + spacing_x*x_pos, cover + spacing_y*y_pos])
+                        circular_section(bar_diam, n_r, [cover + bar_diam/2 + spacing_x*x_pos, cover + bar_diam/2 + spacing_y*y_pos])
                     )
-
-                    
             else:
                 bars_acc.append(
-                    circular_section(bar_diam, 20, [cover + spacing_x*x_pos, cover + spacing_y*y_pos])
+                    circular_section(bar_diam, n_r, [cover + bar_diam/2 + spacing_x*x_pos, cover + bar_diam/2 + spacing_y*y_pos])
                 )
     return CompoundGeometry(bars_acc)

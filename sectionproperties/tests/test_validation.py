@@ -1,4 +1,5 @@
 import unittest
+from shapely.geometry import Polygon
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
 from sectionproperties.tests.helper_functions import validate_properties
@@ -9,10 +10,11 @@ class TestValidation(unittest.TestCase):
         """Section properties are validated against results from the Strand7
         beam section utility."""
 
-        geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-        mesh = geometry.create_mesh(mesh_sizes=[2.5])
+        geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+        geometry.compile_geometry()
+        geometry.create_mesh(mesh_sizes=[2.5])
 
-        section = CrossSection(geometry, mesh)
+        section = CrossSection(geometry)
 
         val_list = []
         val_list.append({"prop": "area", "val": 2746.73, "tol": 2e-4})
@@ -73,14 +75,9 @@ class TestValidation(unittest.TestCase):
             [-10, 0], [110, 0], [100, 10], [55, 10], [55, 90], [100, 90], [110, 100], [110, 110],
             [-10, 110], [-10, 100], [0, 90], [45, 90], [45, 10], [-10, 10]
         ]
-        facets = [
-            [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
-            [10, 11], [11, 12], [12, 13], [13, 0]
-        ]
-        holes = []
-        control_points = [[0, 5]]
 
-        geometry = sections.CustomSection(points, facets, holes, control_points)
+
+        geometry = sections.Geometry(Polygon(points))
         mesh = geometry.create_mesh(mesh_sizes=[5])
         section = CrossSection(geometry, mesh)
 

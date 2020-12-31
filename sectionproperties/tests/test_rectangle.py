@@ -10,9 +10,10 @@ class TestRectangle(unittest.TestCase):
     warping properties."""
 
     def setUp(self):
-        self.geometry = sections.RectangularSection(d=100, b=50)
-        self.mesh = self.geometry.create_mesh(mesh_sizes=[10])
-        self.section = CrossSection(self.geometry, self.mesh)
+        self.geometry = sections.rectangular_section(d=100, b=50)
+        self.geometry.compile_geometry()
+        self.geometry.create_mesh(mesh_sizes=[10])
+        self.section = CrossSection(self.geometry)
 
     def test_geometric(self):
         self.section.calculate_geometric_properties()
