@@ -535,7 +535,7 @@ def check_geometry(points, facets, holes, control_points, atol=1.0e-8):
     check_points = np.array(holes + control_points)
 
     # select the starting and ending points of each facet
-    facet_points = points[facets]
+    facet_points = points[facets, :]
     start = facet_points[:, 0, :]
     end = facet_points[:, 1, :]
 
@@ -580,9 +580,9 @@ def check_geometry(points, facets, holes, control_points, atol=1.0e-8):
     minimum_distances = np.hypot(clamped_distances, perpendicular_distances)
 
     # make sure that the closest distance is not within the allowed tolerance
-    if np.min(minimum_distances) < tolerance:
+    if np.min(minimum_distances) < atol:
         # select the offending points and point type, then raise an exception with that information
-        distance_check = (minimum_distances < tolerance).sum(axis=0)
+        distance_check = (minimum_distances < atol).sum(axis=0)
         point_types = np.array(['Hole'] * len(holes) + ['Control Point'] * len(control_points))
         offending_types = point_types[distance_check > 0]
         offending_coords = check_points[distance_check > 0]
