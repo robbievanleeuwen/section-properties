@@ -1,6 +1,6 @@
 import unittest
 import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import CrossSection
+from sectionproperties.analysis.cross_section import Section
 from sectionproperties.tests.helper_functions import validate_properties
 
 
@@ -13,7 +13,7 @@ class TestRectangle(unittest.TestCase):
         self.geometry = sections.rectangular_section(d=100, b=50)
         self.geometry.compile_geometry()
         self.geometry.create_mesh(mesh_sizes=[10])
-        self.section = CrossSection(self.geometry)
+        self.section = Section(self.geometry)
 
     def test_geometric(self):
         self.section.calculate_geometric_properties()

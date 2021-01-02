@@ -192,15 +192,15 @@ where:
 - *stresstype* denotes the type of stress that is being plotted e.g. *zx* for the *x*-component of shear stress.
 
 The examples shown in the methods below are performed on a 150x90x12 UA
-(unequal angle) section. The :class:`~sectionproperties.analysis.cross_section.CrossSection`
+(unequal angle) section. The :class:`~sectionproperties.analysis.cross_section.Section`
 object is created below::
 
   import sectionproperties.pre.sections as sections
-  from sectionproperties.analysis.cross_section import CrossSection
+  from sectionproperties.analysis.cross_section import Section
 
   geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
   mesh = geometry.create_mesh(mesh_sizes=[2.5])
-  section = CrossSection(geometry, mesh)
+  section = Section(geometry, mesh)
 
 Primary Stress Plots
 ^^^^^^^^^^^^^^^^^^^^

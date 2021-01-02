@@ -34,6 +34,10 @@ class Geometry:
         """Inits the Geometry class.
         Old args; control_points, shift
         """
+        if isinstance(geom, MultiPolygon):
+            raise ValueError(f"Use CompoundGeometry(...) for a MultiPolygon object.")
+        if not isinstance(geom, Polygon):
+            raise ValueError(f"Argument is not a valid shapely.geometry.Polygon object: {geom}")
         self.geom = geom
         self.control_points = [] # Given upon instantiation
         self.shift = [] # Given upon instantiation
@@ -107,51 +111,56 @@ class Geometry:
             self.points, self.facets, self.holes, self.control_points, mesh_sizes)
         return self.mesh
 
-    def align_left(self, align_to):
+    def align_left(self, align_to, inner: bool = False):
         """
         Aligns the "right-most" point of 'self' to the "left-most" point of 'align_to'
         """
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
-        self_max_x = self_extents[1]
+        self_align_x = self_extents[1] # max x
+        if inner: self_align_x = self_extents[0] # min x
         align_to_min_x = align_to_extents[0]
-        x_offset = align_to_min_x - self_max_x
+        x_offset = align_to_min_x - self_align_x
         return self.shift_section(x_offset=x_offset)
 
 
-    def align_top(self, align_to):
+    def align_top(self, align_to, inner: bool = False):
         """
         Aligns the "bottom-most" point of 'self' to the "top-most" point of 'align_to'
+        If 'inner' is True, aligns to the "inside" of the 'align_to' section
         """
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
-        self_min_y = self_extents[2]
+        self_align_y = self_extents[2] # min y
+        if inner: self_align_y = self_extents[3] # max y
         align_to_max_y = align_to_extents[3]
-        y_offset = align_to_max_y - self_min_y
+        y_offset = align_to_max_y - self_align_y
         return self.shift_section(y_offset=y_offset)
 
 
-    def align_right(self, align_to):
+    def align_right(self, align_to, inner: bool = False):
         """
         Aligns the "left-most" point of 'self' to the "right-most" point of 'align_to'
         """
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
-        self_min_x = self_extents[0]
+        self_align_x = self_extents[0] # min x
+        if inner: self_align_x = self_extents[1] # max x
         align_to_max_x = align_to_extents[1]
-        x_offset = align_to_max_x - self_min_x
+        x_offset = align_to_max_x - self_align_x
         return self.shift_section(x_offset=x_offset)
 
 
-    def align_bottom(self, align_to):
+    def align_bottom(self, align_to, inner: bool = False):
         """
         Aligns the "top-most" point of 'self' to the "bottom-most" point of 'align_to'
         """
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
-        self_max_y = self_extents[3]
+        self_align_y = self_extents[3] # max y
+        if inner: self_align_y = self_extents[2] # min y
         align_to_min_y = align_to_extents[2]
-        y_offset = align_to_min_y - self_max_y
+        y_offset = align_to_min_y - self_align_y
         return self.shift_section(y_offset=y_offset)
 
     def align_center(self, align_to):
@@ -177,7 +186,7 @@ class Geometry:
         return new_geom
 
 
-    def rotate_section(self, angle, rot_point=None, use_radians=False):
+    def rotate_section(self, angle, rot_point=[], use_radians=False):
         """Rotates the geometry and specified angle about a point. If the rotation point is not
         provided, rotates the section about the first control point in the list of control points
         of the :class:`~sectionproperties.pre.sections.Geometry` object.
@@ -195,6 +204,7 @@ class Geometry:
             geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
             geometry.rotate_section(angle=-30)
         """
+        if rot_point == []: rot_point = "center"
         new_geom = Geometry(shapely.affinity.rotate(self.geom, angle, rot_point, use_radians))
         # self.control_points = self.geom.representative_point() if self.control_points else None
         return new_geom
@@ -371,6 +381,12 @@ class Geometry:
         """
         perimeter = self.geom.exterior.length
         return perimeter
+
+    def recovery_points(self):
+        """
+        Calculates and returns the nastran stress recovery points for the geometry.
+        """
+        pass
 
     def __or__(self, other):
         try:

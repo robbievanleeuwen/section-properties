@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 import matplotlib.cm as cm
 import matplotlib.patches as mpatches
-from matplotlib.colors import ListedColormap
+from matplotlib.colors import ListedColormap, TwoSlopeNorm
 import meshpy.triangle as triangle
 import sectionproperties.pre.pre as pre
 import sectionproperties.pre.sections as sections
@@ -16,7 +16,7 @@ import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
 
 
-class CrossSection:
+class Section:
     """Class for structural cross-sections.
 
     Stores the finite element geometry, mesh and material information and provides methods to
@@ -40,15 +40,15 @@ class CrossSection:
     :param bool time_info: If set to True, a detailed description of the computation and the time
         cost is printed to the terminal.
 
-    The following example creates a :class:`~sectionproperties.analysis.cross_section.CrossSection`
+    The following example creates a :class:`~sectionproperties.analysis.cross_section.Section`
     object of a 100D x 50W rectangle using a mesh size of 5::
 
         import sectionproperties.pre.sections as sections
-        from sectionproperties.analysis.cross_section import CrossSection
+        from sectionproperties.analysis.cross_section import Section
 
         geometry = sections.RectangularSection(d=100, b=50)
         mesh = geometry.create_mesh(mesh_sizes=[5])
-        section = CrossSection(geometry, mesh)
+        section = Section(geometry, mesh)
 
     The following example creates a 100D x 50W rectangle, with the top half of the section
     comprised of timber and the bottom half steel. The timber section is meshed with a maximum area
@@ -56,7 +56,7 @@ class CrossSection:
 
         import sectionproperties.pre.sections as sections
         from sectionproperties.pre.pre import Material
-        from sectionproperties.analysis.cross_section import CrossSection
+        from sectionproperties.analysis.cross_section import Section
 
         geom_steel = sections.RectangularSection(d=50, b=50)
         geom_timber = sections.RectangularSection(d=50, b=50, shift=[0, 50])
@@ -74,7 +74,7 @@ class CrossSection:
             color='burlywood'
         )
 
-        section = CrossSection(geometry, mesh, [steel, timber])
+        section = Section(geometry, mesh, [steel, timber])
         section.plot_mesh(materials=True, alpha=0.5)
 
     :cvar elements: List of finite element objects describing the cross-section mesh
@@ -101,7 +101,7 @@ class CrossSection:
     """
 
     def __init__(self, geometry: Union[sections.Geometry, sections.CompoundGeometry], materials: list = None, time_info=False):
-        """Inits the CrossSection class."""
+        """Inits the Section class."""
         self.geometry = geometry
         self.materials = materials
         self.time_info = time_info
@@ -201,7 +201,7 @@ class CrossSection:
             self.section_props = SectionProperties()
 
         if time_info:
-            text = "--Initialising the CrossSection class..."
+            text = "--Initialising the Section class..."
             solver.function_timer(text, init)
             print("")
         else:
@@ -233,7 +233,7 @@ class CrossSection:
 
         The following example demonstrates the use of this method::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
         """
 
@@ -300,7 +300,7 @@ class CrossSection:
         Note that the geometric properties must be calculated first for the calculation of the
         warping properties to be correct::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
 
@@ -313,9 +313,9 @@ class CrossSection:
             err = "Cacluate geometric properties before performing a warping analysis."
             raise RuntimeError(err)
 
-        # create a new CrossSection with the origin shifted to the centroid for calculation of the
+        # create a new Section with the origin shifted to the centroid for calculation of the
         # warping properties such that the Lagrangian multiplier approach can be utilised
-        warping_section = CrossSection(self.geometry, self.materials)
+        warping_section = Section(self.geometry, self.materials)
 
         # shift the coordinates of each element N.B. the mesh class attribute remains unshifted!
         for el in warping_section.elements:
@@ -640,7 +640,7 @@ class CrossSection:
 
         The following example demonstrates the use of this method::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             (area, ixx, iyy, ixy, j, phi) = section.calculate_frame_properties()
         """
 
@@ -706,9 +706,9 @@ class CrossSection:
                     self.section_props.ixy_c
                 ) * 180 / np.pi
 
-            # create a new CrossSection with the origin shifted to the centroid for calculation of
+            # create a new Section with the origin shifted to the centroid for calculation of
             # the warping properties
-            warping_section = CrossSection(self.geometry, self.materials)
+            warping_section = Section(self.geometry, self.materials)
 
             # shift the coordinates of each element N.B. the mesh class attribute remains unshifted
             for el in warping_section.elements:
@@ -771,7 +771,7 @@ class CrossSection:
         Note that the geometric properties must be calculated before the plastic properties are
         calculated::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
 
@@ -824,7 +824,7 @@ class CrossSection:
         Note that a geometric and warping analysis must be performed before a stress analysis is
         carried out::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             stress_post = section.calculate_stress(N=1e3, Vy=3e3, Mxx=1e6)
@@ -1004,7 +1004,7 @@ class CrossSection:
             If set to false, the script continues immediately after the window is rendered.
         :param float alpha: Transparency of the mesh outlines: :math:`0 \leq \\alpha \leq 1`
         :param bool materials: If set to true and material properties have been provided to the
-            :class:`~sectionproperties.analysis.cross_section.CrossSection` object, shades the
+            :class:`~sectionproperties.analysis.cross_section.Section` object, shades the
             elements with the specified material colours
         :param mask: Mask array, of length ``num_nodes``, to mask out triangles
         :type mask: list[bool]
@@ -1013,12 +1013,12 @@ class CrossSection:
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
         The following example plots the mesh generated for the second example
-        listed under the :class:`~sectionproperties.analysis.cross_section.CrossSection` object
+        listed under the :class:`~sectionproperties.analysis.cross_section.Section` object
         definition::
 
             import sectionproperties.pre.sections as sections
             from sectionproperties.pre.pre import Material
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geom_steel = sections.RectangularSection(d=50, b=50)
             geom_timber = sections.RectangularSection(d=50, b=50, shift=[50, 0])
@@ -1036,7 +1036,7 @@ class CrossSection:
                 color='burlywood'
             )
 
-            section = CrossSection(geometry, mesh, [steel, timber])
+            section = Section(geometry, mesh, [steel, timber])
             section.plot_mesh(materials=True, alpha=0.5)
 
         ..  figure:: ../images/composite_mesh.png
@@ -1107,12 +1107,12 @@ class CrossSection:
         the centroids::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.PfcSection(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             section.calculate_plastic_properties()
@@ -1129,12 +1129,12 @@ class CrossSection:
         centroids::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             section.calculate_plastic_properties()
@@ -1202,13 +1202,13 @@ class CrossSection:
         rectangles::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             rec1 = sections.RectangularSection(d=100, b=25, shift=[-12.5, 0])
             rec2 = sections.RectangularSection(d=25, b=100, shift=[-50, 100])
             geometry = sections.MergedSection([rec1, rec2])
             mesh = geometry.create_mesh(mesh_sizes=[5, 2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.display_mesh_info()
 
             >>>Mesh Statistics:
@@ -1240,12 +1240,12 @@ class CrossSection:
         with three digits after the decimal point::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.RectangularSection(d=100, b=50)
             mesh = geometry.create_mesh(mesh_sizes=[5])
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
 
             section.display_results(fmt='.3f')
@@ -1260,7 +1260,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             area = section.get_area()
         """
@@ -1274,7 +1274,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             perimeter = section.get_perimeter()
         """
@@ -1288,7 +1288,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             ea = section.get_ea()
         """
@@ -1302,7 +1302,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             (qx, qy) = section.get_q()
         """
@@ -1316,7 +1316,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             (ixx_g, iyy_g, ixy_g) = section.get_ig()
         """
@@ -1330,7 +1330,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             (cx, cy) = section.get_c()
         """
@@ -1344,7 +1344,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             (ixx_c, iyy_c, ixy_c) = section.get_ic()
         """
@@ -1359,7 +1359,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             (zxx_plus, zxx_minus, zyy_plus, zyy_minus) = section.get_z()
         """
@@ -1376,7 +1376,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             (rx, ry) = section.get_rc()
         """
@@ -1390,7 +1390,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             (i11_c, i22_c) = section.get_ip()
         """
@@ -1404,7 +1404,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             phi = section.get_phi()
         """
@@ -1419,7 +1419,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             (z11_plus, z11_minus, z22_plus, z22_minus) = section.get_zp()
         """
@@ -1436,7 +1436,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             (r11, r22) = section.get_rp()
         """
@@ -1450,7 +1450,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             j = section.get_j()
@@ -1465,7 +1465,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (x_se, y_se) = section.get_sc()
@@ -1487,7 +1487,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (x11_se, y22_se) = section.get_sc_p()
@@ -1508,7 +1508,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (x_st, y_st) = section.get_sc_t()
@@ -1530,7 +1530,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             gamma = section.get_gamma()
@@ -1545,7 +1545,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (A_sx, A_sy) = section.get_As()
@@ -1560,7 +1560,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (A_s11, A_s22) = section.get_As_p()
@@ -1577,7 +1577,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus) = section.get_beta()
@@ -1598,7 +1598,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus) = section.get_beta_p()
@@ -1616,7 +1616,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (x_pc, y_pc) = section.get_pc()
@@ -1638,7 +1638,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (x11_pc, y22_pc) = section.get_pc_p()
@@ -1664,7 +1664,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (sxx, syy) = section.get_s()
@@ -1682,7 +1682,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (s11, s22) = section.get_sp()
@@ -1698,7 +1698,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus) = section.get_sf()
@@ -1717,7 +1717,7 @@ class CrossSection:
 
         ::
 
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus) = section.get_sf_p()
@@ -1894,11 +1894,11 @@ class PlasticSection:
     def calculate_plastic_properties(self, cross_section, verbose):
         """Calculates the location of the plastic centroid with respect to the centroidal and
         principal bending axes, the plastic section moduli and shape factors and stores the results
-        to the supplied :class:`~sectionproperties.analysis.cross_section.CrossSection` object.
+        to the supplied :class:`~sectionproperties.analysis.cross_section.Section` object.
 
         :param cross_section: Cross section object that uses the same geometry and materials
             specified in the class constructor
-        :type cross_section: :class:`~sectionproperties.analysis.cross_section.CrossSection`
+        :type cross_section: :class:`~sectionproperties.analysis.cross_section.Section`
         :param bool verbose: If set to True, the number of iterations required for each plastic
             axis is printed to the terminal.
         """
@@ -2365,7 +2365,7 @@ class PlasticSection:
         return False
 
     def plot_mesh(self, nodes, elements, element_list, materials):
-        """Watered down implementation of the CrossSection method to plot the finite element mesh,
+        """Watered down implementation of the Section method to plot the finite element mesh,
         showing material properties."""
 
         (fig, ax) = plt.subplots()
@@ -2412,10 +2412,10 @@ class StressPost:
     material. Methods for post-processing the calculated stresses are provided.
 
     :param cross_section: Cross section object for stress calculation
-    :type cross_section: :class:`~sectionproperties.analysis.cross_section.CrossSection`
+    :type cross_section: :class:`~sectionproperties.analysis.cross_section.Section`
 
     :cvar cross_section: Cross section object for stress calculation
-    :vartype cross_section: :class:`~sectionproperties.analysis.cross_section.CrossSection`
+    :vartype cross_section: :class:`~sectionproperties.analysis.cross_section.Section`
     :cvar material_groups: A deep copy of the `cross_section` material groups to allow a new stress
         analysis
     :vartype material_groups: list[:class:`~sectionproperties.pre.pre.MaterialGroup`]
@@ -2615,11 +2615,11 @@ class StressPost:
         from an axial force of 10 kN::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2679,11 +2679,11 @@ class StressPost:
         an axial force of 10 kN::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2720,11 +2720,11 @@ class StressPost:
         a bending moment about the x-axis of 5 kN.m::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2761,11 +2761,11 @@ class StressPost:
         a bending moment about the y-axis of 2 kN.m::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2802,11 +2802,11 @@ class StressPost:
         a bending moment about the 11-axis of 5 kN.m::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2843,11 +2843,11 @@ class StressPost:
         a bending moment about the 22-axis of 2 kN.m::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2885,11 +2885,11 @@ class StressPost:
         and a bending moment of 3 kN.m about the 11-axis::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2926,11 +2926,11 @@ class StressPost:
         section resulting from a torsion moment of 1 kN.m::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2967,11 +2967,11 @@ class StressPost:
         section resulting from a torsion moment of 1 kN.m::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3008,11 +3008,11 @@ class StressPost:
         section resulting from a torsion moment of 1 kN.m::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3049,11 +3049,11 @@ class StressPost:
         section resulting from a torsion moment of 1 kN.m::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3092,11 +3092,11 @@ class StressPost:
         section resulting from a shear force in the x-direction of 15 kN::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3133,11 +3133,11 @@ class StressPost:
         section resulting from a shear force in the x-direction of 15 kN::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3174,11 +3174,11 @@ class StressPost:
         section resulting from a shear force in the x-direction of 15 kN::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3215,11 +3215,11 @@ class StressPost:
         section resulting from a shear force in the x-direction of 15 kN::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3258,11 +3258,11 @@ class StressPost:
         section resulting from a shear force in the y-direction of 30 kN::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3299,11 +3299,11 @@ class StressPost:
         section resulting from a shear force in the y-direction of 30 kN::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3340,11 +3340,11 @@ class StressPost:
         section resulting from a shear force in the y-direction of 30 kN::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3381,11 +3381,11 @@ class StressPost:
         section resulting from a shear force in the y-direction of 30 kN::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3426,11 +3426,11 @@ class StressPost:
         y-direction::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3469,11 +3469,11 @@ class StressPost:
         y-direction::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3512,11 +3512,11 @@ class StressPost:
         y-direction::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3555,11 +3555,11 @@ class StressPost:
         y-direction::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3599,11 +3599,11 @@ class StressPost:
         about the y-axis of 2 kN.m::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3641,11 +3641,11 @@ class StressPost:
         y-direction::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3683,11 +3683,11 @@ class StressPost:
         y-direction::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3725,11 +3725,11 @@ class StressPost:
         y-direction::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3767,11 +3767,11 @@ class StressPost:
         y-direction::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3819,11 +3819,11 @@ class StressPost:
         ::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            section = Section(geometry, mesh)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()

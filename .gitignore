@@ -20,6 +20,7 @@
 # Jupyter notebooks
 *.ipynb
 /.ipynb_checkpoints/
+/Notebooks
 
 # Shapely whl (Used with Poetry)
 *.whl

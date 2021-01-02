@@ -1,7 +1,7 @@
 import unittest
 from shapely.geometry import Polygon
 import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import CrossSection
+from sectionproperties.analysis.cross_section import Section
 from sectionproperties.tests.helper_functions import validate_properties
 
 
@@ -14,7 +14,7 @@ class TestValidation(unittest.TestCase):
         geometry.compile_geometry()
         geometry.create_mesh(mesh_sizes=[2.5])
 
-        section = CrossSection(geometry)
+        section = Section(geometry)
 
         val_list = []
         val_list.append({"prop": "area", "val": 2746.73, "tol": 2e-4})
@@ -79,7 +79,7 @@ class TestValidation(unittest.TestCase):
 
         geometry = sections.Geometry(Polygon(points))
         mesh = geometry.create_mesh(mesh_sizes=[5])
-        section = CrossSection(geometry, mesh)
+        section = Section(geometry, mesh)
 
         val_list = []
         val_list.append({"prop": "area", "val": 4250, "tol": None})
