@@ -1769,7 +1769,9 @@ class PlasticSection:
         """Inits the PlasticSection class."""
 
         # make a deepcopy of the geometry & materials so that we can modify it
-        self.geometry = copy.deepcopy(geometry)
+        self._geometry_class = type(geometry)
+
+        self.geometry = self._geometry_class(geometry.geom)
         self.materials = copy.deepcopy(materials)
         self.debug = debug
 
@@ -2191,18 +2193,18 @@ class PlasticSection:
         """
 
         # start with the initial geometry
-        geom = copy.deepcopy(self.geometry)
+        geom = self._geometry_class(self.geometry.geom)
 
         # add line at new_line
-        if new_line is not None:
-            self.add_line(geom, new_line)
+        # if new_line is not None:
+        #     self.add_line(geom, new_line)
 
-            # fast clean the geometry after adding the line
-            clean = pre.GeometryCleaner(geom, verbose=False)
-            clean.zip_points()
-            clean.remove_zero_length_facets()
-            clean.remove_unused_points()
-            geom = clean.geometry
+        #     # fast clean the geometry after adding the line
+        #     clean = pre.GeometryCleaner(geom, verbose=False)
+        #     clean.zip_points()
+        #     clean.remove_zero_length_facets()
+        #     clean.remove_unused_points()
+        #     geom = clean.geometry
 
         if self.debug:
             if new_line is not None:

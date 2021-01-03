@@ -31,3 +31,6 @@ poetry.lock
 
 # Shapely JSON files (experiments)
 /sections/*.json
+
+# Any log files
+*.log
