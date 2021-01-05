@@ -1,11 +1,8 @@
-from sectionproperties.pre.sections import (
-    Geometry, RectangularSection, CustomSection, MergedSection
-)
-from sectionproperties.pre.pre import create_mesh
 import numpy as np
+from shapely.geometry import Polygon
+from sectionproperties.pre.sections import Geometry, CompoundGeometry
 
-
-class BARSection(Geometry):
+def nastran_bar(DIM1: float, DIM2: float):
     """Constructs a BAR section with the center at the origin *(0, 0)*, with two parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for definition of
     parameters. Added by JohnDN90.
@@ -35,50 +32,19 @@ class BARSection(Geometry):
 
         Mesh generated from the above geometry.
     """
-
-    def __init__(self, DIM1, DIM2, shift=[0, 0]):
-        """Inits the BARSection class."""
-
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-
-        # assign control point
-        control_points = [[0., 0.]]
-
-        # shift = [-0.5*DIM1+shift[0], -0.5*DIM2+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        self.points = [
+    points = [
             [-0.5*DIM1, -0.5*DIM2], [0.5*DIM1, -0.5*DIM2],
             [0.5*DIM1, 0.5*DIM2], [-0.5*DIM1, 0.5*DIM2]
         ]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 0]]
+    geometry = Geometry(Polygon(points))
+    C = (0.5* DIM1, 0.5* DIM2)
+    D = (0.5* DIM1, -0.5* DIM2)
+    E = (-0.5* DIM1, -0.5* DIM2)
+    F = (-0.5* DIM1, 0.5* DIM2)
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*self.DIM1-shift[0], 0.5*self.DIM2-shift[1])
-        D = (0.5*self.DIM1-shift[0], -0.5*self.DIM2-shift[1])
-        E = (-0.5*self.DIM1-shift[0], -0.5*self.DIM2-shift[1])
-        F = (-0.5*self.DIM1-shift[0], 0.5*self.DIM2-shift[1])
-
-        return C, D, E, F
-
-
-class BOXSection(Geometry):
+def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """ Constructs a BOX section with the center at the origin *(0, 0)*, with four parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for definition of
     parameters. Added by JohnDN90.
@@ -110,62 +76,25 @@ class BOXSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(2.0*DIM4 < DIM1, "Invalid geometry specified.")
+    np.testing.assert_(2.0*DIM3 < DIM2, "Invalid geometry specified.")
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the BOXSection class."""
+    points = [
+    [-0.5*DIM1, -0.5*DIM2], [0.5*DIM1, -0.5*DIM2], [0.5*DIM1, 0.5*DIM2],
+    [-0.5*DIM1, 0.5*DIM2], [-0.5*DIM1 + DIM4, -0.5*DIM2 + DIM3],
+    [0.5*DIM1 - DIM4, -0.5*DIM2 + DIM3], [0.5*DIM1 - DIM4, 0.5*DIM2 - DIM3],
+    [-0.5*DIM1 + DIM4, 0.5*DIM2 - DIM3]
+    ]
+    geometry = Geometry(Polygon(points))
+    C = (0.5* DIM1, 0.5* DIM2)
+    D = (0.5* DIM1, -0.5* DIM2)
+    E = (-0.5* DIM1, -0.5* DIM2)
+    F = (-0.5* DIM1, 0.5* DIM2)
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
-
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(2.0*DIM4 < DIM1, "Invalid geometry specified.")
-        np.testing.assert_(2.0*DIM3 < DIM2, "Invalid geometry specified.")
-
-        # assign control point
-        control_points = [[0., 0.5*DIM2 - 0.5*DIM3]]
-
-        super().__init__(control_points, shift)
-
-        # specify a hole in the centre of the Box
-        self.holes = [[0., 0.]]
-
-        # construct the points and facets
-        self.points = [
-            [-0.5*DIM1, -0.5*DIM2], [0.5*DIM1, -0.5*DIM2], [0.5*DIM1, 0.5*DIM2],
-            [-0.5*DIM1, 0.5*DIM2], [-0.5*DIM1 + DIM4, -0.5*DIM2 + DIM3],
-            [0.5*DIM1 - DIM4, -0.5*DIM2 + DIM3], [0.5*DIM1 - DIM4, 0.5*DIM2 - DIM3],
-            [-0.5*DIM1 + DIM4, 0.5*DIM2 - DIM3]
-        ]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4]]
-
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*self.DIM1-shift[0], 0.5*self.DIM2-shift[1])
-        D = (0.5*self.DIM1-shift[0], -0.5*self.DIM2-shift[1])
-        E = (-0.5*self.DIM1-shift[0], -0.5*self.DIM2-shift[1])
-        F = (-0.5*self.DIM1-shift[0], 0.5*self.DIM2-shift[1])
-
-        return C, D, E, F
-
-
-class BOX1Section(Geometry):
+def nastran_box1(DIM1, DIM2, DIM3, DIM4, DIM5, DIM6):
     """Constructs a BOX1 section with the center at the origin *(0, 0)*, with six parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details. Added by
     JohnDN90.
@@ -201,65 +130,28 @@ class BOX1Section(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM5+DIM6 < DIM1, "Invalid geometry specified.")
+    np.testing.assert_(DIM3+DIM4 < DIM2, "Invalid geometry specified.")
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=[0, 0]):
-        """Inits the Box1Section class."""
+    exterior_points = [
+        [0., 0.], [DIM1, 0.], [DIM1, DIM2], [0., DIM2], 
+    ]
+    interior_points = [
+        [DIM6, DIM4], [DIM1-DIM5, DIM4],
+        [DIM1-DIM5, DIM2-DIM3], [DIM6, DIM2-DIM3]
+    ]
+    geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points))
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM5 *= 1.0
-        DIM6 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
-        self.DIM5 = DIM5
-        self.DIM6 = DIM6
+    C = (0.5*DIM1, 0.5*DIM2)
+    D = (0.5*DIM1, -0.5*DIM2)
+    E = (-0.5*DIM1, -0.5*DIM2)
+    F = (-0.5*DIM1, 0.5*DIM2)
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM5+DIM6 < DIM1, "Invalid geometry specified.")
-        np.testing.assert_(DIM3+DIM4 < DIM2, "Invalid geometry specified.")
-
-        # assign control point
-        control_points = [[0.5*DIM1, 0.5*DIM4]]
-
-        shift = [-0.5*DIM1+shift[0], -0.5*DIM2+shift[1]]
-        super().__init__(control_points, shift)
-
-        # specify a hole in the centre of the Box
-        self.holes = [[DIM6 + 0.5*(DIM1-DIM5), DIM4+0.5*(DIM2-DIM3)]]
-
-        # construct the points and facets
-        self.points = [
-            [0., 0.], [DIM1, 0.], [DIM1, DIM2], [0., DIM2], [DIM6, DIM4], [DIM1-DIM5, DIM4],
-            [DIM1-DIM5, DIM2-DIM3], [DIM6, DIM2-DIM3]
-        ]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4]]
-
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """ Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*self.DIM1-shift[0], 0.5*self.DIM2-shift[1])
-        D = (0.5*self.DIM1-shift[0], -0.5*self.DIM2-shift[1])
-        E = (-0.5*self.DIM1-shift[0], -0.5*self.DIM2-shift[1])
-        F = (-0.5*self.DIM1-shift[0], 0.5*self.DIM2-shift[1])
-
-        return C, D, E, F
-
-
-class CHANSection(Geometry):
+    
+def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """ Constructs a CHAN (C-Channel) section with the web's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Added by JohnDN90.
@@ -291,58 +183,28 @@ class CHANSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(2.0*DIM4 < DIM2, "Invalid geometry specified.")
+    np.testing.assert_(DIM3 < DIM1, "Invalid geometry specified.")
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the CHANSection class."""
+    # construct the points
+    points = [
+        [0., 0.], [DIM1, 0.], [DIM1, DIM4], [DIM3, DIM4], [DIM3, DIM2-DIM4], [DIM1, DIM2-DIM4],
+        [DIM1, DIM2], [0., DIM2]
+    ]
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
+    geometry = Geometry(Polygon(points))
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(2.0*DIM4 < DIM2, "Invalid geometry specified.")
-        np.testing.assert_(DIM3 < DIM1, "Invalid geometry specified.")
+    C = (DIM1-0.5*DIM3, 0.5*DIM2)
+    D = (DIM1-0.5*DIM3, -0.5*DIM2)
+    E = (-0.5*DIM3, -0.5*DIM2)
+    F = (-0.5*DIM3, 0.5*DIM2)
 
-        # assign control point
-        control_points = [[0.5*DIM1, 0.5*DIM4]]
-
-        shift = [-0.5*DIM3+shift[0], -0.5*DIM2+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        self.points = [
-            [0., 0.], [DIM1, 0.], [DIM1, DIM4], [DIM3, DIM4], [DIM3, DIM2-DIM4], [DIM1, DIM2-DIM4],
-            [DIM1, DIM2], [0., DIM2]
-        ]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
-
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """ Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (self.DIM1-0.5*self.DIM3-shift[0], 0.5*self.DIM2-shift[1])
-        D = (self.DIM1-0.5*self.DIM3-shift[0], -0.5*self.DIM2-shift[1])
-        E = (-0.5*self.DIM3-shift[0], -0.5*self.DIM2-shift[1])
-        F = (-0.5*self.DIM3-shift[0], 0.5*self.DIM2-shift[1])
-
-        return C, D, E, F
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
 
-class CHAN1Section(Geometry):
+def nastran_chan1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """ Constructs a CHAN1 (C-Channel) section with the web's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Added by JohnDN90.
@@ -374,58 +236,26 @@ class CHAN1Section(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the CHAN1Section class."""
+    # construct the points and facets
+    tf = 0.5 * (DIM4 - DIM3)
+    points = [
+        [0, 0], [DIM1+DIM2, 0], [DIM1+DIM2, tf], [DIM2, tf], [DIM2, tf+DIM3],
+        [DIM2+DIM1, tf+DIM3], [DIM2+DIM1, DIM4], [0, DIM4]
+    ]
+    geometry = Geometry(Polygon(points))
+    C = (0.5*DIM2+DIM1, 0.5*DIM4)
+    D = (0.5*DIM2+DIM1, -0.5*DIM4)
+    E = (-0.5*DIM2, -0.5*DIM4)
+    F = (-0.5*DIM2, 0.5*DIM4)
+    geometry.recovery_points = [C, D, E, F]
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
-
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
-
-        # assign control point
-        control_points = [[0.5*DIM1, 0.5*DIM4]]
-
-        shift = [-0.5*DIM2+shift[0], -0.5*DIM4+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        tf = 0.5 * (DIM4 - DIM3)
-        self.points = [
-            [0, 0], [DIM1+DIM2, 0], [DIM1+DIM2, tf], [DIM2, tf], [DIM2, tf+DIM3],
-            [DIM2+DIM1, tf+DIM3], [DIM2+DIM1, DIM4], [0, DIM4]
-        ]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
-
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """ Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*self.DIM2+self.DIM1-shift[0], 0.5*self.DIM4-shift[1])
-        D = (0.5*self.DIM2+self.DIM1-shift[0], -0.5*self.DIM4-shift[1])
-        E = (-0.5*self.DIM2-shift[0], -0.5*self.DIM4-shift[1])
-        F = (-0.5*self.DIM2-shift[0], 0.5*self.DIM4-shift[1])
-
-        return C, D, E, F
+    return geometry
 
 
-class CHAN2Section(Geometry):
+def nastran_chan2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """ Constructs a CHAN2 (C-Channel) section with the bottom web's middle center at the origin
     *(0, 0)*, with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_
     [4]_ for more details. Added by JohnDN90.
@@ -457,58 +287,26 @@ class CHAN2Section(Geometry):
 
         Mesh generated from the above geometry.
     """
-
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the CHAN2Section class."""
-
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
-
         # Ensure dimensions are physically relevant
         np.testing.assert_(DIM4 > 2.0*DIM1, "Invalid geometry specified.")
         np.testing.assert_(DIM3 > DIM2, "Invalid geometry specified.")
 
-        # assign control point
-        control_points = [[0.5*DIM4, 0.5*DIM2]]
-
-        shift = [-0.5*DIM4+shift[0], -0.5*DIM2+shift[1]]
-        super().__init__(control_points, shift)
-
         # construct the points and facets
-        self.points = [
+        points = [
             [0., 0.], [DIM4, 0.], [DIM4, DIM3], [DIM4-DIM1, DIM3], [DIM4-DIM1, DIM2], [DIM1, DIM2],
             [DIM1, DIM3], [0., DIM3]
         ]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
+        geometry = Geometry(Polygon(points))
+        C = (0.5*DIM4, DIM3-0.5*DIM2)
+        D = (0.5*DIM4, -0.5*DIM2)
+        E = (-0.5*DIM4, -0.5*DIM2)
+        F = (-0.5*DIM4, DIM3-0.5*DIM2)
+        geometry.recovery_points = [C, D, E, F]
 
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """ Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*self.DIM4-shift[0], self.DIM3-0.5*self.DIM2-shift[1])
-        D = (0.5*self.DIM4-shift[0], -0.5*self.DIM2-shift[1])
-        E = (-0.5*self.DIM4-shift[0], -0.5*self.DIM2-shift[1])
-        F = (-0.5*self.DIM4-shift[0], self.DIM3-0.5*self.DIM2-shift[1])
-
-        return C, D, E, F
+        return geometry
 
 
-class CROSSSection(Geometry):
+def nastran_cross(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """ Constructs Nastran's cruciform/cross section with the intersection's middle center at the
     origin *(0, 0)*, with four parameters defining dimensions. See Nastran documentation [1]_ [2]_
     [3]_ [4]_ for more details. Added by JohnDN90.
@@ -541,62 +339,26 @@ class CROSSSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM4 < DIM3, "Invalid geometry specified.")
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the CROSSSection class."""
-
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
-
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM4 < DIM3, "Invalid geometry specified.")
-
-        # assign control point
-        control_points = [[0.5*DIM1+0.5*DIM2, 0.5*DIM3]]
-
-        shift = [-(0.5*DIM1+0.5*DIM2)+shift[0], -(0.5*DIM3)+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        d = 0.5*(DIM3 - DIM4)
-        self.points = [
-            [0.5*DIM1, 0], [0.5*DIM1+DIM2, 0], [0.5*DIM1+DIM2, d], [DIM1+DIM2, d],
-            [DIM1+DIM2, d+DIM4], [0.5*DIM1+DIM2, d+DIM4], [0.5*DIM1+DIM2, DIM3], [0.5*DIM1, DIM3],
-            [0.5*DIM1, d+DIM4], [0, d+DIM4], [0, d], [0.5*DIM1, d]
-        ]
-        self.facets = [
-            [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
-            [10, 11], [11, 0]
-        ]
-
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (-shift[0], 0.5*self.DIM3-shift[1])
-        D = (0.5*(self.DIM1+self.DIM2)-shift[0], -shift[1])
-        E = (-shift[0], -0.5*self.DIM3-shift[1])
-        F = (-0.5*(self.DIM1+self.DIM2)-shift[0], -shift[1])
-
-        return C, D, E, F
+    # construct the points and facets
+    d = 0.5*(DIM3 - DIM4)
+    points = [
+        [0.5*DIM1, 0], [0.5*DIM1+DIM2, 0], [0.5*DIM1+DIM2, d], [DIM1+DIM2, d],
+        [DIM1+DIM2, d+DIM4], [0.5*DIM1+DIM2, d+DIM4], [0.5*DIM1+DIM2, DIM3], [0.5*DIM1, DIM3],
+        [0.5*DIM1, d+DIM4], [0, d+DIM4], [0, d], [0.5*DIM1, d]
+    ]
+    geometry = Geometry(Polygon(points))
+    C = (0, 0.5*DIM3)
+    D = (0.5*(DIM1+DIM2), 0)
+    E = (0, -0.5*DIM3)
+    F = (-0.5*(DIM1+DIM2), 0)
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
 
-class FCROSSSection(Geometry):
+def nastran_fcross(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float, DIM7: float, DIM8: float):
     """ Constructs a flanged cruciform/cross section with the intersection's middle center at the
     origin *(0, 0)*, with eight parameters defining dimensions. Added by JohnDN90.
 
@@ -632,84 +394,39 @@ class FCROSSSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    # TODO: Finish dimension checks.
+    np.testing.assert_(DIM5 > DIM3, "Invalid geometry specified.")
+    np.testing.assert_(DIM7 > DIM4, "Invalid geometry specified.")
+    np.testing.assert_(DIM7 < DIM1, "Invalid geometry specified.")
+    np.testing.assert_(DIM5 < DIM2, "Invalid geometry specified.")
+    np.testing.assert_(DIM8 < (0.5*DIM2-0.5*DIM3), "Invalid geometry specified.")
+    np.testing.assert_(DIM6 < (0.5*DIM1-0.5*DIM4), "Invalid geometry specified.")
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, shift=[0, 0]):
-        """Inits the FCROSSSection class."""
+    # construct the points and facets
+    points = [
+        [0.5*DIM3, -0.5*DIM4], [0.5*DIM2-DIM8, -0.5*DIM4], [0.5*DIM2-DIM8, -0.5*DIM7],
+        [0.5*DIM2, -0.5*DIM7], [0.5*DIM2, 0.5*DIM7], [0.5*DIM2-DIM8, 0.5*DIM7],
+        [0.5*DIM2-DIM8, 0.5*DIM4], [0.5*DIM3, 0.5*DIM4], [0.5*DIM3, 0.5*DIM1-DIM6],
+        [0.5*DIM5, 0.5*DIM1-DIM6], [0.5*DIM5, 0.5*DIM1], [-0.5*DIM5, 0.5*DIM1],
+        [-0.5*DIM5, 0.5*DIM1-DIM6],  [-0.5*DIM3, 0.5*DIM1-DIM6], [-0.5*DIM3, 0.5*DIM4],
+        [-0.5*DIM2+DIM8, 0.5*DIM4],  [-0.5*DIM2+DIM8, 0.5*DIM7], [-0.5*DIM2, 0.5*DIM7],
+        [-0.5*DIM2, -0.5*DIM7], [-0.5*DIM2+DIM8, -0.5*DIM7], [-0.5*DIM2+DIM8, -0.5*DIM4],
+        [-0.5*DIM3, -0.5*DIM4], [-0.5*DIM3, -0.5*DIM1+DIM6], [-0.5*DIM5, -0.5*DIM1+DIM6],
+        [-0.5*DIM5, -0.5*DIM1], [0.5*DIM5, -0.5*DIM1], [0.5*DIM5, -0.5*DIM1+DIM6],
+        [0.5*DIM3, -0.5*DIM1+DIM6]
+    ]
+    geometry = Geometry(Polygon(points))
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM5 *= 1.0
-        DIM6 *= 1.0
-        DIM7 *= 1.0
-        DIM8 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
-        self.DIM5 = DIM5
-        self.DIM6 = DIM6
-        self.DIM7 = DIM7
-        self.DIM7 = DIM8
-
-        # Ensure dimensions are physically relevant
-        # TODO: Finish dimension checks.
-        np.testing.assert_(DIM5 > DIM3, "Invalid geometry specified.")
-        np.testing.assert_(DIM7 > DIM4, "Invalid geometry specified.")
-        np.testing.assert_(DIM7 < DIM1, "Invalid geometry specified.")
-        np.testing.assert_(DIM5 < DIM2, "Invalid geometry specified.")
-        np.testing.assert_(DIM8 < (0.5*DIM2-0.5*DIM3), "Invalid geometry specified.")
-        np.testing.assert_(DIM6 < (0.5*DIM1-0.5*DIM4), "Invalid geometry specified.")
-
-        # assign control point
-        control_points = [[0.0, 0.0]]
-
-        shift = [shift[0], shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        self.points = [
-            [0.5*DIM3, -0.5*DIM4], [0.5*DIM2-DIM8, -0.5*DIM4], [0.5*DIM2-DIM8, -0.5*DIM7],
-            [0.5*DIM2, -0.5*DIM7], [0.5*DIM2, 0.5*DIM7], [0.5*DIM2-DIM8, 0.5*DIM7],
-            [0.5*DIM2-DIM8, 0.5*DIM4], [0.5*DIM3, 0.5*DIM4], [0.5*DIM3, 0.5*DIM1-DIM6],
-            [0.5*DIM5, 0.5*DIM1-DIM6], [0.5*DIM5, 0.5*DIM1], [-0.5*DIM5, 0.5*DIM1],
-            [-0.5*DIM5, 0.5*DIM1-DIM6],  [-0.5*DIM3, 0.5*DIM1-DIM6], [-0.5*DIM3, 0.5*DIM4],
-            [-0.5*DIM2+DIM8, 0.5*DIM4],  [-0.5*DIM2+DIM8, 0.5*DIM7], [-0.5*DIM2, 0.5*DIM7],
-            [-0.5*DIM2, -0.5*DIM7], [-0.5*DIM2+DIM8, -0.5*DIM7], [-0.5*DIM2+DIM8, -0.5*DIM4],
-            [-0.5*DIM3, -0.5*DIM4], [-0.5*DIM3, -0.5*DIM1+DIM6], [-0.5*DIM5, -0.5*DIM1+DIM6],
-            [-0.5*DIM5, -0.5*DIM1], [0.5*DIM5, -0.5*DIM1], [0.5*DIM5, -0.5*DIM1+DIM6],
-            [0.5*DIM3, -0.5*DIM1+DIM6]
-        ]
-        self.facets = [
-            [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
-            [10, 11], [11, 12], [12, 13], [13, 14], [14, 15], [15, 16], [16, 17], [17, 18],
-            [18, 19], [19, 20], [20, 21], [21, 22], [22, 23], [23, 24], [24, 25], [25, 26],
-            [26, 27], [27, 0]
-        ]
-
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: list[float, float]
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (-shift[0], 0.5*self.DIM1-shift[1])
-        D = (0.5*self.DIM2-shift[0], -shift[1])
-        E = (-shift[0], -0.5*self.DIM1-shift[1])
-        F = (-0.5*self.DIM2-shift[0], -shift[1])
-
-        return C, D, E, F
+    C = (0, 0.5*DIM1)
+    D = (0.5*DIM2, 0)
+    E = (0, -0.5*DIM1)
+    F = (-0.5*DIM2, 0)
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
 
-class DBOXSection(Geometry):
+def nastran_dbox(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float, DIM7: float, DIM8: float, DIM9: float, DIM10: float):
     """ Constructs a DBOX section with the center at the origin *(0, 0)*, with ten parameters
     defining dimensions. See MSC Nastran documentation [1]_ for more details. Added by JohnDN90.
 
@@ -749,84 +466,34 @@ class DBOXSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_((DIM4+DIM5+DIM6) < DIM1, "Invalid geometry specified.")
+    np.testing.assert_((DIM4+0.5*DIM5) < DIM3, "Invalid geometry specified.")
+    np.testing.assert_((DIM7+DIM8) < DIM2, "Invalid geometry specified.")
+    np.testing.assert_((DIM9+DIM10) < DIM2, "Invalid geometry specified.")
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, DIM9, DIM10, shift=[0, 0]):
-        """Inits the DBOXSection class."""
-
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM5 *= 1.0
-        DIM6 *= 1.0
-        DIM7 *= 1.0
-        DIM8 *= 1.0
-        DIM9 *= 1.0
-        DIM10 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
-        self.DIM5 = DIM5
-        self.DIM6 = DIM6
-        self.DIM7 = DIM7
-        self.DIM8 = DIM8
-        self.DIM9 = DIM9
-        self.DIM10 = DIM10
-
-        # Ensure dimensions are physically relevant
-        np.testing.assert_((DIM4+DIM5+DIM6) < DIM1, "Invalid geometry specified.")
-        np.testing.assert_((DIM4+0.5*DIM5) < DIM3, "Invalid geometry specified.")
-        np.testing.assert_((DIM7+DIM8) < DIM2, "Invalid geometry specified.")
-        np.testing.assert_((DIM9+DIM10) < DIM2, "Invalid geometry specified.")
-
-        # assign control point
-        control_points = [[0.5*DIM3, 0.5*DIM8]]
-
-        shift = [-0.5*DIM1+shift[0], -0.5*DIM2+shift[1]]
-        super().__init__(control_points, shift)
-
-        # specify a hole in the centre of the Box
-        d2 = 0.5*(DIM1 - DIM6 - DIM3 - 0.5*DIM5)
-        self.holes = [
-            [DIM4 + 0.5*(DIM3 - DIM4 - 0.5*DIM5), DIM8 + 0.5*(DIM2 - DIM8 - DIM7)],
-            [DIM3 + 0.5*DIM5 + d2, DIM10 + 0.5*(DIM2 - DIM10 - DIM9)]
-        ]
-
-        # construct the points and facets
-        self.points = [
-            [0., 0.], [DIM1, 0.], [DIM1, DIM2], [0., DIM2], [DIM4, DIM8], [DIM3-DIM5/2., DIM8],
-            [DIM3-DIM5/2., DIM2-DIM7], [DIM4, DIM2-DIM7], [DIM3+DIM5/2., DIM10],
-            [DIM1-DIM6, DIM10], [DIM1-DIM6, DIM2-DIM9], [DIM3+DIM5/2., DIM2-DIM9]
-        ]
-        self.facets = [
-            [0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [8, 9], [9, 10],
-            [10, 11], [11, 8]
-        ]
-
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """
-        Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5 * self.DIM1 - shift[0], 0.5 * self.DIM2 - shift[1])
-        D = (0.5 * self.DIM1 - shift[0], -0.5 * self.DIM2 - shift[1])
-        E = (-0.5 * self.DIM1 - shift[0], -0.5 * self.DIM2 - shift[1])
-        F = (-0.5 * self.DIM1 - shift[0], 0.5 * self.DIM2 - shift[1])
-
-        return C, D, E, F
+    # construct the points and facets
+    exterior_points = [
+        [0., 0.], [DIM1, 0.], [DIM1, DIM2], [0., DIM2],  
+    ]
+    interior_points_1 = [
+        [DIM4, DIM8], [DIM3-DIM5/2., DIM8],
+        [DIM3-DIM5/2., DIM2-DIM7], [DIM4, DIM2-DIM7],
+    ]
+    interior_points_2 = [
+        [DIM3+DIM5/2., DIM10],
+        [DIM1-DIM6, DIM10], [DIM1-DIM6, DIM2-DIM9], [DIM3+DIM5/2., DIM2-DIM9]
+    ]
+    geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points_1) - Polygon(interior_points_2))
+    C = (0.5 * DIM1, 0.5 * DIM2)
+    D = (0.5 * DIM1, -0.5 * DIM2)
+    E = (-0.5 * DIM1, -0.5 * DIM2)
+    F = (-0.5 * DIM1, 0.5 * DIM2)
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
 
-class GBOXSection(Geometry):
+def nastran_gbox(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float):
     """ Constructs a GBOX section with the center at the origin *(0, 0)*, with six parameters
     defining dimensions. See ASTROS documentation [5]_ for more details. Added by JohnDN90.
 
@@ -861,71 +528,33 @@ class GBOXSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_((DIM3+DIM4) < DIM2, "Invalid geometry specified.")
+    np.testing.assert_((2.0*DIM5+DIM6) < DIM1, "Invalid geometry specified.")
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=[0, 0]):
-        """Inits the GBOXSection class."""
+    # construct the points and facets
+    d = 0.5*(DIM1 - DIM6 - 2.0 * DIM5)
+    exterior_points = [
+        [0., 0.], [DIM1, 0.], [DIM1, DIM4], [d + 2. * DIM5 + DIM6, DIM4],
+        [d + 2. * DIM5 + DIM6, DIM2 - DIM3], [DIM1, DIM2 - DIM3], [DIM1, DIM2], [0., DIM2],
+        [0., DIM2 - DIM3], [d, DIM2 - DIM3], [d, DIM4], [0., DIM4], 
+    ]
+    interior_points = [
+        [d + DIM5, DIM4],
+        [d + DIM5 + DIM6, DIM4], [d + DIM5 + DIM6, DIM2 - DIM3], [d + DIM5, DIM2 - DIM3]
+    ]
+    geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points))
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM5 *= 1.0
-        DIM6 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
-        self.DIM5 = DIM5
-        self.DIM6 = DIM6
+    C = (0.5*DIM1, 0.5*DIM2)
+    D = (0.5*DIM1, -0.5*DIM2)
+    E = (-0.5*DIM1, -0.5*DIM2)
+    F = (-0.5*DIM1, 0.5*DIM2)
+    geometry.recovery_points = [C, D, E, F]
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_((DIM3+DIM4) < DIM2, "Invalid geometry specified.")
-        np.testing.assert_((2.0*DIM5+DIM6) < DIM1, "Invalid geometry specified.")
-
-        # assign control point
-        control_points = [[0.5*DIM1, 0.5*DIM4]]
-
-        shift = [-(0.5*DIM1)+shift[0], -(DIM4 + 0.5*(DIM2-DIM3-DIM4))+shift[1]]
-        super().__init__(control_points, shift)
-
-        # specify a hole in the centre of the GBOX
-        self.holes = [[0.5*DIM1, 0.5*DIM2]]
-
-        # construct the points and facets
-        d = 0.5*(DIM1 - DIM6 - 2.0 * DIM5)
-        self.points = [
-            [0., 0.], [DIM1, 0.], [DIM1, DIM4], [d + 2. * DIM5 + DIM6, DIM4],
-            [d + 2. * DIM5 + DIM6, DIM2 - DIM3], [DIM1, DIM2 - DIM3], [DIM1, DIM2], [0., DIM2],
-            [0., DIM2 - DIM3], [d, DIM2 - DIM3], [d, DIM4], [0., DIM4], [d + DIM5, DIM4],
-            [d + DIM5 + DIM6, DIM4], [d + DIM5 + DIM6, DIM2 - DIM3], [d + DIM5, DIM2 - DIM3]
-        ]
-        self.facets = [
-            [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
-            [10, 11], [11, 0], [12, 13], [13, 14], [14, 15], [15, 12]
-        ]
-
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*self.DIM1-shift[0], 0.5*self.DIM2-shift[1])
-        D = (0.5*self.DIM1-shift[0], -0.5*self.DIM2-shift[1])
-        E = (-0.5*self.DIM1-shift[0], -0.5*self.DIM2-shift[1])
-        F = (-0.5*self.DIM1-shift[0], 0.5*self.DIM2-shift[1])
-
-        return C, D, E, F
+    return geometry
 
 
-class HSection(Geometry):
+def nastran_h(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a H section with the middle web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -957,64 +586,27 @@ class HSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM4 < DIM3, "Invalid geometry specified.")
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the HSection class."""
+    d1 = 0.5 * (DIM3 - DIM4)
+    d2 = 0.5 * DIM2
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
+    # construct the points and facets
+    points = [
+        [0, 0], [d2, 0], [d2, d1], [d2+DIM1, d1], [d2+DIM1, 0], [DIM1+DIM2, 0],
+        [DIM1+DIM2, DIM3], [DIM1+DIM2-d2, DIM3], [DIM1+DIM2-d2, d1+DIM4], [d2, d1+DIM4],
+        [d2, DIM3], [0, DIM3]
+    ]
+    geometry = Geometry(Polygon(points))
+    C = (0.5*(DIM1+DIM2), 0.5*DIM3)
+    D = (0.5*(DIM1+DIM2), -0.5*DIM3)
+    E = (-0.5*(DIM1+DIM2), -0.5*DIM3)
+    F = (-0.5*(DIM1+DIM2), 0.5*DIM3)
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM4 < DIM3, "Invalid geometry specified.")
-
-        d1 = 0.5 * (DIM3 - DIM4)
-        d2 = 0.5 * DIM2
-
-        # assign control point
-        control_points = [[0.5*d2, 0.5*DIM3]]
-
-        shift = [-0.5*(DIM2+DIM1)+shift[0], -0.5*DIM3+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        self.points = [
-            [0, 0], [d2, 0], [d2, d1], [d2+DIM1, d1], [d2+DIM1, 0], [DIM1+DIM2, 0],
-            [DIM1+DIM2, DIM3], [DIM1+DIM2-d2, DIM3], [DIM1+DIM2-d2, d1+DIM4], [d2, d1+DIM4],
-            [d2, DIM3], [0, DIM3]
-        ]
-        self.facets = [
-            [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
-            [10, 11], [11, 0]
-        ]
-
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*(self.DIM1+self.DIM2)-shift[0], 0.5*self.DIM3-shift[1])
-        D = (0.5*(self.DIM1+self.DIM2)-shift[0], -0.5*self.DIM3-shift[1])
-        E = (-0.5*(self.DIM1+self.DIM2)-shift[0], -0.5*self.DIM3-shift[1])
-        F = (-0.5*(self.DIM1+self.DIM2)-shift[0], 0.5*self.DIM3-shift[1])
-
-        return C, D, E, F
-
-
-class HATSection(Geometry):
+def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a Hat section with the top most section's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Note that HAT in ASTROS is actually HAT1 in this code. Added by JohnDN90.
@@ -1046,61 +638,26 @@ class HATSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(2.0*DIM2 < DIM1, "Invalid geometry specified.")
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
-        """Inits the HATSection class."""
+    # construct the points and facets
+    points = [
+        [0., 0.], [DIM4+DIM2, 0.], [DIM4+DIM2, DIM1-DIM2], [DIM4+DIM3-DIM2, DIM1-DIM2],
+        [DIM4+DIM3-DIM2, 0.], [2*DIM4+DIM3, 0.], [2.*DIM4+DIM3, DIM2], [DIM4+DIM3, DIM2],
+        [DIM4+DIM3, DIM1], [DIM4, DIM1], [DIM4, DIM2], [0., DIM2]
+    ]
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
-
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(2.0*DIM2 < DIM1, "Invalid geometry specified.")
-
-        # assign control point
-        control_points = [[0.5*DIM4, 0.5*DIM2]]
-
-        shift = [-DIM4-0.5*DIM3+shift[0], -DIM1+0.5*DIM2+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        self.points = [
-            [0., 0.], [DIM4+DIM2, 0.], [DIM4+DIM2, DIM1-DIM2], [DIM4+DIM3-DIM2, DIM1-DIM2],
-            [DIM4+DIM3-DIM2, 0.], [2*DIM4+DIM3, 0.], [2.*DIM4+DIM3, DIM2], [DIM4+DIM3, DIM2],
-            [DIM4+DIM3, DIM1], [DIM4, DIM1], [DIM4, DIM2], [0., DIM2]
-        ]
-        self.facets = [
-            [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
-            [10, 11], [11, 0]
-        ]
-
-        self.shift_section()
-
-    def getStressPoints(self, shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the origin by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*self.DIM3 - shift[0], 0.5*self.DIM2 - shift[1])
-        D = (0.5*self.DIM3 + self.DIM4 - shift[0], -self.DIM1 + self.DIM2 - shift[1])
-        E = (-0.5*self.DIM3 - self.DIM4 - shift[0], -self.DIM1 + self.DIM2 - shift[1])
-        F = (-0.5*self.DIM3 - shift[0], 0.5*self.DIM2 - shift[1])
-
-        return C, D, E, F
+    geometry = Geometry(Polygon(points))
+    C = (0.5*DIM3), 0.5*DIM2))
+    D = (0.5*DIM3 + DIM4), -DIM1 + DIM2))
+    E = (-0.5*DIM3 - DIM4), -DIM1 + DIM2))
+    F = (-0.5*DIM3), 0.5*DIM2))
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
 
-class HAT1Section(Geometry):
+def nastran_hat1(DIM1, DIM2, DIM3, DIM4, DIM5):
     """ Constructs a HAT1 section with the bottom plate's bottom center at the origin *(0, 0)*,
     with five parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [5]_ for
     definition of parameters. Note that in ASTROS, HAT1 is called HAT. Added by JohnDN90.
@@ -1133,35 +690,20 @@ class HAT1Section(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # TODO: You are here
+    # Ensure dimensions are physically relevant
+    np.testing.assert_((2.0*DIM4+DIM5) < DIM2, "Invalid geometry specified.")
+    np.testing.assert_(DIM3 < DIM1, "Invalid geometry specified.")
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, shift=[0, 0]):
-        """Inits the HAT1Section class."""
+    shift = [-0.5*DIM1+shift[0], shift[1]]
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM5 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
-        self.DIM5 = DIM5
+    # create bottom rectangular plate
+    bottom_plate = nastran_bar(d=DIM5, b=DIM1, shift=shift)
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_((2.0*DIM4+DIM5) < DIM2, "Invalid geometry specified.")
-        np.testing.assert_(DIM3 < DIM1, "Invalid geometry specified.")
-
-        shift = [-0.5*DIM1+shift[0], shift[1]]
-
-        # create bottom rectangular plate
-        bottom_plate = RectangularSection(d=DIM5, b=DIM1, shift=shift)
-
-        # create the hat stiffener
-        d1 = DIM2 - DIM5
-        d2 = DIM4
-        d4 = 0.5*(DIM1 - DIM3)
+    # create the hat stiffener
+    d1 = DIM2 - DIM5
+    d2 = DIM4
+    d4 = 0.5*(DIM1 - DIM3)
 
         # specify a hole in the combined plate and hat structure
         holes = [[0.5*DIM1, 0.5*DIM2]]
@@ -1194,13 +736,13 @@ class HAT1Section(Geometry):
         # Clean the geometry and print information to the terminal
         geometry.clean_geometry(verbose=False)
 
-        self.control_points = geometry.control_points
-        self.shift = geometry.shift
-        self.points = geometry.points
-        self.facets = geometry.facets
-        self.holes = geometry.holes
+        control_points = geometry.control_points
+        shift = geometry.shift
+        points = geometry.points
+        facets = geometry.facets
+        holes = geometry.holes
 
-    def create_mesh(self, mesh_sizes):
+    def create_mesh(mesh_sizes):
         """Creates a quadratic triangular mesh from the Geometry object. This is overloaded here to
         allow specifying only one mesh_size which is used for both regions in the Hat1 section.
 
@@ -1217,13 +759,13 @@ class HAT1Section(Geometry):
         mesh_sizes *= 2
 
         str = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
-            len(mesh_sizes), len(self.control_points)
+            len(mesh_sizes), len(control_points)
         )
-        assert(len(mesh_sizes) == len(self.control_points)), str
+        assert(len(mesh_sizes) == len(control_points)), str
 
-        return create_mesh(self.points, self.facets, self.holes, self.control_points, mesh_sizes)
+        return create_mesh(points, facets, holes, control_points, mesh_sizes)
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """ Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1233,10 +775,10 @@ class HAT1Section(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (-0.5*self.DIM1 - shift[0], -shift[1])
-        D = (0.5*self.DIM1 - shift[0],  -shift[1])
-        E = (-0.5*self.DIM3 - shift[0], self.DIM2 - shift[1])
-        F = (0.5*self.DIM3 - shift[0], self.DIM2 - shift[1])
+        C = (-0.5*DIM1))
+        D = (0.5*DIM1),  )
+        E = (-0.5*DIM3), DIM2))
+        F = (0.5*DIM3), DIM2))
 
         return C, D, E, F
 
@@ -1273,16 +815,16 @@ class HEXASection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, shift=[0, 0]):
+    def __init__(DIM1, DIM2, DIM3):
         """Inits the HEXASection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
         DIM2 *= 1.0
         DIM3 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
+        DIM1 = DIM1
+        DIM2 = DIM2
+        DIM3 = DIM3
 
         # Ensure dimensions are physically relevant
         np.testing.assert_(DIM2 > DIM1, "Invalid geometry specified.")
@@ -1294,15 +836,15 @@ class HEXASection(Geometry):
         super().__init__(control_points, shift)
 
         # construct the points and facets
-        self.points = [
+        points = [
             [DIM1, 0.], [DIM2-DIM1, 0.], [DIM2, 0.5*DIM3], [DIM2-DIM1, DIM3], [DIM1, DIM3],
             [0., 0.5*DIM3]
         ]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]]
+        facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]]
 
-        self.shift_section()
+        shift_section()
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1312,10 +854,10 @@ class HEXASection(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (-shift[0], 0.5*self.DIM3-shift[1])
-        D = (-shift[0], -0.5*self.DIM3-shift[1])
-        E = (0.5*self.DIM2-shift[0], -shift[1])
-        F = (-0.5*self.DIM2-shift[0], -shift[1])
+        C = (, 0.5*DIM3)
+        D = (, -0.5*DIM3)
+        E = (0.5*DIM2)
+        F = (-0.5*DIM2)
 
         return C, D, E, F
 
@@ -1357,7 +899,7 @@ class NISection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=[0, 0]):
+    def __init__(DIM1, DIM2, DIM3, DIM4, DIM5, DIM6):
         """Inits the NISection class."""
 
         # force dimensions to be floating point values
@@ -1367,12 +909,12 @@ class NISection(Geometry):
         DIM4 *= 1.0
         DIM5 *= 1.0
         DIM6 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
-        self.DIM5 = DIM5
-        self.DIM6 = DIM6
+        DIM1 = DIM1
+        DIM2 = DIM2
+        DIM3 = DIM3
+        DIM4 = DIM4
+        DIM5 = DIM5
+        DIM6 = DIM6
 
         # Ensure dimensions are physically relevant
         np.testing.assert_((DIM5 + DIM6) < DIM1, "Invalid geometry specified.")
@@ -1388,19 +930,19 @@ class NISection(Geometry):
         # construct the points and facets
         db = 0.5*(DIM2 - DIM4)
         dt = 0.5*(DIM3 - DIM4)
-        self.points = [
+        points = [
             [0., 0.], [DIM2, 0.], [DIM2, DIM5], [db+DIM4, DIM5], [db + DIM4, DIM1-DIM6],
             [db+DIM4+dt, DIM1-DIM6], [db+DIM4+dt, DIM1], [db-dt, DIM1], [db-dt, DIM1-DIM6],
             [db, DIM1-DIM6], [db, DIM5], [0, DIM5]
         ]
-        self.facets = [
+        facets = [
             [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
             [10, 11], [11, 0]
         ]
 
-        self.shift_section()
+        shift_section()
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1410,10 +952,10 @@ class NISection(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (0.5*self.DIM3-shift[0], 0.5*self.DIM1-shift[1])
-        D = (0.5*self.DIM3-shift[0], -0.5*self.DIM1-shift[1])
-        E = (-0.5*self.DIM3-shift[0], -0.5*self.DIM1-shift[1])
-        F = (-0.5*self.DIM3-shift[0], 0.5*self.DIM1-shift[1])
+        C = (0.5*DIM3, 0.5*DIM1)
+        D = (0.5*DIM3, -0.5*DIM1)
+        E = (-0.5*DIM3, -0.5*DIM1)
+        F = (-0.5*DIM3, 0.5*DIM1)
 
         return C, D, E, F
 
@@ -1452,7 +994,7 @@ class I1Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(DIM1, DIM2, DIM3, DIM4):
         """Inits the I1section class."""
 
         # force dimensions to be floating point values
@@ -1460,10 +1002,10 @@ class I1Section(Geometry):
         DIM2 *= 1.0
         DIM3 *= 1.0
         DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
+        DIM1 = DIM1
+        DIM2 = DIM2
+        DIM3 = DIM3
+        DIM4 = DIM4
 
         # Ensure dimensions are physically relevant
         np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
@@ -1477,19 +1019,19 @@ class I1Section(Geometry):
 
         # construct the points and facets
         t = 0.5*(DIM4 - DIM3)
-        self.points = [
+        points = [
             [0., 0.], [DIM1+DIM2, 0.], [DIM1+DIM2, t], [0.5*DIM1+DIM2, t], [0.5*DIM1+DIM2, t+DIM3],
             [DIM1+DIM2, t+DIM3], [DIM1+DIM2, DIM4], [0., DIM4], [0., t+DIM3], [0.5*DIM1, t+DIM3],
             [0.5*DIM1, t], [0., t]
         ]
-        self.facets = [
+        facets = [
             [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
             [10, 11], [11, 0]
         ]
 
-        self.shift_section()
+        shift_section()
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1499,10 +1041,10 @@ class I1Section(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (0.5*(self.DIM1+self.DIM2)-shift[0], 0.5*self.DIM4-shift[1])
-        D = (0.5*(self.DIM1+self.DIM2)-shift[0], -0.5*self.DIM4-shift[1])
-        E = (-0.5*(self.DIM1+self.DIM2)-shift[0], -0.5*self.DIM4-shift[1])
-        F = (-0.5*(self.DIM1+self.DIM2)-shift[0], 0.5*self.DIM4-shift[1])
+        C = (0.5*(DIM1+DIM2), 0.5*DIM4)
+        D = (0.5*(DIM1+DIM2), -0.5*DIM4)
+        E = (-0.5*(DIM1+DIM2), -0.5*DIM4)
+        F = (-0.5*(DIM1+DIM2), 0.5*DIM4)
 
         return C, D, E, F
 
@@ -1540,7 +1082,7 @@ class LSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(DIM1, DIM2, DIM3, DIM4):
         """Inits the LSection class."""
 
         # force dimensions to be floating point values
@@ -1548,10 +1090,10 @@ class LSection(Geometry):
         DIM2 *= 1.0
         DIM3 *= 1.0
         DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
+        DIM1 = DIM1
+        DIM2 = DIM2
+        DIM3 = DIM3
+        DIM4 = DIM4
 
         # Ensure dimensions are physically relevant
         np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
@@ -1564,12 +1106,12 @@ class LSection(Geometry):
         super().__init__(control_points, shift)
 
         # construct the points and facets
-        self.points = [[0, 0], [DIM1, 0], [DIM1, DIM3], [DIM4, DIM3], [DIM4, DIM2], [0, DIM2]]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]]
+        points = [[0, 0], [DIM1, 0], [DIM1, DIM3], [DIM4, DIM3], [DIM4, DIM2], [0, DIM2]]
+        facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]]
 
-        self.shift_section()
+        shift_section()
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1579,10 +1121,10 @@ class LSection(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (0.5*self.DIM4-shift[0], self.DIM2-0.5*self.DIM3-shift[1])
-        D = (self.DIM1-0.5*self.DIM4-shift[0], -0.5*self.DIM3-shift[1])
-        E = (-0.5*self.DIM4-shift[0], -0.5*self.DIM3-shift[1])
-        F = (-0.5*self.DIM4-shift[0], self.DIM2-0.5*self.DIM3-shift[1])
+        C = (0.5*DIM4, DIM2-0.5*DIM3)
+        D = (DIM1-0.5*DIM4, -0.5*DIM3)
+        E = (-0.5*DIM4, -0.5*DIM3)
+        F = (-0.5*DIM4, DIM2-0.5*DIM3)
 
         return C, D, E, F
 
@@ -1618,12 +1160,12 @@ class RODSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, n, shift=[0, 0]):
+    def __init__(DIM1, n):
         """Inits the RODSection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
-        self.DIM1 = DIM1
+        DIM1 = DIM1
 
         # assign control point
         control_points = [[0, 0]]
@@ -1642,18 +1184,18 @@ class RODSection(Geometry):
             y = 0.5 * d * np.sin(theta)
 
             # append the current point to the points list
-            self.points.append([x, y])
+            points.append([x, y])
 
             # if we are not at the last point
             if i != n - 1:
-                self.facets.append([i, i + 1])
+                facets.append([i, i + 1])
             # if we are at the last point, complete the circle
             else:
-                self.facets.append([i, 0])
+                facets.append([i, 0])
 
-        self.shift_section()
+        shift_section()
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1664,10 +1206,10 @@ class RODSection(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (-shift[0], self.DIM1-shift[1])
-        D = (self.DIM1-shift[0], -shift[1])
-        E = (-shift[0], -self.DIM1-shift[1])
-        F = (-self.DIM1-shift[0], -shift[1])
+        C = (, DIM1)
+        D = (DIM1)
+        E = (, -DIM1)
+        F = (-DIM1)
 
         return C, D, E, F
 
@@ -1705,7 +1247,7 @@ class TSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(DIM1, DIM2, DIM3, DIM4):
         """Inits the TSection class."""
 
         # force dimensions to be floating point values
@@ -1713,10 +1255,10 @@ class TSection(Geometry):
         DIM2 *= 1.0
         DIM3 *= 1.0
         DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
+        DIM1 = DIM1
+        DIM2 = DIM2
+        DIM3 = DIM3
+        DIM4 = DIM4
 
         # Ensure dimensions are physically relevant
         np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
@@ -1736,35 +1278,35 @@ class TSection(Geometry):
         super().__init__(control_points, shift)
 
         # add first two points
-        self.points.append([b * 0.5 - t_w * 0.5, 0])
-        self.points.append([b * 0.5 + t_w * 0.5, 0])
+        points.append([b * 0.5 - t_w * 0.5, 0])
+        points.append([b * 0.5 + t_w * 0.5, 0])
 
         # construct the top right radius
         pt = [b * 0.5 + t_w * 0.5 + r, d - t_f - r]
-        self.draw_radius(pt, r, np.pi, n_r, False)
+        draw_radius(pt, r, np.pi, n_r, False)
 
         # add next four points
-        self.points.append([b, d - t_f])
-        self.points.append([b, d])
-        self.points.append([0, d])
-        self.points.append([0, d - t_f])
+        points.append([b, d - t_f])
+        points.append([b, d])
+        points.append([0, d])
+        points.append([0, d - t_f])
 
         # construct the top left radius
         pt = [b * 0.5 - t_w * 0.5 - r, d - t_f - r]
-        self.draw_radius(pt, r, 0.5 * np.pi, n_r, False)
+        draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
         # build the facet list
-        for i in range(len(self.points)):
+        for i in range(len(points)):
             # if we are not at the last point
-            if i != len(self.points) - 1:
-                self.facets.append([i, i + 1])
+            if i != len(points) - 1:
+                facets.append([i, i + 1])
             # if we are at the last point, complete the loop
             else:
-                self.facets.append([len(self.points) - 1, 0])
+                facets.append([len(points) - 1, 0])
 
-        self.shift_section()
+        shift_section()
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """
         Returns the coordinates of the stress evaluation points relative to the origin
         of the cross-section. The shift parameter can be used to make the coordinates
@@ -1775,10 +1317,10 @@ class TSection(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (-shift[0], 0.5*self.DIM3-shift[1])
-        D = (0.5*self.DIM1-shift[0], 0.5*self.DIM3-shift[1])
-        E = (-shift[0], 0.5*self.DIM3-self.DIM2-shift[1])
-        F = (-0.5*self.DIM1-shift[0], 0.5*self.DIM3-shift[1])
+        C = (, 0.5*DIM3)
+        D = (0.5*DIM1, 0.5*DIM3)
+        E = (, 0.5*DIM3-DIM2)
+        F = (-0.5*DIM1, 0.5*DIM3)
 
         return C, D, E, F
 
@@ -1816,7 +1358,7 @@ class T1Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(DIM1, DIM2, DIM3, DIM4):
         """Inits the T1section class."""
 
         # force dimensions to be floating point values
@@ -1824,10 +1366,10 @@ class T1Section(Geometry):
         DIM2 *= 1.0
         DIM3 *= 1.0
         DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
+        DIM1 = DIM1
+        DIM2 = DIM2
+        DIM3 = DIM3
+        DIM4 = DIM4
 
         # Ensure dimensions are physically relevant
         np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
@@ -1841,15 +1383,15 @@ class T1Section(Geometry):
 
         # construct the points and facets
         d1 = (DIM1 - DIM4) / 2.0
-        self.points = [
+        points = [
             [0, 0], [DIM3, 0], [DIM3, DIM1], [0, DIM1], [0, d1 + DIM4], [-DIM2, d1 + DIM4],
             [-DIM2, d1], [0, d1]
         ]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
+        facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
 
-        self.shift_section()
+        shift_section()
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1859,10 +1401,10 @@ class T1Section(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (0.5*self.DIM3-shift[0], -shift[1])
-        D = (0.5*self.DIM3-shift[0], -0.5*self.DIM1-shift[1])
-        E = (-0.5*self.DIM3-self.DIM2-shift[0], -shift[1])
-        F = (0.5*self.DIM3-shift[0], 0.5*self.DIM1-shift[1])
+        C = (0.5*DIM3)
+        D = (0.5*DIM3, -0.5*DIM1)
+        E = (-0.5*DIM3-DIM2)
+        F = (0.5*DIM3, 0.5*DIM1)
 
         return C, D, E, F
 
@@ -1900,7 +1442,7 @@ class T2Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(DIM1, DIM2, DIM3, DIM4):
         """Inits the T2Section class."""
 
         # force dimensions to be floating point values
@@ -1908,10 +1450,10 @@ class T2Section(Geometry):
         DIM2 *= 1.0
         DIM3 *= 1.0
         DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
+        DIM1 = DIM1
+        DIM2 = DIM2
+        DIM3 = DIM3
+        DIM4 = DIM4
 
         # Ensure dimensions are physically relevant
         np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
@@ -1925,15 +1467,15 @@ class T2Section(Geometry):
 
         # construct the points and facets
         d1 = 0.5*(DIM1 - DIM4)
-        self.points = [
+        points = [
             [0., 0.], [DIM1, 0.], [DIM1, DIM3], [DIM1-d1, DIM3], [DIM1-d1, DIM2], [d1, DIM2],
             [d1, DIM3], [0, DIM3]
         ]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
+        facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
 
-        self.shift_section()
+        shift_section()
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1943,10 +1485,10 @@ class T2Section(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (0.5*self.DIM4-shift[0], self.DIM2-0.5*self.DIM3-shift[1])
-        D = (0.5*self.DIM1-shift[0], -0.5*self.DIM3-shift[1])
-        E = (-0.5*self.DIM1-shift[0], -0.5*self.DIM3-shift[1])
-        F = (-0.5*self.DIM4-shift[0], self.DIM2-0.5*self.DIM3-shift[1])
+        C = (0.5*DIM4, DIM2-0.5*DIM3)
+        D = (0.5*DIM1, -0.5*DIM3)
+        E = (-0.5*DIM1, -0.5*DIM3)
+        F = (-0.5*DIM4, DIM2-0.5*DIM3)
 
         return C, D, E, F
 
@@ -1984,14 +1526,14 @@ class TUBESection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, n, shift=[0, 0]):
+    def __init__(DIM1, DIM2, n):
         """Inits the TUBESection class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
         DIM2 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
+        DIM1 = DIM1
+        DIM2 = DIM2
 
         # Ensure dimensions are physically relevant
         np.testing.assert_(DIM2 < DIM1, "Invalid geometry specified.")
@@ -2005,7 +1547,7 @@ class TUBESection(Geometry):
         super().__init__(control_points, shift)
 
         # specify a hole in the centre of the CHS
-        self.holes = [[0., 0.]]
+        holes = [[0., 0.]]
 
         # loop through each point of the CHS
         for i in range(n):
@@ -2019,21 +1561,21 @@ class TUBESection(Geometry):
             y_inner = (0.5 * d - t) * np.sin(theta)
 
             # append the current points to the points list
-            self.points.append([x_outer, y_outer])
-            self.points.append([x_inner, y_inner])
+            points.append([x_outer, y_outer])
+            points.append([x_inner, y_inner])
 
             # if we are not at the last point
             if i != n - 1:
-                self.facets.append([i * 2, i * 2 + 2])
-                self.facets.append([i * 2 + 1, i * 2 + 3])
+                facets.append([i * 2, i * 2 + 2])
+                facets.append([i * 2 + 1, i * 2 + 3])
             # if we are at the last point, complete the circle
             else:
-                self.facets.append([i * 2, 0])
-                self.facets.append([i * 2 + 1, 1])
+                facets.append([i * 2, 0])
+                facets.append([i * 2 + 1, 1])
 
-        self.shift_section()
+        shift_section()
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -2043,10 +1585,10 @@ class TUBESection(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (-shift[0], self.DIM1-shift[1])
-        D = (self.DIM1-shift[0], -shift[1])
-        E = (-shift[0], -self.DIM1-shift[1])
-        F = (-self.DIM1-shift[0], -shift[1])
+        C = (, DIM1)
+        D = (DIM1)
+        E = (, -DIM1)
+        F = (-DIM1)
 
         return C, D, E, F
 
@@ -2084,14 +1626,14 @@ class TUBE2Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, n, shift=[0, 0]):
+    def __init__(DIM1, DIM2, n):
         """Inits the TUBE2Section class."""
 
         # force dimensions to be floating point values
         DIM1 *= 1.0
         DIM2 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
+        DIM1 = DIM1
+        DIM2 = DIM2
 
         # Ensure dimensions are physically relevant
         np.testing.assert_(DIM2 < DIM1, "Invalid geometry specified.")
@@ -2105,7 +1647,7 @@ class TUBE2Section(Geometry):
         super().__init__(control_points, shift)
 
         # specify a hole in the centre of the section
-        self.holes = [[0., 0.]]
+        holes = [[0., 0.]]
 
         # loop through each point of the section
         for i in range(n):
@@ -2119,21 +1661,21 @@ class TUBE2Section(Geometry):
             y_inner = (0.5 * d - t) * np.sin(theta)
 
             # append the current points to the points list
-            self.points.append([x_outer, y_outer])
-            self.points.append([x_inner, y_inner])
+            points.append([x_outer, y_outer])
+            points.append([x_inner, y_inner])
 
             # if we are not at the last point
             if i != n - 1:
-                self.facets.append([i * 2, i * 2 + 2])
-                self.facets.append([i * 2 + 1, i * 2 + 3])
+                facets.append([i * 2, i * 2 + 2])
+                facets.append([i * 2 + 1, i * 2 + 3])
             # if we are at the last point, complete the circle
             else:
-                self.facets.append([i * 2, 0])
-                self.facets.append([i * 2 + 1, 1])
+                facets.append([i * 2, 0])
+                facets.append([i * 2 + 1, 1])
 
-        self.shift_section()
+        shift_section()
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -2143,10 +1685,10 @@ class TUBE2Section(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (-shift[0], self.DIM1-shift[1])
-        D = (self.DIM1-shift[0], -shift[1])
-        E = (-shift[0], -self.DIM1-shift[1])
-        F = (-self.DIM1-shift[0], -shift[1])
+        C = (, DIM1)
+        D = (DIM1)
+        E = (, -DIM1)
+        F = (-DIM1)
 
         return C, D, E, F
 
@@ -2184,7 +1726,7 @@ class ZSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(DIM1, DIM2, DIM3, DIM4):
         """Inits the ZSection class."""
 
         # force dimensions to be floating point values
@@ -2192,10 +1734,10 @@ class ZSection(Geometry):
         DIM2 *= 1.0
         DIM3 *= 1.0
         DIM4 *= 1.0
-        self.DIM1 = DIM1
-        self.DIM2 = DIM2
-        self.DIM3 = DIM3
-        self.DIM4 = DIM4
+        DIM1 = DIM1
+        DIM2 = DIM2
+        DIM3 = DIM3
+        DIM4 = DIM4
 
         # Ensure dimensions are physically relevant
         np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
@@ -2208,15 +1750,15 @@ class ZSection(Geometry):
 
         # construct the points and facets
         t = 0.5*(DIM4 - DIM3)
-        self.points = [
+        points = [
             [DIM1, 0.], [2.*DIM1+DIM2, 0.], [2.*DIM1+DIM2, t], [DIM1+DIM2, t], [DIM1+DIM2, DIM4],
             [0., DIM4], [0., DIM4-t],  [DIM1, DIM4-t]
         ]
-        self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
+        facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
 
-        self.shift_section()
+        shift_section()
 
-    def getStressPoints(self, shift=(0., 0.)):
+    def getStressPoints(shift=(0., 0.)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -2226,9 +1768,9 @@ class ZSection(Geometry):
         :returns: Stress evaluation points relative to shifted origin - C, D, E, F
         """
 
-        C = (0.5*self.DIM2-shift[0], 0.5*self.DIM4-shift[1])
-        D = (0.5*self.DIM2+self.DIM1-shift[0], -0.5*self.DIM4-shift[1])
-        E = (-0.5*self.DIM2-shift[0], -0.5*self.DIM4-shift[1])
-        F = (-0.5*self.DIM2-self.DIM1-shift[0], 0.5*self.DIM4-shift[1])
+        C = (0.5*DIM2, 0.5*DIM4)
+        D = (0.5*DIM2+DIM1, -0.5*DIM4)
+        E = (-0.5*DIM2, -0.5*DIM4)
+        F = (-0.5*DIM2-DIM1, 0.5*DIM4)
 
         return C, D, E, F

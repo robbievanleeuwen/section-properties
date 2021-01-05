@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 import more_itertools
 import numpy as np
-from shapely.geometry import Polygon, MultiPolygon, LinearRing, box
+from shapely.geometry import Polygon, MultiPolygon, LinearRing, box, Point, MultiPoint
 import shapely
 import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
@@ -45,6 +45,7 @@ class Geometry:
         self.facets = [] # Previously empty list
         self.holes = [] # Previously empty list
         self.perimeter = [] # Previously empty list
+        self._recovery_points = []
         # self.mesh = None # Previously not a property
 
 
@@ -382,11 +383,33 @@ class Geometry:
         perimeter = self.geom.exterior.length
         return perimeter
 
+    @property
     def recovery_points(self):
         """
-        Calculates and returns the nastran stress recovery points for the geometry.
+        Returns four stress recovery points for the section geometry. If the Geometry instance was
+        created by a NASTRAN geometry function, e.g. sectionproperties.pre.nastran_sections.nastran_bar(),
+        then the recovery points will be pre-set on the Geometry instance.
         """
-        pass
+        return self._recovery_points
+
+    
+    @recovery_points.setter
+    def recovery_points(self, new_points: Union[List[list], List[tuple], List[Point]]) -> list:
+        # The points are in the .geom polygon
+        intersection_exists = MultiPoint(new_points) & self.geom == MultiPoint(new_points)
+        only_four_points = len(new_points) == 4
+        if intersection_exists and only_four_points:
+            self._recovery_points = new_points
+        elif intersection_exists and not only_four_points:
+            raise ValueError("There must be exactly four recovery points")
+        elif not intersection_exists and only_four_points:
+            raise ValueError("Not all of the points entered exist on the current geometry.")
+        else:
+            raise ValueError("There must be exactly four recovery points and they must all exist on the current geometry.")
+
+    @recovery_points.getter
+    def recovery_points(self, new_points: Union[List[list], List[tuple], List[Point]]) -> list:
+        return self._recovery_points
 
     def __or__(self, other):
         try:
