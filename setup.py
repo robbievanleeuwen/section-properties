@@ -1,5 +1,6 @@
 import sys
 from setuptools import setup
+from sectionproperties import __version__ as version
 
 
 def description_text():
@@ -25,7 +26,7 @@ if not (sys.platform == 'win32' or sys.platform == 'cygwin'):
 
 setup(
     name='sectionproperties',
-    version='1.0.8',
+    version=version,
     description=description_text(),
     long_description=readme(),
     long_description_content_type='text/markdown',
