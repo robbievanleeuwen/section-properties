@@ -11,7 +11,7 @@ def solve_cgs(k, f, m=None, tol=1e-5):
     :type k: :class:`scipy.sparse.csc_matrix`
     :param f: N x 1 right hand side of the linear system
     :type f: :class:`numpy.ndarray`
-    :param float tol: Tolerance for the solver to acheieve. The algorithm terminates when either
+    :param float tol: Tolerance for the solver to achieve. The algorithm terminates when either
         the relative or the absolute residual is below tol.
     :param m: Preconditioner for the linear matrix approximating the inverse of k
     :type m: :class:`scipy.linalg.LinearOperator`
@@ -38,7 +38,7 @@ def solve_cgs_lagrange(k_lg, f, tol=1e-5, m=None):
     :type k: :class:`scipy.sparse.csc_matrix`
     :param f: N x 1 right hand side of the linear system
     :type f: :class:`numpy.ndarray`
-    :param float tol: Tolerance for the solver to acheieve. The algorithm terminates when either
+    :param float tol: Tolerance for the solver to achieve. The algorithm terminates when either
         the relative or the absolute residual is below tol.
     :param m: Preconditioner for the linear matrix approximating the inverse of k
     :type m: :class:`scipy.linalg.LinearOperator`

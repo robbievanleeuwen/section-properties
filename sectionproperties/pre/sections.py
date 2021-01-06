@@ -234,7 +234,7 @@ class Geometry:
         return len(self.control_points) - 1
 
     def clean_geometry(self, verbose=False):
-        """Peforms a full clean on the geometry.
+        """Performs a full clean on the geometry.
 
         :param bool verbose: If set to true, information related to the geometry cleaning process
             is printed to the terminal.
@@ -357,7 +357,7 @@ class Geometry:
                 y_min = y
                 y_max = y
 
-            # update the mins and maxs where necessary
+            # update the mins and maxes where necessary
             x_min = min(x_min, x)
             x_max = max(x_max, x)
             y_min = min(y_min, y)
@@ -2131,13 +2131,13 @@ class BoxGirderSection(Geometry):
     :param float d: Depth of the Box Girder section
     :param float b_t: Top width of the Box Girder section
     :param float b_b: Bottom width of the Box Girder section
-    :param float t_ft: Top lange thickness of the Box Girder section
+    :param float t_ft: Top flange thickness of the Box Girder section
     :param float t_fb: Bottom flange thickness of the Box Girder section
     :param float t_w: Web thickness of the Box Girder section
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    The following example creates a Box Gider section with a depth of 1200, a top width of 1200, a
+    The following example creates a Box Girder section with a depth of 1200, a top width of 1200, a
     bottom width of 400, a top flange thickness of 16, a bottom flange thickness of 12 and a web
     thickness of 8. A mesh is generated with a maximum triangular area of 5.0::
 

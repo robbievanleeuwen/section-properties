@@ -172,7 +172,7 @@ class GeometryCleaner:
                         str = "Zipped point {0} to point {1}".format(idx_2, idx_1)
                         print(str)
 
-        # sort list of indices to remove in reverse order so as not to comprimise the indices
+        # sort list of indices to remove in reverse order so as not to compromise the indices
         idx_to_remove = sorted(idx_to_remove, reverse=True)
 
         for idx in idx_to_remove:
@@ -189,7 +189,7 @@ class GeometryCleaner:
             if fct[0] == fct[1]:
                 idx_to_remove.append(idx)
 
-        # sort list of indices to remove in reverse order so as not to comprimise the indices
+        # sort list of indices to remove in reverse order so as not to compromise the indices
         idx_to_remove = sorted(idx_to_remove, reverse=True)
 
         for idx in idx_to_remove:
@@ -269,7 +269,7 @@ class GeometryCleaner:
                 if self.verbose:
                     print("Removed unused point {0}".format(pt))
 
-        # sort list of indices to remove in reverse order so as not to comprimise the indices
+        # sort list of indices to remove in reverse order so as not to compromise the indices
         idx_to_remove = sorted(idx_to_remove, reverse=True)
 
         for idx in idx_to_remove:
@@ -428,7 +428,8 @@ class GeometryCleaner:
         :type r: :class:`numpy.ndarray` [float, float]
         :param s: Vector of the second line segment
         :type s: :class:`numpy.ndarray` [float, float]
-        :param fct1: sadkjas;dkas;dj
+        :param fct1: First facets
+        :param fct2: Second facets
         :returns: A list containing the points required for facet rebuilding. If there is no
             rebuild to be done, returns None.
         :rtype: list[list[float, float]]
@@ -504,7 +505,7 @@ class GeometryCleaner:
                         str += " (identical to facet: {0})".format(idx_1)
                         print(str)
 
-        # sort list of indices to remove in reverse order so as not to comprimise the indices
+        # sort list of indices to remove in reverse order so as not to compromise the indices
         idx_to_remove = sorted(idx_to_remove, reverse=True)
 
         for idx in idx_to_remove:

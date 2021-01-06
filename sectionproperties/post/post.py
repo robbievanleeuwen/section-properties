@@ -70,8 +70,8 @@ def draw_principal_axis(ax, phi, cx, cy):
             point = basis * num / denom + centroid
             vec.append([point[0], point[1]])
 
-    def get_prinicipal_points(basis, lims, centroid):
-        """Determines the intersections of the prinicpal axis with the four lines defining a
+    def get_principal_points(basis, lims, centroid):
+        """Determines the intersections of the principal axis with the four lines defining a
         bounding box around the limits of the cross-section. The middle two intersection points are
         returned for plotting.
 
@@ -103,8 +103,8 @@ def draw_principal_axis(ax, phi, cx, cy):
         return pts
 
     # get intersection points for the 11 and 22 axes
-    x11 = get_prinicipal_points(x11_basis, lims, [cx, cy])
-    y22 = get_prinicipal_points(y22_basis, lims, [cx, cy])
+    x11 = get_principal_points(x11_basis, lims, [cx, cy])
+    y22 = get_principal_points(y22_basis, lims, [cx, cy])
 
     # plot the principal axis
     ax.plot(x11[:, 0], x11[:, 1], 'k--', alpha=0.5, label='11-axis')
