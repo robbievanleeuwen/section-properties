@@ -348,7 +348,7 @@ class CHAN1Section(Geometry):
     more details. Added by JohnDN90.
 
     :param float DIM1: Width (x) of channels
-    :param float DIM2: Thicknesss (x) of web
+    :param float DIM2: Thickness (x) of web
     :param float DIM3: Spacing between channels (length of web)
     :param float DIM4: Depth (y) of CHAN1-section
     :param shift: Vector that shifts the cross-section by *(x, y)*
@@ -1109,7 +1109,7 @@ class HAT1Section(Geometry):
     :param float DIM2: Depth (y) of the HAT1-section
     :param float DIM3: Width (x) of hat's top flange
     :param float DIM4: Thickness of hat stiffener
-    :param float DIM5: Thicknesss of bottom plate
+    :param float DIM5: Thickness of bottom plate
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
@@ -1597,7 +1597,7 @@ class RODSection(Geometry):
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    The following example creates a circular rod with a radius of 3.0 and 50 points discretizing
+    The following example creates a circular rod with a radius of 3.0 and 50 points discretising
     the boundary, and generates a mesh with a maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
@@ -1963,7 +1963,7 @@ class TUBESection(Geometry):
     :type shift: list[float, float]
 
     The following example creates a circular tube cross-section with an outer radius of 3.0 and an
-    inner radius of 2.5, and generates a mesh with 37 points discretizing the boundaries and a
+    inner radius of 2.5, and generates a mesh with 37 points discretising the boundaries and a
     maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
@@ -2062,8 +2062,8 @@ class TUBE2Section(Geometry):
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    The following example creates a ciruclar TUBE2 cross-section with an outer radius of 3.0 and a
-    wall thickness of 0.5, and generates a mesh with 37 point discritizing the boundary and a
+    The following example creates a circular TUBE2 cross-section with an outer radius of 3.0 and a
+    wall thickness of 0.5, and generates a mesh with 37 point discretising the boundary and a
     maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections

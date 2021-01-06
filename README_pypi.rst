@@ -106,7 +106,7 @@ Cross-Section Analysis:
 -  [x] Shear section properties:
 
    -  [x] Shear centre (elastic method)
-   -  [x] Shear centre (Trefftz’s method)
+   -  [x] Shear centre (Trefftz's method)
    -  [x] Shear areas (global axis)
    -  [x] Shear areas (principal axis)
 

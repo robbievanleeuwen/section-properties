@@ -263,7 +263,7 @@ class Tri6:
 
     def monosymmetry_integrals(self, phi):
         """Calculates the integrals used to evaluate the monosymmetry constant about both global
-        axes and both prinicipal axes.
+        axes and both principal axes.
 
         :param float phi: Principal bending axis angle
 
@@ -596,7 +596,7 @@ def shape_function(coords, gauss_point):
 
     # if the area of the element is not zero
     if j != 0:
-        # cacluate the P matrix
+        # calculate the P matrix
         P = np.dot(np.linalg.inv(J), np.array([[0, 0], [1, 0], [0, 1]]))
 
         # calculate the B matrix in terms of cartesian co-ordinates
@@ -608,7 +608,7 @@ def shape_function(coords, gauss_point):
 
 
 def extrapolate_to_nodes(w):
-    """Extrapolates results at six Gauss points to the six noes of a quadratic triangular element.
+    """Extrapolates results at six Gauss points to the six nodes of a quadratic triangular element.
 
     :param w: Result at the six Gauss points [1 x 6]
     :type w: :class:`numpy.ndarray`
@@ -638,7 +638,7 @@ def principal_coordinate(phi, x, y):
     """Determines the coordinates of the cartesian point *(x, y)* in the
     principal axis system given an axis rotation angle phi.
 
-    :param float phi: Prinicpal bending axis angle (degrees)
+    :param float phi: Principal bending axis angle (degrees)
     :param float x: x coordinate in the global axis
     :param float y: y coordinate in the global axis
     :return: Principal axis coordinates *(x1, y2)*
@@ -664,7 +664,7 @@ def global_coordinate(phi, x11, y22):
     """Determines the global coordinates of the principal axis point *(x1, y2)* given principal
     axis rotation angle phi.
 
-    :param float phi: Prinicpal bending axis angle (degrees)
+    :param float phi: Principal bending axis angle (degrees)
     :param float x11: 11 coordinate in the principal axis
     :param float y22: 22 coordinate in the principal axis
     :return: Global axis coordinates *(x, y)*
