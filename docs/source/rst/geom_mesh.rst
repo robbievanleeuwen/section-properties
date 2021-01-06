@@ -181,7 +181,7 @@ Cleaning the Geometry
 ---------------------
 
 When creating a merged section often there are overlapping facets or duplicate nodes. These
-geometry artifacts can cause difficulty for the meshing algorithm. It is therefore recommended to
+geometry artefacts can cause difficulty for the meshing algorithm. It is therefore recommended to
 clean the geometry after merging sections which may result in overlapping or intersecting facets,
 or duplicate nodes. Cleaning the geometry can be carried out by using the
 :func:`~sectionproperties.pre.sections.Geometry.clean_geometry` method:

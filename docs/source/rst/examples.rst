@@ -411,7 +411,7 @@ class. The order of the geometry objects in the list that is passed into the con
 order relates to specifying mesh sizes and material properties.
 
 Once the geometry has been merged, it is vital to clean the geometry to remove
-any artifacts that may impede the meshing algorithm. A mesh is created with a mesh
+any artefacts that may impede the meshing algorithm. A mesh is created with a mesh
 size of 2.5 mm\ :sup:`2` for the RHS (first in ``section_list``), 5 mm\ :sup:`2` for the triangle (second
 in ``section_list``) and 3 mm\ :sup:`2` for the angle (last in ``section_list``).
 
