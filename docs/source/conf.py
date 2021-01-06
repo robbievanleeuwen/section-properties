@@ -15,7 +15,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
-from sectionproperties import __version__ as version
+from sectionproperties import __version__ as ver
 autodoc_mock_imports = ['pybind11', 'meshpy', 'shapely']
 
 # -- Project information -----------------------------------------------------
@@ -25,11 +25,11 @@ copyright = '2020, Robbie van Leeuwen'
 author = 'Robbie van Leeuwen'
 
 # The short Major.Minor.Build version
-# Since version is defined as a str and increments are separated
-# with single period characters, we can just slice the string directly.
-version = version[:5]
+_v = ver.split('.')
+_build = ''.join([c for c in _v[2] if c.isdigit()])
+version = _v[0] + '.' + _v[1] + '.' + _build
 # The full version, including alpha/beta/rc tags
-release = version
+release = ver
 
 
 # -- General configuration ---------------------------------------------------
