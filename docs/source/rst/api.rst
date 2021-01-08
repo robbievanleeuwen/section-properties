@@ -125,10 +125,10 @@ Material Class
       :show-inheritance:
       :members:
 
-GeometryCleaner Class
-"""""""""""""""""""""
+GeometryCleanerMixin Class
+""""""""""""""""""""""""""
 
-  ..  autoclass:: sectionproperties.pre.pre.GeometryCleaner
+  ..  autoclass:: sectionproperties.pre.pre.GeometryCleanerMixin
       :show-inheritance:
       :members:
 

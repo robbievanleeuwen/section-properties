@@ -5,8 +5,6 @@ import meshpy.triangle as triangle
 class GeometryError(Exception):
     """Exception raised when invalid geometry is found."""
 
-    pass
-
 
 class Material:
     """Class for structural materials.
@@ -61,13 +59,8 @@ class Material:
         self.color = color
 
 
-class GeometryCleaner:
+class GeometryCleanerMixin:
     """Class for cleaning :class:`~sectionproperties.pre.sections.Geometry` objects.
-
-    :param geometry: Geometry object to clean
-    :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
-    :param bool verbose: If set to true, information related to the geometry cleaning process is
-        printed to the terminal.
 
     Provides methods to clean various aspects of the geometry including:
 
@@ -109,25 +102,7 @@ class GeometryCleaner:
       duplicate nodes.
     """
 
-    def __init__(self, geometry, verbose):
-        """Inits the GeometryCleaner class."""
-
-        self.geometry = geometry
-        self.verbose = verbose
-
-    def clean_geometry(self):
-        """Performs a full geometry clean on the `geometry` object."""
-
-        self.zip_points()
-        self.remove_zero_length_facets()
-        self.remove_duplicate_facets()
-        self.remove_overlapping_facets()
-        self.remove_unused_points()
-        self.intersect_facets()
-
-        return self.geometry
-
-    def zip_points(self, atol=1e-8, rtol=1e-5):
+    def zip_points(self, atol=1e-8, rtol=1e-5, verbose=False):
         """Zips points that are close to each other. Searches through the point list and merges two
         points if there are deemed to be sufficiently close. The average value of the coordinates
         is used for the new point. One of the points is deleted from the point list and the facet
@@ -141,14 +116,14 @@ class GeometryCleaner:
         idx_to_remove = []
 
         # determine rtol
-        (x_min, x_max, y_min, y_max) = self.geometry.calculate_extents()
+        (x_min, x_max, y_min, y_max) = self.calculate_extents()
         geom_range = max(x_max - x_min, y_max - y_min)
         rel_tol = rtol * geom_range
 
         # loop through the list of points
-        for (i, pt1) in enumerate(self.geometry.points):
+        for (i, pt1) in enumerate(self.points):
             # check all other points
-            for (j, pt2) in enumerate(self.geometry.points[i + 1:]):
+            for (j, pt2) in enumerate(self.points[i + 1:]):
                 # get point indices
                 idx_1 = i
                 idx_2 = i + j + 1
@@ -168,9 +143,9 @@ class GeometryCleaner:
                     # add pt2 to the list of points to remove
                     idx_to_remove.append(idx_2)
 
-                    if self.verbose:
-                        str = "Zipped point {0} to point {1}".format(idx_2, idx_1)
-                        print(str)
+                    if verbose:
+                        msg = "Zipped point {0} to point {1}".format(idx_2, idx_1)
+                        print(msg)
 
         # sort list of indices to remove in reverse order so as not to compromise the indices
         idx_to_remove = sorted(idx_to_remove, reverse=True)
@@ -178,14 +153,14 @@ class GeometryCleaner:
         for idx in idx_to_remove:
             self.remove_point_id(idx)
 
-    def remove_zero_length_facets(self):
+    def remove_zero_length_facets(self, verbose=False):
         """Searches through all facets and removes those that have the same starting and ending
         point."""
 
         idx_to_remove = []
 
         # loop through the list of facets
-        for (idx, fct) in enumerate(self.geometry.facets):
+        for (idx, fct) in enumerate(self.facets):
             if fct[0] == fct[1]:
                 idx_to_remove.append(idx)
 
@@ -193,12 +168,12 @@ class GeometryCleaner:
         idx_to_remove = sorted(idx_to_remove, reverse=True)
 
         for idx in idx_to_remove:
-            self.geometry.facets.pop(idx)
+            self.facets.pop(idx)
 
-            if self.verbose:
+            if verbose:
                 print("Removed zero length facet {0}".format(idx))
 
-    def remove_overlapping_facets(self):
+    def remove_overlapping_facets(self, verbose=False):
         """Searches through all facet combinations and fixes facets that overlap within a
         tolerance."""
 
@@ -206,23 +181,23 @@ class GeometryCleaner:
 
         while cleaning:
             # loop through the list of facets
-            for (i, fct1) in enumerate(self.geometry.facets):
+            for (i, fct1) in enumerate(self.facets):
                 broken = False
 
                 # check all other facets
-                for (j, fct2) in enumerate(self.geometry.facets[i + 1:]):
+                for (j, fct2) in enumerate(self.facets[i + 1:]):
                     # get facet indices
                     idx_1 = i
                     idx_2 = i + j + 1
 
                     # get facets points
                     # facet 1: p -> p + r
-                    p = np.array(self.geometry.points[fct1[0]])
-                    r = self.geometry.points[fct1[1]] - p
+                    p = np.array(self.points[fct1[0]])
+                    r = self.points[fct1[1]] - p
 
                     # facet 2: q -> q + s
-                    q = np.array(self.geometry.points[fct2[0]])
-                    s = self.geometry.points[fct2[1]] - q
+                    q = np.array(self.points[fct2[0]])
+                    s = self.points[fct2[1]] - q
 
                     pts = self.is_overlap(p, q, r, s, fct1, fct2)
 
@@ -230,19 +205,19 @@ class GeometryCleaner:
                         # delete both facets
                         idx_to_remove = sorted([idx_1, idx_2], reverse=True)
                         for idx in idx_to_remove:
-                            self.geometry.facets.pop(idx)
+                            self.facets.pop(idx)
 
                         # add new facets
-                        for i in range(len(pts) - 1):
-                            self.geometry.facets.append([pts[i], pts[i + 1]])
+                        for k in range(len(pts) - 1):
+                            self.facets.append([pts[k], pts[k + 1]])
 
                         # remove duplicate facets
-                        self.remove_duplicate_facets()
+                        self.remove_duplicate_facets(verbose)
 
-                        if self.verbose:
-                            str = "Removed overlapping facets {0}...".format(idx_to_remove)
-                            str += "Rebuilt with points: {0}".format(pts)
-                            print(str)
+                        if verbose:
+                            msg = "Removed overlapping facets {0}...".format(idx_to_remove)
+                            msg += "Rebuilt with points: {0}".format(pts)
+                            print(msg)
 
                         # break both loops and loop through all facets again
                         broken = True
@@ -255,18 +230,18 @@ class GeometryCleaner:
             if not broken:
                 cleaning = False
 
-    def remove_unused_points(self):
+    def remove_unused_points(self, verbose=False):
         """Searches through all facets and removes points that are not connected to any facets."""
 
         idx_to_remove = []
-        facet_flattened = [i for fct in self.geometry.facets for i in fct]
+        facet_flattened = [i for fct in self.facets for i in fct]
 
         # loop through number of points
-        for pt in range(len(self.geometry.points)):
+        for pt in range(len(self.points)):
             if pt not in facet_flattened:
                 idx_to_remove.append(pt)
 
-                if self.verbose:
+                if verbose:
                     print("Removed unused point {0}".format(pt))
 
         # sort list of indices to remove in reverse order so as not to compromise the indices
@@ -275,7 +250,7 @@ class GeometryCleaner:
         for idx in idx_to_remove:
             self.remove_point_id(idx)
 
-    def intersect_facets(self):
+    def intersect_facets(self, verbose=False):
         """Searches through all facet combinations and finds facets that intersect each other. The
         intersection point is added and the facets rebuilt."""
 
@@ -283,49 +258,49 @@ class GeometryCleaner:
 
         while cleaning:
             # loop through the list of facets
-            for (i, fct1) in enumerate(self.geometry.facets):
+            for (i, fct1) in enumerate(self.facets):
                 broken = False
 
                 # check all other facets
-                for (j, fct2) in enumerate(self.geometry.facets[i + 1:]):
+                for (j, fct2) in enumerate(self.facets[i + 1:]):
                     # get facet indices
                     idx_1 = i
                     idx_2 = i + j + 1
 
                     # get facets points
                     # facet 1: p -> p + r
-                    p = np.array(self.geometry.points[fct1[0]])
-                    r = self.geometry.points[fct1[1]] - p
+                    p = np.array(self.points[fct1[0]])
+                    r = self.points[fct1[1]] - p
 
                     # facet 2: q -> q + s
-                    q = np.array(self.geometry.points[fct2[0]])
-                    s = self.geometry.points[fct2[1]] - q
+                    q = np.array(self.points[fct2[0]])
+                    s = self.points[fct2[1]] - q
 
                     pt = self.is_intersect(p, q, r, s)
 
                     if pt is not None:
                         # add point
-                        self.geometry.points.append([pt[0], pt[1]])
-                        pt_idx = len(self.geometry.points) - 1
+                        self.points.append([pt[0], pt[1]])
+                        pt_idx = len(self.points) - 1
 
                         # delete both facets
                         idx_to_remove = sorted([idx_1, idx_2], reverse=True)
                         for idx in idx_to_remove:
-                            self.geometry.facets.pop(idx)
+                            self.facets.pop(idx)
 
                         # rebuild facet 1
-                        self.geometry.facets.append([fct1[0], pt_idx])
-                        self.geometry.facets.append([pt_idx, fct1[1]])
+                        self.facets.append([fct1[0], pt_idx])
+                        self.facets.append([pt_idx, fct1[1]])
 
                         # rebuild facet 2
-                        self.geometry.facets.append([fct2[0], pt_idx])
-                        self.geometry.facets.append([pt_idx, fct2[1]])
+                        self.facets.append([fct2[0], pt_idx])
+                        self.facets.append([pt_idx, fct2[1]])
 
-                        if self.verbose:
-                            str = "Intersected facets"
-                            str += " {0} and {1}".format(idx_1, idx_2)
-                            str += " at point: {0}".format(pt)
-                            print(str)
+                        if verbose:
+                            msg = "Intersected facets"
+                            msg += " {0} and {1}".format(idx_1, idx_2)
+                            msg += " at point: {0}".format(pt)
+                            print(msg)
 
                         # break both loops and loop through all facets again
                         broken = True
@@ -346,11 +321,11 @@ class GeometryCleaner:
         """
 
         # loop through all facets
-        for (i, facet) in enumerate(self.geometry.facets):
+        for (i, facet) in enumerate(self.facets):
             # loop through the point indices defining the facet
             for (j, point_id) in enumerate(facet):
                 if point_id == id_old:
-                    self.geometry.facets[i][j] = id_new
+                    self.facets[i][j] = id_new
 
     def remove_point_id(self, point_id):
         """Removes point point_id from the points list and renumbers the references to points after
@@ -360,18 +335,19 @@ class GeometryCleaner:
         """
 
         # remove index point_id from the points list
-        self.geometry.points.pop(point_id)
+        self.points.pop(point_id)
 
         # renumber facet references to points after point_id
-        for (i, facet) in enumerate(self.geometry.facets):
+        for (i, facet) in enumerate(self.facets):
             # loop through the point indices defining the facet
             for (j, p_id) in enumerate(facet):
                 # if the point index is greater the point to be deleted
                 if p_id > point_id:
                     # decrement the point index
-                    self.geometry.facets[i][j] -= 1
+                    self.facets[i][j] -= 1
 
-    def is_duplicate_facet(self, fct1, fct2):
+    @staticmethod
+    def is_duplicate_facet(fct1, fct2):
         """Checks to see if to facets are duplicates.
 
         :param fct1: First facet to compare
@@ -383,12 +359,10 @@ class GeometryCleaner:
         """
 
         # check for a facet duplicate
-        if fct1 == fct2 or fct1 == list(reversed(fct2)):
-            return True
-        else:
-            return False
+        return bool(fct1 == fct2 or fct1 == list(reversed(fct2)))
 
-    def is_intersect(self, p, q, r, s):
+    @staticmethod
+    def is_intersect(p, q, r, s):
         """Determines if the line segment p->p+r intersects q->q+s. Implements Gareth Rees's
         answer: https://stackoverflow.com/questions/563198.
 
@@ -411,12 +385,13 @@ class GeometryCleaner:
             u = np.cross(p - q, r) / np.cross(s, r)
 
             # modify from closed inequality (<=) to open (<) so end intersections are not picked up
-            if (t > 0 and t < 1) and (u > 0 and u < 1):
+            if (0 < t < 1) and (0 < u < 1):
                 return p + t * r
-            else:
-                return None
 
-    def is_overlap(self, p, q, r, s, fct1, fct2):
+        return None
+
+    @staticmethod
+    def is_overlap(p, q, r, s, fct1, fct2):
         """Determines if the line segment p->p+r overlaps q->q+s. Implements Gareth Rees's answer:
         https://stackoverflow.com/questions/563198.
 
@@ -475,22 +450,21 @@ class GeometryCleaner:
                             idx_list.append(fct2[1])
 
                     return idx_list
-                else:
-                    # collinear and disjoint
-                    return None
-            else:
-                return None
 
-    def remove_duplicate_facets(self):
+                # else it is collinear and disjoint
+
+        return None
+
+    def remove_duplicate_facets(self, verbose=False):
         """Searches through all facets and removes facets that are duplicates, independent of the
         point order."""
 
         idx_to_remove = []
 
         # loop through the list of facets
-        for (i, fct1) in enumerate(self.geometry.facets):
+        for (i, fct1) in enumerate(self.facets):
             # check all other facets
-            for (j, fct2) in enumerate(self.geometry.facets[i + 1:]):
+            for (j, fct2) in enumerate(self.facets[i + 1:]):
                 # get facet indices
                 idx_1 = i
                 idx_2 = i + j + 1
@@ -500,16 +474,16 @@ class GeometryCleaner:
                         and idx_2 not in idx_to_remove):
                     idx_to_remove.append(idx_2)
 
-                    if self.verbose:
-                        str = "Removed duplicate facet: {0}".format(idx_2)
-                        str += " (identical to facet: {0})".format(idx_1)
-                        print(str)
+                    if verbose:
+                        msg = "Removed duplicate facet: {0}".format(idx_2)
+                        msg += " (identical to facet: {0})".format(idx_1)
+                        print(msg)
 
         # sort list of indices to remove in reverse order so as not to compromise the indices
         idx_to_remove = sorted(idx_to_remove, reverse=True)
 
         for idx in idx_to_remove:
-            self.geometry.facets.pop(idx)
+            self.facets.pop(idx)
 
 
 def check_geometry(points, facets, holes, control_points, atol=1.0e-8):
