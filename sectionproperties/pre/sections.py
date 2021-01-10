@@ -9,28 +9,20 @@ import sectionproperties.post.post as post
 
 
 class Geometry:
-    """Parent class for a cross-section geometry input.
+    """Class for defining the geometry of a contiguous section of a single material.
 
-    Provides an interface for the user to specify the geometry defining a cross-section. A method
-    is provided for generating a triangular mesh, for translating the cross-section by *(x, y)* and
-    for plotting the geometry.
+    Provides an interface for the user to specify the geometry defining a section. A method
+    is provided for generating a triangular mesh, transforming the section (e.g. translation,
+    rotation, perimeter offset, mirroring), aligning the geometry to another geometry, and
+    designating stress recovery points.
 
-    :cvar points: List of points *(x, y)* defining the vertices of the cross-section
+    :cvar geom: a Polygon object that defines the geometry
+    :vartype geom: shapely.geometry.Polygon
+    :cvar points: List of points *(x, y)* defining the vertices of the section geometry. If geom
+    is provided then points are ignored.
     :vartype points: list[list[float, float]]
-    :cvar facets: List of point index pairs *(p1, p2)* defining the edges of the cross-section
-    :vartype facets: list[list[int, int]]
-    :cvar holes: List of points *(x, y)* defining the locations of holes within the cross-section.
-        If there are no holes, provide an empty list [].
-    :vartype holes: list[list[float, float]]
-    :cvar control_points: A list of points *(x, y)* that define different regions of the
-        cross-section. A control point is an arbitrary point within a region enclosed by facets.
-    :vartype control_points: list[list[float, float]]
-    :cvar shift: Vector that shifts the cross-section by *(x, y)*
-    :vartype shift: list[float, float]
-    :cvar perimeter: List of facet indices defining the perimeter of the cross-section
-    :vartype perimeter: list[int]
     """
-    def __init__(self, geom: shapely.geometry.Polygon = None, points: List[List[float]] = None):
+    def __init__(self, geom: shapely.geometry.Polygon = None):
         """Inits the Geometry class.
         Old args; control_points, shift
         """
@@ -55,6 +47,67 @@ class Geometry:
         print("sectionproperties.pre.sections.Geometry")
         print(f"object at: {hex(id(self))}")
         return self.geom._repr_svg_()
+
+    @staticmethod
+    def from_points(
+        points: List[List[float]], 
+        facets: Optional[List[List[int]]] = None, 
+        holes: Optional[List[List[float]]] = None,
+        ):
+        """
+        An interface for the creation of Geometry objects through the definition of points, 
+        facets, and holes. 
+
+        :cvar points: List of points *(x, y)* defining the vertices of the section geometry.
+        If facets are not provided, it is a assumed the that the list of points are ordered
+        around the perimeter, either clockwise or anti-clockwise
+        :vartype points: list[list[float]]
+        :cvar facets: Optional. A list of *(start, end)* indexes of vertices defining the edges
+        of the section geoemtry. Can be used to define both external and internal perimeters of holes.
+        Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
+        interior perimeter 2, etc.
+        :vartype facets: list[list[int]]
+        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
+        being holes or voids. The point can be located anywhere within the hole region.
+        Only one point is required per hole region.
+        """
+        if facets is None: return Geometry(Polygon(points))
+        if holes is None and facets is not None:
+            raise ValueError(
+                "If holes coordinates are provided then facets must also be provided "
+                "to distinguish between exterior and interior edges."
+                )
+        prev_facet = []
+        exterior = []
+        interiors = [[] for hole in holes] # initialize an empty facet list for every hole
+        interior_counter = 0
+        active_list = exterior # Like setting a pointer for the list we are accumulating on
+        for facet in facets:
+            i_idx, _ = facet
+            if not prev_facet: # Add the first facet vertex to exterior and move on
+                exterior.append(points[i_idx])
+                prev_facet = facet
+                continue
+            if i_idx != prev_facet[1]: #If there is a break in the chain of edges...
+                if active_list == exterior: # ...and we were still on the exterior...
+                    active_list = interiors[interior_counter] # ... then move to interior
+                else: # ...or if we are already in the interiors...
+                    interior_counter += 1 # ...then start the next interior region.
+                    active_list = interiors[interior_counter]
+                active_list.append(points[i_idx]) 
+            
+            else:
+                active_list.append(points[i_idx]) # Only need i_idx b/c shapely auto-closes polygons
+            prev_facet = facet
+        
+        exterior_geometry = Polygon(exterior)
+        interior_polys = [Polygon(interior) for interior in interiors]
+        interior_geometry = MultiPolygon(interior_polys)
+        geometry = Geometry(exterior_geometry - interior_geometry)
+        return geometry
+
+
+
 
 
     def create_facets_and_control_points(self):
