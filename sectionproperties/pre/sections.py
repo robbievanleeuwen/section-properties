@@ -30,10 +30,12 @@ class Geometry:
     :cvar perimeter: List of facet indices defining the perimeter of the cross-section
     :vartype perimeter: list[int]
     """
-    def __init__(self, geom: shapely.geometry.Polygon):
+    def __init__(self, geom: shapely.geometry.Polygon = None, points: List[List[float]] = None):
         """Inits the Geometry class.
         Old args; control_points, shift
         """
+        if geom is None and points is None:
+            raise ValueError(f"Either geom")
         if isinstance(geom, MultiPolygon):
             raise ValueError(f"Use CompoundGeometry(...) for a MultiPolygon object.")
         if not isinstance(geom, Polygon):

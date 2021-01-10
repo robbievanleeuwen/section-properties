@@ -9,15 +9,13 @@ def nastran_bar(DIM1: float, DIM2: float):
 
     :param float DIM1: Width (x) of bar
     :param float DIM2: Depth (y) of bar
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a BAR cross-section with a depth of 1.5 and width of 2.0, and
     generates a mesh with a maximum triangular area of 0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.BARSection(DIM1=2.0, DIM2=1.5)
+        geometry = nsections.nastran_bar(DIM1=2.0, DIM2=1.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/bar_geometry.png
@@ -53,15 +51,13 @@ def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Depth (y) of box
     :param float DIM3: Thickness of box in y direction
     :param float DIM4: Thickness of box in x direction
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a BOX cross-section with a depth of 3.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.BOXSection(DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5)
+        geometry = nsections.nastran_box(DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/box_geometry.png
@@ -94,7 +90,7 @@ def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     geometry.recovery_points = [C, D, E, F]
     return geometry
 
-def nastran_box1(DIM1, DIM2, DIM3, DIM4, DIM5, DIM6):
+def nastran_box1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float):
     """Constructs a BOX1 section with the center at the origin *(0, 0)*, with six parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details. Added by
     JohnDN90.
@@ -105,15 +101,13 @@ def nastran_box1(DIM1, DIM2, DIM3, DIM4, DIM5, DIM6):
     :param float DIM4: Thickness of bottom wall
     :param float DIM5: Thickness of left wall
     :param float DIM6: Thickness of right wall
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a BOX1 cross-section with a depth of 3.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.007::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.BOX1Section(
+        geometry = nsections.nastran_box1(
             DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5, DIM5=0.25, DIM6=0.75
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.007])
@@ -160,15 +154,13 @@ def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Depth (y) of the CHAN-section
     :param float DIM3: Thickness of web (vertical portion)
     :param float DIM4: Thickness of flanges (top/bottom portion)
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a CHAN cross-section with a depth of 4.0 and width of 2.0, and
     generates a mesh with a maximum triangular area of 0.008::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.CHANSection(DIM1=2.0, DIM2=4.0, DIM3=0.25, DIM4=0.5)
+        geometry = nsections.nastran_chan(DIM1=2.0, DIM2=4.0, DIM3=0.25, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.008])
 
     ..  figure:: ../images/sections/chan_geometry.png
@@ -195,10 +187,10 @@ def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
 
     geometry = Geometry(Polygon(points))
 
-    C = (DIM1-0.5*DIM3, 0.5*DIM2)
-    D = (DIM1-0.5*DIM3, -0.5*DIM2)
-    E = (-0.5*DIM3, -0.5*DIM2)
-    F = (-0.5*DIM3, 0.5*DIM2)
+    C = (0.5*DIM1, 0.5*DIM2)
+    D = (0.5*DIM1, -0.5*DIM2)
+    E = (-0.5*DIM1, -0.5*DIM2)
+    F = (-0.5*DIM1, 0.5*DIM2)
 
     geometry.recovery_points = [C, D, E, F]
     return geometry
@@ -213,15 +205,13 @@ def nastran_chan1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Thicknesss (x) of web
     :param float DIM3: Spacing between channels (length of web)
     :param float DIM4: Depth (y) of CHAN1-section
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a CHAN1 cross-section with a depth of 4.0 and width of 1.75, and
     generates a mesh with a maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.CHAN1Section(DIM1=0.75, DIM2=1.0, DIM3=3.5, DIM4=4.0)
+        geometry = nsections.nastran_chan1(DIM1=0.75, DIM2=1.0, DIM3=3.5, DIM4=4.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/chan1_geometry.png
@@ -264,15 +254,12 @@ def nastran_chan2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Thickness of web
     :param float DIM3: Depth (y) of CHAN2-section
     :param float DIM4: Width (x) of CHAN2-section
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
-
     The following example creates a CHAN2 cross-section with a depth of 2.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.CHAN2Section(DIM1=0.375, DIM2=0.5, DIM3=2.0, DIM4=4.0)
+        geometry = nsections.nastran_chan2(DIM1=0.375, DIM2=0.5, DIM3=2.0, DIM4=4.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/chan2_geometry.png
@@ -287,23 +274,23 @@ def nastran_chan2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
 
         Mesh generated from the above geometry.
     """
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM4 > 2.0*DIM1, "Invalid geometry specified.")
-        np.testing.assert_(DIM3 > DIM2, "Invalid geometry specified.")
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM4 > 2.0*DIM1, "Invalid geometry specified.")
+    np.testing.assert_(DIM3 > DIM2, "Invalid geometry specified.")
 
-        # construct the points and facets
-        points = [
-            [0., 0.], [DIM4, 0.], [DIM4, DIM3], [DIM4-DIM1, DIM3], [DIM4-DIM1, DIM2], [DIM1, DIM2],
-            [DIM1, DIM3], [0., DIM3]
-        ]
-        geometry = Geometry(Polygon(points))
-        C = (0.5*DIM4, DIM3-0.5*DIM2)
-        D = (0.5*DIM4, -0.5*DIM2)
-        E = (-0.5*DIM4, -0.5*DIM2)
-        F = (-0.5*DIM4, DIM3-0.5*DIM2)
-        geometry.recovery_points = [C, D, E, F]
+    # construct the points and facets
+    points = [
+        [0., 0.], [DIM4, 0.], [DIM4, DIM3], [DIM4-DIM1, DIM3], [DIM4-DIM1, DIM2], [DIM1, DIM2],
+        [DIM1, DIM3], [0., DIM3]
+    ]
+    geometry = Geometry(Polygon(points))
+    C = (0.5*DIM4, DIM3-0.5*DIM2)
+    D = (0.5*DIM4, -0.5*DIM2)
+    E = (-0.5*DIM4, -0.5*DIM2)
+    F = (-0.5*DIM4, DIM3-0.5*DIM2)
+    geometry.recovery_points = [C, D, E, F]
 
-        return geometry
+    return geometry
 
 
 def nastran_cross(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
@@ -316,15 +303,13 @@ def nastran_cross(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Thickness of the vertical member
     :param float DIM3: Depth (y) of the CROSS-section
     :param float DIM4: Thickness of the horizontal members
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a rectangular cross-section with a depth of 3.0 and width of
     1.875, and generates a mesh with a maximum triangular area of 0.008::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.CROSSSection(DIM1=1.5, DIM2=0.375, DIM3=3.0, DIM4=0.25)
+        geometry = nsections.nastran_cross(DIM1=1.5, DIM2=0.375, DIM3=3.0, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.008])
 
     ..  figure:: ../images/sections/cross_geometry.png
@@ -370,14 +355,12 @@ def nastran_fcross(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: flo
     :param float DIM6: Thickness of flange attached to vertical web
     :param float DIM7: Length of flange attached to horizontal web
     :param float DIM8: Thickness of flange attached to horizontal web
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example demonstrates the creation of a flanged cross section::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.FCROSSSection(
+        geometry = nsections.nastran_fcross(
             DIM1=9.0, DIM2=6.0, DIM3=0.75, DIM4=0.625, DIM5=2.1, DIM6=0.375, DIM7=4.5, DIM8=0.564
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.03])
@@ -440,15 +423,13 @@ def nastran_dbox(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
     :param float DIM8: Thickness of bottom left wall
     :param float DIM9: Thickness of top right wall
     :param float DIM10: Thickness of bottom right wall
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a DBOX cross-section with a depth of 3.0 and width of 8.0, and
     generates a mesh with a maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.DBOXSection(
+        geometry = nsections.nastran_dbox(
             DIM1=8.0, DIM2=3.0, DIM3=3.0, DIM4=0.5, DIM5=0.625, DIM6=0.75, DIM7=0.375, DIM8=0.25,
             DIM9=0.5, DIM10=0.375
         )
@@ -503,15 +484,12 @@ def nastran_gbox(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
     :param float DIM4: Thickness of bottom flange
     :param float DIM5: Thickness of webs
     :param float DIM6: Spacing between webs
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
-
     The following example creates a GBOX cross-section with a depth of 2.5 and width of 6.0, and
     generates a mesh with a maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.GBOXSection(
+        geometry = nsections.nastran_gbox(
             DIM1=6.0, DIM2=2.5, DIM3=0.375, DIM4=0.25, DIM5=0.625, DIM6=1.0
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
@@ -563,15 +541,13 @@ def nastran_h(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Twice the thickness of the vertical flanges
     :param float DIM3: Depth (y) of the H-section
     :param float DIM4: Thickness of the middle web
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a H cross-section with a depth of 3.5 and width of 2.75, and
     generates a mesh with a maximum triangular area of 0.005::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.HSection(DIM1=2.0, DIM2=0.75, DIM3=3.5, DIM4=0.25)
+        geometry = nsections.nastran_h(DIM1=2.0, DIM2=0.75, DIM3=3.5, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/h_geometry.png
@@ -615,15 +591,13 @@ def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Thickness of HAT-section
     :param float DIM3: Width (x) of top most section
     :param float DIM4: Width (x) of bottom sections
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a HAT cross-section with a depth of 1.25 and width of 2.5, and
     generates a mesh with a maximum triangular area of 0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.HATSection(DIM1=1.25, DIM2=0.25, DIM3=1.5, DIM4=0.5)
+        geometry = nsections.nastran_hat(DIM1=1.25, DIM2=0.25, DIM3=1.5, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/hat_geometry.png
@@ -649,15 +623,15 @@ def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     ]
 
     geometry = Geometry(Polygon(points))
-    C = (0.5*DIM3), 0.5*DIM2))
-    D = (0.5*DIM3 + DIM4), -DIM1 + DIM2))
-    E = (-0.5*DIM3 - DIM4), -DIM1 + DIM2))
-    F = (-0.5*DIM3), 0.5*DIM2))
+    C = (0.5*DIM3, 0.5*DIM2)
+    D = (0.5*DIM3 + DIM4, -DIM1 + DIM2)
+    E = (-0.5*DIM3 - DIM4, -DIM1 + DIM2)
+    F = (-0.5*DIM3, 0.5*DIM2)
     geometry.recovery_points = [C, D, E, F]
     return geometry
 
 
-def nastran_hat1(DIM1, DIM2, DIM3, DIM4, DIM5):
+def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float):
     """ Constructs a HAT1 section with the bottom plate's bottom center at the origin *(0, 0)*,
     with five parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [5]_ for
     definition of parameters. Note that in ASTROS, HAT1 is called HAT. Added by JohnDN90.
@@ -667,15 +641,13 @@ def nastran_hat1(DIM1, DIM2, DIM3, DIM4, DIM5):
     :param float DIM3: Width (x) of hat's top flange
     :param float DIM4: Thickness of hat stiffener
     :param float DIM5: Thicknesss of bottom plate
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a HAT1 cross-section with a depth of 2.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.005::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.HAT1Section(DIM1=4.0, DIM2=2.0, DIM3=1.5, DIM4=0.1875, DIM5=0.375)
+        geometry = nsections.nastran_hat1(DIM1=4.0, DIM2=2.0, DIM3=1.5, DIM4=0.1875, DIM5=0.375)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/hat1_geometry.png
@@ -690,100 +662,35 @@ def nastran_hat1(DIM1, DIM2, DIM3, DIM4, DIM5):
 
         Mesh generated from the above geometry.
     """
-    # TODO: You are here
     # Ensure dimensions are physically relevant
     np.testing.assert_((2.0*DIM4+DIM5) < DIM2, "Invalid geometry specified.")
     np.testing.assert_(DIM3 < DIM1, "Invalid geometry specified.")
 
-    shift = [-0.5*DIM1+shift[0], shift[1]]
-
     # create bottom rectangular plate
-    bottom_plate = nastran_bar(d=DIM5, b=DIM1, shift=shift)
+    bottom_plate = nastran_bar(DIM1=DIM5, DIM2=DIM1)
 
     # create the hat stiffener
     d1 = DIM2 - DIM5
     d2 = DIM4
+    d3 = DIM3
     d4 = 0.5*(DIM1 - DIM3)
 
-        # specify a hole in the combined plate and hat structure
-        holes = [[0.5*DIM1, 0.5*DIM2]]
+    hat = nastran_hat(DIM1=d1, DIM2=d2, DIM3=d3, DIM4=d4)
 
-        # assign control point
-        control_points = [[0.5*d4, DIM5 + 0.5*DIM4]]
+    # Merge the two sections into one geometry
+    geometry = bottom_plate + hat
 
-        super().__init__(control_points, shift)
+    C = (-0.5*DIM1, 0)
+    D = (0.5*DIM1, 0)
+    E = (-0.5*DIM3, DIM2)
+    F = (0.5*DIM3, DIM2)
 
-        # construct the points and facets
-        points = [
-            [0., DIM5 + 0.], [d4 + d2, DIM5 + 0.], [d4 + d2, DIM5 + d1 - d2],
-            [d4 + DIM3 - d2, DIM5 + d1 - d2], [d4 + DIM3 - d2, DIM5 + 0.],
-            [2. * d4 + DIM3, DIM5 + 0.], [2. * d4 + DIM3, DIM5 + d2], [d4 + DIM3, DIM5 + d2],
-            [d4 + DIM3, DIM5 + d1], [d4, DIM5 + d1], [d4, DIM5 + d2], [0, DIM5 + d2]
-        ]
-        facets = [
-            [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
-            [10, 11], [11, 0]
-        ]
+    geometry.recovery_points = [C, D, E, F]
 
-        hat = CustomSection(points, facets, holes, control_points, shift=shift)
-
-        # Create a list of the sections to merge
-        section_list = [bottom_plate, hat]
-
-        # Merge the three sections into one geometry
-        geometry = MergedSection(section_list)
-
-        # Clean the geometry and print information to the terminal
-        geometry.clean_geometry(verbose=False)
-
-        control_points = geometry.control_points
-        shift = geometry.shift
-        points = geometry.points
-        facets = geometry.facets
-        holes = geometry.holes
-
-    def create_mesh(mesh_sizes):
-        """Creates a quadratic triangular mesh from the Geometry object. This is overloaded here to
-        allow specifying only one mesh_size which is used for both regions in the Hat1 section.
-
-        :param mesh_sizes: A list of maximum element areas corresponding to each region within the
-            cross-section geometry.
-        :type mesh_size: list[float]
-
-        :return: Object containing generated mesh data
-        :rtype: :class:`meshpy.triangle.MeshInfo`
-
-        :raises AssertionError: If the number of mesh sizes does not match the number of regions
-        """
-
-        mesh_sizes *= 2
-
-        str = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
-            len(mesh_sizes), len(control_points)
-        )
-        assert(len(mesh_sizes) == len(control_points)), str
-
-        return create_mesh(points, facets, holes, control_points, mesh_sizes)
-
-    def getStressPoints(shift=(0., 0.)):
-        """ Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the origin by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (-0.5*DIM1))
-        D = (0.5*DIM1),  )
-        E = (-0.5*DIM3), DIM2))
-        F = (0.5*DIM3), DIM2))
-
-        return C, D, E, F
+    return geometry
 
 
-class HEXASection(Geometry):
+def nastran_hexa(DIM1: float, DIM2: float, DIM3: float):
     """ Constructs a HEXA (hexagon) section with the center at the origin *(0, 0)*, with three
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -791,15 +698,13 @@ class HEXASection(Geometry):
     :param float DIM1: Spacing between bottom right point and right most point
     :param float DIM2: Width (x) of hexagon
     :param float DIM3: Depth (y) of hexagon
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a rectangular cross-section with a depth of 1.5 and width of 2.0,
     and generates a mesh with a maximum triangular area of 0.005::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.HEXASection(DIM1=0.5, DIM2=2.0, DIM3=1.5)
+        geometry = nsections.nastran_hexa(DIM1=0.5, DIM2=2.0, DIM3=1.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/hexa_geometry.png
@@ -815,54 +720,26 @@ class HEXASection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(DIM1, DIM2, DIM3):
-        """Inits the HEXASection class."""
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM2 > DIM1, "Invalid geometry specified.")
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM1 = DIM1
-        DIM2 = DIM2
-        DIM3 = DIM3
+    # construct the points and facets
+    points = [
+        [DIM1, 0.], [DIM2-DIM1, 0.], [DIM2, 0.5*DIM3], [DIM2-DIM1, DIM3], [DIM1, DIM3],
+        [0., 0.5*DIM3]
+    ]
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM2 > DIM1, "Invalid geometry specified.")
-
-        # assign control point
-        control_points = [[0.5*DIM2, 0.5*DIM3]]
-
-        shift = [-0.5*DIM2+shift[0], -0.5*DIM3+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        points = [
-            [DIM1, 0.], [DIM2-DIM1, 0.], [DIM2, 0.5*DIM3], [DIM2-DIM1, DIM3], [DIM1, DIM3],
-            [0., 0.5*DIM3]
-        ]
-        facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]]
-
-        shift_section()
-
-    def getStressPoints(shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (, 0.5*DIM3)
-        D = (, -0.5*DIM3)
-        E = (0.5*DIM2)
-        F = (-0.5*DIM2)
-
-        return C, D, E, F
+    geometry = Geometry(Polygon(points))
+    C = (, 0.5*DIM3)
+    D = (, -0.5*DIM3)
+    E = (0.5*DIM2)
+    F = (-0.5*DIM2)
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
 
-class NISection(Geometry):
+
+def nastran_i(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float):
     """Constructs Nastran's I section with the bottom flange's middle center at the origin
     *(0, 0)*, with six parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_
     [4]_ for definition of parameters. Added by JohnDN90.
@@ -873,15 +750,13 @@ class NISection(Geometry):
     :param float DIM4: Thickness of web
     :param float DIM5: Thickness of bottom web
     :param float DIM6: Thickness of top web
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a Nastran I cross-section with a depth of 5.0, and generates a
     mesh with a maximum triangular area of 0.008::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.NISection(
+        geometry = nsections.nastran_i(
             DIM1=5.0, DIM2=2.0, DIM3=3.0, DIM4=0.25, DIM5=0.375, DIM6=0.5
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.008])
@@ -898,69 +773,31 @@ class NISection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_((DIM5 + DIM6) < DIM1, "Invalid geometry specified.")
+    np.testing.assert_(DIM4 < DIM3, "Invalid geometry specified.")
+    np.testing.assert_(DIM4 < DIM2, "Invalid geometry specified.")
 
-    def __init__(DIM1, DIM2, DIM3, DIM4, DIM5, DIM6):
-        """Inits the NISection class."""
+    # construct the points and facets
+    db = 0.5*(DIM2 - DIM4)
+    dt = 0.5*(DIM3 - DIM4)
+    points = [
+        [0., 0.], [DIM2, 0.], [DIM2, DIM5], [db+DIM4, DIM5], [db + DIM4, DIM1-DIM6],
+        [db+DIM4+dt, DIM1-DIM6], [db+DIM4+dt, DIM1], [db-dt, DIM1], [db-dt, DIM1-DIM6],
+        [db, DIM1-DIM6], [db, DIM5], [0, DIM5]
+    ]
+    geometry = Geometry(Polygon(points))
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM5 *= 1.0
-        DIM6 *= 1.0
-        DIM1 = DIM1
-        DIM2 = DIM2
-        DIM3 = DIM3
-        DIM4 = DIM4
-        DIM5 = DIM5
-        DIM6 = DIM6
+    C = (0.5*DIM3, 0.5*DIM1)
+    D = (0.5*DIM3, -0.5*DIM1)
+    E = (-0.5*DIM3, -0.5*DIM1)
+    F = (-0.5*DIM3, 0.5*DIM1)
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_((DIM5 + DIM6) < DIM1, "Invalid geometry specified.")
-        np.testing.assert_(DIM4 < DIM3, "Invalid geometry specified.")
-        np.testing.assert_(DIM4 < DIM2, "Invalid geometry specified.")
-
-        # assign control point
-        control_points = [[0.5*DIM2, 0.5*DIM5]]
-
-        shift = [-0.5*DIM2+shift[0], -0.5*DIM1+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        db = 0.5*(DIM2 - DIM4)
-        dt = 0.5*(DIM3 - DIM4)
-        points = [
-            [0., 0.], [DIM2, 0.], [DIM2, DIM5], [db+DIM4, DIM5], [db + DIM4, DIM1-DIM6],
-            [db+DIM4+dt, DIM1-DIM6], [db+DIM4+dt, DIM1], [db-dt, DIM1], [db-dt, DIM1-DIM6],
-            [db, DIM1-DIM6], [db, DIM5], [0, DIM5]
-        ]
-        facets = [
-            [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
-            [10, 11], [11, 0]
-        ]
-
-        shift_section()
-
-    def getStressPoints(shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*DIM3, 0.5*DIM1)
-        D = (0.5*DIM3, -0.5*DIM1)
-        E = (-0.5*DIM3, -0.5*DIM1)
-        F = (-0.5*DIM3, 0.5*DIM1)
-
-        return C, D, E, F
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
 
-class I1Section(Geometry):
+def nastran_i1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a I1 section with the web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -969,8 +806,6 @@ class I1Section(Geometry):
     :param float DIM2: Thickness of web
     :param float DIM3: Length of web (spacing between flanges)
     :param float DIM4: Depth (y) of the I1-section
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a I1 cross-section with a depth of
     5.0 and width of 1.75, and generates a mesh with a maximum triangular area of
@@ -978,7 +813,7 @@ class I1Section(Geometry):
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.I1Section(DIM1=1.0, DIM2=0.75, DIM3=4.0, DIM4=5.0)
+        geometry = nsections.nastran_i1(DIM1=1.0, DIM2=0.75, DIM3=4.0, DIM4=5.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.02])
 
     ..  figure:: ../images/sections/i1_geometry.png
@@ -993,63 +828,28 @@ class I1Section(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
 
-    def __init__(DIM1, DIM2, DIM3, DIM4):
-        """Inits the I1section class."""
+    # construct the points and facets
+    t = 0.5*(DIM4 - DIM3)
+    points = [
+        [0., 0.], [DIM1+DIM2, 0.], [DIM1+DIM2, t], [0.5*DIM1+DIM2, t], [0.5*DIM1+DIM2, t+DIM3],
+        [DIM1+DIM2, t+DIM3], [DIM1+DIM2, DIM4], [0., DIM4], [0., t+DIM3], [0.5*DIM1, t+DIM3],
+        [0.5*DIM1, t], [0., t]
+    ]
+    geometry = Geometry(Polygon(points))
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM1 = DIM1
-        DIM2 = DIM2
-        DIM3 = DIM3
-        DIM4 = DIM4
+    C = (0.5*(DIM1+DIM2), 0.5*DIM4)
+    D = (0.5*(DIM1+DIM2), -0.5*DIM4)
+    E = (-0.5*(DIM1+DIM2), -0.5*DIM4)
+    F = (-0.5*(DIM1+DIM2), 0.5*DIM4)
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
-
-        shift = [-0.5*(DIM1+DIM2)+shift[0], -0.5*DIM4+shift[1]]
-
-        # assign control point
-        control_points = [[0.5*(DIM1+DIM2), 0.5*DIM4]]
-
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        t = 0.5*(DIM4 - DIM3)
-        points = [
-            [0., 0.], [DIM1+DIM2, 0.], [DIM1+DIM2, t], [0.5*DIM1+DIM2, t], [0.5*DIM1+DIM2, t+DIM3],
-            [DIM1+DIM2, t+DIM3], [DIM1+DIM2, DIM4], [0., DIM4], [0., t+DIM3], [0.5*DIM1, t+DIM3],
-            [0.5*DIM1, t], [0., t]
-        ]
-        facets = [
-            [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
-            [10, 11], [11, 0]
-        ]
-
-        shift_section()
-
-    def getStressPoints(shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*(DIM1+DIM2), 0.5*DIM4)
-        D = (0.5*(DIM1+DIM2), -0.5*DIM4)
-        E = (-0.5*(DIM1+DIM2), -0.5*DIM4)
-        F = (-0.5*(DIM1+DIM2), 0.5*DIM4)
-
-        return C, D, E, F
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
 
-class LSection(Geometry):
+def nastran_l(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a L section with the intersection's center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ for more details.
     Added by JohnDN90.
@@ -1058,15 +858,13 @@ class LSection(Geometry):
     :param float DIM2: Depth (y) of the L-section
     :param float DIM3: Thickness of flange (horizontal portion)
     :param float DIM4: Thickness of web (vertical portion)
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a L cross-section with a depth of 6.0 and width of 3.0, and
     generates a mesh with a maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.LSection(DIM1=3.0, DIM2=6.0, DIM3=0.375, DIM4=0.625)
+        geometry = nsections.nastran_l(DIM1=3.0, DIM2=6.0, DIM3=0.375, DIM4=0.625)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/l_geometry.png
@@ -1081,70 +879,38 @@ class LSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
+    np.testing.assert_(DIM3 < DIM2, "Invalid geometry specified.")
 
-    def __init__(DIM1, DIM2, DIM3, DIM4):
-        """Inits the LSection class."""
+    # construct the points and facets
+    points = [[0, 0], [DIM1, 0], [DIM1, DIM3], [DIM4, DIM3], [DIM4, DIM2], [0, DIM2]]
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM1 = DIM1
-        DIM2 = DIM2
-        DIM3 = DIM3
-        DIM4 = DIM4
+    geometry = Geometry(Polygon(points))
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
-        np.testing.assert_(DIM3 < DIM2, "Invalid geometry specified.")
+    C = (0.5*DIM4, DIM2-0.5*DIM3)
+    D = (DIM1-0.5*DIM4, -0.5*DIM3)
+    E = (-0.5*DIM4, -0.5*DIM3)
+    F = (-0.5*DIM4, DIM2-0.5*DIM3)
 
-        # assign control point
-        control_points = [[0.5*DIM1, 0.5*DIM3]]
-
-        shift = [-0.5*DIM4+shift[0], -0.5*DIM3+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        points = [[0, 0], [DIM1, 0], [DIM1, DIM3], [DIM4, DIM3], [DIM4, DIM2], [0, DIM2]]
-        facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]]
-
-        shift_section()
-
-    def getStressPoints(shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*DIM4, DIM2-0.5*DIM3)
-        D = (DIM1-0.5*DIM4, -0.5*DIM3)
-        E = (-0.5*DIM4, -0.5*DIM3)
-        F = (-0.5*DIM4, DIM2-0.5*DIM3)
-
-        return C, D, E, F
+    geometry.recovery_points([C, D, E, F])
+    return geometry
 
 
-class RODSection(Geometry):
+def nastran_rod(DIM1: float, n: int):
     """Constructs a circular rod section with the center at the origin *(0, 0)*, with one parameter
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details. Added by
     JohnDN90.
 
     :param float DIM1: Radius of the circular rod section
     :param int n: Number of points discretising the circle
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a circular rod with a radius of 3.0 and 50 points discretizing
     the boundary, and generates a mesh with a maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.RODSection(DIM1=3.0, n=50)
+        geometry = nsections.nastran_rod(DIM1=3.0, n=50)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/rod_geometry.png
@@ -1160,61 +926,31 @@ class RODSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(DIM1, n):
-        """Inits the RODSection class."""
+    # loop through each point on the circle
+    d = 2.0*DIM1
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM1 = DIM1
+    for i in range(n):
+        # determine polar angle
+        theta = i * 2 * np.pi * 1.0 / n
 
-        # assign control point
-        control_points = [[0, 0]]
+        # calculate location of the point
+        x = 0.5 * d * np.cos(theta)
+        y = 0.5 * d * np.sin(theta)
 
-        super().__init__(control_points, shift)
+        # append the current point to the points list
+        points.append([x, y])
 
-        # loop through each point on the circle
-        d = 2.0*DIM1
+    geometry = Geometry(Polygon(points))
+    C = (0, DIM1)
+    D = (DIM1, 0)
+    E = (0, -DIM1)
+    F = (-DIM1, 0)
 
-        for i in range(n):
-            # determine polar angle
-            theta = i * 2 * np.pi * 1.0 / n
+    geometry.recovery_points([C, D, E, F])
 
-            # calculate location of the point
-            x = 0.5 * d * np.cos(theta)
-            y = 0.5 * d * np.sin(theta)
+    return geometry
 
-            # append the current point to the points list
-            points.append([x, y])
-
-            # if we are not at the last point
-            if i != n - 1:
-                facets.append([i, i + 1])
-            # if we are at the last point, complete the circle
-            else:
-                facets.append([i, 0])
-
-        shift_section()
-
-    def getStressPoints(shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param float DIM1: Radius of the circular rod section
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (, DIM1)
-        D = (DIM1)
-        E = (, -DIM1)
-        F = (-DIM1)
-
-        return C, D, E, F
-
-
-class TSection(Geometry):
+def nastran_t(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a T section with the top flange's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for more
     details. Added by JohnDN90.
@@ -1223,15 +959,13 @@ class TSection(Geometry):
     :param float DIM2: Depth (y) of the T-section
     :param float DIM3: Thickness of top flange
     :param float DIM4: Thickness of web
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a T cross-section with a depth of 4.0 and width of 3.0, and
     generates a mesh with a maximum triangular area of 0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.TSection(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.25)
+        geometry = nsections.nastran_t(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/t_geometry.png
@@ -1246,86 +980,52 @@ class TSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
+    np.testing.assert_(DIM3 < DIM2, "Invalid geometry specified.")
 
-    def __init__(DIM1, DIM2, DIM3, DIM4):
-        """Inits the TSection class."""
+    d = DIM2
+    b = DIM1
+    t_f = DIM3
+    t_w = DIM4
+    r = 0
+    n_r = 1
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM1 = DIM1
-        DIM2 = DIM2
-        DIM3 = DIM3
-        DIM4 = DIM4
+    # assign control point
+    control_points = [[b * 0.5, d - t_f * 0.5]]
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
-        np.testing.assert_(DIM3 < DIM2, "Invalid geometry specified.")
+    super().__init__(control_points, shift)
 
-        d = DIM2
-        b = DIM1
-        t_f = DIM3
-        t_w = DIM4
-        r = 0
-        n_r = 1
-        shift = [-DIM1/2.0+shift[0], -(DIM2-DIM3/2.0)+shift[1]]
+    # add first two points
+    points.append([b * 0.5 - t_w * 0.5, 0])
+    points.append([b * 0.5 + t_w * 0.5, 0])
 
-        # assign control point
-        control_points = [[b * 0.5, d - t_f * 0.5]]
+    # construct the top right radius
+    pt = [b * 0.5 + t_w * 0.5 + r, d - t_f - r]
+    points += draw_radius(pt, r, np.pi, n_r, False)
 
-        super().__init__(control_points, shift)
+    # add next four points
+    points.append([b, d - t_f])
+    points.append([b, d])
+    points.append([0, d])
+    points.append([0, d - t_f])
 
-        # add first two points
-        points.append([b * 0.5 - t_w * 0.5, 0])
-        points.append([b * 0.5 + t_w * 0.5, 0])
+    # construct the top left radius
+    pt = [b * 0.5 - t_w * 0.5 - r, d - t_f - r]
+    points += draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
-        # construct the top right radius
-        pt = [b * 0.5 + t_w * 0.5 + r, d - t_f - r]
-        draw_radius(pt, r, np.pi, n_r, False)
+    geometry = Geometry(Polygon(points))
 
-        # add next four points
-        points.append([b, d - t_f])
-        points.append([b, d])
-        points.append([0, d])
-        points.append([0, d - t_f])
+    C = (0, 0.5*DIM3)
+    D = (0.5*DIM1, 0.5*DIM3)
+    E = (0, 0.5*DIM3-DIM2)
+    F = (-0.5*DIM1, 0.5*DIM3)
+    geometry.recovery_points = [C, D, E, F]
 
-        # construct the top left radius
-        pt = [b * 0.5 - t_w * 0.5 - r, d - t_f - r]
-        draw_radius(pt, r, 0.5 * np.pi, n_r, False)
-
-        # build the facet list
-        for i in range(len(points)):
-            # if we are not at the last point
-            if i != len(points) - 1:
-                facets.append([i, i + 1])
-            # if we are at the last point, complete the loop
-            else:
-                facets.append([len(points) - 1, 0])
-
-        shift_section()
-
-    def getStressPoints(shift=(0., 0.)):
-        """
-        Returns the coordinates of the stress evaluation points relative to the origin
-        of the cross-section. The shift parameter can be used to make the coordinates
-        relative to the centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (, 0.5*DIM3)
-        D = (0.5*DIM1, 0.5*DIM3)
-        E = (, 0.5*DIM3-DIM2)
-        F = (-0.5*DIM1, 0.5*DIM3)
-
-        return C, D, E, F
+    return geometry
 
 
-class T1Section(Geometry):
+def nastran_t1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a T1 section with the right flange's middle center at the origin *(0, 0)*, with
     four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1334,15 +1034,13 @@ class T1Section(Geometry):
     :param float DIM2: Length (x) of web
     :param float DIM3: Thickness of right flange
     :param float DIM4: Thickness of web
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a T1 cross-section with a depth of 3.0 and width of 3.875, and
     generates a mesh with a maximum triangular area of 0.001::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.T1Section(DIM1=3.0, DIM2=3.5, DIM3=0.375, DIM4=0.25)
+        geometry = nsections.nastran_t1(DIM1=3.0, DIM2=3.5, DIM3=0.375, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/t1_geometry.png
@@ -1357,59 +1055,28 @@ class T1Section(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
 
-    def __init__(DIM1, DIM2, DIM3, DIM4):
-        """Inits the T1section class."""
+    # construct the points and facets
+    d1 = (DIM1 - DIM4) / 2.0
+    points = [
+        [0, 0], [DIM3, 0], [DIM3, DIM1], [0, DIM1], [0, d1 + DIM4], [-DIM2, d1 + DIM4],
+        [-DIM2, d1], [0, d1]
+    ]
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM1 = DIM1
-        DIM2 = DIM2
-        DIM3 = DIM3
-        DIM4 = DIM4
+    geometry = Geometry(Polygon(points))
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
+    C = (0.5*DIM3, 0)
+    D = (0.5*DIM3, -0.5*DIM1)
+    E = (-0.5*DIM3-DIM2, 0)
+    F = (0.5*DIM3, 0.5*DIM1)
+    geometry.recovery_points = [C, D, E, F]
 
-        shift = [-0.5*DIM3+shift[0], -0.5*DIM1+shift[1]]
-
-        # assign control point
-        control_points = [[0.5*DIM3, 0.5*DIM1]]
-
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        d1 = (DIM1 - DIM4) / 2.0
-        points = [
-            [0, 0], [DIM3, 0], [DIM3, DIM1], [0, DIM1], [0, d1 + DIM4], [-DIM2, d1 + DIM4],
-            [-DIM2, d1], [0, d1]
-        ]
-        facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
-
-        shift_section()
-
-    def getStressPoints(shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*DIM3)
-        D = (0.5*DIM3, -0.5*DIM1)
-        E = (-0.5*DIM3-DIM2)
-        F = (0.5*DIM3, 0.5*DIM1)
-
-        return C, D, E, F
+    return geometry
 
 
-class T2Section(Geometry):
+def nastran_t2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a T2 section with the bottom flange's middle center at the origin *(0, 0)*, with
     four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1418,15 +1085,13 @@ class T2Section(Geometry):
     :param float DIM2: Depth (y) of T2-section
     :param float DIM3: Thickness of bottom flange
     :param float DIM4: Thickness of web
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a T2 cross-section with a depth of 4.0 and width of 3.0, and
     generates a mesh with a maximum triangular area of 0.005::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.T2Section(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.5)
+        geometry = nsections.nastran_t2(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/t2_geometry.png
@@ -1442,58 +1107,27 @@ class T2Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(DIM1, DIM2, DIM3, DIM4):
-        """Inits the T2Section class."""
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
+    np.testing.assert_(DIM3 < DIM2, "Invalid geometry specified.")
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM1 = DIM1
-        DIM2 = DIM2
-        DIM3 = DIM3
-        DIM4 = DIM4
+    # construct the points and facets
+    d1 = 0.5*(DIM1 - DIM4)
+    points = [
+        [0., 0.], [DIM1, 0.], [DIM1, DIM3], [DIM1-d1, DIM3], [DIM1-d1, DIM2], [d1, DIM2],
+        [d1, DIM3], [0, DIM3]
+    ]
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM4 < DIM1, "Invalid geometry specified.")
-        np.testing.assert_(DIM3 < DIM2, "Invalid geometry specified.")
-
-        # assign control point
-        control_points = [[0.5*DIM1, 0.5*DIM3]]
-
-        shift = [-0.5*DIM1+shift[0], -0.5*DIM3+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        d1 = 0.5*(DIM1 - DIM4)
-        points = [
-            [0., 0.], [DIM1, 0.], [DIM1, DIM3], [DIM1-d1, DIM3], [DIM1-d1, DIM2], [d1, DIM2],
-            [d1, DIM3], [0, DIM3]
-        ]
-        facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
-
-        shift_section()
-
-    def getStressPoints(shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*DIM4, DIM2-0.5*DIM3)
-        D = (0.5*DIM1, -0.5*DIM3)
-        E = (-0.5*DIM1, -0.5*DIM3)
-        F = (-0.5*DIM4, DIM2-0.5*DIM3)
-
-        return C, D, E, F
+    geometry = Geometry(Polygon(points))
+    C = (0.5*DIM4, DIM2-0.5*DIM3)
+    D = (0.5*DIM1, -0.5*DIM3)
+    E = (-0.5*DIM1, -0.5*DIM3)
+    F = (-0.5*DIM4, DIM2-0.5*DIM3)
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
 
-class TUBESection(Geometry):
+def nastran_tube(DIM1:float, DIM2:float, n:int):
     """Constructs a circular tube section with the center at the origin *(0, 0)*, with two
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1501,8 +1135,6 @@ class TUBESection(Geometry):
     :param float DIM1: Outer radius of the circular tube section
     :param float DIM2: Inner radius of the circular tube section
     :param int n: Number of points discretising the circle
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a circular tube cross-section with an outer radius of 3.0 and an
     inner radius of 2.5, and generates a mesh with 37 points discretizing the boundaries and a
@@ -1510,7 +1142,7 @@ class TUBESection(Geometry):
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.TUBESection(DIM1=3.0, DIM2=2.5, n=37)
+        geometry = nsections.nastran_tube(DIM1=3.0, DIM2=2.5, n=37)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/tube_geometry.png
@@ -1525,75 +1157,42 @@ class TUBESection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM2 < DIM1, "Invalid geometry specified.")
 
-    def __init__(DIM1, DIM2, n):
-        """Inits the TUBESection class."""
+    d = 2.0*DIM1
+    t = DIM1-DIM2
+    points_inner = []
+    points_outer = []
+    # loop through each point of the CHS
+    for i in range(n):
+        # determine polar angle
+        theta = i * 2 * np.pi * 1.0 / n
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM1 = DIM1
-        DIM2 = DIM2
+        # calculate location of outer and inner points
+        x_outer = 0.5 * d * np.cos(theta)
+        y_outer = 0.5 * d * np.sin(theta)
+        x_inner = (0.5 * d - t) * np.cos(theta)
+        y_inner = (0.5 * d - t) * np.sin(theta)
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM2 < DIM1, "Invalid geometry specified.")
+        # append the current points to the points list
+        points_outer.append([x_outer, y_outer])
+        points_inner.append([x_inner, y_inner])
 
-        d = 2.0*DIM1
-        t = DIM1-DIM2
+    exterior = Geometry(Polygon(points_outer))
+    interior = Geometry(Polygon(points_inner))
 
-        # assign control point
-        control_points = [[d * 0.5 - t * 0.5, 0]]
+    geometry = exterior - interior
 
-        super().__init__(control_points, shift)
-
-        # specify a hole in the centre of the CHS
-        holes = [[0., 0.]]
-
-        # loop through each point of the CHS
-        for i in range(n):
-            # determine polar angle
-            theta = i * 2 * np.pi * 1.0 / n
-
-            # calculate location of outer and inner points
-            x_outer = 0.5 * d * np.cos(theta)
-            y_outer = 0.5 * d * np.sin(theta)
-            x_inner = (0.5 * d - t) * np.cos(theta)
-            y_inner = (0.5 * d - t) * np.sin(theta)
-
-            # append the current points to the points list
-            points.append([x_outer, y_outer])
-            points.append([x_inner, y_inner])
-
-            # if we are not at the last point
-            if i != n - 1:
-                facets.append([i * 2, i * 2 + 2])
-                facets.append([i * 2 + 1, i * 2 + 3])
-            # if we are at the last point, complete the circle
-            else:
-                facets.append([i * 2, 0])
-                facets.append([i * 2 + 1, 1])
-
-        shift_section()
-
-    def getStressPoints(shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (, DIM1)
-        D = (DIM1)
-        E = (, -DIM1)
-        F = (-DIM1)
-
-        return C, D, E, F
+    C = (0, DIM1)
+    D = (DIM1, 0)
+    E = (0, -DIM1)
+    F = (-DIM1, 0)
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
 
-class TUBE2Section(Geometry):
+def nastran_tube2(DIM1: float, DIM2: float, n: float):
     """Constructs a circular TUBE2 section with the center at the origin *(0, 0)*, with two
     parameters defining dimensions. See MSC Nastran documentation [1]_ for more details. Added by
     JohnDN90.
@@ -1601,8 +1200,6 @@ class TUBE2Section(Geometry):
     :param float DIM1: Outer radius of the circular tube section
     :param float DIM2: Thickness of wall
     :param int n: Number of points discretising the circle
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a ciruclar TUBE2 cross-section with an outer radius of 3.0 and a
     wall thickness of 0.5, and generates a mesh with 37 point discritizing the boundary and a
@@ -1610,7 +1207,7 @@ class TUBE2Section(Geometry):
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.TUBE2Section(DIM1=3.0, DIM2=0.5, n=37)
+        geometry = nsections.nastran_tube2(DIM1=3.0, DIM2=0.5, n=37)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/tube2_geometry.png
@@ -1625,75 +1222,43 @@ class TUBE2Section(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM2 < DIM1, "Invalid geometry specified.")
 
-    def __init__(DIM1, DIM2, n):
-        """Inits the TUBE2Section class."""
+    d = 2.0*DIM1
+    t = DIM2
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM1 = DIM1
-        DIM2 = DIM2
+    points_inner = []
+    points_outer = []
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM2 < DIM1, "Invalid geometry specified.")
+    # loop through each point of the section
+    for i in range(n):
+        # determine polar angle
+        theta = i * 2 * np.pi * 1.0 / n
 
-        d = 2.0*DIM1
-        t = DIM2
+        # calculate location of outer and inner points
+        x_outer = 0.5 * d * np.cos(theta)
+        y_outer = 0.5 * d * np.sin(theta)
+        x_inner = (0.5 * d - t) * np.cos(theta)
+        y_inner = (0.5 * d - t) * np.sin(theta)
 
-        # assign control point
-        control_points = [[d * 0.5 - t * 0.5, 0]]
+        # append the current points to the points list
+        points_outer.append([x_outer, y_outer])
+        points_inner.append([x_inner, y_inner])
 
-        super().__init__(control_points, shift)
+        exterior = Geometry(Polygon(points_outer))
+        interior = Geometry(Polygon(points_inner))
+        geometry = exterior - interior
 
-        # specify a hole in the centre of the section
-        holes = [[0., 0.]]
-
-        # loop through each point of the section
-        for i in range(n):
-            # determine polar angle
-            theta = i * 2 * np.pi * 1.0 / n
-
-            # calculate location of outer and inner points
-            x_outer = 0.5 * d * np.cos(theta)
-            y_outer = 0.5 * d * np.sin(theta)
-            x_inner = (0.5 * d - t) * np.cos(theta)
-            y_inner = (0.5 * d - t) * np.sin(theta)
-
-            # append the current points to the points list
-            points.append([x_outer, y_outer])
-            points.append([x_inner, y_inner])
-
-            # if we are not at the last point
-            if i != n - 1:
-                facets.append([i * 2, i * 2 + 2])
-                facets.append([i * 2 + 1, i * 2 + 3])
-            # if we are at the last point, complete the circle
-            else:
-                facets.append([i * 2, 0])
-                facets.append([i * 2 + 1, 1])
-
-        shift_section()
-
-    def getStressPoints(shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (, DIM1)
-        D = (DIM1)
-        E = (, -DIM1)
-        F = (-DIM1)
-
-        return C, D, E, F
+        C = (0, DIM1)
+        D = (DIM1, 0)
+        E = (0, -DIM1)
+        F = (-DIM1, 0)
+        geometry.recovery_points = [C, D, E, F]
+        return geometry
 
 
-class ZSection(Geometry):
+def nastran_z(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a Z section with the web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -1702,15 +1267,13 @@ class ZSection(Geometry):
     :param float DIM2: Thickness of web
     :param float DIM3: Spacing between horizontal members (length of web)
     :param float DIM4: Depth (y) of Z-section
-    :param shift: Vector that shifts the cross-section by *(x, y)*
-    :type shift: list[float, float]
 
     The following example creates a rectangular cross-section with a depth of 4.0 and width of
     2.75, and generates a mesh with a maximum triangular area of 0.005::
 
         import sectionproperties.pre.nastran_sections as nsections
 
-        geometry = nsections.ZSection(DIM1=1.125, DIM2=0.5, DIM3=3.5, DIM4=4.0)
+        geometry = nsections.nastran_z(DIM1=1.125, DIM2=0.5, DIM3=3.5, DIM4=4.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/z_geometry.png
@@ -1725,52 +1288,22 @@ class ZSection(Geometry):
 
         Mesh generated from the above geometry.
     """
+    # Ensure dimensions are physically relevant
+    np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
 
-    def __init__(DIM1, DIM2, DIM3, DIM4):
-        """Inits the ZSection class."""
+    # construct the points and facets
+    t = 0.5*(DIM4 - DIM3)
+    points = [
+        [DIM1, 0.], [2.*DIM1+DIM2, 0.], [2.*DIM1+DIM2, t], [DIM1+DIM2, t], [DIM1+DIM2, DIM4],
+        [0., DIM4], [0., DIM4-t],  [DIM1, DIM4-t]
+    ]
+    geometry = Geometry(Polygon(points))
 
-        # force dimensions to be floating point values
-        DIM1 *= 1.0
-        DIM2 *= 1.0
-        DIM3 *= 1.0
-        DIM4 *= 1.0
-        DIM1 = DIM1
-        DIM2 = DIM2
-        DIM3 = DIM3
-        DIM4 = DIM4
+    C = (0.5*DIM2, 0.5*DIM4)
+    D = (0.5*DIM2+DIM1, -0.5*DIM4)
+    E = (-0.5*DIM2, -0.5*DIM4)
+    F = (-0.5*DIM2-DIM1, 0.5*DIM4)
 
-        # Ensure dimensions are physically relevant
-        np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
+    geometry.recovery_points = [C, D, E, F]
 
-        # assign control point
-        control_points = [[DIM1+0.5*DIM2, 0.5*DIM4]]
-
-        shift = [-0.5*(DIM1+DIM2)+shift[0], -0.5*DIM4+shift[1]]
-        super().__init__(control_points, shift)
-
-        # construct the points and facets
-        t = 0.5*(DIM4 - DIM3)
-        points = [
-            [DIM1, 0.], [2.*DIM1+DIM2, 0.], [2.*DIM1+DIM2, t], [DIM1+DIM2, t], [DIM1+DIM2, DIM4],
-            [0., DIM4], [0., DIM4-t],  [DIM1, DIM4-t]
-        ]
-        facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
-
-        shift_section()
-
-    def getStressPoints(shift=(0., 0.)):
-        """Returns the coordinates of the stress evaluation points relative to the origin of the
-        cross-section. The shift parameter can be used to make the coordinates relative to the
-        centroid or the shear center.
-
-        :param shift: Vector that shifts the cross-section by *(x, y)*
-        :type shift: tuple(float, float)
-        :returns: Stress evaluation points relative to shifted origin - C, D, E, F
-        """
-
-        C = (0.5*DIM2, 0.5*DIM4)
-        D = (0.5*DIM2+DIM1, -0.5*DIM4)
-        E = (-0.5*DIM2, -0.5*DIM4)
-        F = (-0.5*DIM2-DIM1, 0.5*DIM4)
-
-        return C, D, E, F
+    return geometry
