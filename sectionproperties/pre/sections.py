@@ -24,24 +24,19 @@ class Geometry:
     """
     def __init__(self, geom: shapely.geometry.Polygon = None):
         """Inits the Geometry class.
-        Old args; control_points, shift
         """
-        if geom is None and points is None:
-            raise ValueError(f"Either geom")
         if isinstance(geom, MultiPolygon):
             raise ValueError(f"Use CompoundGeometry(...) for a MultiPolygon object.")
         if not isinstance(geom, Polygon):
             raise ValueError(f"Argument is not a valid shapely.geometry.Polygon object: {geom}")
         self.geom = geom
-        self.control_points = [] # Given upon instantiation
-        self.shift = [] # Given upon instantiation
-        self.points = [] # Previously empty list
-        self.facets = [] # Previously empty list
-        self.holes = [] # Previously empty list
-        self.perimeter = [] # Previously empty list
+        self.control_points = []
+        self.shift = []
+        self.points = []
+        self.facets = []
+        self.holes = []
+        self.perimeter = []
         self._recovery_points = []
-        # self.mesh = None # Previously not a property
-
 
     def _repr_svg_(self):
         print("sectionproperties.pre.sections.Geometry")
@@ -85,17 +80,17 @@ class Geometry:
         for facet in facets:
             i_idx, _ = facet
             if not prev_facet: # Add the first facet vertex to exterior and move on
-                exterior.append(points[i_idx])
+                active_list.append(points[i_idx])
                 prev_facet = facet
                 continue
-            if i_idx != prev_facet[1]: #If there is a break in the chain of edges...
+            prev_j_idx = prev_facet[1]
+            if i_idx != prev_j_idx: #If there is a break in the chain of edges...
                 if active_list == exterior: # ...and we were still on the exterior...
                     active_list = interiors[interior_counter] # ... then move to interior
                 else: # ...or if we are already in the interiors...
                     interior_counter += 1 # ...then start the next interior region.
                     active_list = interiors[interior_counter]
                 active_list.append(points[i_idx]) 
-            
             else:
                 active_list.append(points[i_idx]) # Only need i_idx b/c shapely auto-closes polygons
             prev_facet = facet
@@ -154,9 +149,11 @@ class Geometry:
         self.compile_geometry()
         if isinstance(mesh_sizes, (float, int)): mesh_sizes = [mesh_sizes]*len(self.control_points)
 
-        error_str = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
-            len(mesh_sizes), len(self.control_points)
+        error_str = (
+            f"Number of mesh_sizes ({len(mesh_sizes)}), "
+            f"should match the number of regions ({len(self.control_points)})"
         )
+        
         assert(len(mesh_sizes) == len(self.control_points)), error_str
 
         self.mesh = pre.create_mesh(
@@ -165,7 +162,18 @@ class Geometry:
 
     def align_left(self, align_to, inner: bool = False):
         """
-        Aligns the "right-most" point of 'self' to the "left-most" point of 'align_to'
+        Returns a new Geometry object, tranlsated in x, so that the right-most point 
+        of the new object will be aligned to left-most point of the other Geometry object.
+
+        :param align_to: Another Geometry to align to.
+        :type align_to: sectionproperties.pre.sections.Geometry
+
+        :param inner: Default False. If True, align the left-most point of this
+        object to the left-most point of 'align_to'. 
+        :type align_to: bool
+
+        :return: Geometry object translated to new alignment
+        :rtype: :class:`sections.pre.sections.Geometry`
         """
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
@@ -175,11 +183,20 @@ class Geometry:
         x_offset = align_to_min_x - self_align_x
         return self.shift_section(x_offset=x_offset)
 
-
     def align_top(self, align_to, inner: bool = False):
         """
-        Aligns the "bottom-most" point of 'self' to the "top-most" point of 'align_to'
-        If 'inner' is True, aligns to the "inside" of the 'align_to' section
+        Returns a new Geometry object, tranlsated in y, so that the bottom-most point
+        of the new object will be aligned to top-most point of the other Geometry object.
+
+        :param align_to: Another Geometry to align to.
+        :type align_to: sectionproperties.pre.sections.Geometry
+
+        :param inner: Default False. If True, align the top-most point of this
+        object to the top-most point of 'align_to'. 
+        :type align_to: bool
+
+        :return: Geometry object translated to new alignment
+        :rtype: :class:`sections.pre.sections.Geometry`
         """
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
@@ -189,10 +206,20 @@ class Geometry:
         y_offset = align_to_max_y - self_align_y
         return self.shift_section(y_offset=y_offset)
 
-
     def align_right(self, align_to, inner: bool = False):
         """
-        Aligns the "left-most" point of 'self' to the "right-most" point of 'align_to'
+        Returns a new Geometry object, tranlsated in x, so that the left-most point
+        of the new object will be aligned to right-most point of the other Geometry object.
+
+        :param align_to: Another Geometry to align to.
+        :type align_to: sectionproperties.pre.sections.Geometry
+
+        :param inner: Default False. If True, align the top-most point of this
+        object to the top-most point of 'align_to'. 
+        :type align_to: bool
+
+        :return: Geometry object translated to new alignment
+        :rtype: :class:`sections.pre.sections.Geometry`
         """
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
@@ -202,10 +229,20 @@ class Geometry:
         x_offset = align_to_max_x - self_align_x
         return self.shift_section(x_offset=x_offset)
 
-
     def align_bottom(self, align_to, inner: bool = False):
         """
-        Aligns the "top-most" point of 'self' to the "bottom-most" point of 'align_to'
+        Returns a new Geometry object, tranlsated in y, so that the top-most point 
+        of the new object will be aligned to bottom-most of the other Geometry object.
+
+        :param align_to: Another Geometry to align to.
+        :type align_to: sectionproperties.pre.sections.Geometry
+
+        :param inner: Default False. If True, align the bottom-most point of this
+        object to the bottom-most point of 'align_to'. 
+        :type align_to: bool
+
+        :return: Geometry object translated to new alignment
+        :rtype: :class:`sections.pre.sections.Geometry`
         """
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
@@ -217,7 +254,19 @@ class Geometry:
 
     def align_center(self, align_to):
         """
-        Aligns the "bottom-most" point of 'self' to the "top-most" point of 'align_to'
+        Returns a new Geometry object, tranlsated in both x and y, so that the 
+        center-point of the new object's bounding box will be aligned to the
+        center-point of the other object's bounding box.
+
+        :param align_to: Another Geometry to align to.
+        :type align_to: sectionproperties.pre.sections.Geometry
+
+        :param inner: Default False. If True, align the top-most point of this
+        object to the top-most point of 'align_to'. 
+        :type align_to: bool
+
+        :return: Geometry object translated to new alignment
+        :rtype: :class:`sections.pre.sections.Geometry`
         """
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
@@ -231,10 +280,19 @@ class Geometry:
 
 
     def shift_section(self, x_offset=0., y_offset=0.,):
-        """Shifts the cross-section parameters by the class variable vector *shift*."""
+        """
+        Returns a new Geometry object translated by 'x_offset' and 'y_offset'.
+
+        :param x_offset: Distance in x-direction by which to shift the geometry.
+        :type x_offset: float
+        :param y_offset: Distance in y-direction by which to shift the geometry.
+        :type y_offset: float
+
+        :return: Geometry object shifted by 'x_offset' and 'y_offset'
+        :rtype: :class:`sections.pre.sections.Geometry`
+        """
 
         new_geom = Geometry(shapely.affinity.translate(self.geom, x_offset, y_offset))
-        # self.control_points = self.geom.representative_point() if self.control_points else None
         return new_geom
 
 
@@ -248,41 +306,39 @@ class Geometry:
         :param rot_point: Point *(x, y)* about which to rotate the section
         :type rot_point: list[float, float]
         :param use_radians: Boolean to indicate whether 'angle' is in degrees or radians. If True, 'angle' is interpreted as radians.
-
+        
+        :return: Geometry object rotated by 'angle' about 'rot_point'
+        :rtype: :class:`sections.pre.sections.Geometry`
+        
         The following example rotates a 200UB25 section clockwise by 30 degrees::
 
             import sectionproperties.pre.sections as sections
 
-            geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry.rotate_section(angle=-30)
+            geometry = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+            new_geometry = geometry.rotate_section(angle=-30)
         """
         if rot_point == []: rot_point = "center"
         new_geom = Geometry(shapely.affinity.rotate(self.geom, angle, rot_point, use_radians))
-        # self.control_points = self.geom.representative_point() if self.control_points else None
         return new_geom
 
 
     def mirror_section(self, axis='x', mirror_point: Union[List[float], str] = 'center'):
         """Mirrors the geometry about a point on either the x or y-axis. 
-        
-        Proposed change of behaviour to match shapely: 
-        No longer: 
-            If no point is provided,
-            mirrors the geometry about the first control point in the list of control points of the
-            :class:`~sectionproperties.pre.sections.Geometry` object.
-        Instead:
-            If no point is provided, mirrors the geometry about the centroid of the shape's bounding box.
 
         :param string axis: Axis about which to mirror the geometry, *'x'* or *'y'*
         :param mirror_point: Point about which to mirror the geometry *(x, y)*. 
+        If no point is provided, mirrors the geometry about the centroid of the shape's bounding box.
         :type mirror_point: Union[list[float, float], str]
+
+        :return: Geometry object mirrored on 'axis' about 'mirror_point'
+        :rtype: :class:`sections.pre.sections.Geometry`
 
         The following example mirrors a 200PFC section about the y-axis and the point (0, 0)::
 
             import sectionproperties.pre.sections as sections
 
-            geometry = sections.PfcSection(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-            geometry.mirror_section(axis='y', mirror_point=[0, 0])
+            geometry = sections.pfc_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            new_geometry = geometry.mirror_section(axis='y', mirror_point=[0, 0])
         """
         x_mirror = 1
         y_mirror = 1
@@ -301,12 +357,15 @@ class Geometry:
         :param resolution: Number of segments used to approximate a quarter circle around a point
         :type resolution: float
 
+        :return: Geometry object translated to new alignment
+        :rtype: :class:`sections.pre.sections.Geometry`
+
         The following example erodes a 200PFC section by 3::
 
             import sectionproperties.pre.sections as sections
 
             geometry = sections.pfc_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-            geometry.erode_section(amount=-3)
+            new_geometry = geometry.offset_section_perimeter(amount=-3)
         """
         new_geom = self.geom.buffer(
             distance=amount, 
