@@ -376,17 +376,17 @@ class Geometry:
         for (i, h) in enumerate(self.holes):
             # plot the holes
             if i == 0:
-                ax.plot(h[0], h[1], 'rx', markerSize=5, label='Holes')
+                ax.plot(h[0], h[1], 'rx', markersize=5, label='Holes')
             else:
-                ax.plot(h[0], h[1], 'rx', markerSize=5)
+                ax.plot(h[0], h[1], 'rx', markersize=5)
 
         for (i, cp) in enumerate(self.control_points):
             # plot the control points
             if i == 0:
-                ax.plot(cp[0], cp[1], 'bo', markerSize=5,
+                ax.plot(cp[0], cp[1], 'bo', markersize=5,
                         label='Control Points')
             else:
-                ax.plot(cp[0], cp[1], 'bo', markerSize=5)
+                ax.plot(cp[0], cp[1], 'bo', markersize=5)
 
 
         # display the labels
@@ -2041,13 +2041,13 @@ def box_girder_section(d, b_t, b_b, t_ft, t_fb, t_w):
     :param float d: Depth of the Box Girder section
     :param float b_t: Top width of the Box Girder section
     :param float b_b: Bottom width of the Box Girder section
-    :param float t_ft: Top lange thickness of the Box Girder section
+    :param float t_ft: Top flange thickness of the Box Girder section
     :param float t_fb: Bottom flange thickness of the Box Girder section
     :param float t_w: Web thickness of the Box Girder section
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
 
-    The following example creates a Box Gider section with a depth of 1200, a top width of 1200, a
+    The following example creates a Box Girder section with a depth of 1200, a top width of 1200, a
     bottom width of 400, a top flange thickness of 16, a bottom flange thickness of 12 and a web
     thickness of 8. A mesh is generated with a maximum triangular area of 5.0::
 

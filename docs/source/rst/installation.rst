@@ -44,7 +44,7 @@ be installed using the python package index::
 Testing the Installation
 ------------------------
 
-Python *unittest* modules are located in the *sectionpropertes.tests* package.
+Python *unittest* modules are located in the *sectionproperties.tests* package.
 To see if your installation is working correctly, run this simple test::
 
   $ python -m unittest sectionproperties.tests.test_rectangle

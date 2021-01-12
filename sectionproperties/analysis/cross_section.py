@@ -93,7 +93,7 @@ class Section:
     :cvar materials: List of materials
     :type materials: list[:class:`~sectionproperties.pre.pre.Material`]
     :cvar material_groups: List of objects containing the elements in each defined material
-    :type materials_groups: list[:class:`~sectionproperties.pre.pre.MaterialGroup`]
+    :type material_groups: list[:class:`~sectionproperties.pre.pre.MaterialGroup`]
     :cvar section_props: Class to store calculated section properties
     :vartype section_props: :class:`~sectionproperties.analysis.cross_section.SectionProperties`
 
@@ -249,7 +249,7 @@ class Section:
             self.section_props.iyy_g = 0
             self.section_props.ixy_g = 0
 
-            # caclulate perimeter
+            # calculate perimeter
             self.section_props.perimeter = self.geometry.calculate_perimeter()
 
             # calculate global geometric properties
@@ -310,7 +310,7 @@ class Section:
 
         # check that a geometric analysis has been performed
         if None in [self.section_props.area, self.section_props.ixx_c, self.section_props.cx]:
-            err = "Cacluate geometric properties before performing a warping analysis."
+            err = "Calculate geometric properties before performing a warping analysis."
             raise RuntimeError(err)
 
         # create a new Section with the origin shifted to the centroid for calculation of the
@@ -324,7 +324,7 @@ class Section:
 
         # assemble stiffness matrix and load vector for warping function
         if time_info:
-            text = "--Assembing {0}x{0} stiffness matrix and load vector...".format(self.num_nodes)
+            text = "--Assembling {0}x{0} stiffness matrix and load vector...".format(self.num_nodes)
             (k, k_lg, f_torsion) = solver.function_timer(text, warping_section.assemble_torsion)
         else:
             (k, k_lg, f_torsion) = warping_section.assemble_torsion()
@@ -636,7 +636,7 @@ class Section:
         * Principal axis angle *(phi)*
 
         If materials are specified for the cross-section, the area, second moments of area and
-        torsion constant are elastic moulus weighted.
+        torsion constant are elastic modulus weighted.
 
         The following example demonstrates the use of this method::
 
@@ -781,7 +781,7 @@ class Section:
 
         # check that a geometric analysis has been performed
         if self.section_props.cx is None:
-            err = "Cacluate geometric properties before performing a plastic analysis."
+            err = "Calculate geometric properties before performing a plastic analysis."
             raise RuntimeError(err)
 
         def calc_plastic():
@@ -1077,7 +1077,7 @@ class Section:
                     legend_list.append(mpatches.Patch(color=material.color, label=material.name))
 
             cmap = ListedColormap(color_array)  # custom colormap
-            c = np.arange(len(color_array))  # indicies of elements
+            c = np.arange(len(color_array))  # indices of elements
 
             # plot the mesh colours
             ax.tripcolor(
@@ -1808,7 +1808,7 @@ class PlasticSection:
 
         :param mesh: Mesh object returned by meshpy
         :type mesh: :class:`meshpy.triangle.MeshInfo`
-        :return: A tuple containing an array of the nodes locations, element indicies and a list of
+        :return: A tuple containing an array of the nodes locations, element indices and a list of
             the finite elements.
         :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`,
             list[:class:`~sectionproperties.analysis.fea.Tri6`])
@@ -2001,7 +2001,7 @@ class PlasticSection:
 
         :param root_result: Result object from the root finder
         :type root_result: :class:`scipy.optimize.RootResults`
-        :param string axis: Axis being considered by the function sovler
+        :param string axis: Axis being considered by the function solver
         :raises RuntimeError: If the function solver did not converge
         """
 
@@ -2018,7 +2018,7 @@ class PlasticSection:
         :param float d: Location of the plastic centroid axis
         :param root_result: Result object from the root finder
         :type root_result: :class:`scipy.optimize.RootResults`
-        :param string axis: Axis being considered by the function sovler
+        :param string axis: Axis being considered by the function solver
         """
 
         info_str = "---{0} plastic centroid calculation converged at ".format(axis)
@@ -2047,7 +2047,7 @@ class PlasticSection:
                 v_min = v
                 v_max = v
 
-            # update the mins and maxs where necessary
+            # update the mins and maxes where necessary
             u_min = min(u_min, u)
             u_max = max(u_max, u)
             v_min = min(v_min, v)
@@ -2230,7 +2230,7 @@ class PlasticSection:
 
     def add_line(self, geometry, line):
         """Adds a line a geometry object. Finds the intersection points of the line with the
-        current facets and splits the existing facets to accomodate the new line.
+        current facets and splits the existing facets to accommodate the new line.
 
         :param geometry: Cross-section geometry object used to generate the mesh
         :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
@@ -2256,8 +2256,8 @@ class PlasticSection:
             q = np.array(geometry.points[fct[0]])
             s = geometry.points[fct[1]] - q
 
-            # cacluate intersection point between p -> p + r and q -> q + s N.B. make line
-            # p -> p + r inifintely long to find all intersects if the lines are not parallel
+            # calculate intersection point between p -> p + r and q -> q + s N.B. make line
+            # p -> p + r infinitely long to find all intersects if the lines are not parallel
             if np.cross(r, s) != 0:
                 # calculate t and u
                 t = np.cross(q - p, s) / np.cross(r, s)
@@ -2303,7 +2303,7 @@ class PlasticSection:
             if i == 0:
                 self.rebuild_parent_facet(geometry, fct_idx[0], num_pts + i)
 
-        # sort list of facet indices (to be removed) in reverse order so as not to comprimise the
+        # sort list of facet indices (to be removed) in reverse order so as not to compromise the
         # indices during deletion
         idx_to_remove = sorted(fct_idx, reverse=True)
 
@@ -2393,7 +2393,7 @@ class PlasticSection:
                     legend_list.append(mpatches.Patch(color=mat.color, label=mat.name))
 
             cmap = ListedColormap(color_array)  # custom colormap
-            c = np.arange(len(color_array))  # indicies of elements
+            c = np.arange(len(color_array))  # indices of elements
 
             # plot the mesh colours
             ax.tripcolor(nodes[:, 0], nodes[:, 1], elements[:, 0:3], c, cmap=cmap)
@@ -4221,7 +4221,7 @@ class SectionProperties:
         self.rx_c = (self.ixx_c / self.ea) ** 0.5
         self.ry_c = (self.iyy_c / self.ea) ** 0.5
 
-        # calculate prinicpal 2nd moments of area about the centroidal xy axis
+        # calculate principal 2nd moments of area about the centroidal xy axis
         Delta = (((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c ** 2) ** 0.5
         self.i11_c = (self.ixx_c + self.iyy_c) / 2 + Delta
         self.i22_c = (self.ixx_c + self.iyy_c) / 2 - Delta
@@ -4247,7 +4247,7 @@ class SectionProperties:
                 y2max = y2
                 y2min = y2
 
-            # update the mins and maxs where necessary
+            # update the mins and maxes where necessary
             x1max = max(x1max, x1)
             x1min = min(x1min, x1)
             y2max = max(y2max, y2)

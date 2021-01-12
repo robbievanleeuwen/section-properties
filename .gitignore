@@ -5,6 +5,10 @@
 /dist/
 /build/
 
+# Commont virtual environments
+.venv/
+.env/
+
 # doc generated
 /docs/build
 
@@ -13,6 +17,10 @@
 
 # Pycharm IDE file folder
 /.idea/
+
+# vscode
+.vscode/
+*.code-workspace
 
 # mac
 .DS_Store

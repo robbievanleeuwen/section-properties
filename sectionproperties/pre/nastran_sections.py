@@ -202,7 +202,7 @@ def nastran_chan1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     more details. Added by JohnDN90.
 
     :param float DIM1: Width (x) of channels
-    :param float DIM2: Thicknesss (x) of web
+    :param float DIM2: Thickness (x) of web
     :param float DIM3: Spacing between channels (length of web)
     :param float DIM4: Depth (y) of CHAN1-section
 
@@ -905,7 +905,7 @@ def nastran_rod(DIM1: float, n: int):
     :param float DIM1: Radius of the circular rod section
     :param int n: Number of points discretising the circle
 
-    The following example creates a circular rod with a radius of 3.0 and 50 points discretizing
+    The following example creates a circular rod with a radius of 3.0 and 50 points discretising
     the boundary, and generates a mesh with a maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
@@ -1137,7 +1137,7 @@ def nastran_tube(DIM1:float, DIM2:float, n:int):
     :param int n: Number of points discretising the circle
 
     The following example creates a circular tube cross-section with an outer radius of 3.0 and an
-    inner radius of 2.5, and generates a mesh with 37 points discretizing the boundaries and a
+    inner radius of 2.5, and generates a mesh with 37 points discretising the boundaries and a
     maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
@@ -1201,8 +1201,8 @@ def nastran_tube2(DIM1: float, DIM2: float, n: float):
     :param float DIM2: Thickness of wall
     :param int n: Number of points discretising the circle
 
-    The following example creates a ciruclar TUBE2 cross-section with an outer radius of 3.0 and a
-    wall thickness of 0.5, and generates a mesh with 37 point discritizing the boundary and a
+    The following example creates a circular TUBE2 cross-section with an outer radius of 3.0 and a
+    wall thickness of 0.5, and generates a mesh with 37 point discretising the boundary and a
     maximum triangular area of 0.01::
 
         import sectionproperties.pre.nastran_sections as nsections
