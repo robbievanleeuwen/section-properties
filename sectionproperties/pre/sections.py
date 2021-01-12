@@ -106,10 +106,6 @@ class Geometry:
         geometry = Geometry(exterior_geometry - interior_geometry)
         return geometry
 
-
-
-
-
     def create_facets_and_control_points(self):
         self.perimeter = None
         if not isinstance(self.geom, list):
