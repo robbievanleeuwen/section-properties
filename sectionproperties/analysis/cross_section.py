@@ -121,10 +121,9 @@ class CrossSection:
             # if materials are specified, check that the right number of material properties are
             # specified and then populate material_groups list
             if materials is not None:
-                str = "Number of materials ({0}), ".format(len(materials))
-                str += "should match the number of regions ({0}).".format(
-                    max(attributes) + 1)
-                assert(len(materials) == max(attributes) + 1), str
+                msg = "Number of materials ({0}), ".format(len(materials))
+                msg += "should match the number of regions ({0}).".format(max(attributes) + 1)
+                assert(len(materials) == max(attributes) + 1), msg
 
                 # add a MaterialGroup object to the material_groups list for each uniquely
                 # encountered material
@@ -783,10 +782,10 @@ class CrossSection:
             # calculate plastic properties
             try:
                 plastic_section.calculate_plastic_properties(self, verbose)
-            except ValueError:
-                str = "Plastic section properties calculation failed. Contact "
-                str += "robbie.vanleeuwen@gmail.com with your analysis parameters."
-                raise RuntimeError(str)
+            except ValueError as exp:
+                msg = "Plastic section properties calculation failed. Contact "
+                msg += "robbie.vanleeuwen@gmail.com with your analysis parameters."
+                raise RuntimeError(msg) from exp
 
         if time_info:
             text = "--Calculating plastic properties..."
@@ -1043,7 +1042,7 @@ class CrossSection:
         if ax is None:
             ax_supplied = False
             (fig, ax) = plt.subplots()
-            post.setup_plot(ax, pause)
+            post.setup_plot(pause)
         else:
             ax_supplied = True
 
@@ -1081,10 +1080,14 @@ class CrossSection:
             # display the legend
             ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), handles=legend_list)
 
-        # if no axes object is supplied, finish the plot
-        if not ax_supplied:
-            post.finish_plot(ax, pause, title='Finite Element Mesh')
-            return (fig, ax)
+        if ax_supplied:
+            # if an axis is supplied, return None for figure and axes to indicate that it is not
+            # yet finished
+            return None, None
+
+        # if no axes object is supplied, finish the plot and return the figure and axes
+        post.finish_plot(ax, pause, title='Finite Element Mesh')
+        return (fig, ax)
 
     def plot_centroids(self, pause=True):
         """Plots the elastic centroid, the shear centre, the plastic centroids and the principal
@@ -1143,7 +1146,7 @@ class CrossSection:
 
         # create plot and setup the plot
         (fig, ax) = plt.subplots()
-        post.setup_plot(ax, pause)
+        post.setup_plot(pause)
 
         # plot the finite element mesh
         self.plot_mesh(ax, pause, alpha=0.5)
@@ -1466,10 +1469,10 @@ class CrossSection:
 
         if self.section_props.x_se is None:
             return (None, None)
-        else:
-            # add centroid location to move section back to original location
-            x_se = self.section_props.x_se + self.section_props.cx
-            y_se = self.section_props.y_se + self.section_props.cy
+
+        # add centroid location to move section back to original location
+        x_se = self.section_props.x_se + self.section_props.cx
+        y_se = self.section_props.y_se + self.section_props.cy
 
         return (x_se, y_se)
 
@@ -1488,9 +1491,9 @@ class CrossSection:
 
         if self.section_props.x11_se is None:
             return (None, None)
-        else:
-            x11_se = self.section_props.x11_se
-            y22_se = self.section_props.y22_se
+
+        x11_se = self.section_props.x11_se
+        y22_se = self.section_props.y22_se
 
         return (x11_se, y22_se)
 
@@ -1509,10 +1512,10 @@ class CrossSection:
 
         if self.section_props.x_st is None:
             return (None, None)
-        else:
-            # add centroid location to move section back to original location
-            x_st = self.section_props.x_st + self.section_props.cx
-            y_st = self.section_props.y_st + self.section_props.cy
+
+        # add centroid location to move section back to original location
+        x_st = self.section_props.x_st + self.section_props.cx
+        y_st = self.section_props.y_st + self.section_props.cy
 
         return (x_st, y_st)
 
@@ -1617,10 +1620,10 @@ class CrossSection:
 
         if self.section_props.x_pc is None:
             return (None, None)
-        else:
-            # add centroid location to move section back to original location
-            x_pc = self.section_props.x_pc + self.section_props.cx
-            y_pc = self.section_props.y_pc + self.section_props.cy
+
+        # add centroid location to move section back to original location
+        x_pc = self.section_props.x_pc + self.section_props.cx
+        y_pc = self.section_props.y_pc + self.section_props.cy
 
         return (x_pc, y_pc)
 
@@ -1639,14 +1642,14 @@ class CrossSection:
 
         if self.section_props.x11_pc is None:
             return (None, None)
-        else:
-            # determine the position of the plastic centroid in the global axis
-            (x_pc, y_pc) = fea.global_coordinate(
-                self.section_props.phi, self.section_props.x11_pc, self.section_props.y22_pc
-            )
 
-            # add centroid location to move section back to original location
-            return (x_pc + self.section_props.cx, y_pc + self.section_props.cy)
+        # determine the position of the plastic centroid in the global axis
+        (x_pc, y_pc) = fea.global_coordinate(
+            self.section_props.phi, self.section_props.x11_pc, self.section_props.y22_pc
+        )
+
+        # add centroid location to move section back to original location
+        return (x_pc + self.section_props.cx, y_pc + self.section_props.cy)
 
     def get_s(self):
         """
@@ -1766,9 +1769,15 @@ class PlasticSection:
         self.materials = copy.deepcopy(materials)
         self.debug = debug
 
+        # initialize variables to be defined later within calculate_plastic_force
+        self.c_top = [0.0, 0.0]
+        self.c_bot = [0.0, 0.0]
+        self.f_top = 0.0
+        self.f_bot = 0.0
+
         if self.materials is not None:
             # create dummy control point at the start of the list
-            (x_min, x_max, y_min, y_max) = geometry.calculate_extents()
+            (x_min, _, y_min, _) = geometry.calculate_extents()
             self.geometry.control_points.insert(0, [x_min - 1, y_min - 1])
 
             # create matching dummy material
@@ -1862,7 +1871,8 @@ class PlasticSection:
 
         return (nodes, elements, element_list)
 
-    def calculate_centroid(self, elements):
+    @staticmethod
+    def calculate_centroid(elements):
         """Calculates the elastic centroid from a list of finite elements.
 
         :param elements: A list of Tri6 finite elements.
@@ -1987,7 +1997,8 @@ class PlasticSection:
                 cross_section.section_props.s22 / cross_section.section_props.z22_minus
             )
 
-    def check_convergence(self, root_result, axis):
+    @staticmethod
+    def check_convergence(root_result, axis):
         """Checks that the function solver converged and if not, raises a helpful error.
 
         :param root_result: Result object from the root finder
@@ -1997,13 +2008,14 @@ class PlasticSection:
         """
 
         if not root_result.converged:
-            str = "Plastic centroid calculation about the {0}".format(axis)
-            str += " failed. Contact robbie.vanleeuwen@gmail.com with your"
-            str += " analysis parameters. Termination flag: {0}".format(root_result.flag)
+            msg = "Plastic centroid calculation about the {0}".format(axis)
+            msg += " failed. Contact robbie.vanleeuwen@gmail.com with your"
+            msg += " analysis parameters. Termination flag: {0}".format(root_result.flag)
 
-            raise RuntimeError(str)
+            raise RuntimeError(msg)
 
-    def print_verbose(self, d, root_result, axis):
+    @staticmethod
+    def print_verbose(d, root_result, axis):
         """Prints information related to the function solver convergence to the terminal.
 
         :param float d: Location of the plastic centroid axis
@@ -2012,9 +2024,9 @@ class PlasticSection:
         :param string axis: Axis being considered by the function solver
         """
 
-        str = "---{0} plastic centroid calculation converged at ".format(axis)
-        str += "{0:.5e} in {1} iterations.".format(d, root_result.iterations)
-        print(str)
+        msg = "---{0} plastic centroid calculation converged at ".format(axis)
+        msg += "{0:.5e} in {1} iterations.".format(d, root_result.iterations)
+        print(msg)
 
     def calculate_extreme_fibres(self, angle):
         """Calculates the locations of the extreme fibres along and perpendicular to the axis
@@ -2168,6 +2180,7 @@ class PlasticSection:
         self.c_top = [qy_top / ea_top, qx_top / ea_top]
         self.c_bot = [qy_bot / ea_bot, qx_bot / ea_bot]
         self.f_top = f_top
+        self.f_bot = f_bot
 
         return (f_top, f_bot)
 
@@ -2191,11 +2204,9 @@ class PlasticSection:
             self.add_line(geom, new_line)
 
             # fast clean the geometry after adding the line
-            clean = pre.GeometryCleaner(geom, verbose=False)
-            clean.zip_points()
-            clean.remove_zero_length_facets()
-            clean.remove_unused_points()
-            geom = clean.geometry
+            geom.zip_points()
+            geom.remove_zero_length_facets()
+            geom.remove_unused_points()
 
         if self.debug:
             if new_line is not None:
@@ -2258,7 +2269,7 @@ class PlasticSection:
 
                 # if the line lies within q -> q + s and the point hasn't already been added
                 # (ignore t as it is infinitely long)
-                if (u >= 0 and u <= 1 and list(new_pt) not in [list(item) for item in int_pts]):
+                if (0 <= u <= 1 and list(new_pt) not in [list(item) for item in int_pts]):
                     int_pts.append(new_pt)
                     fct_idx.append(idx)
 
@@ -2301,7 +2312,8 @@ class PlasticSection:
         for idx in idx_to_remove:
             geometry.facets.pop(idx)
 
-    def rebuild_parent_facet(self, geometry, fct_idx, pt_idx):
+    @staticmethod
+    def rebuild_parent_facet(geometry, fct_idx, pt_idx):
         """Splits and rebuilds a facet at a given point.
 
         :param geometry: Cross-section geometry object used to generate the mesh
@@ -2357,12 +2369,13 @@ class PlasticSection:
 
         return False
 
-    def plot_mesh(self, nodes, elements, element_list, materials):
+    @staticmethod
+    def plot_mesh(nodes, elements, element_list, materials):
         """Watered down implementation of the CrossSection method to plot the finite element mesh,
         showing material properties."""
 
-        (fig, ax) = plt.subplots()
-        post.setup_plot(ax, True)
+        (_, ax) = plt.subplots()
+        post.setup_plot(True)
 
         # plot the mesh
         ax.triplot(nodes[:, 0], nodes[:, 1], elements[:, 0:3], lw=0.5,
@@ -2438,7 +2451,7 @@ class StressPost:
 
         # create plot and setup the plot
         (fig, ax) = plt.subplots()
-        post.setup_plot(ax, pause)
+        post.setup_plot(pause)
 
         # plot the finite element mesh
         self.cross_section.plot_mesh(ax, pause, alpha=0.5)
@@ -2500,7 +2513,7 @@ class StressPost:
 
         # create plot and setup the plot
         (fig, ax) = plt.subplots()
-        post.setup_plot(ax, pause)
+        post.setup_plot(pause)
 
         # plot the finite element mesh
         self.cross_section.plot_mesh(ax, pause, alpha=0.5)

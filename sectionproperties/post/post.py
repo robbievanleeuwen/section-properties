@@ -2,11 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def setup_plot(ax, pause):
+def setup_plot(pause):
     """Executes code required to set up a matplotlib figure.
 
-    :param ax: Axes object on which to plot
-    :type ax: :class:`matplotlib.axes.Axes`
     :param bool pause: If set to true, the figure pauses the script until the window is closed. If
         set to false, the script continues immediately after the window is rendered.
     """
@@ -120,9 +118,9 @@ def print_results(cross_section, fmt):
     """
 
     if cross_section.materials is not None:
-        str = "E."
+        prefix = "E."
     else:
-        str = ""
+        prefix = ""
 
     area = cross_section.get_area()
     if area is not None:
@@ -140,8 +138,8 @@ def print_results(cross_section, fmt):
 
     (qx, qy) = cross_section.get_q()
     if qx is not None:
-        print(str + "Qx\t = {:>{fmt}}".format(qx, fmt=fmt))
-        print(str + "Qy\t = {:>{fmt}}".format(qy, fmt=fmt))
+        print(prefix + "Qx\t = {:>{fmt}}".format(qx, fmt=fmt))
+        print(prefix + "Qy\t = {:>{fmt}}".format(qy, fmt=fmt))
 
     (cx, cy) = cross_section.get_c()
     if cx is not None:
@@ -150,22 +148,22 @@ def print_results(cross_section, fmt):
 
     (ixx_g, iyy_g, ixy_g) = cross_section.get_ig()
     if ixx_g is not None:
-        print(str + "Ixx_g\t = {:>{fmt}}".format(ixx_g, fmt=fmt))
-        print(str + "Iyy_g\t = {:>{fmt}}".format(iyy_g, fmt=fmt))
-        print(str + "Ixy_g\t = {:>{fmt}}".format(ixy_g, fmt=fmt))
+        print(prefix + "Ixx_g\t = {:>{fmt}}".format(ixx_g, fmt=fmt))
+        print(prefix + "Iyy_g\t = {:>{fmt}}".format(iyy_g, fmt=fmt))
+        print(prefix + "Ixy_g\t = {:>{fmt}}".format(ixy_g, fmt=fmt))
 
     (ixx_c, iyy_c, ixy_c) = cross_section.get_ic()
     if ixx_c is not None:
-        print(str + "Ixx_c\t = {:>{fmt}}".format(ixx_c, fmt=fmt))
-        print(str + "Iyy_c\t = {:>{fmt}}".format(iyy_c, fmt=fmt))
-        print(str + "Ixy_c\t = {:>{fmt}}".format(ixy_c, fmt=fmt))
+        print(prefix + "Ixx_c\t = {:>{fmt}}".format(ixx_c, fmt=fmt))
+        print(prefix + "Iyy_c\t = {:>{fmt}}".format(iyy_c, fmt=fmt))
+        print(prefix + "Ixy_c\t = {:>{fmt}}".format(ixy_c, fmt=fmt))
 
     (zxx_plus, zxx_minus, zyy_plus, zyy_minus) = cross_section.get_z()
     if zxx_plus is not None:
-        print(str + "Zxx+\t = {:>{fmt}}".format(zxx_plus, fmt=fmt))
-        print(str + "Zxx-\t = {:>{fmt}}".format(zxx_minus, fmt=fmt))
-        print(str + "Zyy+\t = {:>{fmt}}".format(zyy_plus, fmt=fmt))
-        print(str + "Zyy-\t = {:>{fmt}}".format(zyy_minus, fmt=fmt))
+        print(prefix + "Zxx+\t = {:>{fmt}}".format(zxx_plus, fmt=fmt))
+        print(prefix + "Zxx-\t = {:>{fmt}}".format(zxx_minus, fmt=fmt))
+        print(prefix + "Zyy+\t = {:>{fmt}}".format(zyy_plus, fmt=fmt))
+        print(prefix + "Zyy-\t = {:>{fmt}}".format(zyy_minus, fmt=fmt))
 
     (rx, ry) = cross_section.get_rc()
     if rx is not None:
@@ -176,15 +174,15 @@ def print_results(cross_section, fmt):
     (i11_c, i22_c) = cross_section.get_ip()
     if phi is not None:
         print("phi\t = {:>{fmt}}".format(phi, fmt=fmt))
-        print(str + "I11_c\t = {:>{fmt}}".format(i11_c, fmt=fmt))
-        print(str + "I22_c\t = {:>{fmt}}".format(i22_c, fmt=fmt))
+        print(prefix + "I11_c\t = {:>{fmt}}".format(i11_c, fmt=fmt))
+        print(prefix + "I22_c\t = {:>{fmt}}".format(i22_c, fmt=fmt))
 
     (z11_plus, z11_minus, z22_plus, z22_minus) = cross_section.get_zp()
     if z11_plus is not None:
-        print(str + "Z11+\t = {:>{fmt}}".format(z11_plus, fmt=fmt))
-        print(str + "Z11-\t = {:>{fmt}}".format(z11_minus, fmt=fmt))
-        print(str + "Z22+\t = {:>{fmt}}".format(z22_plus, fmt=fmt))
-        print(str + "Z22-\t = {:>{fmt}}".format(z22_minus, fmt=fmt))
+        print(prefix + "Z11+\t = {:>{fmt}}".format(z11_plus, fmt=fmt))
+        print(prefix + "Z11-\t = {:>{fmt}}".format(z11_minus, fmt=fmt))
+        print(prefix + "Z22+\t = {:>{fmt}}".format(z22_plus, fmt=fmt))
+        print(prefix + "Z22-\t = {:>{fmt}}".format(z22_minus, fmt=fmt))
 
     (r11, r22) = cross_section.get_rp()
     if r11 is not None:

@@ -4,7 +4,7 @@ import sectionproperties.pre.pre as pre
 import sectionproperties.post.post as post
 
 
-class Geometry:
+class Geometry(pre.GeometryCleanerMixin):
     """Parent class for a cross-section geometry input.
 
     Provides an interface for the user to specify the geometry defining a cross-section. A method
@@ -64,10 +64,10 @@ class Geometry:
             Mesh generated from the above geometry.
         """
 
-        str = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
+        msg = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
             len(mesh_sizes), len(self.control_points)
         )
-        assert(len(mesh_sizes) == len(self.control_points)), str
+        assert(len(mesh_sizes) == len(self.control_points)), msg
 
         return pre.create_mesh(
             self.points, self.facets, self.holes, self.control_points, mesh_sizes)
@@ -243,7 +243,12 @@ class Geometry:
           which may result in overlapping or intersecting facets, or duplicate nodes.
         """
 
-        self = pre.GeometryCleaner(self, verbose).clean_geometry()
+        self.zip_points(verbose=verbose)
+        self.remove_zero_length_facets(verbose)
+        self.remove_duplicate_facets(verbose)
+        self.remove_overlapping_facets(verbose)
+        self.remove_unused_points(verbose)
+        self.intersect_facets(verbose)
 
     def plot_geometry(self, ax=None, pause=True, labels=False, perimeter=False):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
@@ -278,7 +283,7 @@ class Geometry:
         if ax is None:
             ax_supplied = False
             (fig, ax) = plt.subplots()
-            post.setup_plot(ax, pause)
+            post.setup_plot(pause)
         else:
             ax_supplied = True
 
@@ -333,10 +338,14 @@ class Geometry:
 
                 ax.annotate(str(i), xy=xy, color='b')
 
-        # if no axes object is supplied, finish the plot
-        if not ax_supplied:
-            post.finish_plot(ax, pause, title='Cross-Section Geometry')
-            return (fig, ax)
+        if ax_supplied:
+            # if an axis is supplied, return None for figure and axes to indicate that it is not
+            # yet finished
+            return None, None
+
+        # if no axes object is supplied, finish the plot and return the figure and axes
+        post.finish_plot(ax, pause, title='Cross-Section Geometry')
+        return (fig, ax)
 
     def calculate_extents(self):
         """Calculates the minimum and maximum x and y-values amongst the list of points.
@@ -483,7 +492,7 @@ class CustomSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, points, facets, holes, control_points, shift=[0, 0], perimeter=[]):
+    def __init__(self, points, facets, holes, control_points, shift=(0, 0), perimeter=()):
         """Inits the CustomSection class."""
 
         super().__init__(control_points, shift)
@@ -491,7 +500,7 @@ class CustomSection(Geometry):
         self.points = points
         self.facets = facets
         self.holes = holes
-        self.perimeter = perimeter
+        self.perimeter = list(perimeter)
 
         self.shift_section()
 
@@ -526,7 +535,7 @@ class RectangularSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, b, shift=[0, 0]):
+    def __init__(self, d, b, shift=(0, 0)):
         """Inits the RectangularSection class."""
 
         # assign control point
@@ -572,7 +581,7 @@ class CircularSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, n, shift=[0, 0]):
+    def __init__(self, d, n, shift=(0, 0)):
         """Inits the CircularSection class."""
 
         # assign control point
@@ -635,7 +644,7 @@ class Chs(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, t, n, shift=[0, 0]):
+    def __init__(self, d, t, n, shift=(0, 0)):
         """Inits the Chs class."""
 
         # assign control point
@@ -707,7 +716,7 @@ class EllipticalSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d_y, d_x, n, shift=[0, 0]):
+    def __init__(self, d_y, d_x, n, shift=(0, 0)):
         """Inits the EllipticalSection class."""
 
         # assign control point centered at zero
@@ -773,7 +782,7 @@ class Ehs(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d_y, d_x, t, n, shift=[0, 0]):
+    def __init__(self, d_y, d_x, t, n, shift=(0, 0)):
         """Inits the Ehs class."""
 
         # assign control point
@@ -849,7 +858,7 @@ class Rhs(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, b, t, r_out, n_r, shift=[0, 0]):
+    def __init__(self, d, b, t, r_out, n_r, shift=(0, 0)):
         """Inits the Rhs class."""
 
         # assign control point
@@ -936,7 +945,7 @@ class ISection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, b, t_f, t_w, r, n_r, shift=[0, 0]):
+    def __init__(self, d, b, t_f, t_w, r, n_r, shift=(0, 0)):
         """Inits the ISection class."""
 
         # assign control point
@@ -1030,7 +1039,7 @@ class MonoISection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, shift=[0, 0]):
+    def __init__(self, d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, shift=(0, 0)):
         """Inits the ISection class."""
 
         # assign control point
@@ -1127,7 +1136,7 @@ class TaperedFlangeISection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, b, t_f, t_w, r_r, r_f, alpha, n_r, shift=[0, 0]):
+    def __init__(self, d, b, t_f, t_w, r_r, r_f, alpha, n_r, shift=(0, 0)):
         """Inits the ISection class."""
 
         # assign control point
@@ -1335,7 +1344,7 @@ class PfcSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, b, t_f, t_w, r, n_r, shift=[0, 0]):
+    def __init__(self, d, b, t_f, t_w, r, n_r, shift=(0, 0)):
         """Inits the PfcSection class."""
 
         # assign control point
@@ -1418,7 +1427,7 @@ class TaperedFlangeChannel(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, b, t_f, t_w, r_r, r_f, alpha, n_r, shift=[0, 0]):
+    def __init__(self, d, b, t_f, t_w, r_r, r_f, alpha, n_r, shift=(0, 0)):
         """Inits the ISection class."""
 
         # assign control point
@@ -1561,7 +1570,7 @@ class TeeSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, b, t_f, t_w, r, n_r, shift=[0, 0]):
+    def __init__(self, d, b, t_f, t_w, r, n_r, shift=(0, 0)):
         """Inits the TeeSection class."""
 
         # assign control point
@@ -1635,7 +1644,7 @@ class AngleSection(Geometry):
         :scale: 75 %
     """
 
-    def __init__(self, d, b, t, r_r, r_t, n_r, shift=[0, 0]):
+    def __init__(self, d, b, t, r_r, r_t, n_r, shift=(0, 0)):
         """Inits the AngleSection class."""
 
         # assign control point
@@ -1712,7 +1721,7 @@ class CeeSection(Geometry):
         :scale: 75 %
     """
 
-    def __init__(self, d, b, l, t, r_out, n_r, shift=[0, 0]):
+    def __init__(self, d, b, l, t, r_out, n_r, shift=(0, 0)):
         """Inits the CeeSection class."""
 
         # ensure the lip length is greater than the outer radius
@@ -1813,7 +1822,7 @@ class ZedSection(Geometry):
         :scale: 75 %
     """
 
-    def __init__(self, d, b_l, b_r, l, t, r_out, n_r, shift=[0, 0]):
+    def __init__(self, d, b_l, b_r, l, t, r_out, n_r, shift=(0, 0)):
         """Inits the ZedSection class."""
 
         # ensure the lip length is greater than the outer radius
@@ -1908,7 +1917,7 @@ class CruciformSection(Geometry):
         :scale: 75 %
     """
 
-    def __init__(self, d, b, t, r, n_r, shift=[0, 0]):
+    def __init__(self, d, b, t, r, n_r, shift=(0, 0)):
         """Inits the CruciformSection class."""
 
         # assign control point
@@ -2003,7 +2012,7 @@ class PolygonSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, t, n_sides, r_in=0, n_r=1, rot=0, shift=[0, 0]):
+    def __init__(self, d, t, n_sides, r_in=0, n_r=1, rot=0, shift=(0, 0)):
         """Inits the PolygonSection class."""
 
         if n_sides < 3:
@@ -2102,7 +2111,8 @@ class PolygonSection(Geometry):
 
         self.shift_section()
 
-    def rotate(self, point, angle):
+    @staticmethod
+    def rotate(point, angle):
         """
         Rotate a point counterclockwise by a given angle around origin [0, 0]
 
@@ -2159,7 +2169,7 @@ class BoxGirderSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, d, b_t, b_b, t_ft, t_fb, t_w, shift=[0, 0]):
+    def __init__(self, d, b_t, b_b, t_ft, t_fb, t_w, shift=(0, 0)):
         """Inits the BoxGirderSection class."""
 
         # assign control point

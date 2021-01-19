@@ -99,7 +99,7 @@ def offset_perimeter(geometry, offset, side='left', plot_offset=False):
         point[1] = new_ycoords[i]
 
     if plot_offset:
-        (fig, ax) = plt.subplots()
+        (_, ax) = plt.subplots()
 
         # plot new geometry
         for (i, f) in enumerate(new_geometry.facets):

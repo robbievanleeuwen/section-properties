@@ -181,7 +181,7 @@ class Tri6:
 
         for gp in gps:
             # determine shape function, shape function derivative and jacobian
-            (N, B, j) = shape_function(self.coords, gp)
+            (N, _, j) = shape_function(self.coords, gp)
 
             # determine x and y position at Gauss point
             Nx = np.dot(N, np.transpose(self.coords[0, :]))
@@ -505,11 +505,8 @@ class Tri6:
         )
         gamma = 1.0 - alpha - beta
 
-        # if the point lies within an element
-        if alpha >= 0 and beta >= 0 and gamma >= 0:
-            return True
-        else:
-            return False
+        # return True if the point lies within an element
+        return bool(alpha >= 0 and beta >= 0 and gamma >= 0)
 
 
 def gauss_points(n):
@@ -522,32 +519,36 @@ def gauss_points(n):
     :rtype: :class:`numpy.ndarray`
     """
 
+    if n not in set([1, 3, 6]):
+        raise ValueError('n must be 1, 3, or 6')
+
     if n == 1:
         # one point gaussian integration
         return np.array([[1, 1.0 / 3, 1.0 / 3, 1.0 / 3]])
 
-    elif n == 3:
+    if n == 3:
         # three point gaussian integration
         return np.array([
             [1.0 / 3, 2.0 / 3, 1.0 / 6, 1.0 / 6],
             [1.0 / 3, 1.0 / 6, 2.0 / 3, 1.0 / 6],
             [1.0 / 3, 1.0 / 6, 1.0 / 6, 2.0 / 3]
         ])
-    elif n == 6:
-        # six point gaussian integration
-        g1 = 1.0 / 18 * (8 - np.sqrt(10) + np.sqrt(38 - 44 * np.sqrt(2.0 / 5)))
-        g2 = 1.0 / 18 * (8 - np.sqrt(10) - np.sqrt(38 - 44 * np.sqrt(2.0 / 5)))
-        w1 = (620 + np.sqrt(213125 - 53320 * np.sqrt(10))) / 3720
-        w2 = (620 - np.sqrt(213125 - 53320 * np.sqrt(10))) / 3720
 
-        return np.array([
-            [w2, 1 - 2 * g2, g2, g2],
-            [w2, g2, 1 - 2 * g2, g2],
-            [w2, g2, g2, 1 - 2 * g2],
-            [w1, g1, g1, 1 - 2 * g1],
-            [w1, 1 - 2 * g1, g1, g1],
-            [w1, g1, 1 - 2 * g1, g1]
-        ])
+    # n must be 6 since only 1, 3, and 6 are allowed
+    # six point gaussian integration
+    g1 = 1.0 / 18 * (8 - np.sqrt(10) + np.sqrt(38 - 44 * np.sqrt(2.0 / 5)))
+    g2 = 1.0 / 18 * (8 - np.sqrt(10) - np.sqrt(38 - 44 * np.sqrt(2.0 / 5)))
+    w1 = (620 + np.sqrt(213125 - 53320 * np.sqrt(10))) / 3720
+    w2 = (620 - np.sqrt(213125 - 53320 * np.sqrt(10))) / 3720
+
+    return np.array([
+        [w2, 1 - 2 * g2, g2, g2],
+        [w2, g2, 1 - 2 * g2, g2],
+        [w2, g2, g2, 1 - 2 * g2],
+        [w1, g1, g1, 1 - 2 * g1],
+        [w1, 1 - 2 * g1, g1, g1],
+        [w1, g1, 1 - 2 * g1, g1]
+    ])
 
 
 def shape_function(coords, gauss_point):

@@ -1,8 +1,8 @@
+import numpy as np
 from sectionproperties.pre.sections import (
     Geometry, RectangularSection, CustomSection, MergedSection
 )
 from sectionproperties.pre.pre import create_mesh
-import numpy as np
 
 
 class BARSection(Geometry):
@@ -36,7 +36,7 @@ class BARSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, shift=(0, 0)):
         """Inits the BARSection class."""
 
         # force dimensions to be floating point values
@@ -111,7 +111,7 @@ class BOXSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the BOXSection class."""
 
         # force dimensions to be floating point values
@@ -202,7 +202,7 @@ class BOX1Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=(0, 0)):
         """Inits the Box1Section class."""
 
         # force dimensions to be floating point values
@@ -292,7 +292,7 @@ class CHANSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the CHANSection class."""
 
         # force dimensions to be floating point values
@@ -375,7 +375,7 @@ class CHAN1Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the CHAN1Section class."""
 
         # force dimensions to be floating point values
@@ -458,7 +458,7 @@ class CHAN2Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the CHAN2Section class."""
 
         # force dimensions to be floating point values
@@ -542,7 +542,7 @@ class CROSSSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the CROSSSection class."""
 
         # force dimensions to be floating point values
@@ -633,7 +633,7 @@ class FCROSSSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, shift=(0, 0)):
         """Inits the FCROSSSection class."""
 
         # force dimensions to be floating point values
@@ -675,8 +675,8 @@ class FCROSSSection(Geometry):
             [0.5*DIM2, -0.5*DIM7], [0.5*DIM2, 0.5*DIM7], [0.5*DIM2-DIM8, 0.5*DIM7],
             [0.5*DIM2-DIM8, 0.5*DIM4], [0.5*DIM3, 0.5*DIM4], [0.5*DIM3, 0.5*DIM1-DIM6],
             [0.5*DIM5, 0.5*DIM1-DIM6], [0.5*DIM5, 0.5*DIM1], [-0.5*DIM5, 0.5*DIM1],
-            [-0.5*DIM5, 0.5*DIM1-DIM6],  [-0.5*DIM3, 0.5*DIM1-DIM6], [-0.5*DIM3, 0.5*DIM4],
-            [-0.5*DIM2+DIM8, 0.5*DIM4],  [-0.5*DIM2+DIM8, 0.5*DIM7], [-0.5*DIM2, 0.5*DIM7],
+            [-0.5*DIM5, 0.5*DIM1-DIM6], [-0.5*DIM3, 0.5*DIM1-DIM6], [-0.5*DIM3, 0.5*DIM4],
+            [-0.5*DIM2+DIM8, 0.5*DIM4], [-0.5*DIM2+DIM8, 0.5*DIM7], [-0.5*DIM2, 0.5*DIM7],
             [-0.5*DIM2, -0.5*DIM7], [-0.5*DIM2+DIM8, -0.5*DIM7], [-0.5*DIM2+DIM8, -0.5*DIM4],
             [-0.5*DIM3, -0.5*DIM4], [-0.5*DIM3, -0.5*DIM1+DIM6], [-0.5*DIM5, -0.5*DIM1+DIM6],
             [-0.5*DIM5, -0.5*DIM1], [0.5*DIM5, -0.5*DIM1], [0.5*DIM5, -0.5*DIM1+DIM6],
@@ -750,7 +750,7 @@ class DBOXSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, DIM9, DIM10, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, DIM7, DIM8, DIM9, DIM10, shift=(0, 0)):
         """Inits the DBOXSection class."""
 
         # force dimensions to be floating point values
@@ -862,7 +862,7 @@ class GBOXSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=(0, 0)):
         """Inits the GBOXSection class."""
 
         # force dimensions to be floating point values
@@ -958,7 +958,7 @@ class HSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the HSection class."""
 
         # force dimensions to be floating point values
@@ -1047,7 +1047,7 @@ class HATSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the HATSection class."""
 
         # force dimensions to be floating point values
@@ -1134,7 +1134,7 @@ class HAT1Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, shift=(0, 0)):
         """Inits the HAT1Section class."""
 
         # force dimensions to be floating point values
@@ -1216,10 +1216,10 @@ class HAT1Section(Geometry):
 
         mesh_sizes *= 2
 
-        str = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
+        msg = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
             len(mesh_sizes), len(self.control_points)
         )
-        assert(len(mesh_sizes) == len(self.control_points)), str
+        assert(len(mesh_sizes) == len(self.control_points)), msg
 
         return create_mesh(self.points, self.facets, self.holes, self.control_points, mesh_sizes)
 
@@ -1234,7 +1234,7 @@ class HAT1Section(Geometry):
         """
 
         C = (-0.5*self.DIM1 - shift[0], -shift[1])
-        D = (0.5*self.DIM1 - shift[0],  -shift[1])
+        D = (0.5*self.DIM1 - shift[0], -shift[1])
         E = (-0.5*self.DIM3 - shift[0], self.DIM2 - shift[1])
         F = (0.5*self.DIM3 - shift[0], self.DIM2 - shift[1])
 
@@ -1273,7 +1273,7 @@ class HEXASection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, shift=(0, 0)):
         """Inits the HEXASection class."""
 
         # force dimensions to be floating point values
@@ -1357,7 +1357,7 @@ class NISection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, DIM5, DIM6, shift=(0, 0)):
         """Inits the NISection class."""
 
         # force dimensions to be floating point values
@@ -1452,7 +1452,7 @@ class I1Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the I1section class."""
 
         # force dimensions to be floating point values
@@ -1540,7 +1540,7 @@ class LSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the LSection class."""
 
         # force dimensions to be floating point values
@@ -1618,7 +1618,7 @@ class RODSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, n, shift=[0, 0]):
+    def __init__(self, DIM1, n, shift=(0, 0)):
         """Inits the RODSection class."""
 
         # force dimensions to be floating point values
@@ -1705,7 +1705,7 @@ class TSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the TSection class."""
 
         # force dimensions to be floating point values
@@ -1816,7 +1816,7 @@ class T1Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the T1section class."""
 
         # force dimensions to be floating point values
@@ -1900,7 +1900,7 @@ class T2Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the T2Section class."""
 
         # force dimensions to be floating point values
@@ -1984,7 +1984,7 @@ class TUBESection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, n, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, n, shift=(0, 0)):
         """Inits the TUBESection class."""
 
         # force dimensions to be floating point values
@@ -2084,7 +2084,7 @@ class TUBE2Section(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, n, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, n, shift=(0, 0)):
         """Inits the TUBE2Section class."""
 
         # force dimensions to be floating point values
@@ -2184,7 +2184,7 @@ class ZSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=[0, 0]):
+    def __init__(self, DIM1, DIM2, DIM3, DIM4, shift=(0, 0)):
         """Inits the ZSection class."""
 
         # force dimensions to be floating point values
@@ -2210,7 +2210,7 @@ class ZSection(Geometry):
         t = 0.5*(DIM4 - DIM3)
         self.points = [
             [DIM1, 0.], [2.*DIM1+DIM2, 0.], [2.*DIM1+DIM2, t], [DIM1+DIM2, t], [DIM1+DIM2, DIM4],
-            [0., DIM4], [0., DIM4-t],  [DIM1, DIM4-t]
+            [0., DIM4], [0., DIM4-t], [DIM1, DIM4-t]
         ]
         self.facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0]]
 
