@@ -18,9 +18,6 @@ class Geometry:
 
     :cvar geom: a Polygon object that defines the geometry
     :vartype geom: shapely.geometry.Polygon
-    :cvar points: List of points *(x, y)* defining the vertices of the section geometry. If geom
-    is provided then points are ignored.
-    :vartype points: list[list[float, float]]
     """
     def __init__(self, geom: shapely.geometry.Polygon = None):
         """Inits the Geometry class.
@@ -349,9 +346,9 @@ class Geometry:
 
 
     def offset_section_perimeter(self, amount:float = 0, resolution: float = 12):
-        """Erodes the section (negative perimeter offset) by `amount` using. 
+        """Dilates or erodes the section perimeter by a discrete amount. 
 
-        :param amount: Distance to erode the section by. A -ve value "erodes" the section. A +ve
+        :param amount: Distance to offset the section by. A -ve value "erodes" the section. A +ve
         value "dilates" the section.
         :type amount: float
         :param resolution: Number of segments used to approximate a quarter circle around a point
@@ -475,7 +472,8 @@ class Geometry:
         return (fig, ax)
 
     def calculate_extents(self):
-        """Calculates the minimum and maximum x and y-values amongst the list of points.
+        """Calculates the minimum and maximum x and y-values amongst the list of points; 
+        the points that describe the bounding box of the Geometry instance.
 
         :return: Minimum and maximum x and y-values *(x_min, x_max, y_min, y_max)*
         :rtype: tuple(float, float, float, float)
@@ -484,10 +482,9 @@ class Geometry:
         return (min_x, max_x, min_y, max_y)
 
     def calculate_perimeter(self):
-        """Calculates the perimeter of the cross-section by summing the length of all facets in the
-        ``perimeter`` class variable.
+        """Calculates the exterior perimeter of the geometry.
 
-        :return: Cross-section perimeter, returns 0 if there is no perimeter defined
+        :return: Geometry perimeter.
         :rtype: float
         """
         perimeter = self.geom.exterior.length
@@ -522,6 +519,9 @@ class Geometry:
         return self._recovery_points
 
     def __or__(self, other):
+        """
+        Perform union on Geometry objects with the | operator
+        """
         try:
             new_polygon = self.geom | other.geom
             if isinstance(new_polygon, MultiPolygon): 
@@ -533,6 +533,9 @@ class Geometry:
         )
 
     def __xor__(self, other):
+        """
+        Perform symmetric difference on Geometry objects with the ^ operator
+        """
         try:
             new_polygon = self.geom ^ other.geom
             if isinstance(new_polygon, MultiPolygon): 
@@ -544,6 +547,9 @@ class Geometry:
         )
 
     def __sub__(self, other):
+        """
+        Perform difference on Geometry objects with the - operator
+        """
         try:
             new_polygon = self.geom - other.geom
             if isinstance(new_polygon, MultiPolygon): 
@@ -555,6 +561,9 @@ class Geometry:
         )
 
     def __add__(self, other):
+        """
+        Combine Geometry objects into a CompoundGeometry using the + operator
+        """
         try:
             return CompoundGeometry([self, other])
         except:
@@ -564,6 +573,9 @@ class Geometry:
 
 
     def __and__(self, other):
+        """
+        Perform intersection on Geometry objects with the & operator
+        """
         try:
             new_polygon = self.geom & other.geom
             if isinstance(new_polygon, MultiPolygon): 
@@ -576,6 +588,17 @@ class Geometry:
 
 ### 
 class CompoundGeometry(Geometry):
+    """Class for defining the geometry of multiple distinct regions, each potentially
+    having different material properties.
+
+    Provides an interface for the user to specify the geometry defining a section. A method
+    is provided for generating a triangular mesh, transforming the section (e.g. translation,
+    rotation, perimeter offset, mirroring), aligning the geometry to another geometry, and
+    designating stress recovery points.
+
+    :cvar geom: a Polygon object that defines the geometry
+    :vartype geom: shapely.geometry.Polygon
+    """
     def __init__(self, geoms: Union[MultiPolygon, List[Geometry]]):
         if isinstance(geoms, MultiPolygon):
             self.geoms = [Geometry(geom) for geom in geoms.geoms]
