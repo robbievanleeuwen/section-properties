@@ -148,8 +148,6 @@ class Section:
                 default_material = pre.Material('default', 1, 0, 1)
                 self.material_groups.append(MaterialGroup(default_material, self.num_nodes))
 
-            self.materials = materials  # save the input materials list
-
             self.elements = []  # initialise list holding all element objects
 
             # build the mesh one element at a time
@@ -2700,7 +2698,7 @@ class StressPost:
             Contour plot of the axial stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,N}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,N}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2741,7 +2739,7 @@ class StressPost:
             Contour plot of the bending stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,Mxx}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,Mxx}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2782,7 +2780,7 @@ class StressPost:
             Contour plot of the bending stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,Myy}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,Myy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2823,7 +2821,7 @@ class StressPost:
             Contour plot of the bending stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,M11}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,M11}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2864,7 +2862,7 @@ class StressPost:
             Contour plot of the bending stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,M22}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,M22}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2906,7 +2904,7 @@ class StressPost:
             Contour plot of the bending stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,\Sigma M}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,\Sigma M}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2947,7 +2945,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zx,Mzz}$'
+        title = r'Stress Contour Plot - $\sigma_{zx,Mzz}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2988,7 +2986,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zy,Mzz}$'
+        title = r'Stress Contour Plot - $\sigma_{zy,Mzz}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3029,7 +3027,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zxy,Mzz}$'
+        title = r'Stress Contour Plot - $\sigma_{zxy,Mzz}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3070,7 +3068,7 @@ class StressPost:
             Vector plot of the shear stress.
         """
 
-        title = 'Stress Vector Plot - $\sigma_{zxy,Mzz}$'
+        title = r'Stress Vector Plot - $\sigma_{zxy,Mzz}$'
         sigxs = []
         sigys = []
 
@@ -3113,7 +3111,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zx,Vx}$'
+        title = r'Stress Contour Plot - $\sigma_{zx,Vx}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3154,7 +3152,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zy,Vx}$'
+        title = r'Stress Contour Plot - $\sigma_{zy,Vx}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3195,7 +3193,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zxy,Vx}$'
+        title = r'Stress Contour Plot - $\sigma_{zxy,Vx}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3236,7 +3234,7 @@ class StressPost:
             Vector plot of the shear stress.
         """
 
-        title = 'Stress Vector Plot - $\sigma_{zxy,Vx}$'
+        title = r'Stress Vector Plot - $\sigma_{zxy,Vx}$'
         sigxs = []
         sigys = []
 
@@ -3279,7 +3277,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zx,Vy}$'
+        title = r'Stress Contour Plot - $\sigma_{zx,Vy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3320,7 +3318,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zy,Vy}$'
+        title = r'Stress Contour Plot - $\sigma_{zy,Vy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3361,7 +3359,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zxy,Vy}$'
+        title = r'Stress Contour Plot - $\sigma_{zxy,Vy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3402,7 +3400,7 @@ class StressPost:
             Vector plot of the shear stress.
         """
 
-        title = 'Stress Vector Plot - $\sigma_{zxy,Vy}$'
+        title = r'Stress Vector Plot - $\sigma_{zxy,Vy}$'
         sigxs = []
         sigys = []
 
@@ -3447,7 +3445,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zx,\Sigma V}$'
+        title = r'Stress Contour Plot - $\sigma_{zx,\Sigma V}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3490,7 +3488,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zy,\Sigma V}$'
+        title = r'Stress Contour Plot - $\sigma_{zy,\Sigma V}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3533,7 +3531,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zxy,\Sigma V}$'
+        title = r'Stress Contour Plot - $\sigma_{zxy,\Sigma V}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3576,7 +3574,7 @@ class StressPost:
             Vector plot of the shear stress.
         """
 
-        title = 'Stress Vector Plot - $\sigma_{zxy,\Sigma V}$'
+        title = r'Stress Vector Plot - $\sigma_{zxy,\Sigma V}$'
         sigxs = []
         sigys = []
 
@@ -3620,7 +3618,7 @@ class StressPost:
             Contour plot of the normal stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz}$'
+        title = r'Stress Contour Plot - $\sigma_{zz}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3662,7 +3660,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zx}$'
+        title = r'Stress Contour Plot - $\sigma_{zx}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3704,7 +3702,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zy}$'
+        title = r'Stress Contour Plot - $\sigma_{zy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3746,7 +3744,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zxy}$'
+        title = r'Stress Contour Plot - $\sigma_{zxy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3788,7 +3786,7 @@ class StressPost:
             Vector plot of the shear stress.
         """
 
-        title = 'Stress Vector Plot - $\sigma_{zxy}$'
+        title = r'Stress Vector Plot - $\sigma_{zxy}$'
         sigxs = []
         sigys = []
 
@@ -3842,7 +3840,7 @@ class StressPost:
             Contour plot of the von Mises stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{vM}$'
+        title = r'Stress Contour Plot - $\sigma_{vM}$'
         sigs = []
 
         for group in self.material_groups:

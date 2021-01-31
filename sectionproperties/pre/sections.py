@@ -832,10 +832,10 @@ def create_points_and_facets(shape: Polygon) -> tuple:
     facets = []
     
     # Shape perimeter
-    for coords in list(shape.exterior.coords):
+    for coords in list(shape.exterior.coords[:-1]):
         points.append(list(coords))
         master_count += 1
-    facets += create_facets(points)
+    facets += create_facets(points, connect_back=True)
     exterior_count = master_count # Because increment after last iteration assumes another iteration
     
     # Holes
@@ -847,7 +847,7 @@ def create_points_and_facets(shape: Polygon) -> tuple:
             master_count += 1
         
         offset = break_count*(idx > 0) + exterior_count*(idx < 1) # (idx > 0) is like a 'step function'
-        facets += create_facets(int_points, offset = offset)
+        facets += create_facets(int_points, connect_back=True, offset=offset)
         points += int_points
         
     return points, facets
