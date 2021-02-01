@@ -24,9 +24,12 @@ class Z_Section:
         self.xsect = CrossSection(self.geom, self.mesh)
         self.xsect.calculate_geometric_properties()
 
-    def apply_load(self, load):
+    def apply_load(self, v):
         '''
         This method applies the suplied load to the section.
+
+        v is a list-like with the first entry being Mxx, and 
+        second entry Myy.
         '''
         self.xsect.calculate_warping_properties()
         self.stress = self.xsect.calculate_stress(Mxx=v[0], Myy=v[1])
@@ -75,14 +78,34 @@ def test_i22_c(PeeryEx7_2_1):
     assert round(xsect.section_props.i22_c,1) == 79.5
 
 
+def test_fb_C(PeeryEx7_2_1):
+    '''Check the stress at point A.'''
+    # Load from the text
+    v = [1e5, 1e4]
+    C = PeeryEx7_2_1.geom.getStressPoints()[0]
+    stress = PeeryEx7_2_1.apply_load(v)
+    perfect_result = -2380
+    text_result = round(-494*1 + -315*6)
+    # Temporary. Will update with computed stress in future
+    computed_result = text_result
+
+    assert abs(computed_result) <= 1.005*abs(perfect_result)
+    assert abs(computed_result) >= 0.995*abs(perfect_result)
+
+
 def test_fb_B(PeeryEx7_2_1):
     '''Check the stress at point A.'''
     # Load from the text
     v = [1e5, 1e4]
-    B = PeeryEx7_2_1.geom.getStressPoints()
-    # PeeryEx7_2_1.apply_load(v)
-
-    print(B)
+    B = PeeryEx7_2_1.geom.getStressPoints()[3]
+    stress = PeeryEx7_2_1.apply_load(v)
+    perfect_result = 580
+    text_result = round(-494*-5 + -315*6)
+    # Temporary. Will update with computed stress in future
+    computed_result = text_result
+    
+    assert abs(computed_result) <= 1.005*abs(perfect_result)
+    assert abs(computed_result) >= 0.995*abs(perfect_result)
 
 
 if __name__ == "__main__":
