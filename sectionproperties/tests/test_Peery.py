@@ -84,11 +84,12 @@ def test_fb_C(PeeryEx7_2_1):
     v = [1e5, 1e4]
     C = PeeryEx7_2_1.geom.getStressPoints()[0]
     stress = PeeryEx7_2_1.apply_load(v)
-    perfect_result = -2380
+    perfect_result = -2384
     text_result = round(-494*1 + -315*6)
     # Temporary. Will update with computed stress in future
     computed_result = text_result
 
+    assert abs(text_result) == abs(perfect_result)
     assert abs(computed_result) <= 1.005*abs(perfect_result)
     assert abs(computed_result) >= 0.995*abs(perfect_result)
 
@@ -104,6 +105,7 @@ def test_fb_B(PeeryEx7_2_1):
     # Temporary. Will update with computed stress in future
     computed_result = text_result
     
+    assert abs(text_result) == abs(perfect_result)
     assert abs(computed_result) <= 1.005*abs(perfect_result)
     assert abs(computed_result) >= 0.995*abs(perfect_result)
 
