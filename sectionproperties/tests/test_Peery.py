@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import numpy as np
+
 import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -10,6 +12,20 @@ from sectionproperties.analysis.cross_section import CrossSection
 # "Aircraft Structures," by David Peery.
 # These cases have known results, and the output from 
 # SectionProperties is compared for accuracy.
+
+def get_node(nodes, coord) -> (int, tuple):
+    '''
+    This function will loop over the node list provided,
+    finding the index of the coordinates you want.
+
+    Returns the index in the nodes list, and the coords.
+    '''
+    for index,var in enumerate(nodes):
+        if all(var == coord):
+            return index, var
+        else:
+            continue
+
 
 class Z_Section:
     '''
@@ -79,15 +95,16 @@ def test_i22_c(PeeryEx7_2_1):
 
 
 def test_fb_C(PeeryEx7_2_1):
-    '''Check the stress at point A.'''
+    '''Check the stress at point C.'''
     # Load from the text
-    v = [1e5, 1e4]
+    v = [-1e5, 1e4]
     C = PeeryEx7_2_1.geom.getStressPoints()[0]
-    stress = PeeryEx7_2_1.apply_load(v)
     perfect_result = -2384
     text_result = round(-494*1 + -315*6)
-    # Temporary. Will update with computed stress in future
-    computed_result = text_result
+    nodes = PeeryEx7_2_1.xsect.mesh_nodes
+    index, _ = get_node(nodes, C)
+    stress = PeeryEx7_2_1.apply_load(v)
+    computed_result = PeeryEx7_2_1.stress.get_stress()[0]['sig_zz'][index]
 
     assert abs(text_result) == abs(perfect_result)
     assert abs(computed_result) <= 1.005*abs(perfect_result)
@@ -95,15 +112,33 @@ def test_fb_C(PeeryEx7_2_1):
 
 
 def test_fb_B(PeeryEx7_2_1):
-    '''Check the stress at point A.'''
+    '''Check the stress at point B.'''
     # Load from the text
-    v = [1e5, 1e4]
+    v = [-1e5, 1e4]
     B = PeeryEx7_2_1.geom.getStressPoints()[3]
-    stress = PeeryEx7_2_1.apply_load(v)
     perfect_result = 580
     text_result = round(-494*-5 + -315*6)
-    # Temporary. Will update with computed stress in future
-    computed_result = text_result
+    nodes = PeeryEx7_2_1.xsect.mesh_nodes
+    index, _ = get_node(nodes, B)
+    stress = PeeryEx7_2_1.apply_load(v)
+    computed_result = PeeryEx7_2_1.stress.get_stress()[0]['sig_zz'][index]
+    
+    assert abs(text_result) == abs(perfect_result)
+    assert abs(computed_result) <= 1.005*abs(perfect_result)
+    assert abs(computed_result) >= 0.995*abs(perfect_result)
+
+
+def test_fb_A(PeeryEx7_2_1):
+    '''Check the stress at point A.'''
+    # Load from the text
+    v = [-1e5, 1e4]
+    A = (-5, 4)
+    perfect_result = 1210
+    text_result = round(-494*-5 + -315*4)
+    nodes = PeeryEx7_2_1.xsect.mesh_nodes
+    index, _ = get_node(nodes, A)
+    stress = PeeryEx7_2_1.apply_load(v)
+    computed_result = PeeryEx7_2_1.stress.get_stress()[0]['sig_zz'][index]
     
     assert abs(text_result) == abs(perfect_result)
     assert abs(computed_result) <= 1.005*abs(perfect_result)
@@ -112,4 +147,12 @@ def test_fb_B(PeeryEx7_2_1):
 
 if __name__ == "__main__":
     temp = Z_Section(4,2,8,12,shift=[-2,0],m=0.25, name='Peery_7.2.1_geom.png')
-    test_fb_B(temp)
+    # Coord to find:
+    coord = (1, 6)
+    v = [-1e5, 1e4]
+    nodes = temp.xsect.mesh_nodes
+    i, c = get_node(nodes, coord)
+    print(nodes[i])
+    temp.apply_load(v)
+    computed_result = temp.stress.get_stress()[0]['sig_zz'][i]
+    print(computed_result)
