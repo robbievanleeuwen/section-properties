@@ -30,6 +30,7 @@ can be found in the README file on github.
    rst/analysis
    rst/post
    rst/examples
+   rst/test
    rst/api
    rst/theory
 
