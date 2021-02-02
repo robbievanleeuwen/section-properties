@@ -102,7 +102,7 @@ stress as the specific node must be written [#f1]_::
             else:
                 continue
 
-And a stress testing function::
+And a stress testing function, which checks results within 0.5%::
 
     def test_fb_A(PeeryEx7_2_1):
         '''Check the stress at point A.'''
