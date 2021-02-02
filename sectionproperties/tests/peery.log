@@ -1,0 +1,9 @@
+============================= test session starts =============================
+platform win32 -- Python 3.8.5, pytest-6.2.1, py-1.10.0, pluggy-0.13.1
+rootdir: D:\Czarified\Documents\GitHub\section-properties
+plugins: hypothesis-5.48.0
+collected 8 items
+
+test_Peery.py ........                                                   [100%]
+
+============================== 8 passed in 6.38s ==============================

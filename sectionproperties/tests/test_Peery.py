@@ -39,6 +39,9 @@ class Z_Section:
         self.mesh = self.geom.create_mesh([m])
         self.xsect = CrossSection(self.geom, self.mesh)
         self.xsect.calculate_geometric_properties()
+        # fig, ax = self.xsect.plot_centroids()
+        # ax.grid(1, which='both', linestyle=':')
+        # fig.savefig('Peery_7.2.1_geom.png')
 
     def apply_load(self, v):
         '''
