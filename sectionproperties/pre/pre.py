@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import numpy as np
 import meshpy.triangle as triangle
 
@@ -7,7 +8,7 @@ class GeometryError(Exception):
 
     pass
 
-
+@dataclass
 class Material:
     """Class for structural materials.
 
@@ -48,17 +49,15 @@ class Material:
                 color='burlywood'
         )
     """
+    name: str
+    elastic_modulus: float
+    poissons_ratio: float
+    yield_strength: float
+    color: str = "w"
 
-    def __init__(self, name, elastic_modulus, poissons_ratio, yield_strength,
-                 color='w'):
-        """Inits the Material class"""
-
-        self.name = name
-        self.elastic_modulus = elastic_modulus
-        self.poissons_ratio = poissons_ratio
-        self.shear_modulus = elastic_modulus / (2 * (1 + poissons_ratio))
-        self.yield_strength = yield_strength
-        self.color = color
+    @property
+    def shear_modulus(self):
+        return self.elastic_modulus / (2 * (1 + self.poissons_ratio))
 
 
 class GeometryCleaner:

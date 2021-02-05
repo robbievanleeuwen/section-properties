@@ -789,18 +789,18 @@ class CompoundGeometry(Geometry):
 
 ### Helper functions for Geometry
 
-def create_facets(loc: list, connect_back: bool = False, offset: int = 0) -> list:
+def create_facets(points_list: list, connect_back: bool = False, offset: int = 0) -> list:
     """
     Returns a list of lists of integers representing the "facets" connecting
     the list of coordinates in 'loc'. It is assumed that 'loc' coordinates are 
     already in their order of connectivity.
     
     'loc': a list of coordinates
-    'connect_back': if True, then the last facet pair will be [len(loc), 0]
+    'connect_back': if True, then the last facet pair will be [len(loc), offset]
     'offset': an integer representing the value that the facets should begin incrementing from.
     """
-    idx_peeker = more_itertools.peekable([idx+offset for idx, coords in enumerate(loc)])
-    facets = [[item, idx_peeker.peek(0)] for item in idx_peeker]
+    idx_peeker = more_itertools.peekable([idx+offset for idx, point in enumerate(points_list)])
+    facets = [[item, idx_peeker.peek(offset)] for item in idx_peeker]
     if connect_back:
         return facets
     return facets[:-1]
@@ -832,17 +832,17 @@ def create_points_and_facets(shape: Polygon) -> tuple:
     facets = []
     
     # Shape perimeter
-    for coords in list(shape.exterior.coords[:-1]):
+    for coords in list(shape.exterior.coords[:-1]): # The last point == first point (shapely)
         points.append(list(coords))
         master_count += 1
     facets += create_facets(points, connect_back=True)
-    exterior_count = master_count # Because increment after last iteration assumes another iteration
+    exterior_count = master_count
     
     # Holes
     for idx, hole in enumerate(shape.interiors):
         break_count = master_count
         int_points = []
-        for coords in hole.coords:
+        for coords in hole.coords[:-1]: # The last point == first point (shapely)
             int_points.append(list(coords))
             master_count += 1
         
@@ -851,6 +851,7 @@ def create_points_and_facets(shape: Polygon) -> tuple:
         points += int_points
         
     return points, facets
+
 
 def draw_radius(pt: list, r: float, theta: float, n, ccw: bool = True): # Changed 'anti' to ccw to match shapely
     """Adds a quarter radius of points to the points list - centered at point *pt*, with radius
@@ -910,10 +911,10 @@ def rectangular_section(b, d):
 
         Mesh generated from the above geometry.
     """
-    min_x = 0 - b/2
-    min_y = 0 - d/2
-    max_x = b/2
-    max_y = d/2
+    min_x = 0
+    min_y = 0
+    max_x = b
+    max_y = d
 
     rectangle = box(min_x, min_y, max_x, max_y)
     return Geometry(rectangle)
