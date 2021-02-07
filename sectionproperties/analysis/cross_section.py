@@ -1,5 +1,9 @@
 from typing import Union, Optional, List
+
+import pathlib
+import logging 
 from icecream import ic
+
 import copy
 from dataclasses import dataclass
 import numpy as np
@@ -18,6 +22,9 @@ import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
 
+log = logging.getLogger('shapely')
+log_path = pathlib.Path("C:\\Users\\cferster\\Desktop\\sectionproperties logs\\shapley.log")
+logging.basicConfig(filename=log_path, filemode='w', format="%(message)s", level=logging.DEBUG)
 
 class Section:
     """Class for structural cross-sections.
@@ -153,7 +160,7 @@ class Section:
             # if there are no materials defined, add only the default material
             else:
                 default_material = pre.Material('default', 1, 0, 1)
-                self.materials = [default_material]
+                # self.materials = [default_material]
                 self.material_groups.append(MaterialGroup(default_material, self.num_nodes))
 
             self.elements = []  # initialise list holding all element objects
@@ -202,6 +209,17 @@ class Section:
             self.mesh_nodes = nodes
             self.mesh_elements = elements
             self.mesh_attributes = attributes
+
+
+            log.log(level=logging.DEBUG, msg=f"CrossSection Elements:\n")
+            log.log(level=logging.DEBUG, msg=f"{self.geometry.points}")
+            log.log(level=logging.DEBUG, msg=f"{self.geometry.facets}")
+            for idx, mesh_elem in enumerate(self.mesh_nodes):
+                log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {mesh_elem}")
+            for idx, elem in enumerate(self.mesh_elements):
+                log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {elem}")
+
+            log.log(level=logging.DEBUG, msg="\nPlasticSection Elements:\n")
 
             # initialise class storing section properties
             self.section_props = SectionProperties()
@@ -1775,7 +1793,7 @@ class PlasticSection:
         self.geometry = self._geometry_class(section.geometry.geom)
         # make a deepcopy of the geometry & materials so that we can modify it
         self.materials = copy.deepcopy(section.materials)
-        self.elements = copy.deepcopy(section.elements)
+        # self.elements = copy.deepcopy(section.elements)
         self.debug = debug
         self.geometry.compile_geometry()
 
@@ -1785,11 +1803,13 @@ class PlasticSection:
         self.f_top = 0.0
         self.f_bot = 0.0
 
+        ic(self.materials)
+
         if self.materials is not None:
             # create dummy control point at the start of the list
             (x_min, x_max, y_min, y_max) = self.geometry.calculate_extents()
 
-            # QUESTION: What is the purpose of this control point? A point outside of the section
+            # QUESTION: What is the purpose of this control point? A point outside of the section?
             self.geometry.control_points.insert(0, [x_min - 1, y_min - 1])
 
             # create matching dummy material
@@ -1799,14 +1819,21 @@ class PlasticSection:
         mesh = self.create_plastic_mesh()
 
         # get the elements of the mesh
-        (_, _, elements) = self.get_elements(mesh)
+        (_, mesh_elements, elements) = self.get_elements(mesh)
+
+        for idx, mesh_elem in enumerate(mesh_elements):
+            log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {mesh_elem}")
+        for idx, elem in enumerate(elements):
+            log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {elem}")
 
         # calculate centroid of the mesh
         (cx, cy) = self.calculate_centroid(elements)
+        print(cx, cy)
 
         # shift geometry such that the origin is at the centroid
-        self.geometry.shift = [-cx, -cy]
-        self.geometry.shift_section()
+        # self.geometry.shift = [-cx, -cy]
+        self.geometry = self.geometry.shift_section(x_offset=-cx, y_offset=-cy)
+        self.geometry.compile_geometry()
 
         # remesh the geometry and store the mesh
         self.mesh = self.create_plastic_mesh()
@@ -1892,7 +1919,8 @@ class PlasticSection:
         :return: A tuple containing the x and y location of the elastic centroid.
         :rtype: tuple(float, float)
         """
-
+        log.log(level=logging.DEBUG, msg="CrossSection Tri6 elements:\n")
+        log.log(level=logging.DEBUG, msg=f"{elements}")
         ea = 0
         qx = 0
         qy = 0
@@ -2092,6 +2120,7 @@ class PlasticSection:
         if self.debug:
             self.plot_mesh(nodes, elements, element_list, self.materials)
 
+        # print("Calling calculate_plastic_force")
         # calculate force equilibrium
         (f_top, f_bot) = self.calculate_plastic_force(element_list, u, p)
 
@@ -2124,6 +2153,7 @@ class PlasticSection:
         :rtype: tuple(float, :class:`scipy.optimize.RootResults`, float, list[float, float],
             list[float, float])
         """
+        # print("Runs pc_algorithm")
 
         # calculate vector perpendicular to u
         if axis == 1:
@@ -2134,6 +2164,8 @@ class PlasticSection:
         a = dlim[0]
         b = dlim[1]
 
+        # print("Calling from brentq")
+        # print("Args: ", u, dlim, axis, verbose, u, u_p)
         (d, r) = brentq(
             self.evaluate_force_eq, a, b, args=(u, u_p, verbose), full_output=True, disp=False,
             xtol=1e-6, rtol=1e-6
@@ -2154,6 +2186,7 @@ class PlasticSection:
         :return: Force in the top and bottom areas *(f_top, f_bot)*
         :rtype: tuple(float, float)
         """
+        # print("Runs")
 
         # initialise variables
         (f_top, f_bot) = (0, 0)
@@ -2161,10 +2194,13 @@ class PlasticSection:
         (qx_top, qx_bot) = (0, 0)
         (qy_top, qy_bot) = (0, 0)
 
-        # loop through all elements in the mesh
-        for el in elements:
+        for idx, el in enumerate(elements):
             # calculate element force and area properties
             (f_el, ea_el, qx_el, qy_el, is_above) = el.plastic_properties(u, p)
+            # log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {el}")
+            # log.log(level=logging.DEBUG, msg=f"f_el: {f_el}, ea_el: {ea_el}, qx_el: {qx_el}, qy_el: {qy_el}, is_above: {is_above}")
+            # ic(idx, el)
+            # ic(idx, f_el, ea_el, qx_el, qy_el, is_above)
 
             # assign force and area properties to the top or bottom segments
             if is_above:

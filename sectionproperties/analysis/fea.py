@@ -1,6 +1,9 @@
+from typing import List
 import numpy as np
+from dataclasses import dataclass
+from sectionproperties.pre.pre import Material
 
-
+@dataclass
 class Tri6:
     """Class for a six noded quadratic triangular element.
 
@@ -26,14 +29,10 @@ class Tri6:
     :cvar material: Material of the current finite element.
     :vartype material: :class:`~sectionproperties.pre.pre.Material`
     """
-
-    def __init__(self, el_id, coords, node_ids, material):
-        """Inits the Tri6 class."""
-
-        self.el_id = el_id
-        self.coords = coords
-        self.node_ids = node_ids
-        self.material = material
+    el_id: int
+    coords: np.ndarray
+    node_ids: List[int]
+    material: Material
 
     def geometric_properties(self):
         """Calculates the geometric properties for the current finite element.

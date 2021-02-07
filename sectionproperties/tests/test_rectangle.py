@@ -7,10 +7,10 @@ from sectionproperties.tests.helper_functions import validate_properties
 
 # Rectangle section setup
 rectangle_geometry = sections.rectangular_section(d=100, b=50)
-rectangle_geometry.create_mesh(mesh_sizes=[10])
+rectangle_geometry.create_mesh(mesh_sizes=[100])
 rectangle_section = Section(rectangle_geometry)
 rectangle_section.calculate_geometric_properties()
-# rectangle_section.calculate_plastic_properties()
+rectangle_section.calculate_plastic_properties()
 rectangle_section.calculate_warping_properties()
 
 tol = 5e-6
@@ -46,32 +46,29 @@ def test_rectangular_section_geometric():
     check.almost_equal(rectangle_section.section_props.r22_c, (100*50**3/12/100/50)**0.5)
 
 
-# def test_rectangular_section_plastic():
-#     check.almost_equal(rectangle_section.section_props.x_pc == 50/2
-#     check.almost_equal(rectangle_section.section_props.y_pc == 100/2
-#     check.almost_equal(rectangle_section.section_props.x11_pc == 50/2
-#     check.almost_equal(rectangle_section.section_props.y22_pc == 100/2
-#     check.almost_equal(rectangle_section.section_props.sxx == 50*100**2/4
-#     check.almost_equal(rectangle_section.section_props.syy == 100*50**2/4
-#     check.almost_equal(rectangle_section.section_props.s11 == 50*100**2/4
-#     check.almost_equal(rectangle_section.section_props.s22 == 100*50**2/4
-#     check.almost_equal(rectangle_section.section_props.sf_xx_plus == 1.5
-#     check.almost_equal(rectangle_section.section_props.sf_xx_minus == 1.5
-#     check.almost_equal(rectangle_section.section_props.sf_yy_plus == 1.5
-#     check.almost_equal(rectangle_section.section_props.sf_yy_minus == 1.5
-#     check.almost_equal(rectangle_section.section_props.sf_11_plus == 1.5
-#     check.almost_equal(rectangle_section.section_props.sf_11_minus == 1.5
-#     check.almost_equal(rectangle_section.section_props.sf_22_plus == 1.5
-#     check.almost_equal(rectangle_section.section_props.sf_22_minus == 1.5
+def test_rectangular_section_plastic():
+    check.almost_equal(rectangle_section.section_props.x_pc, 50/2)
+    check.almost_equal(rectangle_section.section_props.y_pc, 100/2)
+    check.almost_equal(rectangle_section.section_props.x11_pc, 50/2)
+    check.almost_equal(rectangle_section.section_props.y22_pc, 100/2)
+    check.almost_equal(rectangle_section.section_props.sxx, 50*100**2/4)
+    check.almost_equal(rectangle_section.section_props.syy, 100*50**2/4)
+    check.almost_equal(rectangle_section.section_props.s11, 50*100**2/4)
+    check.almost_equal(rectangle_section.section_props.s22, 100*50**2/4)
+    check.almost_equal(rectangle_section.section_props.sf_xx_plus, 1.5)
+    check.almost_equal(rectangle_section.section_props.sf_xx_minus, 1.5)
+    check.almost_equal(rectangle_section.section_props.sf_yy_plus, 1.5)
+    check.almost_equal(rectangle_section.section_props.sf_yy_minus, 1.5)
+    check.almost_equal(rectangle_section.section_props.sf_11_plus, 1.5)
+    check.almost_equal(rectangle_section.section_props.sf_11_minus, 1.5)
+    check.almost_equal(rectangle_section.section_props.sf_22_plus, 1.5)
+    check.almost_equal(rectangle_section.section_props.sf_22_minus, 1.5)
 
 
 def test_rectangular_section_warping():
     # pass
-    # check.almost_equal(rectangle_section.section_props.j, 2861002, abs=0.04) # roark's 
-    # check.almost_equal(rectangle_section.section_props.j, 2.85852e6, abs=2e-5) #st7
-    # delta = rectangle_section.section_props.gamma - 3.17542e8
-    # ratio = delta / 3.17542e8
-    # print(delta, ratio)
+    check.almost_equal(rectangle_section.section_props.j, 2861002, abs=0.04) # roark's 
+    check.almost_equal(rectangle_section.section_props.j, 2.85852e6, abs=2e-5) #st7
     check.almost_equal(rectangle_section.section_props.gamma, 3.17542e8)
     check.almost_equal(rectangle_section.section_props.x_se, 50/2)
     check.almost_equal(rectangle_section.section_props.y_se, 100/2)
@@ -186,5 +183,5 @@ def test_rectangular_section_warping():
 #         val_list.append({"prop": "A_s22", "val": 5 / 6 * 100 * 50, "tol": None})
 
 
-# if __name__ == "__main__":
+# if __name__, "__main__":
 #     unittest.main()
