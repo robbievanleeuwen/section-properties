@@ -1,7 +1,15 @@
 from typing import List
 import numpy as np
+
 from dataclasses import dataclass
 from sectionproperties.pre.pre import Material
+np.set_printoptions(precision=25)
+import pathlib
+import logging
+
+log = logging.getLogger('shapely')
+log_path = pathlib.Path("C:\\Users\\cferster\\Desktop\\sectionproperties logs\\shapley.log")
+logging.basicConfig(filename=log_path, filemode='w', format="%(message)s", level=logging.DEBUG)
 
 @dataclass
 class Tri6:
@@ -34,6 +42,10 @@ class Tri6:
     node_ids: List[int]
     material: Material
 
+    def __repr__(self):
+        rep = f"el_id: {self.el_id}\ncoords: {self.coords}\nnode_ids: {self.node_ids}\nmaterial: {self.material}"
+        return rep
+
     def geometric_properties(self):
         """Calculates the geometric properties for the current finite element.
 
@@ -57,6 +69,8 @@ class Tri6:
         for gp in gps:
             # determine shape function, shape function derivative and jacobian
             (N, _, j) = shape_function(self.coords, gp)
+            log.log(level=logging.DEBUG, msg=f"N: {N}\nj: {j}")
+            log.log(level=logging.DEBUG, msg=f"self.coords: {self.coords}\n")
 
             area += gp[0] * j
             qx += gp[0] * np.dot(N, np.transpose(self.coords[1, :])) * j

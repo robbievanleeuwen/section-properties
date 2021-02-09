@@ -4,6 +4,7 @@ import pathlib
 import logging 
 from icecream import ic
 
+
 import copy
 from dataclasses import dataclass
 import numpy as np
@@ -21,6 +22,9 @@ import sectionproperties.pre.sections as sections
 import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
+import sys
+np.set_printoptions(threshold=sys.maxsize)
+np.set_printoptions(precision=25)
 
 log = logging.getLogger('shapely')
 log_path = pathlib.Path("C:\\Users\\cferster\\Desktop\\sectionproperties logs\\shapley.log")
@@ -163,6 +167,8 @@ class Section:
                 # self.materials = [default_material]
                 self.material_groups.append(MaterialGroup(default_material, self.num_nodes))
 
+
+
             self.elements = []  # initialise list holding all element objects
 
             # build the mesh one element at a time
@@ -210,16 +216,19 @@ class Section:
             self.mesh_elements = elements
             self.mesh_attributes = attributes
 
+            log.log(level=logging.DEBUG, msg=f"Section:\n")
+            log.log(level=logging.DEBUG, msg=f"{self.mesh}\n\n{self.mesh_nodes}\n\n{self.mesh_elements}\n\n{self.elements}")
 
-            log.log(level=logging.DEBUG, msg=f"CrossSection Elements:\n")
-            log.log(level=logging.DEBUG, msg=f"{self.geometry.points}")
-            log.log(level=logging.DEBUG, msg=f"{self.geometry.facets}")
-            for idx, mesh_elem in enumerate(self.mesh_nodes):
-                log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {mesh_elem}")
-            for idx, elem in enumerate(self.mesh_elements):
-                log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {elem}")
 
-            log.log(level=logging.DEBUG, msg="\nPlasticSection Elements:\n")
+            # log.log(level=logging.DEBUG, msg=f"CrossSection Elements:\n")
+            # log.log(level=logging.DEBUG, msg=f"{self.geometry.points}")
+            # log.log(level=logging.DEBUG, msg=f"{self.geometry.facets}")
+            # for idx, mesh_elem in enumerate(self.mesh_nodes):
+            #     log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {mesh_elem}")
+            # for idx, elem in enumerate(self.mesh_elements):
+            #     log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {elem}")
+
+            # log.log(level=logging.DEBUG, msg="\nPlasticSection Elements:\n")
 
             # initialise class storing section properties
             self.section_props = SectionProperties()
@@ -279,6 +288,7 @@ class Section:
             # calculate global geometric properties
             for el in self.elements:
                 (area, qx, qy, ixx_g, iyy_g, ixy_g, e, g) = el.geometric_properties()
+                log.log(level=logging.DEBUG, msg=f"Area: {area}\nEA: {e*area}\nqx: {qx}\nqy: {qy}")
                 # print((area, qx, qy, ixx_g, iyy_g, ixy_g, e, g))
                 self.section_props.area += area
                 self.section_props.ea += area * e
@@ -292,6 +302,7 @@ class Section:
             self.section_props.nu_eff = self.section_props.ea / (2 * self.section_props.ga) - 1
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(self.mesh)
+            
 
         if time_info:
             text = "--Calculating geometric section properties..."
@@ -299,6 +310,7 @@ class Section:
             print("")
         else:
             calculate_geom()
+
 
     def calculate_warping_properties(self, time_info=False, solver_type='direct'):
         """Calculates all the warping properties of the cross-section and stores them in the
@@ -1821,14 +1833,14 @@ class PlasticSection:
         # get the elements of the mesh
         (_, mesh_elements, elements) = self.get_elements(mesh)
 
-        for idx, mesh_elem in enumerate(mesh_elements):
-            log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {mesh_elem}")
-        for idx, elem in enumerate(elements):
-            log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {elem}")
+        # for idx, mesh_elem in enumerate(mesh_elements):
+            # log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {mesh_elem}")
+        # for idx, elem in enumerate(elements):
+            # log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {elem}")
 
         # calculate centroid of the mesh
         (cx, cy) = self.calculate_centroid(elements)
-        print(cx, cy)
+        # print(cx, cy)
 
         # shift geometry such that the origin is at the centroid
         # self.geometry.shift = [-cx, -cy]
@@ -1919,15 +1931,17 @@ class PlasticSection:
         :return: A tuple containing the x and y location of the elastic centroid.
         :rtype: tuple(float, float)
         """
-        log.log(level=logging.DEBUG, msg="CrossSection Tri6 elements:\n")
-        log.log(level=logging.DEBUG, msg=f"{elements}")
+        # log.log(level=logging.DEBUG, msg="Centroid elements:\n")
+
         ea = 0
         qx = 0
         qy = 0
 
         # loop through all the elements
         for el in elements:
+            # log.log(level=logging.DEBUG, msg=f"{el}")
             (area, qx_el, qy_el, _, _, _, e, _) = el.geometric_properties()
+            # log.log(level=logging.DEBUG, msg=f"Results: {area} {qx_el} {qy_el} {e}")
             ea += area * e
             qx += qx_el * e
             qy += qy_el * e

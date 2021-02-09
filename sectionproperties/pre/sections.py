@@ -1,5 +1,10 @@
 from __future__ import annotations
 from typing import List, Optional, Union
+
+import pathlib
+import logging 
+from icecream import ic
+
 import more_itertools
 import numpy as np
 from shapely.geometry import Polygon, MultiPolygon, LinearRing, box, Point, MultiPoint
@@ -8,6 +13,9 @@ import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
 import sectionproperties.post.post as post
 
+log = logging.getLogger('shapely')
+log_path = pathlib.Path("C:\\Users\\cferster\\Desktop\\sectionproperties logs\\shapley.log")
+logging.basicConfig(filename=log_path, filemode='w', format="%(message)s", level=logging.DEBUG)
 
 class Geometry:
     """Class for defining the geometry of a contiguous section of a single material.
@@ -112,6 +120,9 @@ class Geometry:
         for hole in self.geom.interiors:
             hole_polygon = Polygon(hole)
             self.holes += list(hole_polygon.representative_point().coords)
+
+        # for idx, point in enumerate(self.points):
+        #     log.log(level=logging.DEBUG, msg=f"{idx}: {point}")
         return
 
     def compile_geometry(self): # Alias
@@ -960,6 +971,7 @@ def circular_section(d: float, n: int):
 
         # append the current point to the points list
         points.append([x, y])
+
 
     circle = Polygon(points)
     return Geometry(circle)
