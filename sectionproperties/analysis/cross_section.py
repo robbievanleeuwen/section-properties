@@ -167,6 +167,7 @@ class Section:
                 # self.materials = [default_material]
                 self.material_groups.append(MaterialGroup(default_material, self.num_nodes))
 
+            self.materials = materials                                                           
 
 
             self.elements = []  # initialise list holding all element objects
@@ -215,20 +216,6 @@ class Section:
             self.mesh_nodes = nodes
             self.mesh_elements = elements
             self.mesh_attributes = attributes
-
-            log.log(level=logging.DEBUG, msg=f"Section:\n")
-            log.log(level=logging.DEBUG, msg=f"{self.mesh}\n\n{self.mesh_nodes}\n\n{self.mesh_elements}\n\n{self.elements}")
-
-
-            # log.log(level=logging.DEBUG, msg=f"CrossSection Elements:\n")
-            # log.log(level=logging.DEBUG, msg=f"{self.geometry.points}")
-            # log.log(level=logging.DEBUG, msg=f"{self.geometry.facets}")
-            # for idx, mesh_elem in enumerate(self.mesh_nodes):
-            #     log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {mesh_elem}")
-            # for idx, elem in enumerate(self.mesh_elements):
-            #     log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {elem}")
-
-            # log.log(level=logging.DEBUG, msg="\nPlasticSection Elements:\n")
 
             # initialise class storing section properties
             self.section_props = SectionProperties()
@@ -288,7 +275,6 @@ class Section:
             # calculate global geometric properties
             for el in self.elements:
                 (area, qx, qy, ixx_g, iyy_g, ixy_g, e, g) = el.geometric_properties()
-                log.log(level=logging.DEBUG, msg=f"Area: {area}\nEA: {e*area}\nqx: {qx}\nqy: {qy}")
                 # print((area, qx, qy, ixx_g, iyy_g, ixy_g, e, g))
                 self.section_props.area += area
                 self.section_props.ea += area * e
@@ -748,8 +734,8 @@ class Section:
 
             # shift the coordinates of each element N.B. the mesh class attribute remains unshifted
             for el in warping_section.elements:
-                el.coords[0, :] -= self.section_props.cx # Does this assume an origin location?
-                el.coords[1, :] -= self.section_props.cy # Does this assume an origin location?
+                el.coords[0, :] -= self.section_props.cx
+                el.coords[1, :] -= self.section_props.cy
 
             (k, _, f) = warping_section.assemble_torsion(lg=False)
 
@@ -820,7 +806,7 @@ class Section:
             raise RuntimeError(err)
 
         def calc_plastic():
-            plastic_section = PlasticSection(self)
+            plastic_section = PlasticSection(self, debug)
             # calculate plastic properties
             try:
                 plastic_section.calculate_plastic_properties(self, verbose)
@@ -830,12 +816,10 @@ class Section:
                 raise RuntimeError(info_str)
 
         if time_info:
-            print("About to start")
-            text = "--Calculating plastic properties..."
+            text = "--Calculating plastic properties...\n"
             solver.function_timer(text, calc_plastic)
             print("")
         else:
-            # breakpoint()
             calc_plastic()
 
     def calculate_stress(self, N=0, Vx=0, Vy=0, Mxx=0, Myy=0, M11=0, M22=0,
@@ -1361,7 +1345,7 @@ class Section:
 
     def get_c(self):
         """
-        :return: Elastic centroid *(cx, cy)*
+        :return: Elastic centroid *()*
         :rtype: tuple(float, float)
 
         ::
@@ -1799,23 +1783,24 @@ class PlasticSection:
     :type c_bot: list[float, float]
     """
 
-    def __init__(self, section: Section, debug: bool = False):
+    def __init__(self, section: Section, debug: bool):
         """Inits the PlasticSection class."""
-        self._geometry_class = type(section.geometry)
-        self.geometry = self._geometry_class(section.geometry.geom)
         # make a deepcopy of the geometry & materials so that we can modify it
+        self._geometry_class = type(section.geometry)
+        shapely_copy = copy.deepcopy(section.geometry.geom)
+        self.geometry = self._geometry_class(shapely_copy)
+        self.geometry.compile_geometry()
+        
         self.materials = copy.deepcopy(section.materials)
         # self.elements = copy.deepcopy(section.elements)
         self.debug = debug
-        self.geometry.compile_geometry()
+
 
         # initialize variables to be defined later within calculate_plastic_force
         self.c_top = [0.0, 0.0]
         self.c_bot = [0.0, 0.0]
         self.f_top = 0.0
         self.f_bot = 0.0
-
-        ic(self.materials)
 
         if self.materials is not None:
             # create dummy control point at the start of the list
@@ -1829,14 +1814,10 @@ class PlasticSection:
 
         # create simple mesh of the geometry
         mesh = self.create_plastic_mesh()
+        # print("Post")
 
         # get the elements of the mesh
         (_, mesh_elements, elements) = self.get_elements(mesh)
-
-        # for idx, mesh_elem in enumerate(mesh_elements):
-            # log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {mesh_elem}")
-        # for idx, elem in enumerate(elements):
-            # log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {elem}")
 
         # calculate centroid of the mesh
         (cx, cy) = self.calculate_centroid(elements)
@@ -1896,7 +1877,6 @@ class PlasticSection:
 
             # if materials are specified, get the material
             if self.materials is not None:
-                # ic(self.materials)
                 # get attribute index of current element
                 att_el = attributes[i]
 
@@ -1931,17 +1911,13 @@ class PlasticSection:
         :return: A tuple containing the x and y location of the elastic centroid.
         :rtype: tuple(float, float)
         """
-        # log.log(level=logging.DEBUG, msg="Centroid elements:\n")
-
         ea = 0
         qx = 0
         qy = 0
 
         # loop through all the elements
         for el in elements:
-            # log.log(level=logging.DEBUG, msg=f"{el}")
             (area, qx_el, qy_el, _, _, _, e, _) = el.geometric_properties()
-            # log.log(level=logging.DEBUG, msg=f"Results: {area} {qx_el} {qy_el} {e}")
             ea += area * e
             qx += qx_el * e
             qy += qy_el * e
@@ -2208,13 +2184,9 @@ class PlasticSection:
         (qx_top, qx_bot) = (0, 0)
         (qy_top, qy_bot) = (0, 0)
 
-        for idx, el in enumerate(elements):
+        for el in elements:
             # calculate element force and area properties
             (f_el, ea_el, qx_el, qy_el, is_above) = el.plastic_properties(u, p)
-            # log.log(level=logging.DEBUG, msg=f"idx: {idx}, el: {el}")
-            # log.log(level=logging.DEBUG, msg=f"f_el: {f_el}, ea_el: {ea_el}, qx_el: {qx_el}, qy_el: {qy_el}, is_above: {is_above}")
-            # ic(idx, el)
-            # ic(idx, f_el, ea_el, qx_el, qy_el, is_above)
 
             # assign force and area properties to the top or bottom segments
             if is_above:
@@ -2259,15 +2231,15 @@ class PlasticSection:
         geom.compile_geometry()
 
         # add line at new_line
-        # if new_line is not None:
-        #     self.add_line(geom, new_line)
+        if new_line is not None:
+            self.add_line(geom, new_line)
 
-        #     # fast clean the geometry after adding the line
-        #     clean = pre.GeometryCleaner(geom, verbose=False)
-        #     clean.zip_points()
-        #     clean.remove_zero_length_facets()
-        #     clean.remove_unused_points()
-        #     geom = clean.geometry
+        # fast clean the geometry after adding the line
+            clean = pre.GeometryCleaner(geom, verbose=False)
+            clean.zip_points()
+            clean.remove_zero_length_facets()
+            clean.remove_unused_points()
+            geom = clean.geometry
 
         if self.debug:
             if new_line is not None:

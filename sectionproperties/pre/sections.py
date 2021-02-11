@@ -261,31 +261,21 @@ class Geometry:
         y_offset = align_to_min_y - self_align_y
         return self.shift_section(y_offset=y_offset)
 
-    def align_center(self, align_to: Geometry):
+    def align_center(self, align_to: Optional[Geometry] = None):
         """
         Returns a new Geometry object, tranlsated in both x and y, so that the 
-        center-point of the new object's bounding box will be aligned to the
-        center-point of the other object's bounding box.
+        center-point of the new object's centroid will be aligned with 
+        centroid of the object in 'align_to'. If 'align_to' is None then the new
+        object will be aligned with it's centroid at the origin.
 
-        :param align_to: Another Geometry to align to.
-        :type align_to: sectionproperties.pre.sections.Geometry
-
-        :param inner: Default False. If True, align the top-most point of this
-        object to the top-most point of 'align_to'. 
-        :type align_to: bool
+        :param align_to: Another Geometry to align to or None (default is None)
+        :type align_to: Optional[sectionproperties.pre.sections.Geometry]
 
         :return: Geometry object translated to new alignment
         :rtype: :class:`sections.pre.sections.Geometry`
         """
-        self_extents = self.calculate_extents()
-        align_to_extents = align_to.calculate_extents()
-        self_center_x = (self_extents[1] - self_extents[0])/2 + self_extents[0]
-        self_center_y = (self_extents[3] - self_extents[2])/2 + self_extents[2]
-        align_to_center_x = (align_to_extents[1] - align_to_extents[0])/2 + align_to_extents[0]
-        align_to_center_y = (align_to_extents[3] - align_to_extents[2])/2 + align_to_extents[2]
-        x_offset = (align_to_center_x - self_center_x)
-        y_offset = (align_to_center_y - self_center_y)
-        return self.shift_section(x_offset=x_offset, y_offset=y_offset)
+        cx, cy = list(self.geom.centroid.coords)[0]
+        return self.shift_section(x_offset=-cx, y_offset=-cy)
 
 
     def shift_section(self, x_offset=0., y_offset=0.,):
