@@ -1,5 +1,5 @@
-import numpy as np
 import meshpy.triangle as triangle
+import numpy as np
 
 
 class GeometryError(Exception):
@@ -47,10 +47,8 @@ class Material:
         )
     """
 
-    def __init__(self, name, elastic_modulus, poissons_ratio, yield_strength,
-                 color='w'):
+    def __init__(self, name, elastic_modulus, poissons_ratio, yield_strength, color='w'):
         """Inits the Material class"""
-
         self.name = name
         self.elastic_modulus = elastic_modulus
         self.poissons_ratio = poissons_ratio
@@ -123,7 +121,7 @@ class GeometryCleanerMixin:
         # loop through the list of points
         for (i, pt1) in enumerate(self.points):
             # check all other points
-            for (j, pt2) in enumerate(self.points[i + 1:]):
+            for (j, pt2) in enumerate(self.points[i + 1 :]):
                 # get point indices
                 idx_1 = i
                 idx_2 = i + j + 1
@@ -185,7 +183,7 @@ class GeometryCleanerMixin:
                 broken = False
 
                 # check all other facets
-                for (j, fct2) in enumerate(self.facets[i + 1:]):
+                for (j, fct2) in enumerate(self.facets[i + 1 :]):
                     # get facet indices
                     idx_1 = i
                     idx_2 = i + j + 1
@@ -262,7 +260,7 @@ class GeometryCleanerMixin:
                 broken = False
 
                 # check all other facets
-                for (j, fct2) in enumerate(self.facets[i + 1:]):
+                for (j, fct2) in enumerate(self.facets[i + 1 :]):
                     # get facet indices
                     idx_1 = i
                     idx_2 = i + j + 1
@@ -464,14 +462,13 @@ class GeometryCleanerMixin:
         # loop through the list of facets
         for (i, fct1) in enumerate(self.facets):
             # check all other facets
-            for (j, fct2) in enumerate(self.facets[i + 1:]):
+            for (j, fct2) in enumerate(self.facets[i + 1 :]):
                 # get facet indices
                 idx_1 = i
                 idx_2 = i + j + 1
 
                 # check for a duplicate facet that has not already been deleted
-                if (self.is_duplicate_facet(fct1, fct2)
-                        and idx_2 not in idx_to_remove):
+                if self.is_duplicate_facet(fct1, fct2) and idx_2 not in idx_to_remove:
                     idx_to_remove.append(idx_2)
 
                     if verbose:
@@ -608,7 +605,12 @@ def create_mesh(points, facets, holes, control_points, mesh_sizes, atol=1.0e-8):
         region_id += 1
 
     mesh = triangle.build(
-        mesh, min_angle=30, mesh_order=2, quality_meshing=True,
-        attributes=True, volume_constraints=True)
+        mesh,
+        min_angle=30,
+        mesh_order=2,
+        quality_meshing=True,
+        attributes=True,
+        volume_constraints=True,
+    )
 
     return mesh

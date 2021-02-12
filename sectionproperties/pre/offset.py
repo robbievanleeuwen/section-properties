@@ -1,6 +1,7 @@
 import copy
-from shapely.geometry.polygon import LinearRing
+
 import matplotlib.pyplot as plt
+from shapely.geometry.polygon import LinearRing
 
 
 def offset_perimeter(geometry, offset, side='left', plot_offset=False):
@@ -104,26 +105,40 @@ def offset_perimeter(geometry, offset, side='left', plot_offset=False):
         # plot new geometry
         for (i, f) in enumerate(new_geometry.facets):
             if i == 0:
-                ax.plot([new_geometry.points[f[0]][0], new_geometry.points[f[1]][0]],
-                        [new_geometry.points[f[0]][1], new_geometry.points[f[1]][1]],
-                        'ko-', markersize=2, label='Offset Geometry')
+                ax.plot(
+                    [new_geometry.points[f[0]][0], new_geometry.points[f[1]][0]],
+                    [new_geometry.points[f[0]][1], new_geometry.points[f[1]][1]],
+                    'ko-',
+                    markersize=2,
+                    label='Offset Geometry',
+                )
             else:
-                ax.plot([new_geometry.points[f[0]][0], new_geometry.points[f[1]][0]],
-                        [new_geometry.points[f[0]][1], new_geometry.points[f[1]][1]],
-                        'ko-', markersize=2)
+                ax.plot(
+                    [new_geometry.points[f[0]][0], new_geometry.points[f[1]][0]],
+                    [new_geometry.points[f[0]][1], new_geometry.points[f[1]][1]],
+                    'ko-',
+                    markersize=2,
+                )
 
         # plot the original perimeter
         for (i, facet_idx) in enumerate(geometry.perimeter):
             f = geometry.facets[facet_idx]
 
             if i == 0:
-                ax.plot([geometry.points[f[0]][0], geometry.points[f[1]][0]],
-                        [geometry.points[f[0]][1], geometry.points[f[1]][1]],
-                        'r--', markersize=2, label='Original Perimeter')
+                ax.plot(
+                    [geometry.points[f[0]][0], geometry.points[f[1]][0]],
+                    [geometry.points[f[0]][1], geometry.points[f[1]][1]],
+                    'r--',
+                    markersize=2,
+                    label='Original Perimeter',
+                )
             else:
-                ax.plot([geometry.points[f[0]][0], geometry.points[f[1]][0]],
-                        [geometry.points[f[0]][1], geometry.points[f[1]][1]],
-                        'r--', markersize=2)
+                ax.plot(
+                    [geometry.points[f[0]][0], geometry.points[f[1]][0]],
+                    [geometry.points[f[0]][1], geometry.points[f[1]][1]],
+                    'r--',
+                    markersize=2,
+                )
 
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         ax.set_title('Offset Geometry')

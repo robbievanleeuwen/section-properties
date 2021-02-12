@@ -24,3 +24,9 @@
 
 # mac
 .DS_Store
+
+# poetry local configuration
+poetry.toml
+
+# cache directory for pytest, mypy, coverage, etc
+.cache/

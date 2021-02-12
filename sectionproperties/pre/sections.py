@@ -1,7 +1,8 @@
-import numpy as np
 import matplotlib.pyplot as plt
-import sectionproperties.pre.pre as pre
+import numpy as np
+
 import sectionproperties.post.post as post
+import sectionproperties.pre.pre as pre
 
 
 class Geometry(pre.GeometryCleanerMixin):
@@ -67,10 +68,11 @@ class Geometry(pre.GeometryCleanerMixin):
         msg = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
             len(mesh_sizes), len(self.control_points)
         )
-        assert(len(mesh_sizes) == len(self.control_points)), msg
+        assert len(mesh_sizes) == len(self.control_points), msg
 
         return pre.create_mesh(
-            self.points, self.facets, self.holes, self.control_points, mesh_sizes)
+            self.points, self.facets, self.holes, self.control_points, mesh_sizes
+        )
 
     def shift_section(self):
         """Shifts the cross-section parameters by the class variable vector *shift*."""
@@ -298,13 +300,22 @@ class Geometry(pre.GeometryCleanerMixin):
 
             # plot the points and facets
             if i == 0:
-                ax.plot([self.points[f[0]][0], self.points[f[1]][0]],
-                        [self.points[f[0]][1], self.points[f[1]][1]],
-                        'ko-', markersize=2, linewidth=linewidth, label='Points & Facets')
+                ax.plot(
+                    [self.points[f[0]][0], self.points[f[1]][0]],
+                    [self.points[f[0]][1], self.points[f[1]][1]],
+                    'ko-',
+                    markersize=2,
+                    linewidth=linewidth,
+                    label='Points & Facets',
+                )
             else:
-                ax.plot([self.points[f[0]][0], self.points[f[1]][0]],
-                        [self.points[f[0]][1], self.points[f[1]][1]],
-                        'ko-', markersize=2, linewidth=linewidth)
+                ax.plot(
+                    [self.points[f[0]][0], self.points[f[1]][0]],
+                    [self.points[f[0]][1], self.points[f[1]][1]],
+                    'ko-',
+                    markersize=2,
+                    linewidth=linewidth,
+                )
 
         for (i, h) in enumerate(self.holes):
             # plot the holes
@@ -316,8 +327,7 @@ class Geometry(pre.GeometryCleanerMixin):
         for (i, cp) in enumerate(self.control_points):
             # plot the control points
             if i == 0:
-                ax.plot(cp[0], cp[1], 'bo', markersize=5,
-                        label='Control Points')
+                ax.plot(cp[0], cp[1], 'bo', markersize=5, label='Control Points')
             else:
                 ax.plot(cp[0], cp[1], 'bo', markersize=5)
 
@@ -1179,9 +1189,8 @@ class TaperedFlangeISection(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    3.0 / 2 * np.pi - alpha_rad) - (i * 1.0 / max(1, n_r - 1) * (
-                        np.pi * 0.5 - alpha_rad)
+                theta = (3.0 / 2 * np.pi - alpha_rad) - (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
                 )
 
                 # calculate the locations of the radius points
@@ -1212,8 +1221,7 @@ class TaperedFlangeISection(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    3.0 * np.pi / 2 + alpha_rad) + i * 1.0 / max(1, n_r - 1) * (
+                theta = (3.0 * np.pi / 2 + alpha_rad) + i * 1.0 / max(1, n_r - 1) * (
                     np.pi * 0.5 - alpha_rad
                 )
 
@@ -1249,9 +1257,8 @@ class TaperedFlangeISection(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    np.pi * 0.5 - alpha_rad) - (i * 1.0 / max(1, n_r - 1) * (
-                        np.pi * 0.5 - alpha_rad)
+                theta = (np.pi * 0.5 - alpha_rad) - (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
                 )
 
                 # calculate the locations of the radius points
@@ -1282,9 +1289,8 @@ class TaperedFlangeISection(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    np.pi * 0.5 + alpha_rad) + (i * 1.0 / max(1, n_r - 1) * (
-                        np.pi * 0.5 - alpha_rad)
+                theta = (np.pi * 0.5 + alpha_rad) + (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
                 )
 
                 # calculate the locations of the radius points
@@ -1470,9 +1476,8 @@ class TaperedFlangeChannel(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    3.0 / 2 * np.pi - alpha_rad) - (i * 1.0 / max(1, n_r - 1) * (
-                        np.pi * 0.5 - alpha_rad)
+                theta = (3.0 / 2 * np.pi - alpha_rad) - (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
                 )
 
                 # calculate the locations of the radius points
@@ -1492,8 +1497,7 @@ class TaperedFlangeChannel(Geometry):
 
                 # calculate the locations of the radius points
                 x = t_w + r_r + r_r * np.cos(theta)
-                y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(
-                    theta)
+                y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
 
                 # append the current points to the points list
                 self.points.append([x, y])
@@ -1504,9 +1508,8 @@ class TaperedFlangeChannel(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    3.0 * np.pi / 2 + alpha_rad) + (i * 1.0 / max(1, n_r - 1) * (
-                        np.pi * 0.5 - alpha_rad)
+                theta = (3.0 * np.pi / 2 + alpha_rad) + (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
                 )
 
                 # calculate the locations of the radius points
@@ -1757,8 +1760,7 @@ class CeeSection(Geometry):
         self.draw_radius([t + r_in, d - t - r_in], r_in, np.pi, n_r, False)
 
         # construct the inner top right radius
-        self.draw_radius(
-            [b - t - r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
+        self.draw_radius([b - t - r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
 
         if r_out != l:
             # add next two points

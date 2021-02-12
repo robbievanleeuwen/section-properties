@@ -1,4 +1,5 @@
 import unittest
+
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
 from sectionproperties.tests.helper_functions import validate_properties
@@ -70,12 +71,36 @@ class TestValidation(unittest.TestCase):
         beam section utility."""
 
         points = [
-            [-10, 0], [110, 0], [100, 10], [55, 10], [55, 90], [100, 90], [110, 100], [110, 110],
-            [-10, 110], [-10, 100], [0, 90], [45, 90], [45, 10], [-10, 10]
+            [-10, 0],
+            [110, 0],
+            [100, 10],
+            [55, 10],
+            [55, 90],
+            [100, 90],
+            [110, 100],
+            [110, 110],
+            [-10, 110],
+            [-10, 100],
+            [0, 90],
+            [45, 90],
+            [45, 10],
+            [-10, 10],
         ]
         facets = [
-            [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10],
-            [10, 11], [11, 12], [12, 13], [13, 0]
+            [0, 1],
+            [1, 2],
+            [2, 3],
+            [3, 4],
+            [4, 5],
+            [5, 6],
+            [6, 7],
+            [7, 8],
+            [8, 9],
+            [9, 10],
+            [10, 11],
+            [11, 12],
+            [12, 13],
+            [13, 0],
         ]
         holes = []
         control_points = [[0, 5]]

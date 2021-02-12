@@ -1,4 +1,5 @@
 import unittest
+
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
 from sectionproperties.tests.helper_functions import validate_properties
@@ -44,12 +45,8 @@ class TestRectangle(unittest.TestCase):
         val_list.append({"prop": "z11_minus", "val": 50 * 100 ** 2 / 6, "tol": None})
         val_list.append({"prop": "z22_plus", "val": 100 * 50 ** 2 / 6, "tol": None})
         val_list.append({"prop": "z22_minus", "val": 100 * 50 ** 2 / 6, "tol": None})
-        val_list.append(
-            {"prop": "r11", "val": (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None}
-        )
-        val_list.append(
-            {"prop": "r22", "val": (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None}
-        )
+        val_list.append({"prop": "r11", "val": (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None})
+        val_list.append({"prop": "r22", "val": (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None})
 
         validate_properties(self, val_list, self.section)
 

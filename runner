@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+set -euf -o pipefail
+
+# -----------------------------------------------------------------------------
+run_all() {
+    echo "--------------------------------------------------------------------"
+    echo "---[ Installing dependencies with poetry ]--------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry install -v
+
+    echo "--------------------------------------------------------------------"
+    echo "---[ Installing pre-commit hooks ]----------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run pre-commit install
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Sort imports with isort ]--------------------------------------"
+    echo "--------------------------------------------------------------------"
+    ISORT_ARGS=""
+    if [[ "${CI:-}" = "1" ]]; then
+        ISORT_ARGS="--check-only"
+    fi
+    poetry run isort $ISORT_ARGS .
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Format with black ]--------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    BLACK_ARGS=""
+    if [[ "${CI:-}" = "1" ]]; then
+        BLACK_ARGS="--check"
+    fi
+    poetry run black $BLACK_ARGS .
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Lint with rstcheck ]-------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run rstcheck README_pypi.rst
+    poetry run rstcheck CHANGELOG.rst
+    # poetry run rstcheck --recursive docs
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Lint with flake8 ]---------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run flake8
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Lint with pylint ]---------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    # allow TODO messages
+    poetry run pylint --disable="fixme" sectionproperties
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Test with pytest and coverage ]--------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run coverage run -m pytest
+    poetry run coverage report --skip-covered
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Build package with poetry ]------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry build
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Build completed successfully! ]--------------------------------"
+    echo "--------------------------------------------------------------------"
+}
+
+# -----------------------------------------------------------------------------
+run_clean() {
+    all="no"
+    while getopts ":a" option; do
+       case $option in
+          a)
+             all="yes"
+             ;;
+          ?)
+             echo "invalid option -$OPTARG"
+             exit 1
+             ;;
+       esac
+    done
+
+    if [[ `env | grep VIRTUAL_ENV` ]]; then
+      echo "Error: deactivate your venv first."
+      exit 1
+    fi
+
+    echo "deleting temporary files and directories..."
+    find . -regex '^.*\(__pycache__\|\.py[co]\)$' -delete
+    rm -rf *.spec .eggs .tox build dist *.egg-info .cache site
+
+    if [ $all == "yes" ]; then
+        echo "deleting virtual environment..."
+        rm -rf .venv/
+    fi
+
+    echo "--------------------------------------------------------------------"
+    echo "---[ Clean complete! ]----------------------------------------------"
+    echo "--------------------------------------------------------------------"
+}
+
+# -----------------------------------------------------------------------------
+if [ $# -eq 0 ]; then
+    run_all
+else
+    case $1 in
+        clean)
+            shift 1
+            run_clean $*
+            ;;
+        *)
+            echo ""
+            echo "------------------------------------"
+            echo "Shortcuts for common developer tasks"
+            echo "------------------------------------"
+            echo ""
+            echo "Usage: run [command]"
+            echo ""
+            echo "- run         : (no arguments) to run everything, including:"
+            echo "                - virtual environment creation"
+            echo "                - formatting"
+            echo "                - linting"
+            echo "                - test and code coverage"
+            echo "                - distribution build"
+            echo "- run clean   : Delete all temporary files and directories"
+            echo "- run clean -a: Do clean plus delete the virutal environment"
+            echo ""
+            exit 1
+    esac
+fi
