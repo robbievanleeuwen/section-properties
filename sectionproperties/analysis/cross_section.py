@@ -987,7 +987,7 @@ class CrossSection:
         return (csc_matrix(k), csc_matrix(k_lg), f_torsion)
 
     def plot_mesh(self, ax=None, pause=True, alpha=1, materials=False, mask=None):
-        """Plots the finite element mesh. If no axes object is supplied a new figure and axis is
+        r"""Plots the finite element mesh. If no axes object is supplied a new figure and axis is
         created.
 
         :param ax: Axes object on which the mesh is plotted
@@ -2564,7 +2564,7 @@ class StressPost:
         return (fig, ax)
 
     def get_stress(self):
-        """Returns the stresses within each material belonging to the current
+        r"""Returns the stresses within each material belonging to the current
         :class:`~sectionproperties.analysis.cross_section.StressPost` object.
 
         :return: A list of dictionaries containing the cross-section stresses for each material.
@@ -2672,7 +2672,7 @@ class StressPost:
         return stress
 
     def plot_stress_n_zz(self, pause=True):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,N}` resulting from the
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,N}` resulting from the
         axial load :math:`N`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -2704,7 +2704,7 @@ class StressPost:
             Contour plot of the axial stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,N}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,N}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2713,7 +2713,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_mxx_zz(self, pause=True):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}` resulting from the
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}` resulting from the
         bending moment :math:`M_{xx}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -2745,7 +2745,7 @@ class StressPost:
             Contour plot of the bending stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,Mxx}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,Mxx}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2754,7 +2754,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_myy_zz(self, pause=True):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}` resulting from the
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}` resulting from the
         bending moment :math:`M_{yy}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -2786,7 +2786,7 @@ class StressPost:
             Contour plot of the bending stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,Myy}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,Myy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2795,7 +2795,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_m11_zz(self, pause=True):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}` resulting from the
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}` resulting from the
         bending moment :math:`M_{11}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -2827,7 +2827,7 @@ class StressPost:
             Contour plot of the bending stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,M11}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,M11}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2836,7 +2836,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_m22_zz(self, pause=True):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}` resulting from the
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}` resulting from the
         bending moment :math:`M_{22}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -2868,7 +2868,7 @@ class StressPost:
             Contour plot of the bending stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,M22}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,M22}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2877,7 +2877,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_m_zz(self, pause=True):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,\Sigma M}` resulting from
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,\Sigma M}` resulting from
         all bending moments :math:`M_{xx} + M_{yy} + M_{11} + M_{22}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -2910,7 +2910,7 @@ class StressPost:
             Contour plot of the bending stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz,\Sigma M}$'
+        title = r'Stress Contour Plot - $\sigma_{zz,\Sigma M}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2919,7 +2919,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_mzz_zx(self, pause=True):
-        """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Mzz}`
+        r"""Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Mzz}`
         resulting from the torsion moment :math:`M_{zz}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -2951,7 +2951,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zx,Mzz}$'
+        title = r'Stress Contour Plot - $\sigma_{zx,Mzz}$'
         sigs = []
 
         for group in self.material_groups:
@@ -2960,7 +2960,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_mzz_zy(self, pause=True):
-        """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Mzz}`
+        r"""Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Mzz}`
         resulting from the torsion moment :math:`M_{zz}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -2992,7 +2992,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zy,Mzz}$'
+        title = r'Stress Contour Plot - $\sigma_{zy,Mzz}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3001,7 +3001,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_mzz_zxy(self, pause=True):
-        """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
+        r"""Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
         from the torsion moment :math:`M_{zz}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3033,7 +3033,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zxy,Mzz}$'
+        title = r'Stress Contour Plot - $\sigma_{zxy,Mzz}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3042,7 +3042,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_vector_mzz_zxy(self, pause=True):
-        """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
+        r"""Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
         from the torsion moment :math:`M_{zz}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3074,7 +3074,7 @@ class StressPost:
             Vector plot of the shear stress.
         """
 
-        title = 'Stress Vector Plot - $\sigma_{zxy,Mzz}$'
+        title = r'Stress Vector Plot - $\sigma_{zxy,Mzz}$'
         sigxs = []
         sigys = []
 
@@ -3085,7 +3085,7 @@ class StressPost:
         return self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_vx_zx(self, pause=True):
-        """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vx}`
+        r"""Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vx}`
         resulting from the shear force :math:`V_{x}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3117,7 +3117,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zx,Vx}$'
+        title = r'Stress Contour Plot - $\sigma_{zx,Vx}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3126,7 +3126,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_vx_zy(self, pause=True):
-        """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vx}`
+        r"""Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vx}`
         resulting from the shear force :math:`V_{x}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3158,7 +3158,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zy,Vx}$'
+        title = r'Stress Contour Plot - $\sigma_{zy,Vx}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3167,7 +3167,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_vx_zxy(self, pause=True):
-        """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
+        r"""Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
         from the shear force :math:`V_{x}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3199,7 +3199,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zxy,Vx}$'
+        title = r'Stress Contour Plot - $\sigma_{zxy,Vx}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3208,7 +3208,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_vector_vx_zxy(self, pause=True):
-        """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
+        r"""Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
         from the shear force :math:`V_{x}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3240,7 +3240,7 @@ class StressPost:
             Vector plot of the shear stress.
         """
 
-        title = 'Stress Vector Plot - $\sigma_{zxy,Vx}$'
+        title = r'Stress Vector Plot - $\sigma_{zxy,Vx}$'
         sigxs = []
         sigys = []
 
@@ -3251,7 +3251,7 @@ class StressPost:
         return self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_vy_zx(self, pause=True):
-        """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vy}`
+        r"""Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vy}`
         resulting from the shear force :math:`V_{y}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3283,7 +3283,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zx,Vy}$'
+        title = r'Stress Contour Plot - $\sigma_{zx,Vy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3292,7 +3292,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_vy_zy(self, pause=True):
-        """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vy}`
+        r"""Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vy}`
         resulting from the shear force :math:`V_{y}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3324,7 +3324,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zy,Vy}$'
+        title = r'Stress Contour Plot - $\sigma_{zy,Vy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3333,7 +3333,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_vy_zxy(self, pause=True):
-        """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
+        r"""Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
         from the shear force :math:`V_{y}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3365,7 +3365,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zxy,Vy}$'
+        title = r'Stress Contour Plot - $\sigma_{zxy,Vy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3374,7 +3374,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_vector_vy_zxy(self, pause=True):
-        """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
+        r"""Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
         from the shear force :math:`V_{y}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3406,7 +3406,7 @@ class StressPost:
             Vector plot of the shear stress.
         """
 
-        title = 'Stress Vector Plot - $\sigma_{zxy,Vy}$'
+        title = r'Stress Vector Plot - $\sigma_{zxy,Vy}$'
         sigxs = []
         sigys = []
 
@@ -3417,7 +3417,7 @@ class StressPost:
         return self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_v_zx(self, pause=True):
-        """Produces a contour plot of the *x*-component of the shear stress
+        r"""Produces a contour plot of the *x*-component of the shear stress
         :math:`\sigma_{zx,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
 
@@ -3451,7 +3451,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zx,\Sigma V}$'
+        title = r'Stress Contour Plot - $\sigma_{zx,\Sigma V}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3460,7 +3460,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_v_zy(self, pause=True):
-        """Produces a contour plot of the *y*-component of the shear stress
+        r"""Produces a contour plot of the *y*-component of the shear stress
         :math:`\sigma_{zy,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
 
@@ -3494,7 +3494,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zy,\Sigma V}$'
+        title = r'Stress Contour Plot - $\sigma_{zy,\Sigma V}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3503,7 +3503,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_v_zxy(self, pause=True):
-        """Produces a contour plot of the resultant shear stress
+        r"""Produces a contour plot of the resultant shear stress
         :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
 
@@ -3537,7 +3537,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zxy,\Sigma V}$'
+        title = r'Stress Contour Plot - $\sigma_{zxy,\Sigma V}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3546,7 +3546,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_vector_v_zxy(self, pause=True):
-        """Produces a vector plot of the resultant shear stress
+        r"""Produces a vector plot of the resultant shear stress
         :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the  applied shear forces
         :math:`V_{x} + V_{y}`.
 
@@ -3580,7 +3580,7 @@ class StressPost:
             Vector plot of the shear stress.
         """
 
-        title = 'Stress Vector Plot - $\sigma_{zxy,\Sigma V}$'
+        title = r'Stress Vector Plot - $\sigma_{zxy,\Sigma V}$'
         sigxs = []
         sigys = []
 
@@ -3591,7 +3591,7 @@ class StressPost:
         return self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_zz(self, pause=True):
-        """Produces a contour plot of the combined normal stress :math:`\sigma_{zz}` resulting from
+        r"""Produces a contour plot of the combined normal stress :math:`\sigma_{zz}` resulting from
         all actions.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3624,7 +3624,7 @@ class StressPost:
             Contour plot of the normal stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zz}$'
+        title = r'Stress Contour Plot - $\sigma_{zz}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3633,7 +3633,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_zx(self, pause=True):
-        """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx}`
+        r"""Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx}`
         resulting from all actions.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3666,7 +3666,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zx}$'
+        title = r'Stress Contour Plot - $\sigma_{zx}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3675,7 +3675,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_zy(self, pause=True):
-        """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy}`
+        r"""Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy}`
         resulting from all actions.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3708,7 +3708,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zy}$'
+        title = r'Stress Contour Plot - $\sigma_{zy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3717,7 +3717,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_zxy(self, pause=True):
-        """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
+        r"""Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
         from all actions.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3750,7 +3750,7 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{zxy}$'
+        title = r'Stress Contour Plot - $\sigma_{zxy}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3759,7 +3759,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_vector_zxy(self, pause=True):
-        """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
+        r"""Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
         from all actions.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3792,7 +3792,7 @@ class StressPost:
             Vector plot of the shear stress.
         """
 
-        title = 'Stress Vector Plot - $\sigma_{zxy}$'
+        title = r'Stress Vector Plot - $\sigma_{zxy}$'
         sigxs = []
         sigys = []
 
@@ -3803,7 +3803,7 @@ class StressPost:
         return self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_vm(self, pause=True):
-        """Produces a contour plot of the von Mises stress :math:`\sigma_{vM}` resulting from all
+        r"""Produces a contour plot of the von Mises stress :math:`\sigma_{vM}` resulting from all
         actions.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
@@ -3846,7 +3846,7 @@ class StressPost:
             Contour plot of the von Mises stress.
         """
 
-        title = 'Stress Contour Plot - $\sigma_{vM}$'
+        title = r'Stress Contour Plot - $\sigma_{vM}$'
         sigs = []
 
         for group in self.material_groups:
@@ -3896,7 +3896,7 @@ class MaterialGroup:
 
 
 class StressResult:
-    """Class for storing a stress result.
+    r"""Class for storing a stress result.
 
     Provides variables to store the results from a cross-section stress analysis. Also provides a
     method to calculate combined stresses.
