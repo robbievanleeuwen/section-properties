@@ -870,7 +870,7 @@ class CompoundGeometry(Geometry):
 
             # add control points
             for control_point in geom.control_points:
-                self.control_points.append([control_point[0], control_point[1]]).
+                self.control_points.append([control_point[0], control_point[1]])
 
         # Check for holes created inadvertently from combined sections
         unionized_geometry = None

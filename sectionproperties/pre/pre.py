@@ -158,8 +158,9 @@ class GeometryCleaner:
                 # if the points are close together and the point has not already been removed
                 if (dist < atol or dist < rel_tol) and idx_2 not in idx_to_remove:
                     # update point1 (average of point1 + point2)
-                    pt1[0] = 0.5 * (pt1[0] + pt2[0])
-                    pt1[1] = 0.5 * (pt1[1] + pt2[1])
+                    pt1 = (0.5 * (pt1[0] + pt2[0]), 0.5 * (pt1[1] + pt2[1]))
+                    # pt1[0] = 0.5 * (pt1[0] + pt2[0])
+                    # pt1[1] = 0.5 * (pt1[1] + pt2[1])
 
                     # join facets connected to pt2 to pt1 instead
                     self.replace_point_id(idx_2, idx_1)
