@@ -69,8 +69,8 @@ class Tri6:
         for gp in gps:
             # determine shape function, shape function derivative and jacobian
             (N, _, j) = shape_function(self.coords, gp)
-            log.log(level=logging.DEBUG, msg=f"N: {N}\nj: {j}")
-            log.log(level=logging.DEBUG, msg=f"self.coords: {self.coords}\n")
+            # log.log(level=logging.DEBUG, msg=f"N: {N}\nj: {j}")
+            # log.log(level=logging.DEBUG, msg=f"self.coords: {self.coords}\n")
 
             area += gp[0] * j
             qx += gp[0] * np.dot(N, np.transpose(self.coords[1, :])) * j

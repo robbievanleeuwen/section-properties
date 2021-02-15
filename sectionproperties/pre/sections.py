@@ -52,8 +52,9 @@ class Geometry:
     @staticmethod
     def from_points(
         points: List[List[float]], 
-        facets: Optional[List[List[int]]] = None, 
-        holes: Optional[List[List[float]]] = None,
+        facets: Optional[List[List[int]]],
+        holes: Optional[List[List[float]]],
+        control_points: Optional[List[List[float]]],
         ):
         """
         An interface for the creation of Geometry objects through the definition of points, 
@@ -73,30 +74,37 @@ class Geometry:
         Only one point is required per hole region.
         """
         if facets is None: return Geometry(Polygon(points))
-        if holes is None and facets is not None:
+        if holes is not None and facets is None:
             raise ValueError(
                 "If holes coordinates are provided then facets must also be provided "
                 "to distinguish between exterior and interior edges."
                 )
+        if len(control_points > 1):
+            raise ValueError(
+                "A Geometry object can only have one contiguous region (with holes)."
+                "Did you mean to use CompoundGeometry.from_points()?"
+        )
+        if holes is None: holes = []
+        multi_geom = False
         prev_facet = []
         exterior = []
         interiors = [[] for hole in holes] # initialize an empty facet list for every hole
         interior_counter = 0
         active_list = exterior # Like setting a pointer for the list we are accumulating on
         for facet in facets:
-            i_idx, _ = facet
+            i_idx, j_idx = facet
             if not prev_facet: # Add the first facet vertex to exterior and move on
                 active_list.append(points[i_idx])
                 prev_facet = facet
                 continue
             prev_j_idx = prev_facet[1]
-            if i_idx != prev_j_idx: #If there is a break in the chain of edges...
+            if i_idx != prev_j_idx and holes: #If there is a break in the chain of edges...
                 if active_list == exterior: # ...and we were still on the exterior...
                     active_list = interiors[interior_counter] # ... then move to interior
                 else: # ...or if we are already in the interiors...
                     interior_counter += 1 # ...then start the next interior region.
                     active_list = interiors[interior_counter]
-                active_list.append(points[i_idx]) 
+                active_list.append(points[i_idx])                
             else:
                 active_list.append(points[i_idx]) # Only need i_idx b/c shapely auto-closes polygons
             prev_facet = facet
@@ -275,7 +283,13 @@ class Geometry:
         :rtype: :class:`sections.pre.sections.Geometry`
         """
         cx, cy = list(self.geom.centroid.coords)[0]
-        return self.shift_section(x_offset=-cx, y_offset=-cy)
+        if align_to is None:
+            shift_x, shift_y = cx, cy
+        else:
+            align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
+            shift_x = align_cx - cx
+            shift_y = align_cy - cy
+        return self.shift_section(x_offset=shift_x, y_offset=shift_y)
 
 
     def shift_section(self, x_offset=0., y_offset=0.,):
@@ -505,16 +519,16 @@ class Geometry:
     @recovery_points.setter
     def recovery_points(self, new_points: Union[List[list], List[tuple], List[Point]]) -> list:
         # The points are in the .geom polygon
-        intersection_exists = MultiPoint(new_points) & self.geom == MultiPoint(new_points)
-        only_four_points = len(new_points) == 4
-        if intersection_exists and only_four_points:
-            self._recovery_points = new_points
-        elif intersection_exists and not only_four_points:
-            raise ValueError("There must be exactly four recovery points")
-        elif not intersection_exists and only_four_points:
-            raise ValueError("Not all of the points entered exist on the current geometry.")
-        else:
-            raise ValueError("There must be exactly four recovery points and they must all exist on the current geometry.")
+        # intersection_exists = (MultiPoint(new_points) & self.geom).equals(MultiPoint(new_points))
+        # only_four_points = len(new_points) == 4
+        # if intersection_exists and only_four_points:
+        self._recovery_points = new_points
+        # elif intersection_exists and not only_four_points:
+        #     raise ValueError("There must be exactly four recovery points")
+        # elif not intersection_exists and only_four_points:
+        #     raise ValueError("Not all of the points entered exist on the current geometry.")
+        # else:
+        #     raise ValueError("There must be exactly four recovery points and they must all exist on the current geometry.")
 
     @recovery_points.getter
     def recovery_points(self, new_points: Union[List[list], List[tuple], List[Point]]) -> list:
@@ -604,7 +618,7 @@ class CompoundGeometry(Geometry):
 
     :cvar geoms: either a list of Geometry objects or a shapely.geometry.MultiPolygon
     instance.
-    :vartype geoms: shapely.geometry.Polygon
+    :vartype geoms: List[sectionproperties.pre.sections.Geometry] or shapely.geometry.MultiPolygon
     """
     def __init__(self, geoms: Union[MultiPolygon, List[Geometry]]):
         if isinstance(geoms, MultiPolygon):
@@ -625,7 +639,8 @@ class CompoundGeometry(Geometry):
         self.points = [] 
         self.facets = [] 
         self.holes = [] 
-        self.perimeter = [] 
+        self.perimeter = []
+
         # self.mesh = None # Previously not a property
 
     def _repr_svg_(self):
@@ -637,6 +652,87 @@ class CompoundGeometry(Geometry):
         print("sectionproperties.pre.sections.CompoundGeometry")
         print(f"object at: {hex(id(self))}")
         return self.geom._repr_svg_()
+
+    @staticmethod
+    def from_points(
+        points: List[List[float]], 
+        facets: Optional[List[List[int]]] = None, 
+        holes: Optional[List[List[float]]] = None,
+        control_points: Optional[List[List[float]]] = None,
+        ):
+        """
+        An interface for the creation of Geometry objects through the definition of points, 
+        facets, and holes. 
+
+        :cvar points: List of points *(x, y)* defining the vertices of the section geometry.
+        If facets are not provided, it is a assumed the that the list of points are ordered
+        around the perimeter, either clockwise or anti-clockwise
+        :vartype points: list[list[float]]
+        :cvar facets: Optional. A list of *(start, end)* indexes of vertices defining the edges
+        of the section geoemtry. Can be used to define both external and internal perimeters of holes.
+        Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
+        interior perimeter 2, etc.
+        :vartype facets: list[list[int]]
+        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
+        being holes or voids. The point can be located anywhere within the hole region.
+        Only one point is required per hole region.
+        :vartype holes: list[list[float]]
+        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
+        being holes or voids. The point can be located anywhere within the hole region.
+        Only one point is required per hole region.
+        :vartype holes: list[list[float]]
+        """
+        if facets is None: return Geometry(Polygon(points))
+        if holes is not None and facets is None:
+            raise ValueError(
+                "If holes coordinates are provided then facets must also be provided "
+                "to distinguish between exterior and interior edges."
+                )
+
+        # First, generate all invidual polygons from points and facets
+        current_polygon_points = []
+        all_polygons = []
+        prev_facet = None
+        for facet in facets:
+            i_idx, j_idx = facet
+            if not prev_facet: # Add the first facet vertex to exterior and move on
+                current_polygon_points.append(points[i_idx])
+                prev_facet = facet
+                continue
+            prev_j_idx = prev_facet[1]
+            if i_idx != prev_j_idx: #If there is a break in the chain of edges...
+                current_polygon_points.append(points[prev_j_idx])
+                all_polygons.append(Polygon(current_polygon_points))
+                current_polygon_points = []
+            else:
+                current_polygon_points.append(points[i_idx]) # Only need i_idx b/c shapely auto-closes polygons
+
+            prev_facet = facet
+        else:
+            current_polygon_points.append(points[j_idx])
+
+        # Then classify all of the collected polygons as either "exterior" or "interior"
+        exteriors = []
+        interiors = []
+        for polygon in all_polygons:
+            hole_coord_in_polygon = any([polygon.contains(Point(hole_coord)) for hole_coord in holes])
+            ctrl_coord_in_polygon = any([polygon.contains(Point(ctrl_coord)) for ctrl_coord in control_points])
+            if hole_coord_in_polygon and not ctrl_coord_in_polygon:
+                interiors.append(polygon)
+            else:
+                exteriors.append(polygon)
+
+        # Create the holes by subtracting interior regions from exterior regions
+        exterior_geometry = MultiPolygon(exteriors)
+        if not interiors:
+            return CompoundGeometry(exterior_geometry)
+        if len(interiors) == 1:
+            interior_geometry = Polygon(interiors)
+            return CompoundGeometry(exterior_geometry - interior_geometry)
+        else:
+            interior_geometry = MultiPolygon(interiors)
+            return CompoundGeometry(exterior_geometry - interior_geometry)
+
 
     def shift_section(self, x_offset: float = 0, y_offset: float = 0):
         """
@@ -774,7 +870,20 @@ class CompoundGeometry(Geometry):
 
             # add control points
             for control_point in geom.control_points:
-                self.control_points.append([control_point[0], control_point[1]])
+                self.control_points.append([control_point[0], control_point[1]]).
+
+        # Check for holes created inadvertently from combined sections
+        unionized_geometry = None
+        for geom in self.geoms:
+            if unionized_geometry is None:
+                unionized_geometry = geom
+                continue
+            unionized_geometry = unionized_geometry | geom
+        unionized_geometry.compile_geometry()
+        if len(unionized_geometry.holes) > len(self.holes):
+            inadvertent_holes = set(unionized_geometry.holes) - set(self.holes)
+            self.holes.append(inadvertent_holes)
+            #change x,y coords to tuples, only
 
     def calculate_perimeter(self):
         """
@@ -912,12 +1021,14 @@ def rectangular_section(b, d):
 
         Mesh generated from the above geometry.
     """
-    min_x = 0
-    min_y = 0
-    max_x = b
-    max_y = d
+    # min_x = 0
+    # min_y = 0
+    # max_x = b
+    # max_y = d
 
-    rectangle = box(min_x, min_y, max_x, max_y)
+    # rectangle = box(min_x, min_y, max_x, max_y)
+    points = [[0, 0], [b, 0], [b, d], [0, d]]
+    rectangle = Polygon(points)
     return Geometry(rectangle)
 
 

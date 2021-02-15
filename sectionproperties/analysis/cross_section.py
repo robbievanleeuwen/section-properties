@@ -217,6 +217,9 @@ class Section:
             self.mesh_elements = elements
             self.mesh_attributes = attributes
 
+            log.log(level=logging.DEBUG, msg=f"Section:\n")
+            log.log(level=logging.DEBUG, msg=f"Tri6 Elements: {self.elements}")
+
             # initialise class storing section properties
             self.section_props = SectionProperties()
 
@@ -343,6 +346,7 @@ class Section:
         for el in warping_section.elements:
             el.coords[0, :] -= self.section_props.cx
             el.coords[1, :] -= self.section_props.cy
+            log.log(level=logging.DEBUG, msg=f"{el.coords}")
 
         # assemble stiffness matrix and load vector for warping function
         if time_info:
@@ -350,6 +354,8 @@ class Section:
             (k, k_lg, f_torsion) = solver.function_timer(text, warping_section.assemble_torsion)
         else:
             (k, k_lg, f_torsion) = warping_section.assemble_torsion()
+
+        log.log(level=logging.DEBUG, msg=f"k: {k}, k_lg: {k_lg}, f_torsion: {f_torsion}")
 
         # ILU decomposition of stiffness matrices
         def ilu_decomp():
@@ -1805,8 +1811,6 @@ class PlasticSection:
         if self.materials is not None:
             # create dummy control point at the start of the list
             (x_min, x_max, y_min, y_max) = self.geometry.calculate_extents()
-
-            # QUESTION: What is the purpose of this control point? A point outside of the section?
             self.geometry.control_points.insert(0, [x_min - 1, y_min - 1])
 
             # create matching dummy material
@@ -2110,7 +2114,6 @@ class PlasticSection:
         if self.debug:
             self.plot_mesh(nodes, elements, element_list, self.materials)
 
-        # print("Calling calculate_plastic_force")
         # calculate force equilibrium
         (f_top, f_bot) = self.calculate_plastic_force(element_list, u, p)
 
@@ -2143,8 +2146,6 @@ class PlasticSection:
         :rtype: tuple(float, :class:`scipy.optimize.RootResults`, float, list[float, float],
             list[float, float])
         """
-        # print("Runs pc_algorithm")
-
         # calculate vector perpendicular to u
         if axis == 1:
             u_p = np.array([-u[1], u[0]])
@@ -2154,8 +2155,6 @@ class PlasticSection:
         a = dlim[0]
         b = dlim[1]
 
-        # print("Calling from brentq")
-        # print("Args: ", u, dlim, axis, verbose, u, u_p)
         (d, r) = brentq(
             self.evaluate_force_eq, a, b, args=(u, u_p, verbose), full_output=True, disp=False,
             xtol=1e-6, rtol=1e-6

@@ -667,7 +667,7 @@ def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
     np.testing.assert_(DIM3 < DIM1, "Invalid geometry specified.")
 
     # create bottom rectangular plate
-    bottom_plate = nastran_bar(DIM1=DIM5, DIM2=DIM1)
+    bottom_plate = nastran_bar(DIM1=DIM1, DIM2=DIM5)
 
     # create the hat stiffener
     d1 = DIM2 - DIM5
@@ -678,7 +678,7 @@ def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
     hat = nastran_hat(DIM1=d1, DIM2=d2, DIM3=d3, DIM4=d4)
 
     # Merge the two sections into one geometry
-    geometry = bottom_plate + hat
+    geometry = bottom_plate.align_center(hat).align_bottom(hat) + hat
 
     C = (-0.5*DIM1, 0)
     D = (0.5*DIM1, 0)
@@ -730,8 +730,8 @@ def nastran_hexa(DIM1: float, DIM2: float, DIM3: float):
     ]
 
     geometry = Geometry(Polygon(points))
-    C = (, 0.5*DIM3)
-    D = (, -0.5*DIM3)
+    C = (0, 0.5*DIM3)
+    D = (0, -0.5*DIM3)
     E = (0.5*DIM2)
     F = (-0.5*DIM2)
     geometry.recovery_points = [C, D, E, F]
