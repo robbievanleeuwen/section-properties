@@ -158,7 +158,7 @@ class GeometryCleaner:
                 # if the points are close together and the point has not already been removed
                 if (dist < atol or dist < rel_tol) and idx_2 not in idx_to_remove:
                     # update point1 (average of point1 + point2)
-                    pt1 = (0.5 * (pt1[0] + pt2[0]), 0.5 * (pt1[1] + pt2[1]))
+                    pt1 = [0.5 * (pt1[0] + pt2[0]), 0.5 * (pt1[1] + pt2[1])]
                     # pt1[0] = 0.5 * (pt1[0] + pt2[0])
                     # pt1[1] = 0.5 * (pt1[1] + pt2[1])
 
@@ -169,8 +169,8 @@ class GeometryCleaner:
                     idx_to_remove.append(idx_2)
 
                     if self.verbose:
-                        str = "Zipped point {0} to point {1}".format(idx_2, idx_1)
-                        print(str)
+                        info_str = "Zipped point {0} to point {1}".format(idx_2, idx_1)
+                        print(info_str)
 
         # sort list of indices to remove in reverse order so as not to compromise the indices
         idx_to_remove = sorted(idx_to_remove, reverse=True)

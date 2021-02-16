@@ -2226,7 +2226,9 @@ class PlasticSection:
         """
 
         # start with the initial geometry
-        geom = self.geometry
+        self._geometry_class = type(self.geometry)
+        shapely_copy = copy.deepcopy(self.geometry.geom)
+        geom = self._geometry_class(shapely_copy)
         geom.compile_geometry()
 
         # add line at new_line
@@ -2258,7 +2260,10 @@ class PlasticSection:
             mesh.regions[i] = [cp[0], cp[1], region_id, 1]
             region_id += 1
 
+        geom.plot_geometry()
+        # print(geom.points, geom.facets)
         mesh = triangle.build(mesh, mesh_order=2, quality_meshing=False, attributes=True)
+    
 
         return mesh
 
