@@ -60,7 +60,7 @@ skip-string-normalization = true
 profile = "black"
 line_length = 100
 lines_after_imports = 2
-src_paths = ["sectionproperties", "tests"]
+src_paths = ["sectionproperties", "tests", "examples"]
 
 [tool.pylint]
   [tool.pylint.master]
