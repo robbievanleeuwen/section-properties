@@ -59,6 +59,7 @@ skip-string-normalization = true
 [tool.isort]
 profile = "black"
 line_length = 100
+lines_after_imports = 2
 src_paths = ["sectionproperties", "tests"]
 
 [tool.pylint]
