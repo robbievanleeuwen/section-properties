@@ -74,14 +74,6 @@ src_paths = ["sectionproperties", "tests", "examples"]
     "i",
     "j",
     "k",
-    "s",
-    "st",
-    "db",
-    "eventSubURL",
-    "uniqueID",
-    "on",
-    "controlURL",
-    "serviceType",
   ]
 
   [tool.pylint.message_control]
