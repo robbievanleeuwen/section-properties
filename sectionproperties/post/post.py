@@ -5,7 +5,7 @@ import contextlib
 
 
 @contextlib.contextmanager
-def plotting_context(ax=None, pause=True, title='', filename='', render=False):
+def plotting_context(ax=None, pause=True, title='', filename='', render=True, **kwargs):
     """Executes code required to set up a matplotlib figure.
 
     :param ax: Axes object on which to plot
@@ -17,16 +17,19 @@ def plotting_context(ax=None, pause=True, title='', filename='', render=False):
         used, the figure is closed after the file is saved.
     :param bool render: If set to False, the image is not popped up. This may be useful if the
         figure or axes will be embedded or further edited before being displayed.
+    :param \**kwargs: Passed to :func:`matplotlib.pyplot.subplots`
     """
+    if filename:
+        render = False
     if ax is None:
-        ax_supplied = False
-        (fig, ax) = plt.subplots()
         if not render:
             plt.ioff()
         elif pause:
             plt.ioff()
         else:
             plt.ion()
+        ax_supplied = False
+        (fig, ax) = plt.subplots(**kwargs)
     else:
         fig = ax.get_figure()
         ax_supplied = True
