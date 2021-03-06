@@ -5,7 +5,7 @@ import contextlib
 
 
 @contextlib.contextmanager
-def plotting_context(ax=None, pause=False, title='', filename='', render=True):
+def plotting_context(ax=None, pause=True, title='', filename='', render=False):
     """Executes code required to set up a matplotlib figure.
 
     :param ax: Axes object on which to plot
