@@ -987,7 +987,7 @@ class CrossSection:
         return (csc_matrix(k), csc_matrix(k_lg), f_torsion)
 
     def plot_mesh(self, alpha=1, materials=False, mask=None, title='Finite Element Mesh', **kwargs):
-        """Plots the finite element mesh. If no axes object is supplied a new figure and axis is
+        r"""Plots the finite element mesh. If no axes object is supplied a new figure and axis is
         created.
 
         :param float alpha: Transparency of the mesh outlines: :math:`0 \leq \\alpha \leq 1`
@@ -1075,7 +1075,7 @@ class CrossSection:
         return fig, ax
 
     def plot_centroids(self, title='Centroids', **kwargs):
-        """Plots the elastic centroid, the shear centre, the plastic centroids and the principal
+        r"""Plots the elastic centroid, the shear centre, the plastic centroids and the principal
         axis, if they have been calculated, on top of the finite element mesh.
 
         :param string title: Plot title
@@ -2351,7 +2351,7 @@ class PlasticSection:
 
     @staticmethod
     def plot_mesh(nodes, elements, element_list, materials, title='Finite Element Mesh', **kwargs):
-        """Watered down implementation of the CrossSection method to plot the finite element mesh,
+        r"""Watered down implementation of the CrossSection method to plot the finite element mesh,
         showing material properties.
 
         :param string title: Plot title
@@ -2421,7 +2421,7 @@ class StressPost:
         self.material_groups = copy.deepcopy(cross_section.material_groups)
 
     def plot_stress_contour(self, sigs, title, **kwargs):
-        """Plots filled stress contours over the finite element mesh.
+        r"""Plots filled stress contours over the finite element mesh.
 
         :param sigs: List of nodal stress values for each material
         :type sigs: list[:class:`numpy.ndarray`]
@@ -2476,7 +2476,7 @@ class StressPost:
         return fig, ax
 
     def plot_stress_vector(self, sigxs, sigys, title, **kwargs):
-        """Plots stress vectors over the finite element mesh.
+        r"""Plots stress vectors over the finite element mesh.
 
         :param sigxs: List of x-components of the nodal stress values for each material
         :type sigxs: list[:class:`numpy.ndarray`]
@@ -2644,8 +2644,8 @@ class StressPost:
 
         return stress
 
-    def plot_stress_n_zz(self, title='Stress Contour Plot - $\sigma_{zz,N}$', **kwargs):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,N}` resulting from the
+    def plot_stress_n_zz(self, title=r'Stress Contour Plot - $\sigma_{zz,N}$', **kwargs):
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,N}` resulting from the
         axial load :math:`N`.
 
         :param string title: Plot title
@@ -2684,8 +2684,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_mxx_zz(self, title='Stress Contour Plot - $\sigma_{zz,Mxx}$', **kwargs):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}` resulting from the
+    def plot_stress_mxx_zz(self, title=r'Stress Contour Plot - $\sigma_{zz,Mxx}$', **kwargs):
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}` resulting from the
         bending moment :math:`M_{xx}`.
 
         :param string title: Plot title
@@ -2724,8 +2724,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_myy_zz(self, title='Stress Contour Plot - $\sigma_{zz,Myy}$', **kwargs):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}` resulting from the
+    def plot_stress_myy_zz(self, title=r'Stress Contour Plot - $\sigma_{zz,Myy}$', **kwargs):
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}` resulting from the
         bending moment :math:`M_{yy}`.
 
         :param string title: Plot title
@@ -2764,8 +2764,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_m11_zz(self, title='Stress Contour Plot - $\sigma_{zz,M11}$', **kwargs):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}` resulting from the
+    def plot_stress_m11_zz(self, title=r'Stress Contour Plot - $\sigma_{zz,M11}$', **kwargs):
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}` resulting from the
         bending moment :math:`M_{11}`.
 
         :param string title: Plot title
@@ -2804,8 +2804,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_m22_zz(self, title='Stress Contour Plot - $\sigma_{zz,M22}$', **kwargs):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}` resulting from the
+    def plot_stress_m22_zz(self, title=r'Stress Contour Plot - $\sigma_{zz,M22}$', **kwargs):
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}` resulting from the
         bending moment :math:`M_{22}`.
 
         :param string title: Plot title
@@ -2844,8 +2844,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_m_zz(self, title='Stress Contour Plot - $\sigma_{zz,\Sigma M}$', **kwargs):
-        """Produces a contour plot of the normal stress :math:`\sigma_{zz,\Sigma M}` resulting from
+    def plot_stress_m_zz(self, title=r'Stress Contour Plot - $\sigma_{zz,\Sigma M}$', **kwargs):
+        r"""Produces a contour plot of the normal stress :math:`\sigma_{zz,\Sigma M}` resulting from
         all bending moments :math:`M_{xx} + M_{yy} + M_{11} + M_{22}`.
 
         :param string title: Plot title
@@ -2885,8 +2885,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_mzz_zx(self, title='Stress Contour Plot - $\sigma_{zx,Mzz}$', **kwargs):
-        """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Mzz}`
+    def plot_stress_mzz_zx(self, title=r'Stress Contour Plot - $\sigma_{zx,Mzz}$', **kwargs):
+        r"""Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Mzz}`
         resulting from the torsion moment :math:`M_{zz}`.
 
         :param string title: Plot title
@@ -2925,8 +2925,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_mzz_zy(self, title='Stress Contour Plot - $\sigma_{zy,Mzz}$', **kwargs):
-        """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Mzz}`
+    def plot_stress_mzz_zy(self, title=r'Stress Contour Plot - $\sigma_{zy,Mzz}$', **kwargs):
+        r"""Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Mzz}`
         resulting from the torsion moment :math:`M_{zz}`.
 
         :param string title: Plot title
@@ -2965,8 +2965,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_mzz_zxy(self, title='Stress Contour Plot - $\sigma_{zxy,Mzz}$', **kwargs):
-        """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
+    def plot_stress_mzz_zxy(self, title=r'Stress Contour Plot - $\sigma_{zxy,Mzz}$', **kwargs):
+        r"""Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
         from the torsion moment :math:`M_{zz}`.
 
         :param string title: Plot title
@@ -3005,8 +3005,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_vector_mzz_zxy(self, title='Stress Vector Plot - $\sigma_{zxy,Mzz}$', **kwargs):
-        """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
+    def plot_vector_mzz_zxy(self, title=r'Stress Vector Plot - $\sigma_{zxy,Mzz}$', **kwargs):
+        r"""Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
         from the torsion moment :math:`M_{zz}`.
 
         :param string title: Plot title
@@ -3047,8 +3047,8 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title=title, **kwargs)
 
-    def plot_stress_vx_zx(self, title='Stress Contour Plot - $\sigma_{zx,Vx}$', **kwargs):
-        """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vx}`
+    def plot_stress_vx_zx(self, title=r'Stress Contour Plot - $\sigma_{zx,Vx}$', **kwargs):
+        r"""Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vx}`
         resulting from the shear force :math:`V_{x}`.
 
         :param string title: Plot title
@@ -3087,8 +3087,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_vx_zy(self, title='Stress Contour Plot - $\sigma_{zy,Vx}$', **kwargs):
-        """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vx}`
+    def plot_stress_vx_zy(self, title=r'Stress Contour Plot - $\sigma_{zy,Vx}$', **kwargs):
+        r"""Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vx}`
         resulting from the shear force :math:`V_{x}`.
 
         :param string title: Plot title
@@ -3127,8 +3127,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_vx_zxy(self, title='Stress Contour Plot - $\sigma_{zxy,Vx}$', **kwargs):
-        """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
+    def plot_stress_vx_zxy(self, title=r'Stress Contour Plot - $\sigma_{zxy,Vx}$', **kwargs):
+        r"""Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
         from the shear force :math:`V_{x}`.
 
         :param string title: Plot title
@@ -3167,8 +3167,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_vector_vx_zxy(self, title='Stress Vector Plot - $\sigma_{zxy,Vx}$', **kwargs):
-        """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
+    def plot_vector_vx_zxy(self, title=r'Stress Vector Plot - $\sigma_{zxy,Vx}$', **kwargs):
+        r"""Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
         from the shear force :math:`V_{x}`.
 
         :param string title: Plot title
@@ -3209,8 +3209,8 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title=title, **kwargs)
 
-    def plot_stress_vy_zx(self, title='Stress Contour Plot - $\sigma_{zx,Vy}$', **kwargs):
-        """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vy}`
+    def plot_stress_vy_zx(self, title=r'Stress Contour Plot - $\sigma_{zx,Vy}$', **kwargs):
+        r"""Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vy}`
         resulting from the shear force :math:`V_{y}`.
 
         :param string title: Plot title
@@ -3249,8 +3249,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_vy_zy(self, title='Stress Contour Plot - $\sigma_{zy,Vy}$', **kwargs):
-        """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vy}`
+    def plot_stress_vy_zy(self, title=r'Stress Contour Plot - $\sigma_{zy,Vy}$', **kwargs):
+        r"""Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vy}`
         resulting from the shear force :math:`V_{y}`.
 
         :param string title: Plot title
@@ -3289,8 +3289,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_vy_zxy(self, title='Stress Contour Plot - $\sigma_{zxy,Vy}$', **kwargs):
-        """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
+    def plot_stress_vy_zxy(self, title=r'Stress Contour Plot - $\sigma_{zxy,Vy}$', **kwargs):
+        r"""Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
         from the shear force :math:`V_{y}`.
 
         :param string title: Plot title
@@ -3329,8 +3329,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_vector_vy_zxy(self, title='Stress Vector Plot - $\sigma_{zxy,Vy}$', **kwargs):
-        """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
+    def plot_vector_vy_zxy(self, title=r'Stress Vector Plot - $\sigma_{zxy,Vy}$', **kwargs):
+        r"""Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
         from the shear force :math:`V_{y}`.
 
         :param string title: Plot title
@@ -3371,8 +3371,8 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title=title, **kwargs)
 
-    def plot_stress_v_zx(self, title='Stress Contour Plot - $\sigma_{zx,\Sigma V}$', **kwargs):
-        """Produces a contour plot of the *x*-component of the shear stress
+    def plot_stress_v_zx(self, title=r'Stress Contour Plot - $\sigma_{zx,\Sigma V}$', **kwargs):
+        r"""Produces a contour plot of the *x*-component of the shear stress
         :math:`\sigma_{zx,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
 
@@ -3413,8 +3413,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_v_zy(self, title='Stress Contour Plot - $\sigma_{zy,\Sigma V}$', **kwargs):
-        """Produces a contour plot of the *y*-component of the shear stress
+    def plot_stress_v_zy(self, title=r'Stress Contour Plot - $\sigma_{zy,\Sigma V}$', **kwargs):
+        r"""Produces a contour plot of the *y*-component of the shear stress
         :math:`\sigma_{zy,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
 
@@ -3455,8 +3455,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_v_zxy(self, title='Stress Contour Plot - $\sigma_{zxy,\Sigma V}$', **kwargs):
-        """Produces a contour plot of the resultant shear stress
+    def plot_stress_v_zxy(self, title=r'Stress Contour Plot - $\sigma_{zxy,\Sigma V}$', **kwargs):
+        r"""Produces a contour plot of the resultant shear stress
         :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
 
@@ -3497,8 +3497,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_vector_v_zxy(self, title='Stress Vector Plot - $\sigma_{zxy,\Sigma V}$', **kwargs):
-        """Produces a vector plot of the resultant shear stress
+    def plot_vector_v_zxy(self, title=r'Stress Vector Plot - $\sigma_{zxy,\Sigma V}$', **kwargs):
+        r"""Produces a vector plot of the resultant shear stress
         :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the  applied shear forces
         :math:`V_{x} + V_{y}`.
 
@@ -3541,8 +3541,8 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title=title, **kwargs)
 
-    def plot_stress_zz(self, title='Stress Contour Plot - $\sigma_{zz}$', **kwargs):
-        """Produces a contour plot of the combined normal stress :math:`\sigma_{zz}` resulting from
+    def plot_stress_zz(self, title=r'Stress Contour Plot - $\sigma_{zz}$', **kwargs):
+        r"""Produces a contour plot of the combined normal stress :math:`\sigma_{zz}` resulting from
         all actions.
 
         :param string title: Plot title
@@ -3582,8 +3582,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_zx(self, title='Stress Contour Plot - $\sigma_{zx}$', **kwargs):
-        """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx}`
+    def plot_stress_zx(self, title=r'Stress Contour Plot - $\sigma_{zx}$', **kwargs):
+        r"""Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx}`
         resulting from all actions.
 
         :param string title: Plot title
@@ -3623,8 +3623,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_zy(self, title='Stress Contour Plot - $\sigma_{zy}$', **kwargs):
-        """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy}`
+    def plot_stress_zy(self, title=r'Stress Contour Plot - $\sigma_{zy}$', **kwargs):
+        r"""Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy}`
         resulting from all actions.
 
         :param string title: Plot title
@@ -3664,8 +3664,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_stress_zxy(self, title='Stress Contour Plot - $\sigma_{zxy}$', **kwargs):
-        """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
+    def plot_stress_zxy(self, title=r'Stress Contour Plot - $\sigma_{zxy}$', **kwargs):
+        r"""Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
         from all actions.
 
         :param string title: Plot title
@@ -3705,8 +3705,8 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title=title, **kwargs)
 
-    def plot_vector_zxy(self, title='Stress Vector Plot - $\sigma_{zxy}$', **kwargs):
-        """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
+    def plot_vector_zxy(self, title=r'Stress Vector Plot - $\sigma_{zxy}$', **kwargs):
+        r"""Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
         from all actions.
 
         :param string title: Plot title
@@ -3748,8 +3748,8 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title=title, **kwargs)
 
-    def plot_stress_vm(self, title='Stress Contour Plot - $\sigma_{vM}$', **kwargs):
-        """Produces a contour plot of the von Mises stress :math:`\sigma_{vM}` resulting from all
+    def plot_stress_vm(self, title=r'Stress Contour Plot - $\sigma_{vM}$', **kwargs):
+        r"""Produces a contour plot of the von Mises stress :math:`\sigma_{vM}` resulting from all
         actions.
 
         :param string title: Plot title
