@@ -88,7 +88,6 @@ disable = [
   "too-many-statements",
   "invalid-name",
   "missing-module-docstring",
-  "anomalous-backslash-in-string",
   "too-many-function-args",
   "deprecated-method",
   "missing-class-docstring",

@@ -414,7 +414,7 @@ class Tri6:
         phi_shear,
         Delta_s,
     ):
-        """Calculates the stress within an element resulting from a specified loading. Also returns
+        r"""Calculates the stress within an element resulting from a specified loading. Also returns
         the shape function weights.
 
         :param float N: Axial force
