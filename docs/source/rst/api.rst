@@ -400,7 +400,6 @@ Post-Processor Package
 post Functions
 """"""""""""""
 
-..  autofunction:: sectionproperties.post.post.setup_plot
-..  autofunction:: sectionproperties.post.post.finish_plot
+..  autofunction:: sectionproperties.post.post.plotting_context
 ..  autofunction:: sectionproperties.post.post.draw_principal_axis
 ..  autofunction:: sectionproperties.post.post.print_results
