@@ -2537,7 +2537,7 @@ class StressPost:
         return fig, ax
 
     def get_stress(self):
-        """Returns the stresses within each material belonging to the current
+        r"""Returns the stresses within each material belonging to the current
         :class:`~sectionproperties.analysis.cross_section.StressPost` object.
 
         :return: A list of dictionaries containing the cross-section stresses for each material.
@@ -3841,7 +3841,7 @@ class MaterialGroup:
 
 
 class StressResult:
-    """Class for storing a stress result.
+    r"""Class for storing a stress result.
 
     Provides variables to store the results from a cross-section stress analysis. Also provides a
     method to calculate combined stresses.
