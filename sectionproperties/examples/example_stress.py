@@ -1,6 +1,7 @@
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
 
+
 # create a 150x100x6 RHS on its side
 geometry = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8)
 

@@ -6,6 +6,8 @@ run_all() {
     echo "--------------------------------------------------------------------"
     echo "---[ Installing dependencies with poetry ]--------------------------"
     echo "--------------------------------------------------------------------"
+    poetry config --local virtualenvs.create true
+    poetry config --local virtualenvs.in-project true
     poetry install -v
 
     echo "--------------------------------------------------------------------"

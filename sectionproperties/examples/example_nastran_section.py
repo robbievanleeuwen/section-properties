@@ -1,6 +1,7 @@
 import sectionproperties.pre.nastran_sections as nsections
 from sectionproperties.analysis.cross_section import CrossSection
 
+
 # create a HAT1 section
 geometry = nsections.HAT1Section(DIM1=4.0, DIM2=2.0, DIM3=1.5, DIM4=0.1875, DIM5=0.375)
 geometry.plot_geometry()  # plot the geometry

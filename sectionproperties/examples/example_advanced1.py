@@ -4,6 +4,7 @@ import numpy as np
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
 
+
 # rectangle dimensions
 d_list = []
 b_list = np.linspace(0.2, 1, 20)

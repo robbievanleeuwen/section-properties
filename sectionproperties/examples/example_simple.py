@@ -1,6 +1,7 @@
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
 
+
 # create a 50 diameter circle discretised by 64 points
 geometry = sections.CircularSection(d=50, n=64)
 geometry.plot_geometry()  # plot the geometry

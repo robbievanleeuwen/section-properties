@@ -1,6 +1,7 @@
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
 
+
 # define parameters for the angle section
 a = 1
 b = 2

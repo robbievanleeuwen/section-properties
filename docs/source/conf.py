@@ -15,8 +15,10 @@
 import os
 import sys
 
+
 sys.path.insert(0, os.path.abspath('../../'))
 from sectionproperties import __version__ as ver  # noqa
+
 
 autodoc_mock_imports = ['pybind11', 'meshpy', 'shapely']
 
