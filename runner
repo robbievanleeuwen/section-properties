@@ -41,7 +41,7 @@ run_all() {
     echo "--------------------------------------------------------------------"
     poetry run rstcheck README_pypi.rst
     poetry run rstcheck CHANGELOG.rst
-    # poetry run rstcheck --recursive docs
+    poetry run rstcheck --recursive docs
 
     echo
     echo "--------------------------------------------------------------------"

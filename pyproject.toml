@@ -63,62 +63,61 @@ lines_after_imports = 2
 src_paths = ["sectionproperties", "tests", "examples"]
 
 [tool.pylint]
-  [tool.pylint.master]
-  jobs = 0
-  extension-pkg-whitelist = "numpy"
+[tool.pylint.master]
+jobs = 0
+extension-pkg-whitelist = "numpy"
 
-  [tool.pylint.format]
-  max-line-length = 100
-  expected-line-ending-format = "LF"
-  good-names = [
-    "i",
-    "j",
-    "k",
-  ]
+[tool.pylint.format]
+max-line-length = 100
+expected-line-ending-format = "LF"
+good-names = [
+  "i",
+  "j",
+  "k",
+]
 
-  [tool.pylint.message_control]
-  disable = [
-    "too-few-public-methods",
-    "too-many-public-methods",
-    "too-many-arguments",
-    "too-many-branches",
-    "too-many-instance-attributes",
-    "too-many-lines",
-    "too-many-locals",
-    "too-many-statements",
-    "invalid-name",
-    "missing-module-docstring",
-    "anomalous-backslash-in-string",
-    "too-many-function-args",
-    "deprecated-method",
-    "missing-class-docstring",
-    "attribute-defined-outside-init",
-    "missing-function-docstring",
-    "protected-access",
-  ]
+[tool.pylint.message_control]
+disable = [
+  "too-few-public-methods",
+  "too-many-public-methods",
+  "too-many-arguments",
+  "too-many-branches",
+  "too-many-instance-attributes",
+  "too-many-lines",
+  "too-many-locals",
+  "too-many-statements",
+  "invalid-name",
+  "missing-module-docstring",
+  "anomalous-backslash-in-string",
+  "too-many-function-args",
+  "deprecated-method",
+  "missing-class-docstring",
+  "attribute-defined-outside-init",
+  "missing-function-docstring",
+  "protected-access",
+]
 
-  [tool.pylint.reports]
-  reports = "no"
-
+[tool.pylint.reports]
+reports = "no"
 
 [tool.pytest]
-  [tool.pytest.ini_options]
-  minversion = "6.2"
-  cache_dir = ".cache/pytest"
+[tool.pytest.ini_options]
+minversion = "6.2"
+cache_dir = ".cache/pytest"
 
 [tool.coverage]
-  [tool.coverage.run]
-  branch = true
-  source = ["sectionproperties"]
-  data_file = ".cache/coverage"
-  omit = [
-    ".venv/*",
-    "*/tests/*",
-  ]
+[tool.coverage.run]
+branch = true
+source = ["sectionproperties"]
+data_file = ".cache/coverage"
+omit = [
+  ".venv/*",
+  "*/tests/*",
+]
 
-  [tool.coverage.report]
-  precision = 2
-  show_missing = true
+[tool.coverage.report]
+precision = 2
+show_missing = true
 
-  [tool.coverage.html]
-  directory = ".cache/htmlcov"
+[tool.coverage.html]
+directory = ".cache/htmlcov"

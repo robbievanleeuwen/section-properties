@@ -26,6 +26,12 @@ repos:
         require_serial: true
         types_or: [python, pyi]
 
+      - id: rstcheck
+        name: rstcheck
+        language: system
+        entry: poetry run rstcheck
+        types: [rst]
+
       - id: flake8
         name: flake8
         language: system

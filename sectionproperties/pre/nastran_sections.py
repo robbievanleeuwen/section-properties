@@ -66,7 +66,7 @@ class BARSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -157,7 +157,7 @@ class BOXSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -257,7 +257,7 @@ class BOX1Section(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -346,7 +346,7 @@ class CHANSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -435,7 +435,7 @@ class CHAN1Section(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -524,7 +524,7 @@ class CHAN2Section(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -631,7 +631,7 @@ class CROSSSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -786,7 +786,7 @@ class FCROSSSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -921,7 +921,7 @@ class DBOXSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """
         Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
@@ -1047,7 +1047,7 @@ class GBOXSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1155,7 +1155,7 @@ class HSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1260,7 +1260,7 @@ class HATSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1419,7 +1419,7 @@ class HAT1Section(Geometry):
 
         return create_mesh(self.points, self.facets, self.holes, self.control_points, mesh_sizes)
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1502,7 +1502,7 @@ class HEXASection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1619,7 +1619,7 @@ class NISection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1727,7 +1727,7 @@ class I1Section(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1807,7 +1807,7 @@ class LSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -1891,7 +1891,7 @@ class RODSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -2002,7 +2002,7 @@ class TSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """
         Returns the coordinates of the stress evaluation points relative to the origin
         of the cross-section. The shift parameter can be used to make the coordinates
@@ -2093,7 +2093,7 @@ class T1Section(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -2183,7 +2183,7 @@ class T2Section(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -2283,7 +2283,7 @@ class TUBESection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -2383,7 +2383,7 @@ class TUBE2Section(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
@@ -2472,7 +2472,7 @@ class ZSection(Geometry):
 
         self.shift_section()
 
-    def getStressPoints(self, shift=(0.0, 0.0)):
+    def get_stress_points(self, shift=(0.0, 0.0)):
         """Returns the coordinates of the stress evaluation points relative to the origin of the
         cross-section. The shift parameter can be used to make the coordinates relative to the
         centroid or the shear center.
