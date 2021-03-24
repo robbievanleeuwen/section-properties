@@ -39,7 +39,7 @@ run_all() {
     echo "--------------------------------------------------------------------"
     echo "---[ Lint with rstcheck ]-------------------------------------------"
     echo "--------------------------------------------------------------------"
-    poetry run rstcheck README_pypi.rst
+    poetry run rstcheck README.rst
     poetry run rstcheck CHANGELOG.rst
     poetry run rstcheck --recursive docs
 
