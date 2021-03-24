@@ -82,13 +82,14 @@ disable = [
   "too-many-locals",
   "too-many-statements",
   "invalid-name",
-  "missing-module-docstring",
-  "too-many-function-args",
-  "deprecated-method",
-  "missing-class-docstring",
-  "attribute-defined-outside-init",
-  "missing-function-docstring",
-  "protected-access",
+  "missing-module-docstring",  # TODO: remove this and fix code
+  "too-many-function-args",  # TODO: remove this and fix code
+  "deprecated-method",  # TODO: remove this and fix code
+  "missing-class-docstring",  # TODO: remove this and fix code
+  "attribute-defined-outside-init",  # TODO: remove this and fix code
+  "missing-function-docstring",  # TODO: remove this and fix code
+  "protected-access",  # TODO: remove this and fix code
+  "duplicate-code",  # TODO: remove this and refactor code
 ]
 
 [tool.pylint.reports]
