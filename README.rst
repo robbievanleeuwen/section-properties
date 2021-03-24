@@ -12,14 +12,14 @@ applied forces and bending moments.
 
 `Subscribe`_ to the mailing list!
 
-Installation:
--------------
+Installation
+------------
 
 For more detailed installation instructions, refer to the
 `documentation`_.
 
-UNIX (MacOS/Linux):
-~~~~~~~~~~~~~~~~~~~
+UNIX (MacOS/Linux)
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: shell
 
@@ -28,7 +28,7 @@ UNIX (MacOS/Linux):
 Windows
 ~~~~~~~
 
-Install *meshpy* by downloading the appropriate `installation wheel`_.
+Install ``meshpy`` by downloading the appropriate `installation wheel`_.
 
 Navigate to the location of the downloaded wheel and install using pip:
 
@@ -37,27 +37,27 @@ Navigate to the location of the downloaded wheel and install using pip:
    $ cd Downloads
    $ pip install MeshPy‑2018.2.1‑cp36‑cp36m‑win_amd64.whl
 
-Once *meshpy* has been installed, *sectionproperties* can be installed:
+Once ``meshpy`` has been installed, *sectionproperties* can be installed:
 
 .. code-block:: shell
 
    $ pip install sectionproperties
 
-Documentation:
---------------
+Documentation
+-------------
 
-*sectionproperties* has a fully documented python API which you can find at
+``sectionproperties`` has a fully documented python API which you can find at
 https://sectionproperties.readthedocs.io/. To read more about the theory behind the program, its
 implementation and some more examples, check out my blog at https://robbievanleeuwen.github.io/.
 
-Contributing:
--------------
+Contributing
+------------
 
 Pull requests are welcome!
 Please read the `contribution guide <CONTRIBUTING.rst>`_ to get started.
 
-Current Capabilities:
----------------------
+Current Capabilities
+--------------------
 
 Pre-Processor:
 ~~~~~~~~~~~~~~
