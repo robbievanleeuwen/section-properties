@@ -5,32 +5,43 @@
 
 This document outlines how to use ``sectionproperties`` locally and get setup for making a pull request.
 The ``runner`` script is written for ``bash``, but should work with ``git-bash`` on Windows as well.
-However, make will also be needed on Windows to buid the docs.
+However, you'll need to install ``make`` to build the docs on Windows.
+On Windows, an error when building the docs is skipped since ``make`` may not be installed.
 
-Guide
+Setup
 -----
 
-Clone the code, then execute the runner script which will use `poetry` to setup a virtual envivonrment, format the code, check it, and test it.
-If your code changes cleanly pass the ``runner`` script without any arguments, then the code will likely pass any CI checks when the PR is opened.
+This library makes use of ``poetry`` and it must be accessible on your path.
+I recommend that it be installed with ``pipx`` as shown below.
+
+.. code-block:: shell
+
+   $ python3 -m pip install --user --upgrade pipx
+   $ pipx install poetry
+   $ pipx upgrade poetry
+   $ pipx ensurepath
+
+``runner`` Script
+-----------------
+
+Executing the runner script which will use `poetry` to:
+
+- Create and setup a local virtual envivonrment
+- Install pre-commit hooks
+- Format the code (``isort`` and ``black``)
+- Lint the code (``rstcheck``, ``flake8``, ``pylint``)
+- Build the docs
+- Test the code
+- Build the sdist and wheel distributions
+
+Be sure that your code passes the ``runner`` script without any arguments before submitting a pull request.
 
 .. code-block:: shell
 
    $ ./runner
 
-Only run the tests with pytest:
+See the help for various tasks to run.
 
 .. code-block:: shell
 
-   $ ./runner clean
-
-Clean tempoary files:
-
-.. code-block:: shell
-
-   $ ./runner clean
-
-Clean tempoary files and remove the virtual environment:
-
-.. code-block:: shell
-
-   $ ./runner clean -a
+   $ ./runner help

@@ -3,6 +3,25 @@ set -euf -o pipefail
 
 # --------------------------------------------------------------------------------------------------
 run_all() {
+    run_install
+    echo
+    run_format
+    echo
+    run_lint
+    echo
+    run_docs
+    echo
+    run_test
+    echo
+    run_build
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Build completed successfully! ]--------------------------------"
+    echo "--------------------------------------------------------------------"
+}
+
+# --------------------------------------------------------------------------------------------------
+run_install() {
     echo "--------------------------------------------------------------------"
     echo "---[ Installing dependencies with poetry ]--------------------------"
     echo "--------------------------------------------------------------------"
@@ -14,8 +33,10 @@ run_all() {
     echo "---[ Installing pre-commit hooks ]----------------------------------"
     echo "--------------------------------------------------------------------"
     poetry run pre-commit install
+}
 
-    echo
+# --------------------------------------------------------------------------------------------------
+run_format() {
     echo "--------------------------------------------------------------------"
     echo "---[ Sort imports with isort ]--------------------------------------"
     echo "--------------------------------------------------------------------"
@@ -34,8 +55,10 @@ run_all() {
         BLACK_ARGS="--check"
     fi
     poetry run black $BLACK_ARGS .
+}
 
-    echo
+# --------------------------------------------------------------------------------------------------
+run_lint() {
     echo "--------------------------------------------------------------------"
     echo "---[ Lint with rstcheck ]-------------------------------------------"
     echo "--------------------------------------------------------------------"
@@ -56,28 +79,23 @@ run_all() {
     echo "--------------------------------------------------------------------"
     # allow TODO messages
     poetry run pylint --disable="fixme" sectionproperties
+}
 
-    echo
+# --------------------------------------------------------------------------------------------------
+run_docs() {
     echo "--------------------------------------------------------------------"
     echo "---[ Build the documentation ]--------------------------------------"
     echo "--------------------------------------------------------------------"
     # activate the virtual environment so that the sphinx installed in it is used
+    if [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" ]]; then
+        # cygwin: POSIX compatibility layer and Linux environment emulation for Windows
+        # msys  : Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+        # on Windows, ignore an error here in case the user does not have make installed
+        set +e
+    fi
     . "$(dirname $(poetry run which python))/activate"
     make -C docs html
-
-    echo
-    run_test
-
-    echo
-    echo "--------------------------------------------------------------------"
-    echo "---[ Build package with poetry ]------------------------------------"
-    echo "--------------------------------------------------------------------"
-    poetry build
-
-    echo
-    echo "--------------------------------------------------------------------"
-    echo "---[ Build completed successfully! ]--------------------------------"
-    echo "--------------------------------------------------------------------"
+    set -e
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -87,6 +105,14 @@ run_test() {
     echo "--------------------------------------------------------------------"
     poetry run coverage run -m pytest
     poetry run coverage report --skip-covered
+}
+
+# --------------------------------------------------------------------------------------------------
+run_build() {
+    echo "--------------------------------------------------------------------"
+    echo "---[ Build package with poetry ]------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry build
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -128,12 +154,27 @@ if [ $# -eq 0 ]; then
     run_all
 else
     case $1 in
-        clean)
-            shift 1
-            run_clean $*
+        install):
+            run_install
+            ;;
+        fmt|format*):
+            run_format
+            ;;
+        lint*)
+            run_lint
+            ;;
+        doc*)
+            run_docs
             ;;
         test*)
             run_test
+            ;;
+        build*)
+            run_build
+            ;;
+        clean)
+            shift 1
+            run_clean $*
             ;;
         *)
             echo ""
@@ -143,12 +184,19 @@ else
             echo ""
             echo "Usage: run [command]"
             echo ""
-            echo "- runner         : (no arguments) to run everything, including:"
-            echo "                   - virtual environment creation"
-            echo "                   - formatting"
-            echo "                   - linting"
-            echo "                   - test and code coverage"
-            echo "                   - distribution build"
+            echo "- runner         : (no arguments) to run everything, including sub-tasks:"
+            echo "                   - install"
+            echo "                   - format"
+            echo "                   - lint"
+            echo "                   - docs"
+            echo "                   - test"
+            echo "                   - build"
+            echo "- runner install : Create virtual environment and install pre-commit hooks"
+            echo "- runner format  : Run formatters"
+            echo "- runner lint    : Run linters/code analysis"
+            echo "- runner docs    : Build the documentation"
+            echo "- runner test    : Run pytest with coverage"
+            echo "- runner build   : Build sdist and wheel distributions"
             echo "- runner clean   : Delete all temporary files and directories"
             echo "- runner clean -a: Do clean plus delete the virutal environment"
             echo ""
