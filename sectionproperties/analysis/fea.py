@@ -352,7 +352,7 @@ class Tri6:
 
     def element_stress(self, N, Mxx, Myy, M11, M22, Mzz, Vx, Vy, ea, cx, cy, ixx, iyy, ixy, i11,
                        i22, phi, j, nu, omega, psi_shear, phi_shear, Delta_s):
-        """Calculates the stress within an element resulting from a specified loading. Also returns
+        r"""Calculates the stress within an element resulting from a specified loading. Also returns
         the shape function weights.
 
         :param float N: Axial force
