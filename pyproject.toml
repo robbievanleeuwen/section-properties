@@ -1,0 +1,120 @@
+[build-system]
+requires = ['poetry-core>=1.0.0']
+build-backend = 'poetry.core.masonry.api'
+
+[tool.poetry]
+name = 'sectionproperties'
+version = '1.0.8'
+description = 'A python package for the analysis of arbitrary cross-sections using the finite element method.'
+authors = [
+  'Robbie van Leeuwen <robbie.vanleeuwen@gmail.com>',
+]
+license = 'MIT'
+readme = 'README.rst'
+repository = 'https://github.com/robbievanleeuwen/section-properties'
+homepage = 'https://github.com/robbievanleeuwen/section-properties'
+keywords = ['section', 'cross section', 'fea']
+classifiers=[
+  'Development Status :: 5 - Production/Stable',
+  'Environment :: Console',
+  'Intended Audience :: Science/Research',
+  'License :: OSI Approved :: MIT License',
+  'Programming Language :: Python :: 3 :: Only',
+  'Topic :: Scientific/Engineering',
+]
+include = ['CHANGELOG.rst']
+
+[tool.poetry.dependencies]
+python = '>=3.7,<4.0'
+numpy = '^1.20'
+scipy = '^1.6'
+matplotlib = '^3.3'
+shapely = '^1.7'
+pybind11 = { version = '^2.6', markers = "sys.platform != 'win32' and sys.platform != 'cygwin'" }
+MeshPy = { version = '^2020.1', markers = "sys.platform != 'win32' and sys.platform != 'cygwin'" }
+
+[tool.poetry.dev-dependencies]
+toml = '^0.10'
+black = '20.8b1'
+isort = '^5.6.4'
+flake8 = '>=3.6.0'
+flake8-docstrings = '^1.3.0'
+flake8-bugbear = '^20.11.1'
+flake8-rst-docstrings = '^0.0.14'
+pylint = '^2.6.0'
+rstcheck = '^3.3.1'
+pytest = '^6.2.2'
+coverage = '^5.4'
+pre-commit = '^2.10'
+Sphinx = "^3.5"
+sphinx-rtd-theme = "^0.5"
+
+[tool.black]
+line-length = 100
+skip-string-normalization = true
+
+[tool.isort]
+profile = 'black'
+line_length = 100
+lines_after_imports = 2
+src_paths = ['sectionproperties', 'tests', 'examples']
+
+[tool.pylint]
+[tool.pylint.master]
+jobs = 0
+extension-pkg-whitelist = 'numpy'
+
+[tool.pylint.format]
+max-line-length = 100
+expected-line-ending-format = 'LF'
+good-names = [
+  'i',
+  'j',
+  'k',
+]
+
+[tool.pylint.message_control]
+disable = [
+  'too-few-public-methods',
+  'too-many-public-methods',
+  'too-many-arguments',
+  'too-many-branches',
+  'too-many-instance-attributes',
+  'too-many-lines',
+  'too-many-locals',
+  'too-many-statements',
+  'invalid-name',
+  'missing-module-docstring',  # TODO: remove this and fix code
+  'too-many-function-args',  # TODO: remove this and fix code
+  'deprecated-method',  # TODO: remove this and fix code
+  'missing-class-docstring',  # TODO: remove this and fix code
+  'attribute-defined-outside-init',  # TODO: remove this and fix code
+  'missing-function-docstring',  # TODO: remove this and fix code
+  'protected-access',  # TODO: remove this and fix code
+  'duplicate-code',  # TODO: remove this and refactor code
+]
+
+[tool.pylint.reports]
+reports = 'no'
+
+[tool.pytest]
+[tool.pytest.ini_options]
+minversion = '6.2'
+cache_dir = '.cache/pytest'
+
+[tool.coverage]
+[tool.coverage.run]
+branch = true
+source = ['sectionproperties']
+data_file = '.cache/coverage'
+omit = [
+  '.venv/*',
+  '*/tests/*',
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+
+[tool.coverage.html]
+directory = '.cache/htmlcov'

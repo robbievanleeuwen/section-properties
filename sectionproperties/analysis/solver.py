@@ -1,4 +1,5 @@
 import time
+
 import numpy as np
 from scipy.sparse import linalg
 from scipy.sparse.linalg import spsolve
@@ -126,7 +127,6 @@ def function_timer(text, function, *args):
     result = function(*args)
 
     if text != "":
-        print("----completed in {0:.6f} seconds---".format(
-            time.time() - start_time))
+        print("----completed in {0:.6f} seconds---".format(time.time() - start_time))
 
     return result

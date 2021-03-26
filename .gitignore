@@ -11,6 +11,8 @@
 
 # doc generated
 /docs/build
+/docs/_build
+/docs/source/examples
 
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
@@ -24,3 +26,9 @@
 
 # mac
 .DS_Store
+
+# poetry local configuration
+poetry.toml
+
+# cache directory for pytest, mypy, coverage, etc
+.cache/

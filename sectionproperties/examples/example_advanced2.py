@@ -1,7 +1,9 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
+
 
 # define mesh sizes
 mesh_size_list = [50, 20, 10, 5, 3, 2, 1]

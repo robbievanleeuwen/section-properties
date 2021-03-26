@@ -1,14 +1,14 @@
-import numpy as np
-import matplotlib.pyplot as plt
-
 import contextlib
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 @contextlib.contextmanager
 def plotting_context(
     ax=None, pause=True, title='', filename='', render=True, axis_index=None, **kwargs
 ):
-    """Executes code required to set up a matplotlib figure.
+    r"""Executes code required to set up a matplotlib figure.
 
     :param ax: Axes object on which to plot
     :type ax: :class:`matplotlib.axes.Axes`
@@ -93,8 +93,7 @@ def draw_principal_axis(ax, phi, cx, cy):
     lims = [xmin, xmax, ymin, ymax]
 
     # form rotation matrix
-    R = np.array([[np.cos(phi), -np.sin(phi)],
-                  [np.sin(phi), np.cos(phi)]])
+    R = np.array([[np.cos(phi), -np.sin(phi)], [np.sin(phi), np.cos(phi)]])
 
     # get basis vectors in the directions of the principal axes
     x11_basis = R.dot(np.array([1, 0]))
@@ -233,7 +232,8 @@ def print_results(cross_section, fmt):
         if cross_section.materials is not None:
             print(
                 "G.J\t = {:>{fmt}}".format(
-                    j / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt)
+                    j / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt
+                )
             )
         else:
             print("J\t = {:>{fmt}}".format(j, fmt=fmt))
@@ -243,7 +243,8 @@ def print_results(cross_section, fmt):
         if cross_section.materials is not None:
             print(
                 "G.Iw\t = {:>{fmt}}".format(
-                    gamma / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt)
+                    gamma / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt
+                )
             )
         else:
             print("Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
@@ -269,12 +270,14 @@ def print_results(cross_section, fmt):
             print(
                 "A_sx\t = {:>{fmt}}".format(
                     A_sx * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    fmt=fmt,
+                )
             )
             print(
                 "A_sy\t = {:>{fmt}}".format(
                     A_sy * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    fmt=fmt,
+                )
             )
         else:
             print("A_sx\t = {:>{fmt}}".format(A_sx, fmt=fmt))
@@ -286,12 +289,14 @@ def print_results(cross_section, fmt):
             print(
                 "A_s11\t = {:>{fmt}}".format(
                     A_s11 * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    fmt=fmt,
+                )
             )
             print(
                 "A_s22\t = {:>{fmt}}".format(
                     A_s22 * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    fmt=fmt,
+                )
             )
         else:
             print("A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))

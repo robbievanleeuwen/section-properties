@@ -1,0 +1,49 @@
+fail_fast: true
+repos:
+  - repo: local
+    hooks:
+      - id: poetry-check
+        name: poetry-check
+        language: system
+        entry: poetry check
+        pass_filenames: false
+        types: [file]
+        files: ^(pyproject.toml|poetry.lock)$
+
+      - id: isort
+        name: isort
+        language: system
+        entry: poetry run isort
+        args: ['--check-only', '--filter-files']
+        require_serial: true
+        types_or: [cython, pyi, python]
+
+      - id: black
+        name: black
+        language: system
+        entry: poetry run black
+        args: ['--check']
+        require_serial: true
+        types_or: [python, pyi]
+
+      - id: rstcheck
+        name: rstcheck
+        language: system
+        entry: poetry run rstcheck
+        types: [rst]
+
+      - id: flake8
+        name: flake8
+        language: system
+        entry: poetry run flake8
+        require_serial: true
+        types: [python]
+
+      - id: pylint
+        name: pylint
+        language: system
+        entry: poetry run pylint
+        args: ['--disable=fixme']
+        require_serial: true
+        types: [python]
+        files: ^sectionproperties/

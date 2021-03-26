@@ -1,6 +1,7 @@
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
 
+
 # define parameters for the angle section
 a = 1
 b = 2
@@ -8,8 +9,16 @@ t = 0.1
 
 # build the lists of points, facets, holes and control points
 points = [
-    [-t / 2, -2 * a], [t / 2, -2 * a], [t / 2, -t / 2], [a, -t / 2], [a, t / 2], [-t / 2, t / 2],
-    [-b / 2, -2 * a], [b / 2, -2 * a], [b / 2, -2 * a - t], [-b / 2, -2 * a - t]
+    [-t / 2, -2 * a],
+    [t / 2, -2 * a],
+    [t / 2, -t / 2],
+    [a, -t / 2],
+    [a, t / 2],
+    [-t / 2, t / 2],
+    [-b / 2, -2 * a],
+    [b / 2, -2 * a],
+    [b / 2, -2 * a - t],
+    [-b / 2, -2 * a - t],
 ]
 facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [6, 7], [7, 8], [8, 9], [9, 6]]
 holes = []

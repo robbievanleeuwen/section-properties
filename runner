@@ -1,0 +1,205 @@
+#!/usr/bin/env bash
+set -euf -o pipefail
+
+# --------------------------------------------------------------------------------------------------
+run_all() {
+    run_install
+    echo
+    run_format
+    echo
+    run_lint
+    echo
+    run_docs
+    echo
+    run_test
+    echo
+    run_build
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Build completed successfully! ]--------------------------------"
+    echo "--------------------------------------------------------------------"
+}
+
+# --------------------------------------------------------------------------------------------------
+run_install() {
+    echo "--------------------------------------------------------------------"
+    echo "---[ Installing dependencies with poetry ]--------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry config --local virtualenvs.create true
+    poetry config --local virtualenvs.in-project true
+    poetry install -v
+
+    echo "--------------------------------------------------------------------"
+    echo "---[ Installing pre-commit hooks ]----------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run pre-commit install
+}
+
+# --------------------------------------------------------------------------------------------------
+run_format() {
+    echo "--------------------------------------------------------------------"
+    echo "---[ Sort imports with isort ]--------------------------------------"
+    echo "--------------------------------------------------------------------"
+    ISORT_ARGS=""
+    if [[ "${CI:-}" = "1" ]]; then
+        ISORT_ARGS="--check-only"
+    fi
+    poetry run isort $ISORT_ARGS .
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Format with black ]--------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    BLACK_ARGS=""
+    if [[ "${CI:-}" = "1" ]]; then
+        BLACK_ARGS="--check"
+    fi
+    poetry run black $BLACK_ARGS .
+}
+
+# --------------------------------------------------------------------------------------------------
+run_lint() {
+    echo "--------------------------------------------------------------------"
+    echo "---[ Lint with rstcheck ]-------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run rstcheck README.rst
+    poetry run rstcheck CONTRIBUTING.rst
+    poetry run rstcheck CHANGELOG.rst
+    poetry run rstcheck --recursive docs
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Lint with flake8 ]---------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run flake8
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Lint with pylint ]---------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    # allow TODO messages
+    poetry run pylint --disable="fixme" sectionproperties
+}
+
+# --------------------------------------------------------------------------------------------------
+run_docs() {
+    echo "--------------------------------------------------------------------"
+    echo "---[ Build the documentation ]--------------------------------------"
+    echo "--------------------------------------------------------------------"
+    # activate the virtual environment so that the sphinx installed in it is used
+    if [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" ]]; then
+        # cygwin: POSIX compatibility layer and Linux environment emulation for Windows
+        # msys  : Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+        # on Windows, ignore an error here in case the user does not have make installed
+        set +e
+    fi
+    . "$(dirname $(poetry run which python))/activate"
+    make -C docs html
+    set -e
+}
+
+# --------------------------------------------------------------------------------------------------
+run_test() {
+    echo "--------------------------------------------------------------------"
+    echo "---[ Test with pytest and coverage ]--------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run coverage run -m pytest
+    poetry run coverage report --skip-covered
+}
+
+# --------------------------------------------------------------------------------------------------
+run_build() {
+    echo "--------------------------------------------------------------------"
+    echo "---[ Build package with poetry ]------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry build
+}
+
+# --------------------------------------------------------------------------------------------------
+run_clean() {
+    all="no"
+    while getopts ":a" option; do
+       case $option in
+          a)
+             all="yes"
+             ;;
+          ?)
+             echo "invalid option -$OPTARG"
+             exit 1
+             ;;
+       esac
+    done
+
+    if [[ `env | grep VIRTUAL_ENV` ]]; then
+      echo "Error: deactivate your venv first."
+      exit 1
+    fi
+
+    echo "deleting temporary files and directories..."
+    find . -regex '^.*\(__pycache__\|\.py[co]\)$' -delete
+    rm -rf *.spec .eggs .tox build dist *.egg-info .cache site
+
+    if [ $all == "yes" ]; then
+        echo "deleting virtual environment..."
+        rm -rf .venv/
+    fi
+
+    echo "--------------------------------------------------------------------"
+    echo "---[ Clean complete! ]----------------------------------------------"
+    echo "--------------------------------------------------------------------"
+}
+
+# --------------------------------------------------------------------------------------------------
+if [ $# -eq 0 ]; then
+    run_all
+else
+    case $1 in
+        install):
+            run_install
+            ;;
+        fmt|format*):
+            run_format
+            ;;
+        lint*)
+            run_lint
+            ;;
+        doc*)
+            run_docs
+            ;;
+        test*)
+            run_test
+            ;;
+        build*)
+            run_build
+            ;;
+        clean)
+            shift 1
+            run_clean $*
+            ;;
+        *)
+            echo ""
+            echo "------------------------------------"
+            echo "Shortcuts for common developer tasks"
+            echo "------------------------------------"
+            echo ""
+            echo "Usage: run [command]"
+            echo ""
+            echo "- runner         : (no arguments) to run each listed task:"
+            echo "                     - install"
+            echo "                     - format"
+            echo "                     - lint"
+            echo "                     - docs"
+            echo "                     - test"
+            echo "                     - build"
+            echo "- runner install : Create virtual environment and install pre-commit hooks"
+            echo "- runner format  : Run formatters"
+            echo "- runner lint    : Run linters/code analysis"
+            echo "- runner docs    : Build the documentation"
+            echo "- runner test    : Run pytest with coverage"
+            echo "- runner build   : Build sdist and wheel distributions"
+            echo "- runner clean   : Delete all temporary files and directories"
+            echo "- runner clean -a: Do clean plus delete the virutal environment"
+            echo ""
+            exit 1
+    esac
+fi

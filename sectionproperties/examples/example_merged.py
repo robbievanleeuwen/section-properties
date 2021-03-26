@@ -1,6 +1,7 @@
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
 
+
 # create a 150x100x6 RHS
 rhs = sections.Rhs(d=150, b=100, t=6, r_out=15, n_r=8)
 

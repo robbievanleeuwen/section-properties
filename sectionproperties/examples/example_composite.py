@@ -1,6 +1,7 @@
 import sectionproperties.pre.sections as sections
-from sectionproperties.pre.pre import Material
 from sectionproperties.analysis.cross_section import CrossSection
+from sectionproperties.pre.pre import Material
+
 
 # create material properties
 steel = Material(

@@ -65,12 +65,21 @@ class Tri6:
             ixx += gp[0] * np.dot(N, np.transpose(self.coords[1, :])) ** 2 * j
             iyy += gp[0] * np.dot(N, np.transpose(self.coords[0, :])) ** 2 * j
             ixy += (
-                gp[0] * np.dot(N, np.transpose(self.coords[1, :])) * np.dot(
-                    N, np.transpose(self.coords[0, :])) * j
+                gp[0]
+                * np.dot(N, np.transpose(self.coords[1, :]))
+                * np.dot(N, np.transpose(self.coords[0, :]))
+                * j
             )
 
         return (
-            area, qx, qy, ixx, iyy, ixy, self.material.elastic_modulus, self.material.shear_modulus
+            area,
+            qx,
+            qy,
+            ixx,
+            iyy,
+            ixy,
+            self.material.elastic_modulus,
+            self.material.shear_modulus,
         )
 
     def torsion_properties(self):
@@ -99,8 +108,10 @@ class Tri6:
             # calculated modulus weighted stiffness matrix and load vector
             k_el += gp[0] * np.dot(np.transpose(B), B) * j * (self.material.elastic_modulus)
             f_el += (
-                gp[0] * np.dot(np.transpose(B), np.transpose(np.array([Ny, -Nx])))
-                * j * self.material.elastic_modulus
+                gp[0]
+                * np.dot(np.transpose(B), np.transpose(np.array([Ny, -Nx])))
+                * j
+                * self.material.elastic_modulus
             )
 
         return (k_el, f_el)
@@ -141,13 +152,21 @@ class Tri6:
             h2 = -iyy * r - ixy * q
 
             f_psi += (
-                gp[0] * (nu / 2 * np.transpose(np.transpose(B).dot(np.array([[d1], [d2]])))[0]
-                         + 2 * (1 + nu) * np.transpose(N) * (ixx * Nx - ixy * Ny)) * j
+                gp[0]
+                * (
+                    nu / 2 * np.transpose(np.transpose(B).dot(np.array([[d1], [d2]])))[0]
+                    + 2 * (1 + nu) * np.transpose(N) * (ixx * Nx - ixy * Ny)
+                )
+                * j
                 * self.material.elastic_modulus
             )
             f_phi += (
-                gp[0] * (nu / 2 * np.transpose(np.transpose(B).dot(np.array([[h1], [h2]])))[0]
-                         + 2 * (1 + nu) * np.transpose(N) * (iyy * Ny - ixy * Nx)) * j
+                gp[0]
+                * (
+                    nu / 2 * np.transpose(np.transpose(B).dot(np.array([[h1], [h2]])))[0]
+                    + 2 * (1 + nu) * np.transpose(N) * (iyy * Ny - ixy * Nx)
+                )
+                * j
                 * self.material.elastic_modulus
             )
 
@@ -189,12 +208,18 @@ class Tri6:
             Nomega = np.dot(N, np.transpose(omega))
 
             sc_xint += (
-                gp[0] * (iyy * Nx + ixy * Ny) * (Nx ** 2 + Ny ** 2)
-                * j * self.material.elastic_modulus
+                gp[0]
+                * (iyy * Nx + ixy * Ny)
+                * (Nx ** 2 + Ny ** 2)
+                * j
+                * self.material.elastic_modulus
             )
             sc_yint += (
-                gp[0] * (ixx * Ny + ixy * Nx) * (Nx ** 2 + Ny ** 2)
-                * j * self.material.elastic_modulus
+                gp[0]
+                * (ixx * Ny + ixy * Nx)
+                * (Nx ** 2 + Ny ** 2)
+                * j
+                * self.material.elastic_modulus
             )
             q_omega += gp[0] * Nomega * j * self.material.elastic_modulus
             i_omega += gp[0] * Nomega ** 2 * j * self.material.elastic_modulus
@@ -244,18 +269,27 @@ class Tri6:
             h2 = -iyy * r - ixy * q
 
             kappa_x += (
-                gp[0] * (psi_shear.dot(np.transpose(B)) - nu / 2 * np.array([d1, d2])).dot(
-                    B.dot(psi_shear) - nu / 2 * np.array([d1, d2])) * j
+                gp[0]
+                * (psi_shear.dot(np.transpose(B)) - nu / 2 * np.array([d1, d2])).dot(
+                    B.dot(psi_shear) - nu / 2 * np.array([d1, d2])
+                )
+                * j
                 * self.material.elastic_modulus
             )
             kappa_y += (
-                gp[0] * (phi_shear.dot(np.transpose(B)) - nu / 2 * np.array([h1, h2])).dot(
-                    B.dot(phi_shear) - nu / 2 * np.array([h1, h2])) * j
+                gp[0]
+                * (phi_shear.dot(np.transpose(B)) - nu / 2 * np.array([h1, h2])).dot(
+                    B.dot(phi_shear) - nu / 2 * np.array([h1, h2])
+                )
+                * j
                 * self.material.elastic_modulus
             )
             kappa_xy += (
-                gp[0] * (psi_shear.dot(np.transpose(B)) - nu / 2 * np.array([d1, d2])).dot(
-                    B.dot(phi_shear) - nu / 2 * np.array([h1, h2])) * j
+                gp[0]
+                * (psi_shear.dot(np.transpose(B)) - nu / 2 * np.array([d1, d2])).dot(
+                    B.dot(phi_shear) - nu / 2 * np.array([h1, h2])
+                )
+                * j
                 * self.material.elastic_modulus
             )
 
@@ -296,11 +330,15 @@ class Tri6:
             int_x += gp[0] * (Nx * Nx * Ny + Ny * Ny * Ny) * j * self.material.elastic_modulus
             int_y += gp[0] * (Ny * Ny * Nx + Nx * Nx * Nx) * j * self.material.elastic_modulus
             int_11 += (
-                gp[0] * (Nx_11 * Nx_11 * Ny_22 + Ny_22 * Ny_22 * Ny_22) * j
+                gp[0]
+                * (Nx_11 * Nx_11 * Ny_22 + Ny_22 * Ny_22 * Ny_22)
+                * j
                 * self.material.elastic_modulus
             )
             int_22 += (
-                gp[0] * (Ny_22 * Ny_22 * Nx_11 + Nx_11 * Nx_11 * Nx_11) * j
+                gp[0]
+                * (Ny_22 * Ny_22 * Nx_11 + Nx_11 * Nx_11 * Nx_11)
+                * j
                 * self.material.elastic_modulus
             )
 
@@ -350,8 +388,32 @@ class Tri6:
 
         return (force, area * e, qx * e, qy * e, is_above)
 
-    def element_stress(self, N, Mxx, Myy, M11, M22, Mzz, Vx, Vy, ea, cx, cy, ixx, iyy, ixy, i11,
-                       i22, phi, j, nu, omega, psi_shear, phi_shear, Delta_s):
+    def element_stress(
+        self,
+        N,
+        Mxx,
+        Myy,
+        M11,
+        M22,
+        Mzz,
+        Vx,
+        Vy,
+        ea,
+        cx,
+        cy,
+        ixx,
+        iyy,
+        ixy,
+        i11,
+        i22,
+        phi,
+        j,
+        nu,
+        omega,
+        psi_shear,
+        phi_shear,
+        Delta_s,
+    ):
         r"""Calculates the stress within an element resulting from a specified loading. Also returns
         the shape function weights.
 
@@ -431,13 +493,13 @@ class Tri6:
             h2 = -iyy * r - ixy * q
 
             # calculate element stresses
-            sig_zz_mxx_gp[i, :] = (
-                self.material.elastic_modulus * (-(ixy * Mxx) / (ixx * iyy - ixy ** 2) * Nx + (
-                    iyy * Mxx) / (ixx * iyy - ixy ** 2) * Ny)
+            sig_zz_mxx_gp[i, :] = self.material.elastic_modulus * (
+                -(ixy * Mxx) / (ixx * iyy - ixy ** 2) * Nx
+                + (iyy * Mxx) / (ixx * iyy - ixy ** 2) * Ny
             )
-            sig_zz_myy_gp[i, :] = (
-                self.material.elastic_modulus * (-(ixx * Myy) / (ixx * iyy - ixy ** 2) * Nx + (
-                    ixy * Myy) / (ixx * iyy - ixy ** 2) * Ny)
+            sig_zz_myy_gp[i, :] = self.material.elastic_modulus * (
+                -(ixx * Myy) / (ixx * iyy - ixy ** 2) * Nx
+                + (ixy * Myy) / (ixx * iyy - ixy ** 2) * Ny
             )
             sig_zz_m11_gp[i, :] = self.material.elastic_modulus * M11 / i11 * Ny_22
             sig_zz_m22_gp[i, :] = self.material.elastic_modulus * -M22 / i22 * Nx_11
@@ -449,14 +511,18 @@ class Tri6:
 
             if Vx != 0:
                 sig_zxy_vx_gp[i, :] = (
-                    self.material.elastic_modulus * Vx / Delta_s * (
-                        B.dot(psi_shear) - nu / 2 * np.array([d1, d2]))
+                    self.material.elastic_modulus
+                    * Vx
+                    / Delta_s
+                    * (B.dot(psi_shear) - nu / 2 * np.array([d1, d2]))
                 )
 
             if Vy != 0:
                 sig_zxy_vy_gp[i, :] = (
-                    self.material.elastic_modulus * Vy / Delta_s * (
-                        B.dot(phi_shear) - nu / 2 * np.array([h1, h2]))
+                    self.material.elastic_modulus
+                    * Vy
+                    / Delta_s
+                    * (B.dot(phi_shear) - nu / 2 * np.array([h1, h2]))
                 )
 
         # extrapolate results to nodes
@@ -471,8 +537,20 @@ class Tri6:
         sig_zx_vy = extrapolate_to_nodes(sig_zxy_vy_gp[:, 0])
         sig_zy_vy = extrapolate_to_nodes(sig_zxy_vy_gp[:, 1])
 
-        return (sig_zz_n, sig_zz_mxx, sig_zz_myy, sig_zz_m11, sig_zz_m22, sig_zx_mzz, sig_zy_mzz,
-                sig_zx_vx, sig_zy_vx, sig_zx_vy, sig_zy_vy, gps[:, 0])
+        return (
+            sig_zz_n,
+            sig_zz_mxx,
+            sig_zz_myy,
+            sig_zz_m11,
+            sig_zz_m22,
+            sig_zx_mzz,
+            sig_zy_mzz,
+            sig_zx_vx,
+            sig_zy_vx,
+            sig_zx_vy,
+            sig_zy_vy,
+            gps[:, 0],
+        )
 
     def point_within_element(self, pt):
         """Determines whether a point lies within the current element.
@@ -495,13 +573,11 @@ class Tri6:
         y3 = self.coords[1][2]
 
         # compute variables alpha, beta and gamma
-        alpha = (
-            ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3))
-            / ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
+        alpha = ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) / (
+            (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)
         )
-        beta = (
-            ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3))
-            / ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
+        beta = ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) / (
+            (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)
         )
         gamma = 1.0 - alpha - beta
 
@@ -528,11 +604,13 @@ def gauss_points(n):
 
     if n == 3:
         # three point gaussian integration
-        return np.array([
-            [1.0 / 3, 2.0 / 3, 1.0 / 6, 1.0 / 6],
-            [1.0 / 3, 1.0 / 6, 2.0 / 3, 1.0 / 6],
-            [1.0 / 3, 1.0 / 6, 1.0 / 6, 2.0 / 3]
-        ])
+        return np.array(
+            [
+                [1.0 / 3, 2.0 / 3, 1.0 / 6, 1.0 / 6],
+                [1.0 / 3, 1.0 / 6, 2.0 / 3, 1.0 / 6],
+                [1.0 / 3, 1.0 / 6, 1.0 / 6, 2.0 / 3],
+            ]
+        )
 
     # n must be 6 since only 1, 3, and 6 are allowed
     # six point gaussian integration
@@ -541,14 +619,16 @@ def gauss_points(n):
     w1 = (620 + np.sqrt(213125 - 53320 * np.sqrt(10))) / 3720
     w2 = (620 - np.sqrt(213125 - 53320 * np.sqrt(10))) / 3720
 
-    return np.array([
-        [w2, 1 - 2 * g2, g2, g2],
-        [w2, g2, 1 - 2 * g2, g2],
-        [w2, g2, g2, 1 - 2 * g2],
-        [w1, g1, g1, 1 - 2 * g1],
-        [w1, 1 - 2 * g1, g1, g1],
-        [w1, g1, 1 - 2 * g1, g1]
-    ])
+    return np.array(
+        [
+            [w2, 1 - 2 * g2, g2, g2],
+            [w2, g2, 1 - 2 * g2, g2],
+            [w2, g2, g2, 1 - 2 * g2],
+            [w1, g1, g1, 1 - 2 * g1],
+            [w1, 1 - 2 * g1, g1, g1],
+            [w1, g1, 1 - 2 * g1, g1],
+        ]
+    )
 
 
 def shape_function(coords, gauss_point):
@@ -571,21 +651,25 @@ def shape_function(coords, gauss_point):
     zeta = gauss_point[3]
 
     # value of the shape functions
-    N = np.array([
-        eta * (2 * eta - 1),
-        xi * (2 * xi - 1),
-        zeta * (2 * zeta - 1),
-        4 * eta * xi,
-        4 * xi * zeta,
-        4 * eta * zeta
-    ])
+    N = np.array(
+        [
+            eta * (2 * eta - 1),
+            xi * (2 * xi - 1),
+            zeta * (2 * zeta - 1),
+            4 * eta * xi,
+            4 * xi * zeta,
+            4 * eta * zeta,
+        ]
+    )
 
     # derivatives of the shape functions wrt the isoparametric co-ordinates
-    B_iso = np.array([
-        [4 * eta - 1, 0, 0, 4 * xi, 0, 4 * zeta],
-        [0, 4 * xi - 1, 0, 4 * eta, 4 * zeta, 0],
-        [0, 0, 4 * zeta - 1, 0, 4 * xi, 4 * eta]
-    ])
+    B_iso = np.array(
+        [
+            [4 * eta - 1, 0, 0, 4 * xi, 0, 4 * zeta],
+            [0, 4 * xi - 1, 0, 4 * eta, 4 * zeta, 0],
+            [0, 0, 4 * zeta - 1, 0, 4 * xi, 4 * eta],
+        ]
+    )
 
     # form Jacobian matrix
     J_upper = np.array([[1, 1, 1]])
@@ -617,20 +701,58 @@ def extrapolate_to_nodes(w):
     :rtype: :class:`numpy.ndarray`
     """
 
-    H_inv = np.array([
-        [1.87365927351160, 0.138559587411935, 0.138559587411935,
-         -0.638559587411936, 0.126340726488397, -0.638559587411935],
-        [0.138559587411935, 1.87365927351160, 0.138559587411935,
-         -0.638559587411935, -0.638559587411935, 0.126340726488397],
-        [0.138559587411935, 0.138559587411935, 1.87365927351160,
-         0.126340726488396, -0.638559587411935, -0.638559587411935],
-        [0.0749010751157440, 0.0749010751157440, 0.180053080734478,
-         1.36051633430762, -0.345185782636792, -0.345185782636792],
-        [0.180053080734478, 0.0749010751157440, 0.0749010751157440,
-         -0.345185782636792, 1.36051633430762, -0.345185782636792],
-        [0.0749010751157440, 0.180053080734478, 0.0749010751157440,
-         -0.345185782636792, -0.345185782636792, 1.36051633430762]
-    ])
+    H_inv = np.array(
+        [
+            [
+                1.87365927351160,
+                0.138559587411935,
+                0.138559587411935,
+                -0.638559587411936,
+                0.126340726488397,
+                -0.638559587411935,
+            ],
+            [
+                0.138559587411935,
+                1.87365927351160,
+                0.138559587411935,
+                -0.638559587411935,
+                -0.638559587411935,
+                0.126340726488397,
+            ],
+            [
+                0.138559587411935,
+                0.138559587411935,
+                1.87365927351160,
+                0.126340726488396,
+                -0.638559587411935,
+                -0.638559587411935,
+            ],
+            [
+                0.0749010751157440,
+                0.0749010751157440,
+                0.180053080734478,
+                1.36051633430762,
+                -0.345185782636792,
+                -0.345185782636792,
+            ],
+            [
+                0.180053080734478,
+                0.0749010751157440,
+                0.0749010751157440,
+                -0.345185782636792,
+                1.36051633430762,
+                -0.345185782636792,
+            ],
+            [
+                0.0749010751157440,
+                0.180053080734478,
+                0.0749010751157440,
+                -0.345185782636792,
+                -0.345185782636792,
+                1.36051633430762,
+            ],
+        ]
+    )
 
     return H_inv.dot(w)
 
@@ -650,10 +772,7 @@ def principal_coordinate(phi, x, y):
     phi_rad = phi * np.pi / 180
 
     # form rotation matrix
-    R = np.array([
-        [np.cos(phi_rad), np.sin(phi_rad)],
-        [-np.sin(phi_rad), np.cos(phi_rad)]
-    ])
+    R = np.array([[np.cos(phi_rad), np.sin(phi_rad)], [-np.sin(phi_rad), np.cos(phi_rad)]])
 
     # calculate rotated x and y coordinates
     x_rotated = R.dot(np.array([x, y]))
@@ -676,10 +795,7 @@ def global_coordinate(phi, x11, y22):
     phi_rad = phi * np.pi / 180
 
     # form transposed rotation matrix
-    R = np.array([
-        [np.cos(phi_rad), -np.sin(phi_rad)],
-        [np.sin(phi_rad), np.cos(phi_rad)]
-    ])
+    R = np.array([[np.cos(phi_rad), -np.sin(phi_rad)], [np.sin(phi_rad), np.cos(phi_rad)]])
     # calculate rotated x_1 and y_2 coordinates
     x_rotated = R.dot(np.array([x11, y22]))
 

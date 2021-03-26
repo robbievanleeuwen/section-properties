@@ -1,8 +1,11 @@
 import time
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
+
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
+
 
 # create a rectangular section
 geometry = sections.RectangularSection(d=100, b=50)

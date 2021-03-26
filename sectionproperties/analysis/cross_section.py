@@ -1,17 +1,18 @@
 import copy
-import numpy as np
-from scipy.sparse import csc_matrix, coo_matrix, linalg
-from scipy.optimize import brentq
-import matplotlib.pyplot as plt
-import matplotlib.tri as tri
+
 import matplotlib.cm as cm
 import matplotlib.patches as mpatches
-from matplotlib.colors import ListedColormap
+import matplotlib.tri as tri
 import meshpy.triangle as triangle
-import sectionproperties.pre.pre as pre
+import numpy as np
+from matplotlib.colors import ListedColormap
+from scipy.optimize import brentq
+from scipy.sparse import coo_matrix, csc_matrix, linalg
+
 import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
+import sectionproperties.pre.pre as pre
 
 
 class CrossSection:
@@ -123,7 +124,7 @@ class CrossSection:
             if materials is not None:
                 msg = "Number of materials ({0}), ".format(len(materials))
                 msg += "should match the number of regions ({0}).".format(max(attributes) + 1)
-                assert(len(materials) == max(attributes) + 1), msg
+                assert len(materials) == max(attributes) + 1, msg
 
                 # add a MaterialGroup object to the material_groups list for each uniquely
                 # encountered material
@@ -364,7 +365,8 @@ class CrossSection:
         # determine the torsion constant
         def j_func():
             return (
-                self.section_props.ixx_c + self.section_props.iyy_c
+                self.section_props.ixx_c
+                + self.section_props.iyy_c
                 - omega.dot(k.dot(np.transpose(omega)))
             )
 
@@ -381,8 +383,11 @@ class CrossSection:
 
             for el in warping_section.elements:
                 (f_psi_el, f_phi_el) = el.shear_load_vectors(
-                    self.section_props.ixx_c, self.section_props.iyy_c,
-                    self.section_props.ixy_c, self.section_props.nu_eff)
+                    self.section_props.ixx_c,
+                    self.section_props.iyy_c,
+                    self.section_props.ixy_c,
+                    self.section_props.nu_eff,
+                )
                 f_psi[el.node_ids] += f_psi_el
                 f_phi[el.node_ids] += f_phi_el
 
@@ -425,10 +430,18 @@ class CrossSection:
             i_yomega = 0
 
             for el in warping_section.elements:
-                (sc_xint_el, sc_yint_el, q_omega_el, i_omega_el, i_xomega_el,
-                 i_yomega_el) = el.shear_warping_integrals(
-                    self.section_props.ixx_c, self.section_props.iyy_c,
-                    self.section_props.ixy_c, omega[el.node_ids]
+                (
+                    sc_xint_el,
+                    sc_yint_el,
+                    q_omega_el,
+                    i_omega_el,
+                    i_xomega_el,
+                    i_yomega_el,
+                ) = el.shear_warping_integrals(
+                    self.section_props.ixx_c,
+                    self.section_props.iyy_c,
+                    self.section_props.ixy_c,
+                    omega[el.node_ids],
                 )
 
                 sc_xint += sc_xint_el
@@ -442,40 +455,44 @@ class CrossSection:
 
         if time_info:
             text = "--Assembling shear centre and warping moment integrals..."
-            (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = (
-                solver.function_timer(text, assemble_sc_warping_integrals))
+            (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = solver.function_timer(
+                text, assemble_sc_warping_integrals
+            )
         else:
-            (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega) = (
-                assemble_sc_warping_integrals())
+            (
+                sc_xint,
+                sc_yint,
+                q_omega,
+                i_omega,
+                i_xomega,
+                i_yomega,
+            ) = assemble_sc_warping_integrals()
 
         # calculate shear centres
         def shear_centres():
             # calculate shear centres (elasticity approach)
             Delta_s = (
-                2 * (1 + self.section_props.nu_eff) * (
+                2
+                * (1 + self.section_props.nu_eff)
+                * (
                     self.section_props.ixx_c * self.section_props.iyy_c
-                    - self.section_props.ixy_c ** 2)
+                    - self.section_props.ixy_c ** 2
+                )
             )
-            x_se = (
-                (1 / Delta_s) * ((self.section_props.nu_eff / 2
-                                  * sc_xint) - f_torsion.dot(phi_shear))
+            x_se = (1 / Delta_s) * (
+                (self.section_props.nu_eff / 2 * sc_xint) - f_torsion.dot(phi_shear)
             )
-            y_se = (
-                (1 / Delta_s) * ((self.section_props.nu_eff / 2
-                                  * sc_yint) + f_torsion.dot(psi_shear))
+            y_se = (1 / Delta_s) * (
+                (self.section_props.nu_eff / 2 * sc_yint) + f_torsion.dot(psi_shear)
             )
             (x11_se, y22_se) = fea.principal_coordinate(self.section_props.phi, x_se, y_se)
 
             # calculate shear centres (Trefftz's approach)
-            x_st = (
-                (self.section_props.ixy_c * i_xomega - self.section_props.iyy_c * i_yomega) / (
-                    self.section_props.ixx_c * self.section_props.iyy_c
-                    - self.section_props.ixy_c ** 2)
+            x_st = (self.section_props.ixy_c * i_xomega - self.section_props.iyy_c * i_yomega) / (
+                self.section_props.ixx_c * self.section_props.iyy_c - self.section_props.ixy_c ** 2
             )
-            y_st = (
-                (self.section_props.ixx_c * i_xomega - self.section_props.ixy_c * i_yomega) / (
-                    self.section_props.ixx_c * self.section_props.iyy_c
-                    - self.section_props.ixy_c ** 2)
+            y_st = (self.section_props.ixx_c * i_xomega - self.section_props.ixy_c * i_yomega) / (
+                self.section_props.ixx_c * self.section_props.iyy_c - self.section_props.ixy_c ** 2
             )
 
             return (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st)
@@ -483,7 +500,8 @@ class CrossSection:
         if time_info:
             text = "--Calculating shear centres..."
             (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st) = solver.function_timer(
-                text, shear_centres)
+                text, shear_centres
+            )
         else:
             (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st) = shear_centres()
 
@@ -509,9 +527,12 @@ class CrossSection:
 
             for el in warping_section.elements:
                 (kappa_x_el, kappa_y_el, kappa_xy_el) = el.shear_coefficients(
-                    self.section_props.ixx_c, self.section_props.iyy_c,
-                    self.section_props.ixy_c, psi_shear[el.node_ids], phi_shear[el.node_ids],
-                    self.section_props.nu_eff
+                    self.section_props.ixx_c,
+                    self.section_props.iyy_c,
+                    self.section_props.ixy_c,
+                    psi_shear[el.node_ids],
+                    phi_shear[el.node_ids],
+                    self.section_props.nu_eff,
                 )
 
                 kappa_x += kappa_x_el
@@ -538,15 +559,11 @@ class CrossSection:
 
         # rotate the tensor by the principal axis angle
         phi_rad = self.section_props.phi * np.pi / 180
-        R = np.array([
-            [np.cos(phi_rad), np.sin(phi_rad)],
-            [-np.sin(phi_rad), np.cos(phi_rad)]
-        ])
+        R = np.array([[np.cos(phi_rad), np.sin(phi_rad)], [-np.sin(phi_rad), np.cos(phi_rad)]])
 
-        rotatedAlpha = R.dot(np.array([
-            [alpha_xx, alpha_xy],
-            [alpha_xy, alpha_yy]
-        ])).dot(np.transpose(R))
+        rotatedAlpha = R.dot(np.array([[alpha_xx, alpha_xy], [alpha_xy, alpha_yy]])).dot(
+            np.transpose(R)
+        )
 
         # recalculate the shear area based on the rotated alpha value
         self.section_props.A_s11 = self.section_props.area / rotatedAlpha[0, 0]
@@ -653,8 +670,7 @@ class CrossSection:
 
             # calculate global geometric properties
             for el in self.elements:
-                (area, qx, qy, ixx_g,
-                 iyy_g, ixy_g, e, _) = el.geometric_properties()
+                (area, qx, qy, ixx_g, iyy_g, ixy_g, e, _) = el.geometric_properties()
 
                 self.section_props.area += area
                 self.section_props.ea += area * e
@@ -675,8 +691,8 @@ class CrossSection:
                 self.section_props.iyy_g - self.section_props.qy ** 2 / self.section_props.ea
             )
             self.section_props.ixy_c = (
-                self.section_props.ixy_g - self.section_props.qx * self.section_props.qy
-                / self.section_props.ea
+                self.section_props.ixy_g
+                - self.section_props.qx * self.section_props.qy / self.section_props.ea
             )
 
             # calculate the principal axis angle
@@ -685,18 +701,17 @@ class CrossSection:
                 + self.section_props.ixy_c ** 2
             ) ** 0.5
 
-            i11_c = (
-                (self.section_props.ixx_c + self.section_props.iyy_c) / 2 + Delta
-            )
+            i11_c = (self.section_props.ixx_c + self.section_props.iyy_c) / 2 + Delta
 
             # calculate initial principal axis angle
             if abs(self.section_props.ixx_c - i11_c) < 1e-12 * i11_c:
                 self.section_props.phi = 0
             else:
-                self.section_props.phi = np.arctan2(
-                    self.section_props.ixx_c - i11_c,
-                    self.section_props.ixy_c
-                ) * 180 / np.pi
+                self.section_props.phi = (
+                    np.arctan2(self.section_props.ixx_c - i11_c, self.section_props.ixy_c)
+                    * 180
+                    / np.pi
+                )
 
             # create a new CrossSection with the origin shifted to the centroid for calculation of
             # the warping properties
@@ -723,8 +738,9 @@ class CrossSection:
 
             # calculate the torsion constant
             self.section_props.j = (
-                self.section_props.ixx_c + self.section_props.iyy_c - omega.dot(k.dot(
-                    np.transpose(omega)))
+                self.section_props.ixx_c
+                + self.section_props.iyy_c
+                - omega.dot(k.dot(np.transpose(omega)))
             )
 
         if time_info:
@@ -735,9 +751,13 @@ class CrossSection:
             calculate_frame()
 
         return (
-            self.section_props.ea, self.section_props.ixx_c,
-            self.section_props.iyy_c, self.section_props.ixy_c,
-            self.section_props.j, self.section_props.phi)
+            self.section_props.ea,
+            self.section_props.ixx_c,
+            self.section_props.iyy_c,
+            self.section_props.ixy_c,
+            self.section_props.j,
+            self.section_props.phi,
+        )
 
     def calculate_plastic_properties(self, time_info=False, verbose=False, debug=False):
         """Calculates the plastic properties of the cross-section and stores the, in the
@@ -794,8 +814,7 @@ class CrossSection:
         else:
             calc_plastic()
 
-    def calculate_stress(self, N=0, Vx=0, Vy=0, Mxx=0, Myy=0, M11=0, M22=0,
-                         Mzz=0, time_info=False):
+    def calculate_stress(self, N=0, Vx=0, Vy=0, Mxx=0, Myy=0, M11=0, M22=0, Mzz=0, time_info=False):
         """Calculates the cross-section stress resulting from design actions and returns a
         :class:`~sectionproperties.analysis.cross_section.StressPost` object allowing
         post-processing of the stress results.
@@ -827,8 +846,10 @@ class CrossSection:
 
         # check that a geometric and warping analysis has been performed
         if None in [
-            self.section_props.area, self.section_props.ixx_c, self.section_props.cx,
-            self.section_props.j
+            self.section_props.area,
+            self.section_props.ixx_c,
+            self.section_props.cx,
+            self.section_props.j,
         ]:
             err = "Perform a geometric and warping analysis before carrying out a stress analysis."
             raise RuntimeError(err)
@@ -859,14 +880,42 @@ class CrossSection:
                 # loop through all elements in the material group
                 for el in group.elements:
                     (
-                        sig_zz_n_el, sig_zz_mxx_el, sig_zz_myy_el, sig_zz_m11_el, sig_zz_m22_el,
-                        sig_zx_mzz_el, sig_zy_mzz_el, sig_zx_vx_el, sig_zy_vx_el, sig_zx_vy_el,
-                        sig_zy_vy_el, weights
+                        sig_zz_n_el,
+                        sig_zz_mxx_el,
+                        sig_zz_myy_el,
+                        sig_zz_m11_el,
+                        sig_zz_m22_el,
+                        sig_zx_mzz_el,
+                        sig_zy_mzz_el,
+                        sig_zx_vx_el,
+                        sig_zy_vx_el,
+                        sig_zx_vy_el,
+                        sig_zy_vy_el,
+                        weights,
                     ) = el.element_stress(
-                        N, Mxx, Myy, M11, M22, Mzz, Vx, Vy, ea, cx, cy, ixx, iyy, ixy, i11, i22,
-                        phi, j, nu, self.section_props.omega[el.node_ids],
+                        N,
+                        Mxx,
+                        Myy,
+                        M11,
+                        M22,
+                        Mzz,
+                        Vx,
+                        Vy,
+                        ea,
+                        cx,
+                        cy,
+                        ixx,
+                        iyy,
+                        ixy,
+                        i11,
+                        i22,
+                        phi,
+                        j,
+                        nu,
+                        self.section_props.omega[el.node_ids],
                         self.section_props.psi_shear[el.node_ids],
-                        self.section_props.phi_shear[el.node_ids], Delta_s
+                        self.section_props.phi_shear[el.node_ids],
+                        Delta_s,
                     )
 
                     # add stresses to global vectors
@@ -1040,8 +1089,13 @@ class CrossSection:
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # plot the mesh
             ax.triplot(
-                self.mesh_nodes[:, 0], self.mesh_nodes[:, 1], self.mesh_elements[:, 0:3], lw=0.5,
-                color='black', alpha=alpha, mask=mask
+                self.mesh_nodes[:, 0],
+                self.mesh_nodes[:, 1],
+                self.mesh_elements[:, 0:3],
+                lw=0.5,
+                color='black',
+                alpha=alpha,
+                mask=mask,
             )
 
             # if the material colours are to be displayed
@@ -1058,15 +1112,20 @@ class CrossSection:
                     # if the material has not be entered yet
                     if i == 0 or material not in self.materials[0:i]:
                         # add the material colour and name to the legend list
-                        legend_list.append(mpatches.Patch(color=material.color, label=material.name))
+                        legend_list.append(
+                            mpatches.Patch(color=material.color, label=material.name)
+                        )
 
                 cmap = ListedColormap(color_array)  # custom colormap
                 c = np.arange(len(color_array))  # indices of elements
 
                 # plot the mesh colours
                 ax.tripcolor(
-                    self.mesh_nodes[:, 0], self.mesh_nodes[:, 1], self.mesh_elements[:, 0:3], c,
-                    cmap=cmap
+                    self.mesh_nodes[:, 0],
+                    self.mesh_nodes[:, 1],
+                    self.mesh_elements[:, 0:3],
+                    c,
+                    cmap=cmap,
                 )
 
                 # display the legend
@@ -1137,8 +1196,13 @@ class CrossSection:
             # if the elastic centroid has been calculated
             if self.section_props.cx is not None:
                 ax.scatter(
-                    self.section_props.cx, self.section_props.cy, edgecolors='r', facecolors='none',
-                    marker='o', s=100, label='Elastic centroid'
+                    self.section_props.cx,
+                    self.section_props.cy,
+                    edgecolors='r',
+                    facecolors='none',
+                    marker='o',
+                    s=100,
+                    label='Elastic centroid',
                 )
 
             # if the shear centre has been calculated
@@ -1155,15 +1219,22 @@ class CrossSection:
             if self.section_props.x11_pc is not None:
                 (x11_pc, y22_pc) = self.get_pc_p()
                 ax.scatter(
-                    x11_pc, y22_pc, edgecolors='r', facecolors='none', marker='s', s=100,
-                    label='Principal plastic centroid'
+                    x11_pc,
+                    y22_pc,
+                    edgecolors='r',
+                    facecolors='none',
+                    marker='s',
+                    s=100,
+                    label='Principal plastic centroid',
                 )
 
             # if the principal axis has been calculated
             if self.section_props.phi is not None:
                 post.draw_principal_axis(
-                    ax, self.section_props.phi * np.pi / 180, self.section_props.cx,
-                    self.section_props.cy
+                    ax,
+                    self.section_props.phi * np.pi / 180,
+                    self.section_props.cx,
+                    self.section_props.cy,
                 )
 
             # display the legend
@@ -1341,8 +1412,10 @@ class CrossSection:
         """
 
         return (
-            self.section_props.zxx_plus, self.section_props.zxx_minus, self.section_props.zyy_plus,
-            self.section_props.zyy_minus
+            self.section_props.zxx_plus,
+            self.section_props.zxx_minus,
+            self.section_props.zyy_plus,
+            self.section_props.zyy_minus,
         )
 
     def get_rc(self):
@@ -1401,8 +1474,10 @@ class CrossSection:
         """
 
         return (
-            self.section_props.z11_plus, self.section_props.z11_minus, self.section_props.z22_plus,
-            self.section_props.z22_minus
+            self.section_props.z11_plus,
+            self.section_props.z11_minus,
+            self.section_props.z22_plus,
+            self.section_props.z22_minus,
         )
 
     def get_rp(self):
@@ -1560,8 +1635,10 @@ class CrossSection:
         """
 
         return (
-            self.section_props.beta_x_plus, self.section_props.beta_x_minus,
-            self.section_props.beta_y_plus, self.section_props.beta_y_minus
+            self.section_props.beta_x_plus,
+            self.section_props.beta_x_minus,
+            self.section_props.beta_y_plus,
+            self.section_props.beta_y_minus,
         )
 
     def get_beta_p(self):
@@ -1581,8 +1658,10 @@ class CrossSection:
         """
 
         return (
-            self.section_props.beta_11_plus, self.section_props.beta_11_minus,
-            self.section_props.beta_22_plus, self.section_props.beta_22_minus
+            self.section_props.beta_11_plus,
+            self.section_props.beta_11_minus,
+            self.section_props.beta_22_plus,
+            self.section_props.beta_22_minus,
         )
 
     def get_pc(self):
@@ -1681,8 +1760,10 @@ class CrossSection:
         """
 
         return (
-            self.section_props.sf_xx_plus, self.section_props.sf_xx_minus,
-            self.section_props.sf_yy_plus, self.section_props.sf_yy_minus
+            self.section_props.sf_xx_plus,
+            self.section_props.sf_xx_minus,
+            self.section_props.sf_yy_plus,
+            self.section_props.sf_yy_minus,
         )
 
     def get_sf_p(self):
@@ -1700,8 +1781,10 @@ class CrossSection:
         """
 
         return (
-            self.section_props.sf_11_plus, self.section_props.sf_11_minus,
-            self.section_props.sf_22_plus, self.section_props.sf_22_minus
+            self.section_props.sf_11_plus,
+            self.section_props.sf_11_minus,
+            self.section_props.sf_22_plus,
+            self.section_props.sf_22_minus,
         )
 
 
@@ -2106,8 +2189,14 @@ class PlasticSection:
         b = dlim[1]
 
         (d, r) = brentq(
-            self.evaluate_force_eq, a, b, args=(u, u_p, verbose), full_output=True, disp=False,
-            xtol=1e-6, rtol=1e-6
+            self.evaluate_force_eq,
+            a,
+            b,
+            args=(u, u_p, verbose),
+            full_output=True,
+            disp=False,
+            xtol=1e-6,
+            rtol=1e-6,
         )
 
         return (d, r, self.f_top, self.c_top, self.c_bot)
@@ -2249,7 +2338,7 @@ class PlasticSection:
 
                 # if the line lies within q -> q + s and the point hasn't already been added
                 # (ignore t as it is infinitely long)
-                if (0 <= u <= 1 and list(new_pt) not in [list(item) for item in int_pts]):
+                if 0 <= u <= 1 and list(new_pt) not in [list(item) for item in int_pts]:
                     int_pts.append(new_pt)
                     fct_idx.append(idx)
 
@@ -2333,13 +2422,11 @@ class PlasticSection:
             y3 = self.mesh_nodes[el[2]][1]
 
             # compute variables alpha, beta and gamma
-            alpha = (
-                ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3))
-                / ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
+            alpha = ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) / (
+                (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)
             )
-            beta = (
-                ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3))
-                / ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
+            beta = ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) / (
+                (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)
             )
             gamma = 1.0 - alpha - beta
 
@@ -2364,8 +2451,7 @@ class PlasticSection:
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # plot the mesh
-            ax.triplot(nodes[:, 0], nodes[:, 1], elements[:, 0:3], lw=0.5,
-                    color='black')
+            ax.triplot(nodes[:, 0], nodes[:, 1], elements[:, 0:3], lw=0.5, color='black')
 
             color_array = []
             legend_list = []
@@ -2392,6 +2478,7 @@ class PlasticSection:
                 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), handles=legend_list)
 
         return fig, ax
+
 
 class StressPost:
     """Class for post-processing finite element stress results.
@@ -2444,7 +2531,7 @@ class StressPost:
             triang = tri.Triangulation(
                 self.cross_section.mesh_nodes[:, 0],
                 self.cross_section.mesh_nodes[:, 1],
-                self.cross_section.mesh_elements[:, 0:3]
+                self.cross_section.mesh_elements[:, 0:3],
             )
 
             # determine minimum and maximum stress values for the contour list
@@ -2509,8 +2596,12 @@ class StressPost:
                 c = np.hypot(sigx, sigy)
 
                 quiv = ax.quiver(
-                    self.cross_section.mesh_nodes[:, 0], self.cross_section.mesh_nodes[:, 1], sigx,
-                    sigy, c, cmap=cmap
+                    self.cross_section.mesh_nodes[:, 0],
+                    self.cross_section.mesh_nodes[:, 1],
+                    sigx,
+                    sigy,
+                    c,
+                    cmap=cmap,
                 )
 
                 # get the scale and store the max value
@@ -2615,32 +2706,34 @@ class StressPost:
         stress = []
 
         for group in self.material_groups:
-            stress.append({
-                'Material': group.material.name,
-                'sig_zz_n': group.stress_result.sig_zz_n,
-                'sig_zz_mxx': group.stress_result.sig_zz_mxx,
-                'sig_zz_myy': group.stress_result.sig_zz_myy,
-                'sig_zz_m11': group.stress_result.sig_zz_m11,
-                'sig_zz_m22': group.stress_result.sig_zz_m22,
-                'sig_zz_m': group.stress_result.sig_zz_m,
-                'sig_zx_mzz': group.stress_result.sig_zx_mzz,
-                'sig_zy_mzz': group.stress_result.sig_zy_mzz,
-                'sig_zxy_mzz': group.stress_result.sig_zxy_mzz,
-                'sig_zx_vx': group.stress_result.sig_zx_vx,
-                'sig_zy_vx': group.stress_result.sig_zy_vx,
-                'sig_zxy_vx': group.stress_result.sig_zxy_vx,
-                'sig_zx_vy': group.stress_result.sig_zx_vy,
-                'sig_zy_vy': group.stress_result.sig_zy_vy,
-                'sig_zxy_vy': group.stress_result.sig_zxy_vy,
-                'sig_zx_v': group.stress_result.sig_zx_v,
-                'sig_zy_v': group.stress_result.sig_zy_v,
-                'sig_zxy_v': group.stress_result.sig_zxy_v,
-                'sig_zz': group.stress_result.sig_zz,
-                'sig_zx': group.stress_result.sig_zx,
-                'sig_zy': group.stress_result.sig_zy,
-                'sig_zxy': group.stress_result.sig_zxy,
-                'sig_vm': group.stress_result.sig_vm
-            })
+            stress.append(
+                {
+                    'Material': group.material.name,
+                    'sig_zz_n': group.stress_result.sig_zz_n,
+                    'sig_zz_mxx': group.stress_result.sig_zz_mxx,
+                    'sig_zz_myy': group.stress_result.sig_zz_myy,
+                    'sig_zz_m11': group.stress_result.sig_zz_m11,
+                    'sig_zz_m22': group.stress_result.sig_zz_m22,
+                    'sig_zz_m': group.stress_result.sig_zz_m,
+                    'sig_zx_mzz': group.stress_result.sig_zx_mzz,
+                    'sig_zy_mzz': group.stress_result.sig_zy_mzz,
+                    'sig_zxy_mzz': group.stress_result.sig_zxy_mzz,
+                    'sig_zx_vx': group.stress_result.sig_zx_vx,
+                    'sig_zy_vx': group.stress_result.sig_zy_vx,
+                    'sig_zxy_vx': group.stress_result.sig_zxy_vx,
+                    'sig_zx_vy': group.stress_result.sig_zx_vy,
+                    'sig_zy_vy': group.stress_result.sig_zy_vy,
+                    'sig_zxy_vy': group.stress_result.sig_zxy_vy,
+                    'sig_zx_v': group.stress_result.sig_zx_v,
+                    'sig_zy_v': group.stress_result.sig_zy_v,
+                    'sig_zxy_v': group.stress_result.sig_zxy_v,
+                    'sig_zz': group.stress_result.sig_zz,
+                    'sig_zx': group.stress_result.sig_zx,
+                    'sig_zy': group.stress_result.sig_zy,
+                    'sig_zxy': group.stress_result.sig_zxy,
+                    'sig_vm': group.stress_result.sig_vm,
+                }
+            )
 
         return stress
 
@@ -4179,8 +4272,7 @@ class SectionProperties:
         if abs(self.ixx_c - self.i11_c) < 1e-12 * self.i11_c:
             self.phi = 0
         else:
-            self.phi = np.arctan2(
-                self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
+            self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
 
         # calculate section moduli about the principal axis
         for (i, pt) in enumerate(nodes):
