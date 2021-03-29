@@ -30,11 +30,10 @@ numpy = '^1.20'
 scipy = '^1.6'
 matplotlib = '^3.3'
 shapely = '^1.7'
-pybind11 = { version = '^2.6', markers = "sys.platform != 'win32' and sys.platform != 'cygwin'" }
-MeshPy = { version = '^2020.1', markers = "sys.platform != 'win32' and sys.platform != 'cygwin'" }
+pybind11 = '^2.6'
+MeshPy = '^2020.1'
 
 [tool.poetry.dev-dependencies]
-toml = '^0.10'
 black = '20.8b1'
 isort = '^5.6.4'
 flake8 = '>=3.6.0'
@@ -44,10 +43,11 @@ flake8-rst-docstrings = '^0.0.14'
 pylint = '^2.6.0'
 rstcheck = '^3.3.1'
 pytest = '^6.2.2'
-coverage = '^5.4'
+coverage = { version = "^5.4", extras = ['toml'] }
 pre-commit = '^2.10'
-Sphinx = "^3.5"
-sphinx-rtd-theme = "^0.5"
+Sphinx = '^3.5'
+sphinx-rtd-theme = '^0.5'
+twine = '^3.4'
 
 [tool.black]
 line-length = 100
@@ -110,6 +110,12 @@ data_file = '.cache/coverage'
 omit = [
   '.venv/*',
   '*/tests/*',
+]
+
+[tool.coverage.paths]
+source = [
+    'sectionproperties/',
+    '*/sectionproperties/',  # for combining data from different OSes in github actions
 ]
 
 [tool.coverage.report]

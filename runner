@@ -40,21 +40,21 @@ run_format() {
     echo "--------------------------------------------------------------------"
     echo "---[ Sort imports with isort ]--------------------------------------"
     echo "--------------------------------------------------------------------"
-    ISORT_ARGS=""
     if [[ "${CI:-}" = "1" ]]; then
-        ISORT_ARGS="--check-only"
+        poetry run isort --check-only .
+    else
+        poetry run isort .
     fi
-    poetry run isort $ISORT_ARGS .
 
     echo
     echo "--------------------------------------------------------------------"
     echo "---[ Format with black ]--------------------------------------------"
     echo "--------------------------------------------------------------------"
-    BLACK_ARGS=""
     if [[ "${CI:-}" = "1" ]]; then
-        BLACK_ARGS="--check"
+        poetry run black --check .
+    else
+        poetry run black .
     fi
-    poetry run black $BLACK_ARGS .
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -86,16 +86,8 @@ run_docs() {
     echo "--------------------------------------------------------------------"
     echo "---[ Build the documentation ]--------------------------------------"
     echo "--------------------------------------------------------------------"
-    # activate the virtual environment so that the sphinx installed in it is used
-    if [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" ]]; then
-        # cygwin: POSIX compatibility layer and Linux environment emulation for Windows
-        # msys  : Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
-        # on Windows, ignore an error here in case the user does not have make installed
-        set +e
-    fi
-    . "$(dirname $(poetry run which python))/activate"
-    make -C docs html
-    set -e
+    rm -rf docs/build
+    poetry run sphinx-build docs/source docs/build
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -103,8 +95,13 @@ run_test() {
     echo "--------------------------------------------------------------------"
     echo "---[ Test with pytest and coverage ]--------------------------------"
     echo "--------------------------------------------------------------------"
-    poetry run coverage run -m pytest
-    poetry run coverage report --skip-covered
+    poetry run coverage run --parallel -m pytest
+    if [[ "${CI:-}" = "1" ]]; then
+        echo "skiping coverage combine and report until all jobs are done"
+    else
+        poetry run coverage combine
+        poetry run coverage report --skip-covered
+    fi
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -113,6 +110,11 @@ run_build() {
     echo "---[ Build package with poetry ]------------------------------------"
     echo "--------------------------------------------------------------------"
     poetry build
+
+    echo "--------------------------------------------------------------------"
+    echo "---[ Check build with twine ]---------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run twine check dist/*
 }
 
 # --------------------------------------------------------------------------------------------------
