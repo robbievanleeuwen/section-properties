@@ -9,6 +9,13 @@
 .venv/
 .env/
 
+# cache directories
+.cache/
+.mypy_cache/
+.pytest_cache/
+.coverage/
+.benchmarks/
+
 # doc generated
 /docs/build
 /docs/_build

@@ -95,7 +95,7 @@ run_test() {
     echo "--------------------------------------------------------------------"
     echo "---[ Test with pytest and coverage ]--------------------------------"
     echo "--------------------------------------------------------------------"
-    poetry run coverage run --parallel -m pytest
+    poetry run coverage run --parallel -m pytest "$*"
     if [[ "${CI:-}" = "1" ]]; then
         echo "skiping coverage combine and report until all jobs are done"
     else
@@ -139,7 +139,7 @@ run_clean() {
 
     echo "deleting temporary files and directories..."
     find . -regex '^.*\(__pycache__\|\.py[co]\)$' -delete
-    rm -rf *.spec .eggs .tox build dist *.egg-info .cache site
+    rm -rf *.spec .eggs .tox build dist *.egg-info .cache site docs/build
 
     if [ $all == "yes" ]; then
         echo "deleting virtual environment..."
@@ -168,8 +168,13 @@ else
         doc*)
             run_docs
             ;;
-        test*)
-            run_test
+        pytest|test*)
+            shift 1
+            run_test $*
+            ;;
+        benchmarks)
+            shift 1
+            run_test --benchmark-enable $*
             ;;
         build*)
             run_build
@@ -186,21 +191,22 @@ else
             echo ""
             echo "Usage: run [command]"
             echo ""
-            echo "- runner         : (no arguments) to run each listed task:"
-            echo "                     - install"
-            echo "                     - format"
-            echo "                     - lint"
-            echo "                     - docs"
-            echo "                     - test"
-            echo "                     - build"
-            echo "- runner install : Create virtual environment and install pre-commit hooks"
-            echo "- runner format  : Run formatters"
-            echo "- runner lint    : Run linters/code analysis"
-            echo "- runner docs    : Build the documentation"
-            echo "- runner test    : Run pytest with coverage"
-            echo "- runner build   : Build sdist and wheel distributions"
-            echo "- runner clean   : Delete all temporary files and directories"
-            echo "- runner clean -a: Do clean plus delete the virutal environment"
+            echo "- runner           : (no arguments) to run each listed task:"
+            echo "                       - install"
+            echo "                       - format"
+            echo "                       - lint"
+            echo "                       - docs"
+            echo "                       - test"
+            echo "                       - build"
+            echo "- runner install   : Create virtual environment and install pre-commit hooks"
+            echo "- runner format    : Run formatters"
+            echo "- runner lint      : Run linters/code analysis"
+            echo "- runner docs      : Build the documentation"
+            echo "- runner test      : Run pytest with coverage"
+            echo "- runner build     : Build sdist and wheel distributions"
+            echo "- runner benchmark : Run benchmarks to compare execution timings"
+            echo "- runner clean     : Delete all temporary files and directories"
+            echo "- runner clean -a  : Do clean plus delete the virutal environment"
             echo ""
             exit 1
     esac
