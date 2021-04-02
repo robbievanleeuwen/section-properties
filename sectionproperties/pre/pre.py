@@ -158,9 +158,9 @@ class GeometryCleaner:
                 # if the points are close together and the point has not already been removed
                 if (dist < atol or dist < rel_tol) and idx_2 not in idx_to_remove:
                     # update point1 (average of point1 + point2)
-                    pt1 = [0.5 * (pt1[0] + pt2[0]), 0.5 * (pt1[1] + pt2[1])]
-                    # pt1[0] = 0.5 * (pt1[0] + pt2[0])
-                    # pt1[1] = 0.5 * (pt1[1] + pt2[1])
+                    # pt1 = [0.5 * (pt1[0] + pt2[0]), 0.5 * (pt1[1] + pt2[1])]
+                    pt1[0] = 0.5 * (pt1[0] + pt2[0])
+                    pt1[1] = 0.5 * (pt1[1] + pt2[1])
 
                     # join facets connected to pt2 to pt1 instead
                     self.replace_point_id(idx_2, idx_1)
@@ -618,7 +618,7 @@ def create_mesh(points, facets, holes, control_points, mesh_sizes, atol=1.0e-8):
     :rtype: :class:`meshpy.triangle.MeshInfo`
     """
 
-    check_geometry(points, facets, holes, control_points, atol=atol)
+    # check_geometry(points, facets, holes, control_points, atol=atol)
 
     mesh = triangle.MeshInfo()  # create mesh info object
     mesh.set_points(points)  # set points

@@ -334,8 +334,8 @@ class Tri6:
             whether or not the element is above the line
         :rtype: tuple(float, float, float, float, bool)
         """
-        import warnings
-        warnings.filterwarnings('error')
+        # import warnings
+        # warnings.filterwarnings('error')
 
         # initialise geometric properties
         e = self.material.elastic_modulus
@@ -358,11 +358,11 @@ class Tri6:
             force += gp[0] * j * self.material.yield_strength
 
         # calculate element centroid
-        try:
-            (cx, cy) = (qy / area, qx / area)
-        except Warning:
-            cx, cy = (0, 0)
-            print(self.coords)
+        # try:
+        (cx, cy) = (qy / area, qx / area)
+        # except Warning:
+            # cx, cy = (0, 0)
+            # print(self.coords)
 
         # determine if the element is above the line p + u
         is_above = point_above_line(u, p[0], p[1], cx, cy)

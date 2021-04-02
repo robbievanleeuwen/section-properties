@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
 
 import pathlib
 import logging 
@@ -7,10 +7,11 @@ from icecream import ic
 
 import more_itertools
 import numpy as np
-from shapely.geometry import Polygon, MultiPolygon, LinearRing, box, Point, MultiPoint
+from shapely.geometry import Polygon, MultiPolygon, LinearRing, LineString, Point, MultiPoint
 import shapely
 import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
+import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
 
 log = logging.getLogger('shapely')
@@ -27,8 +28,14 @@ class Geometry:
 
     :cvar geom: a Polygon object that defines the geometry
     :vartype geom: shapely.geometry.Polygon
+
+    :cvar material: Optional, a Material to associate with this geometry
+    :vartype material: Optional[sectionproperties.pre.Material]
     """
-    def __init__(self, geom: shapely.geometry.Polygon = None):
+    def __init__(self, 
+        geom: shapely.geometry.Polygon, 
+        material: Optional[pre.Material] = None,
+        ):
         """Inits the Geometry class.
         """
         if isinstance(geom, MultiPolygon):
@@ -36,6 +43,7 @@ class Geometry:
         if not isinstance(geom, Polygon):
             raise ValueError(f"Argument is not a valid shapely.geometry.Polygon object: {geom}")
         self.geom = geom
+        self.material = material
         self.control_points = []
         self.shift = []
         self.points = []
@@ -86,24 +94,28 @@ class Geometry:
                 "Did you mean to use CompoundGeometry.from_points()?"
         )
         if holes is None: holes = []
-        multi_geom = False
         prev_facet = []
+
+        # Initialize the total number of accumulators needed
+        # Always an exterior and a separate accumulator for each interior region
         exterior = []
-        interiors = [[] for hole in holes] # initialize an empty facet list for every hole
-        interior_counter = 0
-        active_list = exterior # Like setting a pointer for the list we are accumulating on
-        for facet in facets:
-            i_idx, j_idx = facet
+        interiors = [[] for _ in holes] # initialize an empty facet list for every hole
+        interior_counter = 0 # To keep track of interior regions
+        active_list = exterior # The active_list is the list being accumulated on
+
+        for facet in facets: # Loop through facets for graph connectivity
+            i_idx, _ = facet
             if not prev_facet: # Add the first facet vertex to exterior and move on
                 active_list.append(points[i_idx])
                 prev_facet = facet
                 continue
-            prev_j_idx = prev_facet[1]
+
+            prev_j_idx = prev_facet[1] # Look at the last j_idx to test for a break in the chain of edges
             if i_idx != prev_j_idx and holes: #If there is a break in the chain of edges...
-                if active_list == exterior: # ...and we were still on the exterior...
-                    active_list = interiors[interior_counter] # ... then move to interior
-                else: # ...or if we are already in the interiors...
-                    interior_counter += 1 # ...then start the next interior region.
+                if active_list == exterior: # ...and we are still accumulating on the exterior...
+                    active_list = interiors[interior_counter] # ... then move to the interior accumulator
+                else: # ...or if we are already in the interior accumulator...
+                    interior_counter += 1 # ...then start the next interior accumulator for a new hole.
                     active_list = interiors[interior_counter]
                 active_list.append(points[i_idx])                
             else:
@@ -129,9 +141,6 @@ class Geometry:
         for hole in self.geom.interiors:
             hole_polygon = Polygon(hole)
             self.holes += list(hole_polygon.representative_point().coords)
-
-        # for idx, point in enumerate(self.points):
-        #     log.log(level=logging.DEBUG, msg=f"{idx}: {point}")
         return
 
     def compile_geometry(self): # Alias
@@ -164,6 +173,7 @@ class Geometry:
 
             Mesh generated from the above geometry.
         """
+        self.compile_geometry()
         if isinstance(mesh_sizes, (float, int)): mesh_sizes = [mesh_sizes]*len(self.control_points)
 
         error_str = (
@@ -179,7 +189,7 @@ class Geometry:
 
     def align_left(self, align_to: Geometry, inner: bool = False):
         """
-        Returns a new Geometry object, tranlsated in x, so that the right-most point 
+        Returns a new Geometry object, translated in x, so that the right-most point 
         of the new object will be aligned to left-most point of the other Geometry object.
 
         :param align_to: Another Geometry to align to.
@@ -353,6 +363,55 @@ class Geometry:
             geometry = sections.pfc_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             new_geometry = geometry.mirror_section(axis='y', mirror_point=[0, 0])
         """
+        x_mirror = 1
+        y_mirror = 1
+        if axis == "x": x_mirror = -x_mirror
+        elif axis == "y": y_mirror = -y_mirror
+        new_geom = Geometry(shapely.affinity.scale(self.geom, x_mirror, y_mirror, mirror_point))
+        return new_geom
+
+
+    def split_section(self, 
+        point_i: Tuple[float, float], 
+        point_j: Tuple[float, float],
+        ) -> Tuple[List[Geometry], List[Geometry]]:
+        """Splits, or bisects, the geometry about an infinite line, as defined by two points
+        on the line.
+
+        Returns a tuple of two lists each containing new Geometry instances representing the 
+        "top" and "bottom" portions, respectively, of the bisected geometry.
+
+        If the line is a vertical line then the "right" and "left" portions, respectively, are 
+        returned.
+
+        :param point_i: A tuple of *(x, y)* coordinates to define a first point on the line
+        :type line: Tuple[float, float]
+
+        :param point_i: A tuple of *(x, y)* coordinates to define a second point on the line
+        :type line: Tuple[float, float]
+
+        :return: A tuple of lists containing Geometry objects that are bisected about the 
+        infinite line defined by the two given points. The first item in the tuple represents
+        the geometries on the "top" of the line (or to the "right" of the line, if vertical) and
+        the second item represents the geometries to the "bottom" of the line (or 
+        to the "left" of the line, if vertical).
+
+        :rtype: Tuple[List[Geometry], List[Geometry]]
+
+        The following example splits a 200PFC section about the y-axis::
+
+            import sectionproperties.pre.sections as sections
+            from shapely.geometry import LineString
+
+            geometry = sections.pfc_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            right_geom, left_geom = geometry.split_section((0, 0), (0, 1))
+        """
+        line_vector = np.array([
+            point_j[1] - point_i[1], 
+            point_j[0] - point_i[0],
+            ])
+        line = pre.bisec
+        
         x_mirror = 1
         y_mirror = 1
         if axis == "x": x_mirror = -x_mirror
@@ -857,8 +916,8 @@ class CompoundGeometry(Geometry):
             # add points and count points
             # skip duplicate points
             for point in geom.points:
-                if tuple(point) not in self.points:
-                    self.points.append(tuple(point))
+                if list(point) not in self.points:
+                    self.points.append(list(point))
 
             # map facets from original Polygon points to collected MultiPolygon points
             # b/c points are not being duplicated, have to find the original point and
@@ -871,11 +930,11 @@ class CompoundGeometry(Geometry):
 
             # add holes
             for hole in geom.holes:
-                self.holes.append(tuple(hole))
+                self.holes.append(list(hole))
 
             # add control points
             for control_point in geom.control_points:
-                self.control_points.append(tuple(control_point))
+                self.control_points.append(list(control_point))
 
         # Check for holes created inadvertently from combined sections
         unionized_geometry = None
@@ -885,7 +944,7 @@ class CompoundGeometry(Geometry):
                 continue
             unionized_geometry = unionized_geometry | geom
         if len(unionized_geometry.holes) > len(self.holes):
-            inadvertent_holes = list(set(unionized_geometry.holes) - set(self.holes))
+            inadvertent_holes = [hole_coords for hole_coords in unionized_geometry.holes if hole_coords not in self.holes]
             self.holes += inadvertent_holes
             #change x,y coords to tuples, only
 
@@ -942,7 +1001,7 @@ def create_points_and_facets(shape: Polygon) -> tuple:
     
     # Shape perimeter
     for coords in list(shape.exterior.coords[:-1]): # The last point == first point (shapely)
-        points.append(tuple(coords))
+        points.append(list(coords))
         master_count += 1
     facets += create_facets(points, connect_back=True)
     exterior_count = master_count
@@ -952,7 +1011,7 @@ def create_points_and_facets(shape: Polygon) -> tuple:
         break_count = master_count
         int_points = []
         for coords in hole.coords[:-1]: # The last point == first point (shapely)
-            int_points.append(tuple(coords))
+            int_points.append(list(coords))
             master_count += 1
         
         offset = break_count*(idx > 0) + exterior_count*(idx < 1) # (idx > 0) is like a 'step function'

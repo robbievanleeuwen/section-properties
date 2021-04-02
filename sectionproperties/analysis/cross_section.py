@@ -1803,10 +1803,10 @@ class PlasticSection:
 
 
         # initialize variables to be defined later within calculate_plastic_force
-        self.c_top = [0.0, 0.0]
-        self.c_bot = [0.0, 0.0]
-        self.f_top = 0.0
-        self.f_bot = 0.0
+        # self.c_top = [0.0, 0.0]
+        # self.c_bot = [0.0, 0.0]
+        # self.f_top = 0.0
+        # self.f_bot = 0.0
 
         if self.materials is not None:
             # create dummy control point at the start of the list
@@ -1821,7 +1821,7 @@ class PlasticSection:
         # print("Post")
 
         # get the elements of the mesh
-        (_, mesh_elements, elements) = self.get_elements(mesh)
+        (_, _, elements) = self.get_elements(mesh)
 
         # calculate centroid of the mesh
         (cx, cy) = self.calculate_centroid(elements)
@@ -1941,35 +1941,36 @@ class PlasticSection:
         """
         # 1) Calculate plastic properties for centroidal axis
         # calculate distances to the extreme fibres
-        fibres = self.calculate_extreme_fibres(0)
+        fibres = self.calculate_extreme_fibres(0) # Angle = 0 ; returns bounding box Provides upper/lower bound for brentq algo
 
         # 1a) Calculate x-axis plastic centroid
-        (y_pc, r, f, c_top, c_bot) = self.pc_algorithm(np.array([1, 0]), fibres[2:], 1, verbose)
+        (y_pc, r, f, c_top, c_bot) = self.pc_algorithm(np.array([1, 0]), fibres[2:], 1, verbose) # fibres[2:] = ymin, ymax
+        print("After pc Algorithm")
 
         self.check_convergence(r, 'x-axis')
         cross_section.section_props.y_pc = y_pc
         cross_section.section_props.sxx = f * abs(c_top[1] - c_bot[1])
 
         if verbose:
-            self.print_verbose(y_pc, r, 'x-axis')
+            self.print_verbose(y_pc, r, 'x-axis') # Location of axis for each iteration
 
         # 1b) Calculate y-axis plastic centroid
-        (x_pc, r, f, c_top, c_bot) = self.pc_algorithm(np.array([0, 1]), fibres[0:2], 2, verbose)
+        (x_pc, r, f, c_top, c_bot) = self.pc_algorithm(np.array([0, 1]), fibres[0:2], 2, verbose) # fibres[0:2] = xmin, xmax
 
         self.check_convergence(r, 'y-axis')
         cross_section.section_props.x_pc = x_pc
         cross_section.section_props.syy = f * abs(c_top[0] - c_bot[0])
 
         if verbose:
-            self.print_verbose(x_pc, r, 'y-axis')
+            self.print_verbose(x_pc, r, 'y-axis') # Location of axis for each iteration
 
         # 2) Calculate plastic properties for principal axis
         # convert principal axis angle to radians
         angle = cross_section.section_props.phi * np.pi / 180
 
         # unit vectors in the axis directions
-        ux = np.array([np.cos(angle), np.sin(angle)])
-        uy = np.array([-np.sin(angle), np.cos(angle)])
+        ux = np.array([np.cos(angle), np.sin(angle)]) # Unit vectors
+        uy = np.array([-np.sin(angle), np.cos(angle)]) # Unit vectors
 
         # calculate distances to the extreme fibres in the principal axis
         fibres = self.calculate_extreme_fibres(cross_section.section_props.phi)
@@ -2105,27 +2106,31 @@ class PlasticSection:
         :rtype: float
         """
 
-        p = np.array([d * u_p[0], d * u_p[1]])
+        p = np.array([d * u_p[0], d * u_p[1]]) # p finding a point on the axis by scaling the perpendicular
 
         # create a mesh with the axis included
         mesh = self.create_plastic_mesh([p, u])
+        print("After meshign")
         (nodes, elements, element_list) = self.get_elements(mesh)
+        print("After get elements")
 
         if self.debug:
             self.plot_mesh(nodes, elements, element_list, self.materials)
 
         # calculate force equilibrium
         (f_top, f_bot) = self.calculate_plastic_force(element_list, u, p)
+        print("After plastic force")
 
         # calculate the force norm
-        f_norm = (f_top - f_bot) / (f_top + f_bot)
+        f_norm = (f_top - f_bot) / (f_top + f_bot) # Going down to zero
 
         # print verbose results
         if verbose:
             print("d = {0}; f_norm = {1}".format(d, f_norm))
 
         # return the force norm
-        return f_norm
+        print("F_nrom")
+        return f_norm # This is the result that is the target for the root finding algorithm
 
     def pc_algorithm(self, u, dlim, axis, verbose):
         """An algorithm used for solving for the location of the plastic centroid. The algorithm
@@ -2152,14 +2157,14 @@ class PlasticSection:
         else:
             u_p = np.array([u[1], -u[0]])
 
-        a = dlim[0]
-        b = dlim[1]
+        a = dlim[0] # Upper and lower bound for algorithm
+        b = dlim[1] # Upper and lower bound for algorithm
 
-        (d, r) = brentq(
-            self.evaluate_force_eq, a, b, args=(u, u_p, verbose), full_output=True, disp=False,
+        (d, r) = brentq( # d = neutral axis depth, measured from the origin; r is the convegence indicator
+            self.evaluate_force_eq, a, b, args=(u, u_p, verbose), full_output=True, disp=False, # Unit vector w/ unit vector perpendicular
             xtol=1e-6, rtol=1e-6
         )
-
+        print("After Brent")
         return (d, r, self.f_top, self.c_top, self.c_bot)
 
     def calculate_plastic_force(self, elements, u, p):
@@ -2176,7 +2181,7 @@ class PlasticSection:
         :rtype: tuple(float, float)
         """
         # print("Runs")
-
+        print("Beginnign of plastic forces")
         # initialise variables
         (f_top, f_bot) = (0, 0)
         (ea_top, ea_bot) = (0, 0)
@@ -2185,7 +2190,7 @@ class PlasticSection:
 
         for el in elements:
             # calculate element force and area properties
-            (f_el, ea_el, qx_el, qy_el, is_above) = el.plastic_properties(u, p)
+            (f_el, ea_el, qx_el, qy_el, is_above) = el.plastic_properties(u, p) # Needs to test whether element is above or below the line
 
             # assign force and area properties to the top or bottom segments
             if is_above:
@@ -2210,7 +2215,7 @@ class PlasticSection:
         self.c_top = [qy_top / ea_top, qx_top / ea_top]
         self.c_bot = [qy_bot / ea_bot, qx_bot / ea_bot]
         self.f_top = f_top
-
+        print("end of calculate plastic forces")
         return (f_top, f_bot)
 
     def create_plastic_mesh(self, new_line=None):
@@ -2225,7 +2230,7 @@ class PlasticSection:
         :type mesh: :class:`meshpy.triangle.MeshInfo`
         """
 
-        # start with the initial geometry
+        # start with the initial geometry # Cut the geometry and then separately remesh top and bot
         self._geometry_class = type(self.geometry)
         shapely_copy = copy.deepcopy(self.geometry.geom)
         geom = self._geometry_class(shapely_copy)
@@ -2233,7 +2238,7 @@ class PlasticSection:
 
         # add line at new_line
         if new_line is not None:
-            self.add_line(geom, new_line)
+            self.add_line(geom, new_line) # IF you just cut mesh, you may get some triangular elements with some area in the top where centroid in bottom
 
         # fast clean the geometry after adding the line
             clean = pre.GeometryCleaner(geom, verbose=False)
@@ -2260,10 +2265,10 @@ class PlasticSection:
             mesh.regions[i] = [cp[0], cp[1], region_id, 1]
             region_id += 1
 
-        geom.plot_geometry()
+        # geom.plot_geometry()
         # print(geom.points, geom.facets)
+        print("Before Mesh")
         mesh = triangle.build(mesh, mesh_order=2, quality_meshing=False, attributes=True)
-    
 
         return mesh
 
