@@ -1,9 +1,10 @@
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Tuple
 
 import pathlib
 import logging 
 from icecream import ic
 
+from IPython.display import display_svg
 
 import copy
 from dataclasses import dataclass
@@ -23,12 +24,13 @@ import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
 import sys
-np.set_printoptions(threshold=sys.maxsize)
-np.set_printoptions(precision=25)
+# np.set_printoptions(threshold=sys.maxsize)
+# np.set_printoptions(precision=25)
 
-log = logging.getLogger('shapely')
-log_path = pathlib.Path("C:\\Users\\cferster\\Desktop\\sectionproperties logs\\shapley.log")
-logging.basicConfig(filename=log_path, filemode='w', format="%(message)s", level=logging.DEBUG)
+# log = logging.getLogger('shapely')
+# log_path = pathlib.Path("C:\\Users\\cferster\\Desktop\\sectionproperties logs\\shapley.log")
+# logging.basicConfig(filename=log_path, filemode='w', format="%(message)s", level=logging.DEBUG)
+
 
 class Section:
     """Class for structural cross-sections.
@@ -116,18 +118,20 @@ class Section:
 
     def __init__(self, 
         geometry: Union[sections.Geometry, sections.CompoundGeometry], 
-        materials: Optional[List[pre.Material]] = None, 
         time_info: bool = False,
         ):
         """Inits the Section class."""
         self.geometry = geometry
-        self.materials = materials
         self.time_info = time_info
         self.mesh = geometry.mesh
+        self.materials = []
         mesh = self.mesh
 
         def init():
-            self.geometry = geometry  # save geometry data
+            if isinstance(self.geometry, sections.CompoundGeometry):
+                self.materials = [geom.material for geom in self.geometry.geoms]
+            else:
+                self.materials = [self.geometry.material]
 
             # extract mesh data
             nodes = np.array(mesh.points, dtype=np.dtype(float))
@@ -145,29 +149,30 @@ class Section:
 
             # if materials are specified, check that the right number of material properties are
             # specified and then populate material_groups list
-            if materials is not None:
-                info_str = "Number of materials ({0}), ".format(len(materials))
+            if self.materials:
+                info_str = "Number of materials ({0}), ".format(len(self.materials))
                 info_str += "should match the number of regions ({0}).".format(
                     max(attributes) + 1)
-                assert(len(materials) == max(attributes) + 1), info_str
+                assert(len(self.materials) == max(attributes) + 1), info_str
 
                 # add a MaterialGroup object to the material_groups list for each uniquely
                 # encountered material
-                for (i, material) in enumerate(materials):
+                for (i, material) in enumerate(self.materials):
                     # add the first material to the list
                     if i == 0:
                         self.material_groups.append(MaterialGroup(material, self.num_nodes))
                     else:
                         # if the material hasn't been encountered
-                        if material not in materials[:i]:
+                        if material not in self.materials[:i]:
                             self.material_groups.append(MaterialGroup(material, self.num_nodes))
-            # if there are no materials defined, add only the default material
-            else:
-                default_material = pre.Material('default', 1, 0, 1)
-                # self.materials = [default_material]
-                self.material_groups.append(MaterialGroup(default_material, self.num_nodes))
 
-            self.materials = materials                                                           
+            # # if there are no materials defined, add only the default material
+            # else:
+            #     default_material = pre.Material('default', 1, 0, 1)
+            #     # self.materials = [default_material]
+            #     self.material_groups.append(MaterialGroup(default_material, self.num_nodes))
+
+            # self.materials = materials                                                           
 
 
             self.elements = []  # initialise list holding all element objects
@@ -191,15 +196,15 @@ class Section:
                 coords = np.array([[x1, x2, x3, x4, x5, x6], [y1, y2, y3, y4, y5, y6]])
 
                 # if materials are specified, get the material
-                if materials is not None:
+                if self.materials:
                     # get attribute index of current element
                     att_el = attributes[i]
 
                     # fetch the material
-                    material = materials[att_el]
+                    material = self.materials[att_el]
                 # if there are no materials specified, use a default material
-                else:
-                    material = default_material
+                else: # Should not happen but included as failsafe
+                    material = pre.DEFAULT_MATERIAL 
 
                 # add tri6 elements to the mesh
                 new_element = fea.Tri6(i, coords, node_ids, material)
@@ -217,8 +222,8 @@ class Section:
             self.mesh_elements = elements
             self.mesh_attributes = attributes
 
-            log.log(level=logging.DEBUG, msg=f"Section:\n")
-            log.log(level=logging.DEBUG, msg=f"Tri6 Elements: {self.elements}")
+            # log.log(level=logging.DEBUG, msg=f"Section:\n")
+            # log.log(level=logging.DEBUG, msg=f"Tri6 Elements: {self.elements}")
 
             # initialise class storing section properties
             self.section_props = SectionProperties()
@@ -346,7 +351,7 @@ class Section:
         for el in warping_section.elements:
             el.coords[0, :] -= self.section_props.cx
             el.coords[1, :] -= self.section_props.cy
-            log.log(level=logging.DEBUG, msg=f"{el.coords}")
+            # log.log(level=logging.DEBUG, msg=f"{el.coords}")
 
         # assemble stiffness matrix and load vector for warping function
         if time_info:
@@ -355,7 +360,7 @@ class Section:
         else:
             (k, k_lg, f_torsion) = warping_section.assemble_torsion()
 
-        log.log(level=logging.DEBUG, msg=f"k: {k}, k_lg: {k_lg}, f_torsion: {f_torsion}")
+        # log.log(level=logging.DEBUG, msg=f"k: {k}, k_lg: {k_lg}, f_torsion: {f_torsion}")
 
         # ILU decomposition of stiffness matrices
         def ilu_decomp():
@@ -812,14 +817,14 @@ class Section:
             raise RuntimeError(err)
 
         def calc_plastic():
-            plastic_section = PlasticSection(self, debug)
+            plastic_section = PlasticSection(self.geometry, debug)
             # calculate plastic properties
-            try:
-                plastic_section.calculate_plastic_properties(self, verbose)
-            except ValueError:
-                info_str = "Plastic section properties calculation failed. Contact "
-                info_str += "robbie.vanleeuwen@gmail.com with your analysis parameters."
-                raise RuntimeError(info_str)
+            # try:
+            plastic_section.calculate_plastic_properties(self, verbose)
+            # except ValueError:
+            #     info_str = "Plastic section properties calculation failed. Contact "
+            #     info_str += "robbie.vanleeuwen@gmail.com with your analysis parameters."
+            #     raise RuntimeError(info_str)
 
         if time_info:
             text = "--Calculating plastic properties...\n"
@@ -1789,123 +1794,43 @@ class PlasticSection:
     :type c_bot: list[float, float]
     """
 
-    def __init__(self, section: Section, debug: bool):
+    def __init__(self, geom: Union[sections.Geometry, sections.CompoundGeometry], debug: bool):
         """Inits the PlasticSection class."""
-        # make a deepcopy of the geometry & materials so that we can modify it
-        self._geometry_class = type(section.geometry)
-        shapely_copy = copy.deepcopy(section.geometry.geom)
-        self.geometry = self._geometry_class(shapely_copy)
+        self.geometry = geom.align_center()
         self.geometry.compile_geometry()
-        
-        self.materials = copy.deepcopy(section.materials)
-        # self.elements = copy.deepcopy(section.elements)
         self.debug = debug
 
 
         # initialize variables to be defined later within calculate_plastic_force
-        # self.c_top = [0.0, 0.0]
-        # self.c_bot = [0.0, 0.0]
-        # self.f_top = 0.0
-        # self.f_bot = 0.0
+        self.c_top = [0.0, 0.0]
+        self.c_bot = [0.0, 0.0]
+        self.f_top = 0.0
+        self.f_bot = 0.0
 
-        if self.materials is not None:
-            # create dummy control point at the start of the list
-            (x_min, x_max, y_min, y_max) = self.geometry.calculate_extents()
-            self.geometry.control_points.insert(0, [x_min - 1, y_min - 1])
+        # if self.materials is not None:
+        #     # create dummy control point at the start of the list
+        #     (x_min, x_max, y_min, y_max) = self.geometry.calculate_extents()
+        #     self.geometry.control_points.insert(0, [x_min - 1, y_min - 1])
 
-            # create matching dummy material
-            self.materials.insert(0, pre.Material('default', 1, 0, 1))
+        #     # create matching dummy material
+        #     self.materials.insert(0, pre.Material('default', 1, 0, 1))
 
-        # create simple mesh of the geometry
-        mesh = self.create_plastic_mesh()
-        # print("Post")
+        
+        # # calculate centroid of the mesh
+        # (cx, cy) = self.calculate_centroid()
+        # # print(cx, cy)
 
-        # get the elements of the mesh
-        (_, _, elements) = self.get_elements(mesh)
+        # # shift geometry such that the origin is at the centroid
+        # # self.geometry.shift = [-cx, -cy]
+        # self.geometry = self.geometry.shift_section(x_offset=-cx, y_offset=-cy)
+        # self.geometry.compile_geometry()
 
-        # calculate centroid of the mesh
-        (cx, cy) = self.calculate_centroid(elements)
-        # print(cx, cy)
+        # # remesh the geometry and store the mesh
+        # self.mesh = self.create_plastic_mesh()
 
-        # shift geometry such that the origin is at the centroid
-        # self.geometry.shift = [-cx, -cy]
-        self.geometry = self.geometry.shift_section(x_offset=-cx, y_offset=-cy)
-        self.geometry.compile_geometry()
+        # # store the nodes, elements and list of elements in the mesh
+        # (self.mesh_nodes, self.mesh_elements, self.elements) = self.get_elements(self.mesh)
 
-        # remesh the geometry and store the mesh
-        self.mesh = self.create_plastic_mesh()
-
-        # store the nodes, elements and list of elements in the mesh
-        (self.mesh_nodes, self.mesh_elements, self.elements) = self.get_elements(self.mesh)
-
-    def get_elements(self, mesh):
-        """Extracts finite elements from the provided mesh and returns Tri6 finite elements with
-        their associated material properties.
-
-        :param mesh: Mesh object returned by meshpy
-        :type mesh: :class:`meshpy.triangle.MeshInfo`
-        :return: A tuple containing an array of the nodes locations, element indices and a list of
-            the finite elements.
-        :rtype: tuple(:class:`numpy.ndarray`, :class:`numpy.ndarray`,
-            list[:class:`~sectionproperties.analysis.fea.Tri6`])
-        """
-
-        # extract mesh data
-        nodes = np.array(mesh.points, dtype=np.dtype(float))
-        elements = np.array(mesh.elements, dtype=np.dtype(int))
-        attributes = np.array(mesh.element_attributes, dtype=np.dtype(int))
-
-        # swap mid-node order to retain node ordering consistency
-        elements[:, [3, 4, 5]] = elements[:, [5, 3, 4]]
-
-        # initialise list of Tri6 elements
-        element_list = []
-
-        # build the element list one element at a time
-        for (i, node_ids) in enumerate(elements):
-            x1 = nodes[node_ids[0]][0]
-            y1 = nodes[node_ids[0]][1]
-            x2 = nodes[node_ids[1]][0]
-            y2 = nodes[node_ids[1]][1]
-            x3 = nodes[node_ids[2]][0]
-            y3 = nodes[node_ids[2]][1]
-            x4 = nodes[node_ids[3]][0]
-            y4 = nodes[node_ids[3]][1]
-            x5 = nodes[node_ids[4]][0]
-            y5 = nodes[node_ids[4]][1]
-            x6 = nodes[node_ids[5]][0]
-            y6 = nodes[node_ids[5]][1]
-
-            # create a list containing the vertex and mid-node coordinates
-            coords = np.array([[x1, x2, x3, x4, x5, x6], [y1, y2, y3, y4, y5, y6]])
-
-            # if materials are specified, get the material
-            if self.materials is not None:
-                # get attribute index of current element
-                att_el = attributes[i]
-
-                # if the current element is assigned the default attribute
-                if att_el == 0:
-                    # determine point within current element (centroid)
-                    pt = [(x1 + x2 + x3) / 3, (y1 + y2 + y3) / 3]
-
-                    # search within original elements - find coinciding element
-                    for el in self.elements:
-                        # if the point lies within the current element
-                        if el.point_within_element(pt):
-                            material = el.material
-                            break
-                else:
-                    # fetch the material
-                    material = self.materials[att_el]
-            # if there are no materials specified, use a default material
-            else:
-                material = pre.Material('default', 1, 0, 1)
-
-            # add tri6 elements to the element list
-            element_list.append(fea.Tri6(i, coords, node_ids, material))
-
-        return (nodes, elements, element_list)
 
     def calculate_centroid(self, elements):
         """Calculates the elastic centroid from a list of finite elements.
@@ -1919,14 +1844,30 @@ class PlasticSection:
         qx = 0
         qy = 0
 
-        # loop through all the elements
-        for el in elements:
-            (area, qx_el, qy_el, _, _, _, e, _) = el.geometric_properties()
-            ea += area * e
-            qx += qx_el * e
-            qy += qy_el * e
+        # General case
+        # loop through all the geometries
+        if isinstance(self.geometry, sections.CompoundGeometry):
+            for geom in self.geometry.geoms:
+                e = geom.material.elastic_modulus
+                area = geom.calculate_area()
+                cx, cy = geom.calculate_centroid()
 
-        return (qy / ea, qx / ea)
+                ea += area * e
+                qx += cx * e
+                qy += cy * e
+
+        # Special case (just one geometry w/ one material)
+        else:
+            e = self.geometry.material.elastic_modulus
+            area = self.geometry.calculate_area()
+            cx, cy = self.geometry.calculate_centroid()
+
+            ea += area * e
+            qx += cx * area * e
+            qy += cy * area * e
+
+        return (qy / ea, qx, ea)
+
 
     def calculate_plastic_properties(self, cross_section, verbose):
         """Calculates the location of the plastic centroid with respect to the centroidal and
@@ -1945,7 +1886,6 @@ class PlasticSection:
 
         # 1a) Calculate x-axis plastic centroid
         (y_pc, r, f, c_top, c_bot) = self.pc_algorithm(np.array([1, 0]), fibres[2:], 1, verbose) # fibres[2:] = ymin, ymax
-        print("After pc Algorithm")
 
         self.check_convergence(r, 'x-axis')
         cross_section.section_props.y_pc = y_pc
@@ -2071,7 +2011,7 @@ class PlasticSection:
         """
 
         # loop through all nodes in the mesh
-        for (i, pt) in enumerate(self.mesh_nodes):
+        for (i, pt) in enumerate(self.geometry.points):
             # determine the coordinate of the point wrt the axis
             (u, v) = fea.principal_coordinate(angle, pt[0], pt[1])
 
@@ -2108,18 +2048,17 @@ class PlasticSection:
 
         p = np.array([d * u_p[0], d * u_p[1]]) # p finding a point on the axis by scaling the perpendicular
 
-        # create a mesh with the axis included
-        mesh = self.create_plastic_mesh([p, u])
-        print("After meshign")
-        (nodes, elements, element_list) = self.get_elements(mesh)
-        print("After get elements")
+        # # create a mesh with the axis included
+        # mesh = self.create_plastic_mesh([p, u])
+        # print("After meshign")
+        # (nodes, elements, element_list) = self.get_elements(mesh)
+        # print("After get elements")
 
-        if self.debug:
-            self.plot_mesh(nodes, elements, element_list, self.materials)
+        # if self.debug:
+        #     self.plot_mesh(nodes, elements, element_list, self.materials)
 
         # calculate force equilibrium
-        (f_top, f_bot) = self.calculate_plastic_force(element_list, u, p)
-        print("After plastic force")
+        (f_top, f_bot) = self.calculate_plastic_force(u, p)
 
         # calculate the force norm
         f_norm = (f_top - f_bot) / (f_top + f_bot) # Going down to zero
@@ -2129,7 +2068,6 @@ class PlasticSection:
             print("d = {0}; f_norm = {1}".format(d, f_norm))
 
         # return the force norm
-        print("F_nrom")
         return f_norm # This is the result that is the target for the root finding algorithm
 
     def pc_algorithm(self, u, dlim, axis, verbose):
@@ -2164,10 +2102,10 @@ class PlasticSection:
             self.evaluate_force_eq, a, b, args=(u, u_p, verbose), full_output=True, disp=False, # Unit vector w/ unit vector perpendicular
             xtol=1e-6, rtol=1e-6
         )
-        print("After Brent")
         return (d, r, self.f_top, self.c_top, self.c_bot)
 
-    def calculate_plastic_force(self, elements, u, p):
+
+    def calculate_plastic_force(self, u: np.ndarray, p: np.ndarray) -> Tuple[float, float]:
         """Sums the forces above and below the axis defined by unit vector *u* and point *p*. Also
         returns the force centroid of the forces above and below the axis.
 
@@ -2181,272 +2119,50 @@ class PlasticSection:
         :rtype: tuple(float, float)
         """
         # print("Runs")
-        print("Beginnign of plastic forces")
         # initialise variables
         (f_top, f_bot) = (0, 0)
         (ea_top, ea_bot) = (0, 0)
         (qx_top, qx_bot) = (0, 0)
         (qy_top, qy_bot) = (0, 0)
 
-        for el in elements:
-            # calculate element force and area properties
-            (f_el, ea_el, qx_el, qy_el, is_above) = el.plastic_properties(u, p) # Needs to test whether element is above or below the line
+        top_geoms, bot_geoms = self.geometry.split_section(point_i=p, vector=u)
 
-            # assign force and area properties to the top or bottom segments
-            if is_above:
-                f_top += f_el
-                ea_top += ea_el
-                qx_top += qx_el
-                qy_top += qy_el
-            else:
-                f_bot += f_el
-                ea_bot += ea_el
-                qx_bot += qx_el
-                qy_bot += qy_el
+        if top_geoms:
+            for top_geom in top_geoms:
+                e = top_geom.material.elastic_modulus
+                f_y = top_geom.material.yield_strength
+                area_top = top_geom.calculate_area()
+                ea_top += e * area_top
+                cx, cy = top_geom.calculate_centroid()
+                qx_top += cx * area_top
+                qy_top += cy * area_top
+                f_top += f_y * area_top
 
-        # if there are no elements in the top/bottom prevent division by zero N.B. the algorithm
-        # will never converge at this point, this is purely done to ensure a 100% search range
-        if ea_top == 0:
-            ea_top = 1
-        if ea_bot == 0:
-            ea_bot = 1
+        if bot_geoms:
+            for bot_geom in bot_geoms:
+                e = bot_geom.material.elastic_modulus
+                f_y = bot_geom.material.yield_strength
+                area_bot = bot_geom.calculate_area()
+                ea_bot += e * area_bot
+                cx, cy = bot_geom.calculate_centroid()
+                qx_bot += cx * area_bot
+                qy_bot += cy * area_bot
+                f_bot += f_y * area_bot
 
-        # calculate the centroid of the top and bottom segments and save
-        self.c_top = [qy_top / ea_top, qx_top / ea_top]
-        self.c_bot = [qy_bot / ea_bot, qx_bot / ea_bot]
-        self.f_top = f_top
-        print("end of calculate plastic forces")
+        try:
+            self.c_top = [qy_top / ea_top, qx_top / ea_top]
+            self.f_top = f_top
+        except ZeroDivisionError:
+            self.c_top = [0, 0]
+            self.f_top = 0
+
+        try:
+            self.c_bot = [qy_bot / ea_bot, qx_bot / ea_bot]
+        except ZeroDivisionError:
+            self.c_bot = [0, 0]
+
+
         return (f_top, f_bot)
-
-    def create_plastic_mesh(self, new_line=None):
-        """Generates a triangular mesh of a deep copy of the geometry stored in `self.geometry`.
-        Optionally, a line can be added to the copied geometry, which is defined by a point *p* and
-        a unit vector *u*.
-
-        :param new_line: A point p and a unit vector u defining a line to add to the mesh
-            (new_line: p -> p + u) [*p*, *u*]
-        :type new_line: list[:class:`numpy.ndarray`, :class:`numpy.ndarray`]
-        :param mesh: Mesh object returned by meshpy
-        :type mesh: :class:`meshpy.triangle.MeshInfo`
-        """
-
-        # start with the initial geometry # Cut the geometry and then separately remesh top and bot
-        self._geometry_class = type(self.geometry)
-        shapely_copy = copy.deepcopy(self.geometry.geom)
-        geom = self._geometry_class(shapely_copy)
-        geom.compile_geometry()
-
-        # add line at new_line
-        if new_line is not None:
-            self.add_line(geom, new_line) # IF you just cut mesh, you may get some triangular elements with some area in the top where centroid in bottom
-
-        # fast clean the geometry after adding the line
-            clean = pre.GeometryCleaner(geom, verbose=False)
-            clean.zip_points()
-            clean.remove_zero_length_facets()
-            clean.remove_unused_points()
-            geom = clean.geometry
-
-        if self.debug:
-            if new_line is not None:
-                geom.plot_geometry(labels=True)
-
-        # build mesh object
-        mesh = triangle.MeshInfo()  # create mesh info object
-        mesh.set_points(geom.points)  # set points
-        mesh.set_facets(geom.facets)  # set facets
-        mesh.set_holes(geom.holes)  # set holes
-
-        # set regions
-        mesh.regions.resize(len(geom.control_points))
-        region_id = 0  # initialise region ID variable
-
-        for (i, cp) in enumerate(geom.control_points):
-            mesh.regions[i] = [cp[0], cp[1], region_id, 1]
-            region_id += 1
-
-        # geom.plot_geometry()
-        # print(geom.points, geom.facets)
-        print("Before Mesh")
-        mesh = triangle.build(mesh, mesh_order=2, quality_meshing=False, attributes=True)
-
-        return mesh
-
-    def add_line(self, geometry, line):
-        """Adds a line a geometry object. Finds the intersection points of the line with the
-        current facets and splits the existing facets to accommodate the new line.
-
-        :param geometry: Cross-section geometry object used to generate the mesh
-        :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
-        :param line: A point p and a unit vector u defining a line to add to the mesh
-            (line: p -> p + u)
-        :type line: list[:class:`numpy.ndarray`, :class:`numpy.ndarray`]
-        """
-
-        # initialise intersection points and facet index list
-        int_pts = []
-        fct_idx = []
-
-        # get current number of points in the geometry object
-        num_pts = len(geometry.points)
-
-        # line: p -> p + r
-        p = line[0]
-        r = line[1]
-
-        # loop through all the facets in the geometry to find intersection pts
-        for (idx, fct) in enumerate(geometry.facets):
-            # facet: q -> q + s
-            q = np.array(geometry.points[fct[0]])
-            s = geometry.points[fct[1]] - q
-
-            # calculate intersection point between p -> p + r and q -> q + s N.B. make line
-            # p -> p + r infinitely long to find all intersects if the lines are not parallel
-            if np.cross(r, s) != 0:
-                # calculate t and u
-                t = np.cross(q - p, s) / np.cross(r, s)
-                u = np.cross(p - q, r) / np.cross(s, r)
-
-                new_pt = p + t * r
-
-                # if the line lies within q -> q + s and the point hasn't already been added
-                # (ignore t as it is infinitely long)
-                if (u >= 0 and u <= 1 and list(new_pt) not in [list(item) for item in int_pts]):
-                    int_pts.append(new_pt)
-                    fct_idx.append(idx)
-
-        # if less than 2 intersection points are found, we are at the edge of the section,
-        # therefore no line to add
-        if len(int_pts) < 2:
-            return
-
-        # sort intersection points and facet list first by x, then by y
-        int_pts = np.array(int_pts)
-        idx_sort = np.lexsort((int_pts[:, 0], int_pts[:, 1]))
-        int_pts = int_pts[idx_sort]
-        fct_idx = list(np.array(fct_idx)[idx_sort])
-
-        # add points to the geometry object
-        for pt in int_pts:
-            geometry.points.append([pt[0], pt[1]])
-
-        # add new facets by looping from the second facet index to the end
-        for (i, idx) in enumerate(fct_idx[1:]):
-            # get mid-point of proposed new facet
-            mid_pt = 0.5 * (int_pts[i] + int_pts[i + 1])
-
-            # check to see if the mid-point is not in a hole
-            # add the facet
-            if self.point_within_element(mid_pt):
-                geometry.facets.append([num_pts + i, num_pts + i + 1])
-
-            # rebuild the intersected facet
-            self.rebuild_parent_facet(geometry, idx, num_pts + i + 1)
-
-            # rebuild the first facet the looped skipped
-            if i == 0:
-                self.rebuild_parent_facet(geometry, fct_idx[0], num_pts + i)
-
-        # sort list of facet indices (to be removed) in reverse order so as not to compromise the
-        # indices during deletion
-        idx_to_remove = sorted(fct_idx, reverse=True)
-
-        for idx in idx_to_remove:
-            geometry.facets.pop(idx)
-
-    def rebuild_parent_facet(self, geometry, fct_idx, pt_idx):
-        """Splits and rebuilds a facet at a given point.
-
-        :param geometry: Cross-section geometry object used to generate the mesh
-        :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
-        :param int fct_idx: Index of the facet to be split
-        :param int pt_idx: Index of the point to insert into the facet
-        """
-
-        # get current facet
-        fct = geometry.facets[fct_idx]
-
-        # rebuild facet
-        geometry.facets.append([fct[0], pt_idx])
-        geometry.facets.append([pt_idx, fct[1]])
-
-    def point_within_element(self, pt):
-        """Determines whether a point lies within an element in the mesh stored in
-        `self.mesh_elements`.
-
-        :param pt: Point to check
-        :type pt: :class:`numpy.ndarray`
-        :return: Whether the point lies within an element
-        :rtype: bool
-        """
-
-        px = pt[0]
-        py = pt[1]
-
-        # loop through elements in the mesh
-        for el in self.mesh_elements:
-            # get coordinates of corner points
-            x1 = self.mesh_nodes[el[0]][0]
-            y1 = self.mesh_nodes[el[0]][1]
-            x2 = self.mesh_nodes[el[1]][0]
-            y2 = self.mesh_nodes[el[1]][1]
-            x3 = self.mesh_nodes[el[2]][0]
-            y3 = self.mesh_nodes[el[2]][1]
-
-            # compute variables alpha, beta and gamma
-            alpha = (
-                ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3))
-                / ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
-            )
-            beta = (
-                ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3))
-                / ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
-            )
-            gamma = 1.0 - alpha - beta
-
-            # if the point lies within an element
-            if alpha >= 0 and beta >= 0 and gamma >= 0:
-                return True
-
-        return False
-
-    def plot_mesh(self, nodes, elements, element_list, materials):
-        """Watered down implementation of the Section method to plot the finite element mesh,
-        showing material properties."""
-
-        (fig, ax) = plt.subplots()
-        post.setup_plot(ax, True)
-
-        # plot the mesh
-        ax.triplot(nodes[:, 0], nodes[:, 1], elements[:, 0:3], lw=0.5,
-                   color='black')
-
-        color_array = []
-        legend_list = []
-
-        if materials is not None:
-            # create an array of finite element colours
-            for el in element_list:
-                color_array.append(el.material.color)
-
-            # create a list of unique material legend entries
-            for (i, mat) in enumerate(materials):
-                # if the material has not be entered yet
-                if i == 0 or mat not in materials[0:i]:
-                    # add the material colour and name to the legend list
-                    legend_list.append(mpatches.Patch(color=mat.color, label=mat.name))
-
-            cmap = ListedColormap(color_array)  # custom colormap
-            c = np.arange(len(color_array))  # indices of elements
-
-            # plot the mesh colours
-            ax.tripcolor(nodes[:, 0], nodes[:, 1], elements[:, 0:3], c, cmap=cmap)
-
-            # display the legend
-            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), handles=legend_list)
-
-        # finish the plot
-        post.finish_plot(ax, True, title='Finite Element Mesh')
 
 
 class StressPost:

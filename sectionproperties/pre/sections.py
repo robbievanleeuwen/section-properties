@@ -4,15 +4,16 @@ from typing import List, Optional, Union, Tuple
 import pathlib
 import logging 
 from icecream import ic
-
+from IPython.display import display_svg
 import more_itertools
 import numpy as np
-from shapely.geometry import Polygon, MultiPolygon, LinearRing, LineString, Point, MultiPoint
+from shapely.geometry import Polygon, MultiPolygon, LinearRing, LineString, Point, GeometryCollection
 import shapely
 import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
+
 
 log = logging.getLogger('shapely')
 log_path = pathlib.Path("C:\\Users\\cferster\\Desktop\\sectionproperties logs\\shapley.log")
@@ -34,7 +35,7 @@ class Geometry:
     """
     def __init__(self, 
         geom: shapely.geometry.Polygon, 
-        material: Optional[pre.Material] = None,
+        material: pre.Material = pre.DEFAULT_MATERIAL,
         ):
         """Inits the Geometry class.
         """
@@ -294,7 +295,7 @@ class Geometry:
         """
         cx, cy = list(self.geom.centroid.coords)[0]
         if align_to is None:
-            shift_x, shift_y = cx, cy
+            shift_x, shift_y = -cx, -cy
         else:
             align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
             shift_x = align_cx - cx
@@ -315,7 +316,7 @@ class Geometry:
         :rtype: :class:`sections.pre.sections.Geometry`
         """
 
-        new_geom = Geometry(shapely.affinity.translate(self.geom, x_offset, y_offset))
+        new_geom = Geometry(shapely.affinity.translate(self.geom, x_offset, y_offset), self.material)
         return new_geom
 
 
@@ -340,7 +341,7 @@ class Geometry:
             geometry = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
             new_geometry = geometry.rotate_section(angle=-30)
         """
-        new_geom = Geometry(shapely.affinity.rotate(self.geom, angle, rot_point, use_radians))
+        new_geom = Geometry(shapely.affinity.rotate(self.geom, angle, rot_point, use_radians), self.material)
         return new_geom
 
 
@@ -367,16 +368,18 @@ class Geometry:
         y_mirror = 1
         if axis == "x": x_mirror = -x_mirror
         elif axis == "y": y_mirror = -y_mirror
-        new_geom = Geometry(shapely.affinity.scale(self.geom, x_mirror, y_mirror, mirror_point))
+        new_geom = Geometry(shapely.affinity.scale(self.geom, x_mirror, y_mirror, mirror_point), self.material)
         return new_geom
 
 
     def split_section(self, 
         point_i: Tuple[float, float], 
-        point_j: Tuple[float, float],
+        point_j: Optional[Tuple[float, float]] = None,
+        vector: Union[Optional[Tuple[float, float]], np.ndarray] = None,
         ) -> Tuple[List[Geometry], List[Geometry]]:
         """Splits, or bisects, the geometry about an infinite line, as defined by two points
-        on the line.
+        on the line or by one point on the line and a vector. Either 'point_j' or 'vector'
+        must be given. If 'point_j' is given, 'vector' is ignored.
 
         Returns a tuple of two lists each containing new Geometry instances representing the 
         "top" and "bottom" portions, respectively, of the bisected geometry.
@@ -385,10 +388,13 @@ class Geometry:
         returned.
 
         :param point_i: A tuple of *(x, y)* coordinates to define a first point on the line
-        :type line: Tuple[float, float]
+        :type point_i: Tuple[float, float]
 
-        :param point_i: A tuple of *(x, y)* coordinates to define a second point on the line
-        :type line: Tuple[float, float]
+        :param point_j: Optional. A tuple of *(x, y)* coordinates to define a second point on the line
+        :type point_j: Tuple[float, float]
+
+        :param vector: Optional. A tuple or numpy ndarray of *(x, y)* components to define the line direction.
+        :type vector: Union[Tuple[float, float], numpy.ndarray]
 
         :return: A tuple of lists containing Geometry objects that are bisected about the 
         infinite line defined by the two given points. The first item in the tuple represents
@@ -406,18 +412,28 @@ class Geometry:
             geometry = sections.pfc_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             right_geom, left_geom = geometry.split_section((0, 0), (0, 1))
         """
-        line_vector = np.array([
-            point_j[1] - point_i[1], 
-            point_j[0] - point_i[0],
-            ])
-        line = pre.bisec
-        
-        x_mirror = 1
-        y_mirror = 1
-        if axis == "x": x_mirror = -x_mirror
-        elif axis == "y": y_mirror = -y_mirror
-        new_geom = Geometry(shapely.affinity.scale(self.geom, x_mirror, y_mirror, mirror_point))
-        return new_geom
+        if point_j:
+            vector = np.array([
+                point_j[0] - point_i[0], 
+                point_j[1] - point_i[1],
+                ])
+        elif vector is not None:
+            vector = np.array(vector)
+        elif not point_j and not vector:
+            raise ValueError("Either a second point or a vector must be given to define the line.")
+        bounds = self.calculate_extents()
+        line_segment = bisect.create_line_segment(point_i, vector, bounds)
+        top_right_polys, bottom_left_polys = bisect.group_top_and_bottom_polys(
+            shapely.ops.split(self.geom, line_segment), line_segment
+        )
+
+        # Create new Geometry instances from polys, preserve original material assignments
+        top_right_geoms = [Geometry(poly, self.material) for poly in top_right_polys]
+        bottom_left_geoms = [Geometry(poly, self.material) for poly in bottom_left_polys]
+
+        return (top_right_geoms, bottom_left_geoms)
+
+
 
 
     def offset_section_perimeter(self, amount:float = 0, resolution: float = 12):
@@ -444,7 +460,9 @@ class Geometry:
             join_style=1, 
             resolution=resolution
             )
-        return Geometry(new_geom)
+        if isinstance(new_geom, MultiPolygon):
+            return CompoundGeometry([Geometry(poly, self.material) for poly in new_geom])
+        return Geometry(new_geom, self.material)
 
 
     def plot_geometry(self, ax=None, pause=True, labels=False, perimeter=False):
@@ -466,7 +484,7 @@ class Geometry:
 
             import sectionproperties.pre.sections as sections
 
-            geometry = sections.Chs(d=48, t=3.2, n=64)
+            geometry = sections.chs(d=48, t=3.2, n=64)
             geometry.plot_geometry()
 
         ..  figure:: ../images/sections/chs_geometry.png
@@ -564,6 +582,25 @@ class Geometry:
         perimeter = self.geom.exterior.length
         return perimeter
 
+    def calculate_area(self):
+        """Calculates the area of the geometry.
+
+        :return: Geometry area.
+        :rtype: float
+        """
+        area = self.geom.area
+        return area
+
+    def calculate_centroid(self):
+        """Calculates the centroid of the geometry as a tuple
+        of *(x,y)* coordinates.
+
+        :return: Geometry centroid.
+        :rtype: Tuple[float, float]
+        """
+        cx, cy = self.geom.centroid.coords[0]
+        return (cx, cy)
+
     @property
     def recovery_points(self):
         """
@@ -599,8 +636,8 @@ class Geometry:
         try:
             new_polygon = self.geom | other.geom
             if isinstance(new_polygon, MultiPolygon): 
-                return CompoundGeometry([Geometry(polygon) for polygon in new_polygon.geoms])
-            return Geometry(new_polygon)
+                return CompoundGeometry([Geometry(polygon, self.material) for polygon in new_polygon.geoms])
+            return Geometry(new_polygon, self.material)
         except:
             raise ValueError(
         f"Cannot perform 'union' on these two Geometry instances: {self} | {other}"
@@ -613,8 +650,8 @@ class Geometry:
         try:
             new_polygon = self.geom ^ other.geom
             if isinstance(new_polygon, MultiPolygon): 
-                return CompoundGeometry([Geometry(polygon) for polygon in new_polygon.geoms])
-            return Geometry(new_polygon)
+                return CompoundGeometry([Geometry(polygon, self.material) for polygon in new_polygon.geoms])
+            return Geometry(new_polygon, self.material)
         except:
             raise ValueError(
         f"Cannot perform 'symmetric difference' on these two Geometry instances: {self} ^ {other}"
@@ -627,8 +664,8 @@ class Geometry:
         try:
             new_polygon = self.geom - other.geom
             if isinstance(new_polygon, MultiPolygon): 
-                return CompoundGeometry([Geometry(polygon) for polygon in new_polygon.geoms])
-            return Geometry(new_polygon)
+                return CompoundGeometry([Geometry(polygon, self.material) for polygon in new_polygon.geoms])
+            return Geometry(new_polygon, self.material)
         except:
             raise ValueError(
         f"Cannot perform 'difference' on these two Geometry instances: {self} - {other}"
@@ -653,14 +690,16 @@ class Geometry:
         try:
             new_polygon = self.geom & other.geom
             if isinstance(new_polygon, MultiPolygon): 
-                return CompoundGeometry([Geometry(polygon) for polygon in new_polygon.geoms])
-            return Geometry(new_polygon)
+                return CompoundGeometry([Geometry(polygon, self.material) for polygon in new_polygon.geoms])
+            return Geometry(new_polygon, self.material)
         except:
             raise ValueError(
         f"Cannot perform 'intersection' on these two Geometry instances: {self} & {other}"
         )
 
 ### 
+
+# TODO: Create setter for adding Material to CompoundGeometry
 class CompoundGeometry(Geometry):
     """Class for defining a geometry of multiple distinct regions, each potentially
     having different material properties.
@@ -668,8 +707,8 @@ class CompoundGeometry(Geometry):
     CompoundGeometry instances are composed of multiple Geometry objects. As with
     Geometry objects, CompoundGeometry objects have methods for generating a triangular
     mesh over all geometries, transforming the collection of geometries as though they
-    were one (e.g. translation, rotation, and mirroring), and aligning the compound geometry
-    to another geometry (or compound geometry).
+    were one (e.g. translation, rotation, and mirroring), and aligning the CompoundGeometry
+    to another Geometry (or to another CompoundGeometry).
 
     CompoundGeometry objects can be created directly between two or more Geometry
     objects by using the + operator.
@@ -680,13 +719,13 @@ class CompoundGeometry(Geometry):
     """
     def __init__(self, geoms: Union[MultiPolygon, List[Geometry]]):
         if isinstance(geoms, MultiPolygon):
-            self.geoms = [Geometry(geom) for geom in geoms.geoms]
+            self.geoms = [Geometry(poly) for poly in geoms.geoms]
             self.geom = geoms
         elif isinstance(geoms, list):
             processed_geoms = []
             for item in geoms:
-                if isinstance(item, CompoundGeometry):
-                    # Add the list of component Geometry objects to this instance
+                if isinstance(item, CompoundGeometry): 
+                    # "Flatten" any CompoundGeometry objects in the 'geoms' list
                     processed_geoms += item.geoms 
                 elif isinstance(item, Geometry):
                     processed_geoms.append(item)
@@ -715,12 +754,12 @@ class CompoundGeometry(Geometry):
     @staticmethod
     def from_points(
         points: List[List[float]], 
-        facets: Optional[List[List[int]]] = None, 
-        holes: Optional[List[List[float]]] = None,
-        control_points: Optional[List[List[float]]] = None,
+        facets: Optional[List[List[int]]], 
+        holes: Optional[List[List[float]]],
+        control_points: Optional[List[List[float]]],
         ):
         """
-        An interface for the creation of Geometry objects through the definition of points, 
+        An interface for the creation of CompoundGeometry objects through the definition of points, 
         facets, and holes. 
 
         :cvar points: List of points *(x, y)* defining the vertices of the section geometry.
@@ -741,13 +780,6 @@ class CompoundGeometry(Geometry):
         Only one point is required per hole region.
         :vartype holes: list[list[float]]
         """
-        if facets is None: return Geometry(Polygon(points))
-        if holes is not None and facets is None:
-            raise ValueError(
-                "If holes coordinates are provided then facets must also be provided "
-                "to distinguish between exterior and interior edges."
-                )
-
         # First, generate all invidual polygons from points and facets
         current_polygon_points = []
         all_polygons = []
@@ -762,13 +794,15 @@ class CompoundGeometry(Geometry):
             if i_idx != prev_j_idx: #If there is a break in the chain of edges...
                 current_polygon_points.append(points[prev_j_idx])
                 all_polygons.append(Polygon(current_polygon_points))
-                current_polygon_points = []
+                current_polygon_points = [points[i_idx]]
             else:
                 current_polygon_points.append(points[i_idx]) # Only need i_idx b/c shapely auto-closes polygons
-
             prev_facet = facet
         else:
             current_polygon_points.append(points[j_idx])
+            all_polygons.append(Polygon(current_polygon_points))
+
+        # print(all_polygons)
 
         # Then classify all of the collected polygons as either "exterior" or "interior"
         exteriors = []
@@ -784,7 +818,7 @@ class CompoundGeometry(Geometry):
         # Create the holes by subtracting interior regions from exterior regions
         exterior_geometry = MultiPolygon(exteriors)
         if not interiors:
-            return CompoundGeometry(exterior_geometry)
+            return CompoundGeometry([Geometry(exterior) for exterior in exteriors])
         if len(interiors) == 1:
             interior_geometry = Polygon(interiors)
             return CompoundGeometry(exterior_geometry - interior_geometry)
@@ -830,7 +864,7 @@ class CompoundGeometry(Geometry):
             import sectionproperties.pre.sections as sections
 
             geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry_2 = sections.rectangle(d=20, b=133)
+            geometry_2 = sections.rectangular_section(d=20, b=133)
             compound = geometry_2.align_center(geometry_1).align_top(geometry_1) + geometry_1
             new_compound = compound.rotate_section(angle=-30)
         """
@@ -857,7 +891,7 @@ class CompoundGeometry(Geometry):
             import sectionproperties.pre.sections as sections
 
             geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry_2 = sections.rectangle(d=20, b=133)
+            geometry_2 = sections.rectangular_section(d=20, b=133)
             compound = geometry_2.align_center(geometry_1).align_top(geometry_1) + geometry_1
             new_compound = compound.mirror_section(axis='y')
         """
@@ -866,6 +900,57 @@ class CompoundGeometry(Geometry):
             geoms_acc.append(geom.mirror_section(axis, mirror_point))
         new_geom = CompoundGeometry(geoms_acc)
         return new_geom
+
+
+    def split_section(self, 
+        point_i: Tuple[float, float], 
+        point_j: Optional[Tuple[float, float]] = None,
+        vector: Union[Optional[Tuple[float, float]], np.ndarray] = None,
+        ) -> Tuple[List[Geometry], List[Geometry]]:
+        """Splits, or bisects, the geometry about an infinite line, as defined by two points
+        on the line or by one point on the line and a vector. Either 'point_j' or 'vector'
+        must be given. If 'point_j' is given, 'vector' is ignored.
+
+        Returns a tuple of two lists each containing new Geometry instances representing the 
+        "top" and "bottom" portions, respectively, of the bisected geometry.
+
+        If the line is a vertical line then the "right" and "left" portions, respectively, are 
+        returned.
+
+        :param point_i: A tuple of *(x, y)* coordinates to define a first point on the line
+        :type point_i: Tuple[float, float]
+
+        :param point_j: Optional. A tuple of *(x, y)* coordinates to define a second point on the line
+        :type point_j: Tuple[float, float]
+
+        :param vector: Optional. A tuple or numpy ndarray of *(x, y)* components to define the line direction.
+        :type vector: Union[Tuple[float, float], numpy.ndarray]
+
+        :return: A tuple of lists containing Geometry objects that are bisected about the 
+        infinite line defined by the two given points. The first item in the tuple represents
+        the geometries on the "top" of the line (or to the "right" of the line, if vertical) and
+        the second item represents the geometries to the "bottom" of the line (or 
+        to the "left" of the line, if vertical).
+
+        :rtype: Tuple[List[Geometry], List[Geometry]]
+
+        The following example splits a 200PFC section about the y-axis::
+
+            import sectionproperties.pre.sections as sections
+            from shapely.geometry import LineString
+
+            geometry = sections.pfc_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            right_geom, left_geom = geometry.split_section((0, 0), (0, 1))
+        """
+        top_geoms_acc = []
+        bottom_geoms_acc = []
+        for geom in self.geoms:
+            top_geoms, bottom_geoms = geom.split_section(point_i, point_j, vector)
+            top_geoms_acc += top_geoms
+            bottom_geoms_acc += bottom_geoms
+        return (top_geoms_acc, bottom_geoms_acc)
+
+
 
     def offset_section_perimeter(self, amount:float = 0, resolution: float = 12):
         """Dilates or erodes perimeter of the individual geometries within the CompoundGeometry
@@ -888,9 +973,9 @@ class CompoundGeometry(Geometry):
             import sectionproperties.pre.sections as sections
 
             geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry_2 = sections.rectangle(d=20, b=133)
+            geometry_2 = sections.rectangular_section(d=20, b=133)
             compound = geometry_2.align_center(geometry_1).align_top(geometry_1) + geometry_1
-            new_geometry = geometry.offset_section_perimeter(amount=-3)
+            new_geometry = compound.offset_section_perimeter(amount=-3)
         """
         geoms_acc = []
         for geom in self.geoms:
