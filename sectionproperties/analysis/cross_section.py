@@ -1916,7 +1916,7 @@ class PlasticSection:
         fibres = self.calculate_extreme_fibres(cross_section.section_props.phi)
 
         # 2a) Calculate 11-axis plastic centroid
-        (y22_pc, r, f, c_top, c_bot) = self.pc_algorithm(ux, fibres[2:], 1, verbose)
+        (y22_pc, r, f, c_top, c_bot) = self.pc_algorithm(ux, fibres[2:], 1, verbose) #ux
 
         # calculate the centroids in the principal coordinate system
         c_top_p = fea.principal_coordinate(cross_section.section_props.phi, c_top[0], c_top[1])
@@ -1926,11 +1926,13 @@ class PlasticSection:
         cross_section.section_props.y22_pc = y22_pc
         cross_section.section_props.s11 = f * abs(c_top_p[1] - c_bot_p[1])
 
+        print(y22_pc, c_top_p, c_bot_p)
+
         if verbose:
             self.print_verbose(y22_pc, r, '11-axis')
 
         # 2b) Calculate 22-axis plastic centroid
-        (x11_pc, r, f, c_top, c_bot) = self.pc_algorithm(uy, fibres[0:2], 2, verbose)
+        (x11_pc, r, f, c_top, c_bot) = self.pc_algorithm(uy, fibres[0:2], 2, verbose) #uy
 
         # calculate the centroids in the principal coordinate system
         c_top_p = fea.principal_coordinate(cross_section.section_props.phi, c_top[0], c_top[1])
@@ -1940,36 +1942,37 @@ class PlasticSection:
         cross_section.section_props.x11_pc = x11_pc
         cross_section.section_props.s22 = f * abs(c_top_p[0] - c_bot_p[0])
 
+
+
         if verbose:
             self.print_verbose(x11_pc, r, '22-axis')
 
         # if there are no materials specified, calculate shape factors
-        if cross_section.materials is None:
-            cross_section.section_props.sf_xx_plus = (
-                cross_section.section_props.sxx / cross_section.section_props.zxx_plus
-            )
-            cross_section.section_props.sf_xx_minus = (
-                cross_section.section_props.sxx / cross_section.section_props.zxx_minus
-            )
-            cross_section.section_props.sf_yy_plus = (
-                cross_section.section_props.syy / cross_section.section_props.zyy_plus
-            )
-            cross_section.section_props.sf_yy_minus = (
-                cross_section.section_props.syy / cross_section.section_props.zyy_minus
-            )
+        cross_section.section_props.sf_xx_plus = (
+            cross_section.section_props.sxx / cross_section.section_props.zxx_plus
+        )
+        cross_section.section_props.sf_xx_minus = (
+            cross_section.section_props.sxx / cross_section.section_props.zxx_minus
+        )
+        cross_section.section_props.sf_yy_plus = (
+            cross_section.section_props.syy / cross_section.section_props.zyy_plus
+        )
+        cross_section.section_props.sf_yy_minus = (
+            cross_section.section_props.syy / cross_section.section_props.zyy_minus
+        )
 
-            cross_section.section_props.sf_11_plus = (
-                cross_section.section_props.s11 / cross_section.section_props.z11_plus
-            )
-            cross_section.section_props.sf_11_minus = (
-                cross_section.section_props.s11 / cross_section.section_props.z11_minus
-            )
-            cross_section.section_props.sf_22_plus = (
-                cross_section.section_props.s22 / cross_section.section_props.z22_plus
-            )
-            cross_section.section_props.sf_22_minus = (
-                cross_section.section_props.s22 / cross_section.section_props.z22_minus
-            )
+        cross_section.section_props.sf_11_plus = (
+            cross_section.section_props.s11 / cross_section.section_props.z11_plus
+        )
+        cross_section.section_props.sf_11_minus = (
+            cross_section.section_props.s11 / cross_section.section_props.z11_minus
+        )
+        cross_section.section_props.sf_22_plus = (
+            cross_section.section_props.s22 / cross_section.section_props.z22_plus
+        )
+        cross_section.section_props.sf_22_minus = (
+            cross_section.section_props.s22 / cross_section.section_props.z22_minus
+        )
 
     def check_convergence(self, root_result, axis):
         """Checks that the function solver converged and if not, raises a helpful error.
@@ -2134,8 +2137,8 @@ class PlasticSection:
                 area_top = top_geom.calculate_area()
                 ea_top += e * area_top
                 cx, cy = top_geom.calculate_centroid()
-                qx_top += cx * area_top
-                qy_top += cy * area_top
+                qx_top += cy * area_top
+                qy_top += cx * area_top
                 f_top += f_y * area_top
 
         if bot_geoms:
@@ -2145,8 +2148,8 @@ class PlasticSection:
                 area_bot = bot_geom.calculate_area()
                 ea_bot += e * area_bot
                 cx, cy = bot_geom.calculate_centroid()
-                qx_bot += cx * area_bot
-                qy_bot += cy * area_bot
+                qx_bot += cy * area_bot
+                qy_bot += cx * area_bot
                 f_bot += f_y * area_bot
 
         try:

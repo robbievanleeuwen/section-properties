@@ -8,6 +8,7 @@ from IPython.display import display_svg
 import more_itertools
 import numpy as np
 from shapely.geometry import Polygon, MultiPolygon, LinearRing, LineString, Point, GeometryCollection
+from shapely.ops import split
 import shapely
 import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
@@ -424,7 +425,7 @@ class Geometry:
         bounds = self.calculate_extents()
         line_segment = bisect.create_line_segment(point_i, vector, bounds)
         top_right_polys, bottom_left_polys = bisect.group_top_and_bottom_polys(
-            shapely.ops.split(self.geom, line_segment), line_segment
+            split(self.geom, line_segment), line_segment
         )
 
         # Create new Geometry instances from polys, preserve original material assignments

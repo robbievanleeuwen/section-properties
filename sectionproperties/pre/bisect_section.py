@@ -1,4 +1,4 @@
-from typing import Tuple, Union, List
+from typing import Tuple, Union, List, Optional
 from sectionproperties.pre import sections
 
 import numpy as np
@@ -100,9 +100,19 @@ def line_intersection(
     b_1: float,
     m_2: float,
     b_2: float,
-) -> Tuple[float, float]:
+) -> Optional[float]:
     """
-    Returns a tuple representing the intersection point
+    Returns a float representing the x-ordinate of the intersection
+    point of the lines defined by y = m_1*x + b_1 and y = m_2*x + b_2.
+
+    Returns None if the lines are parallel.
+    """
+    try:
+        x = (b_2 - b_1) / (m_1 - m_2)
+    except ZeroDivisionError:
+        x = None
+    return x
+
 
 
 def sum_poly_areas(
