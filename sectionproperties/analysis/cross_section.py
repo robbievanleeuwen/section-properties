@@ -24,12 +24,6 @@ import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
 import sys
-# np.set_printoptions(threshold=sys.maxsize)
-# np.set_printoptions(precision=25)
-
-# log = logging.getLogger('shapely')
-# log_path = pathlib.Path("C:\\Users\\cferster\\Desktop\\sectionproperties logs\\shapley.log")
-# logging.basicConfig(filename=log_path, filemode='w', format="%(message)s", level=logging.DEBUG)
 
 
 class Section:
@@ -1926,8 +1920,6 @@ class PlasticSection:
         cross_section.section_props.y22_pc = y22_pc
         cross_section.section_props.s11 = f * abs(c_top_p[1] - c_bot_p[1])
 
-        print(y22_pc, c_top_p, c_bot_p)
-
         if verbose:
             self.print_verbose(y22_pc, r, '11-axis')
 
@@ -1941,8 +1933,6 @@ class PlasticSection:
         self.check_convergence(r, '22-axis')
         cross_section.section_props.x11_pc = x11_pc
         cross_section.section_props.s22 = f * abs(c_top_p[0] - c_bot_p[0])
-
-
 
         if verbose:
             self.print_verbose(x11_pc, r, '22-axis')

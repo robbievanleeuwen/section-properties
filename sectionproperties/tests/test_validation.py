@@ -7,7 +7,7 @@ from sectionproperties.tests.helper_functions import validate_properties
 
 # Setup for angle section
 angle = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-angle.create_mesh(mesh_sizes=[2.5])
+angle.create_mesh(mesh_size=2.5)
 angle_section = Section(angle)
 angle_section.calculate_geometric_properties()
 angle_section.calculate_plastic_properties()
@@ -67,7 +67,7 @@ custom_geom_points = [
             [-10, 110], [-10, 100], [0, 90], [45, 90], [45, 10], [-10, 10]
         ]
 custom_geom = sections.Geometry(Polygon(custom_geom_points))
-custom_geom.create_mesh(mesh_sizes=[5])
+custom_geom.create_mesh(mesh_size=5)
 custom_section = Section(custom_geom)
 custom_section.calculate_geometric_properties()
 custom_section.calculate_plastic_properties()

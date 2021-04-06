@@ -596,7 +596,7 @@ DEFAULT_MATERIAL = Material('default', 1, 0, 1)
 #         )
 
 
-def create_mesh(points, facets, holes, control_points, mesh_sizes, atol=1.0e-8):
+def create_mesh(points, facets, holes, control_points, mesh_size, atol=1.0e-8):
     """Creates a quadratic triangular mesh using the meshpy module, which utilises the code
     'Triangle', by Jonathan Shewchuk.
 
@@ -631,7 +631,7 @@ def create_mesh(points, facets, holes, control_points, mesh_sizes, atol=1.0e-8):
     region_id = 0  # initialise region ID variable
 
     for (i, cp) in enumerate(control_points):
-        mesh.regions[i] = [cp[0], cp[1], region_id, mesh_sizes[i]]
+        mesh.regions[i] = [cp[0], cp[1], region_id, mesh_size]
         region_id += 1
 
     mesh = triangle.build(

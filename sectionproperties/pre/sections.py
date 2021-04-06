@@ -90,7 +90,7 @@ class Geometry:
                 "If holes coordinates are provided then facets must also be provided "
                 "to distinguish between exterior and interior edges."
                 )
-        if len(control_points > 1):
+        if len(control_points) > 1:
             raise ValueError(
                 "A Geometry object can only have one contiguous region (with holes)."
                 "Did you mean to use CompoundGeometry.from_points()?"
@@ -99,7 +99,7 @@ class Geometry:
         prev_facet = []
 
         # Initialize the total number of accumulators needed
-        # Always an exterior and a separate accumulator for each interior region
+        # Always an exterior, plus, a separate accumulator for each interior region
         exterior = []
         interiors = [[] for _ in holes] # initialize an empty facet list for every hole
         interior_counter = 0 # To keep track of interior regions
@@ -132,34 +132,32 @@ class Geometry:
 
     def create_facets_and_control_points(self):
         self.perimeter = None
-        if not isinstance(self.geom, list):
-            self.perimeter = list(range(len(self.geom.exterior.coords)))
+        self.perimeter = list(range(len(self.geom.exterior.coords)))
         self.holes = []
         self.points = []
         self.facets = []
         self.points, self.facets = create_points_and_facets(self.geom)
-        self.control_points = list(self.geom.representative_point().coords)
+        self.control_points = tuple(self.geom.representative_point().coords)
 
         for hole in self.geom.interiors:
             hole_polygon = Polygon(hole)
-            self.holes += list(hole_polygon.representative_point().coords)
+            self.holes += tuple(hole_polygon.representative_point().coords)
         return
 
     def compile_geometry(self): # Alias
         self.create_facets_and_control_points()
 
 
-    def create_mesh(self, mesh_sizes: Union[float, list]):
+    def create_mesh(self, mesh_size: float):
         """Creates a quadratic triangular mesh from the Geometry object.
 
-        :param mesh_sizes: A list of maximum element areas corresponding to each region within the
-            cross-section geometry.
-        :type mesh_size: list[float]
+        :param mesh_size: A float describing the maximum mesh element area to be used
+        within the Geometry-object finite-element mesh.
+        :type mesh_size: float
 
-        :return: Object containing generated mesh data
-        :rtype: :class:`mesh.triangle.MeshInfo`
-
-        :raises AssertionError: If the number of mesh sizes does not match the number of regions
+        :return: Geometry-object with mesh data stored in .mesh attribute. Returned
+        Geometry-object is self, not a new instance.
+        :rtype: :class:`sectionproperties.pre.sections.Geometry`
 
         The following example creates a circular cross-section with a diameter of 50 with 64
         points, and generates a mesh with a maximum triangular area of 2.5::
@@ -167,7 +165,7 @@ class Geometry:
             import sectionproperties.pre.sections as sections
 
             geometry = sections.CircularSection(d=50, n=64)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            geometry = geometry.create_mesh(mesh_size=2.5)
 
         ..  figure:: ../images/sections/circle_mesh.png
             :align: center
@@ -175,19 +173,10 @@ class Geometry:
 
             Mesh generated from the above geometry.
         """
-        self.compile_geometry()
-        if isinstance(mesh_sizes, (float, int)): mesh_sizes = [mesh_sizes]*len(self.control_points)
-
-        error_str = (
-            f"Number of mesh_sizes ({len(mesh_sizes)}), "
-            f"should match the number of regions ({len(self.control_points)})"
-        )
-        
-        assert(len(mesh_sizes) == len(self.control_points)), error_str
-
         self.mesh = pre.create_mesh(
-            self.points, self.facets, self.holes, self.control_points, mesh_sizes)
-        return self.mesh
+            self.points, self.facets, self.holes, self.control_points, mesh_size
+            )
+        return self
 
     def align_left(self, align_to: Geometry, inner: bool = False):
         """
@@ -207,10 +196,12 @@ class Geometry:
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
         self_align_x = self_extents[1] # max x
-        if inner: self_align_x = self_extents[0] # min x
+        if inner: 
+            self_align_x = self_extents[0] # min x
         align_to_min_x = align_to_extents[0]
         x_offset = align_to_min_x - self_align_x
-        return self.shift_section(x_offset=x_offset)
+        new_geom = self.shift_section(x_offset=x_offset)
+        return new_geom
 
     def align_top(self, align_to: Geometry, inner: bool = False):
         """
@@ -230,10 +221,12 @@ class Geometry:
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
         self_align_y = self_extents[2] # min y
-        if inner: self_align_y = self_extents[3] # max y
+        if inner: 
+            self_align_y = self_extents[3] # max y
         align_to_max_y = align_to_extents[3]
         y_offset = align_to_max_y - self_align_y
-        return self.shift_section(y_offset=y_offset)
+        new_geom = self.shift_section(y_offset=y_offset)
+        return new_geom
 
     def align_right(self, align_to: Geometry, inner: bool = False):
         """
@@ -253,10 +246,12 @@ class Geometry:
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
         self_align_x = self_extents[0] # min x
-        if inner: self_align_x = self_extents[1] # max x
+        if inner: 
+            self_align_x = self_extents[1] # max x
         align_to_max_x = align_to_extents[1]
         x_offset = align_to_max_x - self_align_x
-        return self.shift_section(x_offset=x_offset)
+        new_geom = self.shift_section(x_offset=x_offset)
+        return new_geom
 
     def align_bottom(self, align_to: Geometry, inner: bool = False):
         """
@@ -276,10 +271,12 @@ class Geometry:
         self_extents = self.calculate_extents()
         align_to_extents = align_to.calculate_extents()
         self_align_y = self_extents[3] # max y
-        if inner: self_align_y = self_extents[2] # min y
+        if inner:
+            self_align_y = self_extents[2] # min y
         align_to_min_y = align_to_extents[2]
         y_offset = align_to_min_y - self_align_y
-        return self.shift_section(y_offset=y_offset)
+        new_geom = self.shift_section(y_offset=y_offset)
+        return new_geom
 
     def align_center(self, align_to: Optional[Geometry] = None):
         """
@@ -301,7 +298,8 @@ class Geometry:
             align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
             shift_x = align_cx - cx
             shift_y = align_cy - cy
-        return self.shift_section(x_offset=shift_x, y_offset=shift_y)
+        new_geom = self.shift_section(x_offset=shift_x, y_offset=shift_y)
+        return new_geom
 
 
     def shift_section(self, x_offset=0., y_offset=0.,):
@@ -313,10 +311,9 @@ class Geometry:
         :param y_offset: Distance in y-direction by which to shift the geometry.
         :type y_offset: float
 
-        :return: Geometry object shifted by 'x_offset' and 'y_offset'
+        :return: New Geometry-object shifted by 'x_offset' and 'y_offset'
         :rtype: :class:`sections.pre.sections.Geometry`
         """
-
         new_geom = Geometry(shapely.affinity.translate(self.geom, x_offset, y_offset), self.material)
         return new_geom
 
@@ -332,7 +329,7 @@ class Geometry:
         :type rot_point: list[float, float]
         :param use_radians: Boolean to indicate whether 'angle' is in degrees or radians. If True, 'angle' is interpreted as radians.
         
-        :return: Geometry object rotated by 'angle' about 'rot_point'
+        :return: New Geometry-object rotated by 'angle' about 'rot_point'
         :rtype: :class:`sections.pre.sections.Geometry`
         
         The following example rotates a 200UB25 section clockwise by 30 degrees::
@@ -355,7 +352,7 @@ class Geometry:
         Default = 'center'.
         :type mirror_point: Union[list[float, float], str]
 
-        :return: Geometry object mirrored on 'axis' about 'mirror_point'
+        :return: New Geometry-object mirrored on 'axis' about 'mirror_point'
         :rtype: :class:`sections.pre.sections.Geometry`
 
         The following example mirrors a 200PFC section about the y-axis and the point (0, 0)::
@@ -369,7 +366,7 @@ class Geometry:
         y_mirror = 1
         if axis == "x": x_mirror = -x_mirror
         elif axis == "y": y_mirror = -y_mirror
-        new_geom = Geometry(shapely.affinity.scale(self.geom, x_mirror, y_mirror, mirror_point), self.material)
+        new_geom = Geometry(shapely.affinity.scale(self.geom, x_mirror, y_mirror, origin=mirror_point), self.material)
         return new_geom
 
 
@@ -435,13 +432,11 @@ class Geometry:
         return (top_right_geoms, bottom_left_geoms)
 
 
-
-
     def offset_section_perimeter(self, amount:float = 0, resolution: float = 12):
         """Dilates or erodes the section perimeter by a discrete amount. 
 
-        :param amount: Distance to offset the section by. A -ve value "erodes" the section. A +ve
-        value "dilates" the section.
+        :param amount: Distance to offset the section by. A -ve value "erodes" the section.
+        A +ve value "dilates" the section.
         :type amount: float
         :param resolution: Number of segments used to approximate a quarter circle around a point
         :type resolution: float
@@ -462,8 +457,10 @@ class Geometry:
             resolution=resolution
             )
         if isinstance(new_geom, MultiPolygon):
-            return CompoundGeometry([Geometry(poly, self.material) for poly in new_geom])
-        return Geometry(new_geom, self.material)
+            compound_geom = CompoundGeometry([Geometry(poly, self.material) for poly in new_geom])
+            return compound_geom
+        single_geom = Geometry(new_geom, self.material)
+        return single_geom
 
 
     def plot_geometry(self, ax=None, pause=True, labels=False, perimeter=False):
@@ -738,7 +735,7 @@ class CompoundGeometry(Geometry):
         self.facets = [] 
         self.holes = [] 
         self.perimeter = []
-        # self.compile_geometry()
+        self.compile_geometry()
 
         # self.mesh = None # Previously not a property
 
@@ -802,8 +799,6 @@ class CompoundGeometry(Geometry):
         else:
             current_polygon_points.append(points[j_idx])
             all_polygons.append(Polygon(current_polygon_points))
-
-        # print(all_polygons)
 
         # Then classify all of the collected polygons as either "exterior" or "interior"
         exteriors = []
@@ -1016,11 +1011,11 @@ class CompoundGeometry(Geometry):
 
             # add holes
             for hole in geom.holes:
-                self.holes.append(list(hole))
+                self.holes.append(tuple(hole))
 
             # add control points
             for control_point in geom.control_points:
-                self.control_points.append(list(control_point))
+                self.control_points.append(tuple(control_point))
 
         # Check for holes created inadvertently from combined sections
         unionized_geometry = None
@@ -1030,7 +1025,7 @@ class CompoundGeometry(Geometry):
                 continue
             unionized_geometry = unionized_geometry | geom
         if len(unionized_geometry.holes) > len(self.holes):
-            inadvertent_holes = [hole_coords for hole_coords in unionized_geometry.holes if hole_coords not in self.holes]
+            inadvertent_holes = [tuple(hole_coords) for hole_coords in unionized_geometry.holes if hole_coords not in self.holes]
             self.holes += inadvertent_holes
             #change x,y coords to tuples, only
 

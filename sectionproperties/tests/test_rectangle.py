@@ -9,7 +9,7 @@ import sectionproperties.analysis.cross_section as file
 
 # Rectangle section setup
 rectangle_geometry = sections.rectangular_section(b=50, d=100)
-rectangle_geometry.create_mesh(mesh_sizes=100)
+rectangle_geometry.create_mesh(mesh_size=100)
 rectangle_section = Section(rectangle_geometry)
 rectangle_section.calculate_geometric_properties()
 rectangle_section.calculate_warping_properties()
