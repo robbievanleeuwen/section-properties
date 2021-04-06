@@ -1,3 +1,5 @@
+import pathlib
+
 from sectionproperties.pre.sections import *
 from sectionproperties.analysis.cross_section import Section
 from sectionproperties.pre.pre import Material
@@ -43,6 +45,9 @@ def test_for_incidental_holes():
     assert len(composite.holes) == 2
 
 def test_geometry_from_points():
+    # Geometry.from_points() tests a shape with exactly one exterior
+    # and an arbitrary number of interiors being built from the legacy
+    # points, facets, holes, control_points interface of sectionproperties
     exterior = [[-6, 10], [6, 10], [6, -10], [-6, -10]]
     interior1 = [[-4, 8], [4, 8], [4, 4], [-4, 4]]
     interior2 = [[-4, -8], [4, -8], [4, -4], [-4, -4]]
@@ -51,5 +56,39 @@ def test_geometry_from_points():
     holes = [[0, 6], [0, -6]]
     new_geom = Geometry.from_points(points, facets, holes, control_points=[])
     assert new_geom.geom.wkt == 'POLYGON ((-6 10, 6 10, 6 -10, -6 -10, -6 10), (-4 8, -4 4, 4 4, 4 8, -4 8), (-4 -8, 4 -8, 4 -4, -4 -4, -4 -8))'
-    
+
  
+def test_compound_geometry_from_points():
+    # CompoundGeometry.from_points() tests a shape with an arbitrary
+    # number of exteriors and an arbitrary number of interiors being 
+    # built from the legacy
+    # points, facets, holes, control_points interface of sectionproperties
+    a = 1
+    b = 2
+    t = 0.1
+
+    # build the lists of points, facets, holes and control points
+    points = [[-t/2, -2*a], [t/2, -2*a], [t/2, -t/2], [a, -t/2], [a, t/2],
+            [-t/2, t/2], [-b/2, -2*a], [b/2, -2*a], [b/2, -2*a-t],
+            [-b/2, -2*a-t]]
+    facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [6, 7], [7, 8],
+            [8, 9], [9, 6]]
+    holes = []
+    control_points = [[0, 0], [0, -2*a-t/2]]
+    new_geom = CompoundGeometry.from_points(points, facets, holes, control_points)
+    assert new_geom.geom.wkt == 'MULTIPOLYGON (((-0.05 -2, 0.05 -2, 0.05 -0.05, 1 -0.05, 1 0.05, -0.05 0.05, -0.05 -2)), ((-1 -2, 1 -2, 1 -2.1, -1 -2.1, -1 -2)))'
+
+
+def test_geometry_from_dxf():
+    section_holes_dxf = pathlib.Path.cwd() / "sectionproperties" / "tests" / 'section_holes.dxf'
+    assert Geometry.from_dxf(section_holes_dxf).geom.wkt == (
+        'POLYGON ((-0.3386588348890669 -0.3951777028951984, '
+        '-0.3386588348890669 29.09231821639347, 31.96225758877617 29.09231821639347, '
+        '31.96225758877617 -0.3951777028951984, -0.3386588348890669 -0.3951777028951984), '
+        '(16.68431586247806 2.382629883704458, 29.68303085105337 2.382629883704458, '
+        '29.68303085105337 24.35580015206329, 16.68431586247806 24.35580015206329, '
+        '16.68431586247806 2.382629883704458), (1.548825807287628 3.34417866368126, '
+        '14.54754079586294 3.34417866368126, 14.54754079586294 27.38289816310137, '
+        '1.548825807287628 27.38289816310137, 1.548825807287628 3.34417866368126))'
+    )
+

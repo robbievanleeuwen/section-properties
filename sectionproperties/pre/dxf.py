@@ -31,20 +31,3 @@ def load_dxf(dxf_filepath: pathlib.Path):
             return Geometry(new_polygons)
         else:
             print(f"No shapely.Polygon objects found in file: {dxf_filepath}")
-
-        # # hole_cps = [] # control points for holes
-        # # for hole in new_polygons.interiors:
-        # #     p = c2s.utils.point_in_polygon(shapely.geometry.Polygon(hole))
-        # #     hole_cps.append([p.x,p.y])
-
-        # # create the custom geometry object
-        # points = [list(elem) for elem in list(zip(new_polygons.exterior.xy[0],new_polygons.exterior.xy[1]))]
-        # cp = c2s.utils.point_in_polygon(new_polygons)
-
-        # for hole_lr in new_polygons.interiors:
-        #     pts = [list(elem) for elem in list(zip(hole_lr.xy[0],hole_lr.xy[1]))]
-        #     points.extend(pts)
-
-        # facets = c2s.utils.facets(new_polygons,inc_holes=True)
-
-        # return CustomSection(points = points, facets=facets, holes =hole_cps, control_points=[[cp.x,cp.y]] )
