@@ -8,7 +8,7 @@ class GeometryError(Exception):
 
     pass
 
-@dataclass
+@dataclass(eq=True, frozen=True)
 class Material:
     """Class for structural materials.
 
@@ -53,13 +53,13 @@ class Material:
     elastic_modulus: float
     poissons_ratio: float
     yield_strength: float
-    color: str = "w"
+    color: str
 
     @property
     def shear_modulus(self):
         return self.elastic_modulus / (2 * (1 + self.poissons_ratio))
 
-DEFAULT_MATERIAL = Material('default', 1, 0, 1)
+DEFAULT_MATERIAL = Material('default', 1, 0, 1, 'w')
 
 # class GeometryCleaner:
 #     """Class for cleaning :class:`~sectionproperties.pre.sections.Geometry` objects.

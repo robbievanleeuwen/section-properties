@@ -669,7 +669,6 @@ def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
 
     # create bottom rectangular plate
     bottom_plate = nastran_bar(DIM1=DIM1, DIM2=DIM5).shift_section(y_offset=DIM5/2)
-    print(bottom_plate.calculate_extents())
 
     # create the hat stiffener
     d1 = DIM2 - DIM5

@@ -23,7 +23,7 @@ def test_material_persistence():
     # returns a new Geometry object.
     # The material assignment should persist through all of the
     # transformations
-    steel = Material("steel", 200e3, 0.3, 400)
+    steel = Material("steel", 200e3, 0.3, 400, "grey")
     big_sq.material = steel
     new_geom = (big_sq
         .align_left(small_sq)

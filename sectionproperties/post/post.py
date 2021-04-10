@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sectionproperties.pre.pre import DEFAULT_MATERIAL
 
 
 def setup_plot(ax, pause):
@@ -121,8 +122,7 @@ def print_results(cross_section, fmt):
     :type cross_section: :class:`~sectionproperties.analysis.cross_section.CrossSection`
     :param info_string fmt: Number format
     """
-
-    if cross_section.materials is not None:
+    if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
         info_str = "E."
     else:
         info_str = ""
@@ -136,7 +136,7 @@ def print_results(cross_section, fmt):
     if perimeter is not None:
         print("Perim.\t = {:>{fmt}}".format(perimeter, fmt=fmt))
 
-    if cross_section.materials is not None:
+    if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
         ea = cross_section.get_ea()
         if ea is not None:
             print("E.A\t = {:>{fmt}}".format(ea, fmt=fmt))
@@ -196,7 +196,7 @@ def print_results(cross_section, fmt):
 
     j = cross_section.get_j()
     if j is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "G.J\t = {:>{fmt}}".format(
                     j / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt)
@@ -206,7 +206,7 @@ def print_results(cross_section, fmt):
 
     gamma = cross_section.get_gamma()
     if gamma is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "G.Iw\t = {:>{fmt}}".format(
                     gamma / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt)
@@ -231,7 +231,7 @@ def print_results(cross_section, fmt):
 
     (A_sx, A_sy) = cross_section.get_As()
     if A_sx is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "A_sx\t = {:>{fmt}}".format(
                     A_sx * cross_section.section_props.area / cross_section.section_props.ea,
@@ -248,7 +248,7 @@ def print_results(cross_section, fmt):
 
     (A_s11, A_s22) = cross_section.get_As_p()
     if A_s11 is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "A_s11\t = {:>{fmt}}".format(
                     A_s11 * cross_section.section_props.area / cross_section.section_props.ea,
@@ -284,7 +284,7 @@ def print_results(cross_section, fmt):
 
     (sxx, syy) = cross_section.get_s()
     if sxx is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print("M_p,xx\t = {:>{fmt}}".format(sxx, fmt=fmt))
             print("M_p,yy\t = {:>{fmt}}".format(syy, fmt=fmt))
         else:
@@ -305,7 +305,7 @@ def print_results(cross_section, fmt):
 
     (s11, s22) = cross_section.get_sp()
     if s11 is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print("M_p,11\t = {:>{fmt}}".format(s11, fmt=fmt))
             print("M_p,22\t = {:>{fmt}}".format(s22, fmt=fmt))
         else:

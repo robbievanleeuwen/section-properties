@@ -7,7 +7,7 @@ from icecream import ic
 from IPython.display import display_svg
 
 import copy
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 import numpy as np
 import math
 from scipy.sparse import csc_matrix, coo_matrix, linalg
@@ -40,13 +40,6 @@ class Section:
     :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
     :param mesh: Mesh object returned by meshpy
     :type mesh: :class:`meshpy.triangle.MeshInfo`
-    :param materials: A list of material properties corresponding to various regions in the
-        geometry and mesh. Note that if materials are specified, the number of material objects
-        ust equal the number of regions in the geometry. If no materials are specified, only a
-        purely geometric analysis can take place, and all regions will be assigned a default
-        material with an elastic modulus and yield strength equal to 1, and a Poisson's ratio
-        equal to 0.
-    :type materials: list[:class:`~sectionproperties.pre.pre.Material`]
     :param bool time_info: If set to True, a detailed description of the computation and the time
         cost is printed to the terminal.
 
@@ -56,36 +49,9 @@ class Section:
         import sectionproperties.pre.sections as sections
         from sectionproperties.analysis.cross_section import Section
 
-        geometry = sections.RectangularSection(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
-        section = Section(geometry, mesh)
-
-    The following example creates a 100D x 50W rectangle, with the top half of the section
-    comprised of timber and the bottom half steel. The timber section is meshed with a maximum area
-    of 10 and the steel section mesh with a maximum area of 5::
-
-        import sectionproperties.pre.sections as sections
-        from sectionproperties.pre.pre import Material
-        from sectionproperties.analysis.cross_section import Section
-
-        geom_steel = sections.RectangularSection(d=50, b=50)
-        geom_timber = sections.RectangularSection(d=50, b=50, shift=[0, 50])
-        geometry = sections.MergedSection([geom_steel, geom_timber])
-        geometry.clean_geometry()
-
-        mesh = geometry.create_mesh(mesh_sizes=[5, 10])
-
-        steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
-            color='grey'
-        )
-        timber = Material(
-            name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
-            color='burlywood'
-        )
-
-        section = Section(geometry, mesh, [steel, timber])
-        section.plot_mesh(materials=True, alpha=0.5)
+        geometry = sections.rectangular_section(d=100, b=50)
+        mesh = geometry.create_mesh(mesh_size=5)
+        section = Section(geometry)
 
     :cvar elements: List of finite element objects describing the cross-section mesh
     :vartype elements: list[:class:`~sectionproperties.analysis.fea.Tri6`]
@@ -288,6 +254,7 @@ class Section:
                 self.section_props.ixy_g += ixy_g * e
 
             self.section_props.nu_eff = self.section_props.ea / (2 * self.section_props.ga) - 1
+            # self.section_props.nu_eff = 0
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(self.mesh)
             
@@ -339,7 +306,7 @@ class Section:
 
         # create a new Section with the origin shifted to the centroid for calculation of the
         # warping properties such that the Lagrangian multiplier approach can be utilised
-        warping_section = Section(self.geometry, self.materials)
+        warping_section = Section(self.geometry)
 
         # shift the coordinates of each element N.B. the mesh class attribute remains unshifted!
         for el in warping_section.elements:
@@ -3937,6 +3904,12 @@ class SectionProperties:
     sf_11_minus: Optional[float] = None
     sf_22_plus: Optional[float] = None
     sf_22_minus: Optional[float] = None
+
+    def asdict(self):
+        """
+        Returns the SectionProperties dataclass object as a dictionary.
+        """
+        return asdict(self)
 
     def calculate_elastic_centroid(self):
         """Calculates the elastic centroid based on the cross-section area and first moments of

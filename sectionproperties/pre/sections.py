@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import List, Optional, Union, Tuple
 
+import copy
 import pathlib
 import logging 
 from icecream import ic
@@ -186,102 +187,150 @@ class Geometry:
             )
         return self
 
-    def align_left(self, align_to: Geometry, inner: bool = False):
+    def align_left(self, 
+        align_to: Union[Geometry, Tuple[float, float]], 
+        inner: bool = False,
+        ) -> Geometry:
         """
         Returns a new Geometry object, translated in x, so that the right-most point 
         of the new object will be aligned to left-most point of the other Geometry object.
 
-        :param align_to: Another Geometry to align to.
+        If 'align_to' is a tuple representing an *(x,y)* coordinate, then the new
+        Geometry object will be translated so the right-most point on the new object will
+        have it's *x* ordinate the same as the point.
+
+        :param align_to: Another Geometry to align to or a tuple representing an
+        *(x,y)* coordinate point.
         :type align_to: sectionproperties.pre.sections.Geometry
 
         :param inner: Default False. If True, align the left-most point of this
         object to the left-most point of 'align_to'. 
-        :type align_to: bool
+        :type inner: bool
 
-        :return: Geometry object translated to new alignment
+        :return: Geometry object translated to alignment location
         :rtype: :class:`sections.pre.sections.Geometry`
         """
         self_extents = self.calculate_extents()
-        align_to_extents = align_to.calculate_extents()
+        if isinstance(align_to, Geometry):
+            align_to_extents = align_to.calculate_extents()
         self_align_x = self_extents[1] # max x
         if inner: 
             self_align_x = self_extents[0] # min x
-        align_to_min_x = align_to_extents[0]
+        if isinstance(align_to, tuple):
+            align_to_min_x = align_to[0]
+        else:
+            align_to_min_x = align_to_extents[0]
         x_offset = align_to_min_x - self_align_x
         new_geom = self.shift_section(x_offset=x_offset)
         return new_geom
 
-    def align_top(self, align_to: Geometry, inner: bool = False):
+    def align_top(self, 
+        align_to: Union[Geometry, Tuple[float, float]], 
+        inner: bool = False,
+        ) -> Geometry:
         """
-        Returns a new Geometry object, tranlsated in y, so that the bottom-most point
+        Returns a new Geometry object, translated in y, so that the bottom-most point 
         of the new object will be aligned to top-most point of the other Geometry object.
 
-        :param align_to: Another Geometry to align to.
+        If 'align_to' is a tuple representing an *(x,y)* coordinate, then the new
+        Geometry object will be translated so the bottom-most point on the new object will
+        have it's *y* ordinate the same as the point.
+
+        :param align_to: Another Geometry to align to or a tuple representing an
+        *(x,y)* coordinate point.
         :type align_to: sectionproperties.pre.sections.Geometry
 
         :param inner: Default False. If True, align the top-most point of this
         object to the top-most point of 'align_to'. 
-        :type align_to: bool
+        :type inner: bool
 
-        :return: Geometry object translated to new alignment
+        :return: Geometry object translated to alignment location
         :rtype: :class:`sections.pre.sections.Geometry`
         """
         self_extents = self.calculate_extents()
-        align_to_extents = align_to.calculate_extents()
+        if isinstance(align_to, Geometry):
+            align_to_extents = align_to.calculate_extents()
         self_align_y = self_extents[2] # min y
         if inner: 
             self_align_y = self_extents[3] # max y
-        align_to_max_y = align_to_extents[3]
+        if isinstance(align_to, tuple):
+            align_to_max_y = align_to[1]
+        else:
+            align_to_max_y = align_to_extents[3]
         y_offset = align_to_max_y - self_align_y
         new_geom = self.shift_section(y_offset=y_offset)
         return new_geom
 
-    def align_right(self, align_to: Geometry, inner: bool = False):
+    def align_right(self, 
+        align_to: Union[Geometry, Tuple[float, float]], 
+        inner: bool = False,
+        ) -> Geometry:
         """
-        Returns a new Geometry object, tranlsated in x, so that the left-most point
+        Returns a new Geometry object, translated in x, so that the left-most point 
         of the new object will be aligned to right-most point of the other Geometry object.
 
-        :param align_to: Another Geometry to align to.
+        If 'align_to' is a tuple representing an *(x,y)* coordinate, then the new
+        Geometry object will be translated so the left-most point on the new object will
+        have it's *x* ordinate the same as the point.
+
+        :param align_to: Another Geometry to align to or a tuple representing an
+        *(x,y)* coordinate point.
         :type align_to: sectionproperties.pre.sections.Geometry
 
-        :param inner: Default False. If True, align the top-most point of this
-        object to the top-most point of 'align_to'. 
-        :type align_to: bool
+        :param inner: Default False. If True, align the right-most point of this
+        object to the right-most point of 'align_to'. 
+        :type inner: bool
 
-        :return: Geometry object translated to new alignment
+        :return: Geometry object translated to alignment location
         :rtype: :class:`sections.pre.sections.Geometry`
         """
         self_extents = self.calculate_extents()
-        align_to_extents = align_to.calculate_extents()
+        if isinstance(align_to, Geometry):
+            align_to_extents = align_to.calculate_extents()        
         self_align_x = self_extents[0] # min x
         if inner: 
             self_align_x = self_extents[1] # max x
-        align_to_max_x = align_to_extents[1]
+        if isinstance(align_to, tuple):
+            align_to_max_x = align_to[0]
+        else:
+            align_to_max_x = align_to_extents[1]        
         x_offset = align_to_max_x - self_align_x
         new_geom = self.shift_section(x_offset=x_offset)
         return new_geom
 
-    def align_bottom(self, align_to: Geometry, inner: bool = False):
+    def align_bottom(self, 
+        align_to: Union[Geometry, Tuple[float, float]], 
+        inner: bool = False,
+        ) -> Geometry:
         """
-        Returns a new Geometry object, tranlsated in y, so that the top-most point 
-        of the new object will be aligned to bottom-most of the other Geometry object.
+        Returns a new Geometry object, translated in y, so that the top-most point 
+        of the new object will be aligned to bottom-most point of the other Geometry object.
 
-        :param align_to: Another Geometry to align to.
+        If 'align_to' is a tuple representing an *(x,y)* coordinate, then the new
+        Geometry object will be translated so the top-most point on the new object will
+        have it's *y* ordinate the same as the point.
+
+        :param align_to: Another Geometry to align to or a tuple representing an
+        *(x,y)* coordinate point.
         :type align_to: sectionproperties.pre.sections.Geometry
 
         :param inner: Default False. If True, align the bottom-most point of this
         object to the bottom-most point of 'align_to'. 
-        :type align_to: bool
+        :type inner: bool
 
-        :return: Geometry object translated to new alignment
+        :return: Geometry object translated to alignment location
         :rtype: :class:`sections.pre.sections.Geometry`
         """
         self_extents = self.calculate_extents()
-        align_to_extents = align_to.calculate_extents()
+        if isinstance(align_to, Geometry):
+            align_to_extents = align_to.calculate_extents()
         self_align_y = self_extents[3] # max y
         if inner:
             self_align_y = self_extents[2] # min y
-        align_to_min_y = align_to_extents[2]
+        if isinstance(align_to, tuple):
+            align_to_min_y = align_to[1] # y-ord
+        else:
+            align_to_min_y = align_to_extents[2] #min y
         y_offset = align_to_min_y - self_align_y
         new_geom = self.shift_section(y_offset=y_offset)
         return new_geom
@@ -470,6 +519,71 @@ class Geometry:
         single_geom = Geometry(new_geom, self.material)
         return single_geom
 
+
+    def shift_points(self, 
+        point_idxs: Union[int, List[int]],
+        dx: float = 0,
+        dy: float = 0,
+        abs_x: Optional[float] = None,
+        abs_y: Optional[float] = None) -> Geometry:
+        """
+        Translates one (or many points) in the geometry by either a relative amount or
+        to a new absolute location. Returns a new Geometry representing the original 
+        with the selected point(s) shifted to the new location.
+
+        Points are identified by their index, their relative location within the points
+        list found in self.points. You can call self.plot_geometry(labels="points") to
+        see a plot with the points labeled to find the appropriate point indexes.
+
+        :param point_idxs: An integer representing an index location or a list of integer
+        index locations.
+        :type point_idxs: Union[int, List[int]]
+        :param dx: The number of units in the x-direction to shift the point(s) by
+        :type dx: float
+        :param dy: The number of units in the y-direction to shift the point(s) by
+        :type dy: float
+        :param abs_x: Absolute x-coordinate in coordinate system to shift the 
+        point(s) to. If abs_x is provided, dx is ignored. If providing a list
+        to point_idxs, all points will be moved to this absolute location.
+        :type abs_x: Optional[float]
+        :param abs_y: Absolute y-coordinate in coordinate system to shift the 
+        point(s) to. If abs_y is provided, dy is ignored. If providing a list
+        to point_idxs, all points will be moved to this absolute location.
+        :type abs_y: Optional[float]
+
+        :return: Geometry object with selected points translated to the new location.
+        :rtype: :class:`sections.pre.sections.Geometry`
+
+        The following example expands the sides of a rectangle, one point at a time,
+        to make it a square.
+
+            import sectionproperties.pre.sections as sections
+
+            geometry = sections.rectangular_section(d=200, b=150)
+            one_pt_shifted_geom = geometry.shift_points(point_idxs=1, dx=50) # Using relative shifting
+            both_pts_shift_geom = one_pt_shift_geom.shift_points(point_idxs=2, abs_x=200) # Using absolute relocation
+        """
+        current_points = copy.copy(self.points)
+        current_facets = copy.copy(self.facets)
+        current_holes = copy.copy(self.holes)
+        current_control_points = copy.copy(self.control_points)
+
+        if isinstance(point_idxs, int): point_idxs = [point_idxs]
+        new_x, new_y = None, None
+        for point_idx in point_idxs:
+            current_x, current_y = current_points[point_idx]
+            new_x = abs_x if abs_x else current_x + dx
+            new_y = abs_y if abs_y else current_y + dy
+            current_points[point_idx] = (new_x, new_y)
+
+        new_geom = Geometry.from_points(
+            current_points,
+            current_facets,
+            current_holes,
+            current_control_points,
+        )
+        return new_geom
+        
 
     def plot_geometry(self, ax=None, pause=True, labels=False, perimeter=False):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
