@@ -33,7 +33,7 @@ def finish_plot(ax, pause, title=''):
     ax.set_aspect('equal', anchor='C')
     handles, labels = ax.get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
-    ax.legend(by_label.values(), by_label.keys(), loc='center left', bbox_to_anchor=(1, 0.5))
+    # ax.legend(by_label.values(), by_label.keys(), loc='center left', bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
 
     if pause:

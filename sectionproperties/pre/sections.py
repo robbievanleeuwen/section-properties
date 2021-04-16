@@ -9,7 +9,7 @@ from IPython.display import display_svg
 import more_itertools
 import numpy as np
 from shapely.geometry import Polygon, MultiPolygon, LinearRing, LineString, Point, GeometryCollection
-from shapely.ops import split
+from shapely.ops import split, unary_union
 import shapely
 import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
@@ -59,14 +59,15 @@ class Geometry:
     def _repr_svg_(self):
         print("sectionproperties.pre.sections.Geometry")
         print(f"object at: {hex(id(self))}")
+        print(f"Material: {self.material.name}")
         return self.geom._repr_svg_()
 
     @staticmethod
     def from_points(
         points: List[List[float]], 
-        facets: Optional[List[List[int]]],
-        holes: Optional[List[List[float]]],
-        control_points: Optional[List[List[float]]],
+        facets: Optional[List[List[int]]] = None,
+        holes: Optional[List[List[float]]] = None,
+        control_points: Optional[List[List[float]]] = None,
         ):
         """
         An interface for the creation of Geometry objects through the definition of points, 
@@ -74,7 +75,7 @@ class Geometry:
 
         :cvar points: List of points *(x, y)* defining the vertices of the section geometry.
         If facets are not provided, it is a assumed the that the list of points are ordered
-        around the perimeter, either clockwise or anti-clockwise
+        around the perimeter, either clockwise or anti-clockwise.
         :vartype points: list[list[float]]
         :cvar facets: Optional. A list of *(start, end)* indexes of vertices defining the edges
         of the section geoemtry. Can be used to define both external and internal perimeters of holes.
@@ -82,16 +83,23 @@ class Geometry:
         interior perimeter 2, etc.
         :vartype facets: list[list[int]]
         :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-        being holes or voids. The point can be located anywhere within the hole region.
+        being holes or voids. The point can be located anywhere within the hole region. If 
+        facets is provided, then holes must also be provided.
         Only one point is required per hole region.
+        :vartype control_points: list[list[int]]
+        :cvar control_points: Optional. A list of points *(x, y)* that described distinct
+        material regions within the geometry. One point is required for each geometry 
+        with a distinct material. If not provided, a control_point will be auto-generated for
+        the geometry.
         """
-        if facets is None: return Geometry(Polygon(points))
+        if facets is None and holes is None and control_points is None: 
+            return Geometry(Polygon(points))
         if holes is not None and facets is None:
             raise ValueError(
                 "If holes coordinates are provided then facets must also be provided "
                 "to distinguish between exterior and interior edges."
                 )
-        if len(control_points) > 1:
+        if control_points and len(control_points) > 1:
             raise ValueError(
                 "A Geometry object can only have one contiguous region (with holes)."
                 "Did you mean to use CompoundGeometry.from_points()?"
@@ -154,6 +162,7 @@ class Geometry:
         return
 
     def compile_geometry(self): # Alias
+        # pass
         self.create_facets_and_control_points()
 
 
@@ -187,13 +196,14 @@ class Geometry:
             )
         return self
 
-    def align_left(self, 
-        align_to: Union[Geometry, Tuple[float, float]], 
+    def align_to(self, 
+        other: Union[Geometry, Tuple[float, float]],
+        on: str,
         inner: bool = False,
         ) -> Geometry:
         """
-        Returns a new Geometry object, translated in x, so that the right-most point 
-        of the new object will be aligned to left-most point of the other Geometry object.
+        Returns a new Geometry object, translated in x, so that the left-most point 
+        of the new object will be aligned to right-most point of the other Geometry object.
 
         If 'align_to' is a tuple representing an *(x,y)* coordinate, then the new
         Geometry object will be translated so the right-most point on the new object will
@@ -210,18 +220,52 @@ class Geometry:
         :return: Geometry object translated to alignment location
         :rtype: :class:`sections.pre.sections.Geometry`
         """
-        self_extents = self.calculate_extents()
-        if isinstance(align_to, Geometry):
-            align_to_extents = align_to.calculate_extents()
-        self_align_x = self_extents[1] # max x
-        if inner: 
-            self_align_x = self_extents[0] # min x
-        if isinstance(align_to, tuple):
-            align_to_min_x = align_to[0]
+        # Mappings are indexes in the list of bbox extents of both
+        # self and 'align_to'
+        align_self_map = {
+            "left": 0,
+            "right": 1,
+            "bottom": 2,
+            "top": 3,
+            }
+
+        other_as_geom_map = {
+            "left": 1,
+            "right": 0,
+            "bottom": 3,
+            "top": 2,
+            }
+
+        other_as_point_map = {
+            "left": 0,
+            "right": 0,
+            "bottom": 1,
+            "top": 1,
+        }
+
+        self_align_idx = align_self_map[on]
+        align_to_geometry = isinstance(other, Geometry)
+        if align_to_geometry:
+            align_to_idx = other_as_geom_map[on]
+            if inner:
+                align_to_idx = align_self_map[on]
         else:
-            align_to_min_x = align_to_extents[0]
-        x_offset = align_to_min_x - self_align_x
-        new_geom = self.shift_section(x_offset=x_offset)
+            align_to_idx = other_as_point_map[on]
+
+        self_extents = self.calculate_extents()
+        self_align_coord = self_extents[self_align_idx]
+        if align_to_geometry:
+            other_extents = other.calculate_extents()
+        else:
+            other_extents = other
+        align_to_coord = other_extents[align_to_idx]
+        
+        offset = align_to_coord - self_align_coord
+
+        arg = "x_offset"
+        if on in ["top", "bottom"]: arg = "y_offset"
+        kwargs = {arg: offset}
+        new_geom = self.shift_section(**kwargs)
         return new_geom
 
     def align_top(self, 
@@ -250,11 +294,11 @@ class Geometry:
         self_extents = self.calculate_extents()
         if isinstance(align_to, Geometry):
             align_to_extents = align_to.calculate_extents()
-        self_align_y = self_extents[2] # min y
+        self_align_y = self_extents[3] # max y
         if inner: 
-            self_align_y = self_extents[3] # max y
+            self_align_y = self_extents[3] # min y
         if isinstance(align_to, tuple):
-            align_to_max_y = align_to[1]
+            align_to_max_y = align_to[0]
         else:
             align_to_max_y = align_to_extents[3]
         y_offset = align_to_max_y - self_align_y
@@ -585,7 +629,12 @@ class Geometry:
         return new_geom
         
 
-    def plot_geometry(self, ax=None, pause=True, labels=False, perimeter=False):
+    def plot_geometry(
+        self, 
+        ax=None, 
+        pause=True, 
+        labels=["control_points"],
+        perimeter=False):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
         figure and axis is created.
 
@@ -593,7 +642,9 @@ class Geometry:
         :type ax: :class:`matplotlib.axes.Axes`
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
-        :param bool labels: If set to true, node and facet labels are displayed
+        :param bool labels: A list of str which indicate which labels to plot. Can be one
+        or a combination of 'points', 'facets', 'control_points', or an empty list
+        to indicate no labels. Default is ['control_points']
         :param bool perimeter: If set to true, boldens the perimeter of the cross-section
 
         :return: Matplotlib figure and axes objects (fig, ax)
@@ -658,24 +709,24 @@ class Geometry:
 
 
         # display the labels
-        if labels:
+        for label in labels:
             # plot control_point labels
-            # With shapely, it will be useful to have numbered regions
-            # to match with lists of mesh_sizes and Materials
-            # With shapely, enumerated points and facets becomes less useful
-            for (i, pt) in enumerate(self.control_points):
-                ax.annotate(str(i), xy=pt, color='b')
 
-            # for (i, pt) in enumerate(self.points):
-            #     ax.annotate(str(i), xy=pt, color='r')
+            if label == "control_points":
+                for (i, pt) in enumerate(self.control_points):
+                    ax.annotate(str(i), xy=pt, color='b')
+            if label == "points":
+                for (i, pt) in enumerate(self.points):
+                    ax.annotate(str(i), xy=pt, color='r')
 
             # # plot facet labels
-            # for (i, fct) in enumerate(self.facets):
-            #     pt1 = self.points[fct[0]]
-            #     pt2 = self.points[fct[1]]
-            #     xy = [(pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2]
+            if label == "facets":
+                for (i, fct) in enumerate(self.facets):
+                    pt1 = self.points[fct[0]]
+                    pt2 = self.points[fct[1]]
+                    xy = [(pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2]
 
-            #     ax.annotate(str(i), xy=xy, color='b')
+                    ax.annotate(str(i), xy=xy, color='b')
 
         # if no axes object is supplied, finish the plot
         if not ax_supplied:
@@ -852,6 +903,26 @@ class CompoundGeometry(Geometry):
             self.geoms = processed_geoms
             self.geom = MultiPolygon([geom.geom for geom in processed_geoms])
 
+        mesh_bool_acc = []
+        for geom in self.geoms:
+            if hasattr(geom, "mesh") and hasattr(geom.mesh, "num_vertices"):
+                mesh_bool_acc.append(True)
+            else:
+                mesh_bool_acc.append(False)
+        
+        if any (mesh_bool_acc) and not all(mesh_bool_acc):
+            raise Warning(
+                "Some but not all of the Geometry objects have generated meshes.\n"
+                "It is recommended to either pre-mesh each Geometry object individually before"
+                " adding to CompoundGeometry or to re-mesh all Geometry objects with\n"
+                "<CompoundGeometry>.create_mesh(mesh_size)."
+                )
+        elif not any(mesh_bool_acc):
+            pass
+        # elif all(mesh_bool_acc):
+        #     new_mesh = None
+        #     for 
+
         self.control_points = []
         self.points = [] 
         self.facets = [] 
@@ -867,16 +938,18 @@ class CompoundGeometry(Geometry):
         Wraps shapely.geometry.MultiPolygon._repr_svg_() by returning
         self.geom._repr_svg_()
         """
+        materials_list = [geom.material.name for geom in self.geoms]
         print("sectionproperties.pre.sections.CompoundGeometry")
         print(f"object at: {hex(id(self))}")
+        print(f"Materials incl.: {list(set(materials_list))}")
         return self.geom._repr_svg_()
 
     @staticmethod
     def from_points(
         points: List[List[float]], 
-        facets: Optional[List[List[int]]], 
-        holes: Optional[List[List[float]]],
-        control_points: Optional[List[List[float]]],
+        facets: List[List[int]], 
+        holes: List[List[float]],
+        control_points: List[List[float]],
         ):
         """
         An interface for the creation of CompoundGeometry objects through the definition of points, 
@@ -943,6 +1016,36 @@ class CompoundGeometry(Geometry):
         else:
             interior_geometry = MultiPolygon(interiors)
             return CompoundGeometry(exterior_geometry - interior_geometry)
+
+    def create_mesh(self, mesh_sizes: List[float]):
+        """Creates a quadratic triangular mesh from the Geometry object.
+
+        :param mesh_size: A float describing the maximum mesh element area to be used
+        within the Geometry-object finite-element mesh.
+        :type mesh_sizes: List[float]
+
+        :return: Geometry-object with mesh data stored in .mesh attribute. Returned
+        Geometry-object is self, not a new instance.
+        :rtype: :class:`sectionproperties.pre.sections.Geometry`
+
+        The following example creates a circular cross-section with a diameter of 50 with 64
+        points, and generates a mesh with a maximum triangular area of 2.5::
+
+            import sectionproperties.pre.sections as sections
+
+            geometry = sections.circular_section(d=50, n=64)
+            geometry = geometry.create_mesh(mesh_sizes=[2.5])
+
+        ..  figure:: ../images/sections/circle_mesh.png
+            :align: center
+            :scale: 75 %
+
+            Mesh generated from the above geometry.
+        """
+        self.mesh = pre.create_mesh(
+            self.points, self.facets, self.holes, self.control_points, mesh_sizes
+            )
+        return self
 
 
     def shift_section(self, x_offset: float = 0, y_offset: float = 0):
@@ -1136,20 +1239,39 @@ class CompoundGeometry(Geometry):
                 self.holes.append(tuple(hole))
 
             # add control points
+
             for control_point in geom.control_points:
                 self.control_points.append(tuple(control_point))
 
         # Check for holes created inadvertently from combined sections
-        unionized_geometry = None
-        for geom in self.geoms:
-            if unionized_geometry is None:
-                unionized_geometry = geom
-                continue
-            unionized_geometry = unionized_geometry | geom
-        if len(unionized_geometry.holes) > len(self.holes):
-            inadvertent_holes = [tuple(hole_coords) for hole_coords in unionized_geometry.holes if hole_coords not in self.holes]
-            self.holes += inadvertent_holes
-            #change x,y coords to tuples, only
+        inadvertent_holes = []
+        unionized_poly = unary_union([geom.geom for geom in self.geoms])
+        if isinstance(unionized_poly, MultiPolygon):
+            for poly in unionized_poly.geoms:
+                for interior in poly.interiors:
+                    inadvertent_holes.append(tuple(interior.representative_point().coords))
+
+        elif isinstance(unionized_poly, Polygon):
+            inadvertent_holes += Geometry(unionized_poly).holes
+        
+        extra_holes = []
+        if set(inadvertent_holes) - set(self.holes):
+            extra_holes = [hole for hole in inadvertent_holes if hole not in self.holes]
+        
+        self.holes += extra_holes
+        
+
+
+        # for geom in self.geoms:
+        #     if unionized_geometry is None:
+        #         unionized_geometry = geom
+        #     else:
+        #         unionized_geometry = unionized_geometry | geom
+        #         if unionized_geometry
+        # if len(unionized_geometry.holes) > len(self.holes):
+        #     inadvertent_holes = [tuple(hole_coords) for hole_coords in unionized_geometry.holes if hole_coords not in self.holes]
+        #     self.holes += inadvertent_holes
+        #     #change x,y coords to tuples, only
 
     def calculate_perimeter(self):
         """
@@ -2190,6 +2312,8 @@ def angle_section(d, b, t, r_r, r_t, n_r):
         :align: center
         :scale: 75 %
     """
+    if r_t > t:
+        raise ValueError("The radius of the toe (r_t) cannot be larger than the toe thickness (t).")
 
     points = []
 
