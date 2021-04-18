@@ -227,7 +227,6 @@ class Section:
             # calculate global geometric properties
             for el in self.elements:
                 (area, qx, qy, ixx_g, iyy_g, ixy_g, e, g) = el.geometric_properties()
-                # print((area, qx, qy, ixx_g, iyy_g, ixy_g, e, g))
                 self.section_props.area += area
                 self.section_props.ea += area * e
                 self.section_props.ga += area * g
@@ -1046,8 +1045,6 @@ class Section:
                 if i == 0 or material not in self.materials[0:i]:
                     # add the material colour and name to the legend list
                     legend_list.append(mpatches.Patch(color=material.color, label=material.name))
-
-            print(legend_list)
 
             cmap = ListedColormap(color_array)  # custom colormap
             # c = np.arange(len(color_array))  # indices of elements
@@ -1965,15 +1962,6 @@ class PlasticSection:
 
         p = np.array([d * u_p[0], d * u_p[1]]) # p finding a point on the axis by scaling the perpendicular
 
-        # # create a mesh with the axis included
-        # mesh = self.create_plastic_mesh([p, u])
-        # print("After meshign")
-        # (nodes, elements, element_list) = self.get_elements(mesh)
-        # print("After get elements")
-
-        # if self.debug:
-        #     self.plot_mesh(nodes, elements, element_list, self.materials)
-
         # calculate force equilibrium
         (f_top, f_bot) = self.calculate_plastic_force(u, p)
 
@@ -2035,7 +2023,6 @@ class PlasticSection:
         :return: Force in the top and bottom areas *(f_top, f_bot)*
         :rtype: tuple(float, float)
         """
-        # print("Runs")
         # initialise variables
         (f_top, f_bot) = (0, 0)
         (ea_top, ea_bot) = (0, 0)
