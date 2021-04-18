@@ -3,9 +3,6 @@ from typing import List, Optional, Union, Tuple
 
 import copy
 import pathlib
-import logging 
-from icecream import ic
-from IPython.display import display_svg
 import more_itertools
 import numpy as np
 from shapely.geometry import Polygon, MultiPolygon, LinearRing, LineString, Point, GeometryCollection
@@ -16,10 +13,6 @@ import sectionproperties.pre.pre as pre
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
 
-
-log = logging.getLogger('shapely')
-log_path = pathlib.Path("C:\\Users\\cferster\\Desktop\\sectionproperties logs\\shapley.log")
-logging.basicConfig(filename=log_path, filemode='w', format="%(message)s", level=logging.DEBUG)
 
 class Geometry:
     """Class for defining the geometry of a contiguous section of a single material.
@@ -268,117 +261,6 @@ class Geometry:
         new_geom = self.shift_section(**kwargs)
         return new_geom
 
-    def align_top(self, 
-        align_to: Union[Geometry, Tuple[float, float]], 
-        inner: bool = False,
-        ) -> Geometry:
-        """
-        Returns a new Geometry object, translated in y, so that the bottom-most point 
-        of the new object will be aligned to top-most point of the other Geometry object.
-
-        If 'align_to' is a tuple representing an *(x,y)* coordinate, then the new
-        Geometry object will be translated so the bottom-most point on the new object will
-        have it's *y* ordinate the same as the point.
-
-        :param align_to: Another Geometry to align to or a tuple representing an
-        *(x,y)* coordinate point.
-        :type align_to: sectionproperties.pre.sections.Geometry
-
-        :param inner: Default False. If True, align the top-most point of this
-        object to the top-most point of 'align_to'. 
-        :type inner: bool
-
-        :return: Geometry object translated to alignment location
-        :rtype: :class:`sections.pre.sections.Geometry`
-        """
-        self_extents = self.calculate_extents()
-        if isinstance(align_to, Geometry):
-            align_to_extents = align_to.calculate_extents()
-        self_align_y = self_extents[3] # max y
-        if inner: 
-            self_align_y = self_extents[3] # min y
-        if isinstance(align_to, tuple):
-            align_to_max_y = align_to[0]
-        else:
-            align_to_max_y = align_to_extents[3]
-        y_offset = align_to_max_y - self_align_y
-        new_geom = self.shift_section(y_offset=y_offset)
-        return new_geom
-
-    def align_right(self, 
-        align_to: Union[Geometry, Tuple[float, float]], 
-        inner: bool = False,
-        ) -> Geometry:
-        """
-        Returns a new Geometry object, translated in x, so that the left-most point 
-        of the new object will be aligned to right-most point of the other Geometry object.
-
-        If 'align_to' is a tuple representing an *(x,y)* coordinate, then the new
-        Geometry object will be translated so the left-most point on the new object will
-        have it's *x* ordinate the same as the point.
-
-        :param align_to: Another Geometry to align to or a tuple representing an
-        *(x,y)* coordinate point.
-        :type align_to: sectionproperties.pre.sections.Geometry
-
-        :param inner: Default False. If True, align the right-most point of this
-        object to the right-most point of 'align_to'. 
-        :type inner: bool
-
-        :return: Geometry object translated to alignment location
-        :rtype: :class:`sections.pre.sections.Geometry`
-        """
-        self_extents = self.calculate_extents()
-        if isinstance(align_to, Geometry):
-            align_to_extents = align_to.calculate_extents()        
-        self_align_x = self_extents[0] # min x
-        if inner: 
-            self_align_x = self_extents[1] # max x
-        if isinstance(align_to, tuple):
-            align_to_max_x = align_to[0]
-        else:
-            align_to_max_x = align_to_extents[1]        
-        x_offset = align_to_max_x - self_align_x
-        new_geom = self.shift_section(x_offset=x_offset)
-        return new_geom
-
-    def align_bottom(self, 
-        align_to: Union[Geometry, Tuple[float, float]], 
-        inner: bool = False,
-        ) -> Geometry:
-        """
-        Returns a new Geometry object, translated in y, so that the top-most point 
-        of the new object will be aligned to bottom-most point of the other Geometry object.
-
-        If 'align_to' is a tuple representing an *(x,y)* coordinate, then the new
-        Geometry object will be translated so the top-most point on the new object will
-        have it's *y* ordinate the same as the point.
-
-        :param align_to: Another Geometry to align to or a tuple representing an
-        *(x,y)* coordinate point.
-        :type align_to: sectionproperties.pre.sections.Geometry
-
-        :param inner: Default False. If True, align the bottom-most point of this
-        object to the bottom-most point of 'align_to'. 
-        :type inner: bool
-
-        :return: Geometry object translated to alignment location
-        :rtype: :class:`sections.pre.sections.Geometry`
-        """
-        self_extents = self.calculate_extents()
-        if isinstance(align_to, Geometry):
-            align_to_extents = align_to.calculate_extents()
-        self_align_y = self_extents[3] # max y
-        if inner:
-            self_align_y = self_extents[2] # min y
-        if isinstance(align_to, tuple):
-            align_to_min_y = align_to[1] # y-ord
-        else:
-            align_to_min_y = align_to_extents[2] #min y
-        y_offset = align_to_min_y - self_align_y
-        new_geom = self.shift_section(y_offset=y_offset)
-        return new_geom
-
     def align_center(self, align_to: Optional[Geometry] = None):
         """
         Returns a new Geometry object, tranlsated in both x and y, so that the 
@@ -460,14 +342,23 @@ class Geometry:
 
             import sectionproperties.pre.sections as sections
 
-            geometry = sections.pfc_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             new_geometry = geometry.mirror_section(axis='y', mirror_point=[0, 0])
         """
         x_mirror = 1
         y_mirror = 1
+        x, y, z = *mirror_point, 0
         if axis == "x": x_mirror = -x_mirror
         elif axis == "y": y_mirror = -y_mirror
-        new_geom = Geometry(shapely.affinity.scale(self.geom, x_mirror, y_mirror, origin=mirror_point), self.material)
+        mirrored_geom = shapely.affinity.scale(
+            self.geom, 
+            xfact=y_mirror,
+            yfact=x_mirror,
+            zfact=1.0,
+            origin=(x, y, z)
+            )
+
+        new_geom = Geometry(mirrored_geom, self.material)
         return new_geom
 
 
@@ -508,7 +399,7 @@ class Geometry:
             import sectionproperties.pre.sections as sections
             from shapely.geometry import LineString
 
-            geometry = sections.pfc_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             right_geom, left_geom = geometry.split_section((0, 0), (0, 1))
         """
         if point_j:
@@ -549,7 +440,7 @@ class Geometry:
 
             import sectionproperties.pre.sections as sections
 
-            geometry = sections.pfc_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             new_geometry = geometry.offset_section_perimeter(amount=-3)
         """
         new_geom = self.geom.buffer(
@@ -1160,7 +1051,7 @@ class CompoundGeometry(Geometry):
             import sectionproperties.pre.sections as sections
             from shapely.geometry import LineString
 
-            geometry = sections.pfc_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             right_geom, left_geom = geometry.split_section((0, 0), (0, 1))
         """
         top_geoms_acc = []
@@ -1259,19 +1150,7 @@ class CompoundGeometry(Geometry):
             extra_holes = [hole for hole in inadvertent_holes if hole not in self.holes]
         
         self.holes += extra_holes
-        
 
-
-        # for geom in self.geoms:
-        #     if unionized_geometry is None:
-        #         unionized_geometry = geom
-        #     else:
-        #         unionized_geometry = unionized_geometry | geom
-        #         if unionized_geometry
-        # if len(unionized_geometry.holes) > len(self.holes):
-        #     inadvertent_holes = [tuple(hole_coords) for hole_coords in unionized_geometry.holes if hole_coords not in self.holes]
-        #     self.holes += inadvertent_holes
-        #     #change x,y coords to tuples, only
 
     def calculate_perimeter(self):
         """
