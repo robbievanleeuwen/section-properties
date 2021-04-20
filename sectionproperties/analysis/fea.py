@@ -3,13 +3,7 @@ import numpy as np
 
 from dataclasses import dataclass
 from sectionproperties.pre.pre import Material
-np.set_printoptions(precision=25)
-import pathlib
-import logging
 
-log = logging.getLogger('shapely')
-log_path = pathlib.Path("C:\\Users\\cferster\\Desktop\\sectionproperties logs\\shapley.log")
-logging.basicConfig(filename=log_path, filemode='w', format="%(message)s", level=logging.DEBUG)
 
 @dataclass
 class Tri6:

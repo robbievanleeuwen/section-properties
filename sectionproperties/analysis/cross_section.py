@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 import matplotlib.cm as cm
 import matplotlib.patches as mpatches
-from matplotlib.colors import ListedColormap, TwoSlopeNorm
+from matplotlib.colors import ListedColormap
 
 import numpy as np
 from scipy.sparse import csc_matrix, coo_matrix, linalg
