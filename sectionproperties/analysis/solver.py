@@ -22,9 +22,9 @@ def solve_cgs(k, f, m=None, tol=1e-5):
     :raises RuntimeError: If the CGS iterative method does not converge
     """
 
-    (u, exit) = linalg.cgs(k, f, tol=tol, M=m)
+    (u, info) = linalg.cgs(k, f, tol=tol, M=m)
 
-    if exit != 0:
+    if info != 0:
         raise RuntimeError("CGS iterative method did not converge.")
 
     return u
@@ -50,9 +50,9 @@ def solve_cgs_lagrange(k_lg, f, tol=1e-5, m=None):
         Lagrangian multiplier method exceeds the tolerance
     """
 
-    (u, exit) = linalg.cgs(k_lg, np.append(f, 0), tol=tol, M=m)
+    (u, info) = linalg.cgs(k_lg, np.append(f, 0), tol=tol, M=m)
 
-    if exit != 0:
+    if info != 0:
         raise RuntimeError("CGS iterative method did not converge.")
 
     # compute error
