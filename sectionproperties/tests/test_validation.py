@@ -15,6 +15,7 @@ angle_section.calculate_warping_properties()
 
 tol = 1e-6
 
+
 def test_angle_all_properties():
     check.almost_equal(angle_section.section_props.area, 2747.059)
     check.almost_equal(angle_section.section_props.perimeter, 471.3501)
@@ -63,9 +64,21 @@ def test_angle_all_properties():
 
 # Setup custom section
 custom_geom_points = [
-            [-10, 0], [110, 0], [100, 10], [55, 10], [55, 90], [100, 90], [110, 100], [110, 110],
-            [-10, 110], [-10, 100], [0, 90], [45, 90], [45, 10], [-10, 10]
-        ]
+    [-10, 0],
+    [110, 0],
+    [100, 10],
+    [55, 10],
+    [55, 90],
+    [100, 90],
+    [110, 100],
+    [110, 110],
+    [-10, 110],
+    [-10, 100],
+    [0, 90],
+    [45, 90],
+    [45, 10],
+    [-10, 10],
+]
 custom_geom = sections.Geometry(Polygon(custom_geom_points))
 custom_geom.create_mesh(mesh_size=5)
 custom_section = Section(custom_geom)
@@ -101,7 +114,9 @@ def test_custom_section_all_properties():
     check.almost_equal(custom_section.section_props.r22_c, 3.003998e1)
     check.almost_equal(custom_section.section_props.sxx, 1.531971e5)
     check.almost_equal(custom_section.section_props.syy, 1.014943e5)
-    check.almost_equal(custom_section.get_sf(), (8.942884e-01, 1.292703, 1.602519, 1.567298))
+    check.almost_equal(
+        custom_section.get_sf(), (8.942884e-01, 1.292703, 1.602519, 1.567298)
+    )
     check.almost_equal(custom_section.section_props.s11, 1.533463e5)
     check.almost_equal(custom_section.section_props.s22, 1.015010e5)
     check.almost_equal(custom_section.section_props.sf_11_plus, 9.450478e-1)

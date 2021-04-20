@@ -4,10 +4,12 @@ import numpy as np
 import meshpy.triangle as triangle
 import meshpy
 
+
 class GeometryError(Exception):
     """Exception raised when invalid geometry is found."""
 
     pass
+
 
 @dataclass(eq=True, frozen=True)
 class Material:
@@ -50,6 +52,7 @@ class Material:
                 color='burlywood'
         )
     """
+
     name: str
     elastic_modulus: float
     poissons_ratio: float
@@ -60,17 +63,18 @@ class Material:
     def shear_modulus(self):
         return self.elastic_modulus / (2 * (1 + self.poissons_ratio))
 
-DEFAULT_MATERIAL = Material('default', 1, 0, 1, 'w')
+
+DEFAULT_MATERIAL = Material("default", 1, 0, 1, "w")
 
 
 def create_mesh(
-    points: List[List[float]], 
-    facets: List[List[float]], 
-    holes: List[List[float]], 
-    control_points: List[List[float]], 
-    mesh_sizes: Union[List[float], float], 
+    points: List[List[float]],
+    facets: List[List[float]],
+    holes: List[List[float]],
+    control_points: List[List[float]],
+    mesh_sizes: Union[List[float], float],
     atol=1.0e-8,
-    ) -> meshpy.triangle.MeshInfo:
+) -> meshpy.triangle.MeshInfo:
     """Creates a quadratic triangular mesh using the meshpy module, which utilises the code
     'Triangle', by Jonathan Shewchuk.
 
@@ -94,7 +98,8 @@ def create_mesh(
     """
 
     # check_geometry(points, facets, holes, control_points, atol=atol)
-    if not isinstance(mesh_sizes, list): mesh_sizes = [mesh_sizes]
+    if not isinstance(mesh_sizes, list):
+        mesh_sizes = [mesh_sizes]
     mesh = triangle.MeshInfo()  # create mesh info object
     mesh.set_points(points)  # set points
     mesh.set_facets(facets)  # set facets
@@ -109,7 +114,12 @@ def create_mesh(
         region_id += 1
 
     mesh = triangle.build(
-        mesh, min_angle=30, mesh_order=2, quality_meshing=True,
-        attributes=True, volume_constraints=True)
+        mesh,
+        min_angle=30,
+        mesh_order=2,
+        quality_meshing=True,
+        attributes=True,
+        volume_constraints=True,
+    )
 
     return mesh

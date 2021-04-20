@@ -24,7 +24,7 @@ def solve_cgs(k, f, m=None, tol=1e-5):
 
     (u, exit) = linalg.cgs(k, f, tol=tol, M=m)
 
-    if (exit != 0):
+    if exit != 0:
         raise RuntimeError("CGS iterative method did not converge.")
 
     return u
@@ -52,7 +52,7 @@ def solve_cgs_lagrange(k_lg, f, tol=1e-5, m=None):
 
     (u, exit) = linalg.cgs(k_lg, np.append(f, 0), tol=tol, M=m)
 
-    if (exit != 0):
+    if exit != 0:
         raise RuntimeError("CGS iterative method did not converge.")
 
     # compute error
@@ -126,7 +126,6 @@ def function_timer(text, function, *args):
     result = function(*args)
 
     if text != "":
-        print("----completed in {0:.6f} seconds---".format(
-            time.time() - start_time))
+        print("----completed in {0:.6f} seconds---".format(time.time() - start_time))
 
     return result

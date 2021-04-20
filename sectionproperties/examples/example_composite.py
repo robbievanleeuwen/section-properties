@@ -4,10 +4,18 @@ from sectionproperties.analysis.cross_section import CrossSection
 
 # create material properties
 steel = Material(
-    name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500, color='grey'
+    name="Steel",
+    elastic_modulus=200e3,
+    poissons_ratio=0.3,
+    yield_strength=500,
+    color="grey",
 )
 timber = Material(
-    name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20, color='burlywood'
+    name="Timber",
+    elastic_modulus=8e3,
+    poissons_ratio=0.35,
+    yield_strength=20,
+    color="burlywood",
 )
 
 # create 310UB40.4

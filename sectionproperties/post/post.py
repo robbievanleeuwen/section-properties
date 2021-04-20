@@ -19,7 +19,7 @@ def setup_plot(ax, pause):
         plt.ioff()
 
 
-def finish_plot(ax, pause, title=''):
+def finish_plot(ax, pause, title=""):
     """Executes code required to finish a matplotlib figure.
 
     :param ax: Axes object on which to plot
@@ -30,7 +30,7 @@ def finish_plot(ax, pause, title=''):
     """
 
     ax.set_title(title)
-    ax.set_aspect('equal', anchor='C')
+    ax.set_aspect("equal", anchor="C")
     handles, labels = ax.get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
     # ax.legend(by_label.values(), by_label.keys(), loc='center left', bbox_to_anchor=(1, 0.5))
@@ -60,8 +60,7 @@ def draw_principal_axis(ax, phi, cx, cy):
     lims = [xmin, xmax, ymin, ymax]
 
     # form rotation matrix
-    R = np.array([[np.cos(phi), -np.sin(phi)],
-                  [np.sin(phi), np.cos(phi)]])
+    R = np.array([[np.cos(phi), -np.sin(phi)], [np.sin(phi), np.cos(phi)]])
 
     # get basis vectors in the directions of the principal axes
     x11_basis = R.dot(np.array([1, 0]))
@@ -111,8 +110,8 @@ def draw_principal_axis(ax, phi, cx, cy):
     y22 = get_principal_points(y22_basis, lims, [cx, cy])
 
     # plot the principal axis
-    ax.plot(x11[:, 0], x11[:, 1], 'k--', alpha=0.5, label='11-axis')
-    ax.plot(y22[:, 0], y22[:, 1], 'k-.', alpha=0.5, label='22-axis')
+    ax.plot(x11[:, 0], x11[:, 1], "k--", alpha=0.5, label="11-axis")
+    ax.plot(y22[:, 0], y22[:, 1], "k-.", alpha=0.5, label="22-axis")
 
 
 def print_results(cross_section, fmt):
@@ -199,7 +198,8 @@ def print_results(cross_section, fmt):
         if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "G.J\t = {:>{fmt}}".format(
-                    j / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt)
+                    j / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt
+                )
             )
         else:
             print("J\t = {:>{fmt}}".format(j, fmt=fmt))
@@ -209,7 +209,8 @@ def print_results(cross_section, fmt):
         if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "G.Iw\t = {:>{fmt}}".format(
-                    gamma / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt)
+                    gamma / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt
+                )
             )
         else:
             print("Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
@@ -234,13 +235,19 @@ def print_results(cross_section, fmt):
         if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "A_sx\t = {:>{fmt}}".format(
-                    A_sx * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    A_sx
+                    * cross_section.section_props.area
+                    / cross_section.section_props.ea,
+                    fmt=fmt,
+                )
             )
             print(
                 "A_sy\t = {:>{fmt}}".format(
-                    A_sy * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    A_sy
+                    * cross_section.section_props.area
+                    / cross_section.section_props.ea,
+                    fmt=fmt,
+                )
             )
         else:
             print("A_sx\t = {:>{fmt}}".format(A_sx, fmt=fmt))
@@ -251,13 +258,19 @@ def print_results(cross_section, fmt):
         if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "A_s11\t = {:>{fmt}}".format(
-                    A_s11 * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    A_s11
+                    * cross_section.section_props.area
+                    / cross_section.section_props.ea,
+                    fmt=fmt,
+                )
             )
             print(
                 "A_s22\t = {:>{fmt}}".format(
-                    A_s22 * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    A_s22
+                    * cross_section.section_props.area
+                    / cross_section.section_props.ea,
+                    fmt=fmt,
+                )
             )
         else:
             print("A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))
@@ -270,7 +283,12 @@ def print_results(cross_section, fmt):
         print("betay+\t = {:>{fmt}}".format(beta_y_plus, fmt=fmt))
         print("betay-\t = {:>{fmt}}".format(beta_y_minus, fmt=fmt))
 
-    (beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus) = cross_section.get_beta_p()
+    (
+        beta_11_plus,
+        beta_11_minus,
+        beta_22_plus,
+        beta_22_minus,
+    ) = cross_section.get_beta_p()
     if beta_x_plus is not None:
         print("beta11+\t = {:>{fmt}}".format(beta_11_plus, fmt=fmt))
         print("beta11-\t = {:>{fmt}}".format(beta_11_minus, fmt=fmt))

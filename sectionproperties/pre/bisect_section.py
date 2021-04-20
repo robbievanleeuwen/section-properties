@@ -4,11 +4,12 @@ from sectionproperties.pre import sections
 import numpy as np
 import shapely
 
+
 def create_line_segment(
     point_on_line: Union[Tuple[float, float], np.ndarray],
-    vector: np.ndarray, 
+    vector: np.ndarray,
     bounds: tuple,
-    ):
+):
     """
     Return a LineString of a line that contains 'point_on_line' in the direction of 'unit_vector' 
     bounded by 'bounds'.
@@ -17,25 +18,24 @@ def create_line_segment(
     p_x, p_y = point_on_line
     b_2 = max(bounds)
     b_1 = min(bounds)
-    if vector[0] != 0: # Not a vertical line
+    if vector[0] != 0:  # Not a vertical line
         scale_factor_2 = (b_2 - p_x) / vector[0]
         y_2 = scale_factor_2 * vector[1] + p_y
-        
+
         scale_factor_1 = (b_1 - p_x) / vector[0]
         y_1 = scale_factor_1 * vector[1] + p_y
         return shapely.geometry.LineString([(b_1, y_1), (b_2, y_2)])
-    else: # Vertical line
+    else:  # Vertical line
         scale_factor_2 = (b_2 - p_y) / vector[1]
         x_2 = scale_factor_2 * vector[0] + p_x
-        
+
         scale_factor_1 = (b_1 - p_y) / vector[1]
         x_1 = scale_factor_1 * vector[0] + p_x
         return shapely.geometry.LineString([(x_1, b_1), (x_2, b_2)])
 
 
 def group_top_and_bottom_polys(
-    polys: shapely.geometry.GeometryCollection,
-    line: shapely.geometry.LineString,
+    polys: shapely.geometry.GeometryCollection, line: shapely.geometry.LineString,
 ) -> Tuple[list, list]:
     """
     Returns tuple of two lists representing the list of Polygons in 'polys' on the "top" side of 'line' and the 
@@ -51,55 +51,54 @@ def group_top_and_bottom_polys(
     for poly in polys:
         m, b = line_mx_plus_b(line)
         px, py = poly.representative_point().coords[0]
-        if b is not None: # Not a vertical line (special case)
-            y_test = m*px + b
-            if py < y_test: bot_acc.append(poly)
-            elif py > y_test: top_acc.append(poly)
-        else: # The special case of vertical line
+        if b is not None:  # Not a vertical line (special case)
+            y_test = m * px + b
+            if py < y_test:
+                bot_acc.append(poly)
+            elif py > y_test:
+                top_acc.append(poly)
+        else:  # The special case of vertical line
             lx, _ = line.coords[0]
-            if px < lx: bot_acc.append(poly)
-            elif px > lx: top_acc.append(poly)
+            if px < lx:
+                bot_acc.append(poly)
+            elif px > lx:
+                top_acc.append(poly)
     return top_acc, bot_acc
 
 
-def line_mx_plus_b(
-    line: shapely.geometry.LineString,
-) -> Tuple[float, float]:
+def line_mx_plus_b(line: shapely.geometry.LineString,) -> Tuple[float, float]:
     """
     Returns a tuple representing the values of "m" and "b" from the definition of 'line' as "y = mx + b".
     """
     y2, y1 = line.coords[1][1], line.coords[0][1]
     x2, x1 = line.coords[1][0], line.coords[0][0]
-    if x2 - x1 == 0: return (1, None)
+    if x2 - x1 == 0:
+        return (1, None)
     m_slope = (y2 - y1) / (x2 - x1)
-    
+
     point_on_line = line.coords[0]
-    p_x ,p_y = point_on_line
-     # solve line eqn for b given a known point on the line
+    p_x, p_y = point_on_line
+    # solve line eqn for b given a known point on the line
     b_intercept = p_y - m_slope * p_x
     return (m_slope, b_intercept)
 
 
 def perp_mx_plus_b(
-    m_slope: float,
-    point_on_line: Tuple[float, float],
+    m_slope: float, point_on_line: Tuple[float, float],
 ) -> Tuple[float, float]:
     """
     Returns a tuple representing the values of "m" and "b" from
     for a line that is perpendicular to 'm_slope' and contains the
     'point_on_line', which represents an (x, y) coordinate.
     """
-    m_perp = -1/m_slope
-    p_x ,p_y = point_on_line
+    m_perp = -1 / m_slope
+    p_x, p_y = point_on_line
     b_intercept = p_y - m_perp * p_x
     return (m_perp, b_intercept)
 
 
 def line_intersection(
-    m_1: float,
-    b_1: float,
-    m_2: float,
-    b_2: float,
+    m_1: float, b_1: float, m_2: float, b_2: float,
 ) -> Optional[float]:
     """
     Returns a float representing the x-ordinate of the intersection
@@ -114,10 +113,7 @@ def line_intersection(
     return x
 
 
-
-def sum_poly_areas(
-    lop: List[shapely.geometry.Polygon],
-) -> float:
+def sum_poly_areas(lop: List[shapely.geometry.Polygon],) -> float:
     """
     Returns a float representing the total area of all polygons
     in 'lop', the list of polygons.

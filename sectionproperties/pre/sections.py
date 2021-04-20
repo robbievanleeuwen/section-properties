@@ -5,7 +5,14 @@ import copy
 import pathlib
 import more_itertools
 import numpy as np
-from shapely.geometry import Polygon, MultiPolygon, LinearRing, LineString, Point, GeometryCollection
+from shapely.geometry import (
+    Polygon,
+    MultiPolygon,
+    LinearRing,
+    LineString,
+    Point,
+    GeometryCollection,
+)
 from shapely.ops import split, unary_union
 import shapely
 import matplotlib.pyplot as plt
@@ -28,16 +35,20 @@ class Geometry:
     :cvar material: Optional, a Material to associate with this geometry
     :vartype material: Optional[sectionproperties.pre.Material]
     """
-    def __init__(self, 
-        geom: shapely.geometry.Polygon, 
+
+    def __init__(
+        self,
+        geom: shapely.geometry.Polygon,
         material: pre.Material = pre.DEFAULT_MATERIAL,
-        ):
+    ):
         """Inits the Geometry class.
         """
         if isinstance(geom, MultiPolygon):
             raise ValueError(f"Use CompoundGeometry(...) for a MultiPolygon object.")
         if not isinstance(geom, Polygon):
-            raise ValueError(f"Argument is not a valid shapely.geometry.Polygon object: {geom}")
+            raise ValueError(
+                f"Argument is not a valid shapely.geometry.Polygon object: {geom}"
+            )
         self.geom = geom
         self.material = material
         self.control_points = []
@@ -57,11 +68,11 @@ class Geometry:
 
     @staticmethod
     def from_points(
-        points: List[List[float]], 
+        points: List[List[float]],
         facets: Optional[List[List[int]]] = None,
         holes: Optional[List[List[float]]] = None,
         control_points: Optional[List[List[float]]] = None,
-        ):
+    ):
         """
         An interface for the creation of Geometry objects through the definition of points, 
         facets, and holes. 
@@ -85,47 +96,60 @@ class Geometry:
         with a distinct material. If not provided, a control_point will be auto-generated for
         the geometry.
         """
-        if facets is None and holes is None and control_points is None: 
+        if facets is None and holes is None and control_points is None:
             return Geometry(Polygon(points))
         if holes is not None and facets is None:
             raise ValueError(
                 "If holes coordinates are provided then facets must also be provided "
                 "to distinguish between exterior and interior edges."
-                )
+            )
         if control_points and len(control_points) > 1:
             raise ValueError(
                 "A Geometry object can only have one contiguous region (with holes)."
                 "Did you mean to use CompoundGeometry.from_points()?"
-        )
-        if holes is None: holes = []
+            )
+        if holes is None:
+            holes = []
         prev_facet = []
 
         # Initialize the total number of accumulators needed
         # Always an exterior, plus, a separate accumulator for each interior region
         exterior = []
-        interiors = [[] for _ in holes] # initialize an empty facet list for every hole
-        interior_counter = 0 # To keep track of interior regions
-        active_list = exterior # The active_list is the list being accumulated on
+        interiors = [[] for _ in holes]  # initialize an empty facet list for every hole
+        interior_counter = 0  # To keep track of interior regions
+        active_list = exterior  # The active_list is the list being accumulated on
 
-        for facet in facets: # Loop through facets for graph connectivity
+        for facet in facets:  # Loop through facets for graph connectivity
             i_idx, _ = facet
-            if not prev_facet: # Add the first facet vertex to exterior and move on
+            if not prev_facet:  # Add the first facet vertex to exterior and move on
                 active_list.append(points[i_idx])
                 prev_facet = facet
                 continue
 
-            prev_j_idx = prev_facet[1] # Look at the last j_idx to test for a break in the chain of edges
-            if i_idx != prev_j_idx and holes: #If there is a break in the chain of edges...
-                if active_list == exterior: # ...and we are still accumulating on the exterior...
-                    active_list = interiors[interior_counter] # ... then move to the interior accumulator
-                else: # ...or if we are already in the interior accumulator...
-                    interior_counter += 1 # ...then start the next interior accumulator for a new hole.
+            prev_j_idx = prev_facet[
+                1
+            ]  # Look at the last j_idx to test for a break in the chain of edges
+            if (
+                i_idx != prev_j_idx and holes
+            ):  # If there is a break in the chain of edges...
+                if (
+                    active_list == exterior
+                ):  # ...and we are still accumulating on the exterior...
+                    active_list = interiors[
+                        interior_counter
+                    ]  # ... then move to the interior accumulator
+                else:  # ...or if we are already in the interior accumulator...
+                    interior_counter += (
+                        1  # ...then start the next interior accumulator for a new hole.
+                    )
                     active_list = interiors[interior_counter]
-                active_list.append(points[i_idx])                
+                active_list.append(points[i_idx])
             else:
-                active_list.append(points[i_idx]) # Only need i_idx b/c shapely auto-closes polygons
+                active_list.append(
+                    points[i_idx]
+                )  # Only need i_idx b/c shapely auto-closes polygons
             prev_facet = facet
-        
+
         exterior_geometry = Polygon(exterior)
         interior_polys = [Polygon(interior) for interior in interiors]
         interior_geometry = MultiPolygon(interior_polys)
@@ -138,7 +162,6 @@ class Geometry:
         An interface for the creation of Geometry objects from CAD .dxf files.
         """
         return load_dxf(dxf_filepath)
-
 
     def create_facets_and_control_points(self):
         self.perimeter = None
@@ -154,10 +177,9 @@ class Geometry:
             self.holes += tuple(hole_polygon.representative_point().coords)
         return
 
-    def compile_geometry(self): # Alias
+    def compile_geometry(self):  # Alias
         # pass
         self.create_facets_and_control_points()
-
 
     def create_mesh(self, mesh_size: float):
         """Creates a quadratic triangular mesh from the Geometry object.
@@ -186,14 +208,12 @@ class Geometry:
         """
         self.mesh = pre.create_mesh(
             self.points, self.facets, self.holes, self.control_points, mesh_size
-            )
+        )
         return self
 
-    def align_to(self, 
-        other: Union[Geometry, Tuple[float, float]],
-        on: str,
-        inner: bool = False,
-        ) -> Geometry:
+    def align_to(
+        self, other: Union[Geometry, Tuple[float, float]], on: str, inner: bool = False,
+    ) -> Geometry:
         """
         Returns a new Geometry object, translated in x, so that the left-most point 
         of the new object will be aligned to right-most point of the other Geometry object.
@@ -220,14 +240,14 @@ class Geometry:
             "right": 1,
             "bottom": 2,
             "top": 3,
-            }
+        }
 
         other_as_geom_map = {
             "left": 1,
             "right": 0,
             "bottom": 3,
             "top": 2,
-            }
+        }
 
         other_as_point_map = {
             "left": 0,
@@ -252,11 +272,12 @@ class Geometry:
         else:
             other_extents = other
         align_to_coord = other_extents[align_to_idx]
-        
+
         offset = align_to_coord - self_align_coord
 
         arg = "x_offset"
-        if on in ["top", "bottom"]: arg = "y_offset"
+        if on in ["top", "bottom"]:
+            arg = "y_offset"
         kwargs = {arg: offset}
         new_geom = self.shift_section(**kwargs)
         return new_geom
@@ -284,8 +305,9 @@ class Geometry:
         new_geom = self.shift_section(x_offset=shift_x, y_offset=shift_y)
         return new_geom
 
-
-    def shift_section(self, x_offset=0., y_offset=0.,):
+    def shift_section(
+        self, x_offset=0.0, y_offset=0.0,
+    ):
         """
         Returns a new Geometry object translated by 'x_offset' and 'y_offset'.
 
@@ -297,11 +319,17 @@ class Geometry:
         :return: New Geometry-object shifted by 'x_offset' and 'y_offset'
         :rtype: :class:`sections.pre.sections.Geometry`
         """
-        new_geom = Geometry(shapely.affinity.translate(self.geom, x_offset, y_offset), self.material)
+        new_geom = Geometry(
+            shapely.affinity.translate(self.geom, x_offset, y_offset), self.material
+        )
         return new_geom
 
-
-    def rotate_section(self, angle: float, rot_point: Union[List[float], str] = "center", use_radians: bool=False):
+    def rotate_section(
+        self,
+        angle: float,
+        rot_point: Union[List[float], str] = "center",
+        use_radians: bool = False,
+    ):
         """Rotates the geometry and specified angle about a point. If the rotation point is not
         provided, rotates the section about the center of the geometry's bounding box.
 
@@ -322,11 +350,15 @@ class Geometry:
             geometry = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
             new_geometry = geometry.rotate_section(angle=-30)
         """
-        new_geom = Geometry(shapely.affinity.rotate(self.geom, angle, rot_point, use_radians), self.material)
+        new_geom = Geometry(
+            shapely.affinity.rotate(self.geom, angle, rot_point, use_radians),
+            self.material,
+        )
         return new_geom
 
-
-    def mirror_section(self, axis: str ='x', mirror_point: Union[List[float], str] = 'center'):
+    def mirror_section(
+        self, axis: str = "x", mirror_point: Union[List[float], str] = "center"
+    ):
         """Mirrors the geometry about a point on either the x or y-axis. 
 
         :param string axis: Axis about which to mirror the geometry, *'x'* or *'y'*
@@ -347,28 +379,26 @@ class Geometry:
         """
         x_mirror = 1
         y_mirror = 1
-        if mirror_point != "center": 
+        if mirror_point != "center":
             x, y = mirror_point
             mirror_point = (x, y, 0)
-            if axis == "x": x_mirror = -x_mirror
-            elif axis == "y": y_mirror = -y_mirror
+            if axis == "x":
+                x_mirror = -x_mirror
+            elif axis == "y":
+                y_mirror = -y_mirror
         mirrored_geom = shapely.affinity.scale(
-            self.geom, 
-            xfact=y_mirror,
-            yfact=x_mirror,
-            zfact=1.0,
-            origin=mirror_point
-            )
+            self.geom, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=mirror_point
+        )
 
         new_geom = Geometry(mirrored_geom, self.material)
         return new_geom
 
-
-    def split_section(self, 
-        point_i: Tuple[float, float], 
+    def split_section(
+        self,
+        point_i: Tuple[float, float],
         point_j: Optional[Tuple[float, float]] = None,
         vector: Union[Optional[Tuple[float, float]], np.ndarray] = None,
-        ) -> Tuple[List[Geometry], List[Geometry]]:
+    ) -> Tuple[List[Geometry], List[Geometry]]:
         """Splits, or bisects, the geometry about an infinite line, as defined by two points
         on the line or by one point on the line and a vector. Either 'point_j' or 'vector'
         must be given. If 'point_j' is given, 'vector' is ignored.
@@ -405,14 +435,13 @@ class Geometry:
             right_geom, left_geom = geometry.split_section((0, 0), (0, 1))
         """
         if point_j:
-            vector = np.array([
-                point_j[0] - point_i[0], 
-                point_j[1] - point_i[1],
-                ])
+            vector = np.array([point_j[0] - point_i[0], point_j[1] - point_i[1],])
         elif vector is not None:
             vector = np.array(vector)
         elif not point_j and not vector:
-            raise ValueError("Either a second point or a vector must be given to define the line.")
+            raise ValueError(
+                "Either a second point or a vector must be given to define the line."
+            )
         bounds = self.calculate_extents()
         line_segment = bisect.create_line_segment(point_i, vector, bounds)
         top_right_polys, bottom_left_polys = bisect.group_top_and_bottom_polys(
@@ -421,12 +450,13 @@ class Geometry:
 
         # Create new Geometry instances from polys, preserve original material assignments
         top_right_geoms = [Geometry(poly, self.material) for poly in top_right_polys]
-        bottom_left_geoms = [Geometry(poly, self.material) for poly in bottom_left_polys]
+        bottom_left_geoms = [
+            Geometry(poly, self.material) for poly in bottom_left_polys
+        ]
 
         return (top_right_geoms, bottom_left_geoms)
 
-
-    def offset_section_perimeter(self, amount:float = 0, resolution: float = 12):
+    def offset_section_perimeter(self, amount: float = 0, resolution: float = 12):
         """Dilates or erodes the section perimeter by a discrete amount. 
 
         :param amount: Distance to offset the section by. A -ve value "erodes" the section.
@@ -446,23 +476,24 @@ class Geometry:
             new_geometry = geometry.offset_section_perimeter(amount=-3)
         """
         new_geom = self.geom.buffer(
-            distance=amount, 
-            join_style=1, 
-            resolution=resolution
-            )
+            distance=amount, join_style=1, resolution=resolution
+        )
         if isinstance(new_geom, MultiPolygon):
-            compound_geom = CompoundGeometry([Geometry(poly, self.material) for poly in new_geom])
+            compound_geom = CompoundGeometry(
+                [Geometry(poly, self.material) for poly in new_geom]
+            )
             return compound_geom
         single_geom = Geometry(new_geom, self.material)
         return single_geom
 
-
-    def shift_points(self, 
+    def shift_points(
+        self,
         point_idxs: Union[int, List[int]],
         dx: float = 0,
         dy: float = 0,
         abs_x: Optional[float] = None,
-        abs_y: Optional[float] = None) -> Geometry:
+        abs_y: Optional[float] = None,
+    ) -> Geometry:
         """
         Translates one (or many points) in the geometry by either a relative amount or
         to a new absolute location. Returns a new Geometry representing the original 
@@ -505,7 +536,8 @@ class Geometry:
         current_holes = copy.copy(self.holes)
         current_control_points = copy.copy(self.control_points)
 
-        if isinstance(point_idxs, int): point_idxs = [point_idxs]
+        if isinstance(point_idxs, int):
+            point_idxs = [point_idxs]
         new_x, new_y = None, None
         for point_idx in point_idxs:
             current_x, current_y = current_points[point_idx]
@@ -514,20 +546,13 @@ class Geometry:
             current_points[point_idx] = (new_x, new_y)
 
         new_geom = Geometry.from_points(
-            current_points,
-            current_facets,
-            current_holes,
-            current_control_points,
+            current_points, current_facets, current_holes, current_control_points,
         )
         return new_geom
-        
 
     def plot_geometry(
-        self, 
-        ax=None, 
-        pause=True, 
-        labels=["control_points"],
-        perimeter=False):
+        self, ax=None, pause=True, labels=["control_points"], perimeter=False
+    ):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
         figure and axis is created.
 
@@ -577,29 +602,36 @@ class Geometry:
 
             # plot the points and facets
             if i == 0:
-                ax.plot([self.points[f[0]][0], self.points[f[1]][0]],
-                        [self.points[f[0]][1], self.points[f[1]][1]],
-                        'ko-', markersize=2, linewidth=linewidth, label='Points & Facets')
+                ax.plot(
+                    [self.points[f[0]][0], self.points[f[1]][0]],
+                    [self.points[f[0]][1], self.points[f[1]][1]],
+                    "ko-",
+                    markersize=2,
+                    linewidth=linewidth,
+                    label="Points & Facets",
+                )
             else:
-                ax.plot([self.points[f[0]][0], self.points[f[1]][0]],
-                        [self.points[f[0]][1], self.points[f[1]][1]],
-                        'ko-', markersize=2, linewidth=linewidth)
+                ax.plot(
+                    [self.points[f[0]][0], self.points[f[1]][0]],
+                    [self.points[f[0]][1], self.points[f[1]][1]],
+                    "ko-",
+                    markersize=2,
+                    linewidth=linewidth,
+                )
 
         for (i, h) in enumerate(self.holes):
             # plot the holes
             if i == 0:
-                ax.plot(h[0], h[1], 'rx', markersize=5, label='Holes')
+                ax.plot(h[0], h[1], "rx", markersize=5, label="Holes")
             else:
-                ax.plot(h[0], h[1], 'rx', markersize=5)
+                ax.plot(h[0], h[1], "rx", markersize=5)
 
         for (i, cp) in enumerate(self.control_points):
             # plot the control points
             if i == 0:
-                ax.plot(cp[0], cp[1], 'bo', markersize=5,
-                        label='Control Points')
+                ax.plot(cp[0], cp[1], "bo", markersize=5, label="Control Points")
             else:
-                ax.plot(cp[0], cp[1], 'bo', markersize=5)
-
+                ax.plot(cp[0], cp[1], "bo", markersize=5)
 
         # display the labels
         for label in labels:
@@ -607,10 +639,10 @@ class Geometry:
 
             if label == "control_points":
                 for (i, pt) in enumerate(self.control_points):
-                    ax.annotate(str(i), xy=pt, color='b')
+                    ax.annotate(str(i), xy=pt, color="b")
             if label == "points":
                 for (i, pt) in enumerate(self.points):
-                    ax.annotate(str(i), xy=pt, color='r')
+                    ax.annotate(str(i), xy=pt, color="r")
 
             # # plot facet labels
             if label == "facets":
@@ -619,11 +651,11 @@ class Geometry:
                     pt2 = self.points[fct[1]]
                     xy = [(pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2]
 
-                    ax.annotate(str(i), xy=xy, color='b')
+                    ax.annotate(str(i), xy=xy, color="b")
 
         # if no axes object is supplied, finish the plot
         if not ax_supplied:
-            post.finish_plot(ax, pause, title='Cross-Section Geometry')
+            post.finish_plot(ax, pause, title="Cross-Section Geometry")
             return (fig, ax)
         return (fig, ax)
 
@@ -674,9 +706,10 @@ class Geometry:
         """
         return self._recovery_points
 
-    
     @recovery_points.setter
-    def recovery_points(self, new_points: Union[List[list], List[tuple], List[Point]]) -> list:
+    def recovery_points(
+        self, new_points: Union[List[list], List[tuple], List[Point]]
+    ) -> list:
         # The points are in the .geom polygon
         # intersection_exists = (MultiPoint(new_points) & self.geom).equals(MultiPoint(new_points))
         # only_four_points = len(new_points) == 4
@@ -690,7 +723,9 @@ class Geometry:
         #     raise ValueError("There must be exactly four recovery points and they must all exist on the current geometry.")
 
     @recovery_points.getter
-    def recovery_points(self, new_points: Union[List[list], List[tuple], List[Point]]) -> list:
+    def recovery_points(
+        self, new_points: Union[List[list], List[tuple], List[Point]]
+    ) -> list:
         return self._recovery_points
 
     def __or__(self, other):
@@ -699,13 +734,15 @@ class Geometry:
         """
         try:
             new_polygon = self.geom | other.geom
-            if isinstance(new_polygon, MultiPolygon): 
-                return CompoundGeometry([Geometry(polygon, self.material) for polygon in new_polygon.geoms])
+            if isinstance(new_polygon, MultiPolygon):
+                return CompoundGeometry(
+                    [Geometry(polygon, self.material) for polygon in new_polygon.geoms]
+                )
             return Geometry(new_polygon, self.material)
         except:
             raise ValueError(
-        f"Cannot perform 'union' on these two Geometry instances: {self} | {other}"
-        )
+                f"Cannot perform 'union' on these two Geometry instances: {self} | {other}"
+            )
 
     def __xor__(self, other):
         """
@@ -713,13 +750,15 @@ class Geometry:
         """
         try:
             new_polygon = self.geom ^ other.geom
-            if isinstance(new_polygon, MultiPolygon): 
-                return CompoundGeometry([Geometry(polygon, self.material) for polygon in new_polygon.geoms])
+            if isinstance(new_polygon, MultiPolygon):
+                return CompoundGeometry(
+                    [Geometry(polygon, self.material) for polygon in new_polygon.geoms]
+                )
             return Geometry(new_polygon, self.material)
         except:
             raise ValueError(
-        f"Cannot perform 'symmetric difference' on these two Geometry instances: {self} ^ {other}"
-        )
+                f"Cannot perform 'symmetric difference' on these two Geometry instances: {self} ^ {other}"
+            )
 
     def __sub__(self, other):
         """
@@ -727,13 +766,15 @@ class Geometry:
         """
         try:
             new_polygon = self.geom - other.geom
-            if isinstance(new_polygon, MultiPolygon): 
-                return CompoundGeometry([Geometry(polygon, self.material) for polygon in new_polygon.geoms])
+            if isinstance(new_polygon, MultiPolygon):
+                return CompoundGeometry(
+                    [Geometry(polygon, self.material) for polygon in new_polygon.geoms]
+                )
             return Geometry(new_polygon, self.material)
         except:
             raise ValueError(
-        f"Cannot perform 'difference' on these two Geometry instances: {self} - {other}"
-        )
+                f"Cannot perform 'difference' on these two Geometry instances: {self} - {other}"
+            )
 
     def __add__(self, other):
         """
@@ -743,9 +784,8 @@ class Geometry:
             return CompoundGeometry([self, other])
         except:
             raise ValueError(
-            f"Cannot create new CompoundGeometry with these objects: {self} + {other}"
-        )
-
+                f"Cannot create new CompoundGeometry with these objects: {self} + {other}"
+            )
 
     def __and__(self, other):
         """
@@ -753,15 +793,18 @@ class Geometry:
         """
         try:
             new_polygon = self.geom & other.geom
-            if isinstance(new_polygon, MultiPolygon): 
-                return CompoundGeometry([Geometry(polygon, self.material) for polygon in new_polygon.geoms])
+            if isinstance(new_polygon, MultiPolygon):
+                return CompoundGeometry(
+                    [Geometry(polygon, self.material) for polygon in new_polygon.geoms]
+                )
             return Geometry(new_polygon, self.material)
         except:
             raise ValueError(
-        f"Cannot perform 'intersection' on these two Geometry instances: {self} & {other}"
-        )
+                f"Cannot perform 'intersection' on these two Geometry instances: {self} & {other}"
+            )
 
-### 
+
+###
 
 # TODO: Create setter for adding Material to CompoundGeometry
 class CompoundGeometry(Geometry):
@@ -781,6 +824,7 @@ class CompoundGeometry(Geometry):
     instance.
     :vartype geoms: List[sectionproperties.pre.sections.Geometry] or shapely.geometry.MultiPolygon
     """
+
     def __init__(self, geoms: Union[MultiPolygon, List[Geometry]]):
         if isinstance(geoms, MultiPolygon):
             self.geoms = [Geometry(poly) for poly in geoms.geoms]
@@ -788,9 +832,9 @@ class CompoundGeometry(Geometry):
         elif isinstance(geoms, list):
             processed_geoms = []
             for item in geoms:
-                if isinstance(item, CompoundGeometry): 
+                if isinstance(item, CompoundGeometry):
                     # "Flatten" any CompoundGeometry objects in the 'geoms' list
-                    processed_geoms += item.geoms 
+                    processed_geoms += item.geoms
                 elif isinstance(item, Geometry):
                     processed_geoms.append(item)
             self.geoms = processed_geoms
@@ -802,24 +846,24 @@ class CompoundGeometry(Geometry):
                 mesh_bool_acc.append(True)
             else:
                 mesh_bool_acc.append(False)
-        
-        if any (mesh_bool_acc) and not all(mesh_bool_acc):
+
+        if any(mesh_bool_acc) and not all(mesh_bool_acc):
             raise Warning(
                 "Some but not all of the Geometry objects have generated meshes.\n"
                 "It is recommended to either pre-mesh each Geometry object individually before"
                 " adding to CompoundGeometry or to re-mesh all Geometry objects with\n"
                 "<CompoundGeometry>.create_mesh(mesh_size)."
-                )
+            )
         elif not any(mesh_bool_acc):
             pass
         # elif all(mesh_bool_acc):
         #     new_mesh = None
-        #     for 
+        #     for
 
         self.control_points = []
-        self.points = [] 
-        self.facets = [] 
-        self.holes = [] 
+        self.points = []
+        self.facets = []
+        self.holes = []
         self.perimeter = []
         self.compile_geometry()
 
@@ -839,11 +883,11 @@ class CompoundGeometry(Geometry):
 
     @staticmethod
     def from_points(
-        points: List[List[float]], 
-        facets: List[List[int]], 
+        points: List[List[float]],
+        facets: List[List[int]],
         holes: List[List[float]],
         control_points: List[List[float]],
-        ):
+    ):
         """
         An interface for the creation of CompoundGeometry objects through the definition of points, 
         facets, and holes. 
@@ -872,17 +916,19 @@ class CompoundGeometry(Geometry):
         prev_facet = None
         for facet in facets:
             i_idx, j_idx = facet
-            if not prev_facet: # Add the first facet vertex to exterior and move on
+            if not prev_facet:  # Add the first facet vertex to exterior and move on
                 current_polygon_points.append(points[i_idx])
                 prev_facet = facet
                 continue
             prev_j_idx = prev_facet[1]
-            if i_idx != prev_j_idx: #If there is a break in the chain of edges...
+            if i_idx != prev_j_idx:  # If there is a break in the chain of edges...
                 current_polygon_points.append(points[prev_j_idx])
                 all_polygons.append(Polygon(current_polygon_points))
                 current_polygon_points = [points[i_idx]]
             else:
-                current_polygon_points.append(points[i_idx]) # Only need i_idx b/c shapely auto-closes polygons
+                current_polygon_points.append(
+                    points[i_idx]
+                )  # Only need i_idx b/c shapely auto-closes polygons
             prev_facet = facet
         else:
             current_polygon_points.append(points[j_idx])
@@ -892,8 +938,12 @@ class CompoundGeometry(Geometry):
         exteriors = []
         interiors = []
         for polygon in all_polygons:
-            hole_coord_in_polygon = any([polygon.contains(Point(hole_coord)) for hole_coord in holes])
-            ctrl_coord_in_polygon = any([polygon.contains(Point(ctrl_coord)) for ctrl_coord in control_points])
+            hole_coord_in_polygon = any(
+                [polygon.contains(Point(hole_coord)) for hole_coord in holes]
+            )
+            ctrl_coord_in_polygon = any(
+                [polygon.contains(Point(ctrl_coord)) for ctrl_coord in control_points]
+            )
             if hole_coord_in_polygon and not ctrl_coord_in_polygon:
                 interiors.append(polygon)
             else:
@@ -940,9 +990,8 @@ class CompoundGeometry(Geometry):
             mesh_sizes = mesh_sizes * len(self.control_points)
         self.mesh = pre.create_mesh(
             self.points, self.facets, self.holes, self.control_points, mesh_sizes
-            )
+        )
         return self
-
 
     def shift_section(self, x_offset: float = 0, y_offset: float = 0):
         """
@@ -991,7 +1040,9 @@ class CompoundGeometry(Geometry):
         new_geom = CompoundGeometry(geoms_acc)
         return new_geom
 
-    def mirror_section(self, axis='x', mirror_point: Union[List[float], str] = 'center'):
+    def mirror_section(
+        self, axis="x", mirror_point: Union[List[float], str] = "center"
+    ):
         """Mirrors the geometry about a point on either the x or y-axis. 
 
         :param string axis: Axis about which to mirror the geometry, *'x'* or *'y'*
@@ -1018,12 +1069,12 @@ class CompoundGeometry(Geometry):
         new_geom = CompoundGeometry(geoms_acc)
         return new_geom
 
-
-    def split_section(self, 
-        point_i: Tuple[float, float], 
+    def split_section(
+        self,
+        point_i: Tuple[float, float],
         point_j: Optional[Tuple[float, float]] = None,
         vector: Union[Optional[Tuple[float, float]], np.ndarray] = None,
-        ) -> Tuple[List[Geometry], List[Geometry]]:
+    ) -> Tuple[List[Geometry], List[Geometry]]:
         """Splits, or bisects, the geometry about an infinite line, as defined by two points
         on the line or by one point on the line and a vector. Either 'point_j' or 'vector'
         must be given. If 'point_j' is given, 'vector' is ignored.
@@ -1067,9 +1118,7 @@ class CompoundGeometry(Geometry):
             bottom_geoms_acc += bottom_geoms
         return (top_geoms_acc, bottom_geoms_acc)
 
-
-
-    def offset_section_perimeter(self, amount:float = 0, resolution: float = 12):
+    def offset_section_perimeter(self, amount: float = 0, resolution: float = 12):
         """Dilates or erodes perimeter of the individual geometries within the CompoundGeometry
         object by a discrete amount. Note, because the individual geometries have their own
         perimeters offset independently, sections don't "stick" as though they were a joined section.
@@ -1113,7 +1162,7 @@ class CompoundGeometry(Geometry):
         # loop through all sections
         for geom in self.geoms:
             if not all([geom.points, geom.facets, geom.control_points]):
-                geom.create_facets_and_control_points() # If not previously done
+                geom.create_facets_and_control_points()  # If not previously done
 
             # add points and count points
             # skip duplicate points
@@ -1145,17 +1194,18 @@ class CompoundGeometry(Geometry):
         if isinstance(unionized_poly, MultiPolygon):
             for poly in unionized_poly.geoms:
                 for interior in poly.interiors:
-                    inadvertent_holes.append(tuple(interior.representative_point().coords))
+                    inadvertent_holes.append(
+                        tuple(interior.representative_point().coords)
+                    )
 
         elif isinstance(unionized_poly, Polygon):
             inadvertent_holes += Geometry(unionized_poly).holes
-        
+
         extra_holes = []
         if set(inadvertent_holes) - set(self.holes):
             extra_holes = [hole for hole in inadvertent_holes if hole not in self.holes]
-        
-        self.holes += extra_holes
 
+        self.holes += extra_holes
 
     def calculate_perimeter(self):
         """
@@ -1166,37 +1216,41 @@ class CompoundGeometry(Geometry):
 
 ### Helper functions for Geometry
 
+
 def load_dxf(dxf_filepath: pathlib.Path):
-        """
+    """
             Import any-old-shape in dxf format for analysis.
             Code by aegis1980 and connorferster
         """
-        c2s = None
-        try:
-            import cad_to_shapely as c2s # type: ignore
-        except ImportError as e:
-            print (e.message)
-            print("To use 'from_dxf(...)' you need to 'pip install cad_to_shapely'")
-            return
+    c2s = None
+    try:
+        import cad_to_shapely as c2s  # type: ignore
+    except ImportError as e:
+        print(e.message)
+        print("To use 'from_dxf(...)' you need to 'pip install cad_to_shapely'")
+        return
 
-        if not dxf_filepath.exists():
-            raise ValueError(f"The filepath does not exist: {dxf_filepath}")
+    if not dxf_filepath.exists():
+        raise ValueError(f"The filepath does not exist: {dxf_filepath}")
 
-        #TODO avoid step of making a temp file locally
-        my_dxf = c2s.dxf.DxfImporter(dxf_filepath)
-        my_dxf.process()
-        my_dxf.cleanup()
+    # TODO avoid step of making a temp file locally
+    my_dxf = c2s.dxf.DxfImporter(dxf_filepath)
+    my_dxf.process()
+    my_dxf.cleanup()
 
-        polygons = my_dxf.polygons
-        new_polygons = c2s.utils.find_holes(polygons)
-        if isinstance(new_polygons, MultiPolygon):
-            return CompoundGeometry(new_polygons)
-        elif isinstance(new_polygons, Polygon):
-            return Geometry(new_polygons)
-        else:
-            print(f"No shapely.Polygon objects found in file: {dxf_filepath}")
+    polygons = my_dxf.polygons
+    new_polygons = c2s.utils.find_holes(polygons)
+    if isinstance(new_polygons, MultiPolygon):
+        return CompoundGeometry(new_polygons)
+    elif isinstance(new_polygons, Polygon):
+        return Geometry(new_polygons)
+    else:
+        print(f"No shapely.Polygon objects found in file: {dxf_filepath}")
 
-def create_facets(points_list: list, connect_back: bool = False, offset: int = 0) -> list:
+
+def create_facets(
+    points_list: list, connect_back: bool = False, offset: int = 0
+) -> list:
     """
     Returns a list of lists of integers representing the "facets" connecting
     the list of coordinates in 'loc'. It is assumed that 'loc' coordinates are 
@@ -1206,11 +1260,14 @@ def create_facets(points_list: list, connect_back: bool = False, offset: int = 0
     'connect_back': if True, then the last facet pair will be [len(loc), offset]
     'offset': an integer representing the value that the facets should begin incrementing from.
     """
-    idx_peeker = more_itertools.peekable([idx+offset for idx, _ in enumerate(points_list)])
+    idx_peeker = more_itertools.peekable(
+        [idx + offset for idx, _ in enumerate(points_list)]
+    )
     facets = [[item, idx_peeker.peek(offset)] for item in idx_peeker]
     if connect_back:
         return facets
     return facets[:-1]
+
 
 def create_exterior_points(shape: Polygon) -> list:
     """
@@ -1219,6 +1276,7 @@ def create_exterior_points(shape: Polygon) -> list:
     """
     acc = [list(coord) for coord in shape.exterior.coords]
     return acc
+
 
 def create_interior_points(lr: LinearRing) -> list:
     """
@@ -1237,30 +1295,36 @@ def create_points_and_facets(shape: Polygon) -> tuple:
     master_count = 0
     points = []
     facets = []
-    
+
     # Shape perimeter
-    for coords in list(shape.exterior.coords[:-1]): # The last point == first point (shapely)
+    for coords in list(
+        shape.exterior.coords[:-1]
+    ):  # The last point == first point (shapely)
         points.append(list(coords))
         master_count += 1
     facets += create_facets(points, connect_back=True)
     exterior_count = master_count
-    
+
     # Holes
     for idx, hole in enumerate(shape.interiors):
         break_count = master_count
         int_points = []
-        for coords in hole.coords[:-1]: # The last point == first point (shapely)
+        for coords in hole.coords[:-1]:  # The last point == first point (shapely)
             int_points.append(list(coords))
             master_count += 1
-        
-        offset = break_count*(idx > 0) + exterior_count*(idx < 1) # (idx > 0) is like a 'step function'
+
+        offset = break_count * (idx > 0) + exterior_count * (
+            idx < 1
+        )  # (idx > 0) is like a 'step function'
         facets += create_facets(int_points, connect_back=True, offset=offset)
         points += int_points
-        
+
     return points, facets
 
 
-def draw_radius(pt: list, r: float, theta: float, n, ccw: bool = True): # Changed 'anti' to ccw to match shapely
+def draw_radius(
+    pt: list, r: float, theta: float, n, ccw: bool = True
+):  # Changed 'anti' to ccw to match shapely
     """Adds a quarter radius of points to the points list - centered at point *pt*, with radius
     *r*, starting at angle *theta*, with *n* points. If r = 0, adds pt only.
 
@@ -1290,6 +1354,7 @@ def draw_radius(pt: list, r: float, theta: float, n, ccw: bool = True): # Change
         y = pt[1] + r * np.sin(t)
         points.append([x, y])
     return points
+
 
 def rectangular_section(b, d):
     """Constructs a rectangular section with the bottom left corner at the origin *(0, 0)*, with
@@ -1369,7 +1434,6 @@ def circular_section(d: float, n: int):
 
         # append the current point to the points list
         points.append([x, y])
-
 
     circle = Polygon(points)
     return Geometry(circle)
@@ -1469,10 +1533,10 @@ def elliptical_section(d_y: float, d_x: float, n: int):
         points.append([x, y])
 
     ellipse = Polygon(points)
-    return Geometry(ellipse)    
+    return Geometry(ellipse)
 
 
-def elliptical_hollow_section(d_y:float, d_x:float, t:float, n:int):
+def elliptical_hollow_section(d_y: float, d_x: float, t: float, n: int):
     """Constructs an elliptical hollow section (EHS) centered at the origin *(0, 0)*, with outer vertical
     diameter *d_y*, outer horizontal diameter *d_x*, and thickness *t*, using *n* points to
     construct the inner and outer ellipses.
@@ -1525,7 +1589,6 @@ def elliptical_hollow_section(d_y:float, d_x:float, t:float, n:int):
     return Geometry(outer - inner)
 
 
-
 def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: int):
     """Constructs a rectangular hollow section (RHS) centered at *(b/2, d/2)*, with depth *d*, width *b*,
     thickness *t* and outer radius *r_out*, using *n_r* points to construct the inner and outer
@@ -1576,10 +1639,12 @@ def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: 
 
     outer = Polygon(points_outer)
     inner = Polygon(points_inner)
-    return Geometry(outer-inner)
+    return Geometry(outer - inner)
 
 
-def i_section(d: float, b: float, t_f: float, t_w: float, r: float, n_r: int): # More specific description and less ambiguous? e.g. not an "S" section.
+def i_section(
+    d: float, b: float, t_f: float, t_w: float, r: float, n_r: int
+):  # More specific description and less ambiguous? e.g. not an "S" section.
     """Constructs an I-section centered at *(b/2, d/2)*, with depth *d*, width *b*, flange
     thickness *t_f*, web thickness *t_w*, and root radius *r*, using *n_r* points to construct the
     root radius.
@@ -1800,9 +1865,8 @@ def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
     else:
         for i in range(n_r):
             # determine polar angle
-            theta = (
-                3.0 / 2 * np.pi - alpha_rad) - (i * 1.0 / max(1, n_r - 1) * (
-                    np.pi * 0.5 - alpha_rad)
+            theta = (3.0 / 2 * np.pi - alpha_rad) - (
+                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
             )
 
             # calculate the locations of the radius points
@@ -1833,8 +1897,7 @@ def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
     else:
         for i in range(n_r):
             # determine polar angle
-            theta = (
-                3.0 * np.pi / 2 + alpha_rad) + i * 1.0 / max(1, n_r - 1) * (
+            theta = (3.0 * np.pi / 2 + alpha_rad) + i * 1.0 / max(1, n_r - 1) * (
                 np.pi * 0.5 - alpha_rad
             )
 
@@ -1870,9 +1933,8 @@ def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
     else:
         for i in range(n_r):
             # determine polar angle
-            theta = (
-                np.pi * 0.5 - alpha_rad) - (i * 1.0 / max(1, n_r - 1) * (
-                    np.pi * 0.5 - alpha_rad)
+            theta = (np.pi * 0.5 - alpha_rad) - (
+                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
             )
 
             # calculate the locations of the radius points
@@ -1903,9 +1965,8 @@ def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
     else:
         for i in range(n_r):
             # determine polar angle
-            theta = (
-                np.pi * 0.5 + alpha_rad) + (i * 1.0 / max(1, n_r - 1) * (
-                    np.pi * 0.5 - alpha_rad)
+            theta = (np.pi * 0.5 + alpha_rad) + (
+                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
             )
 
             # calculate the locations of the radius points
@@ -2055,9 +2116,8 @@ def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
     else:
         for i in range(n_r):
             # determine polar angle
-            theta = (
-                3.0 / 2 * np.pi - alpha_rad) - (i * 1.0 / max(1, n_r - 1) * (
-                    np.pi * 0.5 - alpha_rad)
+            theta = (3.0 / 2 * np.pi - alpha_rad) - (
+                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
             )
 
             # calculate the locations of the radius points
@@ -2077,8 +2137,7 @@ def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
 
             # calculate the locations of the radius points
             x = t_w + r_r + r_r * np.cos(theta)
-            y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(
-                theta)
+            y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
 
             # append the current points to the points list
             points.append([x, y])
@@ -2089,9 +2148,8 @@ def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
     else:
         for i in range(n_r):
             # determine polar angle
-            theta = (
-                3.0 * np.pi / 2 + alpha_rad) + (i * 1.0 / max(1, n_r - 1) * (
-                    np.pi * 0.5 - alpha_rad)
+            theta = (3.0 * np.pi / 2 + alpha_rad) + (
+                i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
             )
 
             # calculate the locations of the radius points
@@ -2197,7 +2255,9 @@ def angle_section(d, b, t, r_r, r_t, n_r):
         :scale: 75 %
     """
     if r_t > t:
-        raise ValueError("The radius of the toe (r_t) cannot be larger than the toe thickness (t).")
+        raise ValueError(
+            "The radius of the toe (r_t) cannot be larger than the toe thickness (t)."
+        )
 
     points = []
 
@@ -2259,7 +2319,7 @@ def cee_section(d, b, l, t, r_out, n_r):
     """
     # ensure the lip length is greater than the outer radius
     if l < r_out:
-        raise Exception('Lip length must be greater than the outer radius')
+        raise Exception("Lip length must be greater than the outer radius")
 
     points = []
 
@@ -2287,8 +2347,7 @@ def cee_section(d, b, l, t, r_out, n_r):
     points += draw_radius([t + r_in, d - t - r_in], r_in, np.pi, n_r, False)
 
     # construct the inner top right radius
-    points += draw_radius(
-        [b - t - r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
+    points += draw_radius([b - t - r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
 
     if r_out != l:
         # add next two points
@@ -2340,7 +2399,7 @@ def zed_section(d, b_l, b_r, l, t, r_out, n_r):
     """
     # ensure the lip length is greater than the outer radius
     if l < r_out:
-        raise Exception('Lip length must be greater than the outer radius')
+        raise Exception("Lip length must be greater than the outer radius")
 
     points = []
 
@@ -2383,7 +2442,9 @@ def zed_section(d, b_l, b_r, l, t, r_out, n_r):
     polygon = Polygon(points)
     return Geometry(polygon)
 
-zee_section = zed_section # An alias for our American friends (and friends who use "American English")
+
+zee_section = zed_section  # An alias for our American friends (and friends who use "American English")
+
 
 def cruciform_section(d, b, t, r, n_r):
     """Constructs a cruciform section centered at the origin *(0, 0)*, with depth *d*, width *b*,
@@ -2450,6 +2511,7 @@ def cruciform_section(d, b, t, r, n_r):
     polygon = Polygon(points)
     return Geometry(polygon)
 
+
 def polygon_section(d, t, n_sides, r_in=0, n_r=1, rot=0):
     """Constructs a regular hollow polygon section centered at *(0, 0)*, with a pitch circle
     diameter of bounding polygon *d*, thickness *t*, number of sides *n_sides* and an optional
@@ -2490,9 +2552,9 @@ def polygon_section(d, t, n_sides, r_in=0, n_r=1, rot=0):
     """
     outer_points = []
     inner_points = []
-    
+
     if n_sides < 3:
-        msg = 'n_sides required to be greater than 3 for PolygonSection class'
+        msg = "n_sides required to be greater than 3 for PolygonSection class"
         raise Exception(msg)
 
     # initial rotation
@@ -2664,16 +2726,17 @@ def box_girder_section(d, b_t, b_b, t_ft, t_fb, t_w):
 
     return Geometry(outer_polygon - inner_polygon)
 
+
 def dowel_array(
-    b: int, 
-    d: int, 
-    bars_x: int, 
-    bars_y: int, 
-    cover: float, 
-    diam: float, 
-    n_r: int = 20, 
+    b: int,
+    d: int,
+    bars_x: int,
+    bars_y: int,
+    cover: float,
+    diam: float,
+    n_r: int = 20,
     perimeter_only: bool = False,
-    ):
+):
     """Constructs an array of circular sections within a space of width 'b' and
     depth, 'd' representing a section of cylindrical dowels.
 
@@ -2710,22 +2773,38 @@ def dowel_array(
 
         Mesh generated from the above geometry.
     """
-    total_x = b - 2*cover - diam
-    total_y = d - 2*cover - diam
+    total_x = b - 2 * cover - diam
+    total_y = d - 2 * cover - diam
     spacing_x = total_x / (bars_x - 1)
     spacing_y = total_y / (bars_y - 1)
     bars_acc = []
     for x_pos in range(bars_x):
         for y_pos in range(bars_y):
-            if perimeter_only: # Use circular section from Robbie with optional center location
+            if (
+                perimeter_only
+            ):  # Use circular section from Robbie with optional center location
                 if (0 < x_pos < bars_x - 1) and (0 < y_pos < bars_y - 1):
-                        continue
+                    continue
                 else:
                     bars_acc.append(
-                        circular_section(diam, n_r, [cover + diam/2 + spacing_x*x_pos, cover + diam/2 + spacing_y*y_pos])
+                        circular_section(
+                            diam,
+                            n_r,
+                            [
+                                cover + diam / 2 + spacing_x * x_pos,
+                                cover + diam / 2 + spacing_y * y_pos,
+                            ],
+                        )
                     )
             else:
                 bars_acc.append(
-                    circular_section(diam, n_r, [cover + diam/2 + spacing_x*x_pos, cover + diam/2 + spacing_y*y_pos])
+                    circular_section(
+                        diam,
+                        n_r,
+                        [
+                            cover + diam / 2 + spacing_x * x_pos,
+                            cover + diam / 2 + spacing_y * y_pos,
+                        ],
+                    )
                 )
     return CompoundGeometry(bars_acc)

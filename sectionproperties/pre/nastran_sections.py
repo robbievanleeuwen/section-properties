@@ -2,6 +2,7 @@ import numpy as np
 from shapely.geometry import Polygon
 from sectionproperties.pre.sections import Geometry, CompoundGeometry
 
+
 def nastran_bar(DIM1: float, DIM2: float):
     """Constructs a BAR section with the center at the origin *(0, 0)*, with two parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for definition of
@@ -31,16 +32,19 @@ def nastran_bar(DIM1: float, DIM2: float):
         Mesh generated from the above geometry.
     """
     points = [
-            [-0.5*DIM1, -0.5*DIM2], [0.5*DIM1, -0.5*DIM2],
-            [0.5*DIM1, 0.5*DIM2], [-0.5*DIM1, 0.5*DIM2]
-        ]
+        [-0.5 * DIM1, -0.5 * DIM2],
+        [0.5 * DIM1, -0.5 * DIM2],
+        [0.5 * DIM1, 0.5 * DIM2],
+        [-0.5 * DIM1, 0.5 * DIM2],
+    ]
     geometry = Geometry(Polygon(points))
-    C = (0.5* DIM1, 0.5* DIM2)
-    D = (0.5* DIM1, -0.5* DIM2)
-    E = (-0.5* DIM1, -0.5* DIM2)
-    F = (-0.5* DIM1, 0.5* DIM2)
+    C = (0.5 * DIM1, 0.5 * DIM2)
+    D = (0.5 * DIM1, -0.5 * DIM2)
+    E = (-0.5 * DIM1, -0.5 * DIM2)
+    F = (-0.5 * DIM1, 0.5 * DIM2)
     geometry.recovery_points = [C, D, E, F]
     return geometry
+
 
 def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """ Constructs a BOX section with the center at the origin *(0, 0)*, with four parameters
@@ -73,24 +77,31 @@ def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         Mesh generated from the above geometry.
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(2.0*DIM4 < DIM1, "Invalid geometry specified.")
-    np.testing.assert_(2.0*DIM3 < DIM2, "Invalid geometry specified.")
+    np.testing.assert_(2.0 * DIM4 < DIM1, "Invalid geometry specified.")
+    np.testing.assert_(2.0 * DIM3 < DIM2, "Invalid geometry specified.")
 
     points = [
-    [-0.5*DIM1, -0.5*DIM2], [0.5*DIM1, -0.5*DIM2], [0.5*DIM1, 0.5*DIM2],
-    [-0.5*DIM1, 0.5*DIM2], [-0.5*DIM1 + DIM4, -0.5*DIM2 + DIM3],
-    [0.5*DIM1 - DIM4, -0.5*DIM2 + DIM3], [0.5*DIM1 - DIM4, 0.5*DIM2 - DIM3],
-    [-0.5*DIM1 + DIM4, 0.5*DIM2 - DIM3]
+        [-0.5 * DIM1, -0.5 * DIM2],
+        [0.5 * DIM1, -0.5 * DIM2],
+        [0.5 * DIM1, 0.5 * DIM2],
+        [-0.5 * DIM1, 0.5 * DIM2],
+        [-0.5 * DIM1 + DIM4, -0.5 * DIM2 + DIM3],
+        [0.5 * DIM1 - DIM4, -0.5 * DIM2 + DIM3],
+        [0.5 * DIM1 - DIM4, 0.5 * DIM2 - DIM3],
+        [-0.5 * DIM1 + DIM4, 0.5 * DIM2 - DIM3],
     ]
     geometry = Geometry(Polygon(points))
-    C = (0.5* DIM1, 0.5* DIM2)
-    D = (0.5* DIM1, -0.5* DIM2)
-    E = (-0.5* DIM1, -0.5* DIM2)
-    F = (-0.5* DIM1, 0.5* DIM2)
+    C = (0.5 * DIM1, 0.5 * DIM2)
+    D = (0.5 * DIM1, -0.5 * DIM2)
+    E = (-0.5 * DIM1, -0.5 * DIM2)
+    F = (-0.5 * DIM1, 0.5 * DIM2)
     geometry.recovery_points = [C, D, E, F]
     return geometry
 
-def nastran_box1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float):
+
+def nastran_box1(
+    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float
+):
     """Constructs a BOX1 section with the center at the origin *(0, 0)*, with six parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details. Added by
     JohnDN90.
@@ -125,26 +136,31 @@ def nastran_box1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
         Mesh generated from the above geometry.
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(DIM5+DIM6 < DIM1, "Invalid geometry specified.")
-    np.testing.assert_(DIM3+DIM4 < DIM2, "Invalid geometry specified.")
+    np.testing.assert_(DIM5 + DIM6 < DIM1, "Invalid geometry specified.")
+    np.testing.assert_(DIM3 + DIM4 < DIM2, "Invalid geometry specified.")
 
     exterior_points = [
-        [0., 0.], [DIM1, 0.], [DIM1, DIM2], [0., DIM2], 
+        [0.0, 0.0],
+        [DIM1, 0.0],
+        [DIM1, DIM2],
+        [0.0, DIM2],
     ]
     interior_points = [
-        [DIM6, DIM4], [DIM1-DIM5, DIM4],
-        [DIM1-DIM5, DIM2-DIM3], [DIM6, DIM2-DIM3]
+        [DIM6, DIM4],
+        [DIM1 - DIM5, DIM4],
+        [DIM1 - DIM5, DIM2 - DIM3],
+        [DIM6, DIM2 - DIM3],
     ]
     geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points))
 
-    C = (0.5*DIM1, 0.5*DIM2)
-    D = (0.5*DIM1, -0.5*DIM2)
-    E = (-0.5*DIM1, -0.5*DIM2)
-    F = (-0.5*DIM1, 0.5*DIM2)
+    C = (0.5 * DIM1, 0.5 * DIM2)
+    D = (0.5 * DIM1, -0.5 * DIM2)
+    E = (-0.5 * DIM1, -0.5 * DIM2)
+    F = (-0.5 * DIM1, 0.5 * DIM2)
     geometry.recovery_points = [C, D, E, F]
     return geometry
 
-    
+
 def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """ Constructs a CHAN (C-Channel) section with the web's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
@@ -176,21 +192,27 @@ def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         Mesh generated from the above geometry.
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(2.0*DIM4 < DIM2, "Invalid geometry specified.")
+    np.testing.assert_(2.0 * DIM4 < DIM2, "Invalid geometry specified.")
     np.testing.assert_(DIM3 < DIM1, "Invalid geometry specified.")
 
     # construct the points
     points = [
-        [0., 0.], [DIM1, 0.], [DIM1, DIM4], [DIM3, DIM4], [DIM3, DIM2-DIM4], [DIM1, DIM2-DIM4],
-        [DIM1, DIM2], [0., DIM2]
+        [0.0, 0.0],
+        [DIM1, 0.0],
+        [DIM1, DIM4],
+        [DIM3, DIM4],
+        [DIM3, DIM2 - DIM4],
+        [DIM1, DIM2 - DIM4],
+        [DIM1, DIM2],
+        [0.0, DIM2],
     ]
 
     geometry = Geometry(Polygon(points))
 
-    C = (0.5*DIM1, 0.5*DIM2)
-    D = (0.5*DIM1, -0.5*DIM2)
-    E = (-0.5*DIM1, -0.5*DIM2)
-    F = (-0.5*DIM1, 0.5*DIM2)
+    C = (0.5 * DIM1, 0.5 * DIM2)
+    D = (0.5 * DIM1, -0.5 * DIM2)
+    E = (-0.5 * DIM1, -0.5 * DIM2)
+    F = (-0.5 * DIM1, 0.5 * DIM2)
 
     geometry.recovery_points = [C, D, E, F]
     return geometry
@@ -232,14 +254,20 @@ def nastran_chan1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     # construct the points and facets
     tf = 0.5 * (DIM4 - DIM3)
     points = [
-        [0, 0], [DIM1+DIM2, 0], [DIM1+DIM2, tf], [DIM2, tf], [DIM2, tf+DIM3],
-        [DIM2+DIM1, tf+DIM3], [DIM2+DIM1, DIM4], [0, DIM4]
+        [0, 0],
+        [DIM1 + DIM2, 0],
+        [DIM1 + DIM2, tf],
+        [DIM2, tf],
+        [DIM2, tf + DIM3],
+        [DIM2 + DIM1, tf + DIM3],
+        [DIM2 + DIM1, DIM4],
+        [0, DIM4],
     ]
     geometry = Geometry(Polygon(points))
-    C = (0.5*DIM2+DIM1, 0.5*DIM4)
-    D = (0.5*DIM2+DIM1, -0.5*DIM4)
-    E = (-0.5*DIM2, -0.5*DIM4)
-    F = (-0.5*DIM2, 0.5*DIM4)
+    C = (0.5 * DIM2 + DIM1, 0.5 * DIM4)
+    D = (0.5 * DIM2 + DIM1, -0.5 * DIM4)
+    E = (-0.5 * DIM2, -0.5 * DIM4)
+    F = (-0.5 * DIM2, 0.5 * DIM4)
     geometry.recovery_points = [C, D, E, F]
 
     return geometry
@@ -275,19 +303,25 @@ def nastran_chan2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         Mesh generated from the above geometry.
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(DIM4 > 2.0*DIM1, "Invalid geometry specified.")
+    np.testing.assert_(DIM4 > 2.0 * DIM1, "Invalid geometry specified.")
     np.testing.assert_(DIM3 > DIM2, "Invalid geometry specified.")
 
     # construct the points and facets
     points = [
-        [0., 0.], [DIM4, 0.], [DIM4, DIM3], [DIM4-DIM1, DIM3], [DIM4-DIM1, DIM2], [DIM1, DIM2],
-        [DIM1, DIM3], [0., DIM3]
+        [0.0, 0.0],
+        [DIM4, 0.0],
+        [DIM4, DIM3],
+        [DIM4 - DIM1, DIM3],
+        [DIM4 - DIM1, DIM2],
+        [DIM1, DIM2],
+        [DIM1, DIM3],
+        [0.0, DIM3],
     ]
     geometry = Geometry(Polygon(points))
-    C = (0.5*DIM4, DIM3-0.5*DIM2)
-    D = (0.5*DIM4, -0.5*DIM2)
-    E = (-0.5*DIM4, -0.5*DIM2)
-    F = (-0.5*DIM4, DIM3-0.5*DIM2)
+    C = (0.5 * DIM4, DIM3 - 0.5 * DIM2)
+    D = (0.5 * DIM4, -0.5 * DIM2)
+    E = (-0.5 * DIM4, -0.5 * DIM2)
+    F = (-0.5 * DIM4, DIM3 - 0.5 * DIM2)
     geometry.recovery_points = [C, D, E, F]
 
     return geometry
@@ -328,22 +362,40 @@ def nastran_cross(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     np.testing.assert_(DIM4 < DIM3, "Invalid geometry specified.")
 
     # construct the points and facets
-    d = 0.5*(DIM3 - DIM4)
+    d = 0.5 * (DIM3 - DIM4)
     points = [
-        [0.5*DIM1, 0], [0.5*DIM1+DIM2, 0], [0.5*DIM1+DIM2, d], [DIM1+DIM2, d],
-        [DIM1+DIM2, d+DIM4], [0.5*DIM1+DIM2, d+DIM4], [0.5*DIM1+DIM2, DIM3], [0.5*DIM1, DIM3],
-        [0.5*DIM1, d+DIM4], [0, d+DIM4], [0, d], [0.5*DIM1, d]
+        [0.5 * DIM1, 0],
+        [0.5 * DIM1 + DIM2, 0],
+        [0.5 * DIM1 + DIM2, d],
+        [DIM1 + DIM2, d],
+        [DIM1 + DIM2, d + DIM4],
+        [0.5 * DIM1 + DIM2, d + DIM4],
+        [0.5 * DIM1 + DIM2, DIM3],
+        [0.5 * DIM1, DIM3],
+        [0.5 * DIM1, d + DIM4],
+        [0, d + DIM4],
+        [0, d],
+        [0.5 * DIM1, d],
     ]
     geometry = Geometry(Polygon(points))
-    C = (0, 0.5*DIM3)
-    D = (0.5*(DIM1+DIM2), 0)
-    E = (0, -0.5*DIM3)
-    F = (-0.5*(DIM1+DIM2), 0)
+    C = (0, 0.5 * DIM3)
+    D = (0.5 * (DIM1 + DIM2), 0)
+    E = (0, -0.5 * DIM3)
+    F = (-0.5 * (DIM1 + DIM2), 0)
     geometry.recovery_points = [C, D, E, F]
     return geometry
 
 
-def nastran_fcross(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float, DIM7: float, DIM8: float):
+def nastran_fcross(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    DIM5: float,
+    DIM6: float,
+    DIM7: float,
+    DIM8: float,
+):
     """ Constructs a flanged cruciform/cross section with the intersection's middle center at the
     origin *(0, 0)*, with eight parameters defining dimensions. Added by JohnDN90.
 
@@ -383,33 +435,62 @@ def nastran_fcross(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: flo
     np.testing.assert_(DIM7 > DIM4, "Invalid geometry specified.")
     np.testing.assert_(DIM7 < DIM1, "Invalid geometry specified.")
     np.testing.assert_(DIM5 < DIM2, "Invalid geometry specified.")
-    np.testing.assert_(DIM8 < (0.5*DIM2-0.5*DIM3), "Invalid geometry specified.")
-    np.testing.assert_(DIM6 < (0.5*DIM1-0.5*DIM4), "Invalid geometry specified.")
+    np.testing.assert_(DIM8 < (0.5 * DIM2 - 0.5 * DIM3), "Invalid geometry specified.")
+    np.testing.assert_(DIM6 < (0.5 * DIM1 - 0.5 * DIM4), "Invalid geometry specified.")
 
     # construct the points and facets
     points = [
-        [0.5*DIM3, -0.5*DIM4], [0.5*DIM2-DIM8, -0.5*DIM4], [0.5*DIM2-DIM8, -0.5*DIM7],
-        [0.5*DIM2, -0.5*DIM7], [0.5*DIM2, 0.5*DIM7], [0.5*DIM2-DIM8, 0.5*DIM7],
-        [0.5*DIM2-DIM8, 0.5*DIM4], [0.5*DIM3, 0.5*DIM4], [0.5*DIM3, 0.5*DIM1-DIM6],
-        [0.5*DIM5, 0.5*DIM1-DIM6], [0.5*DIM5, 0.5*DIM1], [-0.5*DIM5, 0.5*DIM1],
-        [-0.5*DIM5, 0.5*DIM1-DIM6],  [-0.5*DIM3, 0.5*DIM1-DIM6], [-0.5*DIM3, 0.5*DIM4],
-        [-0.5*DIM2+DIM8, 0.5*DIM4],  [-0.5*DIM2+DIM8, 0.5*DIM7], [-0.5*DIM2, 0.5*DIM7],
-        [-0.5*DIM2, -0.5*DIM7], [-0.5*DIM2+DIM8, -0.5*DIM7], [-0.5*DIM2+DIM8, -0.5*DIM4],
-        [-0.5*DIM3, -0.5*DIM4], [-0.5*DIM3, -0.5*DIM1+DIM6], [-0.5*DIM5, -0.5*DIM1+DIM6],
-        [-0.5*DIM5, -0.5*DIM1], [0.5*DIM5, -0.5*DIM1], [0.5*DIM5, -0.5*DIM1+DIM6],
-        [0.5*DIM3, -0.5*DIM1+DIM6]
+        [0.5 * DIM3, -0.5 * DIM4],
+        [0.5 * DIM2 - DIM8, -0.5 * DIM4],
+        [0.5 * DIM2 - DIM8, -0.5 * DIM7],
+        [0.5 * DIM2, -0.5 * DIM7],
+        [0.5 * DIM2, 0.5 * DIM7],
+        [0.5 * DIM2 - DIM8, 0.5 * DIM7],
+        [0.5 * DIM2 - DIM8, 0.5 * DIM4],
+        [0.5 * DIM3, 0.5 * DIM4],
+        [0.5 * DIM3, 0.5 * DIM1 - DIM6],
+        [0.5 * DIM5, 0.5 * DIM1 - DIM6],
+        [0.5 * DIM5, 0.5 * DIM1],
+        [-0.5 * DIM5, 0.5 * DIM1],
+        [-0.5 * DIM5, 0.5 * DIM1 - DIM6],
+        [-0.5 * DIM3, 0.5 * DIM1 - DIM6],
+        [-0.5 * DIM3, 0.5 * DIM4],
+        [-0.5 * DIM2 + DIM8, 0.5 * DIM4],
+        [-0.5 * DIM2 + DIM8, 0.5 * DIM7],
+        [-0.5 * DIM2, 0.5 * DIM7],
+        [-0.5 * DIM2, -0.5 * DIM7],
+        [-0.5 * DIM2 + DIM8, -0.5 * DIM7],
+        [-0.5 * DIM2 + DIM8, -0.5 * DIM4],
+        [-0.5 * DIM3, -0.5 * DIM4],
+        [-0.5 * DIM3, -0.5 * DIM1 + DIM6],
+        [-0.5 * DIM5, -0.5 * DIM1 + DIM6],
+        [-0.5 * DIM5, -0.5 * DIM1],
+        [0.5 * DIM5, -0.5 * DIM1],
+        [0.5 * DIM5, -0.5 * DIM1 + DIM6],
+        [0.5 * DIM3, -0.5 * DIM1 + DIM6],
     ]
     geometry = Geometry(Polygon(points))
 
-    C = (0, 0.5*DIM1)
-    D = (0.5*DIM2, 0)
-    E = (0, -0.5*DIM1)
-    F = (-0.5*DIM2, 0)
+    C = (0, 0.5 * DIM1)
+    D = (0.5 * DIM2, 0)
+    E = (0, -0.5 * DIM1)
+    F = (-0.5 * DIM2, 0)
     geometry.recovery_points = [C, D, E, F]
     return geometry
 
 
-def nastran_dbox(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float, DIM7: float, DIM8: float, DIM9: float, DIM10: float):
+def nastran_dbox(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    DIM5: float,
+    DIM6: float,
+    DIM7: float,
+    DIM8: float,
+    DIM9: float,
+    DIM10: float,
+):
     """ Constructs a DBOX section with the center at the origin *(0, 0)*, with ten parameters
     defining dimensions. See MSC Nastran documentation [1]_ for more details. Added by JohnDN90.
 
@@ -448,24 +529,35 @@ def nastran_dbox(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
         Mesh generated from the above geometry.
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_((DIM4+DIM5+DIM6) < DIM1, "Invalid geometry specified.")
-    np.testing.assert_((DIM4+0.5*DIM5) < DIM3, "Invalid geometry specified.")
-    np.testing.assert_((DIM7+DIM8) < DIM2, "Invalid geometry specified.")
-    np.testing.assert_((DIM9+DIM10) < DIM2, "Invalid geometry specified.")
+    np.testing.assert_((DIM4 + DIM5 + DIM6) < DIM1, "Invalid geometry specified.")
+    np.testing.assert_((DIM4 + 0.5 * DIM5) < DIM3, "Invalid geometry specified.")
+    np.testing.assert_((DIM7 + DIM8) < DIM2, "Invalid geometry specified.")
+    np.testing.assert_((DIM9 + DIM10) < DIM2, "Invalid geometry specified.")
 
     # construct the points and facets
     exterior_points = [
-        [0., 0.], [DIM1, 0.], [DIM1, DIM2], [0., DIM2],  
+        [0.0, 0.0],
+        [DIM1, 0.0],
+        [DIM1, DIM2],
+        [0.0, DIM2],
     ]
     interior_points_1 = [
-        [DIM4, DIM8], [DIM3-DIM5/2., DIM8],
-        [DIM3-DIM5/2., DIM2-DIM7], [DIM4, DIM2-DIM7],
+        [DIM4, DIM8],
+        [DIM3 - DIM5 / 2.0, DIM8],
+        [DIM3 - DIM5 / 2.0, DIM2 - DIM7],
+        [DIM4, DIM2 - DIM7],
     ]
     interior_points_2 = [
-        [DIM3+DIM5/2., DIM10],
-        [DIM1-DIM6, DIM10], [DIM1-DIM6, DIM2-DIM9], [DIM3+DIM5/2., DIM2-DIM9]
+        [DIM3 + DIM5 / 2.0, DIM10],
+        [DIM1 - DIM6, DIM10],
+        [DIM1 - DIM6, DIM2 - DIM9],
+        [DIM3 + DIM5 / 2.0, DIM2 - DIM9],
     ]
-    geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points_1) - Polygon(interior_points_2))
+    geometry = Geometry(
+        Polygon(exterior_points)
+        - Polygon(interior_points_1)
+        - Polygon(interior_points_2)
+    )
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
     E = (-0.5 * DIM1, -0.5 * DIM2)
@@ -474,7 +566,9 @@ def nastran_dbox(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
     return geometry
 
 
-def nastran_gbox(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float):
+def nastran_gbox(
+    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float
+):
     """ Constructs a GBOX section with the center at the origin *(0, 0)*, with six parameters
     defining dimensions. See ASTROS documentation [5]_ for more details. Added by JohnDN90.
 
@@ -507,26 +601,37 @@ def nastran_gbox(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
         Mesh generated from the above geometry.
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_((DIM3+DIM4) < DIM2, "Invalid geometry specified.")
-    np.testing.assert_((2.0*DIM5+DIM6) < DIM1, "Invalid geometry specified.")
+    np.testing.assert_((DIM3 + DIM4) < DIM2, "Invalid geometry specified.")
+    np.testing.assert_((2.0 * DIM5 + DIM6) < DIM1, "Invalid geometry specified.")
 
     # construct the points and facets
-    d = 0.5*(DIM1 - DIM6 - 2.0 * DIM5)
+    d = 0.5 * (DIM1 - DIM6 - 2.0 * DIM5)
     exterior_points = [
-        [0., 0.], [DIM1, 0.], [DIM1, DIM4], [d + 2. * DIM5 + DIM6, DIM4],
-        [d + 2. * DIM5 + DIM6, DIM2 - DIM3], [DIM1, DIM2 - DIM3], [DIM1, DIM2], [0., DIM2],
-        [0., DIM2 - DIM3], [d, DIM2 - DIM3], [d, DIM4], [0., DIM4], 
+        [0.0, 0.0],
+        [DIM1, 0.0],
+        [DIM1, DIM4],
+        [d + 2.0 * DIM5 + DIM6, DIM4],
+        [d + 2.0 * DIM5 + DIM6, DIM2 - DIM3],
+        [DIM1, DIM2 - DIM3],
+        [DIM1, DIM2],
+        [0.0, DIM2],
+        [0.0, DIM2 - DIM3],
+        [d, DIM2 - DIM3],
+        [d, DIM4],
+        [0.0, DIM4],
     ]
     interior_points = [
         [d + DIM5, DIM4],
-        [d + DIM5 + DIM6, DIM4], [d + DIM5 + DIM6, DIM2 - DIM3], [d + DIM5, DIM2 - DIM3]
+        [d + DIM5 + DIM6, DIM4],
+        [d + DIM5 + DIM6, DIM2 - DIM3],
+        [d + DIM5, DIM2 - DIM3],
     ]
     geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points))
 
-    C = (0.5*DIM1, 0.5*DIM2)
-    D = (0.5*DIM1, -0.5*DIM2)
-    E = (-0.5*DIM1, -0.5*DIM2)
-    F = (-0.5*DIM1, 0.5*DIM2)
+    C = (0.5 * DIM1, 0.5 * DIM2)
+    D = (0.5 * DIM1, -0.5 * DIM2)
+    E = (-0.5 * DIM1, -0.5 * DIM2)
+    F = (-0.5 * DIM1, 0.5 * DIM2)
     geometry.recovery_points = [C, D, E, F]
 
     return geometry
@@ -570,17 +675,27 @@ def nastran_h(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
 
     # construct the points and facets
     points = [
-        [0, 0], [d2, 0], [d2, d1], [d2+DIM1, d1], [d2+DIM1, 0], [DIM1+DIM2, 0],
-        [DIM1+DIM2, DIM3], [DIM1+DIM2-d2, DIM3], [DIM1+DIM2-d2, d1+DIM4], [d2, d1+DIM4],
-        [d2, DIM3], [0, DIM3]
+        [0, 0],
+        [d2, 0],
+        [d2, d1],
+        [d2 + DIM1, d1],
+        [d2 + DIM1, 0],
+        [DIM1 + DIM2, 0],
+        [DIM1 + DIM2, DIM3],
+        [DIM1 + DIM2 - d2, DIM3],
+        [DIM1 + DIM2 - d2, d1 + DIM4],
+        [d2, d1 + DIM4],
+        [d2, DIM3],
+        [0, DIM3],
     ]
     geometry = Geometry(Polygon(points))
-    C = (0.5*(DIM1+DIM2), 0.5*DIM3)
-    D = (0.5*(DIM1+DIM2), -0.5*DIM3)
-    E = (-0.5*(DIM1+DIM2), -0.5*DIM3)
-    F = (-0.5*(DIM1+DIM2), 0.5*DIM3)
+    C = (0.5 * (DIM1 + DIM2), 0.5 * DIM3)
+    D = (0.5 * (DIM1 + DIM2), -0.5 * DIM3)
+    E = (-0.5 * (DIM1 + DIM2), -0.5 * DIM3)
+    F = (-0.5 * (DIM1 + DIM2), 0.5 * DIM3)
     geometry.recovery_points = [C, D, E, F]
     return geometry
+
 
 def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a Hat section with the top most section's middle center at the origin *(0, 0)*,
@@ -613,20 +728,29 @@ def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         Mesh generated from the above geometry.
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(2.0*DIM2 < DIM1, "Invalid geometry specified.")
+    np.testing.assert_(2.0 * DIM2 < DIM1, "Invalid geometry specified.")
 
     # construct the points and facets
     points = [
-        [0., 0.], [DIM4+DIM2, 0.], [DIM4+DIM2, DIM1-DIM2], [DIM4+DIM3-DIM2, DIM1-DIM2],
-        [DIM4+DIM3-DIM2, 0.], [2*DIM4+DIM3, 0.], [2.*DIM4+DIM3, DIM2], [DIM4+DIM3, DIM2],
-        [DIM4+DIM3, DIM1], [DIM4, DIM1], [DIM4, DIM2], [0., DIM2]
+        [0.0, 0.0],
+        [DIM4 + DIM2, 0.0],
+        [DIM4 + DIM2, DIM1 - DIM2],
+        [DIM4 + DIM3 - DIM2, DIM1 - DIM2],
+        [DIM4 + DIM3 - DIM2, 0.0],
+        [2 * DIM4 + DIM3, 0.0],
+        [2.0 * DIM4 + DIM3, DIM2],
+        [DIM4 + DIM3, DIM2],
+        [DIM4 + DIM3, DIM1],
+        [DIM4, DIM1],
+        [DIM4, DIM2],
+        [0.0, DIM2],
     ]
 
     geometry = Geometry(Polygon(points))
-    C = (0.5*DIM3, 0.5*DIM2)
-    D = (0.5*DIM3 + DIM4, -DIM1 + DIM2)
-    E = (-0.5*DIM3 - DIM4, -DIM1 + DIM2)
-    F = (-0.5*DIM3, 0.5*DIM2)
+    C = (0.5 * DIM3, 0.5 * DIM2)
+    D = (0.5 * DIM3 + DIM4, -DIM1 + DIM2)
+    E = (-0.5 * DIM3 - DIM4, -DIM1 + DIM2)
+    F = (-0.5 * DIM3, 0.5 * DIM2)
     geometry.recovery_points = [C, D, E, F]
     # geometry.compile_geometry()
     return geometry
@@ -664,27 +788,27 @@ def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
         Mesh generated from the above geometry.
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_((2.0*DIM4+DIM5) < DIM2, "Invalid geometry specified.")
+    np.testing.assert_((2.0 * DIM4 + DIM5) < DIM2, "Invalid geometry specified.")
     np.testing.assert_(DIM3 < DIM1, "Invalid geometry specified.")
 
     # create bottom rectangular plate
-    bottom_plate = nastran_bar(DIM1=DIM1, DIM2=DIM5).shift_section(y_offset=DIM5/2)
+    bottom_plate = nastran_bar(DIM1=DIM1, DIM2=DIM5).shift_section(y_offset=DIM5 / 2)
 
     # create the hat stiffener
     d1 = DIM2 - DIM5
     d2 = DIM4
     d3 = DIM3
-    d4 = 0.5*(DIM1 - DIM3)
+    d4 = 0.5 * (DIM1 - DIM3)
 
     hat = nastran_hat(DIM1=d1, DIM2=d2, DIM3=d3, DIM4=d4)
 
     # Merge the two sections into one geometry
     geometry = hat.align_center(bottom_plate).align_top(bottom_plate) + bottom_plate
 
-    C = (-0.5*DIM1, 0)
-    D = (0.5*DIM1, 0)
-    E = (-0.5*DIM3, DIM2)
-    F = (0.5*DIM3, DIM2)
+    C = (-0.5 * DIM1, 0)
+    D = (0.5 * DIM1, 0)
+    E = (-0.5 * DIM3, DIM2)
+    F = (0.5 * DIM3, DIM2)
 
     geometry.recovery_points = [C, D, E, F]
     # geometry.compile_geometry()
@@ -727,21 +851,26 @@ def nastran_hexa(DIM1: float, DIM2: float, DIM3: float):
 
     # construct the points and facets
     points = [
-        [DIM1, 0.], [DIM2-DIM1, 0.], [DIM2, 0.5*DIM3], [DIM2-DIM1, DIM3], [DIM1, DIM3],
-        [0., 0.5*DIM3]
+        [DIM1, 0.0],
+        [DIM2 - DIM1, 0.0],
+        [DIM2, 0.5 * DIM3],
+        [DIM2 - DIM1, DIM3],
+        [DIM1, DIM3],
+        [0.0, 0.5 * DIM3],
     ]
 
     geometry = Geometry(Polygon(points))
-    C = (0, 0.5*DIM3)
-    D = (0, -0.5*DIM3)
-    E = (0.5*DIM2)
-    F = (-0.5*DIM2)
+    C = (0, 0.5 * DIM3)
+    D = (0, -0.5 * DIM3)
+    E = 0.5 * DIM2
+    F = -0.5 * DIM2
     geometry.recovery_points = [C, D, E, F]
     return geometry
 
 
-
-def nastran_i(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float):
+def nastran_i(
+    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float
+):
     """Constructs Nastran's I section with the bottom flange's middle center at the origin
     *(0, 0)*, with six parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_
     [4]_ for definition of parameters. Added by JohnDN90.
@@ -781,19 +910,28 @@ def nastran_i(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, D
     np.testing.assert_(DIM4 < DIM2, "Invalid geometry specified.")
 
     # construct the points and facets
-    db = 0.5*(DIM2 - DIM4)
-    dt = 0.5*(DIM3 - DIM4)
+    db = 0.5 * (DIM2 - DIM4)
+    dt = 0.5 * (DIM3 - DIM4)
     points = [
-        [0., 0.], [DIM2, 0.], [DIM2, DIM5], [db+DIM4, DIM5], [db + DIM4, DIM1-DIM6],
-        [db+DIM4+dt, DIM1-DIM6], [db+DIM4+dt, DIM1], [db-dt, DIM1], [db-dt, DIM1-DIM6],
-        [db, DIM1-DIM6], [db, DIM5], [0, DIM5]
+        [0.0, 0.0],
+        [DIM2, 0.0],
+        [DIM2, DIM5],
+        [db + DIM4, DIM5],
+        [db + DIM4, DIM1 - DIM6],
+        [db + DIM4 + dt, DIM1 - DIM6],
+        [db + DIM4 + dt, DIM1],
+        [db - dt, DIM1],
+        [db - dt, DIM1 - DIM6],
+        [db, DIM1 - DIM6],
+        [db, DIM5],
+        [0, DIM5],
     ]
     geometry = Geometry(Polygon(points))
 
-    C = (0.5*DIM3, 0.5*DIM1)
-    D = (0.5*DIM3, -0.5*DIM1)
-    E = (-0.5*DIM3, -0.5*DIM1)
-    F = (-0.5*DIM3, 0.5*DIM1)
+    C = (0.5 * DIM3, 0.5 * DIM1)
+    D = (0.5 * DIM3, -0.5 * DIM1)
+    E = (-0.5 * DIM3, -0.5 * DIM1)
+    F = (-0.5 * DIM3, 0.5 * DIM1)
 
     geometry.recovery_points = [C, D, E, F]
     return geometry
@@ -834,18 +972,27 @@ def nastran_i1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
 
     # construct the points and facets
-    t = 0.5*(DIM4 - DIM3)
+    t = 0.5 * (DIM4 - DIM3)
     points = [
-        [0., 0.], [DIM1+DIM2, 0.], [DIM1+DIM2, t], [0.5*DIM1+DIM2, t], [0.5*DIM1+DIM2, t+DIM3],
-        [DIM1+DIM2, t+DIM3], [DIM1+DIM2, DIM4], [0., DIM4], [0., t+DIM3], [0.5*DIM1, t+DIM3],
-        [0.5*DIM1, t], [0., t]
+        [0.0, 0.0],
+        [DIM1 + DIM2, 0.0],
+        [DIM1 + DIM2, t],
+        [0.5 * DIM1 + DIM2, t],
+        [0.5 * DIM1 + DIM2, t + DIM3],
+        [DIM1 + DIM2, t + DIM3],
+        [DIM1 + DIM2, DIM4],
+        [0.0, DIM4],
+        [0.0, t + DIM3],
+        [0.5 * DIM1, t + DIM3],
+        [0.5 * DIM1, t],
+        [0.0, t],
     ]
     geometry = Geometry(Polygon(points))
 
-    C = (0.5*(DIM1+DIM2), 0.5*DIM4)
-    D = (0.5*(DIM1+DIM2), -0.5*DIM4)
-    E = (-0.5*(DIM1+DIM2), -0.5*DIM4)
-    F = (-0.5*(DIM1+DIM2), 0.5*DIM4)
+    C = (0.5 * (DIM1 + DIM2), 0.5 * DIM4)
+    D = (0.5 * (DIM1 + DIM2), -0.5 * DIM4)
+    E = (-0.5 * (DIM1 + DIM2), -0.5 * DIM4)
+    F = (-0.5 * (DIM1 + DIM2), 0.5 * DIM4)
 
     geometry.recovery_points = [C, D, E, F]
     return geometry
@@ -890,10 +1037,10 @@ def nastran_l(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
 
     geometry = Geometry(Polygon(points))
 
-    C = (0.5*DIM4, DIM2-0.5*DIM3)
-    D = (DIM1-0.5*DIM4, -0.5*DIM3)
-    E = (-0.5*DIM4, -0.5*DIM3)
-    F = (-0.5*DIM4, DIM2-0.5*DIM3)
+    C = (0.5 * DIM4, DIM2 - 0.5 * DIM3)
+    D = (DIM1 - 0.5 * DIM4, -0.5 * DIM3)
+    E = (-0.5 * DIM4, -0.5 * DIM3)
+    F = (-0.5 * DIM4, DIM2 - 0.5 * DIM3)
 
     geometry.recovery_points([C, D, E, F])
     return geometry
@@ -929,7 +1076,7 @@ def nastran_rod(DIM1: float, n: int):
     """
 
     # loop through each point on the circle
-    d = 2.0*DIM1
+    d = 2.0 * DIM1
 
     for i in range(n):
         # determine polar angle
@@ -951,6 +1098,7 @@ def nastran_rod(DIM1: float, n: int):
     geometry.recovery_points([C, D, E, F])
 
     return geometry
+
 
 def nastran_t(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a T section with the top flange's middle center at the origin *(0, 0)*, with four
@@ -1018,10 +1166,10 @@ def nastran_t(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
 
     geometry = Geometry(Polygon(points))
 
-    C = (0, 0.5*DIM3)
-    D = (0.5*DIM1, 0.5*DIM3)
-    E = (0, 0.5*DIM3-DIM2)
-    F = (-0.5*DIM1, 0.5*DIM3)
+    C = (0, 0.5 * DIM3)
+    D = (0.5 * DIM1, 0.5 * DIM3)
+    E = (0, 0.5 * DIM3 - DIM2)
+    F = (-0.5 * DIM1, 0.5 * DIM3)
     geometry.recovery_points = [C, D, E, F]
 
     return geometry
@@ -1063,16 +1211,22 @@ def nastran_t1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     # construct the points and facets
     d1 = (DIM1 - DIM4) / 2.0
     points = [
-        [0, 0], [DIM3, 0], [DIM3, DIM1], [0, DIM1], [0, d1 + DIM4], [-DIM2, d1 + DIM4],
-        [-DIM2, d1], [0, d1]
+        [0, 0],
+        [DIM3, 0],
+        [DIM3, DIM1],
+        [0, DIM1],
+        [0, d1 + DIM4],
+        [-DIM2, d1 + DIM4],
+        [-DIM2, d1],
+        [0, d1],
     ]
 
     geometry = Geometry(Polygon(points))
 
-    C = (0.5*DIM3, 0)
-    D = (0.5*DIM3, -0.5*DIM1)
-    E = (-0.5*DIM3-DIM2, 0)
-    F = (0.5*DIM3, 0.5*DIM1)
+    C = (0.5 * DIM3, 0)
+    D = (0.5 * DIM3, -0.5 * DIM1)
+    E = (-0.5 * DIM3 - DIM2, 0)
+    F = (0.5 * DIM3, 0.5 * DIM1)
     geometry.recovery_points = [C, D, E, F]
 
     return geometry
@@ -1114,22 +1268,28 @@ def nastran_t2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     np.testing.assert_(DIM3 < DIM2, "Invalid geometry specified.")
 
     # construct the points and facets
-    d1 = 0.5*(DIM1 - DIM4)
+    d1 = 0.5 * (DIM1 - DIM4)
     points = [
-        [0., 0.], [DIM1, 0.], [DIM1, DIM3], [DIM1-d1, DIM3], [DIM1-d1, DIM2], [d1, DIM2],
-        [d1, DIM3], [0, DIM3]
+        [0.0, 0.0],
+        [DIM1, 0.0],
+        [DIM1, DIM3],
+        [DIM1 - d1, DIM3],
+        [DIM1 - d1, DIM2],
+        [d1, DIM2],
+        [d1, DIM3],
+        [0, DIM3],
     ]
 
     geometry = Geometry(Polygon(points))
-    C = (0.5*DIM4, DIM2-0.5*DIM3)
-    D = (0.5*DIM1, -0.5*DIM3)
-    E = (-0.5*DIM1, -0.5*DIM3)
-    F = (-0.5*DIM4, DIM2-0.5*DIM3)
+    C = (0.5 * DIM4, DIM2 - 0.5 * DIM3)
+    D = (0.5 * DIM1, -0.5 * DIM3)
+    E = (-0.5 * DIM1, -0.5 * DIM3)
+    F = (-0.5 * DIM4, DIM2 - 0.5 * DIM3)
     geometry.recovery_points = [C, D, E, F]
     return geometry
 
 
-def nastran_tube(DIM1:float, DIM2:float, n:int):
+def nastran_tube(DIM1: float, DIM2: float, n: int):
     """Constructs a circular tube section with the center at the origin *(0, 0)*, with two
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1162,8 +1322,8 @@ def nastran_tube(DIM1:float, DIM2:float, n:int):
     # Ensure dimensions are physically relevant
     np.testing.assert_(DIM2 < DIM1, "Invalid geometry specified.")
 
-    d = 2.0*DIM1
-    t = DIM1-DIM2
+    d = 2.0 * DIM1
+    t = DIM1 - DIM2
     points_inner = []
     points_outer = []
     # loop through each point of the CHS
@@ -1227,7 +1387,7 @@ def nastran_tube2(DIM1: float, DIM2: float, n: float):
     # Ensure dimensions are physically relevant
     np.testing.assert_(DIM2 < DIM1, "Invalid geometry specified.")
 
-    d = 2.0*DIM1
+    d = 2.0 * DIM1
     t = DIM2
 
     points_inner = []
@@ -1294,17 +1454,23 @@ def nastran_z(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     np.testing.assert_(DIM4 > DIM3, "Invalid geometry specified.")
 
     # construct the points and facets
-    t = 0.5*(DIM4 - DIM3)
+    t = 0.5 * (DIM4 - DIM3)
     points = [
-        [DIM1, 0.], [2.*DIM1+DIM2, 0.], [2.*DIM1+DIM2, t], [DIM1+DIM2, t], [DIM1+DIM2, DIM4],
-        [0., DIM4], [0., DIM4-t],  [DIM1, DIM4-t]
+        [DIM1, 0.0],
+        [2.0 * DIM1 + DIM2, 0.0],
+        [2.0 * DIM1 + DIM2, t],
+        [DIM1 + DIM2, t],
+        [DIM1 + DIM2, DIM4],
+        [0.0, DIM4],
+        [0.0, DIM4 - t],
+        [DIM1, DIM4 - t],
     ]
     geometry = Geometry(Polygon(points))
 
-    C = (0.5*DIM2, 0.5*DIM4)
-    D = (0.5*DIM2+DIM1, -0.5*DIM4)
-    E = (-0.5*DIM2, -0.5*DIM4)
-    F = (-0.5*DIM2-DIM1, 0.5*DIM4)
+    C = (0.5 * DIM2, 0.5 * DIM4)
+    D = (0.5 * DIM2 + DIM1, -0.5 * DIM4)
+    E = (-0.5 * DIM2, -0.5 * DIM4)
+    F = (-0.5 * DIM2 - DIM1, 0.5 * DIM4)
 
     geometry.recovery_points = [C, D, E, F]
 

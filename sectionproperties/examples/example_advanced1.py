@@ -34,7 +34,7 @@ for b in b_list:
 
 # plot the torsion constant as a function of the aspect ratio
 (fig, ax) = plt.subplots()
-ax.plot(np.array(d_list) / b_list, j_list, 'kx-')
+ax.plot(np.array(d_list) / b_list, j_list, "kx-")
 ax.set_xlabel("Aspect Ratio [d/b]")
 ax.set_ylabel("Torsion Constant [J]")
 ax.set_title("Rectangular Section Torsion Constant")

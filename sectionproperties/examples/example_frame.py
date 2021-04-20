@@ -33,7 +33,7 @@ j_np = np.array(j_calc)  # convert results to a numpy array
 error_vals = (j_calc - correct_val) / j_calc * 100  # compute the error
 
 # produce a plot of the accuracy of the torsion constant with computation time
-plt.loglog(t_calc[1:], error_vals[1:], 'kx-')
+plt.loglog(t_calc[1:], error_vals[1:], "kx-")
 plt.xlabel("Solver Time [s]")
 plt.ylabel("Torsion Constant Error [%]")
 plt.show()
