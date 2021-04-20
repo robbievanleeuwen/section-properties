@@ -212,7 +212,7 @@ class Geometry:
             raise ValueError(
                 "Argument 'mesh_sizes' for a Geometry must be either "
                 f"a float, or a list of float with length of 1, not {mesh_sizes}."
-                )
+            )
         self.mesh = pre.create_mesh(
             self.points, self.facets, self.holes, self.control_points, mesh_size
         )
@@ -1165,8 +1165,8 @@ class CompoundGeometry(Geometry):
             # self.points list.
             for facet in geom.facets:
                 i_pnt, j_pnt = geom.points[facet[0]], geom.points[facet[1]]
-                i_pnt_idx = self.points.index(i_pnt) # List, .index method
-                j_pnt_idx = self.points.index(j_pnt) # List, .index method
+                i_pnt_idx = self.points.index(i_pnt)  # List, .index method
+                j_pnt_idx = self.points.index(j_pnt)  # List, .index method
                 self.facets.append([i_pnt_idx, j_pnt_idx])
 
             # add holes
