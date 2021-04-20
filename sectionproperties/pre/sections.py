@@ -347,15 +347,17 @@ class Geometry:
         """
         x_mirror = 1
         y_mirror = 1
-        x, y, z = *mirror_point, 0
-        if axis == "x": x_mirror = -x_mirror
-        elif axis == "y": y_mirror = -y_mirror
+        if mirror_point != "center": 
+            x, y = mirror_point
+            mirror_point = (x, y, 0)
+            if axis == "x": x_mirror = -x_mirror
+            elif axis == "y": y_mirror = -y_mirror
         mirrored_geom = shapely.affinity.scale(
             self.geom, 
             xfact=y_mirror,
             yfact=x_mirror,
             zfact=1.0,
-            origin=(x, y, z)
+            origin=mirror_point
             )
 
         new_geom = Geometry(mirrored_geom, self.material)
@@ -911,8 +913,9 @@ class CompoundGeometry(Geometry):
     def create_mesh(self, mesh_sizes: List[float]):
         """Creates a quadratic triangular mesh from the Geometry object.
 
-        :param mesh_size: A float describing the maximum mesh element area to be used
-        within the Geometry-object finite-element mesh.
+        :param mesh_size: A float describing the maximum mesh element area to be
+        used in the finite-element mesh for each Geometry object within the
+        CompoundGeometry object.
         :type mesh_sizes: List[float]
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
@@ -933,6 +936,8 @@ class CompoundGeometry(Geometry):
 
             Mesh generated from the above geometry.
         """
+        if len(mesh_sizes) == 1:
+            mesh_sizes = mesh_sizes * len(self.control_points)
         self.mesh = pre.create_mesh(
             self.points, self.facets, self.holes, self.control_points, mesh_sizes
             )

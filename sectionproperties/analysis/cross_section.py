@@ -74,6 +74,13 @@ class Section:
         time_info: bool = False,
         ):
         """Inits the Section class."""
+        if not hasattr(geometry, "mesh") or not geometry.mesh:
+            raise ValueError(
+                "Selected Geometry or CompoundGeometry "
+                "object does not contain a mesh.\n"
+                "Try running {geometry}.create_mesh() before adding to"
+                "a Section object for analysis."
+                )
         self.geometry = geometry
         self.time_info = time_info
         self.mesh = geometry.mesh
