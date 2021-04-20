@@ -110,10 +110,10 @@ class Section:
             # if materials are specified, check that the right number of material properties are
             # specified and then populate material_groups list
             if self.materials:
-                info_str = "Number of materials ({0}), ".format(len(self.materials))
-                info_str += "should match the number of regions ({0}).".format(
+                msg = "Number of materials ({0}), ".format(len(self.materials))
+                msg += "should match the number of regions ({0}).".format(
                     max(attributes) + 1)
-                assert(len(self.materials) == max(attributes) + 1), info_str
+                assert(len(self.materials) == max(attributes) + 1), msg
 
                 # add a MaterialGroup object to the material_groups list for each uniquely
                 # encountered material
@@ -1902,11 +1902,11 @@ class PlasticSection:
         """
 
         if not root_result.converged:
-            info_str = "Plastic centroid calculation about the {0}".format(axis)
-            info_str += " failed. Contact robbie.vanleeuwen@gmail.com with your"
-            info_str += " analysis parameters. Termination flag: {0}".format(root_result.flag)
+            msg = "Plastic centroid calculation about the {0}".format(axis)
+            msg += " failed. Contact robbie.vanleeuwen@gmail.com with your"
+            msg += " analysis parameters. Termination flag: {0}".format(root_result.flag)
 
-            raise RuntimeError(info_str)
+            raise RuntimeError(msg)
 
     def print_verbose(self, d, root_result, axis):
         """Prints information related to the function solver convergence to the terminal.
@@ -1917,9 +1917,9 @@ class PlasticSection:
         :param string axis: Axis being considered by the function solver
         """
 
-        info_str = "---{0} plastic centroid calculation converged at ".format(axis)
-        info_str += "{0:.5e} in {1} iterations.".format(d, root_result.iterations)
-        print(info_str)
+        msg = "---{0} plastic centroid calculation converged at ".format(axis)
+        msg += "{0:.5e} in {1} iterations.".format(d, root_result.iterations)
+        print(msg)
 
     def calculate_extreme_fibres(self, angle):
         """Calculates the locations of the extreme fibres along and perpendicular to the axis
