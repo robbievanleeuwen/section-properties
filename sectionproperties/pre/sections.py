@@ -9,9 +9,7 @@ from shapely.geometry import (
     Polygon,
     MultiPolygon,
     LinearRing,
-    LineString,
     Point,
-    GeometryCollection,
 )
 from shapely.ops import split, unary_union
 import shapely
@@ -181,12 +179,12 @@ class Geometry:
         # pass
         self.create_facets_and_control_points()
 
-    def create_mesh(self, mesh_size: float):
+    def create_mesh(self, mesh_sizes: Union[float, List[float]]):
         """Creates a quadratic triangular mesh from the Geometry object.
 
-        :param mesh_size: A float describing the maximum mesh element area to be used
+        :param mesh_sizes: A float describing the maximum mesh element area to be used
         within the Geometry-object finite-element mesh.
-        :type mesh_size: float
+        :type mesh_sizes: Union[float, List[float]]
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
         Geometry-object is self, not a new instance.
@@ -198,7 +196,7 @@ class Geometry:
             import sectionproperties.pre.sections as sections
 
             geometry = sections.CircularSection(d=50, n=64)
-            geometry = geometry.create_mesh(mesh_size=2.5)
+            geometry = geometry.create_mesh(mesh_sizes=2.5)
 
         ..  figure:: ../images/sections/circle_mesh.png
             :align: center
@@ -206,6 +204,15 @@ class Geometry:
 
             Mesh generated from the above geometry.
         """
+        if isinstance(mesh_sizes, (list, tuple)) and len(mesh_sizes) == 1:
+            mesh_size = mesh_sizes[0]
+        elif isinstance(mesh_sizes, (float, int)):
+            mesh_size = mesh_sizes
+        else:
+            raise ValueError(
+                "Argument 'mesh_sizes' for a Geometry must be either "
+                f"a float, or a list of float with length of 1, not {mesh_sizes}."
+                )
         self.mesh = pre.create_mesh(
             self.points, self.facets, self.holes, self.control_points, mesh_size
         )
@@ -840,26 +847,6 @@ class CompoundGeometry(Geometry):
             self.geoms = processed_geoms
             self.geom = MultiPolygon([geom.geom for geom in processed_geoms])
 
-        mesh_bool_acc = []
-        for geom in self.geoms:
-            if hasattr(geom, "mesh") and hasattr(geom.mesh, "num_vertices"):
-                mesh_bool_acc.append(True)
-            else:
-                mesh_bool_acc.append(False)
-
-        if any(mesh_bool_acc) and not all(mesh_bool_acc):
-            raise Warning(
-                "Some but not all of the Geometry objects have generated meshes.\n"
-                "It is recommended to either pre-mesh each Geometry object individually before"
-                " adding to CompoundGeometry or to re-mesh all Geometry objects with\n"
-                "<CompoundGeometry>.create_mesh(mesh_size)."
-            )
-        elif not any(mesh_bool_acc):
-            pass
-        # elif all(mesh_bool_acc):
-        #     new_mesh = None
-        #     for
-
         self.control_points = []
         self.points = []
         self.facets = []
@@ -867,7 +854,7 @@ class CompoundGeometry(Geometry):
         self.perimeter = []
         self.compile_geometry()
 
-        # self.mesh = None # Previously not a property
+        self.mesh = None
 
     def _repr_svg_(self):
         """
@@ -965,7 +952,8 @@ class CompoundGeometry(Geometry):
 
         :param mesh_size: A float describing the maximum mesh element area to be
         used in the finite-element mesh for each Geometry object within the
-        CompoundGeometry object.
+        CompoundGeometry object. If a list of length 1 is passed, then the one
+        size will be applied to all constituent Geometry meshes.
         :type mesh_sizes: List[float]
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
@@ -1164,19 +1152,21 @@ class CompoundGeometry(Geometry):
             if not all([geom.points, geom.facets, geom.control_points]):
                 geom.create_facets_and_control_points()  # If not previously done
 
-            # add points and count points
-            # skip duplicate points
+            # add points and skip duplicate points
             for point in geom.points:
                 if list(point) not in self.points:
                     self.points.append(list(point))
 
-            # map facets from original Polygon points to collected MultiPolygon points
-            # b/c points are not being duplicated, have to find the original point and
-            # map the facet to the existing MultiPolygon point
+            # The facets numbering from the constituent Polygon is no longer valid
+            # in the MultiPolygon.
+            # Map facets from original Polygon points to collected MultiPolygon points.
+            # Because points are not in their "original" order, have to find the matching point
+            # in the new self.points list and map the facet from the old points list to the new
+            # self.points list.
             for facet in geom.facets:
                 i_pnt, j_pnt = geom.points[facet[0]], geom.points[facet[1]]
-                i_pnt_idx = self.points.index(i_pnt)
-                j_pnt_idx = self.points.index(j_pnt)
+                i_pnt_idx = self.points.index(i_pnt) # List, .index method
+                j_pnt_idx = self.points.index(j_pnt) # List, .index method
                 self.facets.append([i_pnt_idx, j_pnt_idx])
 
             # add holes
@@ -1207,11 +1197,16 @@ class CompoundGeometry(Geometry):
 
         self.holes += extra_holes
 
-    def calculate_perimeter(self):
+    def calculate_perimeter(self) -> float:
         """
-        Returns the length of the exterior convex hull of the CompoundGeometry.
+        Returns the length of the exterior perimeter of the CompoundGeometry.
+        If the CompoundGeometry includes disjoint geometries then the
+        perimeter cannot be calculated and the method returns -1.0
         """
-        return self.geom.convex_hull.exterior.length
+        unionized_poly = unary_union([geom.geom for geom in self.geoms])
+        if isinstance(unionized_poly, MultiPolygon):
+            return -1.0
+        return unionized_poly.exterior.length
 
 
 ### Helper functions for Geometry
@@ -1219,9 +1214,9 @@ class CompoundGeometry(Geometry):
 
 def load_dxf(dxf_filepath: pathlib.Path):
     """
-            Import any-old-shape in dxf format for analysis.
-            Code by aegis1980 and connorferster
-        """
+    Import any-old-shape in dxf format for analysis.
+    Code by aegis1980 and connorferster
+    """
     c2s = None
     try:
         import cad_to_shapely as c2s  # type: ignore
