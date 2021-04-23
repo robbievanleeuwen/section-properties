@@ -34,7 +34,7 @@ class Section:
     :param mesh: Mesh object returned by meshpy
     :type mesh: :class:`meshpy.triangle.MeshInfo`
     :param bool time_info: If set to True, a detailed description of the computation and the time
-        cost is printed to the terminal.
+        cost is printed to the terminal for every computation performed.
 
     The following example creates a :class:`~sectionproperties.analysis.cross_section.Section`
     object of a 100D x 50W rectangle using a mesh size of 5::
@@ -179,26 +179,20 @@ class Section:
             self.mesh_elements = elements
             self.mesh_attributes = attributes
 
-            # log.log(level=logging.DEBUG, msg=f"Section:\n")
-            # log.log(level=logging.DEBUG, msg=f"Tri6 Elements: {self.elements}")
-
             # initialise class storing section properties
             self.section_props = SectionProperties()
 
-        if time_info:
+        if self.time_info:
             text = "--Initialising the Section class..."
             solver.function_timer(text, init)
             print("")
         else:
             init()
 
-    def calculate_geometric_properties(self, time_info=False):
+    def calculate_geometric_properties(self):
         """Calculates the geometric properties of the cross-section and stores them in the
         :class:`~sectionproperties.analysis.cross_section.SectionProperties` object contained in
         the ``section_props`` class variable.
-
-        :param bool time_info: If set to True, a detailed description of the computation and the
-            time cost is printed to the terminal.
 
         The following geometric section properties are calculated:
 
@@ -256,20 +250,18 @@ class Section:
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(self.mesh)
 
-        if time_info:
+        if self.time_info:
             text = "--Calculating geometric section properties..."
             solver.function_timer(text, calculate_geom)
             print("")
         else:
             calculate_geom()
 
-    def calculate_warping_properties(self, time_info=False, solver_type="direct"):
+    def calculate_warping_properties(self, solver_type="direct"):
         """Calculates all the warping properties of the cross-section and stores them in the
         :class:`~sectionproperties.analysis.cross_section.SectionProperties` object contained in
         the ``section_props`` class variable.
 
-        :param bool time_info: If set to True, a detailed description of the computation and the
-            time cost is printed to the terminal.
         :param string solver_type: Solver used for solving systems of linear equations, either
             using the *'direct'* method or *'cgs'* iterative method
 
@@ -312,10 +304,9 @@ class Section:
         for el in warping_section.elements:
             el.coords[0, :] -= self.section_props.cx
             el.coords[1, :] -= self.section_props.cy
-            # log.log(level=logging.DEBUG, msg=f"{el.coords}")
 
         # assemble stiffness matrix and load vector for warping function
-        if time_info:
+        if self.time_info:
             text = "--Assembling {0}x{0} stiffness matrix and load vector...".format(
                 self.num_nodes
             )
@@ -324,8 +315,6 @@ class Section:
             )
         else:
             (k, k_lg, f_torsion) = warping_section.assemble_torsion()
-
-        # log.log(level=logging.DEBUG, msg=f"k: {k}, k_lg: {k_lg}, f_torsion: {f_torsion}")
 
         # ILU decomposition of stiffness matrices
         def ilu_decomp():
@@ -343,7 +332,7 @@ class Section:
 
         # if the cgs method is used, perform ILU decomposition
         if solver_type == "cgs":
-            if time_info:
+            if self.time_info:
                 text = "--Performing ILU decomposition on the stiffness matrices..."
                 (k_precond, k_lg_precond) = solver.function_timer(text, ilu_decomp)
             else:
@@ -358,7 +347,7 @@ class Section:
 
             return omega
 
-        if time_info:
+        if self.time_info:
             text = "--Solving for the warping function using the {0} solver...".format(
                 solver_type
             )
@@ -377,7 +366,7 @@ class Section:
                 - omega.dot(k.dot(np.transpose(omega)))
             )
 
-        if time_info:
+        if self.time_info:
             text = "--Computing the torsion constant..."
             self.section_props.j = solver.function_timer(text, j_func)
         else:
@@ -400,7 +389,7 @@ class Section:
 
             return (f_psi, f_phi)
 
-        if time_info:
+        if self.time_info:
             text = "--Assembling shear function load vectors..."
             (f_psi, f_phi) = solver.function_timer(text, assemble_shear_load)
         else:
@@ -417,7 +406,7 @@ class Section:
 
             return (psi_shear, phi_shear)
 
-        if time_info:
+        if self.time_info:
             text = "--Solving for the shear functions using the {0} solver...".format(
                 solver_type
             )
@@ -462,7 +451,7 @@ class Section:
 
             return (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega)
 
-        if time_info:
+        if self.time_info:
             text = "--Assembling shear centre and warping moment integrals..."
             (
                 sc_xint,
@@ -521,7 +510,7 @@ class Section:
 
             return (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st)
 
-        if time_info:
+        if self.time_info:
             text = "--Calculating shear centres..."
             (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st) = solver.function_timer(
                 text, shear_centres
@@ -568,7 +557,7 @@ class Section:
 
             return (kappa_x, kappa_y, kappa_xy)
 
-        if time_info:
+        if self.time_info:
             text = "--Assembling shear deformation coefficients..."
             (kappa_x, kappa_y, kappa_xy) = solver.function_timer(
                 text, assemble_shear_deformation
@@ -619,7 +608,7 @@ class Section:
 
             return (int_x, int_y, int_11, int_22)
 
-        if time_info:
+        if self.time_info:
             text = "--Assembling monosymmetry integrals..."
             (int_x, int_y, int_11, int_22) = solver.function_timer(
                 text, calculate_monosymmetry_integrals
@@ -654,13 +643,11 @@ class Section:
             int_22 / self.section_props.i22_c - 2 * self.section_props.x11_se
         )
 
-    def calculate_frame_properties(self, time_info=False, solver_type="direct"):
+    def calculate_frame_properties(self, solver_type="direct"):
         """Calculates and returns the properties required for a frame analysis. The properties are
         also stored in the :class:`~sectionproperties.analysis.cross_section.SectionProperties`
         object contained in the ``section_props`` class variable.
 
-        :param bool time_info: If set to True, a detailed description of the computation and the
-            time cost is printed to the terminal.
         :param string solver_type: Solver used for solving systems of linear equations, either
             using the *'direct'* method or *'cgs'* iterative method
 
@@ -778,7 +765,7 @@ class Section:
                 - omega.dot(k.dot(np.transpose(omega)))
             )
 
-        if time_info:
+        if self.time_info:
             text = "--Calculating frame section properties..."
             solver.function_timer(text, calculate_frame)
             print("")
@@ -794,13 +781,11 @@ class Section:
             self.section_props.phi,
         )
 
-    def calculate_plastic_properties(self, time_info=False, verbose=False, debug=False):
+    def calculate_plastic_properties(self, verbose=False, debug=False):
         """Calculates the plastic properties of the cross-section and stores the, in the
         :class:`~sectionproperties.analysis.cross_section.SectionProperties` object contained in
         the ``section_props`` class variable.
 
-        :param bool time_info: If set to True, a detailed description of the computation and the
-            time cost is printed to the terminal.
         :param bool verbose: If set to True, the number of iterations required for each plastic
             axis is printed to the terminal.
         :param bool debug: If set to True, the geometry is plotted each time a new mesh is
@@ -834,16 +819,14 @@ class Section:
             plastic_section = PlasticSection(self.geometry, debug)
             plastic_section.calculate_plastic_properties(self, verbose)
 
-        if time_info:
+        if self.time_info:
             text = "--Calculating plastic properties...\n"
             solver.function_timer(text, calc_plastic)
             print("")
         else:
             calc_plastic()
 
-    def calculate_stress(
-        self, N=0, Vx=0, Vy=0, Mxx=0, Myy=0, M11=0, M22=0, Mzz=0, time_info=False
-    ):
+    def calculate_stress(self, N=0, Vx=0, Vy=0, Mxx=0, Myy=0, M11=0, M22=0, Mzz=0):
         """Calculates the cross-section stress resulting from design actions and returns a
         :class:`~sectionproperties.analysis.cross_section.StressPost` object allowing
         post-processing of the stress results.
@@ -856,8 +839,6 @@ class Section:
         :param float M11: Bending moment about the centroidal 11-axis
         :param float M22: Bending moment about the centroidal 22-axis
         :param float Mzz: Torsion moment about the centroidal zz-axis
-        :param bool time_info: If set to True, a detailed description of the computation and the
-            time cost is printed to the terminal.
         :return: Object for post-processing cross-section stresses
         :rtype: :class:`~sectionproperties.analysis.cross_section.StressPost`
 
@@ -995,7 +976,7 @@ class Section:
 
             return stress_post
 
-        if time_info:
+        if self.time_info:
             text = "--Calculating cross-section stresses..."
             stress_post = solver.function_timer(text, calc_stress)
             print("")
