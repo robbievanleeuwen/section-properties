@@ -816,7 +816,7 @@ class Section:
             raise RuntimeError(err)
 
         def calc_plastic():
-            plastic_section = PlasticSection(self.geometry, debug)
+            plastic_section = PlasticSection(self.geometry)
             plastic_section.calculate_plastic_properties(self, verbose)
 
         if self.time_info:
@@ -1148,7 +1148,6 @@ class Section:
                     )
 
             cmap = ListedColormap(color_array)  # custom colormap
-            # c = np.arange(len(color_array))  # indices of elements
 
             # plot the mesh colours
             ax.tripcolor(
@@ -1417,7 +1416,7 @@ class Section:
 
     def get_c(self):
         """
-        :return: Elastic centroid *()*
+        :return: Elastic centroid *(cx, cy)*
         :rtype: tuple(float, float)
 
         ::
@@ -1872,13 +1871,10 @@ class PlasticSection:
     :type c_bot: list[float, float]
     """
 
-    def __init__(
-        self, geom: Union[sections.Geometry, sections.CompoundGeometry], debug: bool
-    ):
+    def __init__(self, geom: Union[sections.Geometry, sections.CompoundGeometry]):
         """Inits the PlasticSection class."""
         self.geometry = geom.align_center()
         self.geometry.compile_geometry()
-        self.debug = debug
 
         # initialize variables to be defined later within calculate_plastic_force
         self.c_top = [0.0, 0.0]

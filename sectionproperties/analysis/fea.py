@@ -368,56 +368,6 @@ class Tri6:
 
         return (int_x, int_y, int_11, int_22)
 
-    def plastic_properties(self, u, p):
-        """Calculates total force resisted by the element when subjected to a stress equal to the
-        yield strength. Also returns the modulus weighted area and first moments of area, and
-        determines whether or not the element is above or below the line defined by the unit
-        vector *u* and point *p*.
-
-        :param u: Unit vector in the direction of the line
-        :type u: :class:`numpy.ndarray`
-        :param p: Point on the line
-        :type p: :class:`numpy.ndarray`
-
-        :return: Element force *(force)*, modulus weighted area properties *(ea, e.qx, e.qy)* and
-            whether or not the element is above the line
-        :rtype: tuple(float, float, float, float, bool)
-        """
-        # import warnings
-        # warnings.filterwarnings('error')
-
-        # initialise geometric properties
-        e = self.material.elastic_modulus
-        area = 0
-        qx = 0
-        qy = 0
-        force = 0
-
-        # Gauss points for 3 point Gaussian integration
-        gps = gauss_points(3)
-
-        # loop through each Gauss point
-        for gp in gps:
-            # determine shape function, shape function derivative and jacobian
-            (N, _, j) = shape_function(self.coords, gp)
-
-            area += gp[0] * j
-            qx += gp[0] * np.dot(N, np.transpose(self.coords[1, :])) * j
-            qy += gp[0] * np.dot(N, np.transpose(self.coords[0, :])) * j
-            force += gp[0] * j * self.material.yield_strength
-
-        # calculate element centroid
-        # try:
-        (cx, cy) = (qy / area, qx / area)
-        # except Warning:
-        # cx, cy = (0, 0)
-        # print(self.coords)
-
-        # determine if the element is above the line p + u
-        is_above = point_above_line(u, p[0], p[1], cx, cy)
-
-        return (force, area * e, qx * e, qy * e, is_above)
-
     def element_stress(
         self,
         N,
