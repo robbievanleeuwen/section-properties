@@ -185,7 +185,6 @@ class Section:
         if self.time_info:
             text = "--Initialising the Section class..."
             solver.function_timer(text, init)
-            print("")
         else:
             init()
 
@@ -253,7 +252,6 @@ class Section:
         if self.time_info:
             text = "--Calculating geometric section properties..."
             solver.function_timer(text, calculate_geom)
-            print("")
         else:
             calculate_geom()
 
@@ -613,7 +611,6 @@ class Section:
             (int_x, int_y, int_11, int_22) = solver.function_timer(
                 text, calculate_monosymmetry_integrals
             )
-            print("")
         else:
             (int_x, int_y, int_11, int_22) = calculate_monosymmetry_integrals()
 
@@ -768,7 +765,6 @@ class Section:
         if self.time_info:
             text = "--Calculating frame section properties..."
             solver.function_timer(text, calculate_frame)
-            print("")
         else:
             calculate_frame()
 
@@ -822,7 +818,6 @@ class Section:
         if self.time_info:
             text = "--Calculating plastic properties...\n"
             solver.function_timer(text, calc_plastic)
-            print("")
         else:
             calc_plastic()
 
@@ -979,7 +974,6 @@ class Section:
         if self.time_info:
             text = "--Calculating cross-section stresses..."
             stress_post = solver.function_timer(text, calc_stress)
-            print("")
         else:
             stress_post = calc_stress()
 
