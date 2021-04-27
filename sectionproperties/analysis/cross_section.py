@@ -816,7 +816,7 @@ class Section:
             plastic_section.calculate_plastic_properties(self, verbose)
 
         if self.time_info:
-            text = "--Calculating plastic properties...\n"
+            text = "--Calculating plastic properties..."
             solver.function_timer(text, calc_plastic)
         else:
             calc_plastic()
