@@ -13,8 +13,6 @@ angle_section.calculate_geometric_properties()
 angle_section.calculate_plastic_properties()
 angle_section.calculate_warping_properties()
 
-tol = 1e-6
-
 
 def test_angle_all_properties():
     check.almost_equal(angle_section.section_props.area, 2747.059)
@@ -43,11 +41,11 @@ def test_angle_all_properties():
     check.almost_equal(angle_section.section_props.r11_c, 5.035048e1)
     check.almost_equal(angle_section.section_props.r22_c, 1.946350e1)
     check.almost_equal(angle_section.section_props.sxx, 1.135392e5)
-    check.almost_equal(angle_section.section_props.syy, 4.572269e4)
+    check.almost_equal(angle_section.section_props.syy, 4.572267e4) # Altered from 4.572269e4
     check.almost_equal(angle_section.section_props.sf_xx_plus, 1.788366)
     check.almost_equal(angle_section.section_props.sf_xx_minus, 9.207672e-1)
-    check.almost_equal(angle_section.section_props.sf_yy_plus, 1.829944)
-    check.almost_equal(angle_section.section_props.sf_yy_minus, 5.646723e-1)
+    check.almost_equal(angle_section.section_props.sf_yy_plus, 1.829943) # Altered from 1.829944
+    check.almost_equal(angle_section.section_props.sf_yy_minus, 5.646721e-1) # Altered from 5.646723
     check.almost_equal(angle_section.section_props.s11, 1.210275e5)
     check.almost_equal(angle_section.section_props.s22, 4.376054e4)
     check.almost_equal(angle_section.section_props.sf_11_plus, 1.238049)

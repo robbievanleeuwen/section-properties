@@ -56,6 +56,7 @@ class Geometry:
         self.holes = []
         self.perimeter = []
         self._recovery_points = []
+        self.tol = 12 # Represents num of decimal places of precision
         self.compile_geometry()
 
     def _repr_svg_(self):
@@ -167,7 +168,7 @@ class Geometry:
         self.holes = []
         self.points = []
         self.facets = []
-        self.points, self.facets = create_points_and_facets(self.geom)
+        self.points, self.facets = create_points_and_facets(self.geom, self.tol)
         self.control_points = tuple(self.geom.representative_point().coords)
 
         for hole in self.geom.interiors:
@@ -204,6 +205,7 @@ class Geometry:
 
             Mesh generated from the above geometry.
         """
+        print("Geometry create mesh method begin")
         if isinstance(mesh_sizes, (list, tuple)) and len(mesh_sizes) == 1:
             mesh_size = mesh_sizes[0]
         elif isinstance(mesh_sizes, (float, int)):
@@ -973,8 +975,10 @@ class CompoundGeometry(Geometry):
 
             Mesh generated from the above geometry.
         """
+        print("Begin create mesh method")
         if len(mesh_sizes) == 1:
             mesh_sizes = mesh_sizes * len(self.control_points)
+        print("Call pre.create_mesh")
         self.mesh = pre.create_mesh(
             self.points, self.facets, self.holes, self.control_points, mesh_sizes
         )
@@ -1281,7 +1285,7 @@ def create_interior_points(lr: LinearRing) -> list:
     return acc
 
 
-def create_points_and_facets(shape: Polygon) -> tuple:
+def create_points_and_facets(shape: Polygon, tol=12) -> tuple:
     """
     Return a list of lists representing x,y pairs of the exterior
     perimeter of `polygon`.
@@ -1294,7 +1298,9 @@ def create_points_and_facets(shape: Polygon) -> tuple:
     for coords in list(
         shape.exterior.coords[:-1]
     ):  # The last point == first point (shapely)
-        points.append(list(coords))
+        x, y = list(coords)
+        x, y = round(x, tol), round(y, tol)    
+        points.append([x, y])
         master_count += 1
     facets += create_facets(points, connect_back=True)
     exterior_count = master_count
@@ -1304,6 +1310,8 @@ def create_points_and_facets(shape: Polygon) -> tuple:
         break_count = master_count
         int_points = []
         for coords in hole.coords[:-1]:  # The last point == first point (shapely)
+            x, y = list(coords)
+            x, y = round(x, tol), round(y, tol)
             int_points.append(list(coords))
             master_count += 1
 
