@@ -56,7 +56,7 @@ class Geometry:
         self.holes = []
         self.perimeter = []
         self._recovery_points = []
-        self.tol = 12 # Represents num of decimal places of precision
+        self.tol = 12 # Represents num of decimal places of precision for point locations
         self.compile_geometry()
 
     def _repr_svg_(self):
@@ -205,7 +205,6 @@ class Geometry:
 
             Mesh generated from the above geometry.
         """
-        print("Geometry create mesh method begin")
         if isinstance(mesh_sizes, (list, tuple)) and len(mesh_sizes) == 1:
             mesh_size = mesh_sizes[0]
         elif isinstance(mesh_sizes, (float, int)):
@@ -242,8 +241,9 @@ class Geometry:
         :return: Geometry object translated to alignment location
         :rtype: :class:`sections.pre.sections.Geometry`
         """
-        # Mappings are indexes in the list of bbox extents of both
-        # self and 'align_to'
+        # Mappings are for indexes in the list of bbox extents of both
+        # 'self' and 'align_to'. i.e. a mapping of which "word" corresponds
+        # to which bounding box coordinate
         align_self_map = {
             "left": 0,
             "right": 1,
@@ -305,12 +305,17 @@ class Geometry:
         :rtype: :class:`sections.pre.sections.Geometry`
         """
         cx, cy = list(self.geom.centroid.coords)[0]
+        # Suggested by Agent 6-6-6: Hard-rounding of cx and cy allows
+        # for greater precision in placing geometry with its centroid
+        # near [0, 0]. True [0, 0] placement will not be possible due
+        # to floating point errors.
         if align_to is None:
-            shift_x, shift_y = -cx, -cy
+            shift_x, shift_y = round(-cx, self.tol), round(-cy, self.tol)
+            
         else:
             align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
-            shift_x = align_cx - cx
-            shift_y = align_cy - cy
+            shift_x = round(align_cx - cx, self.tol)
+            shift_y = round(align_cy - cy, self.tol)
         new_geom = self.shift_section(x_offset=shift_x, y_offset=shift_y)
         return new_geom
 
@@ -854,7 +859,7 @@ class CompoundGeometry(Geometry):
         self.holes = []
         self.perimeter = []
         self.compile_geometry()
-
+        self.tol = 12
         self.mesh = None
 
     def _repr_svg_(self):
@@ -975,10 +980,8 @@ class CompoundGeometry(Geometry):
 
             Mesh generated from the above geometry.
         """
-        print("Begin create mesh method")
         if len(mesh_sizes) == 1:
             mesh_sizes = mesh_sizes * len(self.control_points)
-        print("Call pre.create_mesh")
         self.mesh = pre.create_mesh(
             self.points, self.facets, self.holes, self.control_points, mesh_sizes
         )

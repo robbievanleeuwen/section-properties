@@ -96,8 +96,6 @@ def create_mesh(
     :return: Object containing generated mesh data
     :rtype: :class:`meshpy.triangle.MeshInfo`
     """
-    print("Pre.mesh beginning")
-
     # check_geometry(points, facets, holes, control_points, atol=atol)
     if not isinstance(mesh_sizes, list):
         mesh_sizes = [mesh_sizes]
@@ -114,7 +112,6 @@ def create_mesh(
         mesh.regions[i] = [cp[0], cp[1], region_id, mesh_sizes[i]]
         region_id += 1
 
-    print("Just before mesh")
     mesh = triangle.build(
         mesh,
         min_angle=30,
