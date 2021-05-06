@@ -1100,7 +1100,7 @@ def nastran_rod(DIM1: float, n: int):
     return geometry
 
 
-def nastran_t(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_tee(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a T section with the top flange's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for more
     details. Added by JohnDN90.
@@ -1175,7 +1175,7 @@ def nastran_t(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_t1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_tee1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a T1 section with the right flange's middle center at the origin *(0, 0)*, with
     four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1232,7 +1232,7 @@ def nastran_t1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_t2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_tee2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a T2 section with the bottom flange's middle center at the origin *(0, 0)*, with
     four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1420,7 +1420,7 @@ def nastran_tube2(DIM1: float, DIM2: float, n: float):
         return geometry
 
 
-def nastran_z(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_zed(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     """Constructs a Z section with the web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.

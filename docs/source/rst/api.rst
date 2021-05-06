@@ -14,105 +14,85 @@ Geometry Class
 ..  autoclass:: sectionproperties.pre.sections.Geometry
     :members:
 
-CustomSection Class
+CompoundGeometry Class
 """""""""""""""""""
-..  autoclass:: sectionproperties.pre.sections.CustomSection
+..  autoclass:: sectionproperties.pre.sections.CompoundGeometry
     :show-inheritance:
+    
+*sections* Functions
+^^^^^^^^^^^^^^^^^^^^^
 
-RectangularSection Class
-""""""""""""""""""""""""
-..  autoclass:: sectionproperties.pre.sections.RectangularSection
-    :show-inheritance:
+rectangular_section
+"""""""""""""""""""
+..  autofunction:: sectionproperties.pre.sections.rectangular_section
 
-CircularSection Class
-"""""""""""""""""""""
-..  autoclass:: sectionproperties.pre.sections.CircularSection
-    :show-inheritance:
+circular_section
+""""""""""""""""
+..  autofunction:: sectionproperties.pre.sections.circular_section
 
-Chs Class
-"""""""""
-..  autoclass:: sectionproperties.pre.sections.Chs
-    :show-inheritance:
-
-EllipticalSection Class
+circular_hollow_section
 """""""""""""""""""""""
-..  autoclass:: sectionproperties.pre.sections.EllipticalSection
-    :show-inheritance:
+..  autofunction:: sectionproperties.pre.sections.circular_hollow_section
 
-Ehs Class
-"""""""""
-..  autoclass:: sectionproperties.pre.sections.Ehs
-    :show-inheritance:
-
-Rhs Class
-"""""""""
-..  autoclass:: sectionproperties.pre.sections.Rhs
-    :show-inheritance:
-
-ISection Class
-""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.ISection
-      :show-inheritance:
-
-MonoISection Class
+elliptical_section
 """"""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.MonoISection
-      :show-inheritance:
+..  autofunction:: sectionproperties.pre.sections.elliptical_section
 
-TaperedFlangeISection Class
-"""""""""""""""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.TaperedFlangeISection
-      :show-inheritance:
+elliptical_hollow_section
+"""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.sections.elliptical_hollow_section
 
-PfcSection Class
-""""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.PfcSection
-      :show-inheritance:
-
-TaperedFlangeChannel Class
+rectangular_hollow_section
 """"""""""""""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.TaperedFlangeChannel
-      :show-inheritance:
+..  autofunction:: sectionproperties.pre.sections.rectangular_hollow_section
 
-TeeSection Class
-""""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.TeeSection
-      :show-inheritance:
+i_section
+"""""""""
+  ..  autofunction:: sectionproperties.pre.sections.i_section
 
-AngleSection Class
+mono_i_section
+""""""""""""""
+  ..  autofunction:: sectionproperties.pre.sections.mono_i_section
+
+tapered_flange_i_section
+""""""""""""""""""""""""
+  ..  autofunction:: sectionproperties.pre.sections.tapered_flange_i_section
+
+channel_section
+"""""""""""""""
+  ..  autofunction:: sectionproperties.pre.sections.channel_section
+
+tapered_flange_channel
+""""""""""""""""""""""
+  ..  autofunction:: sectionproperties.pre.sections.tapered_flange_channel
+
+tee_section
+"""""""""""
+  ..  autofunction:: sectionproperties.pre.sections.tee_section
+
+angle_section
+""""""""""""""
+  ..  autofunction:: sectionproperties.pre.sections.angle_section
+
+cee_section
+""""""""""""
+  ..  autofnction:: sectionproperties.pre.sections.cee_section
+
+zed_section
+"""""""""""
+  ..  autofunction:: sectionproperties.pre.sections.zed_section
+
+cruciform_section
 """"""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.AngleSection
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.cruciform_section
 
-CeeSection Class
-""""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.CeeSection
-      :show-inheritance:
+hollow_polygon_section
+"""""""""""""""""""""""
+  ..  autofunction:: sectionproperties.pre.sections.hollow_polygon_section
 
-ZedSection Class
-""""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.ZedSection
-      :show-inheritance:
-
-CruciformSection Class
-""""""""""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.CruciformSection
-      :show-inheritance:
-
-PolygonSection Class
-""""""""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.PolygonSection
-      :show-inheritance:
-
-BoxGirderSection Class
-""""""""""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.BoxGirderSection
-      :show-inheritance:
-
-MergedSection Class
+box_girder_section
 """""""""""""""""""
-  ..  autoclass:: sectionproperties.pre.sections.MergedSection
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.box_girder_section
 
 
 *pre* Module
@@ -125,173 +105,115 @@ Material Class
       :show-inheritance:
       :members:
 
-GeometryCleaner Class
-"""""""""""""""""""""
-
-  ..  autoclass:: sectionproperties.pre.pre.GeometryCleaner
-      :show-inheritance:
-      :members:
-
 pre Functions
 """""""""""""
 
+create_mesh
+""""""""""""
 ..  autofunction:: sectionproperties.pre.pre.create_mesh
-
-
-*offset* Module
-^^^^^^^^^^^^^^^
-
-..  autofunction:: sectionproperties.pre.offset.offset_perimeter
 
 
 *nastran_sections* Module
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-This module contains cross-sections as defined by Nastran and Nastran-based programs,
+This module contains sections as defined by Nastran and Nastran-based programs,
 such as MYSTRAN and ASTROS.
 
-BARSection Class
+nastran_bar
+""""""""""""
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_bar
+
+nastran_box
 """"""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.BARSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_box
 
-BOXSection Class
-""""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.BOXSection
-    :show-inheritance:
-    :members:
-
-BOX1Section Class
+nastran_box1
 """""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.BOX1Section
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_box1
 
-CHANSection Class
+nastran_chan
 """""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.CHANSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_chan
 
-CHAN1Section Class
+nastran_chan1
 """"""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.CHAN1Section
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_chan1
 
-CHAN2Section Class
+nastran_chan2
 """"""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.CHAN2Section
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_chan2
 
-CROSSSection Class
+nastran_cross
 """""""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.CROSSSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_cross
 
-DBOXSection Class
+nastran_dbox
 """""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.DBOXSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_dbox
 
-FCROSSSection Class
+
+nastran_fcross
 """""""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.FCROSSSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_fcross
 
-GBOXSection Class
+nastran_gbox
 """""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.GBOXSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_gbox
 
-HSection Class
+nastran_h
 """"""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.HSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_h
 
-HATSection Class
+nastran_hat
 """"""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.HATSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_hat
 
-HAT1Section Class
+nastran_hat1
 """""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.HAT1Section
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_hat1
 
-HEXASection Class
+nastran_hexa
 """""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.HEXASection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_hexa
 
-NISection Class
+nastran_i
 """""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.NISection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_i
 
-I1Section Class
+nastran_i1
 """""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.I1Section
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_i1
 
-LSection Class
+nastran_l
 """"""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.LSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_l
 
-RODSection Class
+nastran_rod
 """"""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.RODSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_rod
 
-TSection Class
+nastran_tee
 """"""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.TSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tee
 
-T1Section Class
+nastran_tee1
 """""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.T1Section
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tee1
 
-T2Section Class
+nastran_tee2
 """""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.T2Section
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tee2
 
-TUBESection Class
+nastran_tube
 """""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.TUBESection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tube
 
-TUBE2Section Class
+nastran_tube2
 """"""""""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.TUBE2Section
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tube2
 
-ZSection Class
+nastran_zed
 """"""""""""""
-..  autoclass:: sectionproperties.pre.nastran_sections.ZSection
-    :show-inheritance:
-    :members:
+..  autofunction:: sectionproperties.pre.nastran_sections.nastran_zed
 
 References
 """"""""""
@@ -317,10 +239,10 @@ Analysis Package
 *cross_section* Module
 ^^^^^^^^^^^^^^^^^^^^^^
 
-CrossSection Class
+Section Class
 """"""""""""""""""
 
-  ..  autoclass:: sectionproperties.analysis.cross_section.CrossSection
+  ..  autoclass:: sectionproperties.analysis.cross_section.Section
       :show-inheritance:
       :members:
 

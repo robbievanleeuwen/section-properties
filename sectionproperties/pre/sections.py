@@ -1361,12 +1361,13 @@ def draw_radius(
     return points
 
 
-def rectangular_section(b, d):
+def rectangular_section(b, d, material: pre.Material = pre.DEFAULT_MATERIAL):
     """Constructs a rectangular section with the bottom left corner at the origin *(0, 0)*, with
     depth *d* and width *b*.
 
     :param float d: Depth (y) of the rectangle
     :param float b: Width (x) of the rectangle
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a rectangular cross-section with a depth of 100 and width of 50,
     and generates a mesh with a maximum triangular area of 5::
@@ -1396,7 +1397,7 @@ def rectangular_section(b, d):
     # rectangle = box(min_x, min_y, max_x, max_y)
     points = [[0, 0], [b, 0], [b, d], [0, d]]
     rectangle = Polygon(points)
-    return Geometry(rectangle)
+    return Geometry(rectangle, material)
 
 
 def circular_section(d: float, n: int):
@@ -2517,7 +2518,7 @@ def cruciform_section(d, b, t, r, n_r):
     return Geometry(polygon)
 
 
-def polygon_section(d, t, n_sides, r_in=0, n_r=1, rot=0):
+def hollow_polygon_section(d, t, n_sides, r_in=0, n_r=1, rot=0):
     """Constructs a regular hollow polygon section centered at *(0, 0)*, with a pitch circle
     diameter of bounding polygon *d*, thickness *t*, number of sides *n_sides* and an optional
     inner radius *r_in*, using *n_r* points to construct the inner and outer radii (if radii is
