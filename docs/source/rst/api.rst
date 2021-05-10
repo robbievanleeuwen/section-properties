@@ -15,7 +15,7 @@ Geometry Class
     :members:
 
 CompoundGeometry Class
-"""""""""""""""""""
+""""""""""""""""""""""
 ..  autoclass:: sectionproperties.pre.sections.CompoundGeometry
     :show-inheritance:
     
@@ -25,75 +25,92 @@ CompoundGeometry Class
 rectangular_section
 """""""""""""""""""
 ..  autofunction:: sectionproperties.pre.sections.rectangular_section
+    :noindex:
 
 circular_section
 """"""""""""""""
 ..  autofunction:: sectionproperties.pre.sections.circular_section
+    :noindex:
 
 circular_hollow_section
 """""""""""""""""""""""
 ..  autofunction:: sectionproperties.pre.sections.circular_hollow_section
+    :noindex:
 
 elliptical_section
 """"""""""""""""""
 ..  autofunction:: sectionproperties.pre.sections.elliptical_section
+    :noindex:
 
 elliptical_hollow_section
 """""""""""""""""""""""""
 ..  autofunction:: sectionproperties.pre.sections.elliptical_hollow_section
+    :noindex:
 
 rectangular_hollow_section
 """"""""""""""""""""""""""
 ..  autofunction:: sectionproperties.pre.sections.rectangular_hollow_section
+    :noindex:
 
 i_section
 """""""""
   ..  autofunction:: sectionproperties.pre.sections.i_section
+      :noindex:
 
 mono_i_section
 """"""""""""""
   ..  autofunction:: sectionproperties.pre.sections.mono_i_section
+      :noindex:
 
 tapered_flange_i_section
 """"""""""""""""""""""""
   ..  autofunction:: sectionproperties.pre.sections.tapered_flange_i_section
+      :noindex:
 
 channel_section
 """""""""""""""
   ..  autofunction:: sectionproperties.pre.sections.channel_section
+      :noindex:
 
 tapered_flange_channel
 """"""""""""""""""""""
   ..  autofunction:: sectionproperties.pre.sections.tapered_flange_channel
+      :noindex:
 
 tee_section
 """""""""""
   ..  autofunction:: sectionproperties.pre.sections.tee_section
+      :noindex:
 
 angle_section
 """"""""""""""
   ..  autofunction:: sectionproperties.pre.sections.angle_section
+      :noindex:
 
 cee_section
 """"""""""""
-  ..  autofnction:: sectionproperties.pre.sections.cee_section
+  ..  autofunction:: sectionproperties.pre.sections.cee_section
+      :noindex:
 
 zed_section
 """""""""""
   ..  autofunction:: sectionproperties.pre.sections.zed_section
+      :noindex:
 
 cruciform_section
 """"""""""""""""""
   ..  autofunction:: sectionproperties.pre.sections.cruciform_section
+      :noindex:
 
-hollow_polygon_section
+polygon_hollow_section
 """""""""""""""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.hollow_polygon_section
+  ..  autofunction:: sectionproperties.pre.sections.polygon_hollow_section
+      :noindex:
 
 box_girder_section
 """""""""""""""""""
   ..  autofunction:: sectionproperties.pre.sections.box_girder_section
-
+      :noindex:
 
 *pre* Module
 ^^^^^^^^^^^^
@@ -121,99 +138,122 @@ such as MYSTRAN and ASTROS.
 nastran_bar
 """"""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_bar
+    :noindex:
 
 nastran_box
 """"""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_box
+    :noindex:
 
 nastran_box1
 """""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_box1
+    :noindex:
 
 nastran_chan
 """""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_chan
+    :noindex:
 
 nastran_chan1
 """"""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_chan1
+    :noindex:
 
 nastran_chan2
 """"""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_chan2
+    :noindex:
 
 nastran_cross
 """""""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_cross
+    :noindex:
 
 nastran_dbox
 """""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_dbox
-
+    :noindex:
 
 nastran_fcross
 """""""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_fcross
+    :noindex:
 
 nastran_gbox
 """""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_gbox
+    :noindex:
 
 nastran_h
 """"""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_h
+    :noindex:
 
 nastran_hat
 """"""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_hat
+    :noindex:
 
 nastran_hat1
 """""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_hat1
+    :noindex:
 
 nastran_hexa
 """""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_hexa
+    :noindex:
 
 nastran_i
 """""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_i
+    :noindex:
 
 nastran_i1
 """""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_i1
+    :noindex:
 
 nastran_l
 """"""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_l
+    :noindex:
 
 nastran_rod
 """"""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_rod
+    :noindex:
 
 nastran_tee
 """"""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tee
+    :noindex:
 
 nastran_tee1
 """""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tee1
+    :noindex:
 
 nastran_tee2
 """""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tee2
+    :noindex:
 
 nastran_tube
 """""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tube
+    :noindex:
 
 nastran_tube2
 """"""""""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tube2
+    :noindex:
 
 nastran_zed
 """"""""""""""
 ..  autofunction:: sectionproperties.pre.nastran_sections.nastran_zed
+    :noindex:
 
 References
 """"""""""

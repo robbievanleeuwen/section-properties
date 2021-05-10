@@ -9,7 +9,7 @@ Installing *sectionproperties*
 
 *sectionproperties* uses *meshpy* to efficiently generate a conforming triangular
 mesh in order to perform a finite element analysis of the structural cross-section.
-The installation procedure for of *meshpy* depends on your local machine.
+The installation procedure for *meshpy* depends on your local machine.
 
 UNIX (MacOS/Linux)
 ^^^^^^^^^^^^^^^^^^
@@ -44,7 +44,8 @@ be installed using the python package index::
 Testing the Installation
 ------------------------
 
-Python *unittest* modules are located in the *sectionproperties.tests* package.
-To see if your installation is working correctly, run this simple test::
+Python *pytest* modules are located in the *sectionproperties.tests* package.
+To see if your installation is working correctly, install `pytest` and run the
+following test:
 
-  $ python -m unittest sectionproperties.tests.test_rectangle
+  $ pytest --pyargs sectionproperties

@@ -1732,6 +1732,7 @@ class Section:
         """
         :return: Principal bending axis plastic centroid *(x11_pc, y22_pc)*
         :rtype: tuple(float, float)
+
         ::
 
             section = Section(geometry, mesh)

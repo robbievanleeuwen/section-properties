@@ -35,7 +35,7 @@ def test_material_persistence():
         .align_center()
         .rotate_section(23)
         .mirror_section(axis="y")
-        .offset_section_perimeter(amount=1)
+        .offset_perimeter(amount=1)
     )
     new_geom.material == steel
 

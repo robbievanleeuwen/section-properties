@@ -1,15 +1,18 @@
 import numpy as np
 from shapely.geometry import Polygon
 from sectionproperties.pre.sections import Geometry, CompoundGeometry
+from sectionproperties.pre import pre
+from sectionproperties.pre.sections import draw_radius
 
 
-def nastran_bar(DIM1: float, DIM2: float):
+def nastran_bar(DIM1: float, DIM2: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a BAR section with the center at the origin *(0, 0)*, with two parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for definition of
     parameters. Added by JohnDN90.
 
     :param float DIM1: Width (x) of bar
     :param float DIM2: Depth (y) of bar
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a BAR cross-section with a depth of 1.5 and width of 2.0, and
     generates a mesh with a maximum triangular area of 0.001::
@@ -37,7 +40,7 @@ def nastran_bar(DIM1: float, DIM2: float):
         [0.5 * DIM1, 0.5 * DIM2],
         [-0.5 * DIM1, 0.5 * DIM2],
     ]
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
     E = (-0.5 * DIM1, -0.5 * DIM2)
@@ -46,7 +49,7 @@ def nastran_bar(DIM1: float, DIM2: float):
     return geometry
 
 
-def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """ Constructs a BOX section with the center at the origin *(0, 0)*, with four parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for definition of
     parameters. Added by JohnDN90.
@@ -55,6 +58,7 @@ def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Depth (y) of box
     :param float DIM3: Thickness of box in y direction
     :param float DIM4: Thickness of box in x direction
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a BOX cross-section with a depth of 3.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.001::
@@ -90,7 +94,7 @@ def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         [0.5 * DIM1 - DIM4, 0.5 * DIM2 - DIM3],
         [-0.5 * DIM1 + DIM4, 0.5 * DIM2 - DIM3],
     ]
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
     E = (-0.5 * DIM1, -0.5 * DIM2)
@@ -100,8 +104,8 @@ def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
 
 
 def nastran_box1(
-    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float
-):
+    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a BOX1 section with the center at the origin *(0, 0)*, with six parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details. Added by
     JohnDN90.
@@ -112,6 +116,7 @@ def nastran_box1(
     :param float DIM4: Thickness of bottom wall
     :param float DIM5: Thickness of left wall
     :param float DIM6: Thickness of right wall
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a BOX1 cross-section with a depth of 3.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.007::
@@ -151,7 +156,7 @@ def nastran_box1(
         [DIM1 - DIM5, DIM2 - DIM3],
         [DIM6, DIM2 - DIM3],
     ]
-    geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points))
+    geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points), material)
 
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
@@ -161,7 +166,7 @@ def nastran_box1(
     return geometry
 
 
-def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """ Constructs a CHAN (C-Channel) section with the web's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Added by JohnDN90.
@@ -170,6 +175,7 @@ def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Depth (y) of the CHAN-section
     :param float DIM3: Thickness of web (vertical portion)
     :param float DIM4: Thickness of flanges (top/bottom portion)
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a CHAN cross-section with a depth of 4.0 and width of 2.0, and
     generates a mesh with a maximum triangular area of 0.008::
@@ -207,7 +213,7 @@ def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         [0.0, DIM2],
     ]
 
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
 
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
@@ -218,7 +224,7 @@ def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_chan1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_chan1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """ Constructs a CHAN1 (C-Channel) section with the web's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Added by JohnDN90.
@@ -227,6 +233,7 @@ def nastran_chan1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Thickness (x) of web
     :param float DIM3: Spacing between channels (length of web)
     :param float DIM4: Depth (y) of CHAN1-section
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a CHAN1 cross-section with a depth of 4.0 and width of 1.75, and
     generates a mesh with a maximum triangular area of 0.01::
@@ -263,7 +270,7 @@ def nastran_chan1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         [DIM2 + DIM1, DIM4],
         [0, DIM4],
     ]
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
     C = (0.5 * DIM2 + DIM1, 0.5 * DIM4)
     D = (0.5 * DIM2 + DIM1, -0.5 * DIM4)
     E = (-0.5 * DIM2, -0.5 * DIM4)
@@ -273,7 +280,7 @@ def nastran_chan1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_chan2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_chan2(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """ Constructs a CHAN2 (C-Channel) section with the bottom web's middle center at the origin
     *(0, 0)*, with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_
     [4]_ for more details. Added by JohnDN90.
@@ -282,6 +289,8 @@ def nastran_chan2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Thickness of web
     :param float DIM3: Depth (y) of CHAN2-section
     :param float DIM4: Width (x) of CHAN2-section
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
+
     The following example creates a CHAN2 cross-section with a depth of 2.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.01::
 
@@ -317,7 +326,7 @@ def nastran_chan2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         [DIM1, DIM3],
         [0.0, DIM3],
     ]
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
     C = (0.5 * DIM4, DIM3 - 0.5 * DIM2)
     D = (0.5 * DIM4, -0.5 * DIM2)
     E = (-0.5 * DIM4, -0.5 * DIM2)
@@ -327,7 +336,7 @@ def nastran_chan2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_cross(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_cross(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """ Constructs Nastran's cruciform/cross section with the intersection's middle center at the
     origin *(0, 0)*, with four parameters defining dimensions. See Nastran documentation [1]_ [2]_
     [3]_ [4]_ for more details. Added by JohnDN90.
@@ -337,6 +346,7 @@ def nastran_cross(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Thickness of the vertical member
     :param float DIM3: Depth (y) of the CROSS-section
     :param float DIM4: Thickness of the horizontal members
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a rectangular cross-section with a depth of 3.0 and width of
     1.875, and generates a mesh with a maximum triangular area of 0.008::
@@ -377,7 +387,7 @@ def nastran_cross(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         [0, d],
         [0.5 * DIM1, d],
     ]
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
     C = (0, 0.5 * DIM3)
     D = (0.5 * (DIM1 + DIM2), 0)
     E = (0, -0.5 * DIM3)
@@ -395,7 +405,8 @@ def nastran_fcross(
     DIM6: float,
     DIM7: float,
     DIM8: float,
-):
+    material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """ Constructs a flanged cruciform/cross section with the intersection's middle center at the
     origin *(0, 0)*, with eight parameters defining dimensions. Added by JohnDN90.
 
@@ -407,6 +418,7 @@ def nastran_fcross(
     :param float DIM6: Thickness of flange attached to vertical web
     :param float DIM7: Length of flange attached to horizontal web
     :param float DIM8: Thickness of flange attached to horizontal web
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example demonstrates the creation of a flanged cross section::
 
@@ -469,7 +481,7 @@ def nastran_fcross(
         [0.5 * DIM5, -0.5 * DIM1 + DIM6],
         [0.5 * DIM3, -0.5 * DIM1 + DIM6],
     ]
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
 
     C = (0, 0.5 * DIM1)
     D = (0.5 * DIM2, 0)
@@ -490,7 +502,8 @@ def nastran_dbox(
     DIM8: float,
     DIM9: float,
     DIM10: float,
-):
+    material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """ Constructs a DBOX section with the center at the origin *(0, 0)*, with ten parameters
     defining dimensions. See MSC Nastran documentation [1]_ for more details. Added by JohnDN90.
 
@@ -504,6 +517,7 @@ def nastran_dbox(
     :param float DIM8: Thickness of bottom left wall
     :param float DIM9: Thickness of top right wall
     :param float DIM10: Thickness of bottom right wall
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a DBOX cross-section with a depth of 3.0 and width of 8.0, and
     generates a mesh with a maximum triangular area of 0.01::
@@ -567,8 +581,8 @@ def nastran_dbox(
 
 
 def nastran_gbox(
-    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float
-):
+    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """ Constructs a GBOX section with the center at the origin *(0, 0)*, with six parameters
     defining dimensions. See ASTROS documentation [5]_ for more details. Added by JohnDN90.
 
@@ -578,6 +592,8 @@ def nastran_gbox(
     :param float DIM4: Thickness of bottom flange
     :param float DIM5: Thickness of webs
     :param float DIM6: Spacing between webs
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
+
     The following example creates a GBOX cross-section with a depth of 2.5 and width of 6.0, and
     generates a mesh with a maximum triangular area of 0.01::
 
@@ -626,7 +642,7 @@ def nastran_gbox(
         [d + DIM5 + DIM6, DIM2 - DIM3],
         [d + DIM5, DIM2 - DIM3],
     ]
-    geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points))
+    geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points), material)
 
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
@@ -637,7 +653,7 @@ def nastran_gbox(
     return geometry
 
 
-def nastran_h(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_h(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a H section with the middle web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -646,6 +662,7 @@ def nastran_h(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Twice the thickness of the vertical flanges
     :param float DIM3: Depth (y) of the H-section
     :param float DIM4: Thickness of the middle web
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a H cross-section with a depth of 3.5 and width of 2.75, and
     generates a mesh with a maximum triangular area of 0.005::
@@ -688,7 +705,7 @@ def nastran_h(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         [d2, DIM3],
         [0, DIM3],
     ]
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
     C = (0.5 * (DIM1 + DIM2), 0.5 * DIM3)
     D = (0.5 * (DIM1 + DIM2), -0.5 * DIM3)
     E = (-0.5 * (DIM1 + DIM2), -0.5 * DIM3)
@@ -697,7 +714,7 @@ def nastran_h(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a Hat section with the top most section's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Note that HAT in ASTROS is actually HAT1 in this code. Added by JohnDN90.
@@ -706,6 +723,7 @@ def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Thickness of HAT-section
     :param float DIM3: Width (x) of top most section
     :param float DIM4: Width (x) of bottom sections
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a HAT cross-section with a depth of 1.25 and width of 2.5, and
     generates a mesh with a maximum triangular area of 0.001::
@@ -746,7 +764,7 @@ def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         [0.0, DIM2],
     ]
 
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
     C = (0.5 * DIM3, 0.5 * DIM2)
     D = (0.5 * DIM3 + DIM4, -DIM1 + DIM2)
     E = (-0.5 * DIM3 - DIM4, -DIM1 + DIM2)
@@ -756,7 +774,7 @@ def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float):
+def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """ Constructs a HAT1 section with the bottom plate's bottom center at the origin *(0, 0)*,
     with five parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [5]_ for
     definition of parameters. Note that in ASTROS, HAT1 is called HAT. Added by JohnDN90.
@@ -766,6 +784,7 @@ def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
     :param float DIM3: Width (x) of hat's top flange
     :param float DIM4: Thickness of hat stiffener
     :param float DIM5: Thicknesss of bottom plate
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a HAT1 cross-section with a depth of 2.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.005::
@@ -816,7 +835,7 @@ def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
     return geometry
 
 
-def nastran_hexa(DIM1: float, DIM2: float, DIM3: float):
+def nastran_hexa(DIM1: float, DIM2: float, DIM3: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """ Constructs a HEXA (hexagon) section with the center at the origin *(0, 0)*, with three
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -824,6 +843,7 @@ def nastran_hexa(DIM1: float, DIM2: float, DIM3: float):
     :param float DIM1: Spacing between bottom right point and right most point
     :param float DIM2: Width (x) of hexagon
     :param float DIM3: Depth (y) of hexagon
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a rectangular cross-section with a depth of 1.5 and width of 2.0,
     and generates a mesh with a maximum triangular area of 0.005::
@@ -859,7 +879,7 @@ def nastran_hexa(DIM1: float, DIM2: float, DIM3: float):
         [0.0, 0.5 * DIM3],
     ]
 
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
     C = (0, 0.5 * DIM3)
     D = (0, -0.5 * DIM3)
     E = 0.5 * DIM2
@@ -869,8 +889,8 @@ def nastran_hexa(DIM1: float, DIM2: float, DIM3: float):
 
 
 def nastran_i(
-    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float
-):
+    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs Nastran's I section with the bottom flange's middle center at the origin
     *(0, 0)*, with six parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_
     [4]_ for definition of parameters. Added by JohnDN90.
@@ -881,6 +901,7 @@ def nastran_i(
     :param float DIM4: Thickness of web
     :param float DIM5: Thickness of bottom web
     :param float DIM6: Thickness of top web
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a Nastran I cross-section with a depth of 5.0, and generates a
     mesh with a maximum triangular area of 0.008::
@@ -926,7 +947,7 @@ def nastran_i(
         [db, DIM5],
         [0, DIM5],
     ]
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
 
     C = (0.5 * DIM3, 0.5 * DIM1)
     D = (0.5 * DIM3, -0.5 * DIM1)
@@ -937,7 +958,7 @@ def nastran_i(
     return geometry
 
 
-def nastran_i1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_i1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a I1 section with the web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -946,6 +967,7 @@ def nastran_i1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Thickness of web
     :param float DIM3: Length of web (spacing between flanges)
     :param float DIM4: Depth (y) of the I1-section
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a I1 cross-section with a depth of
     5.0 and width of 1.75, and generates a mesh with a maximum triangular area of
@@ -987,7 +1009,7 @@ def nastran_i1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         [0.5 * DIM1, t],
         [0.0, t],
     ]
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
 
     C = (0.5 * (DIM1 + DIM2), 0.5 * DIM4)
     D = (0.5 * (DIM1 + DIM2), -0.5 * DIM4)
@@ -998,7 +1020,7 @@ def nastran_i1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_l(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_l(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a L section with the intersection's center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ for more details.
     Added by JohnDN90.
@@ -1007,6 +1029,7 @@ def nastran_l(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Depth (y) of the L-section
     :param float DIM3: Thickness of flange (horizontal portion)
     :param float DIM4: Thickness of web (vertical portion)
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a L cross-section with a depth of 6.0 and width of 3.0, and
     generates a mesh with a maximum triangular area of 0.01::
@@ -1035,7 +1058,7 @@ def nastran_l(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     # construct the points and facets
     points = [[0, 0], [DIM1, 0], [DIM1, DIM3], [DIM4, DIM3], [DIM4, DIM2], [0, DIM2]]
 
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
 
     C = (0.5 * DIM4, DIM2 - 0.5 * DIM3)
     D = (DIM1 - 0.5 * DIM4, -0.5 * DIM3)
@@ -1046,13 +1069,14 @@ def nastran_l(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_rod(DIM1: float, n: int):
+def nastran_rod(DIM1: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a circular rod section with the center at the origin *(0, 0)*, with one parameter
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details. Added by
     JohnDN90.
 
     :param float DIM1: Radius of the circular rod section
     :param int n: Number of points discretising the circle
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a circular rod with a radius of 3.0 and 50 points discretising
     the boundary, and generates a mesh with a maximum triangular area of 0.01::
@@ -1077,7 +1101,7 @@ def nastran_rod(DIM1: float, n: int):
 
     # loop through each point on the circle
     d = 2.0 * DIM1
-
+    points = []
     for i in range(n):
         # determine polar angle
         theta = i * 2 * np.pi * 1.0 / n
@@ -1089,7 +1113,7 @@ def nastran_rod(DIM1: float, n: int):
         # append the current point to the points list
         points.append([x, y])
 
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
     C = (0, DIM1)
     D = (DIM1, 0)
     E = (0, -DIM1)
@@ -1100,7 +1124,7 @@ def nastran_rod(DIM1: float, n: int):
     return geometry
 
 
-def nastran_tee(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_tee(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a T section with the top flange's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for more
     details. Added by JohnDN90.
@@ -1109,6 +1133,7 @@ def nastran_tee(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Depth (y) of the T-section
     :param float DIM3: Thickness of top flange
     :param float DIM4: Thickness of web
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a T cross-section with a depth of 4.0 and width of 3.0, and
     generates a mesh with a maximum triangular area of 0.001::
@@ -1141,10 +1166,7 @@ def nastran_tee(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     r = 0
     n_r = 1
 
-    # assign control point
-    control_points = [[b * 0.5, d - t_f * 0.5]]
-
-    super().__init__(control_points, shift)
+    points = []
 
     # add first two points
     points.append([b * 0.5 - t_w * 0.5, 0])
@@ -1164,7 +1186,7 @@ def nastran_tee(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     pt = [b * 0.5 - t_w * 0.5 - r, d - t_f - r]
     points += draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
 
     C = (0, 0.5 * DIM3)
     D = (0.5 * DIM1, 0.5 * DIM3)
@@ -1175,7 +1197,7 @@ def nastran_tee(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_tee1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_tee1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a T1 section with the right flange's middle center at the origin *(0, 0)*, with
     four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1184,6 +1206,7 @@ def nastran_tee1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Length (x) of web
     :param float DIM3: Thickness of right flange
     :param float DIM4: Thickness of web
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a T1 cross-section with a depth of 3.0 and width of 3.875, and
     generates a mesh with a maximum triangular area of 0.001::
@@ -1221,7 +1244,7 @@ def nastran_tee1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         [0, d1],
     ]
 
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
 
     C = (0.5 * DIM3, 0)
     D = (0.5 * DIM3, -0.5 * DIM1)
@@ -1232,7 +1255,7 @@ def nastran_tee1(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_tee2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_tee2(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a T2 section with the bottom flange's middle center at the origin *(0, 0)*, with
     four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1241,6 +1264,7 @@ def nastran_tee2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Depth (y) of T2-section
     :param float DIM3: Thickness of bottom flange
     :param float DIM4: Thickness of web
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a T2 cross-section with a depth of 4.0 and width of 3.0, and
     generates a mesh with a maximum triangular area of 0.005::
@@ -1280,7 +1304,7 @@ def nastran_tee2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         [0, DIM3],
     ]
 
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
     C = (0.5 * DIM4, DIM2 - 0.5 * DIM3)
     D = (0.5 * DIM1, -0.5 * DIM3)
     E = (-0.5 * DIM1, -0.5 * DIM3)
@@ -1289,7 +1313,7 @@ def nastran_tee2(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     return geometry
 
 
-def nastran_tube(DIM1: float, DIM2: float, n: int):
+def nastran_tube(DIM1: float, DIM2: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a circular tube section with the center at the origin *(0, 0)*, with two
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1297,6 +1321,7 @@ def nastran_tube(DIM1: float, DIM2: float, n: int):
     :param float DIM1: Outer radius of the circular tube section
     :param float DIM2: Inner radius of the circular tube section
     :param int n: Number of points discretising the circle
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a circular tube cross-section with an outer radius of 3.0 and an
     inner radius of 2.5, and generates a mesh with 37 points discretising the boundaries and a
@@ -1341,8 +1366,8 @@ def nastran_tube(DIM1: float, DIM2: float, n: int):
         points_outer.append([x_outer, y_outer])
         points_inner.append([x_inner, y_inner])
 
-    exterior = Geometry(Polygon(points_outer))
-    interior = Geometry(Polygon(points_inner))
+    exterior = Geometry(Polygon(points_outer), material)
+    interior = Geometry(Polygon(points_inner), material)
 
     geometry = exterior - interior
 
@@ -1354,7 +1379,7 @@ def nastran_tube(DIM1: float, DIM2: float, n: int):
     return geometry
 
 
-def nastran_tube2(DIM1: float, DIM2: float, n: float):
+def nastran_tube2(DIM1: float, DIM2: float, n: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a circular TUBE2 section with the center at the origin *(0, 0)*, with two
     parameters defining dimensions. See MSC Nastran documentation [1]_ for more details. Added by
     JohnDN90.
@@ -1362,6 +1387,7 @@ def nastran_tube2(DIM1: float, DIM2: float, n: float):
     :param float DIM1: Outer radius of the circular tube section
     :param float DIM2: Thickness of wall
     :param int n: Number of points discretising the circle
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a circular TUBE2 cross-section with an outer radius of 3.0 and a
     wall thickness of 0.5, and generates a mesh with 37 point discretising the boundary and a
@@ -1408,8 +1434,8 @@ def nastran_tube2(DIM1: float, DIM2: float, n: float):
         points_outer.append([x_outer, y_outer])
         points_inner.append([x_inner, y_inner])
 
-        exterior = Geometry(Polygon(points_outer))
-        interior = Geometry(Polygon(points_inner))
+        exterior = Geometry(Polygon(points_outer), material)
+        interior = Geometry(Polygon(points_inner), material)
         geometry = exterior - interior
 
         C = (0, DIM1)
@@ -1420,7 +1446,7 @@ def nastran_tube2(DIM1: float, DIM2: float, n: float):
         return geometry
 
 
-def nastran_zed(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
+def nastran_zed(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a Z section with the web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -1429,6 +1455,7 @@ def nastran_zed(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
     :param float DIM2: Thickness of web
     :param float DIM3: Spacing between horizontal members (length of web)
     :param float DIM4: Depth (y) of Z-section
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a rectangular cross-section with a depth of 4.0 and width of
     2.75, and generates a mesh with a maximum triangular area of 0.005::
@@ -1465,7 +1492,7 @@ def nastran_zed(DIM1: float, DIM2: float, DIM3: float, DIM4: float):
         [0.0, DIM4 - t],
         [DIM1, DIM4 - t],
     ]
-    geometry = Geometry(Polygon(points))
+    geometry = Geometry(Polygon(points), material)
 
     C = (0.5 * DIM2, 0.5 * DIM4)
     D = (0.5 * DIM2 + DIM1, -0.5 * DIM4)

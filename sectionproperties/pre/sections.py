@@ -77,23 +77,23 @@ class Geometry:
         facets, and holes. 
 
         :cvar points: List of points *(x, y)* defining the vertices of the section geometry.
-        If facets are not provided, it is a assumed the that the list of points are ordered
-        around the perimeter, either clockwise or anti-clockwise.
+            If facets are not provided, it is a assumed the that the list of points are ordered
+            around the perimeter, either clockwise or anti-clockwise.
         :vartype points: list[list[float]]
         :cvar facets: Optional. A list of *(start, end)* indexes of vertices defining the edges
-        of the section geoemtry. Can be used to define both external and internal perimeters of holes.
-        Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
-        interior perimeter 2, etc.
+            of the section geoemtry. Can be used to define both external and internal perimeters of holes.
+            Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
+            interior perimeter 2, etc.
         :vartype facets: list[list[int]]
         :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-        being holes or voids. The point can be located anywhere within the hole region. If 
-        facets is provided, then holes must also be provided.
-        Only one point is required per hole region.
+            being holes or voids. The point can be located anywhere within the hole region. If 
+            facets is provided, then holes must also be provided.
+            Only one point is required per hole region.
         :vartype control_points: list[list[int]]
         :cvar control_points: Optional. A list of points *(x, y)* that described distinct
-        material regions within the geometry. One point is required for each geometry 
-        with a distinct material. If not provided, a control_point will be auto-generated for
-        the geometry.
+            material regions within the geometry. One point is required for each geometry 
+            with a distinct material. If not provided, a control_point will be auto-generated for
+            the geometry.
         """
         if facets is None and holes is None and control_points is None:
             return Geometry(Polygon(points))
@@ -156,9 +156,12 @@ class Geometry:
         return geometry
 
     @staticmethod
-    def from_dxf(dxf_filepath: Union[str, pathlib.Path]) -> Geometry:
+    def from_dxf(dxf_filepath: Union[str, pathlib.Path]) -> Union[Geometry, CompoundGeometry]:
         """
         An interface for the creation of Geometry objects from CAD .dxf files.
+
+        :cvar dxf_filepath: A path-like object for the dxf file
+        :vartype dxf_filepath: Union[str, pathlib.Path] 
         """
         return load_dxf(dxf_filepath)
 
@@ -177,18 +180,22 @@ class Geometry:
         return
 
     def compile_geometry(self):  # Alias
-        # pass
+        """
+        Alters attributes .points, .facets, .holes, .control_points to represent
+        the data in the shapely geometry.
+        """
         self.create_facets_and_control_points()
+
 
     def create_mesh(self, mesh_sizes: Union[float, List[float]]):
         """Creates a quadratic triangular mesh from the Geometry object.
 
         :param mesh_sizes: A float describing the maximum mesh element area to be used
-        within the Geometry-object finite-element mesh.
+            within the Geometry-object finite-element mesh.
         :type mesh_sizes: Union[float, List[float]]
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
-        Geometry-object is self, not a new instance.
+            Geometry-object is self, not a new instance.
         :rtype: :class:`sectionproperties.pre.sections.Geometry`
 
         The following example creates a circular cross-section with a diameter of 50 with 64
@@ -231,11 +238,11 @@ class Geometry:
         have it's *x* ordinate the same as the point.
 
         :param align_to: Another Geometry to align to or a tuple representing an
-        *(x,y)* coordinate point.
+            *(x,y)* coordinate point.
         :type align_to: sectionproperties.pre.sections.Geometry
 
         :param inner: Default False. If True, align the left-most point of this
-        object to the left-most point of 'align_to'. 
+            object to the left-most point of 'align_to'. 
         :type inner: bool
 
         :return: Geometry object translated to alignment location
@@ -350,7 +357,7 @@ class Geometry:
         :param float angle: Angle (degrees by default) by which to rotate the section. A positive angle leads
             to a counter-clockwise rotation.
         :param rot_point: Optional. Point *(x, y)* about which to rotate the section. If not provided, will rotate
-        about the center of the geometry's bounding box. Default = 'center'.
+            about the center of the geometry's bounding box. Default = 'center'.
         :type rot_point: list[float, float]
         :param use_radians: Boolean to indicate whether 'angle' is in degrees or radians. If True, 'angle' is interpreted as radians.
         
@@ -377,8 +384,8 @@ class Geometry:
 
         :param string axis: Axis about which to mirror the geometry, *'x'* or *'y'*
         :param mirror_point: Point about which to mirror the geometry *(x, y)*. 
-        If no point is provided, mirrors the geometry about the centroid of the shape's bounding box.
-        Default = 'center'.
+            If no point is provided, mirrors the geometry about the centroid of the shape's bounding box.
+            Default = 'center'.
         :type mirror_point: Union[list[float, float], str]
 
         :return: New Geometry-object mirrored on 'axis' about 'mirror_point'
@@ -413,7 +420,7 @@ class Geometry:
         point_j: Optional[Tuple[float, float]] = None,
         vector: Union[Optional[Tuple[float, float]], np.ndarray] = None,
     ) -> Tuple[List[Geometry], List[Geometry]]:
-        """Splits, or bisects, the geometry about an infinite line, as defined by two points
+        """Splits, or bisects, the geometry about a line, as defined by two points
         on the line or by one point on the line and a vector. Either 'point_j' or 'vector'
         must be given. If 'point_j' is given, 'vector' is ignored.
 
@@ -433,10 +440,10 @@ class Geometry:
         :type vector: Union[Tuple[float, float], numpy.ndarray]
 
         :return: A tuple of lists containing Geometry objects that are bisected about the 
-        infinite line defined by the two given points. The first item in the tuple represents
-        the geometries on the "top" of the line (or to the "right" of the line, if vertical) and
-        the second item represents the geometries to the "bottom" of the line (or 
-        to the "left" of the line, if vertical).
+            line defined by the two given points. The first item in the tuple represents
+            the geometries on the "top" of the line (or to the "right" of the line, if vertical) and
+            the second item represents the geometries to the "bottom" of the line (or 
+            to the "left" of the line, if vertical).
 
         :rtype: Tuple[List[Geometry], List[Geometry]]
 
@@ -470,11 +477,11 @@ class Geometry:
 
         return (top_right_geoms, bottom_left_geoms)
 
-    def offset_section_perimeter(self, amount: float = 0, resolution: float = 12):
+    def offset_perimeter(self, amount: float = 0, resolution: float = 12):
         """Dilates or erodes the section perimeter by a discrete amount. 
 
         :param amount: Distance to offset the section by. A -ve value "erodes" the section.
-        A +ve value "dilates" the section.
+            A +ve value "dilates" the section.
         :type amount: float
         :param resolution: Number of segments used to approximate a quarter circle around a point
         :type resolution: float
@@ -487,7 +494,7 @@ class Geometry:
             import sectionproperties.pre.sections as sections
 
             geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-            new_geometry = geometry.offset_section_perimeter(amount=-3)
+            new_geometry = geometry.offset_perimeter(amount=-3)
         """
         new_geom = self.geom.buffer(
             distance=amount, join_style=1, resolution=resolution
@@ -518,19 +525,19 @@ class Geometry:
         see a plot with the points labeled to find the appropriate point indexes.
 
         :param point_idxs: An integer representing an index location or a list of integer
-        index locations.
+            index locations.
         :type point_idxs: Union[int, List[int]]
         :param dx: The number of units in the x-direction to shift the point(s) by
         :type dx: float
         :param dy: The number of units in the y-direction to shift the point(s) by
         :type dy: float
         :param abs_x: Absolute x-coordinate in coordinate system to shift the 
-        point(s) to. If abs_x is provided, dx is ignored. If providing a list
-        to point_idxs, all points will be moved to this absolute location.
+            point(s) to. If abs_x is provided, dx is ignored. If providing a list
+            to point_idxs, all points will be moved to this absolute location.
         :type abs_x: Optional[float]
         :param abs_y: Absolute y-coordinate in coordinate system to shift the 
-        point(s) to. If abs_y is provided, dy is ignored. If providing a list
-        to point_idxs, all points will be moved to this absolute location.
+            point(s) to. If abs_y is provided, dy is ignored. If providing a list
+            to point_idxs, all points will be moved to this absolute location.
         :type abs_y: Optional[float]
 
         :return: Geometry object with selected points translated to the new location.
@@ -573,8 +580,8 @@ class Geometry:
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
         :param bool labels: A list of str which indicate which labels to plot. Can be one
-        or a combination of 'points', 'facets', 'control_points', or an empty list
-        to indicate no labels. Default is ['control_points']
+            or a combination of 'points', 'facets', 'control_points', or an empty list
+            to indicate no labels. Default is ['control_points']
         :param bool perimeter: If set to true, boldens the perimeter of the cross-section
 
         :return: Matplotlib figure and axes objects (fig, ax)
@@ -723,17 +730,7 @@ class Geometry:
     def recovery_points(
         self, new_points: Union[List[list], List[tuple], List[Point]]
     ) -> list:
-        # The points are in the .geom polygon
-        # intersection_exists = (MultiPoint(new_points) & self.geom).equals(MultiPoint(new_points))
-        # only_four_points = len(new_points) == 4
-        # if intersection_exists and only_four_points:
         self._recovery_points = new_points
-        # elif intersection_exists and not only_four_points:
-        #     raise ValueError("There must be exactly four recovery points")
-        # elif not intersection_exists and only_four_points:
-        #     raise ValueError("Not all of the points entered exist on the current geometry.")
-        # else:
-        #     raise ValueError("There must be exactly four recovery points and they must all exist on the current geometry.")
 
     @recovery_points.getter
     def recovery_points(
@@ -834,8 +831,8 @@ class CompoundGeometry(Geometry):
     objects by using the + operator.
 
     :cvar geoms: either a list of Geometry objects or a shapely.geometry.MultiPolygon
-    instance.
-    :vartype geoms: List[sectionproperties.pre.sections.Geometry] or shapely.geometry.MultiPolygon
+        instance.
+    :vartype geoms: Union[shapely.geometry.MultiPolygon, List[sectionproperties.pre.sections.Geometry]]
     """
 
     def __init__(self, geoms: Union[MultiPolygon, List[Geometry]]):
@@ -874,6 +871,7 @@ class CompoundGeometry(Geometry):
         print(f"Materials incl.: {list(set(materials_list))}")
         return self.geom._repr_svg_()
 
+
     @staticmethod
     def from_points(
         points: List[List[float]],
@@ -886,21 +884,21 @@ class CompoundGeometry(Geometry):
         facets, and holes. 
 
         :cvar points: List of points *(x, y)* defining the vertices of the section geometry.
-        If facets are not provided, it is a assumed the that the list of points are ordered
-        around the perimeter, either clockwise or anti-clockwise
+            If facets are not provided, it is a assumed the that the list of points are ordered
+            around the perimeter, either clockwise or anti-clockwise
         :vartype points: list[list[float]]
         :cvar facets: Optional. A list of *(start, end)* indexes of vertices defining the edges
-        of the section geoemtry. Can be used to define both external and internal perimeters of holes.
-        Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
-        interior perimeter 2, etc.
+            of the section geoemtry. Can be used to define both external and internal perimeters of holes.
+            Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
+            interior perimeter 2, etc.
         :vartype facets: list[list[int]]
         :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-        being holes or voids. The point can be located anywhere within the hole region.
-        Only one point is required per hole region.
+            being holes or voids. The point can be located anywhere within the hole region.
+            Only one point is required per hole region.
         :vartype holes: list[list[float]]
         :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-        being holes or voids. The point can be located anywhere within the hole region.
-        Only one point is required per hole region.
+            being holes or voids. The point can be located anywhere within the hole region.
+            Only one point is required per hole region.
         :vartype holes: list[list[float]]
         """
         # First, generate all invidual polygons from points and facets
@@ -957,13 +955,13 @@ class CompoundGeometry(Geometry):
         """Creates a quadratic triangular mesh from the Geometry object.
 
         :param mesh_size: A float describing the maximum mesh element area to be
-        used in the finite-element mesh for each Geometry object within the
-        CompoundGeometry object. If a list of length 1 is passed, then the one
-        size will be applied to all constituent Geometry meshes.
+            used in the finite-element mesh for each Geometry object within the
+            CompoundGeometry object. If a list of length 1 is passed, then the one
+            size will be applied to all constituent Geometry meshes.
         :type mesh_sizes: List[float]
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
-        Geometry-object is self, not a new instance.
+            Geometry-object is self, not a new instance.
         :rtype: :class:`sectionproperties.pre.sections.Geometry`
 
         The following example creates a circular cross-section with a diameter of 50 with 64
@@ -1012,7 +1010,7 @@ class CompoundGeometry(Geometry):
         :param float angle: Angle (degrees by default) by which to rotate the section. A positive angle leads
             to a counter-clockwise rotation.
         :param rot_point: Optional. Point *(x, y)* about which to rotate the section. If not provided, will rotate
-        about the center of the compound geometry's bounding box. Default = 'center'.
+            about the center of the compound geometry's bounding box. Default = 'center'.
         :type rot_point: list[float, float]
         :param use_radians: Boolean to indicate whether 'angle' is in degrees or radians. If True, 'angle' is interpreted as radians.
         
@@ -1041,8 +1039,8 @@ class CompoundGeometry(Geometry):
 
         :param string axis: Axis about which to mirror the geometry, *'x'* or *'y'*
         :param mirror_point: Point about which to mirror the geometry *(x, y)*. 
-        If no point is provided, mirrors the geometry about the centroid of the shape's bounding box.
-        Default = 'center'.
+            If no point is provided, mirrors the geometry about the centroid of the shape's bounding box.
+            Default = 'center'.
         :type mirror_point: Union[list[float, float], str]
 
         :return: Geometry object mirrored on 'axis' about 'mirror_point'
@@ -1089,10 +1087,10 @@ class CompoundGeometry(Geometry):
         :type vector: Union[Tuple[float, float], numpy.ndarray]
 
         :return: A tuple of lists containing Geometry objects that are bisected about the 
-        infinite line defined by the two given points. The first item in the tuple represents
-        the geometries on the "top" of the line (or to the "right" of the line, if vertical) and
-        the second item represents the geometries to the "bottom" of the line (or 
-        to the "left" of the line, if vertical).
+            infinite line defined by the two given points. The first item in the tuple represents
+            the geometries on the "top" of the line (or to the "right" of the line, if vertical) and
+            the second item represents the geometries to the "bottom" of the line (or 
+            to the "left" of the line, if vertical).
 
         :rtype: Tuple[List[Geometry], List[Geometry]]
 
@@ -1112,6 +1110,7 @@ class CompoundGeometry(Geometry):
             bottom_geoms_acc += bottom_geoms
         return (top_geoms_acc, bottom_geoms_acc)
 
+
     def offset_section_perimeter(self, amount: float = 0, resolution: float = 12):
         """Dilates or erodes perimeter of the individual geometries within the CompoundGeometry
         object by a discrete amount. Note, because the individual geometries have their own
@@ -1120,7 +1119,7 @@ class CompoundGeometry(Geometry):
         the perimeter offset.
 
         :param amount: Distance to offset the section by. A -ve value "erodes" the section. A +ve
-        value "dilates" the section.
+            value "dilates" the section.
         :type amount: float
         :param resolution: Number of segments used to approximate a quarter circle around a point
         :type resolution: float
@@ -1216,7 +1215,6 @@ class CompoundGeometry(Geometry):
 
 
 ### Helper functions for Geometry
-
 
 def load_dxf(dxf_filepath: pathlib.Path):
     """
@@ -1361,7 +1359,7 @@ def draw_radius(
     return points
 
 
-def rectangular_section(b, d, material: pre.Material = pre.DEFAULT_MATERIAL):
+def rectangular_section(b, d, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a rectangular section with the bottom left corner at the origin *(0, 0)*, with
     depth *d* and width *b*.
 
@@ -1400,12 +1398,13 @@ def rectangular_section(b, d, material: pre.Material = pre.DEFAULT_MATERIAL):
     return Geometry(rectangle, material)
 
 
-def circular_section(d: float, n: int):
+def circular_section(d: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a solid circle centered at the origin *(0, 0)* with diameter *d* and using *n*
     points to construct the circle.
 
     :param float d: Diameter of the circle
     :param int n: Number of points discretising the circle
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a circular geometry with a diameter of 50 with 64 points,
     and generates a mesh with a maximum triangular area of 2.5::
@@ -1442,16 +1441,17 @@ def circular_section(d: float, n: int):
         points.append([x, y])
 
     circle = Polygon(points)
-    return Geometry(circle)
+    return Geometry(circle, material)
 
 
-def circular_hollow_section(d: float, t: float, n: int):
+def circular_hollow_section(d: float, t: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a circular hollow section (CHS) centered at the origin *(0, 0)*, with diameter *d* and
     thickness *t*, using *n* points to construct the inner and outer circles.
 
     :param float d: Outer diameter of the CHS
     :param float t: Thickness of the CHS
     :param int n: Number of points discretising the inner and outer circles
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a CHS discretised with 64 points, with a diameter of 48 and
     thickness of 3.2, and generates a mesh with a maximum triangular area of 1.0::
@@ -1492,16 +1492,17 @@ def circular_hollow_section(d: float, t: float, n: int):
 
     inner_circle = Polygon(points_inner)
     outer_circle = Polygon(points_outer)
-    return Geometry(outer_circle - inner_circle)
+    return Geometry(outer_circle - inner_circle, material)
 
 
-def elliptical_section(d_y: float, d_x: float, n: int):
+def elliptical_section(d_y: float, d_x: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a solid ellipse centered at the origin *(0, 0)* with vertical diameter *d_y* and
     horizontal diameter *d_x*, using *n* points to construct the ellipse.
 
     :param float d_y: Diameter of the ellipse in the y-dimension
     :param float d_x: Diameter of the ellipse in the x-dimension
     :param int n: Number of points discretising the ellipse
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates an elliptical cross-section with a vertical diameter of 25 and
     horizontal diameter of 50, with 40 points, and generates a mesh with a maximum triangular area
@@ -1539,10 +1540,10 @@ def elliptical_section(d_y: float, d_x: float, n: int):
         points.append([x, y])
 
     ellipse = Polygon(points)
-    return Geometry(ellipse)
+    return Geometry(ellipse, material)
 
 
-def elliptical_hollow_section(d_y: float, d_x: float, t: float, n: int):
+def elliptical_hollow_section(d_y: float, d_x: float, t: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs an elliptical hollow section (EHS) centered at the origin *(0, 0)*, with outer vertical
     diameter *d_y*, outer horizontal diameter *d_x*, and thickness *t*, using *n* points to
     construct the inner and outer ellipses.
@@ -1551,6 +1552,7 @@ def elliptical_hollow_section(d_y: float, d_x: float, t: float, n: int):
     :param float d_x: Diameter of the ellipse in the x-dimension
     :param float t: Thickness of the EHS
     :param int n: Number of points discretising the inner and outer ellipses
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a EHS discretised with 30 points, with a outer vertical diameter
     of 25, outer horizontal diameter of 50, and thickness of 2.0, and generates a mesh with a
@@ -1592,10 +1594,10 @@ def elliptical_hollow_section(d_y: float, d_x: float, t: float, n: int):
 
     outer = Polygon(points_outer)
     inner = Polygon(points_inner)
-    return Geometry(outer - inner)
+    return Geometry(outer - inner, material)
 
 
-def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: int):
+def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a rectangular hollow section (RHS) centered at *(b/2, d/2)*, with depth *d*, width *b*,
     thickness *t* and outer radius *r_out*, using *n_r* points to construct the inner and outer
     radii. If the outer radius is less than the thickness of the RHS, the inner radius is set to
@@ -1606,6 +1608,7 @@ def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: 
     :param float t: Thickness of the RHS
     :param float r_out: Outer radius of the RHS
     :param int n_r: Number of points discretising the inner and outer radii
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates an RHS with a depth of 100, a width of 50, a thickness of 6 and
     an outer radius of 9, using 8 points to discretise the inner and outer radii. A mesh is
@@ -1645,12 +1648,12 @@ def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: 
 
     outer = Polygon(points_outer)
     inner = Polygon(points_inner)
-    return Geometry(outer - inner)
+    return Geometry(outer - inner, material)
 
 
 def i_section(
-    d: float, b: float, t_f: float, t_w: float, r: float, n_r: int
-):  # More specific description and less ambiguous? e.g. not an "S" section.
+    d: float, b: float, t_f: float, t_w: float, r: float, n_r: int, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:  # More specific description and less ambiguous? e.g. not an "S" section.
     """Constructs an I-section centered at *(b/2, d/2)*, with depth *d*, width *b*, flange
     thickness *t_f*, web thickness *t_w*, and root radius *r*, using *n_r* points to construct the
     root radius.
@@ -1661,6 +1664,7 @@ def i_section(
     :param float t_w: Web thickness of the I-section
     :param float r: Root radius of the I-section
     :param int n_r: Number of points discretising the root radius
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates an I-section with a depth of 203, a width of 133, a flange
     thickness of 7.8, a web thickness of 5.8 and a root radius of 8.9, using 16 points to
@@ -1715,10 +1719,10 @@ def i_section(
     # # add the last point
     points.append([0, t_f])
     i_section = Polygon(points)
-    return Geometry(i_section)
+    return Geometry(i_section, material)
 
 
-def mono_i_section(d, b_t, b_b, t_fb, t_ft, t_w, r, n_r):
+def mono_i_section(d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a monosymmetric I-section centered at *(max(b_t, b_b)/2, d/2)*, with depth *d*,
     top flange width *b_t*, bottom flange width *b_b*, top flange thickness *t_ft*, top flange
     thickness *t_fb*, web thickness *t_w*, and root radius *r*, using *n_r* points to construct the
@@ -1732,6 +1736,7 @@ def mono_i_section(d, b_t, b_b, t_fb, t_ft, t_w, r, n_r):
     :param float t_w: Web thickness of the I-section
     :param float r: Root radius of the I-section
     :param int n_r: Number of points discretising the root radius
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a monosymmetric I-section with a depth of 200, a top flange width
     of 50, a top flange thickness of 12, a bottom flange width of 130, a bottom flange thickness of
@@ -1792,10 +1797,10 @@ def mono_i_section(d, b_t, b_b, t_fb, t_ft, t_w, r, n_r):
     points.append([x_central - b_b * 0.5, t_fb])
 
     polygon = Polygon(points)
-    return Geometry(polygon)
+    return Geometry(polygon, material)
 
 
-def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
+def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a Tapered Flange I-section centered at *(b/2, d/2)*, with depth *d*, width *b*,
     mid-flange thickness *t_f*, web thickness *t_w*, root radius *r_r*, flange radius *r_f* and
     flange angle *alpha*, using *n_r* points to construct the radii.
@@ -1809,6 +1814,7 @@ def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
     :param float r_f: Flange radius of the Tapered Flange I-section
     :param float alpha: Flange angle of the Tapered Flange I-section (degrees)
     :param int n_r: Number of points discretising the radii
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a Tapered Flange I-section with a depth of 588, a width of 191, a
     mid-flange thickness of 27.2, a web thickness of 15.2, a root radius of 17.8, a flange radius
@@ -1983,10 +1989,10 @@ def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
             points.append([x, y])
 
     polygon = Polygon(points)
-    return Geometry(polygon)
+    return Geometry(polygon, material)
 
 
-def channel_section(d, b, t_f, t_w, r, n_r):
+def channel_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a parallel-flange channel (PFC) section with the bottom left corner at the origin *(0, 0)*, with depth *d*,
     width *b*, flange thickness *t_f*, web  thickness *t_w* and root radius *r*, using *n_r* points
     to construct the root radius.
@@ -1999,6 +2005,7 @@ def channel_section(d, b, t_f, t_w, r, n_r):
     :param int n_r: Number of points discretising the root radius
     :param shift: Vector that shifts the cross-section by *(x, y)*
     :type shift: list[float, float]
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a PFC section with a depth of 250, a width of 90, a flange
     thickness of 15, a web thickness of 8 and a root radius of 12, using 8 points to discretise the
@@ -2042,10 +2049,10 @@ def channel_section(d, b, t_f, t_w, r, n_r):
     points.append([0, d])
 
     polygon = Polygon(points)
-    return Geometry(polygon)
+    return Geometry(polygon, material)
 
 
-def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
+def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a Tapered Flange Channel section with the bottom left corner at the origin
     *(0, 0)*, with depth *d*, width *b*, mid-flange thickness *t_f*, web thickness *t_w*, root
     radius *r_r*, flange radius *r_f* and flange angle *alpha*, using *n_r* points to construct the
@@ -2060,6 +2067,7 @@ def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
     :param float r_f: Flange radius of the Tapered Flange Channel section
     :param float alpha: Flange angle of the Tapered Flange Channel section (degrees)
     :param int n_r: Number of points discretising the radii
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a Tapered Flange Channel section with a depth of 10, a width of
     3.5, a mid-flange thickness of 0.575, a web thickness of 0.475, a root radius of 0.575, a
@@ -2170,10 +2178,10 @@ def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r):
     points.append([0, d])
 
     polygon = Polygon(points)
-    return Geometry(polygon)
+    return Geometry(polygon, material)
 
 
-def tee_section(d, b, t_f, t_w, r, n_r):
+def tee_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a Tee section with the top left corner at *(0, d)*, with depth *d*, width *b*,
     flange thickness *t_f*, web thickness *t_w* and root radius *r*, using *n_r* points to
     construct the root radius.
@@ -2184,6 +2192,7 @@ def tee_section(d, b, t_f, t_w, r, n_r):
     :param float t_w: Web thickness of the Tee section
     :param float r: Root radius of the Tee section
     :param int n_r: Number of points discretising the root radius
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a Tee section with a depth of 200, a width of 100, a flange
     thickness of 12, a web thickness of 6 and a root radius of 8, using 8 points to discretise the
@@ -2226,10 +2235,10 @@ def tee_section(d, b, t_f, t_w, r, n_r):
     points += draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
     polygon = Polygon(points)
-    return Geometry(polygon)
+    return Geometry(polygon, material)
 
 
-def angle_section(d, b, t, r_r, r_t, n_r):
+def angle_section(d, b, t, r_r, r_t, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs an angle section with the bottom left corner at the origin *(0, 0)*, with depth
     *d*, width *b*, thickness *t*, root radius *r_r* and toe radius *r_t*, using *n_r* points to
     construct the radii.
@@ -2240,6 +2249,7 @@ def angle_section(d, b, t, r_r, r_t, n_r):
     :param float r_r: Root radius of the angle section
     :param float r_t: Toe radius of the angle section
     :param int n_r: Number of points discretising the radii
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates an angle section with a depth of 150, a width of 100, a thickness
     of 8, a root radius of 12 and a toe radius of 5, using 16 points to discretise the radii. A
@@ -2287,10 +2297,10 @@ def angle_section(d, b, t, r_r, r_t, n_r):
     points.append([0, d])
 
     polygon = Polygon(points)
-    return Geometry(polygon)
+    return Geometry(polygon, material)
 
 
-def cee_section(d, b, l, t, r_out, n_r):
+def cee_section(d, b, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a Cee section (typical of cold-formed steel) with the bottom left corner at the 
     origin *(0, 0)*, with depth *d*, width *b*, lip *l*, thickness *t* and outer radius *r_out*,
     using *n_r* points to construct the radius. If the outer radius is less than the thickness 
@@ -2303,6 +2313,7 @@ def cee_section(d, b, l, t, r_out, n_r):
     :param float r_out: Outer radius of the Cee section
     :param int n_r: Number of points discretising the outer radius
     :raises Exception: Lip length must be greater than the outer radius
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a Cee section with a depth of 125, a width of 50, a lip of 30, a
     thickness of 1.5 and an outer radius of 6, using 8 points to discretise the radius. A mesh is
@@ -2367,10 +2378,10 @@ def cee_section(d, b, l, t, r_out, n_r):
     points += draw_radius([r_out, d - r_out], r_out, 0.5 * np.pi, n_r)
 
     polygon = Polygon(points)
-    return Geometry(polygon)
+    return Geometry(polygon, material)
 
 
-def zed_section(d, b_l, b_r, l, t, r_out, n_r):
+def zed_section(d, b_l, b_r, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a zed section with the bottom left corner at the origin *(0, 0)*, with depth *d*,
     left flange width *b_l*, right flange width *b_r*, lip *l*, thickness *t* and outer radius
     *r_out*, using *n_r* points to construct the radius. If the outer radius is less than the
@@ -2383,6 +2394,7 @@ def zed_section(d, b_l, b_r, l, t, r_out, n_r):
     :param float t: Thickness of the Zed section
     :param float r_out: Outer radius of the Zed section
     :param int n_r: Number of points discretising the outer radius
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a zed section with a depth of 100, a left flange width of 40, a
     right flange width of 50, a lip of 20, a thickness of 1.2 and an outer radius of 5, using 8
@@ -2446,13 +2458,13 @@ def zed_section(d, b_l, b_r, l, t, r_out, n_r):
     # construct the inner top right radius
     points += draw_radius([-r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
     polygon = Polygon(points)
-    return Geometry(polygon)
+    return Geometry(polygon, material)
 
 
 zee_section = zed_section  # An alias for our American friends (and friends who use "American English")
 
 
-def cruciform_section(d, b, t, r, n_r):
+def cruciform_section(d, b, t, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a cruciform section centered at the origin *(0, 0)*, with depth *d*, width *b*,
     thickness *t* and root radius *r*, using *n_r* points to construct the root radius.
 
@@ -2460,6 +2472,7 @@ def cruciform_section(d, b, t, r, n_r):
     :param float b: Width of the cruciform section
     :param float t: Thickness of the cruciform section
     :param float r: Root radius of the cruciform section
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a cruciform section with a depth of 250, a width of 175, a
     thickness of 12 and a root radius of 16, using 16 points to discretise the radius. A mesh is
@@ -2515,10 +2528,10 @@ def cruciform_section(d, b, t, r, n_r):
     points += draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
     polygon = Polygon(points)
-    return Geometry(polygon)
+    return Geometry(polygon, material)
 
 
-def hollow_polygon_section(d, t, n_sides, r_in=0, n_r=1, rot=0):
+def polygon_hollow_section(d, t, n_sides, r_in=0, n_r=1, rot=0, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
     """Constructs a regular hollow polygon section centered at *(0, 0)*, with a pitch circle
     diameter of bounding polygon *d*, thickness *t*, number of sides *n_sides* and an optional
     inner radius *r_in*, using *n_r* points to construct the inner and outer radii (if radii is
@@ -2533,6 +2546,7 @@ def hollow_polygon_section(d, t, n_sides, r_in=0, n_r=1, rot=0):
         radii is specified
     :param rot: Initial counterclockwise rotation in degrees. By default bottom face is aligned
         with x axis.
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
     :raises Exception: Number of sides in polygon must be greater than or equal to 3
 
     The following example creates an Octagonal section (8 sides) with a diameter of 200, a
@@ -2541,7 +2555,7 @@ def hollow_polygon_section(d, t, n_sides, r_in=0, n_r=1, rot=0):
 
         import sectionproperties.pre.sections as sections
 
-        geometry = sections.polygon_section(d=200, t=6, n_sides=8, r_in=20, n_r=12)
+        geometry = sections.polygon_hollow_section(d=200, t=6, n_sides=8, r_in=20, n_r=12)
         mesh = geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/polygon_geometry.png
@@ -2632,7 +2646,7 @@ def hollow_polygon_section(d, t, n_sides, r_in=0, n_r=1, rot=0):
 
     outer_polygon = Polygon(outer_points)
     inner_polygon = Polygon(inner_points)
-    return Geometry(outer_polygon - inner_polygon)
+    return Geometry(outer_polygon - inner_polygon, material)
 
 
 def rotate(point, angle: float):
@@ -2656,7 +2670,7 @@ def rotate(point, angle: float):
     return [new_x, new_y]
 
 
-def box_girder_section(d, b_t, b_b, t_ft, t_fb, t_w):
+def box_girder_section(d, b_t, b_b, t_ft, t_fb, t_w, material: pre.Material = pre.DEFAULT_MATERIAL):
     """Constructs a box girder section centered at at *(max(b_t, b_b)/2, d/2)*, with depth *d*, top
     width *b_t*, bottom width *b_b*, top flange thickness *t_ft*, bottom flange thickness *t_fb*
     and web thickness *t_w*.
@@ -2723,87 +2737,4 @@ def box_girder_section(d, b_t, b_b, t_ft, t_fb, t_w):
     outer_polygon = Polygon(outer_points)
     inner_polygon = Polygon(inner_points)
 
-    return Geometry(outer_polygon - inner_polygon)
-
-
-def dowel_array(
-    b: int,
-    d: int,
-    bars_x: int,
-    bars_y: int,
-    cover: float,
-    diam: float,
-    n_r: int = 20,
-    perimeter_only: bool = False,
-):
-    """Constructs an array of circular sections within a space of width 'b' and
-    depth, 'd' representing a section of cylindrical dowels.
-
-    :param float b: Width of the total array space in the x direction
-    :param float b: Depth of the total array space in the y direction
-    :param float bars_x: Number of circles to place within array space distance 'b'
-    :param float bars_y: Number of circles to place within array space distance 'd'
-    :param float cover: A +ve distance that serves as a buffer between the edges of 'b' and 'd'
-    and the tangent of the outer circles that would normally touch 'b' and 'd'.
-    :param float diam: The diameter of each circle in the array
-    :param float n_r: Number of points used to discretize each circular section
-    :param bool perimeter_only: If True, only return circular sections around the perimeter
-    of the array space. Default is False.
-
-    The following example creates an array of circular sections within a space that has a depth
-    of 1200, a top width of 800, has four circles in the x direction, six circles in the y
-    direction, a cover distance of 50 (applies to all sides), each having a diameter of 25,
-    and discretized with 20 points.
-
-        import sectionproperties.pre.sections as sections
-
-        geometry = sections.dowel_array(d=1200, b=800, bars_x=4, bars_y=6, cover=50, diam=25, n_r=20)
-        mesh = geometry.create_mesh(mesh_sizes=[10.0])
-
-    ..  figure:: ../images/sections/dowel_array_geometry.png
-        :align: center
-        :scale: 75 %
-
-        Dowel array geometry.
-
-    ..  figure:: ../images/sections/dowel_array_mesh.png
-        :align: center
-        :scale: 75 %
-
-        Mesh generated from the above geometry.
-    """
-    total_x = b - 2 * cover - diam
-    total_y = d - 2 * cover - diam
-    spacing_x = total_x / (bars_x - 1)
-    spacing_y = total_y / (bars_y - 1)
-    bars_acc = []
-    for x_pos in range(bars_x):
-        for y_pos in range(bars_y):
-            if (
-                perimeter_only
-            ):  # Use circular section from Robbie with optional center location
-                if (0 < x_pos < bars_x - 1) and (0 < y_pos < bars_y - 1):
-                    continue
-                else:
-                    bars_acc.append(
-                        circular_section(
-                            diam,
-                            n_r,
-                            [
-                                cover + diam / 2 + spacing_x * x_pos,
-                                cover + diam / 2 + spacing_y * y_pos,
-                            ],
-                        )
-                    )
-            else:
-                bars_acc.append(
-                    circular_section(
-                        diam,
-                        n_r,
-                        [
-                            cover + diam / 2 + spacing_x * x_pos,
-                            cover + diam / 2 + spacing_y * y_pos,
-                        ],
-                    )
-                )
-    return CompoundGeometry(bars_acc)
+    return Geometry(outer_polygon - inner_polygon, material)
