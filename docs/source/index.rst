@@ -17,7 +17,7 @@ section properties to be used in structural design and visualise cross-sectional
 from combinations of applied forces and bending moments.
 
 A list of the `current features of the package and implementation goals for future releases
-<https://github.com/robbievanleeuwen/section-properties/tree/master/README.md>`_
+<https://github.com/robbievanleeuwen/section-properties/blob/master/README.md>`_
 can be found in the README file on github.
 
 .. toctree::
@@ -29,44 +29,51 @@ can be found in the README file on github.
    rst/geom_mesh
    rst/analysis
    rst/post
-   rst/examples
+   sphinx_gallery_examples/index
    rst/api
    rst/theory
 
-Here's a quick example that harnesses some of the power of *sectionproperties* and shows its simplicity::
+Here's a quick example that harnesses some of the power of *sectionproperties* and shows its
+simplicity.  An I section is analysed and then the area, second moments of area about the centroidal
+axis, torsion constant, and shear areas in the x & y directions are printed.
 
-  import sectionproperties.pre.sections as sections
-  from sectionproperties.analysis.cross_section import CrossSection
+.. jupyter-execute::
 
-  # create geometry of the cross-section
-  geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+   import sectionproperties.pre.sections as sections
+   from sectionproperties.analysis.cross_section import CrossSection
+   from pprint import pprint as print
+   # create geometry of the cross-section
+   geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+   # generate a finite element mesh
+   mesh = geometry.create_mesh(mesh_sizes=[2.5])
+   # create a CrossSection object for analysis
+   section = CrossSection(geometry, mesh)
+   # calculate various cross-section properties
+   section.calculate_geometric_properties()
+   section.calculate_warping_properties()
 
-  # generate a finite element mesh
-  mesh = geometry.create_mesh(mesh_sizes=[2.5])
+.. jupyter-execute::
 
-  # create a CrossSection object for analysis
-  section = CrossSection(geometry, mesh)
+   print(section.get_area())
 
-  # calculate various cross-section properties
-  section.calculate_geometric_properties()
-  section.calculate_warping_properties()
+.. jupyter-execute::
 
-  # print some of the calculated section properties
-  print(section.get_area())  # cross-section area
-  >>>3231.80
-  print(section.get_ic())  # second moments of area about the centroidal axis
-  >>>(23544664.29, 3063383.07, 0.00)
-  print(section.get_j())  # torsion constant
-  >>>62907.79
-  print(section.get_As())  # shear areas in the x & y directions
-  >>>(1842.17, 1120.18)
+   print(section.get_ic())
+
+.. jupyter-execute::
+
+   print(section.get_j())
+
+.. jupyter-execute::
+
+   print(section.get_As())
 
 Support
 -------
 
 Contact me on my email robbie.vanleeuwen@gmail.com or raise an issue on the github issue
 tracker using one of the `issue templates
-<https://github.com/robbievanleeuwen/section-properties/tree/master/.github/ISSUE_TEMPLATE>`_.
+<https://github.com/robbievanleeuwen/section-properties/issues/new/choose>`_.
 If you have a request for a feature to be added to the *sectionproperties* package,
 please don't hesitate to get in touch
 

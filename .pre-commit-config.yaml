@@ -46,4 +46,4 @@ repos:
         args: ['--disable=fixme']
         require_serial: true
         types: [python]
-        files: ^sectionproperties/
+        files: ^src/sectionproperties/

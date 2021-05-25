@@ -29,6 +29,7 @@ run_install() {
     poetry config --local virtualenvs.in-project true
     poetry install -v
 
+    echo
     echo "--------------------------------------------------------------------"
     echo "---[ Installing pre-commit hooks ]----------------------------------"
     echo "--------------------------------------------------------------------"
@@ -40,25 +41,35 @@ run_format() {
     echo "--------------------------------------------------------------------"
     echo "---[ Sort imports with isort ]--------------------------------------"
     echo "--------------------------------------------------------------------"
-    if [[ "${CI:-}" = "1" ]]; then
-        poetry run isort --check-only .
-    else
-        poetry run isort .
-    fi
+    poetry run isort .
 
     echo
     echo "--------------------------------------------------------------------"
     echo "---[ Format with black ]--------------------------------------------"
     echo "--------------------------------------------------------------------"
-    if [[ "${CI:-}" = "1" ]]; then
-        poetry run black --check .
-    else
-        poetry run black .
-    fi
+    poetry run black .
 }
 
 # --------------------------------------------------------------------------------------------------
 run_lint() {
+    echo "--------------------------------------------------------------------"
+    echo "---[ Poetry check ]-------------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry check
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Check with black ]---------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run black --check .
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Check with isort ]---------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run isort --check-only .
+
+    echo
     echo "--------------------------------------------------------------------"
     echo "---[ Lint with rstcheck ]-------------------------------------------"
     echo "--------------------------------------------------------------------"
@@ -66,6 +77,12 @@ run_lint() {
     poetry run rstcheck CONTRIBUTING.rst
     poetry run rstcheck CHANGELOG.rst
     poetry run rstcheck --recursive docs
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Lint with doc8 ]-----------------------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run doc8
 
     echo
     echo "--------------------------------------------------------------------"
@@ -78,24 +95,84 @@ run_lint() {
     echo "---[ Lint with pylint ]---------------------------------------------"
     echo "--------------------------------------------------------------------"
     # allow TODO messages
-    poetry run pylint --disable="fixme" sectionproperties
+    poetry run pylint --disable="fixme" src
 }
 
 # --------------------------------------------------------------------------------------------------
 run_docs() {
+    build_opts="-W"
+    while getopts ":i" option; do
+       case $option in
+          i)
+             build_opts=""
+             ;;
+          *)
+             echo "invalid option -$OPTARG"
+             exit 1
+             ;;
+       esac
+    done
+
+    # NOTE: Don't use this by default --- building the examples with sphinx-gallery is very slow
+    #       and doesn't need to be re-done each time the docs are built.  If a fresh start is
+    #       desiured, just run './runner clean' first.
+    # echo "--------------------------------------------------------------------"
+    # echo "---[ Remove documentation build artifacts ]-------------------------"
+    # echo "--------------------------------------------------------------------"
+    # rm -rf docs/build
+
+    # NOTE: This is skipped as pytest is used to do the docs testing
+    # echo
+    # echo "--------------------------------------------------------------------"
+    # echo "---[ Run documentation doctests ]-----------------------------------"
+    # echo "--------------------------------------------------------------------"
+    # poetry run sphinx-build -b doctest docs/source docs/build
+
+    echo
     echo "--------------------------------------------------------------------"
     echo "---[ Build the documentation ]--------------------------------------"
     echo "--------------------------------------------------------------------"
-    rm -rf docs/build
-    poetry run sphinx-build docs/source docs/build
+    poetry run sphinx-build -b html -n $build_opts docs/source docs/build
+
+    echo "--------------------------------------------------------------------"
+    echo "---[ Check links in the documentation ]-----------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run sphinx-build -b linkcheck docs/source docs/build
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Check documentation coverage ]---------------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run sphinx-build -b coverage docs/source docs/build
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Documentation coverage ]---------------------------------------"
+    echo "--------------------------------------------------------------------"
+    cat docs/build/python.txt
+    lines=$(cat docs/build/python.txt | wc -l)
+    # test that there are exactly 2 lines (which would indicate 100% coverage)
+    test $lines -eq 2
 }
 
 # --------------------------------------------------------------------------------------------------
 run_test() {
     echo "--------------------------------------------------------------------"
-    echo "---[ Test with pytest and coverage ]--------------------------------"
+    echo "---[ Test code in source docstrings ]-------------------------------"
     echo "--------------------------------------------------------------------"
-    poetry run coverage run --parallel -m pytest "$*"
+    poetry run pytest -v --doctest-modules src
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Test code in reStructuredText documentation ]------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run pytest -v --doctest-glob="*.rst" docs/source
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo "---[ Runs actual tests with pytest and coverage ]-------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run coverage run --parallel -m pytest -v "$*"
     if [[ "${CI:-}" = "1" ]]; then
         echo "skiping coverage combine and report until all jobs are done"
     else
@@ -111,10 +188,19 @@ run_build() {
     echo "--------------------------------------------------------------------"
     poetry build
 
+    echo
     echo "--------------------------------------------------------------------"
     echo "---[ Check build with twine ]---------------------------------------"
     echo "--------------------------------------------------------------------"
     poetry run twine check dist/*
+}
+
+# --------------------------------------------------------------------------------------------------
+run_precommit_on_all() {
+    echo "--------------------------------------------------------------------"
+    echo "---[ Run pre-commit checks on all files]----------------------------"
+    echo "--------------------------------------------------------------------"
+    poetry run pre-commit run --all-files
 }
 
 # --------------------------------------------------------------------------------------------------
@@ -125,23 +211,32 @@ run_clean() {
           a)
              all="yes"
              ;;
-          ?)
+          *)
              echo "invalid option -$OPTARG"
              exit 1
              ;;
        esac
     done
 
-    if [[ `env | grep VIRTUAL_ENV` ]]; then
-      echo "Error: deactivate your venv first."
-      exit 1
-    fi
-
     echo "deleting temporary files and directories..."
     find . -regex '^.*\(__pycache__\|\.py[co]\)$' -delete
-    rm -rf *.spec .eggs .tox build dist *.egg-info .cache site docs/build
+    rm -rf *.spec build dist *.egg-info .cache
+    # remove all docs/build files and directories except the rst directory (which is created with
+    # the matplotlib plot directive and is slow to re-create)
+    find docs/build -mindepth 1 ! -regex '^docs/build/plot_directive\(/.*\)?' ! -regex '^docs/build/rst\(/.*\)?' -delete
 
     if [ $all == "yes" ]; then
+        echo "deleting Sphinx gallery examples..."
+        rm -rf docs/source/sphinx_gallery_examples/
+        echo "deleting jupyter-execute notebooks..."
+        rm -rf docs/jupyter_execute
+        echo "deleting entire documentation output directory..."
+        rm -rf docs/build
+
+        if [[ `env | grep VIRTUAL_ENV` ]]; then
+            echo "Error: deactivate your venv to remove venv directory too (.venv/ not removed)"
+            exit 1
+        fi
         echo "deleting virtual environment..."
         rm -rf .venv/
     fi
@@ -156,28 +251,32 @@ if [ $# -eq 0 ]; then
     run_all
 else
     case $1 in
-        install):
+        install)
             run_install
             ;;
-        fmt|format*):
+        fmt|format*)
             run_format
             ;;
-        lint*)
+        check|lint*)
             run_lint
             ;;
         doc*)
-            run_docs
+            shift 1
+            run_docs $*
             ;;
         pytest|test*)
             shift 1
             run_test $*
             ;;
-        benchmarks)
+        benchmark*)
             shift 1
             run_test --benchmark-enable $*
             ;;
         build*)
             run_build
+            ;;
+        precommit|pre-commit)
+            run_precommit_on_all
             ;;
         clean)
             shift 1
@@ -189,24 +288,27 @@ else
             echo "Shortcuts for common developer tasks"
             echo "------------------------------------"
             echo ""
-            echo "Usage: run [command]"
+            echo "Usage: runner [command]"
             echo ""
-            echo "- runner           : (no arguments) to run each listed task:"
-            echo "                       - install"
-            echo "                       - format"
-            echo "                       - lint"
-            echo "                       - docs"
-            echo "                       - test"
-            echo "                       - build"
-            echo "- runner install   : Create virtual environment and install pre-commit hooks"
-            echo "- runner format    : Run formatters"
-            echo "- runner lint      : Run linters/code analysis"
-            echo "- runner docs      : Build the documentation"
-            echo "- runner test      : Run pytest with coverage"
-            echo "- runner build     : Build sdist and wheel distributions"
-            echo "- runner benchmark : Run benchmarks to compare execution timings"
-            echo "- runner clean     : Delete all temporary files and directories"
-            echo "- runner clean -a  : Do clean plus delete the virutal environment"
+            echo "- runner            : (no arguments) to run each listed task:"
+            echo "                        - install"
+            echo "                        - format"
+            echo "                        - lint"
+            echo "                        - docs"
+            echo "                        - test"
+            echo "                        - build"
+            echo "- runner install    : Create virtual environment and install pre-commit hooks"
+            echo "- runner format     : Run formatters"
+            echo "- runner lint       : Run linters/code analysis"
+            echo "- runner docs       : Check and build the documentation (warnings as errors)"
+            echo "- runner docs -i    : Check and build the documentation (warnings not as errors)"
+            echo "- runner test       : Run pytest with coverage"
+            echo "- runner build      : Build sdist and wheel distributions"
+            echo "- runner benchmark  : Run benchmarks to compare execution timings"
+            echo "- runner pre-commit : Run pre-commit on all files"
+            echo "- runner clean      : Delete all temporary files and directories"
+            echo "- runner clean -a   : Do clean plus delete the virutal environment and all"
+            echo "                      documentation artifacts"
             echo ""
             exit 1
     esac

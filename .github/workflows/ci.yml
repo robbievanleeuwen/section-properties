@@ -57,14 +57,10 @@ jobs:
           key: poetry-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Poetry check
-        env:
-          CI: 1
         run: |
           poetry check
 
       - name: Poetry configuration
-        env:
-          CI: 1
         run: |
           poetry config --local virtualenvs.in-project false
           poetry config --local virtualenvs.path ~/.virtualenvs
@@ -73,19 +69,10 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: poetry install
 
-      - name: Check formatting
-        env:
-          CI: 1
-        run: ./runner format
-
-      - name: Check linting
-        env:
-          CI: 1
+      - name: Check linting and formatting
         run: ./runner lint
 
       - name: Check build (sdist/wheel)
-        env:
-          CI: 1
         run: ./runner build
 
   docs:
@@ -124,16 +111,19 @@ jobs:
           pip --version
           poetry --version
 
-      - name: Cache Poetry Virtual Environments
+      - name: Cache Poetry virtual environments
         uses: actions/cache@v2
         id: cache
         with:
-          path: ~/.virtualenvs
+          path: |
+            ~/.virtualenvs
+            docs/source/sphinx_gallery_examples
+            docs/jupyter_execute
+            docs/build/plot_directive
+            docs/build/rst
           key: poetry-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Poetry configuration
-        env:
-          CI: 1
         run: |
           poetry config --local virtualenvs.in-project false
           poetry config --local virtualenvs.path ~/.virtualenvs
@@ -143,8 +133,6 @@ jobs:
         run: poetry install
 
       - name: Build documentation
-        env:
-          CI: 1
         run: ./runner docs
 
       - name: Upload documentation
@@ -237,8 +225,6 @@ jobs:
           key: poetry-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Poetry configuration
-        env:
-          CI: 1
         run: |
           poetry config --local virtualenvs.in-project false
           poetry config --local virtualenvs.path ~/.virtualenvs
@@ -303,8 +289,6 @@ jobs:
           key: poetry-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Poetry configuration
-        env:
-          CI: 1
         run: |
           poetry config --local virtualenvs.in-project false
           poetry config --local virtualenvs.path ~/.virtualenvs

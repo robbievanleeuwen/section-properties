@@ -1,42 +1,66 @@
-# -*- coding: utf-8 -*-
-#
-# Configuration file for the Sphinx documentation builder.
-#
-# This file does only contain a selection of the most common options. For a
-# full list see the documentation:
-# http://www.sphinx-doc.org/en/master/config
+"""Configuration file for the Sphinx documentation builder.
 
-# -- Path setup --------------------------------------------------------------
+This file only contains a selection of the most common options. For a full
+list see the documentation:
+https://www.sphinx-doc.org/en/master/usage/configuration.html
+"""
+
+# --- Path setup -----------------------------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
+import datetime
 import os
 import sys
+import warnings
+
+import sphinx_rtd_theme
+from docutils.parsers.rst import directives
+from sphinx.ext.autosummary import Autosummary, get_documenter
+from sphinx.util.inspect import safe_getattr
+from sphinx_gallery.sorting import FileNameSortKey
 
 
-sys.path.insert(0, os.path.abspath('../../'))
-from sectionproperties import __version__ as ver  # noqa
+sys.path.insert(0, os.path.abspath('../../src'))
+
+from sectionproperties import __version__  # noqa: E402   # pylint: disable=wrong-import-position
 
 
-autodoc_mock_imports = ['pybind11', 'meshpy', 'shapely']
+# --- General Settings  ----------------------------------------------------------------------------
 
-# -- Project information -----------------------------------------------------
+# silence the matplotlib warning
+warnings.filterwarnings(
+    "ignore",
+    category=UserWarning,
+    message=(
+        'Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.'
+    ),
+)
+
+
+# --- Project information --------------------------------------------------------------------------
 
 project = 'sectionproperties'
-copyright = '2020, Robbie van Leeuwen'
+year = datetime.date.today().year
+copyright = f'2017-{year}, Robbie van Leeuwen'  # pylint: disable=redefined-builtin
 author = 'Robbie van Leeuwen'
 
-# The short Major.Minor.Build version
-_v = ver.split('.')
-_build = ''.join([c for c in _v[2] if c.isdigit()])
-version = _v[0] + '.' + _v[1] + '.' + _build
+# The version info for the project you're documenting, acts as replacement for
+# |version| and |release|, also used in various other places throughout the
+# built documents.
+#
+# The short X.Y version.
+_version = __version__.split('.')
+_build = ''.join([c for c in _version[2] if c.isdigit()])
+version = _version[0] + '.' + _version[1] + '.' + _build
+
 # The full version, including alpha/beta/rc tags
-release = ver
+release = __version__
 
 
-# -- General configuration ---------------------------------------------------
+# --- General configuration ------------------------------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
@@ -47,8 +71,20 @@ release = ver
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'sphinx.ext.doctest',
+    'sphinx.ext.coverage',
+    'sphinx.ext.extlinks',
+    'sphinx.ext.intersphinx',
+    'sphinx_gallery.gen_gallery',
+    'sphinx_rtd_theme',
+    'sphinx_copybutton',
+    'notfound.extension',
+    'matplotlib.sphinxext.plot_directive',
+    'sphinx.ext.napoleon',
+    'jupyter_sphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -72,49 +108,74 @@ language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path .
-exclude_patterns = []
+# This patterns also effect to html_static_path and html_extra_path
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.ipynb_checkpoints']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
 
-# -- Options for HTML output -------------------------------------------------
+# --- Options for HTML output ----------------------------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
 
+# Add any paths that contain custom themes here, relative to this directory.
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+# A dictionary of values to pass into the template engine’s context for all
+# pages. Single values can also be put in this dictionary using the -A
+# command-line option of sphinx-build.
+#
+html_context = {
+    'menu_links_name': 'More Information',
+    'menu_links': [
+        (
+            '<i class="fa fa-github fa-fw"></i> Source Code',
+            'https://github.com/robbievanleeuwen/section-properties',
+        ),
+        (
+            '<i class="fa fa-bug fa-fw"></i> Bug/Feature Request',
+            'https://github.com/robbievanleeuwen/section-properties/issues/new/choose',
+        ),
+        (
+            '<i class="fa fa-gavel fa-fw"></i> Contributing',
+            'https://github.com/robbievanleeuwen/section-properties/blob/master/CONTRIBUTING.md',
+        ),
+        (
+            '<i class="fa fa-comment fa-fw"></i> Discussion',
+            'https://github.com/robbievanleeuwen/section-properties/discussions',
+        ),
+        (
+            '<i class="fa fa-file-pdf-o fa-fw"></i> The Paper',
+            'https://robbievanleeuwen.github.io/assets/cross-section.pdf',
+        ),
+    ],
+}
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {'logo_only': True}
+
+# The name of an image file (relative to this directory) to place at the top
+# of the sidebar.
+#
+html_logo = './_static/logo.png'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-#
-# The default sidebars (for documents that don't match any pattern) are
-# defined by theme itself.  Builtin themes are using these templates by
-# default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
-# 'searchbox.html']``.
-#
-# html_sidebars = {}
-
-
-# -- Options for HTMLHelp output ---------------------------------------------
-
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'sectionpropertiesdoc'
 
 
-# -- Options for LaTeX output ------------------------------------------------
+# --- Options for LaTeX output ---------------------------------------------------------------------
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
@@ -135,24 +196,18 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (
-        master_doc,
-        'sectionproperties.tex',
-        'sectionproperties Documentation',
-        'Robbie van Leeuwen',
-        'manual',
-    ),
+    (master_doc, 'sectionproperties.tex', 'sectionproperties Documentation', author, 'manual')
 ]
 
 
-# -- Options for manual page output ------------------------------------------
+# --- Options for manual page output ---------------------------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [(master_doc, 'sectionproperties', 'sectionproperties Documentation', [author], 1)]
 
 
-# -- Options for Texinfo output ----------------------------------------------
+# --- Options for Texinfo output -------------------------------------------------------------------
 
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
@@ -164,10 +219,163 @@ texinfo_documents = [
         'sectionproperties Documentation',
         author,
         'sectionproperties',
-        'One line description of project.',
-        'Miscellaneous',
-    ),
+        'Cross Section Analysis.',
+        'Structures',
+    )
 ]
 
 
-# -- Extension configuration -------------------------------------------------
+# --------------------------------------------------------------------------------------------------
+# --- Extension configurations ---------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
+
+
+# --- Intersphinx configuration --------------------------------------------------------------------
+
+intersphinx_mapping = {
+    'python': ("https://docs.python.org/3/", None),
+    'numpy': ('https://docs.scipy.org/doc/numpy', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org/stable', None),
+    'meshpy': ('https://documen.tician.de/meshpy/', None),
+}
+
+
+# --- matplotlib plot directive --------------------------------------------------------------------
+
+plot_include_source = True
+plot_formats = [("png", 90)]
+plot_html_show_formats = False
+plot_html_show_source_link = False
+plot_pre_code = """import numpy as np
+from matplotlib import pyplot as plt"""
+
+
+# --- Sphinx-Gallery options -----------------------------------------------------------------------
+
+sphinx_gallery_conf = {
+    # convert rst to md for ipynb
+    'pypandoc': False,
+    # path to your examples scripts
+    'examples_dirs': ['../../examples/'],
+    # path where to save gallery generated examples
+    'gallery_dirs': ['sphinx_gallery_examples'],
+    # Patter to search for example files
+    'filename_pattern': r'\.py',
+    # Remove the 'Download all examples' button from the top level gallery
+    'download_all_examples': False,
+    # Sort gallery example by file name instead of number of lines (default)
+    'within_subsection_order': FileNameSortKey,
+    # directory where function granular galleries are stored
+    'backreferences_dir': None,
+    # Modules for which function level galleries are created.  In
+    'doc_module': 'sectionproperties',
+    'image_scrapers': ('matplotlib',),
+    'first_notebook_cell': ('%matplotlib inline\n'),
+}
+
+
+# --- Sphinx-copybutton options --------------------------------------------------------------------
+
+# exclude Python prompt and ... line continuation from copied code
+copybutton_prompt_text = r'>>> |\.\.\. '
+copybutton_prompt_is_regexp = True
+
+
+# --- External links options -----------------------------------------------------------------------
+
+extlinks = {'issue': ('https://github.com/robbievanleeuwen/section-properties/issues/%s', 'issue ')}
+
+
+# --- sphinx-notfound-page options (custom 404 page) -----------------------------------------------
+
+example_link = r'https://sectionproperties.readthedocs.io/en/latest/rst/examples.html'
+notfound_context = {
+    'title': 'Page not found',
+    'body': f'<h1>Page not found</h1>\n\nTry the <a href="{example_link}">examples page</a>.',
+}
+
+
+# --- linkcheck options ----------------------------------------------------------------------------
+
+linkcheck_retries = 3
+linkcheck_timeout = 1000
+
+
+# --- jupyter_sphinx options -----------------------------------------------------------------------
+
+# kernel options are from:
+# https://ipython.org/ipython-doc/2/config/options/notebook.html
+jupyter_execute_kwargs = {
+    'timeout': -1,
+    'allow_errors': True,
+    'extra_arguments': [
+        '--matplotlib=inline',
+        '--InlineBackend.print_figure_kwargs={"bbox_inches": None}',
+        '--InlineBackend.rc={"figure.figsize": (10, 10), "figure.dpi": 100}',
+    ],
+}
+
+
+# --- Autosummary options --------------------------------------------------------------------------
+
+
+class AutoAutoSummary(Autosummary):
+    """Extended Autosummary directive to list members separately.
+
+    Based on this stack overflow answer (https://stackoverflow.com/a/30783465) with modifications
+    from the pyvista project.
+    """
+
+    option_spec = {'methods': directives.unchanged, 'attributes': directives.unchanged}
+
+    required_arguments = 1
+    app = None
+
+    @staticmethod
+    def get_members(obj, typ, include_public=None):
+        """Get members from the class."""
+        if not include_public:
+            include_public = []
+        items = []
+        for name in sorted(obj.__dict__.keys()):  # dir(obj):
+            try:
+                documenter = get_documenter(AutoAutoSummary.app, safe_getattr(obj, name), obj)
+            except AttributeError:
+                continue
+            if documenter.objtype in typ:
+                items.append(name)
+        public = [x for x in items if x in include_public or not x.startswith('_')]
+        return public, items
+
+    def run(self):
+        """Run the directive."""
+        clazz = str(self.arguments[0])
+        try:
+            (module_name, class_name) = clazz.rsplit('.', 1)
+            m = __import__(module_name, globals(), locals(), [class_name])
+            c = getattr(m, class_name)
+            if 'methods' in self.options:
+                _, methods = self.get_members(c, ['method'], ['__init__'])
+                self.content = [
+                    f"~{clazz}.{method}" for method in methods if not method.startswith('_')
+                ]
+            if 'attributes' in self.options:
+                _, attribs = self.get_members(c, ['attribute', 'property'])
+                self.content = [
+                    f"~{clazz}.{attrib}" for attrib in attribs if not attrib.startswith('_')
+                ]
+        except:  # noqa  # pylint: disable=bare-except
+            print(f'Something went wrong when autodocumenting {clazz}')
+        finally:
+            return super().run()  # noqa  # pylint: disable=lost-exception
+
+
+# --- Sphinx specific function(s) ------------------------------------------------------------------
+
+
+def setup(app):
+    """Sphinx setup function."""
+    AutoAutoSummary.app = app
+    app.add_directive('autoautosummary', AutoAutoSummary)
+    app.add_css_file('style.css')

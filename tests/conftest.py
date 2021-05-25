@@ -1,10 +1,30 @@
 """Shared pytest fixtures."""
+import warnings
 
 import numpy as np
 import pytest
 
 
+@pytest.fixture(scope='session', autouse=True)
+def set_mpl():
+    """Avoid matplotlib windows popping up."""
+    import matplotlib
+
+    matplotlib.use('agg', force=True)
+
+    warnings.filterwarnings(
+        "ignore",
+        category=UserWarning,
+        message=(
+            'Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the '
+            'figure.'
+        ),
+    )
+
+
 class Helpers:
+    """Helper methods available as a fixture for all of the tests."""
+
     @staticmethod
     def validate_properties(validation_list, section):
         for entry in validation_list:

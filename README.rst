@@ -1,4 +1,4 @@
-.. image:: https://raw.githubusercontent.com/Spectre5/section-properties/dev/docs/source/_static/logo.png
+.. image:: https://raw.githubusercontent.com/robbievanleeuwen/section-properties/dev/docs/source/_static/logo.png
   :width: 100 %
   :alt: sectionproperties
   :align: left

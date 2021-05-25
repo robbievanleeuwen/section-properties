@@ -15,9 +15,11 @@ UNIX (MacOS/Linux)
 ^^^^^^^^^^^^^^^^^^
 
 *sectionproperties* and all of its dependencies can be installed through the
-python package index::
+python package index
 
-  $ pip install sectionproperties
+.. code-block:: bash
+
+   $ pip install sectionproperties
 
 If you have any issues installing *meshpy*, refer to the installation instructions
 on its `github page
@@ -31,12 +33,16 @@ Windows
 Install *meshpy* by downloading the appropriate `installation wheel
 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#meshpy>`_.
 
-Navigate to the location of the downloaded wheel and install using pip::
+Navigate to the location of the downloaded wheel and install using pip
 
-  $ cd Downloads
-  $ pip install MeshPy‑2018.2.1‑cp36‑cp36m‑win_amd64.whl
+.. code-block:: bash
+
+   $ cd Downloads
+   $ pip install MeshPy‑2018.2.1‑cp36‑cp36m‑win_amd64.whl
 
 Once *meshpy* has been installed, the rest of the *sectionproperties* package can
-be installed using the python package index::
+be installed using the python package index
 
-  $ pip install sectionproperties
+.. code-block:: bash
+
+   $ pip install sectionproperties
