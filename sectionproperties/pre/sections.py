@@ -586,7 +586,7 @@ class Geometry:
         )
         return new_geom
 
-    def plot_geometry(self, ax=None, pause=True, labels=["control_points"]):
+    def plot_geometry(self, ax=None, pause=True, labels=["control_points"], size=500, dpi=96):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
         figure and axis is created.
 
@@ -619,9 +619,10 @@ class Geometry:
         # if no axes object is supplied, create and setup the plot
         perimeter = None  # To be implemented for CompoundGeometry at a later date
         fig = None
+        # plt.figure(figsize=(2*width, width), dpi=100)
         if ax is None:
             ax_supplied = False
-            (fig, ax) = plt.subplots()
+            (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=96)
             post.setup_plot(ax, pause)
         else:
             ax_supplied = True
@@ -655,6 +656,8 @@ class Geometry:
                 )
 
         for (i, h) in enumerate(self.holes):
+            print(self.holes)
+            print("h: ", h)
             # plot the holes
             if i == 0:
                 ax.plot(h[0], h[1], "rx", markersize=5, label="Holes")
@@ -689,6 +692,7 @@ class Geometry:
                     ax.annotate(str(i), xy=xy, color="b")
 
         # if no axes object is supplied, finish the plot
+
         if not ax_supplied:
             post.finish_plot(ax, pause, title="Cross-Section Geometry")
             return (fig, ax)
@@ -1208,7 +1212,7 @@ class CompoundGeometry(Geometry):
             for poly in unionized_poly.geoms:
                 for interior in poly.interiors:
                     inadvertent_holes.append(
-                        tuple(interior.representative_point().coords)
+                        tuple(interior.representative_point().coords[0])
                     )
 
         elif isinstance(unionized_poly, Polygon):
@@ -1216,6 +1220,7 @@ class CompoundGeometry(Geometry):
 
         extra_holes = []
         if set(inadvertent_holes) - set(self.holes):
+            print(inadvertent_holes)
             extra_holes = [hole for hole in inadvertent_holes if hole not in self.holes]
 
         self.holes += extra_holes
