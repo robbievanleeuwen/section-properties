@@ -630,11 +630,11 @@ class Geometry:
         for (i, f) in enumerate(self.facets):
             if perimeter:
                 if i in self.perimeter:
-                    linewidth = 3
+                    linewidth = 0.3*size/dpi
                 else:
-                    linewidth = 1.5
+                    linewidth = 0.15*size/dpi
             else:
-                linewidth = 1.5
+                linewidth = 0.15*size/dpi
 
             # plot the points and facets
             if i == 0:
@@ -642,7 +642,7 @@ class Geometry:
                     [self.points[f[0]][0], self.points[f[1]][0]],
                     [self.points[f[0]][1], self.points[f[1]][1]],
                     "ko-",
-                    markersize=2,
+                    markersize=0.15*size/dpi,
                     linewidth=linewidth,
                     label="Points & Facets",
                 )
@@ -651,7 +651,7 @@ class Geometry:
                     [self.points[f[0]][0], self.points[f[1]][0]],
                     [self.points[f[0]][1], self.points[f[1]][1]],
                     "ko-",
-                    markersize=2,
+                    markersize=0.15*size/dpi,
                     linewidth=linewidth,
                 )
 
@@ -660,16 +660,16 @@ class Geometry:
             print("h: ", h)
             # plot the holes
             if i == 0:
-                ax.plot(h[0], h[1], "rx", markersize=5, label="Holes")
+                ax.plot(h[0], h[1], "rx", markersize=1*size/dpi, markeredgewidth=0.2*size/dpi, label="Holes")
             else:
-                ax.plot(h[0], h[1], "rx", markersize=5)
+                ax.plot(h[0], h[1], "rx", markersize=1*size/dpi, markeredgewidth=0.2*size/dpi)
 
         for (i, cp) in enumerate(self.control_points):
             # plot the control points
             if i == 0:
-                ax.plot(cp[0], cp[1], "bo", markersize=5, label="Control Points")
+                ax.plot(cp[0], cp[1], "bo", markersize=1*size/dpi, label="Control Points")
             else:
-                ax.plot(cp[0], cp[1], "bo", markersize=5)
+                ax.plot(cp[0], cp[1], "bo", markersize=1*size/dpi)
 
         # display the labels
         for label in labels:
@@ -694,7 +694,7 @@ class Geometry:
         # if no axes object is supplied, finish the plot
 
         if not ax_supplied:
-            post.finish_plot(ax, pause, title="Cross-Section Geometry")
+            post.finish_plot(ax, pause, title="Cross-Section Geometry", size=size, dpi=dpi)
             return (fig, ax)
         return (fig, ax)
 

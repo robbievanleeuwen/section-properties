@@ -19,7 +19,7 @@ def setup_plot(ax, pause):
         plt.ioff()
 
 
-def finish_plot(ax, pause, title=""):
+def finish_plot(ax, pause, title="", size=1000, dpi=96):
     """Executes code required to finish a matplotlib figure.
 
     :param ax: Axes object on which to plot
@@ -29,11 +29,11 @@ def finish_plot(ax, pause, title=""):
     :param str title: Plot title
     """
 
-    ax.set_title(title)
+    ax.set_title(title, fontdict={"fontsize": 2*size/dpi})
     ax.set_aspect("equal", anchor="C")
     handles, labels = ax.get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
-    # ax.legend(by_label.values(), by_label.keys(), loc='center left', bbox_to_anchor=(1, 0.5))
+    ax.legend(by_label.values(), by_label.keys(), loc='center left', bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
 
     if pause:
