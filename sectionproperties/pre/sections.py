@@ -55,6 +55,7 @@ class Geometry:
         self.facets = []
         self.holes = []
         self.perimeter = []
+        self.manual_control_point = False
         self._recovery_points = []
         self.tol = 12 # Represents num of decimal places of precision for point locations
         self.compile_geometry()
@@ -71,6 +72,7 @@ class Geometry:
         facets: Optional[List[List[int]]] = None,
         holes: Optional[List[List[float]]] = None,
         control_points: Optional[List[List[float]]] = None,
+        material: pre.Material = pre.DEFAULT_MATERIAL,
     ):
         """
         An interface for the creation of Geometry objects through the definition of points, 
@@ -114,7 +116,7 @@ class Geometry:
         # Initialize the total number of accumulators needed
         # Always an exterior, plus, a separate accumulator for each interior region
         exterior = []
-        interiors = [[] for _ in holes]  # initialize an empty facet list for every hole
+        interiors = [[] for _ in holes] 
         interior_counter = 0  # To keep track of interior regions
         active_list = exterior  # The active_list is the list being accumulated on
 
@@ -125,9 +127,9 @@ class Geometry:
                 prev_facet = facet
                 continue
 
-            prev_j_idx = prev_facet[
-                1
-            ]  # Look at the last j_idx to test for a break in the chain of edges
+            # Look at the last j_idx to test for a break in the chain of edges
+            prev_j_idx = prev_facet[1]
+
             if (
                 i_idx != prev_j_idx and holes
             ):  # If there is a break in the chain of edges...
@@ -152,7 +154,7 @@ class Geometry:
         exterior_geometry = Polygon(exterior)
         interior_polys = [Polygon(interior) for interior in interiors]
         interior_geometry = MultiPolygon(interior_polys)
-        geometry = Geometry(exterior_geometry - interior_geometry)
+        geometry = Geometry(exterior_geometry - interior_geometry, material)
         return geometry
 
     @staticmethod
@@ -215,7 +217,7 @@ class Geometry:
         if isinstance(mesh_sizes, (list, tuple)) and len(mesh_sizes) == 1:
             mesh_size = mesh_sizes[0]
         elif isinstance(mesh_sizes, (float, int)):
-            mesh_size = mesh_sizes
+            mesh_size = [mesh_sizes]
         else:
             raise ValueError(
                 "Argument 'mesh_sizes' for a Geometry must be either "
@@ -230,19 +232,23 @@ class Geometry:
         self, other: Union[Geometry, Tuple[float, float]], on: str, inner: bool = False,
     ) -> Geometry:
         """
-        Returns a new Geometry object, translated in x, so that the left-most point 
-        of the new object will be aligned to right-most point of the other Geometry object.
+        Returns a new Geometry object, representing 'self' translated so that is aligned
+        'on' one of the outer bounding box edges of 'other'.
 
-        If 'align_to' is a tuple representing an *(x,y)* coordinate, then the new
-        Geometry object will be translated so the right-most point on the new object will
-        have it's *x* ordinate the same as the point.
+        If 'other' is a tuple representing an *(x,y)* coordinate, then the new
+        Geometry object will represent 'self' translated so that it is aligned 
+        'on' that side of the point.
 
-        :param align_to: Another Geometry to align to or a tuple representing an
-            *(x,y)* coordinate point.
-        :type align_to: sectionproperties.pre.sections.Geometry
+        :param other: Either another Geometry or a tuple representing an
+            *(x,y)* coordinate point that 'self' should align to.
+        :type other: Union[sectionproperties.pre.sections.Geometry, Tuple[float, float]]
 
-        :param inner: Default False. If True, align the left-most point of this
-            object to the left-most point of 'align_to'. 
+        :param on: A str of either "left", "right", "bottom", or "top" indicating which
+            side of 'other' that self should be aligned to.
+
+        :param inner: Default False. If True, align 'self' to 'other' in such a way that
+            'self' is aligned to the "inside" of 'other'. In other words, align 'self' to
+            'other' on the specified edge so they overlap.
         :type inner: bool
 
         :return: Geometry object translated to alignment location
@@ -252,17 +258,17 @@ class Geometry:
         # 'self' and 'align_to'. i.e. a mapping of which "word" corresponds
         # to which bounding box coordinate
         align_self_map = {
-            "left": 0,
-            "right": 1,
-            "bottom": 2,
-            "top": 3,
-        }
-
-        other_as_geom_map = {
             "left": 1,
             "right": 0,
             "bottom": 3,
             "top": 2,
+        }
+
+        other_as_geom_map = {
+            "left": 0,
+            "right": 1,
+            "bottom": 2,
+            "top": 3,
         }
 
         other_as_point_map = {
@@ -276,13 +282,15 @@ class Geometry:
         align_to_geometry = isinstance(other, Geometry)
         if align_to_geometry:
             align_to_idx = other_as_geom_map[on]
-            if inner:
-                align_to_idx = align_self_map[on]
+            # if inner:
+            #     align_to_idx = align_self_map[on]
         else:
             align_to_idx = other_as_point_map[on]
 
         self_extents = self.calculate_extents()
         self_align_coord = self_extents[self_align_idx]
+        if inner:
+            self_align_coord = self_extents[align_to_idx]
         if align_to_geometry:
             other_extents = other.calculate_extents()
         else:
@@ -477,12 +485,15 @@ class Geometry:
 
         return (top_right_geoms, bottom_left_geoms)
 
-    def offset_perimeter(self, amount: float = 0, resolution: float = 12):
+    def offset_perimeter(self, amount: float = 0, where: str = "exterior", resolution: float = 12):
         """Dilates or erodes the section perimeter by a discrete amount. 
 
         :param amount: Distance to offset the section by. A -ve value "erodes" the section.
             A +ve value "dilates" the section.
         :type amount: float
+        :param where: One of either "exterior", "interior", or "all" to specify which edges of the
+            geometry to offset. If geometry has no interiors, then this parameter has no effect.
+            Default is "exterior". 
         :param resolution: Number of segments used to approximate a quarter circle around a point
         :type resolution: float
 
@@ -496,14 +507,18 @@ class Geometry:
             geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             new_geometry = geometry.offset_perimeter(amount=-3)
         """
-        new_geom = self.geom.buffer(
-            distance=amount, join_style=1, resolution=resolution
-        )
-        if isinstance(new_geom, MultiPolygon):
-            compound_geom = CompoundGeometry(
-                [Geometry(poly, self.material) for poly in new_geom]
+        if self.geom.interiors and where == "interior":
+            pass
+
+        elif where == "all":
+            new_geom = self.geom.buffer(
+                distance=amount, join_style=1, resolution=resolution
             )
-            return compound_geom
+            if isinstance(new_geom, MultiPolygon):
+                compound_geom = CompoundGeometry(
+                    [Geometry(poly, self.material) for poly in new_geom]
+                )
+                return compound_geom
         single_geom = Geometry(new_geom, self.material)
         return single_geom
 
@@ -855,6 +870,7 @@ class CompoundGeometry(Geometry):
         self.facets = []
         self.holes = []
         self.perimeter = []
+        self.material = None
         self.compile_geometry()
         self.tol = 12
         self.mesh = None
@@ -978,6 +994,8 @@ class CompoundGeometry(Geometry):
 
             Mesh generated from the above geometry.
         """
+        if isinstance(mesh_sizes, (float, int)):
+            mesh_sizes = [mesh_sizes]
         if len(mesh_sizes) == 1:
             mesh_sizes = mesh_sizes * len(self.control_points)
         self.mesh = pre.create_mesh(
@@ -1023,7 +1041,7 @@ class CompoundGeometry(Geometry):
 
             geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
             geometry_2 = sections.rectangular_section(d=20, b=133)
-            compound = geometry_2.align_center(geometry_1).align_top(geometry_1) + geometry_1
+            compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_compound = compound.rotate_section(angle=-30)
         """
         geoms_acc = []
@@ -1052,7 +1070,7 @@ class CompoundGeometry(Geometry):
 
             geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
             geometry_2 = sections.rectangular_section(d=20, b=133)
-            compound = geometry_2.align_center(geometry_1).align_top(geometry_1) + geometry_1
+            compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_compound = compound.mirror_section(axis='y')
         """
         geoms_acc = []
@@ -1111,7 +1129,7 @@ class CompoundGeometry(Geometry):
         return (top_geoms_acc, bottom_geoms_acc)
 
 
-    def offset_section_perimeter(self, amount: float = 0, resolution: float = 12):
+    def offset_perimeter(self, amount: float = 0, resolution: float = 12):
         """Dilates or erodes perimeter of the individual geometries within the CompoundGeometry
         object by a discrete amount. Note, because the individual geometries have their own
         perimeters offset independently, sections don't "stick" as though they were a joined section.
@@ -1133,12 +1151,12 @@ class CompoundGeometry(Geometry):
 
             geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
             geometry_2 = sections.rectangular_section(d=20, b=133)
-            compound = geometry_2.align_center(geometry_1).align_top(geometry_1) + geometry_1
+            compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_geometry = compound.offset_section_perimeter(amount=-3)
         """
         geoms_acc = []
         for geom in self.geoms:
-            geoms_acc.append(geom.offset_section_perimeter(amount, resolution))
+            geoms_acc.append(geom.offset_perimeter(amount, resolution))
         new_geom = CompoundGeometry(geoms_acc)
         return new_geom
 

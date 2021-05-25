@@ -170,11 +170,11 @@ Combining Geometries using set operations `+`, `-`, `|`, `^`, `&`
 -----------------------------------------------------------------
 
 Both `Geometry` and `CompoundGeometry` objects can be manipulated using Python's set operators:
-* `|` - Bitwise OR - Performs a union on the two geometries
-* `-` - Bitwise DIFFERENCE - Performs a subtraction, subtracting the second geometry from the first
-* `&` - Bitwise AND - Performs an intersection operation, returning the regions of geometry common to both
-* `^` - Bitwise XOR - Performs a symmetric difference operation, returning the regions of geometry that are not overlapping
-* `+` - Addition - Combines two geometries into a `CompoundGeometry`
+- `|`  Bitwise OR - Performs a union on the two geometries
+- `-`  Bitwise DIFFERENCE - Performs a subtraction, subtracting the second geometry from the first
+- `&`  Bitwise AND - Performs an intersection operation, returning the regions of geometry common to both
+- `^`  Bitwise XOR - Performs a symmetric difference operation, returning the regions of geometry that are not overlapping
+- `+`  Addition - Combines two geometries into a `CompoundGeometry`
 
 Operations on geometries are non-destructive: for each operation, a new `Geometry` (or `CompoundGeometry`) instance is created.
 No geometries are "altered in place".

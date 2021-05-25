@@ -820,9 +820,8 @@ def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
     d4 = 0.5 * (DIM1 - DIM3)
 
     hat = nastran_hat(DIM1=d1, DIM2=d2, DIM3=d3, DIM4=d4)
-
     # Merge the two sections into one geometry
-    geometry = hat.align_center(bottom_plate).align_top(bottom_plate) + bottom_plate
+    geometry = hat.align_center(bottom_plate).align_to(bottom_plate, on="top") + bottom_plate
 
     C = (-0.5 * DIM1, 0)
     D = (0.5 * DIM1, 0)
