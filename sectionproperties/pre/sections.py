@@ -14,6 +14,7 @@ from shapely.geometry import (
 from shapely.ops import split, unary_union
 import shapely
 import matplotlib.pyplot as plt
+from IPython.display import display_svg
 import sectionproperties.pre.pre as pre
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
@@ -48,7 +49,7 @@ class Geometry:
                 f"Argument is not a valid shapely.geometry.Polygon object: {geom}"
             )
         self.geom = geom
-        self.material = material
+        self.material = pre.DEFAULT_MATERIAL if material is None else material
         self.control_points = []
         self.shift = []
         self.points = []
@@ -508,18 +509,36 @@ class Geometry:
             new_geometry = geometry.offset_perimeter(amount=-3)
         """
         if self.geom.interiors and where == "interior":
-            pass
+            exterior_polygon = Polygon(self.geom.exterior)
+            for interior in self.geom.interiors:
+                buffered_interior = Polygon(interior).buffer(distance=amount, join_style=1, resolution=resolution)
+                exterior_polygon = exterior_polygon - buffered_interior
+            if isinstance(exterior_polygon, MultiPolygon):
+                return CompoundGeometry([Geometry(poly, self.material) for poly in exterior_polygon])
+            return Geometry(exterior_polygon, self.material)
+        elif not self.geom.interiors and where == "interior":
+            raise ValueError("Cannot buffer interior of Geometry object if it has no holes.")
+
+        elif where == "exterior":
+            exterior_polygon = Polygon(self.geom.exterior)
+            buffered_exterior = exterior_polygon.buffer(distance=amount, join_style=1, resolution=resolution)
+            for interior in self.geom.interiors:
+                interior_poly = Polygon(interior)
+                buffered_exterior = buffered_exterior - interior_poly
+            if isinstance(buffered_exterior, MultiPolygon):
+                return CompoundGeometry([Geometry(poly, self.material) for poly in buffered_exterior])
+            return Geometry(buffered_exterior, self.material)
 
         elif where == "all":
-            new_geom = self.geom.buffer(
+            buffered_geom = self.geom.buffer(
                 distance=amount, join_style=1, resolution=resolution
             )
-            if isinstance(new_geom, MultiPolygon):
+            if isinstance(buffered_geom, MultiPolygon):
                 compound_geom = CompoundGeometry(
-                    [Geometry(poly, self.material) for poly in new_geom]
+                    [Geometry(poly, self.material) for poly in buffered_geom]
                 )
                 return compound_geom
-        single_geom = Geometry(new_geom, self.material)
+            single_geom = Geometry(buffered_geom, self.material)
         return single_geom
 
     def shift_points(
@@ -656,8 +675,6 @@ class Geometry:
                 )
 
         for (i, h) in enumerate(self.holes):
-            print(self.holes)
-            print("h: ", h)
             # plot the holes
             if i == 0:
                 ax.plot(h[0], h[1], "rx", markersize=1*size/dpi, markeredgewidth=0.2*size/dpi, label="Holes")
@@ -831,11 +848,8 @@ class Geometry:
             raise ValueError(
                 f"Cannot perform 'intersection' on these two Geometry instances: {self} & {other}"
             )
-
-
 ###
 
-# TODO: Create setter for adding Material to CompoundGeometry
 class CompoundGeometry(Geometry):
     """Class for defining a geometry of multiple distinct regions, each potentially
     having different material properties.
@@ -856,7 +870,7 @@ class CompoundGeometry(Geometry):
 
     def __init__(self, geoms: Union[MultiPolygon, List[Geometry]]):
         if isinstance(geoms, MultiPolygon):
-            self.geoms = [Geometry(poly) for poly in geoms.geoms]
+            self.geoms = [Geometry(poly, material=pre.DEFAULT_MATERIAL) for poly in geoms.geoms]
             self.geom = geoms
         elif isinstance(geoms, list):
             processed_geoms = []
@@ -1207,12 +1221,13 @@ class CompoundGeometry(Geometry):
 
         # Check for holes created inadvertently from combined sections
         inadvertent_holes = []
+        # Use .buffer() to make sure shapes are fully touching
         unionized_poly = unary_union([geom.geom for geom in self.geoms])
         if isinstance(unionized_poly, MultiPolygon):
             for poly in unionized_poly.geoms:
                 for interior in poly.interiors:
                     inadvertent_holes.append(
-                        tuple(interior.representative_point().coords[0])
+                        tuple(Polygon(interior).representative_point().coords[0])
                     )
 
         elif isinstance(unionized_poly, Polygon):
@@ -1220,7 +1235,6 @@ class CompoundGeometry(Geometry):
 
         extra_holes = []
         if set(inadvertent_holes) - set(self.holes):
-            print(inadvertent_holes)
             extra_holes = [hole for hole in inadvertent_holes if hole not in self.holes]
 
         self.holes += extra_holes
@@ -1410,12 +1424,6 @@ def rectangular_section(b, d, material: pre.Material = pre.DEFAULT_MATERIAL) -> 
 
         Mesh generated from the above geometry.
     """
-    # min_x = 0
-    # min_y = 0
-    # max_x = b
-    # max_y = d
-
-    # rectangle = box(min_x, min_y, max_x, max_y)
     points = [[0, 0], [b, 0], [b, d], [0, d]]
     rectangle = Polygon(points)
     return Geometry(rectangle, material)
