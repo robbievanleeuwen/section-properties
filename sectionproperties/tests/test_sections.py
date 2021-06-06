@@ -71,10 +71,10 @@ def test_geometry_from_points():
         [11, 7],
     ]
     holes = [[0, 6], [0, -6]]
-    new_geom = Geometry.from_points(points, facets, holes, control_points=[])
+    new_geom = Geometry.from_points(points, facets, holes, control_point=[])
     assert (
         new_geom.geom.wkt
-        == 'POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))'
+        == 'POLYGON ((-6 10, 6 10, 6 -10, -6 -10, -6 10), (-4 8, -4 4, 4 4, 4 8, -4 8), (-4 -8, 4 -8, 4 -4, -4 -4, -4 -8))'
     )
 
 

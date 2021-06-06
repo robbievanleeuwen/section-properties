@@ -33,12 +33,18 @@ class Geometry:
 
     :cvar material: Optional, a Material to associate with this geometry
     :vartype material: Optional[sectionproperties.pre.Material]
+
+    :cvar control_point: Optional, an *(x, y)* coordinate within the geometry that 
+        represents a pre-assigned control point (aka, a region identification point)
+        to be used instead of the automatically assigned control point generated
+        with shapely.geometry.Polygon.representative_point.
     """
 
     def __init__(
         self,
         geom: shapely.geometry.Polygon,
         material: pre.Material = pre.DEFAULT_MATERIAL,
+        control_point: Optional[List[float, float]] = None,
     ):
         """Inits the Geometry class.
         """
@@ -48,6 +54,9 @@ class Geometry:
             raise ValueError(
                 f"Argument is not a valid shapely.geometry.Polygon object: {geom}"
             )
+        self.assigned_control_point = None
+        if control_point is not None and len(control_point) == 2:
+            self.assigned_control_point = Point(control_point)
         self.geom = geom
         self.material = pre.DEFAULT_MATERIAL if material is None else material
         self.control_points = []
@@ -56,7 +65,6 @@ class Geometry:
         self.facets = []
         self.holes = []
         self.perimeter = []
-        self.manual_control_point = False
         self._recovery_points = []
         self.tol = 12 # Represents num of decimal places of precision for point locations
         self.compile_geometry()
@@ -72,7 +80,7 @@ class Geometry:
         points: List[List[float]],
         facets: Optional[List[List[int]]] = None,
         holes: Optional[List[List[float]]] = None,
-        control_points: Optional[List[List[float]]] = None,
+        control_point: Optional[List[float]] = None,
         material: pre.Material = pre.DEFAULT_MATERIAL,
     ):
         """
@@ -92,20 +100,20 @@ class Geometry:
             being holes or voids. The point can be located anywhere within the hole region. If 
             facets is provided, then holes must also be provided.
             Only one point is required per hole region.
-        :vartype control_points: list[list[int]]
-        :cvar control_points: Optional. A list of points *(x, y)* that described distinct
-            material regions within the geometry. One point is required for each geometry 
+        :vartype control_point: list[list[int]]
+        :cvar control_point: Optional. An *(x, y)* coordinate that describes distinct
+            material regions within the geometry. Exactly one point is required for each geometry 
             with a distinct material. If not provided, a control_point will be auto-generated for
-            the geometry.
+            the geometry using shapely.geometry.Polygon.represenative_point()
         """
-        if facets is None and holes is None and control_points is None:
+        if facets is None and holes is None and control_point is None:
             return Geometry(Polygon(points))
         if holes is not None and facets is None:
             raise ValueError(
                 "If holes coordinates are provided then facets must also be provided "
                 "to distinguish between exterior and interior edges."
             )
-        if control_points and len(control_points) > 1:
+        if control_point and len(control_point) != 2:
             raise ValueError(
                 "A Geometry object can only have one contiguous region (with holes)."
                 "Did you mean to use CompoundGeometry.from_points()?"
@@ -155,7 +163,7 @@ class Geometry:
         exterior_geometry = Polygon(exterior)
         interior_polys = [Polygon(interior) for interior in interiors]
         interior_geometry = MultiPolygon(interior_polys)
-        geometry = Geometry(exterior_geometry - interior_geometry, material)
+        geometry = Geometry(exterior_geometry - interior_geometry, material, control_point)
         return geometry
 
     @staticmethod
@@ -175,7 +183,10 @@ class Geometry:
         self.points = []
         self.facets = []
         self.points, self.facets = create_points_and_facets(self.geom, self.tol)
-        self.control_points = tuple(self.geom.representative_point().coords)
+        if not self.assigned_control_point:
+            self.control_points = tuple(self.geom.representative_point().coords)
+        else:
+            self.control_points = tuple(self.assigned_control_point.coords)
 
         for hole in self.geom.interiors:
             hole_polygon = Polygon(hole)
@@ -349,8 +360,12 @@ class Geometry:
         :return: New Geometry-object shifted by 'x_offset' and 'y_offset'
         :rtype: :class:`sections.pre.sections.Geometry`
         """
+        # Move assigned control point
+        new_ctrl_point = None
+        if self.assigned_control_point:
+            new_ctrl_point = shapely.affinity.translate(self.assigned_control_point, x_offset, y_offset)
         new_geom = Geometry(
-            shapely.affinity.translate(self.geom, x_offset, y_offset), self.material
+            shapely.affinity.translate(self.geom, x_offset, y_offset), self.material, new_ctrl_point
         )
         return new_geom
 
@@ -380,9 +395,12 @@ class Geometry:
             geometry = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
             new_geometry = geometry.rotate_section(angle=-30)
         """
+        new_ctrl_point = None
+        if self.assigned_control_point:
+            new_ctrl_point = shapely.affinity.rotate(self.assigned_control_point, angle, rot_point, use_radians)
         new_geom = Geometry(
             shapely.affinity.rotate(self.geom, angle, rot_point, use_radians),
-            self.material,
+            self.material, new_ctrl_point
         )
         return new_geom
 
@@ -420,7 +438,12 @@ class Geometry:
             self.geom, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=mirror_point
         )
 
-        new_geom = Geometry(mirrored_geom, self.material)
+        new_ctrl_point = None
+        if self.assigned_control_point:
+            new_ctrl_point = shapely.affinity.scale(
+                self.assigned_control_point, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=mirror_point
+            )
+        new_geom = Geometry(mirrored_geom, self.material, new_ctrl_point)
         return new_geom
 
     def split_section(
@@ -1221,7 +1244,6 @@ class CompoundGeometry(Geometry):
 
         # Check for holes created inadvertently from combined sections
         inadvertent_holes = []
-        # Use .buffer() to make sure shapes are fully touching
         unionized_poly = unary_union([geom.geom for geom in self.geoms])
         if isinstance(unionized_poly, MultiPolygon):
             for poly in unionized_poly.geoms:
