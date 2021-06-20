@@ -13,6 +13,7 @@ from shapely.geometry import (
 )
 from shapely.ops import split, unary_union
 import shapely
+import matplotlib
 import matplotlib.pyplot as plt
 from IPython.display import display_svg
 import sectionproperties.pre.pre as pre
@@ -679,19 +680,27 @@ class Geometry:
             )
         return new_geom
 
-    def plot_geometry(self, ax=None, pause=True, labels=["control_points"], size=500, dpi=96):
+    def plot_geometry(self, ax: Optional[matplotlib.axes.Axes]=None, labels=["control_points"], size=500, dpi=96, pause=False):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
-        figure and axis is created.
+        figure and axis is created. Allows for 'size' and 'dpi' arguments to be given however the
+        function dynamically sizes nodes and lineweights so that they appear appropriately sized at
+        large and small sizes and resolutions.
 
-        :param ax: Axes object on which the mesh is plotted
-        :type ax: :class:`matplotlib.axes.Axes`
-        :param bool pause: If set to true, the figure pauses the script until the window is closed.
-            If set to false, the script continues immediately after the window is rendered.
-        :param bool labels: A list of str which indicate which labels to plot. Can be one
+        :param ax: Optional. An Axes object on which the mesh is plotted. If not Axes is
+            provided, a new one will be created.
+        :type ax: Optional, :class:`matplotlib.axes.Axes`
+        :param labels: A list of str which indicate which labels to plot. Can be one
             or a combination of 'points', 'facets', 'control_points', or an empty list
             to indicate no labels. Default is ['control_points']
-        :param bool perimeter: If set to true, boldens the perimeter of the cross-section
-
+        :type labels: list[str]
+        :param size: The size of the plot in pixels. Default is 500.
+        :type size: int
+        :param dpi: The resolution of the plot in dots-per-inch. Default is 96. If 'size'
+            is changed
+        :param pause: If set to true, the figure pauses the script until the window is closed.
+            If set to false, the script continues immediately after the window is rendered.
+        :type pause: bool
+        
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
