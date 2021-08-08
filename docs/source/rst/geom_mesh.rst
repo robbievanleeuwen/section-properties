@@ -1,7 +1,8 @@
 .. _label-geom_mesh:
 
-Creating a Geometry, Mesh and Material Properties
-=================================================
+====================================================
+Creating Geometries, Meshes, and Material Properties
+====================================================
 
 Before performing a cross-section analysis, the geometry of the cross-section and a finite element
 mesh must be created. Optionally, material properties can be applied to different regions of the
@@ -10,64 +11,99 @@ properties.
 
 
 Section Geometry
-""""""""""""""""
+================
 
+**New in v2.0.0**
 There are two types of geometry objects in sectionproperties:
 
 * The :class:`~sectionproperties.pre.sections.Geometry` class, for section geometries with a single, contiguous region
-* The :class:`~sectionproperties.pre.sections.CompoundGeometry` class, for section geometries with multiple distinct regions
+* The :class:`~sectionproperties.pre.sections.CompoundGeometry` class, comprised of two or more `Geometry` objects
 
-**New in v2.0.0**
-sectionproperties geometry classes are now powered by shapely. A :class:``~sectionproperties.pre.sections.Geometry`` object
-takes a shapely Polygon object. A :class:`~sectionproperties.pre.sections.CompoundGeometry` object takes a shapely MultiPolygon
-object. 
+A :class:`~sectionproperties.pre.sections.Geometry` is instantiated with two arguments: 
 
-In both cases, the original shapely geometry is stored in the geometry class in the `.geom` attribute.
+#. A shapely.geometry.Polygon object
+#. An optional :class:`~sectionproperties.pre.pre.Material` object
 
-Geometry for sectionproperties analysis can be created in several ways: 
+.. note::
+   If a Material is not given, then the default material is assigned to the `Geometry.material` attribute
 
-1. From shapely Polygon and MultiPolygon objects
-2. From points, facets, hole regions, and control_point regions
-3. From DXF files
-4. From sectionproperties "factory functions" of common shapes
-5. By applying set operations (e.g. `|`, `+`, `-`, `&`, `^`) and transformation methods on existing geometries
+A :class:`~sectionproperties.pre.sections.CompoundGeometry` is instantiated with **one argument** which can be one of **two types**:
+#. A list of :class:`~sectionproperties.pre.sections.Geometry`; or
+#. A shapely.geometry.MultiPolygon
 
-For the first four methods, an optional `materials` parameter can be passed containing a :class:`~sectionproperties.pre.pre.Material` object
-(or a list of `Material` objects) to associate with the newly created geometry(ies). The material attribute can be altered in a `Geometry`
-object at any time by simply assigning a material to the `.material` attribute.
+.. note::
+   A CompoundGeometry does not have a `.material` attribute and a :class:`~sectionproperties.pre.pre.Material`
+   cannot be assigned to a CompoundGeometry directly. Since a CompoundGeometry is simply a combination of Geometry objects,
+   the Material(s) should be assigned to the individual Geometry objects that comprise the CompoundGeometry. CompoundGeoemtry
+   objects created from a `shapely.geometry.MultiPolygon` will have its constituent Geometry objects assigned the default material.
 
-Geometry from shapely Polygon and MultiPolygon objects
-------------------------------------------------------
-Using shapely, any 2D shape can be created from an ordered sequence of coordinates. A Polygon is created 
-from a coordinate sequence with one enclosed perimeter. A MultiPolygon can be created from multiple Polygons.
 
-* :class:`~sectionproperties.pre.sections.Geometry` objects are instantiated with a shapely Polygon object and an optional :class:`~sectionproperties.pre.pre.Material`
-* :class:`~sectionproperties.pre.sections.CompoundGeometry` objects are instantiated with a shapely MultiPolygon object -OR- a list of Polygon objects and an optional :class:`~sectionproperties.pre.pre.Material`
+Defining Material Properties
+----------------------------
 
-The geometry objects in sectionproperties make use of the shapely geometry's `_repr_svg_` method for rich display 
-of geometries in Jupyter environments.
+Materials are defined in *sectionproperties* by creating a :class:`~sectionproperties.pre.pre.Material` object:
+
+..  autoclass:: sectionproperties.pre.pre.Material
+    :noindex:
+    :show-inheritance:
+
+Each :class:`~sectionproperties.pre.sections.Geometry` contains its own material definition,
+which is stored in the :attr:`~sectionproperties.pre.sections.Geometry.material` attribute. A geometry's material
+may be altered at any time by simply assigning a new :class:`~sectionproperties.pre.pre.Material` to the ``.material`` attribute.
+
+.. note::
+   A :class:`~sectionproperties.pre.sections.CompoundGeometry` is composed of multiple :class:`~sectionproperties.pre.sections.Geometry` objects,
+   each of which have their own 
+
+Creating Section Geometries
+===========================
+
+In addition to creating geometries directly from `shapely.geometry.Polygon` and/or `shapely.geometry.MultiPolygon` objects
+directly, there are other ways to create geometries for analysis:
+
+#. From lists of points, facets, hole regions, and control regions
+#. From DXF files
+#. From `sectionproperties`'s "factory functions" of common shapes
+#. Using transformation methods on existing geometries and/or by applying set operations (e.g. `|`, `+`, `-`, `&`, `^`)
+
+For the first three approaches, an optional `materials` parameter can be passed containing a :class:`~sectionproperties.pre.pre.Material`
+(or a list of `Material` objects) to associate with the newly created geometry(ies). The material attribute can be altered afterward in a `Geometry`
+object at any time by simply assigning a different :class:`~sectionproperties.pre.pre.Material` to the `.material` attribute
 
 
 Geometry from points, facets, holes, and control_points
 -------------------------------------------------------
 
-In sectionproperties v1.x.x, geometries were created by specifying lists of `points`, `facets`, `holes`, and `control_points`.
+In sectionproperties v1.x.x, geometries were created by specifying lists of `points`, `facets`, `holes`, and `control_points` and
+this functionality has been preserved in v2.0.0 by using `:attr:`~sectionproperties.pre.sections.Geometry.from_points()`
 
-To maintain backward compatability, geometries can be created this same way using the `Geometry.from_points()` class method
-and the `CompoundGeometry.from_points()` class method. 
+.. class:: 
+   sectionproperties.pre.sections.Geometry 
+   .. method:: from_points()
 
 For simple geometries (i.e. single-region shapes without holes), if the points are an ordered sequence of coordinates, only the `points` 
 argument is required (`facets`, `holes`, and `control_points` are optional). If the geometry has holes, then all arguments are required.
 
-If the geometry has multiple regions, then `CompoundGeometry.from_points()` class method must be used.
+If the geometry has multiple regions, then `:attr:`~sectionproperties.pre.sections.CompoundGeometry.from_points()` class method must be used.
+
+.. class:: 
+   sectionproperties.pre.sections.CompoundGeometry 
+   .. method:: from_points()
 
 
 Geometry from DXF Files
 -----------------------
 
-Geometries can now be created from DXF files using the `Geometry.from_dxf()` method. The returned geometry will either be a `Geometry`
-or `CompoundGeometry` object depending on the geometry in the file (one or more contiguous regions).
+Geometries can now be created from DXF files using the :attr:`~sectionproperties.pre.sections.Geometry.from_dxf()` method. The returned geometry will either be a `Geometry`
+or `CompoundGeometry` object depending on the geometry in the file (depending on the number of contiguous regions).
 
+.. class:: 
+   sectionproperties.pre.sections.Geometry 
+   .. method:: from_dxf()
+
+.. class:: 
+   sectionproperties.pre.sections.CompoundGeometry 
+   .. method:: from_dxf()
 
 Creating Common Structural Geometries from sectionproperties "factory functions"
 --------------------------------------------------------------------------------
@@ -176,20 +212,20 @@ Both `Geometry` and `CompoundGeometry` objects can be manipulated using Python's
 - `^`  Bitwise XOR - Performs a symmetric difference operation, returning the regions of geometry that are not overlapping
 - `+`  Addition - Combines two geometries into a `CompoundGeometry`
 
-Operations on geometries are non-destructive: for each operation, a new `Geometry` (or `CompoundGeometry`) instance is created.
-No geometries are "altered in place".
-
 Manipulating Geometries
-"""""""""""""""""""""""
+=======================
 
 Each geometry instance is able to be manipulated in 2D space for the purpose of creating novel, custom section geometries
 that the user may require. 
 
+.. note::   
+   Operations on geometries are _non-destructive_. For each operation, a new geometry object is returned.
+
+   This gives sectionproperties geoemtries a _fluent API_ meaning that transformation methods can be
+   chained together. Please see :doc:`./advanced_geom` for examples.
+
 Shifting, Aligning, Mirroring, Rotating, etc.
 ---------------------------------------------
-
-These manipulation methods are all non-destructive: they all return a new geometry instance
-instead of altering the geometry in place.
 
   .. automethod:: sectionproperties.pre.sections.Geometry.align_center
      :noindex:
@@ -218,17 +254,29 @@ instead of altering the geometry in place.
 Visualising the Geometry
 ------------------------
 
-Geometry objects can be visualised by using the
-:func:`~sectionproperties.pre.sections.Geometry.plot_geometry` method:
+Visualization of geometry objects is best performed in the Jupyter computing environment,
+however, most visualization can also be done in any environment which supports display of
+matplotlib plots.
+
+There are generally two ways to visualize geometry objects:
+
+#. In the Jupyter computing environment, geometry objects utilize their underlying
+   ``shapely.geometry.Polygon`` object's ``_repr_svg_`` method to show the geometry
+   as it's own representation.
+#. By using the :attr:`~sectionproperties.pre.sections.Geometry.plot_geometry()` method
 
 ..  automethod:: sectionproperties.pre.sections.Geometry.plot_geometry
     :noindex:
 
+.. note::
+   You can also use ``.plot_geometry()`` with ``CompoundGeometry`` objects
+
 Generating a Mesh
 -----------------
 
-A finite element mesh is required to perform a cross-section analysis. A finite element mesh can
-be created by using the :func:`~sectionproperties.pre.sections.Geometry.create_mesh` method:
+A finite element mesh is required to perform a cross-section analysis. After a geometry has been created,
+a finite element mesh can then be created for the geometry by using the 
+:attr:`~sectionproperties.pre.sections.Geometry.create_mesh()` method:
 
 ..  automethod:: sectionproperties.pre.sections.Geometry.create_mesh
     :noindex:
@@ -236,13 +284,7 @@ be created by using the :func:`~sectionproperties.pre.sections.Geometry.create_m
 ..  warning:: The length of ``mesh_sizes`` must match the number of regions
   in the geometry object.
 
-Defining Material Properties
-----------------------------
+Once the mesh has been created, it is stored within the geometry object and the geometry object
+can then be passed to :class:`~sectionproperties.analysis.cross_section.Section` for analysis.
 
-Composite cross-sections can be analysed by specifying different material properties for each
-section of the mesh. Materials are defined in *sectionproperties* by creating a
-:class:`~sectionproperties.pre.pre.Material` object:
-
-..  autoclass:: sectionproperties.pre.pre.Material
-    :noindex:
-    :show-inheritance:
+Please see :doc:`./analysis` for further information on performing analyses.
