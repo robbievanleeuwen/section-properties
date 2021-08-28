@@ -80,6 +80,7 @@ this functionality has been preserved in v2.0.0 by using `:attr:`~sectionpropert
 .. class:: 
    sectionproperties.pre.sections.Geometry 
    .. method:: from_points()
+   :noindex:
 
 For simple geometries (i.e. single-region shapes without holes), if the points are an ordered sequence of coordinates, only the `points` 
 argument is required (`facets`, `holes`, and `control_points` are optional). If the geometry has holes, then all arguments are required.
@@ -89,7 +90,7 @@ If the geometry has multiple regions, then `:attr:`~sectionproperties.pre.sectio
 .. class:: 
    sectionproperties.pre.sections.CompoundGeometry 
    .. method:: from_points()
-
+   :noindex:
 
 Geometry from DXF Files
 -----------------------
@@ -100,10 +101,12 @@ or `CompoundGeometry` object depending on the geometry in the file (depending on
 .. class:: 
    sectionproperties.pre.sections.Geometry 
    .. method:: from_dxf()
+   :noindex:
 
 .. class:: 
    sectionproperties.pre.sections.CompoundGeometry 
    .. method:: from_dxf()
+   :noindex:
 
 Creating Common Structural Geometries from sectionproperties "factory functions"
 --------------------------------------------------------------------------------

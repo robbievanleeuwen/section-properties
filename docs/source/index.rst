@@ -27,6 +27,7 @@ can be found in the README file on github.
    rst/installation
    rst/structure
    rst/geom_mesh
+   rst/advanced_geom
    rst/analysis
    rst/post
    rst/examples
