@@ -725,7 +725,7 @@ class Geometry:
         if ax is None:
             ax_supplied = False
             (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=96)
-            post.setup_plot(ax, pause)
+            # post.setup_plot(ax, pause)
         else:
             ax_supplied = True
 
@@ -893,7 +893,6 @@ class Geometry:
         """
         Perform difference on Geometry objects with the - operator
         """
-        print("Sub")
         try:
             new_polygon = self.geom - other.geom
             if isinstance(new_polygon, MultiPolygon):

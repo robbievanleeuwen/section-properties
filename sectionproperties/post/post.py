@@ -14,7 +14,7 @@ def setup_plot(ax, pause):
 
     if not pause:
         plt.ion()
-        plt.show()
+        # plt.show()
     else:
         plt.ioff()
 
@@ -28,7 +28,6 @@ def finish_plot(ax, pause, title="", size=1000, dpi=96):
         set to false, the script continues immediately after the window is rendered.
     :param str title: Plot title
     """
-
     ax.set_title(title, fontdict={"fontsize": 2*size/dpi})
     ax.set_aspect("equal", anchor="C")
     handles, labels = ax.get_legend_handles_labels()
@@ -39,8 +38,8 @@ def finish_plot(ax, pause, title="", size=1000, dpi=96):
     if pause:
         plt.show()
     else:
-        plt.draw()
-        plt.pause(0.001)
+        plt.show()
+        # plt.pause(0.001)
 
 
 def draw_principal_axis(ax, phi, cx, cy):
@@ -53,7 +52,6 @@ def draw_principal_axis(ax, phi, cx, cy):
     :param float cx: x-location of the centroid
     :param float cy: y-location of the centroid
     """
-
     # get current axis limits
     (xmin, xmax) = ax.get_xlim()
     (ymin, ymax) = ax.get_ylim()
