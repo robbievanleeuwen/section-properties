@@ -724,7 +724,7 @@ class Geometry:
         # plt.figure(figsize=(2*width, width), dpi=100)
         if ax is None:
             ax_supplied = False
-            (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=96)
+            (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
             # post.setup_plot(ax, pause)
         else:
             ax_supplied = True

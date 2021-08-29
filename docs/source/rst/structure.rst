@@ -1,7 +1,7 @@
 Structure of an Analysis
 ========================
 
-The process of performing a cross-section analysis with *sectionproperties* can
+The process of performing a cross-section analysis with ``sectionproperties`` can
 be broken down into three stages:
 
 1. Pre-Processor: The input geometry and finite element mesh is created.
@@ -12,11 +12,9 @@ Creating a Geometry and Mesh
 ----------------------------
 
 The dimensions and shape of the cross-section to be analysed define the *geometry*
-of the cross-section. The :ref:`label-sections-module` provides a number of classes
-to easily generate either commonly used structural sections or an  arbitrary
-cross-section, defined by a list of points, facets and holes. All of the classes
-in the :ref:`label-sections-module` inherit from the
-:class:`~sectionproperties.pre.sections.Geometry` class.
+of the cross-section. The :ref:`label-sections-module` provides a number of functions
+to easily generate either commonly used structural sections or an arbitrary
+cross-section, defined by an ordered list of points. 
 
 The final stage in the pre-processor involves generating a finite element mesh of
 the *geometry* that the solver can use to calculate the cross-section properties.
@@ -31,7 +29,7 @@ of 2.5::
 
       import sectionproperties.pre.sections as sections
 
-      geometry = sections.CircularSection(d=50, n=64)
+      geometry = sections.circular_section(d=50, n=64)
       mesh = geometry.create_mesh(mesh_sizes=[2.5])
 
 ..  figure:: ../images/sections/circle_mesh.png
@@ -77,12 +75,13 @@ property::
   from sectionproperties.analysis.cross_section import Section
   from sectionproperties.pre.pre import Material
 
-  geometry = sections.CircularSection(d=50, n=64)
-  mesh = geometry.create_mesh(mesh_sizes=[2.5])
+
   steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
                    color='grey')
+  geometry = sections.circular_section(d=50, n=64, material=steel)
+  geometry.create_mesh(mesh_sizes=[2.5]) # Adds the mesh to the geometry
 
-  section = Section(geometry, mesh, [steel])
+  section = Section(geometry)
   section.calculate_geometric_properties()
   section.calculate_warping_properties()
 
@@ -103,10 +102,10 @@ are printed to the terminal and a plot of the centroids is displayed::
   import sectionproperties.pre.sections as sections
   from sectionproperties.analysis.cross_section import Section
 
-  geometry = sections.PfcSection(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-  mesh = geometry.create_mesh(mesh_sizes=[2.5])
+  geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+  geometry.create_mesh(mesh_sizes=[2.5]) # Adds the mesh to the geometry
 
-  section = Section(geometry, mesh)
+  section = Section(geometry)
   section.calculate_geometric_properties()
   section.calculate_plastic_properties()
   section.calculate_warping_properties()

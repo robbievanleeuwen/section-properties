@@ -855,7 +855,7 @@ class Section:
             self.section_props.ixx_c,
             self.section_props.cx,
             self.section_props.j,
-        ]:
+        ] and self.section_props.omega is None:
             err = "Perform a geometric and warping analysis before carrying out a stress analysis."
             raise RuntimeError(err)
 
@@ -1051,7 +1051,7 @@ class Section:
 
         return (csc_matrix(k), csc_matrix(k_lg), f_torsion)
 
-    def plot_mesh(self, ax=None, pause=True, alpha=0.5, materials=True, mask=None):
+    def plot_mesh(self, ax=None, pause=True, alpha=0.5, materials=True, mask=None, size=500, dpi=96):
         """Plots the finite element mesh. If no axes object is supplied a new figure and axis is
         created.
 
@@ -1105,7 +1105,7 @@ class Section:
         # if no axes object is supplied, create and setup the plot
         if ax is None:
             ax_supplied = False
-            (fig, ax) = plt.subplots()
+            (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
             post.setup_plot(ax, pause)
         else:
             ax_supplied = True
@@ -1157,7 +1157,7 @@ class Section:
 
         # if no axes object is supplied, finish the plot
         if not ax_supplied:
-            post.finish_plot(ax, pause, title="Finite Element Mesh")
+            post.finish_plot(ax, pause, title="Finite Element Mesh", size=size, dpi=dpi)
             return (fig, ax)
 
     def plot_centroids(self, pause=True):
@@ -2256,7 +2256,7 @@ class StressPost:
         # can be saved to a new material group
         self.material_groups = copy.deepcopy(cross_section.material_groups)
 
-    def plot_stress_contour(self, sigs, title, pause, cmap):
+    def plot_stress_contour(self, sigs, title, pause, cmap, size=500, dpi=96):
         """Plots filled stress contours over the finite element mesh.
 
         :param sigs: List of nodal stress values for each material
@@ -2270,7 +2270,7 @@ class StressPost:
         """
 
         # create plot and setup the plot
-        (fig, ax) = plt.subplots()
+        (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
         post.setup_plot(ax, pause)
 
         # plot the finite element mesh
@@ -2317,7 +2317,7 @@ class StressPost:
 
         return (fig, ax)
 
-    def plot_stress_vector(self, sigxs, sigys, title, pause):
+    def plot_stress_vector(self, sigxs, sigys, title, pause, cmap, size=1000, dpi=96):
         """Plots stress vectors over the finite element mesh.
 
         :param sigxs: List of x-components of the nodal stress values for each material
@@ -2340,7 +2340,7 @@ class StressPost:
         self.cross_section.plot_mesh(ax, pause, alpha=0.5)
 
         # set up the colormap
-        cmap = cm.get_cmap(name="jet")
+        cmap = cm.get_cmap(name=cmap)
 
         # initialise quiver plot list max scale
         quiv_list = []
@@ -3629,7 +3629,7 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title, pause, cmap)
 
-    def plot_stress_vm(self, pause=True, cmap="coolwarm"):
+    def plot_stress_vm(self, pause=True, cmap="coolwarm", size=500, dpi=96):
         """Produces a contour plot of the von Mises stress :math:`\sigma_{vM}` resulting from all
         actions.
 
@@ -3679,7 +3679,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_vm)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, size, dpi)
 
 
 class MaterialGroup:
