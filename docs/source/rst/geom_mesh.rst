@@ -224,7 +224,7 @@ that the user may require.
 .. note::   
    Operations on geometries are _non-destructive_. For each operation, a new geometry object is returned.
 
-   This gives sectionproperties geoemtries a _fluent API_ meaning that transformation methods can be
+   This gives sectionproperties geoemtries a *fluent API* meaning that transformation methods can be
    chained together. Please see :doc:`./advanced_geom` for examples.
 
 Shifting, Aligning, Mirroring, Rotating, etc.
