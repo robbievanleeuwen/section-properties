@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 import matplotlib.cm as cm
 import matplotlib.patches as mpatches
-from matplotlib.colors import ListedColormap
+from matplotlib.colors import ListedColormap, CenteredNorm
 
 import numpy as np
 from scipy.sparse import csc_matrix, coo_matrix, linalg
@@ -2256,7 +2256,7 @@ class StressPost:
         # can be saved to a new material group
         self.material_groups = copy.deepcopy(cross_section.material_groups)
 
-    def plot_stress_contour(self, sigs, title, pause, cmap, size=500, dpi=96):
+    def plot_stress_contour(self, sigs, title, pause, cmap, normalize=False, size=500, dpi=96):
         """Plots filled stress contours over the finite element mesh.
 
         :param sigs: List of nodal stress values for each material
@@ -2297,6 +2297,10 @@ class StressPost:
         else:
             ticks = v
 
+        norm = None
+        if normalize:
+            norm = CenteredNorm()
+
         # plot the filled contour, looping through the materials
         for (i, sig) in enumerate(sigs):
             # create and set the mask for the current material
@@ -2305,7 +2309,7 @@ class StressPost:
             triang.set_mask(mask_array)
 
             # plot the filled contour
-            trictr = ax.tricontourf(triang, sig, v, cmap=cmap)
+            trictr = ax.tricontourf(triang, sig, v, cmap=cmap, norm=norm)
 
         # display the colourbar
         fig.colorbar(trictr, label="Stress", format="%.4e", ticks=ticks)
@@ -2317,7 +2321,7 @@ class StressPost:
 
         return (fig, ax)
 
-    def plot_stress_vector(self, sigxs, sigys, title, pause, cmap, size=1000, dpi=96):
+    def plot_stress_vector(self, sigxs, sigys, title, pause, cmap, normalize=False, size=1000, dpi=96):
         """Plots stress vectors over the finite element mesh.
 
         :param sigxs: List of x-components of the nodal stress values for each material
@@ -2333,7 +2337,7 @@ class StressPost:
         """
 
         # create plot and setup the plot
-        (fig, ax) = plt.subplots()
+        (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
         post.setup_plot(ax, pause)
 
         # plot the finite element mesh
@@ -2345,6 +2349,11 @@ class StressPost:
         # initialise quiver plot list max scale
         quiv_list = []
         max_scale = 0
+
+        norm = None
+        if normalize:
+            norm = CenteredNorm()
+
 
         # plot the vectors
         for (i, sigx) in enumerate(sigxs):
@@ -2360,6 +2369,7 @@ class StressPost:
                 sigy,
                 c,
                 cmap=cmap,
+                norm=norm,
             )
 
             # get the scale and store the max value
@@ -2498,7 +2508,7 @@ class StressPost:
 
         return stress
 
-    def plot_stress_n_zz(self, pause=True, cmap="coolwarm"):
+    def plot_stress_n_zz(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,N}` resulting from the
         axial load :math:`N`.
 
@@ -2537,9 +2547,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_n)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_mxx_zz(self, pause=True, cmap="coolwarm"):
+    def plot_stress_mxx_zz(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}` resulting from the
         bending moment :math:`M_{xx}`.
 
@@ -2578,9 +2588,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_mxx)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_myy_zz(self, pause=True, cmap="coolwarm"):
+    def plot_stress_myy_zz(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}` resulting from the
         bending moment :math:`M_{yy}`.
 
@@ -2619,9 +2629,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_myy)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_m11_zz(self, pause=True, cmap="coolwarm"):
+    def plot_stress_m11_zz(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}` resulting from the
         bending moment :math:`M_{11}`.
 
@@ -2660,9 +2670,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_m11)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_m22_zz(self, pause=True, cmap="coolwarm"):
+    def plot_stress_m22_zz(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}` resulting from the
         bending moment :math:`M_{22}`.
 
@@ -2701,9 +2711,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_m22)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_m_zz(self, pause=True, cmap="coolwarm"):
+    def plot_stress_m_zz(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,\Sigma M}` resulting from
         all bending moments :math:`M_{xx} + M_{yy} + M_{11} + M_{22}`.
 
@@ -2743,9 +2753,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz_m)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_mzz_zx(self, pause=True, cmap="coolwarm"):
+    def plot_stress_mzz_zx(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Mzz}`
         resulting from the torsion moment :math:`M_{zz}`.
 
@@ -2784,9 +2794,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zx_mzz)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_mzz_zy(self, pause=True, cmap="coolwarm"):
+    def plot_stress_mzz_zy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Mzz}`
         resulting from the torsion moment :math:`M_{zz}`.
 
@@ -2825,9 +2835,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zy_mzz)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_mzz_zxy(self, pause=True, cmap="coolwarm"):
+    def plot_stress_mzz_zxy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
         from the torsion moment :math:`M_{zz}`.
 
@@ -2866,9 +2876,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zxy_mzz)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_mzz_zxy(self, pause=True, cmap="coolwarm"):
+    def plot_vector_mzz_zxy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
         from the torsion moment :math:`M_{zz}`.
 
@@ -2909,9 +2919,9 @@ class StressPost:
             sigxs.append(group.stress_result.sig_zx_mzz)
             sigys.append(group.stress_result.sig_zy_mzz)
 
-        return self.plot_stress_vector(sigxs, sigys, title, pause, cmap)
+        return self.plot_stress_vector(sigxs, sigys, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vx_zx(self, pause=True, cmap="coolwarm"):
+    def plot_stress_vx_zx(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vx}`
         resulting from the shear force :math:`V_{x}`.
 
@@ -2950,9 +2960,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zx_vx)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vx_zy(self, pause=True, cmap="coolwarm"):
+    def plot_stress_vx_zy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vx}`
         resulting from the shear force :math:`V_{x}`.
 
@@ -2991,9 +3001,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zy_vx)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vx_zxy(self, pause=True, cmap="coolwarm"):
+    def plot_stress_vx_zxy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
         from the shear force :math:`V_{x}`.
 
@@ -3032,9 +3042,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zxy_vx)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_vx_zxy(self, pause=True, cmap="coolwarm"):
+    def plot_vector_vx_zxy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
         from the shear force :math:`V_{x}`.
 
@@ -3075,9 +3085,9 @@ class StressPost:
             sigxs.append(group.stress_result.sig_zx_vx)
             sigys.append(group.stress_result.sig_zy_vx)
 
-        return self.plot_stress_vector(sigxs, sigys, title, pause, cmap)
+        return self.plot_stress_vector(sigxs, sigys, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vy_zx(self, pause=True, cmap="coolwarm"):
+    def plot_stress_vy_zx(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vy}`
         resulting from the shear force :math:`V_{y}`.
 
@@ -3116,9 +3126,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zx_vy)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vy_zy(self, pause=True, cmap="coolwarm"):
+    def plot_stress_vy_zy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vy}`
         resulting from the shear force :math:`V_{y}`.
 
@@ -3157,9 +3167,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zy_vy)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vy_zxy(self, pause=True, cmap="coolwarm"):
+    def plot_stress_vy_zxy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
         from the shear force :math:`V_{y}`.
 
@@ -3198,9 +3208,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zxy_vy)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_vy_zxy(self, pause=True, cmap="coolwarm"):
+    def plot_vector_vy_zxy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
         from the shear force :math:`V_{y}`.
 
@@ -3241,9 +3251,9 @@ class StressPost:
             sigxs.append(group.stress_result.sig_zx_vy)
             sigys.append(group.stress_result.sig_zy_vy)
 
-        return self.plot_stress_vector(sigxs, sigys, title, pause, cmap)
+        return self.plot_stress_vector(sigxs, sigys, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_v_zx(self, pause=True, cmap="coolwarm"):
+    def plot_stress_v_zx(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the *x*-component of the shear stress
         :math:`\sigma_{zx,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
@@ -3284,9 +3294,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zx_v)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_v_zy(self, pause=True, cmap="coolwarm"):
+    def plot_stress_v_zy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the *y*-component of the shear stress
         :math:`\sigma_{zy,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
@@ -3327,9 +3337,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zy_v)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_v_zxy(self, pause=True, cmap="coolwarm"):
+    def plot_stress_v_zxy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the resultant shear stress
         :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
@@ -3370,9 +3380,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zxy_v)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_v_zxy(self, pause=True, cmap="coolwarm"):
+    def plot_vector_v_zxy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a vector plot of the resultant shear stress
         :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the  applied shear forces
         :math:`V_{x} + V_{y}`.
@@ -3415,9 +3425,9 @@ class StressPost:
             sigxs.append(group.stress_result.sig_zx_v)
             sigys.append(group.stress_result.sig_zy_v)
 
-        return self.plot_stress_vector(sigxs, sigys, title, pause, cmap)
+        return self.plot_stress_vector(sigxs, sigys, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_zz(self, pause=True, cmap="coolwarm"):
+    def plot_stress_zz(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the combined normal stress :math:`\sigma_{zz}` resulting from
         all actions.
 
@@ -3457,9 +3467,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zz)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_zx(self, pause=True, cmap="coolwarm"):
+    def plot_stress_zx(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx}`
         resulting from all actions.
 
@@ -3499,9 +3509,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zx)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_zy(self, pause=True, cmap="coolwarm"):
+    def plot_stress_zy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy}`
         resulting from all actions.
 
@@ -3541,9 +3551,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zy)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_zxy(self, pause=True, cmap="coolwarm"):
+    def plot_stress_zxy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
         from all actions.
 
@@ -3583,9 +3593,9 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_zxy)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_zxy(self, pause=True, cmap="coolwarm"):
+    def plot_vector_zxy(self, pause=True, cmap="coolwarm", normalize=False, size=1000, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
         from all actions.
 
@@ -3627,9 +3637,9 @@ class StressPost:
             sigxs.append(group.stress_result.sig_zx)
             sigys.append(group.stress_result.sig_zy)
 
-        return self.plot_stress_vector(sigxs, sigys, title, pause, cmap)
+        return self.plot_stress_vector(sigxs, sigys, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vm(self, pause=True, cmap="coolwarm", size=500, dpi=96):
+    def plot_stress_vm(self, pause=True, cmap="coolwarm", normalize=False, size=500, dpi=96):
         """Produces a contour plot of the von Mises stress :math:`\sigma_{vM}` resulting from all
         actions.
 
@@ -3679,7 +3689,7 @@ class StressPost:
         for group in self.material_groups:
             sigs.append(group.stress_result.sig_vm)
 
-        return self.plot_stress_contour(sigs, title, pause, cmap, size, dpi)
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
 
 class MaterialGroup:
