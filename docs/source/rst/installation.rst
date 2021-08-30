@@ -20,16 +20,12 @@ python package index::
   $ pip install sectionproperties
 
 If you have any issues installing *meshpy*, refer to the installation instructions
-on its `github page
-<https://github.com/inducer/meshpy>`_ or its
-`documentation
-<https://documen.tician.de/meshpy/installation.html>`_.
+on its `github page<https://github.com/inducer/meshpy>` or its
+`documentation<https://documen.tician.de/meshpy/installation.html>`.
 
 If you have any issues installing *shapely*, refer to the installation instructions
-on its `github page
-<https://github.com/Toblerity/Shapely>`_ or its
-`documentation
-<https://shapely.readthedocs.io/en/stable/manual.html>`_.
+on its `github page<https://github.com/Toblerity/Shapely>` or its
+`documentation<https://shapely.readthedocs.io/en/stable/manual.html>`.
 
 Windows
 ^^^^^^^
@@ -38,8 +34,7 @@ If you use conda, you can install *meshpy* and *shapely* directly::
 
   $ conda install -c conda-forge meshpy shapely
 
-Alternatively, you can install both *meshpy* and shapely by downloading the appropriate `installation wheels
-<https://www.lfd.uci.edu/~gohlke/pythonlibs>`_.
+Alternatively, you can install both *meshpy* and shapely by downloading the appropriate `installation wheels<https://www.lfd.uci.edu/~gohlke/pythonlibs>`.
 
 Navigate to the location of the downloaded wheel and install using pip::
 

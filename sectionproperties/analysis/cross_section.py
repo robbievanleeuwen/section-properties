@@ -44,7 +44,7 @@ class Section:
         from sectionproperties.analysis.cross_section import Section
 
         geometry = sections.rectangular_section(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_size=5)
+        geometry.create_mesh(mesh_sizes=[5])
         section = Section(geometry)
 
     :cvar elements: List of finite element objects describing the cross-section mesh
@@ -212,7 +212,7 @@ class Section:
 
         The following example demonstrates the use of this method::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
         """
 
@@ -278,7 +278,7 @@ class Section:
         Note that the geometric properties must be calculated first for the calculation of the
         warping properties to be correct::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
 
@@ -665,7 +665,7 @@ class Section:
 
         The following example demonstrates the use of this method::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             (area, ixx, iyy, ixy, j, phi) = section.calculate_frame_properties()
         """
 
@@ -800,7 +800,7 @@ class Section:
         Note that the geometric properties must be calculated before the plastic properties are
         calculated::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
 
@@ -841,7 +841,7 @@ class Section:
         Note that a geometric and warping analysis must be performed before a stress analysis is
         carried out::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             stress_post = section.calculate_stress(N=1e3, Vy=3e3, Mxx=1e6)
@@ -1074,28 +1074,27 @@ class Section:
         listed under the :class:`~sectionproperties.analysis.cross_section.Section` object
         definition::
 
-            import sectionproperties.pre.sections as sections
-            from sectionproperties.pre.pre import Material
-            from sectionproperties.analysis.cross_section import Section
+        import sectionproperties.pre.sections as sections
+        from sectionproperties.pre.pre import Material
+        from sectionproperties.analysis.cross_section import Section
 
-            geom_steel = sections.RectangularSection(d=50, b=50)
-            geom_timber = sections.RectangularSection(d=50, b=50, shift=[50, 0])
-            geometry = sections.MergedSection([geom_steel, geom_timber])
-            geometry.clean_geometry()
+        steel = Material(
+            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
+            color='grey'
+        )
+        timber = Material(
+            name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
+            color='burlywood'
+        )
 
-            mesh = geometry.create_mesh(mesh_sizes=[5, 10])
+        geom_steel = sections.rectangular_section(d=50, b=50, material=steel)
+        geom_timber = sections.rectangular_section(d=50, b=50, material=timber)
+        geometry = geom_timber.align_to(geom_steel, on="right") + geom_steel
 
-            steel = Material(
-                name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
-                color='grey'
-            )
-            timber = Material(
-                name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
-                color='burlywood'
-            )
+        geometry.create_mesh(mesh_sizes=[10, 5])
 
-            section = Section(geometry, mesh, [steel, timber])
-            section.plot_mesh(materials=True, alpha=0.5)
+        section = Section(geometry)
+        section.plot_mesh(materials=True, alpha=0.5)
 
         ..  figure:: ../images/composite_mesh.png
             :align: center
@@ -1161,7 +1160,7 @@ class Section:
             post.finish_plot(ax, pause, title="Finite Element Mesh", size=size, dpi=dpi)
             return (fig, ax)
 
-    def plot_centroids(self, pause=True):
+    def plot_centroids(self, pause=True, size=500, dpi=96):
         """Plots the elastic centroid, the shear centre, the plastic centroids and the principal
         axis, if they have been calculated, on top of the finite element mesh.
 
@@ -1177,10 +1176,10 @@ class Section:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.PfcSection(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry.create_mesh(mesh_sizes=[2.5])
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             section.calculate_plastic_properties()
@@ -1217,7 +1216,7 @@ class Section:
         """
 
         # create plot and setup the plot
-        (fig, ax) = plt.subplots()
+        fig, ax = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
         post.setup_plot(ax, pause)
 
         # plot the finite element mesh
@@ -1286,11 +1285,14 @@ class Section:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            rec1 = sections.RectangularSection(d=100, b=25, shift=[-12.5, 0])
-            rec2 = sections.RectangularSection(d=25, b=100, shift=[-50, 100])
-            geometry = sections.MergedSection([rec1, rec2])
-            mesh = geometry.create_mesh(mesh_sizes=[5, 2.5])
-            section = Section(geometry, mesh)
+            rec1 = sections.rectangular_section(d=100, b=25, shift=[-12.5, 0])
+            rec2 = sections.rectangular_section(d=25, b=100, shift=[-50, 100])
+            rec1 = rec1.shift_section(x_offset=-12.5)
+            rec2 = rec2.shift_section(x_offset=-50, y_offset=100)
+
+            geometry = rec1 + rec2
+            geometry.create_mesh(mesh_sizes=[5, 2.5])
+            section = Section(geometry)
             section.display_mesh_info()
 
             >>>Mesh Statistics:
@@ -1324,10 +1326,10 @@ class Section:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.RectangularSection(d=100, b=50)
-            mesh = geometry.create_mesh(mesh_sizes=[5])
+            geometry = sections.rectangular_section(d=100, b=50)
+            geometry.create_mesh(mesh_sizes=[5])
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
 
             section.display_results(fmt='.3f')
@@ -1342,7 +1344,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             area = section.get_area()
         """
@@ -1356,7 +1358,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             perimeter = section.get_perimeter()
         """
@@ -1370,7 +1372,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             ea = section.get_ea()
         """
@@ -1384,7 +1386,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             (qx, qy) = section.get_q()
         """
@@ -1398,7 +1400,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             (ixx_g, iyy_g, ixy_g) = section.get_ig()
         """
@@ -1416,7 +1418,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             (cx, cy) = section.get_c()
         """
@@ -1430,7 +1432,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             (ixx_c, iyy_c, ixy_c) = section.get_ic()
         """
@@ -1449,7 +1451,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             (zxx_plus, zxx_minus, zyy_plus, zyy_minus) = section.get_z()
         """
@@ -1468,7 +1470,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             (rx, ry) = section.get_rc()
         """
@@ -1482,7 +1484,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             (i11_c, i22_c) = section.get_ip()
         """
@@ -1496,7 +1498,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             phi = section.get_phi()
         """
@@ -1511,7 +1513,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             (z11_plus, z11_minus, z22_plus, z22_minus) = section.get_zp()
         """
@@ -1530,7 +1532,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             (r11, r22) = section.get_rp()
         """
@@ -1544,7 +1546,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             j = section.get_j()
@@ -1559,7 +1561,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (x_se, y_se) = section.get_sc()
@@ -1581,7 +1583,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (x11_se, y22_se) = section.get_sc_p()
@@ -1602,7 +1604,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (x_st, y_st) = section.get_sc_t()
@@ -1624,7 +1626,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             gamma = section.get_gamma()
@@ -1639,7 +1641,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (A_sx, A_sy) = section.get_As()
@@ -1654,7 +1656,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (A_s11, A_s22) = section.get_As_p()
@@ -1671,7 +1673,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus) = section.get_beta()
@@ -1694,7 +1696,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             (beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus) = section.get_beta_p()
@@ -1714,7 +1716,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (x_pc, y_pc) = section.get_pc()
@@ -1736,7 +1738,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (x11_pc, y22_pc) = section.get_pc_p()
@@ -1764,7 +1766,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (sxx, syy) = section.get_s()
@@ -1782,7 +1784,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (s11, s22) = section.get_sp()
@@ -1798,7 +1800,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus) = section.get_sf()
@@ -1819,7 +1821,7 @@ class Section:
 
         ::
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_plastic_properties()
             (sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus) = section.get_sf_p()
@@ -1860,7 +1862,8 @@ class PlasticSection:
     :vartype mesh_elements: :class:`numpy.ndarray`
     :cvar elements: List of finite element objects describing the cross-section mesh
     :vartype elements: list[:class:`~sectionproperties.analysis.fea.Tri6`]
-    :cvar float f_top: Current force in the top region
+    :cvar f_top: Current force in the top region
+    :type f_top: float
     :cvar c_top: Centroid of the force in the top region *(c_top_x, c_top_y)*
     :type c_top: list[float, float]
     :cvar c_bot: Centroid of the force in the bottom region *(c_bot_x, c_bot_y)*
@@ -2290,6 +2293,8 @@ class StressPost:
         # determine minimum and maximum stress values for the contour list
         sig_min = min([min(x) for x in sigs])
         sig_max = max([max(x) for x in sigs])
+        if round(sig_min, 12) == round(sig_max, 12):
+            sig_min = -sig_max
         v = np.linspace(sig_min, sig_max, 15, endpoint=True)
 
         if np.isclose(v[0], v[-1], atol=1e-12):
@@ -2326,7 +2331,7 @@ class StressPost:
 
         return (fig, ax)
 
-    def plot_stress_vector(self, sigxs, sigys, title, pause, cmap, normalize=True, size=1000, dpi=96):
+    def plot_stress_vector(self, sigxs, sigys, title, pause, cmap, normalize=True, size=500, dpi=96):
         """Plots stress vectors over the finite element mesh.
 
         :param sigxs: List of x-components of the nodal stress values for each material
@@ -2467,9 +2472,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[2.5])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2517,7 +2522,7 @@ class StressPost:
 
         return stress
 
-    def plot_stress_n_zz(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_n_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,N}` resulting from the
         axial load :math:`N`.
 
@@ -2533,9 +2538,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[2.5])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2558,7 +2563,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_mxx_zz(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_mxx_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}` resulting from the
         bending moment :math:`M_{xx}`.
 
@@ -2599,7 +2604,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_myy_zz(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_myy_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}` resulting from the
         bending moment :math:`M_{yy}`.
 
@@ -2640,7 +2645,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_m11_zz(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_m11_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}` resulting from the
         bending moment :math:`M_{11}`.
 
@@ -2681,7 +2686,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_m22_zz(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_m22_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}` resulting from the
         bending moment :math:`M_{22}`.
 
@@ -2722,7 +2727,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_m_zz(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_m_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,\Sigma M}` resulting from
         all bending moments :math:`M_{xx} + M_{yy} + M_{11} + M_{22}`.
 
@@ -2764,7 +2769,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_mzz_zx(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_mzz_zx(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Mzz}`
         resulting from the torsion moment :math:`M_{zz}`.
 
@@ -2805,7 +2810,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_mzz_zy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_mzz_zy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Mzz}`
         resulting from the torsion moment :math:`M_{zz}`.
 
@@ -2846,7 +2851,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_mzz_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_mzz_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
         from the torsion moment :math:`M_{zz}`.
 
@@ -2887,7 +2892,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_mzz_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_vector_mzz_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
         from the torsion moment :math:`M_{zz}`.
 
@@ -2930,7 +2935,7 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vx_zx(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_vx_zx(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vx}`
         resulting from the shear force :math:`V_{x}`.
 
@@ -2971,7 +2976,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vx_zy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_vx_zy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vx}`
         resulting from the shear force :math:`V_{x}`.
 
@@ -3012,7 +3017,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vx_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_vx_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
         from the shear force :math:`V_{x}`.
 
@@ -3053,7 +3058,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_vx_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_vector_vx_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
         from the shear force :math:`V_{x}`.
 
@@ -3096,7 +3101,7 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vy_zx(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_vy_zx(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx,Vy}`
         resulting from the shear force :math:`V_{y}`.
 
@@ -3137,7 +3142,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vy_zy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_vy_zy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy,Vy}`
         resulting from the shear force :math:`V_{y}`.
 
@@ -3178,7 +3183,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_vy_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_vy_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
         from the shear force :math:`V_{y}`.
 
@@ -3219,7 +3224,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_vy_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_vector_vy_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
         from the shear force :math:`V_{y}`.
 
@@ -3262,7 +3267,7 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_v_zx(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_v_zx(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the *x*-component of the shear stress
         :math:`\sigma_{zx,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
@@ -3305,7 +3310,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_v_zy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_v_zy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the *y*-component of the shear stress
         :math:`\sigma_{zy,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
@@ -3348,7 +3353,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_v_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_v_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the resultant shear stress
         :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the applied shear forces
         :math:`V_{x} + V_{y}`.
@@ -3391,7 +3396,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_v_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_vector_v_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a vector plot of the resultant shear stress
         :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the  applied shear forces
         :math:`V_{x} + V_{y}`.
@@ -3436,7 +3441,7 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_zz(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the combined normal stress :math:`\sigma_{zz}` resulting from
         all actions.
 
@@ -3478,7 +3483,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_zx(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_zx(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the *x*-component of the shear stress :math:`\sigma_{zx}`
         resulting from all actions.
 
@@ -3520,7 +3525,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_zy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_zy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the *y*-component of the shear stress :math:`\sigma_{zy}`
         resulting from all actions.
 
@@ -3562,7 +3567,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_stress_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_stress_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
         from all actions.
 
@@ -3604,7 +3609,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=1000, dpi=96):
+    def plot_vector_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
         from all actions.
 

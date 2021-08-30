@@ -37,16 +37,16 @@ can be found in the README file on github.
 Here's a quick example that harnesses some of the power of *sectionproperties* and shows its simplicity::
 
   import sectionproperties.pre.sections as sections
-  from sectionproperties.analysis.cross_section import CrossSection
+  from sectionproperties.analysis.cross_section import Section
 
   # create geometry of the cross-section
-  geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+  geometry = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
 
   # generate a finite element mesh
-  mesh = geometry.create_mesh(mesh_sizes=[2.5])
+  geometry.create_mesh(mesh_sizes=[2.5])
 
-  # create a CrossSection object for analysis
-  section = CrossSection(geometry, mesh)
+  # create a Section object for analysis
+  section = Section(geometry)
 
   # calculate various cross-section properties
   section.calculate_geometric_properties()
