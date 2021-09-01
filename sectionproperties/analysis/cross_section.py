@@ -1177,7 +1177,7 @@ class Section:
             from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-            geometry.create_mesh(mesh_sizes=[2.5])
+            geometry.create_mesh(mesh_sizes=[20])
 
             section = Section(geometry)
             section.calculate_geometric_properties()
@@ -1198,10 +1198,10 @@ class Section:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
 
-            section = Section(geometry, mesh)
+            section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             section.calculate_plastic_properties()
@@ -2295,6 +2295,7 @@ class StressPost:
         sig_max = max([max(x) for x in sigs])
         if round(sig_min, 12) == round(sig_max, 12):
             sig_min = -sig_max
+
         v = np.linspace(sig_min, sig_max, 15, endpoint=True)
 
         if np.isclose(v[0], v[-1], atol=1e-12):
@@ -2327,11 +2328,11 @@ class StressPost:
         # TODO: display stress values in the toolbar (format_coord)
 
         # finish the plot
-        post.finish_plot(ax, pause, title)
+        post.finish_plot(ax, pause, title, size=size, dpi=dpi)
 
         return (fig, ax)
 
-    def plot_stress_vector(self, sigxs, sigys, title, pause, cmap, normalize=True, size=500, dpi=96):
+    def plot_stress_vector(self, sigxs, sigys, title, pause, cmap, normalize=False, yield_max=False, size=500, dpi=96):
         """Plots stress vectors over the finite element mesh.
 
         :param sigxs: List of x-components of the nodal stress values for each material
@@ -2408,7 +2409,7 @@ class StressPost:
         fig.colorbar(quiv, label="Stress", format="%.4e", ticks=v1, cax=cax)
 
         # finish the plot
-        post.finish_plot(ax, pause, title=title)
+        post.finish_plot(ax, pause, title=title, size=size, dpi=dpi)
 
         return (fig, ax)
 
@@ -2473,7 +2474,7 @@ class StressPost:
             from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            geometry.create_mesh(mesh_sizes=[2.5])
+            geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
             section.calculate_geometric_properties()
@@ -2539,7 +2540,7 @@ class StressPost:
             from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            geometry.create_mesh(mesh_sizes=[2.5])
+            geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
             section.calculate_geometric_properties()
@@ -2563,6 +2564,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
+
     def plot_stress_mxx_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}` resulting from the
         bending moment :math:`M_{xx}`.
@@ -2576,18 +2578,18 @@ class StressPost:
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         a bending moment about the x-axis of 5 kN.m::
 
-            import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import Section
+        import sectionproperties.pre.sections as sections
+        from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+        geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+        geometry.create_mesh(mesh_sizes=[20])
+        section = Section(geometry)
 
-            section.calculate_geometric_properties()
-            section.calculate_warping_properties()
-            stress_post = section.calculate_stress(Mxx=5e6)
+        section.calculate_geometric_properties()
+        section.calculate_warping_properties()
+        stress_post = section.calculate_stress(Mxx=5e6)
 
-            stress_post.plot_stress_mxx_zz()
+        stress_post.plot_stress_mxx_zz()
 
         ..  figure:: ../images/stress/stress_mxx_zz.png
             :align: center
@@ -2603,6 +2605,7 @@ class StressPost:
             sigs.append(group.stress_result.sig_zz_mxx)
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
+
 
     def plot_stress_myy_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}` resulting from the
@@ -2620,9 +2623,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2645,6 +2648,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
+
     def plot_stress_m11_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}` resulting from the
         bending moment :math:`M_{11}`.
@@ -2661,9 +2665,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2686,6 +2690,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
+
     def plot_stress_m22_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}` resulting from the
         bending moment :math:`M_{22}`.
@@ -2702,9 +2707,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2744,9 +2749,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2785,9 +2790,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2826,9 +2831,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2867,9 +2872,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2892,7 +2897,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_mzz_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
+    def plot_vector_mzz_zxy(self, pause=True, cmap="YlOrBr", normalize=False, size=500, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Mzz}` resulting
         from the torsion moment :math:`M_{zz}`.
 
@@ -2908,9 +2913,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2951,9 +2956,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -2992,9 +2997,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3033,9 +3038,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3058,7 +3063,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_vx_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
+    def plot_vector_vx_zxy(self, pause=True, cmap="YlOrBr", normalize=False, size=500, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vx}` resulting
         from the shear force :math:`V_{x}`.
 
@@ -3074,9 +3079,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3117,9 +3122,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3158,9 +3163,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3199,9 +3204,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3224,7 +3229,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_vy_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
+    def plot_vector_vy_zxy(self, pause=True, cmap="YlOrBr", normalize=False, size=500, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy,Vy}` resulting
         from the shear force :math:`V_{y}`.
 
@@ -3240,9 +3245,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3285,9 +3290,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3328,9 +3333,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3371,9 +3376,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3396,7 +3401,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_v_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
+    def plot_vector_v_zxy(self, pause=True, cmap="YlOrBr", normalize=False, size=500, dpi=96):
         """Produces a vector plot of the resultant shear stress
         :math:`\sigma_{zxy,\Sigma V}` resulting from the sum of the  applied shear forces
         :math:`V_{x} + V_{y}`.
@@ -3414,9 +3419,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3458,9 +3463,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3500,9 +3505,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3542,9 +3547,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3584,9 +3589,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3609,7 +3614,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-    def plot_vector_zxy(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
+    def plot_vector_zxy(self, pause=True, cmap="YlOrBr", normalize=False, size=500, dpi=96):
         """Produces a vector plot of the resultant shear stress :math:`\sigma_{zxy}` resulting
         from all actions.
 
@@ -3626,9 +3631,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3678,9 +3683,9 @@ class StressPost:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()

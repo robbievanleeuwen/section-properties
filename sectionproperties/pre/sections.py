@@ -833,7 +833,7 @@ class Geometry:
         :return: Geometry centroid.
         :rtype: Tuple[float, float]
         """
-        cx, cy = self.geom.centroid.coords[0]
+        cx, cy = self.geom.centroid.coords[0] # Nested list
         return (cx, cy)
 
     @property
@@ -870,7 +870,7 @@ class Geometry:
             return Geometry(new_polygon, self.material, self.control_points[0])
         except:
             raise ValueError(
-                f"Cannot perform 'union' on these two Geometry instances: {self} | {other}"
+                f"Cannot perform 'union' on these two objects: {self} | {other}"
             )
 
     def __xor__(self, other):
@@ -886,7 +886,7 @@ class Geometry:
             return Geometry(new_polygon, self.material)
         except:
             raise ValueError(
-                f"Cannot perform 'symmetric difference' on these two Geometry instances: {self} ^ {other}"
+                f"Cannot perform 'symmetric difference' on these two objects: {self} ^ {other}"
             )
 
     def __sub__(self, other):
@@ -905,7 +905,7 @@ class Geometry:
             return Geometry(new_polygon, self.material)
         except:
             raise ValueError(
-                f"Cannot perform 'difference' on these two Geometry instances: {self} - {other}"
+                f"Cannot perform 'difference' on these two objects: {self} - {other}"
             )
 
     def __add__(self, other):
@@ -1310,16 +1310,19 @@ class CompoundGeometry(Geometry):
                 if list(point) not in self.points:
                     self.points.append(list(point))
 
-            # The facets numbering from the constituent Polygon is no longer valid
+            # The facet numbering from the constituent Polygon is no longer valid
             # in the MultiPolygon.
-            # Map facets from original Polygon points to collected MultiPolygon points.
-            # Because points are not in their "original" order, have to find the matching point
+            # We need to map the facets from the original Polygon points to the new
+            # collected MultiPolygon points, which are in a different order.
+            # Because points are not in their "original" order, we have to find the matching point
             # in the new self.points list and map the facet from the old points list to the new
-            # self.points list.
+            # self.points list. In other words, we need to change the facet numbering so that
+            # connectivity is preserved but there are no duplicate points.
+
             for facet in geom.facets:
                 i_pnt, j_pnt = geom.points[facet[0]], geom.points[facet[1]]
-                i_pnt_idx = self.points.index(i_pnt)  # List, .index method
-                j_pnt_idx = self.points.index(j_pnt)  # List, .index method
+                i_pnt_idx = self.points.index(i_pnt)  # using <list>.index method
+                j_pnt_idx = self.points.index(j_pnt)  # using <list>.index method
                 self.facets.append([i_pnt_idx, j_pnt_idx])
 
             # add holes
@@ -1327,7 +1330,6 @@ class CompoundGeometry(Geometry):
                 self.holes.append(tuple(hole))
 
             # add control points
-
             for control_point in geom.control_points:
                 self.control_points.append(tuple(control_point))
 
@@ -1380,7 +1382,6 @@ def load_dxf(dxf_filepath: pathlib.Path):
     if not dxf_filepath.exists():
         raise ValueError(f"The filepath does not exist: {dxf_filepath}")
 
-    # TODO avoid step of making a temp file locally
     my_dxf = c2s.dxf.DxfImporter(dxf_filepath)
     my_dxf.process()
     my_dxf.cleanup()
@@ -1601,7 +1602,7 @@ def circular_hollow_section(d: float, t: float, n: int, material: pre.Material =
         import sectionproperties.pre.sections as sections
 
         geometry = sections.circular_hollow_section(d=48, t=3.2, n=64)
-        mesh = geometry.create_mesh(mesh_sizes=[1.0])
+        geometry.create_mesh(mesh_sizes=[1.0])
 
     ..  figure:: ../images/sections/chs_geometry.png
         :align: center
