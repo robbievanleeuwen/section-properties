@@ -338,9 +338,9 @@ Major Principal Stress (:math:`\sigma_{1}`)
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_1
     :noindex:
 
-Major Principal Stress (:math:`\sigma_{2}`)
+Minor Principal Stress (:math:`\sigma_{2}`)
 """"""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_1
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_2
     :noindex:
 
 von Mises Stress (:math:`\sigma_{vM}`)

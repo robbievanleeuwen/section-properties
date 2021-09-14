@@ -3861,7 +3861,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause)
 
     def plot_stress_2(self, pause=True):
-        """Produces a contour plot of the Minor principal stress :math:`\sigma_{1}` resulting from all
+        """Produces a contour plot of the Minor principal stress :math:`\sigma_{2}` resulting from all
         actions.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
