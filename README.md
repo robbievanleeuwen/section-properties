@@ -102,3 +102,7 @@ $ pip install sectionproperties
 - [ ] Optimisation
 - [ ] Reinforced Concrete
 - [ ] Steel
+
+## Disclaimer:
+
+*sectionproperties* is an open source engineering tool that continues to benefit from the collaboration of many contributors. Although efforts have been made to ensure the that relevant engineering theories have been correctly implemented, it remains the user's responsibility to confirm and accept the output. Refer to the [license](LICENSE) for clarification of the conditions of use.
