@@ -2615,6 +2615,8 @@ class StressPost:
         * *'sig_zy'*: *y*-component of the shear stress :math:`\sigma_{zy}` resulting from all
           actions
         * *'sig_zxy'*: Resultant shear stress :math:`\sigma_{zxy}` resulting from all actions
+        * *'sig_1'*: Major principal stress :math:`\sigma_{1}` resulting from all actions
+        * *'sig_2'*: Minor principal stress :math:`\sigma_{2}` resulting from all actions
         * *'sig_vm'*: von Mises stress :math:`\sigma_{vM}` resulting from all actions
 
         The following example returns the normal stress within a 150x90x12 UA section resulting
@@ -2642,32 +2644,36 @@ class StressPost:
         stress = []
 
         for group in self.material_groups:
-            stress.append({
-                'Material': group.material.name,
-                'sig_zz_n': group.stress_result.sig_zz_n,
-                'sig_zz_mxx': group.stress_result.sig_zz_mxx,
-                'sig_zz_myy': group.stress_result.sig_zz_myy,
-                'sig_zz_m11': group.stress_result.sig_zz_m11,
-                'sig_zz_m22': group.stress_result.sig_zz_m22,
-                'sig_zz_m': group.stress_result.sig_zz_m,
-                'sig_zx_mzz': group.stress_result.sig_zx_mzz,
-                'sig_zy_mzz': group.stress_result.sig_zy_mzz,
-                'sig_zxy_mzz': group.stress_result.sig_zxy_mzz,
-                'sig_zx_vx': group.stress_result.sig_zx_vx,
-                'sig_zy_vx': group.stress_result.sig_zy_vx,
-                'sig_zxy_vx': group.stress_result.sig_zxy_vx,
-                'sig_zx_vy': group.stress_result.sig_zx_vy,
-                'sig_zy_vy': group.stress_result.sig_zy_vy,
-                'sig_zxy_vy': group.stress_result.sig_zxy_vy,
-                'sig_zx_v': group.stress_result.sig_zx_v,
-                'sig_zy_v': group.stress_result.sig_zy_v,
-                'sig_zxy_v': group.stress_result.sig_zxy_v,
-                'sig_zz': group.stress_result.sig_zz,
-                'sig_zx': group.stress_result.sig_zx,
-                'sig_zy': group.stress_result.sig_zy,
-                'sig_zxy': group.stress_result.sig_zxy,
-                'sig_vm': group.stress_result.sig_vm
-            })
+            stress.append(
+                {
+                    "Material": group.material.name,
+                    "sig_zz_n": group.stress_result.sig_zz_n,
+                    "sig_zz_mxx": group.stress_result.sig_zz_mxx,
+                    "sig_zz_myy": group.stress_result.sig_zz_myy,
+                    "sig_zz_m11": group.stress_result.sig_zz_m11,
+                    "sig_zz_m22": group.stress_result.sig_zz_m22,
+                    "sig_zz_m": group.stress_result.sig_zz_m,
+                    "sig_zx_mzz": group.stress_result.sig_zx_mzz,
+                    "sig_zy_mzz": group.stress_result.sig_zy_mzz,
+                    "sig_zxy_mzz": group.stress_result.sig_zxy_mzz,
+                    "sig_zx_vx": group.stress_result.sig_zx_vx,
+                    "sig_zy_vx": group.stress_result.sig_zy_vx,
+                    "sig_zxy_vx": group.stress_result.sig_zxy_vx,
+                    "sig_zx_vy": group.stress_result.sig_zx_vy,
+                    "sig_zy_vy": group.stress_result.sig_zy_vy,
+                    "sig_zxy_vy": group.stress_result.sig_zxy_vy,
+                    "sig_zx_v": group.stress_result.sig_zx_v,
+                    "sig_zy_v": group.stress_result.sig_zy_v,
+                    "sig_zxy_v": group.stress_result.sig_zxy_v,
+                    "sig_zz": group.stress_result.sig_zz,
+                    "sig_zx": group.stress_result.sig_zx,
+                    "sig_zy": group.stress_result.sig_zy,
+                    "sig_zxy": group.stress_result.sig_zxy,
+                    "sig_1": group.stress_result.sig_1,
+                    "sig_2": group.stress_result.sig_2,
+                    "sig_vm": group.stress_result.sig_vm,
+                }
+            )
 
         return stress
 
@@ -3802,6 +3808,111 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title, pause)
 
+    def plot_stress_1(self, pause=True):
+        """Produces a contour plot of the Major principal stress :math:`\sigma_{1}` resulting from all
+        actions.
+
+        :param bool pause: If set to true, the figure pauses the script until the window is closed.
+            If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
+
+        The following example plots a contour of the Major principal stress within a 150x90x12 UA section
+        resulting from the following actions:
+
+        * :math:`N = 50` kN
+        * :math:`M_{xx} = -5` kN.m
+        * :math:`M_{22} = 2.5` kN.m
+        * :math:`M_{zz} = 1.5` kN.m
+        * :math:`V_{x} = 10` kN
+        * :math:`V_{y} = 5` kN
+
+        ::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(
+                N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3
+            )
+
+            stress_post.plot_stress_1()
+
+        ..  figure:: ../images/stress/stress_1.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the Major Principal stress.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{1}$'
+        sigs = []
+
+        for group in self.material_groups:
+            sigs.append(group.stress_result.sig_1)
+
+        return self.plot_stress_contour(sigs, title, pause)
+
+    def plot_stress_2(self, pause=True):
+        """Produces a contour plot of the Minor principal stress :math:`\sigma_{2}` resulting from all
+        actions.
+
+        :param bool pause: If set to true, the figure pauses the script until the window is closed.
+            If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
+
+        The following example plots a contour of the Minor principal stress within a 150x90x12 UA section
+        resulting from the following actions:
+
+        * :math:`N = 50` kN
+        * :math:`M_{xx} = -5` kN.m
+        * :math:`M_{22} = 2.5` kN.m
+        * :math:`M_{zz} = 1.5` kN.m
+        * :math:`V_{x} = 10` kN
+        * :math:`V_{y} = 5` kN
+
+        ::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(
+                N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3
+            )
+
+            stress_post.plot_stress_2()
+
+        ..  figure:: ../images/stress/stress_2.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the Minor Principal stress.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{2}$'
+        sigs = []
+
+        for group in self.material_groups:
+            sigs.append(group.stress_result.sig_2)
+
+        return self.plot_stress_contour(sigs, title, pause)
+
+    
     def plot_stress_vm(self, pause=True):
         """Produces a contour plot of the von Mises stress :math:`\sigma_{vM}` resulting from all
         actions.
@@ -3962,6 +4073,10 @@ class StressResult:
     :cvar sig_zxy: Combined resultant shear stress (:math:`\sigma_{zxy}`) resulting from all
         actions
     :vartype sig_zxy: :class:`numpy.ndarray`
+    :cvar sig_1: Major principal stress (:math:`\sigma_{1}`) resulting from all actions
+    :vartype sig_1: :class:`numpy.ndarray`
+    :cvar sig_2: Minor principal stress (:math:`\sigma_{2}`) resulting from all actions
+    :vartype sig_2: :class:`numpy.ndarray`
     :cvar sig_vm: von Mises stress (:math:`\sigma_{VM}`) resulting from all actions
     :vartype sig_vm: :class:`numpy.ndarray`
     """
@@ -3994,6 +4109,8 @@ class StressResult:
         self.sig_zx = np.zeros(num_nodes)
         self.sig_zy = np.zeros(num_nodes)
         self.sig_zxy = np.zeros(num_nodes)
+        self.sig_1 = np.zeros(num_nodes)
+        self.sig_2 = np.zeros(num_nodes)
         self.sig_vm = np.zeros(num_nodes)
 
     def calculate_combined_stresses(self):
@@ -4010,6 +4127,8 @@ class StressResult:
         self.sig_zx = self.sig_zx_mzz + self.sig_zx_v
         self.sig_zy = self.sig_zy_mzz + self.sig_zy_v
         self.sig_zxy = (self.sig_zx ** 2 + self.sig_zy ** 2) ** 0.5
+        self.sig_1 = self.sig_zz / 2 + np.sqrt( (self.sig_zz / 2) ** 2 + self.sig_zxy ** 2)
+        self.sig_2 = self.sig_zz / 2 - np.sqrt( (self.sig_zz / 2) ** 2 + self.sig_zxy ** 2)
         self.sig_vm = (self.sig_zz ** 2 + 3 * self.sig_zxy ** 2) ** 0.5
 
 
