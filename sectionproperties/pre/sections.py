@@ -6,7 +6,7 @@ import sectionproperties.post.post as post
 
 class Geometry(pre.GeometryCleanerMixin):
     """Parent class for a cross-section geometry input.
-
+    Test change
     Provides an interface for the user to specify the geometry defining a cross-section. A method
     is provided for generating a triangular mesh, for translating the cross-section by *(x, y)* and
     for plotting the geometry.
