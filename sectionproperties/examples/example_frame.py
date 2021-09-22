@@ -23,17 +23,17 @@ for mesh_size in mesh_sizes:
     t_calc.append(t)  # save the time
     j_calc.append(j)  # save the torsion constant
     # print the result
-    msg = "Mesh Size: {0}; ".format(mesh_size)
-    msg += "Solution Time {0:.5f} s; ".format(t)
-    msg += "Torsion Constant: {0:.12e}".format(j)
-    print(msg)
+    str = "Mesh Size: {0}; ".format(mesh_size)
+    str += "Solution Time {0:.5f} s; ".format(t)
+    str += "Torsion Constant: {0:.12e}".format(j)
+    print(str)
 
 correct_val = j_calc[0]  # assume the finest mesh gives the 'correct' value
 j_np = np.array(j_calc)  # convert results to a numpy array
 error_vals = (j_calc - correct_val) / j_calc * 100  # compute the error
 
 # produce a plot of the accuracy of the torsion constant with computation time
-plt.loglog(t_calc[1:], error_vals[1:], 'kx-')
+plt.loglog(t_calc[1:], error_vals[1:], "kx-")
 plt.xlabel("Solver Time [s]")
 plt.ylabel("Torsion Constant Error [%]")
 plt.show()

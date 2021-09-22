@@ -1,101 +1,134 @@
-import unittest
+import pytest_check as check
+
+# import unittest
 import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import CrossSection
+import sectionproperties.pre.pre as pre
+from sectionproperties.analysis.cross_section import Section
 from sectionproperties.tests.helper_functions import validate_properties
 
+import sectionproperties.analysis.cross_section as file
 
-class TestRectangle(unittest.TestCase):
-    """Section properties are mostly validated against hand calcs. Results from
-    Strand7 and Roark's Formulas for Stress and Strain are used for some
-    warping properties."""
+# Rectangle section setup
+rectangle_geometry = sections.rectangular_section(b=50, d=100)
+rectangle_geometry.create_mesh(mesh_sizes=100)
+rectangle_section = Section(rectangle_geometry)
+rectangle_section.calculate_geometric_properties()
+rectangle_section.calculate_warping_properties()
+rectangle_section.calculate_plastic_properties()
 
-    def setUp(self):
-        self.geometry = sections.RectangularSection(d=100, b=50)
-        self.mesh = self.geometry.create_mesh(mesh_sizes=[10])
-        self.section = CrossSection(self.geometry, self.mesh)
-
-    def test_geometric(self):
-        self.section.calculate_geometric_properties()
-
-        val_list = []
-        val_list.append({"prop": "area", "val": 100 * 50, "tol": None})
-        val_list.append({"prop": "perimeter", "val": 100 * 2 + 50 * 2, "tol": None})
-        val_list.append({"prop": "ea", "val": 1 * 100 * 50, "tol": None})
-        val_list.append({"prop": "qx", "val": 100 * 50 * 50, "tol": None})
-        val_list.append({"prop": "qy", "val": 100 * 50 * 25, "tol": None})
-        val_list.append({"prop": "ixx_g", "val": 50 * 100 ** 3 / 3, "tol": None})
-        val_list.append({"prop": "iyy_g", "val": 100 * 50 ** 3 / 3, "tol": None})
-        val_list.append({"prop": "ixy_g", "val": 100 * 50 * 50 * 25, "tol": None})
-        val_list.append({"prop": "cx", "val": 50 / 2, "tol": None})
-        val_list.append({"prop": "cy", "val": 100 / 2, "tol": None})
-        val_list.append({"prop": "ixx_c", "val": 50 * 100 ** 3 / 12, "tol": None})
-        val_list.append({"prop": "iyy_c", "val": 100 * 50 ** 3 / 12, "tol": None})
-        val_list.append({"prop": "ixy_c", "val": 0, "tol": None})
-        val_list.append({"prop": "zxx_plus", "val": 50 * 100 ** 2 / 6, "tol": None})
-        val_list.append({"prop": "zxx_minus", "val": 50 * 100 ** 2 / 6, "tol": None})
-        val_list.append({"prop": "zyy_plus", "val": 100 * 50 ** 2 / 6, "tol": None})
-        val_list.append({"prop": "zyy_minus", "val": 100 * 50 ** 2 / 6, "tol": None})
-        val_list.append({"prop": "rx", "val": (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None})
-        val_list.append({"prop": "ry", "val": (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None})
-        val_list.append({"prop": "i11_c", "val": 50 * 100 ** 3 / 12, "tol": None})
-        val_list.append({"prop": "i22_c", "val": 100 * 50 ** 3 / 12, "tol": None})
-        val_list.append({"prop": "phi", "val": 0, "tol": None})
-        val_list.append({"prop": "z11_plus", "val": 50 * 100 ** 2 / 6, "tol": None})
-        val_list.append({"prop": "z11_minus", "val": 50 * 100 ** 2 / 6, "tol": None})
-        val_list.append({"prop": "z22_plus", "val": 100 * 50 ** 2 / 6, "tol": None})
-        val_list.append({"prop": "z22_minus", "val": 100 * 50 ** 2 / 6, "tol": None})
-        val_list.append(
-            {"prop": "r11", "val": (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None}
-        )
-        val_list.append(
-            {"prop": "r22", "val": (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None}
-        )
-
-        validate_properties(self, val_list, self.section)
-
-    def test_plastic(self):
-        self.section.calculate_geometric_properties()
-        self.section.calculate_plastic_properties()
-
-        val_list = []
-        val_list.append({"prop": "x_pc", "val": 50 / 2, "tol": None})
-        val_list.append({"prop": "y_pc", "val": 100 / 2, "tol": None})
-        val_list.append({"prop": "x11_pc", "val": 50 / 2, "tol": None})
-        val_list.append({"prop": "y22_pc", "val": 100 / 2, "tol": None})
-        val_list.append({"prop": "sxx", "val": 50 * 100 ** 2 / 4, "tol": None})
-        val_list.append({"prop": "syy", "val": 100 * 50 ** 2 / 4, "tol": None})
-        val_list.append({"prop": "s11", "val": 50 * 100 ** 2 / 4, "tol": None})
-        val_list.append({"prop": "s22", "val": 100 * 50 ** 2 / 4, "tol": None})
-        val_list.append({"prop": "sf_xx_plus", "val": 1.5, "tol": None})
-        val_list.append({"prop": "sf_xx_minus", "val": 1.5, "tol": None})
-        val_list.append({"prop": "sf_yy_plus", "val": 1.5, "tol": None})
-        val_list.append({"prop": "sf_yy_minus", "val": 1.5, "tol": None})
-        val_list.append({"prop": "sf_11_plus", "val": 1.5, "tol": None})
-        val_list.append({"prop": "sf_11_minus", "val": 1.5, "tol": None})
-        val_list.append({"prop": "sf_22_plus", "val": 1.5, "tol": None})
-        val_list.append({"prop": "sf_22_minus", "val": 1.5, "tol": None})
-
-        validate_properties(self, val_list, self.section)
-
-    def test_warping(self):
-        self.section.calculate_geometric_properties()
-        self.section.calculate_warping_properties()
-
-        val_list = []
-        val_list.append({"prop": "j", "val": 2861002, "tol": 0.04})  # roark's
-        val_list.append({"prop": "j", "val": 2.85852e6, "tol": 2e-5})  # st7
-        val_list.append({"prop": "gamma", "val": 3.17542e8, "tol": None})  # st7
-        val_list.append({"prop": "x_se", "val": 50 / 2, "tol": None})
-        val_list.append({"prop": "y_se", "val": 100 / 2, "tol": None})
-        val_list.append({"prop": "x11_se", "val": 0, "tol": None})
-        val_list.append({"prop": "y22_se", "val": 0, "tol": None})
-        val_list.append({"prop": "x_st", "val": 50 / 2, "tol": None})
-        val_list.append({"prop": "y_st", "val": 100 / 2, "tol": None})
-        val_list.append({"prop": "A_sx", "val": 5 / 6 * 100 * 50, "tol": None})
-        val_list.append({"prop": "A_sy", "val": 5 / 6 * 100 * 50, "tol": None})
-        val_list.append({"prop": "A_s11", "val": 5 / 6 * 100 * 50, "tol": None})
-        val_list.append({"prop": "A_s22", "val": 5 / 6 * 100 * 50, "tol": None})
+tol = 1e-6
+warp_tol = 1e-4
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_rectangular_section_geometric():
+    check.almost_equal(rectangle_section.section_props.area, 100 * 50, rel=tol)
+    check.almost_equal(
+        rectangle_section.section_props.perimeter, 2 * 100 + 2 * 50, rel=tol
+    )
+    check.almost_equal(rectangle_section.section_props.ea, 1 * 100 * 50, rel=tol)
+    check.almost_equal(rectangle_section.section_props.qx, 100 * 50 * 50, rel=tol)
+    check.almost_equal(rectangle_section.section_props.qy, 100 * 50 * 25, rel=tol)
+    check.almost_equal(
+        rectangle_section.section_props.ixx_g, 50 * 100 ** 3 / 3, rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.iyy_g, 100 * 50 ** 3 / 3, rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.ixy_g, 100 * 50 * 50 * 25, rel=tol
+    )
+    check.almost_equal(rectangle_section.section_props.cx, 50 / 2, rel=tol)
+    check.almost_equal(rectangle_section.section_props.cy, 100 / 2, rel=tol)
+    check.almost_equal(
+        rectangle_section.section_props.ixx_c, 50 * 100 ** 3 / 12, rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.iyy_c, 100 * 50 ** 3 / 12, rel=tol
+    )
+    check.almost_equal(rectangle_section.section_props.ixy_c, 0, abs=tol)
+    check.almost_equal(
+        rectangle_section.section_props.zxx_plus, 50 * 100 ** 2 / 6, rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.zxx_minus, 50 * 100 ** 2 / 6, rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.zyy_plus, 100 * 50 ** 2 / 6, rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.zyy_minus, 100 * 50 ** 2 / 6, rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.rx_c,
+        (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
+    )
+    check.almost_equal(
+        rectangle_section.section_props.ry_c,
+        (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
+    )
+    check.almost_equal(
+        rectangle_section.section_props.i11_c, (50 * 100 ** 3 / 12), rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.i22_c, (100 * 50 ** 3 / 12), rel=tol
+    )
+    check.almost_equal(rectangle_section.section_props.phi, 0, rel=tol)
+    check.almost_equal(
+        rectangle_section.section_props.z11_plus, 50 * 100 ** 2 / 6, rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.z11_minus, 50 * 100 ** 2 / 6, rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.z22_plus, 100 * 50 ** 2 / 6, rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.z22_minus, 100 * 50 ** 2 / 6, rel=tol
+    )
+    check.almost_equal(
+        rectangle_section.section_props.r11_c,
+        (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
+    )
+    check.almost_equal(
+        rectangle_section.section_props.r22_c,
+        (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
+    )
+
+
+def test_rectangular_section_plastic():
+    check.almost_equal(rectangle_section.get_pc(), (50 / 2, 100 / 2))
+    check.almost_equal(rectangle_section.get_pc_p(), (50 / 2, 100 / 2))
+    check.almost_equal(
+        rectangle_section.get_s(), (50 * 100 ** 2 / 4, 100 * 50 ** 2 / 4)
+    )
+    check.almost_equal(
+        rectangle_section.get_sp(), (50 * 100 ** 2 / 4, 100 * 50 ** 2 / 4)
+    )
+    check.almost_equal(rectangle_section.get_sf(), (1.5, 1.5, 1.5, 1.5))
+    check.almost_equal(rectangle_section.get_sf_p(), (1.5, 1.5, 1.5, 1.5))
+
+
+def test_rectangular_section_warping():
+    check.almost_equal(
+        rectangle_section.section_props.j, 2861002, rel=2 * warp_tol
+    )  # roark's
+    # check.almost_equal(rectangle_section.section_props.j, 2.85852e6, rel=2e-5) #st7
+    check.almost_equal(
+        rectangle_section.section_props.j, 2.861326e06, rel=tol
+    )  # main branch
+    check.almost_equal(
+        rectangle_section.section_props.gamma, 3.177234e08, rel=tol
+    )  # main branch
+    check.almost_equal(rectangle_section.get_sc(), (50 / 2, 100 / 2), rel=warp_tol)
+    check.almost_equal(
+        rectangle_section.get_sc_p(), (-4.103589e-04, 1.164891e-03), rel=tol
+    )
+    check.almost_equal(rectangle_section.get_sc_t(), (50 / 2, 100 / 2), rel=warp_tol)
+    check.almost_equal(rectangle_section.get_As(), (4.168418e03, 4.166821e03), rel=tol)
+    check.almost_equal(
+        rectangle_section.get_As_p(), (4.168418e03, 4.166821e03), rel=tol
+    )

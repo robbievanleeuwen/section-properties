@@ -1,227 +1,285 @@
 .. _label-geom_mesh:
 
-Creating a Geometry, Mesh and Material Properties
-=================================================
+====================================================
+Creating Geometries, Meshes, and Material Properties
+====================================================
 
 Before performing a cross-section analysis, the geometry of the cross-section and a finite element
 mesh must be created. Optionally, material properties can be applied to different regions of the
-cross-section.
+cross-section. If materials are not applied, then a default material is used to report the geometric
+properties.
 
-Cross-Section Geometry
-----------------------
 
-The geometry of a cross-section defines its dimensions and shape and involves the creation of a
-:class:`~sectionproperties.pre.sections.Geometry` object. This geometry object stores all the
-information needed to create a finite element mesh.
+Section Geometry
+================
 
-..  autoclass:: sectionproperties.pre.sections.Geometry
+**New in v2.0.0**
+There are two types of geometry objects in sectionproperties:
+
+* The :class:`~sectionproperties.pre.sections.Geometry` class, for section geometries with a single, contiguous region
+* The :class:`~sectionproperties.pre.sections.CompoundGeometry` class, comprised of two or more `Geometry` objects
+
+A :class:`~sectionproperties.pre.sections.Geometry` is instantiated with two arguments: 
+
+#. A shapely.geometry.Polygon object
+#. An optional :class:`~sectionproperties.pre.pre.Material` object
+
+.. note::
+   If a Material is not given, then the default material is assigned to the `Geometry.material` attribute
+
+A :class:`~sectionproperties.pre.sections.CompoundGeometry` is instantiated with **one argument** which can be one of **two types**:
+#. A list of :class:`~sectionproperties.pre.sections.Geometry`; or
+#. A shapely.geometry.MultiPolygon
+
+.. note::
+   A CompoundGeometry does not have a `.material` attribute and a :class:`~sectionproperties.pre.pre.Material`
+   cannot be assigned to a CompoundGeometry directly. Since a CompoundGeometry is simply a combination of Geometry objects,
+   the Material(s) should be assigned to the individual Geometry objects that comprise the CompoundGeometry. CompoundGeoemtry
+   objects created from a `shapely.geometry.MultiPolygon` will have its constituent Geometry objects assigned the default material.
+
+
+Defining Material Properties
+----------------------------
+
+Materials are defined in *sectionproperties* by creating a :class:`~sectionproperties.pre.pre.Material` object:
+
+..  autoclass:: sectionproperties.pre.pre.Material
     :noindex:
+    :show-inheritance:
 
-Different regions of the geometry can be specified by defining a list of ``control_points``, which
-are located within unique enclosed areas of the geometry. Different regions can be used to specify
-different mesh sizes and/or different material properties within the structural cross-section. See
-the :ref:`label-examples` for some example scripts in which different regions are specified through
-a list of control points.
+Each :class:`~sectionproperties.pre.sections.Geometry` contains its own material definition,
+which is stored in the :attr:`~sectionproperties.pre.sections.Geometry.material` attribute. A geometry's material
+may be altered at any time by simply assigning a new :class:`~sectionproperties.pre.pre.Material` to the ``.material`` attribute.
+
+.. note::
+   A :class:`~sectionproperties.pre.sections.CompoundGeometry` is composed of multiple :class:`~sectionproperties.pre.sections.Geometry` objects,
+   each of which have their own 
+
+Creating Section Geometries
+===========================
+
+In addition to creating geometries directly from `shapely.geometry.Polygon` and/or `shapely.geometry.MultiPolygon` objects
+directly, there are other ways to create geometries for analysis:
+
+#. From lists of points, facets, hole regions, and control regions
+#. From DXF files
+#. From `sectionproperties`'s "factory functions" of common shapes
+#. Using transformation methods on existing geometries and/or by applying set operations (e.g. `|`, `+`, `-`, `&`, `^`)
+
+For the first three approaches, an optional `materials` parameter can be passed containing a :class:`~sectionproperties.pre.pre.Material`
+(or a list of `Material` objects) to associate with the newly created geometry(ies). The material attribute can be altered afterward in a `Geometry`
+object at any time by simply assigning a different :class:`~sectionproperties.pre.pre.Material` to the `.material` attribute
 
 
-Creating Common Structural Geometries
----------------------------------------
+Geometry from points, facets, holes, and control_points
+-------------------------------------------------------
 
-In order to make your life easier, there are a number of built-in classes that generate typical
-structural cross-sections that inherit from the :class:`~sectionproperties.pre.sections.Geometry`
-class. Note that these classes automatically assign a ``control_point`` to the geometry object.
+In sectionproperties v1.x.x, geometries were created by specifying lists of `points`, `facets`, `holes`, and `control_points` and
+this functionality has been preserved in v2.0.0 by using `:attr:`~sectionproperties.pre.sections.Geometry.from_points()`
+
+.. class:: 
+   sectionproperties.pre.sections.Geometry 
+   .. method:: from_points()
+   :noindex:
+
+For simple geometries (i.e. single-region shapes without holes), if the points are an ordered sequence of coordinates, only the `points` 
+argument is required (`facets`, `holes`, and `control_points` are optional). If the geometry has holes, then all arguments are required.
+
+If the geometry has multiple regions, then `:attr:`~sectionproperties.pre.sections.CompoundGeometry.from_points()` class method must be used.
+
+.. class:: 
+   sectionproperties.pre.sections.CompoundGeometry 
+   .. method:: from_points()
+   :noindex:
+
+Geometry from DXF Files
+-----------------------
+
+Geometries can now be created from DXF files using the :attr:`~sectionproperties.pre.sections.Geometry.from_dxf()` method. The returned geometry will either be a `Geometry`
+or `CompoundGeometry` object depending on the geometry in the file (depending on the number of contiguous regions).
+
+.. class:: 
+   sectionproperties.pre.sections.Geometry 
+   .. method:: from_dxf()
+   :noindex:
+
+.. class:: 
+   sectionproperties.pre.sections.CompoundGeometry 
+   .. method:: from_dxf()
+   :noindex:
+
+Creating Common Structural Geometries from sectionproperties "factory functions"
+--------------------------------------------------------------------------------
+
+In order to make your life easier, there are a number of built-in functions that generate typical
+structural cross-sections that create :class:`~sectionproperties.pre.sections.Geometry` objects.
+
 
 Rectangular Section
 ^^^^^^^^^^^^^^^^^^^
-..  autoclass:: sectionproperties.pre.sections.RectangularSection
-    :show-inheritance:
+..  autofunction:: sectionproperties.pre.sections.rectangular_section
     :noindex:
 
 Circular Section
 ^^^^^^^^^^^^^^^^
-..  autoclass:: sectionproperties.pre.sections.CircularSection
-    :show-inheritance:
+..  autofunction:: sectionproperties.pre.sections.circular_section
     :noindex:
 
 Circular Hollow Section (CHS)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autoclass:: sectionproperties.pre.sections.Chs
-    :show-inheritance:
+..  autofunction:: sectionproperties.pre.sections.circular_hollow_section
     :noindex:
 
 Elliptical Section
 ^^^^^^^^^^^^^^^^^^
-..  autoclass:: sectionproperties.pre.sections.EllipticalSection
-    :show-inheritance:
+..  autofunction:: sectionproperties.pre.sections.elliptical_section
     :noindex:
 
 Elliptical Hollow Section (EHS)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autoclass:: sectionproperties.pre.sections.Ehs
-    :show-inheritance:
+..  autofunction:: sectionproperties.pre.sections.elliptical_hollow_section
     :noindex:
 
 Rectangular Hollow Section (RHS)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autoclass:: sectionproperties.pre.sections.Rhs
-    :show-inheritance:
+..  autofunction:: sectionproperties.pre.sections.rectangular_hollow_section
     :noindex:
 
 I-Section
 ^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.ISection
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.i_section
       :noindex:
 
 Monosymmetric I-Section
 ^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.MonoISection
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.mono_i_section
       :noindex:
 
 Tapered Flange I-Section
 ^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.TaperedFlangeISection
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.tapered_flange_i_section
       :noindex:
 
 Parallel Flange Channel (PFC) Section
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.PfcSection
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.channel_section
       :noindex:
 
 Tapered Flange Channel Section
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.TaperedFlangeChannel
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.tapered_flange_channel
       :noindex:
 
 Tee Section
 ^^^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.TeeSection
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.tee_section
       :noindex:
 
 Angle Section
 ^^^^^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.AngleSection
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.angle_section
       :noindex:
 
 Cee Section
 ^^^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.CeeSection
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.cee_section
       :noindex:
 
 Zed Section
 ^^^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.ZedSection
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.zed_section
       :noindex:
 
 Cruciform Section
 ^^^^^^^^^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.CruciformSection
-      :show-inheritance:
+  ..  autofunction:: sectionproperties.pre.sections.cruciform_section
       :noindex:
 
-Polygon Section
-^^^^^^^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.PolygonSection
-      :show-inheritance:
+Polygon Hollow Section
+^^^^^^^^^^^^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.sections.polygon_hollow_section
       :noindex:
 
 Box Girder Section
 ^^^^^^^^^^^^^^^^^^
-  ..  autoclass:: sectionproperties.pre.sections.BoxGirderSection
-      :show-inheritance:
-      :noindex:
+  ..  autofunction:: sectionproperties.pre.sections.box_girder_section
+      :noindex:  
 
-Arbitrary Cross-Section Geometries
-----------------------------------
+Combining Geometries using set operations `+`, `-`, `|`, `^`, `&`
+-----------------------------------------------------------------
 
-If none of the above classes gives you what you need, you can create a
-:class:`~sectionproperties.pre.sections.CustomSection` geometry object, which is defined by a list
-of points (nodes), facets (node connectivities) and hole locations:
+Both `Geometry` and `CompoundGeometry` objects can be manipulated using Python's set operators:
+- `|`  Bitwise OR - Performs a union on the two geometries
+- `-`  Bitwise DIFFERENCE - Performs a subtraction, subtracting the second geometry from the first
+- `&`  Bitwise AND - Performs an intersection operation, returning the regions of geometry common to both
+- `^`  Bitwise XOR - Performs a symmetric difference operation, returning the regions of geometry that are not overlapping
+- `+`  Addition - Combines two geometries into a `CompoundGeometry`
 
-..  autoclass:: sectionproperties.pre.sections.CustomSection
-    :show-inheritance:
-    :noindex:
+Manipulating Geometries
+=======================
 
-..  note:: Ensure that the ``control_points`` you choose lie within the
-  :class:`~sectionproperties.pre.sections.CustomSection`. If any of the ``control_points`` are
-  outside the region, on an edge or within a hole, the meshing algorithm will likely not treat
-  distinct areas within the :class:`~sectionproperties.pre.sections.CustomSection` as a separate
-  regions and mesh refinements may not work as anticipated.
+Each geometry instance is able to be manipulated in 2D space for the purpose of creating novel, custom section geometries
+that the user may require. 
 
-..  note:: In order to calculate the perimeter of the cross-section be sure to enter the facet
-  indices that correspond to the perimeter of your cross-section.
+.. note::   
+   Operations on geometries are _non-destructive_. For each operation, a new geometry object is returned.
 
-Merging Geometries
-------------------
+   This gives sectionproperties geoemtries a *fluent API* meaning that transformation methods can be
+   chained together. Please see :doc:`./advanced_geom` for examples.
 
-If you wish to merge multiple :class:`~sectionproperties.pre.sections.Geometry` objects into a
-single object, you can use the :class:`~sectionproperties.pre.sections.MergedSection` class:
+Shifting, Aligning, Mirroring, Rotating, etc.
+---------------------------------------------
 
-..  autoclass:: sectionproperties.pre.sections.MergedSection
-    :show-inheritance:
-    :noindex:
+  .. automethod:: sectionproperties.pre.sections.Geometry.align_center
+     :noindex:
 
-..  note:: There must be connectivity between the :class:`~sectionproperties.pre.sections.Geometry`
-  objects that you wish to merge. It is currently not possible to analyse a cross-section that is
-  composed of two or more unconnected domains.
+  .. automethod:: sectionproperties.pre.sections.Geometry.align_to
+     :noindex:
+   
+  .. automethod:: sectionproperties.pre.sections.Geometry.mirror_section
+     :noindex:
 
-..  note:: You may need to overwrite the perimeter facets list if predefined sections are used.
-  Enabling labels while plotting the geometry is an easy way to manually identify the facet indices
-  that make up the perimeter of the cross-section.
+  .. automethod:: sectionproperties.pre.sections.Geometry.offset_perimeter
+     :noindex:
 
-Cleaning the Geometry
----------------------
+  .. automethod:: sectionproperties.pre.sections.Geometry.rotate_section
+     :noindex:
+ 
+  .. automethod:: sectionproperties.pre.sections.Geometry.shift_points
+     :noindex:
 
-When creating a merged section often there are overlapping facets or duplicate nodes. These
-geometry artefacts can cause difficulty for the meshing algorithm. It is therefore recommended to
-clean the geometry after merging sections which may result in overlapping or intersecting facets,
-or duplicate nodes. Cleaning the geometry can be carried out by using the
-:func:`~sectionproperties.pre.sections.Geometry.clean_geometry` method:
+  .. automethod:: sectionproperties.pre.sections.Geometry.shift_section
+     :noindex:
 
-..  automethod:: sectionproperties.pre.sections.Geometry.clean_geometry
-    :noindex:
-
-Perimeter Offset
-----------------
-
-The perimeter of a cross-section geometry can be offset by using the
-:func:`~sectionproperties.pre.offset.offset_perimeter` method:
-
-..  autofunction:: sectionproperties.pre.offset.offset_perimeter
-    :noindex:
-
-..  note:: All the built-in sections in the ``sections`` module are built using an anti-clockwise
-  facet direction. As a result, side='left' will reduce the cross-section, while side='right' will
-  increase the cross-section.
-
-..  note:: The ``control_points`` may need to be manually re-assigned if reducing the cross-section
-  moves the control_point outside the geometry.
-
-..  warning:: This feature is a *beta* addition and as a result may produce some errors if the
-  offsetting drastically changes the geometry.
+  .. automethod:: sectionproperties.pre.sections.Geometry.split_section
+     :noindex:
 
 Visualising the Geometry
 ------------------------
 
-Geometry objects can be visualised by using the
-:func:`~sectionproperties.pre.sections.Geometry.plot_geometry` method:
+Visualization of geometry objects is best performed in the Jupyter computing environment,
+however, most visualization can also be done in any environment which supports display of
+matplotlib plots.
+
+There are generally two ways to visualize geometry objects:
+
+#. In the Jupyter computing environment, geometry objects utilize their underlying
+   ``shapely.geometry.Polygon`` object's ``_repr_svg_`` method to show the geometry
+   as it's own representation.
+#. By using the :attr:`~sectionproperties.pre.sections.Geometry.plot_geometry()` method
 
 ..  automethod:: sectionproperties.pre.sections.Geometry.plot_geometry
     :noindex:
 
+.. note::
+   You can also use ``.plot_geometry()`` with ``CompoundGeometry`` objects
+
 Generating a Mesh
 -----------------
 
-A finite element mesh is required to perform a cross-section analysis. A finite element mesh can
-be created by using the :func:`~sectionproperties.pre.sections.Geometry.create_mesh` method:
+A finite element mesh is required to perform a cross-section analysis. After a geometry has been created,
+a finite element mesh can then be created for the geometry by using the 
+:attr:`~sectionproperties.pre.sections.Geometry.create_mesh()` method:
 
 ..  automethod:: sectionproperties.pre.sections.Geometry.create_mesh
     :noindex:
@@ -229,13 +287,7 @@ be created by using the :func:`~sectionproperties.pre.sections.Geometry.create_m
 ..  warning:: The length of ``mesh_sizes`` must match the number of regions
   in the geometry object.
 
-Defining Material Properties
-----------------------------
+Once the mesh has been created, it is stored within the geometry object and the geometry object
+can then be passed to :class:`~sectionproperties.analysis.cross_section.Section` for analysis.
 
-Composite cross-sections can be analysed by specifying different material properties for each
-section of the mesh. Materials are defined in *sectionproperties* by creating a
-:class:`~sectionproperties.pre.pre.Material` object:
-
-..  autoclass:: sectionproperties.pre.pre.Material
-    :noindex:
-    :show-inheritance:
+Please see :doc:`./analysis` for further information on performing analyses.

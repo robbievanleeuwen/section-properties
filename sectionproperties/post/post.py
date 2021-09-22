@@ -1,40 +1,45 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sectionproperties.pre.pre import DEFAULT_MATERIAL
 
 
-def setup_plot(pause):
+def setup_plot(ax, pause):
     """Executes code required to set up a matplotlib figure.
 
+    :param ax: Axes object on which to plot
+    :type ax: :class:`matplotlib.axes.Axes`
     :param bool pause: If set to true, the figure pauses the script until the window is closed. If
         set to false, the script continues immediately after the window is rendered.
     """
 
     if not pause:
         plt.ion()
-        plt.show()
+        # plt.show()
     else:
         plt.ioff()
 
 
-def finish_plot(ax, pause, title=''):
+def finish_plot(ax, pause, title="", size=1000, dpi=96):
     """Executes code required to finish a matplotlib figure.
 
     :param ax: Axes object on which to plot
     :type ax: :class:`matplotlib.axes.Axes`
     :param bool pause: If set to true, the figure pauses the script until the window is closed. If
         set to false, the script continues immediately after the window is rendered.
-    :param string title: Plot title
+    :param str title: Plot title
     """
-
-    ax.set_title(title)
-    ax.set_aspect('equal', anchor='C')
+    ax.set_title(title, fontdict={"fontsize": 2*size/dpi})
+    ax.set_aspect("equal", anchor="C")
+    handles, labels = ax.get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))
+    ax.legend(by_label.values(), by_label.keys(), loc='center left', bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
 
     if pause:
         plt.show()
     else:
-        plt.draw()
-        plt.pause(0.001)
+        plt.show()
+        # plt.pause(0.001)
 
 
 def draw_principal_axis(ax, phi, cx, cy):
@@ -47,15 +52,13 @@ def draw_principal_axis(ax, phi, cx, cy):
     :param float cx: x-location of the centroid
     :param float cy: y-location of the centroid
     """
-
     # get current axis limits
     (xmin, xmax) = ax.get_xlim()
     (ymin, ymax) = ax.get_ylim()
     lims = [xmin, xmax, ymin, ymax]
 
     # form rotation matrix
-    R = np.array([[np.cos(phi), -np.sin(phi)],
-                  [np.sin(phi), np.cos(phi)]])
+    R = np.array([[np.cos(phi), -np.sin(phi)], [np.sin(phi), np.cos(phi)]])
 
     # get basis vectors in the directions of the principal axes
     x11_basis = R.dot(np.array([1, 0]))
@@ -105,19 +108,18 @@ def draw_principal_axis(ax, phi, cx, cy):
     y22 = get_principal_points(y22_basis, lims, [cx, cy])
 
     # plot the principal axis
-    ax.plot(x11[:, 0], x11[:, 1], 'k--', alpha=0.5, label='11-axis')
-    ax.plot(y22[:, 0], y22[:, 1], 'k-.', alpha=0.5, label='22-axis')
+    ax.plot(x11[:, 0], x11[:, 1], "k--", alpha=0.5, label="11-axis")
+    ax.plot(y22[:, 0], y22[:, 1], "k-.", alpha=0.5, label="22-axis")
 
 
 def print_results(cross_section, fmt):
     """Prints the results that have been calculated to the terminal.
 
-    :param cross_section: Structural cross-section object
+    :param cross_section: structural cross-section object
     :type cross_section: :class:`~sectionproperties.analysis.cross_section.CrossSection`
     :param string fmt: Number format
     """
-
-    if cross_section.materials is not None:
+    if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
         prefix = "E."
     else:
         prefix = ""
@@ -131,7 +133,7 @@ def print_results(cross_section, fmt):
     if perimeter is not None:
         print("Perim.\t = {:>{fmt}}".format(perimeter, fmt=fmt))
 
-    if cross_section.materials is not None:
+    if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
         ea = cross_section.get_ea()
         if ea is not None:
             print("E.A\t = {:>{fmt}}".format(ea, fmt=fmt))
@@ -191,20 +193,22 @@ def print_results(cross_section, fmt):
 
     j = cross_section.get_j()
     if j is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "G.J\t = {:>{fmt}}".format(
-                    j / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt)
+                    j / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt
+                )
             )
         else:
             print("J\t = {:>{fmt}}".format(j, fmt=fmt))
 
     gamma = cross_section.get_gamma()
     if gamma is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "G.Iw\t = {:>{fmt}}".format(
-                    gamma / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt)
+                    gamma / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt
+                )
             )
         else:
             print("Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
@@ -226,16 +230,22 @@ def print_results(cross_section, fmt):
 
     (A_sx, A_sy) = cross_section.get_As()
     if A_sx is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "A_sx\t = {:>{fmt}}".format(
-                    A_sx * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    A_sx
+                    * cross_section.section_props.area
+                    / cross_section.section_props.ea,
+                    fmt=fmt,
+                )
             )
             print(
                 "A_sy\t = {:>{fmt}}".format(
-                    A_sy * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    A_sy
+                    * cross_section.section_props.area
+                    / cross_section.section_props.ea,
+                    fmt=fmt,
+                )
             )
         else:
             print("A_sx\t = {:>{fmt}}".format(A_sx, fmt=fmt))
@@ -243,16 +253,22 @@ def print_results(cross_section, fmt):
 
     (A_s11, A_s22) = cross_section.get_As_p()
     if A_s11 is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print(
                 "A_s11\t = {:>{fmt}}".format(
-                    A_s11 * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    A_s11
+                    * cross_section.section_props.area
+                    / cross_section.section_props.ea,
+                    fmt=fmt,
+                )
             )
             print(
                 "A_s22\t = {:>{fmt}}".format(
-                    A_s22 * cross_section.section_props.area / cross_section.section_props.ea,
-                    fmt=fmt)
+                    A_s22
+                    * cross_section.section_props.area
+                    / cross_section.section_props.ea,
+                    fmt=fmt,
+                )
             )
         else:
             print("A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))
@@ -265,7 +281,12 @@ def print_results(cross_section, fmt):
         print("betay+\t = {:>{fmt}}".format(beta_y_plus, fmt=fmt))
         print("betay-\t = {:>{fmt}}".format(beta_y_minus, fmt=fmt))
 
-    (beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus) = cross_section.get_beta_p()
+    (
+        beta_11_plus,
+        beta_11_minus,
+        beta_22_plus,
+        beta_22_minus,
+    ) = cross_section.get_beta_p()
     if beta_x_plus is not None:
         print("beta11+\t = {:>{fmt}}".format(beta_11_plus, fmt=fmt))
         print("beta11-\t = {:>{fmt}}".format(beta_11_minus, fmt=fmt))
@@ -279,7 +300,7 @@ def print_results(cross_section, fmt):
 
     (sxx, syy) = cross_section.get_s()
     if sxx is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print("M_p,xx\t = {:>{fmt}}".format(sxx, fmt=fmt))
             print("M_p,yy\t = {:>{fmt}}".format(syy, fmt=fmt))
         else:
@@ -300,7 +321,7 @@ def print_results(cross_section, fmt):
 
     (s11, s22) = cross_section.get_sp()
     if s11 is not None:
-        if cross_section.materials is not None:
+        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
             print("M_p,11\t = {:>{fmt}}".format(s11, fmt=fmt))
             print("M_p,22\t = {:>{fmt}}".format(s22, fmt=fmt))
         else:

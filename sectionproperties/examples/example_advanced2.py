@@ -53,10 +53,10 @@ nr_error_vals = (nr_results - j_reference) / nr_results * 100
 
 # plot the results
 (fig, ax) = plt.subplots()
-ax.loglog(mesh_elements, mesh_error_vals, 'kx-', label='Mesh Size Refinement')
-ax.loglog(nr_elements, nr_error_vals, 'rx-', label='Root Radius Refinement')
+ax.loglog(mesh_elements, mesh_error_vals, "kx-", label="Mesh Size Refinement")
+ax.loglog(nr_elements, nr_error_vals, "rx-", label="Root Radius Refinement")
 plt.xlabel("Number of Elements")
 plt.ylabel("Torsion Constant Error [%]")
-plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 plt.tight_layout()
 plt.show()
