@@ -18,7 +18,10 @@ def readme():
 if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 7:
     sys.exit('Sorry, Python < 3.7 is not supported')
 
-install_requires = ['numpy', 'scipy', 'matplotlib', 'shapely', 'pybind11', 'meshpy']
+install_requires = [
+    'numpy', 'scipy', 'pytest_check', 'more_itertools', 'matplotlib', 'shapely', 'pybind11',
+    'meshpy'
+]
 
 setup(
     name='sectionproperties',
