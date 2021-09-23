@@ -11,18 +11,14 @@ def description_text():
 
 
 def readme():
-    with open('README_pypi.rst') as f:
+    with open('README.md') as f:
         return f.read()
 
 
-if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 6:
-    sys.exit('Sorry, Python < 3.6 is not supported')
+if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 7:
+    sys.exit('Sorry, Python < 3.7 is not supported')
 
-install_requires = ['numpy', 'scipy<1.6', 'matplotlib', 'shapely']
-
-if not (sys.platform == 'win32' or sys.platform == 'cygwin'):
-    install_requires.append('pybind11')
-    install_requires.append('meshpy')
+install_requires = ['numpy', 'scipy', 'matplotlib', 'shapely', 'pybind11', 'meshpy']
 
 setup(
     name='sectionproperties',
