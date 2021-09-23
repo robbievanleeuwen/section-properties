@@ -1074,27 +1074,27 @@ class Section:
         listed under the :class:`~sectionproperties.analysis.cross_section.Section` object
         definition::
 
-        import sectionproperties.pre.sections as sections
-        from sectionproperties.pre.pre import Material
-        from sectionproperties.analysis.cross_section import Section
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.pre.pre import Material
+            from sectionproperties.analysis.cross_section import Section
 
-        steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
-            color='grey'
-        )
-        timber = Material(
-            name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
-            color='burlywood'
-        )
+            steel = Material(
+                name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
+                color='grey'
+            )
+            timber = Material(
+                name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
+                color='burlywood'
+            )
 
-        geom_steel = sections.rectangular_section(d=50, b=50, material=steel)
-        geom_timber = sections.rectangular_section(d=50, b=50, material=timber)
-        geometry = geom_timber.align_to(geom_steel, on="right") + geom_steel
+            geom_steel = sections.rectangular_section(d=50, b=50, material=steel)
+            geom_timber = sections.rectangular_section(d=50, b=50, material=timber)
+            geometry = geom_timber.align_to(geom_steel, on="right") + geom_steel
 
-        geometry.create_mesh(mesh_sizes=[10, 5])
+            geometry.create_mesh(mesh_sizes=[10, 5])
 
-        section = Section(geometry)
-        section.plot_mesh(materials=True, alpha=0.5)
+            section = Section(geometry)
+            section.plot_mesh(materials=True, alpha=0.5)
 
         ..  figure:: ../images/composite_mesh.png
             :align: center
@@ -1285,8 +1285,8 @@ class Section:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            rec1 = sections.rectangular_section(d=100, b=25, shift=[-12.5, 0])
-            rec2 = sections.rectangular_section(d=25, b=100, shift=[-50, 100])
+            rec1 = sections.rectangular_section(d=100, b=25)
+            rec2 = sections.rectangular_section(d=25, b=100)
             rec1 = rec1.shift_section(x_offset=-12.5)
             rec2 = rec2.shift_section(x_offset=-50, y_offset=100)
 
