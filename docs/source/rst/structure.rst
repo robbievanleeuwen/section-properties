@@ -14,7 +14,7 @@ Creating a Geometry and Mesh
 The dimensions and shape of the cross-section to be analysed define the *geometry*
 of the cross-section. The :ref:`label-sections-module` provides a number of functions
 to easily generate either commonly used structural sections or an arbitrary
-cross-section, defined by an ordered list of points. 
+cross-section, defined by an ordered list of points.
 
 The final stage in the pre-processor involves generating a finite element mesh of
 the *geometry* that the solver can use to calculate the cross-section properties.
@@ -30,7 +30,7 @@ of 2.5::
       import sectionproperties.pre.sections as sections
 
       geometry = sections.circular_section(d=50, n=64)
-      mesh = geometry.create_mesh(mesh_sizes=[2.5])
+      geometry = geometry.create_mesh(mesh_sizes=[2.5])
 
 ..  figure:: ../images/sections/circle_mesh.png
     :align: center
@@ -79,7 +79,7 @@ property::
   steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
                    color='grey')
   geometry = sections.circular_section(d=50, n=64, material=steel)
-  geometry.create_mesh(mesh_sizes=[2.5]) # Adds the mesh to the geometry
+  geometry.create_mesh(mesh_sizes=[2.5])  # Adds the mesh to the geometry
 
   section = Section(geometry)
   section.calculate_geometric_properties()
@@ -103,7 +103,7 @@ are printed to the terminal and a plot of the centroids is displayed::
   from sectionproperties.analysis.cross_section import Section
 
   geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-  geometry.create_mesh(mesh_sizes=[2.5]) # Adds the mesh to the geometry
+  geometry.create_mesh(mesh_sizes=[2.5])  # Adds the mesh to the geometry
 
   section = Section(geometry)
   section.calculate_geometric_properties()
@@ -125,6 +125,7 @@ method::
 
   Section Properties:
   A       = 2.919699e+03
+  Perim.  = 6.776201e+02
   Qx      = 2.919699e+05
   Qy      = 7.122414e+04
   cx      = 2.439434e+01
@@ -160,6 +161,16 @@ method::
   y2_se   = 4.905074e-06
   A_sx    = 9.468851e+02
   A_sy    = 1.106943e+03
+  A_s11	  = 9.468854e+02
+  A_s22	  = 1.106943e+03
+  betax+  = 1.671593e-05
+  betax-  = -1.671593e-05
+  betay+  = -2.013448e+02
+  betay-  = 2.013448e+02
+  beta11+ = 1.671593e-05
+  beta11- = -1.671593e-05
+  beta22+ = -2.013448e+02
+  beta22- = 2.013448e+02
   x_pc    = 1.425046e+01
   y_pc    = 1.000000e+02
   Sxx     = 2.210956e+05
