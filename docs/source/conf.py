@@ -21,7 +21,7 @@ autodoc_mock_imports = ['pybind11', 'meshpy', 'shapely']
 # -- Project information -----------------------------------------------------
 
 project = 'sectionproperties'
-copyright = '2020, Robbie van Leeuwen'
+copyright = '2021, Robbie van Leeuwen'
 author = 'Robbie van Leeuwen'
 
 # The short Major.Minor.Build version

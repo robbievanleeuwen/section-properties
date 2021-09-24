@@ -65,11 +65,10 @@ Here's a quick example that harnesses some of the power of *sectionproperties* a
 Support
 -------
 
-Contact me on my email robbie.vanleeuwen@gmail.com or raise an issue on the github issue
-tracker using one of the `issue templates
-<https://github.com/robbievanleeuwen/section-properties/tree/master/.github/ISSUE_TEMPLATE>`_.
-If you have a request for a feature to be added to the *sectionproperties* package,
-please don't hesitate to get in touch
+Raise an issue on the `GitHub issue tracker
+<https://github.com/robbievanleeuwen/section-properties/issues>`_ or contact me at
+`robbie.vanleeuwen@gmail.com <mailto:robbie.vanleeuwen@gmail.com>`_. If you have a request for a
+feature to be added to the *sectionproperties* package, please don't hesitate to get in touch
 
 License
 -------

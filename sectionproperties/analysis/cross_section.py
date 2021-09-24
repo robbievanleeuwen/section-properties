@@ -1074,27 +1074,27 @@ class Section:
         listed under the :class:`~sectionproperties.analysis.cross_section.Section` object
         definition::
 
-        import sectionproperties.pre.sections as sections
-        from sectionproperties.pre.pre import Material
-        from sectionproperties.analysis.cross_section import Section
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.pre.pre import Material
+            from sectionproperties.analysis.cross_section import Section
 
-        steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
-            color='grey'
-        )
-        timber = Material(
-            name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
-            color='burlywood'
-        )
+            steel = Material(
+                name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
+                color='grey'
+            )
+            timber = Material(
+                name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
+                color='burlywood'
+            )
 
-        geom_steel = sections.rectangular_section(d=50, b=50, material=steel)
-        geom_timber = sections.rectangular_section(d=50, b=50, material=timber)
-        geometry = geom_timber.align_to(geom_steel, on="right") + geom_steel
+            geom_steel = sections.rectangular_section(d=50, b=50, material=steel)
+            geom_timber = sections.rectangular_section(d=50, b=50, material=timber)
+            geometry = geom_timber.align_to(geom_steel, on="right") + geom_steel
 
-        geometry.create_mesh(mesh_sizes=[10, 5])
+            geometry.create_mesh(mesh_sizes=[10, 5])
 
-        section = Section(geometry)
-        section.plot_mesh(materials=True, alpha=0.5)
+            section = Section(geometry)
+            section.plot_mesh(materials=True, alpha=0.5)
 
         ..  figure:: ../images/composite_mesh.png
             :align: center
@@ -2578,18 +2578,18 @@ class StressPost:
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         a bending moment about the x-axis of 5 kN.m::
 
-        import sectionproperties.pre.sections as sections
-        from sectionproperties.analysis.cross_section import Section
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import Section
 
-        geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-        geometry.create_mesh(mesh_sizes=[20])
-        section = Section(geometry)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
-        section.calculate_geometric_properties()
-        section.calculate_warping_properties()
-        stress_post = section.calculate_stress(Mxx=5e6)
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(Mxx=5e6)
 
-        stress_post.plot_stress_mxx_zz()
+            stress_post.plot_stress_mxx_zz()
 
         ..  figure:: ../images/stress/stress_mxx_zz.png
             :align: center

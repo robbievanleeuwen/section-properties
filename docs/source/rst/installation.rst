@@ -2,7 +2,7 @@ Installation
 ============
 
 These instructions will get you a copy of *sectionproperties* up and running on
-your local machine. You will need a working copy of python>=3.5 on your machine.
+your local machine. You will need a working copy of python 3.8 on your machine.
 
 Installing *sectionproperties*
 ------------------------------
@@ -20,12 +20,12 @@ python package index::
   $ pip install sectionproperties
 
 If you have any issues installing *meshpy*, refer to the installation instructions
-on its `github page<https://github.com/inducer/meshpy>` or its
-`documentation<https://documen.tician.de/meshpy/installation.html>`.
+on the `MeshPy GitHub page <https://github.com/inducer/meshpy>`_ or the
+`MeshPy documentation <https://documen.tician.de/meshpy/installation.html>`_.
 
 If you have any issues installing *shapely*, refer to the installation instructions
-on its `github page<https://github.com/Toblerity/Shapely>` or its
-`documentation<https://shapely.readthedocs.io/en/stable/manual.html>`.
+on the `Shapely GitHub page <https://github.com/Toblerity/Shapely>`_ or the
+`Shapely documentation <https://shapely.readthedocs.io/en/stable/manual.html>`_.
 
 Windows
 ^^^^^^^
@@ -34,7 +34,8 @@ If you use conda, you can install *meshpy* and *shapely* directly::
 
   $ conda install -c conda-forge meshpy shapely
 
-Alternatively, you can install both *meshpy* and shapely by downloading the appropriate `installation wheels<https://www.lfd.uci.edu/~gohlke/pythonlibs>`.
+Alternatively, you can install both *meshpy* and shapely by downloading the appropriate
+`installation wheels <https://www.lfd.uci.edu/~gohlke/pythonlibs>`_.
 
 Navigate to the location of the downloaded wheel and install using pip::
 
@@ -51,6 +52,6 @@ Testing the Installation
 
 Python *pytest* modules are located in the *sectionproperties.tests* package.
 To see if your installation is working correctly, install `pytest` and run the
-following test:
+following test::
 
   $ pytest --pyargs sectionproperties
