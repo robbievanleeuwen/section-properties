@@ -2268,6 +2268,11 @@ class StressPost:
         :param string title: Plot title
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2332,7 +2337,7 @@ class StressPost:
 
         return (fig, ax)
 
-    def plot_stress_vector(self, sigxs, sigys, title, pause, cmap, normalize=False, yield_max=False, size=500, dpi=96):
+    def plot_stress_vector(self, sigxs, sigys, title, pause, cmap, normalize=False, size=500, dpi=96):
         """Plots stress vectors over the finite element mesh.
 
         :param sigxs: List of x-components of the nodal stress values for each material
@@ -2342,6 +2347,11 @@ class StressPost:
         :param string title: Plot title
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2529,6 +2539,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2564,13 +2579,17 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-
     def plot_stress_mxx_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Mxx}` resulting from the
         bending moment :math:`M_{xx}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2606,13 +2625,17 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-
     def plot_stress_myy_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,Myy}` resulting from the
         bending moment :math:`M_{yy}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2648,13 +2671,17 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-
     def plot_stress_m11_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M11}` resulting from the
         bending moment :math:`M_{11}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2690,13 +2717,17 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
-
     def plot_stress_m22_zz(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the normal stress :math:`\sigma_{zz,M22}` resulting from the
         bending moment :math:`M_{22}`.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2738,6 +2769,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2780,6 +2816,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2821,6 +2862,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2862,6 +2908,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2903,6 +2954,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2946,6 +3002,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -2987,6 +3048,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3028,6 +3094,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3069,6 +3140,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3112,6 +3188,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3153,6 +3234,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3194,6 +3280,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3235,6 +3326,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3279,6 +3375,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3322,6 +3423,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3365,6 +3471,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3408,6 +3519,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3452,6 +3568,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3494,6 +3615,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3536,6 +3662,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3578,6 +3709,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3620,6 +3756,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -3664,6 +3805,11 @@ class StressPost:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param string cmap: Matplotlib color map.
+        :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap. 
+            If set to false, the default linear scaling is used.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
