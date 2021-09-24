@@ -1285,8 +1285,8 @@ class Section:
             import sectionproperties.pre.sections as sections
             from sectionproperties.analysis.cross_section import Section
 
-            rec1 = sections.rectangular_section(d=100, b=25, shift=[-12.5, 0])
-            rec2 = sections.rectangular_section(d=25, b=100, shift=[-50, 100])
+            rec1 = sections.rectangular_section(d=100, b=25)
+            rec2 = sections.rectangular_section(d=25, b=100)
             rec1 = rec1.shift_section(x_offset=-12.5)
             rec2 = rec2.shift_section(x_offset=-50, y_offset=100)
 
