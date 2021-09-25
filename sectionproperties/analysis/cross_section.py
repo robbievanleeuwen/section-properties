@@ -1166,6 +1166,8 @@ class Section:
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
+        :param float size: The figure's size relative to the dpi.
+        :param float dpi: Matplotlib figure parameter for the resolution of the figure in dots-per-inch.
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
