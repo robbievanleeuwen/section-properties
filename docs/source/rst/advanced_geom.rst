@@ -8,15 +8,16 @@ for section analysis by combining multiple shapes.
 
 Some key points to remember:
 
-1. Geometries of two *different* materials should not overlap (can create un-predictable results)
+1. Geometries of two *different* materials should not overlap (can create unpredictable results)
 2. If two geometries of the *same* materials are overlapping, then you should perform a union on the two sections
 3. Two different section geometries that share a common edge (facet) should also share the same nodes (do not leave "floating" nodes along common edges)
 
 These are general points to remember for any finite element analysis.
 
-Note: ``sectionproperties`` will not prevent the creation of these ambiguous sections. The flexibility of the new
-pre-processing engine (shapely) allows for a wide variety of intermediate modelling steps but the user must ensure
-that the final model is one that is appropriate for analysis.
+.. note::
+   *sectionproperties* will not prevent the creation of these ambiguous sections. The flexibility of the new
+   pre-processing engine (shapely) allows for a wide variety of intermediate modelling steps but the user must ensure
+   that the final model is one that is appropriate for analysis.
 
 Creating Merged Sections
 ------------------------
@@ -42,12 +43,12 @@ Assign a unique material to each geometry::
     from sectionproperties.pre.pre import Material
 
     mat1 = Material("Material_1", 200e3, 0.3, 400, "red")
-    mat2 = Material("Material_2", 150e3, 0.2, 200, "blue") # Just some differing properties
+    mat2 = Material("Material_2", 150e3, 0.2, 200, "blue")  # Just some differing properties
 
     i_sec1.material = mat1
     i_sec2.material = mat2
 
-Now, we can use the ``+`` operator to naively combine these two sections into a ``CompoundGeometry``. Note, the two
+Now, we can use the ``+`` operator to naively combine these two sections into a :class:`~sectionproperties.pre.sections.CompoundGeometry`. Note, the two
 different materials::
 
     i_sec1 + i_sec2
@@ -78,9 +79,9 @@ Preventing Ambiguity
 
 To prevent ambiguity between geometries and their analytical regions, there are a few options we can take. We can perform a simple union operation but that will lose
 the material information for one of our sections, whichever section comes first in the operation. In this example, we will use ``|`` (union)
-with ``sec_2`` taking precedence by being the first object in the operation::
+with ``i_sec2`` taking precedence by being the first object in the operation::
 
-    sec_2 | sec_1
+    i_sec2 | i_sec1
 
 ..  figure:: ../images/examples/basic_union.png
     :align: center
@@ -115,8 +116,8 @@ Creating Nodes in Common
 
 It is best practice to *first* create nodes in common on both sections and *then* combine them. For this, an extra step is required::
 
-    cut_2_from_1 = (i_sec1 - i_sec2) # locates intersection nodes
-    sec_1_nodes_added = cut_2_from_1 | sec_1
+    cut_2_from_1 = (i_sec1 - i_sec2)  # locates intersection nodes
+    sec_1_nodes_added = cut_2_from_1 | i_sec1
 
     # This can also be done in one line
     sec_1_nodes_added = (i_sec1 - i_sec2) | i_sec1
