@@ -327,6 +327,8 @@ The following is printed to the terminal:
     Ixx + Iyy = 4.220
     J = 0.988
 
+.. _label-example-custom:
+
 Creating Custom Geometry
 ------------------------
 
@@ -403,9 +405,9 @@ Creating a Built-Up Section
 
 The following example demonstrates how to combine multiple geometry objects into
 a single geometry object. A 150x100x6 RHS is modelled with a solid 50x50 triangular
-section on its top and a 100x100x6 angle section on its right side. 
+section on its top and a 100x100x6 angle section on its right side.
 The three geometry objects are combined together as a :class:`~sectionproperties.pre.sections.CompoundGeometry`
-object using the `+` operator. 
+object using the `+` operator.
 
 To manipulate individual geometries into the final shape, there are a variety of
 methods available to move and align. This example uses `.align_center()`, `.align_to()`,
