@@ -1,6 +1,6 @@
 .. _label-advanced_geom:
 
-Advanced Geometry creation
+Advanced Geometry Creation
 ==========================
 
 The below tutorial was created to demonstrate the creation of valid geometries
@@ -22,7 +22,7 @@ Creating Merged Sections
 ------------------------
 
 For this example, we will create a custom section out of two similar "I" sections::
-    
+
     import sectionproperties.pre.sections as sections
     import sectionproperties.analysis.cross_section as cross_section
 
@@ -88,7 +88,7 @@ with ``sec_2`` taking precedence by being the first object in the operation::
 
 However, this is unsatisfactory as a solution. We want this section to more aptly represent a real section that might be created by cutting and welding two sections together.
 
-Lets say we want the upright "I" section to be our main section and the diagonal section will be added on to it. 
+Lets say we want the upright "I" section to be our main section and the diagonal section will be added on to it.
 
 It is sometimes possible to do this in a quick operation, one which does not create nodes in common at the intersection points.
 Here, we will simply "slice" ``i_sec2`` with ``i_sec1`` and add it to ``i_sec1``. This will create "floating nodes" along the
@@ -104,7 +104,7 @@ common edges of ``i_sec2`` and ``i_sec1`` because the nodes are not a part of ``
 ..  figure:: ../images/examples/combined_section_lucky_plot.png
     :align: center
     :scale: 50 %
-    
+
 Sometimes, we can get away with this as in this example. We can see in the plot that there are five distinct regions indicated with five control points.
 
 When we are "unlucky", sometimes gaps can be created (due to floating point errors) where the two sections meet and a proper hole might not be detected, resulting
@@ -151,5 +151,3 @@ And when we create our mesh and analysis section::
     :scale: 50 %
 
 We can see that the mesh represents how we expect the section to be.
-
-

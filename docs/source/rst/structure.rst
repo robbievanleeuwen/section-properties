@@ -30,7 +30,7 @@ of 2.5::
       import sectionproperties.pre.sections as sections
 
       geometry = sections.circular_section(d=50, n=64)
-      geometry = geometry.create_mesh(mesh_sizes=[2.5])
+      geometry.create_mesh(mesh_sizes=[2.5])
 
 ..  figure:: ../images/sections/circle_mesh.png
     :align: center
@@ -161,8 +161,8 @@ method::
   y2_se   = 4.905074e-06
   A_sx    = 9.468851e+02
   A_sy    = 1.106943e+03
-  A_s11	  = 9.468854e+02
-  A_s22	  = 1.106943e+03
+  A_s11   = 9.468854e+02
+  A_s22   = 1.106943e+03
   betax+  = 1.671593e-05
   betax-  = -1.671593e-05
   betay+  = -2.013448e+02

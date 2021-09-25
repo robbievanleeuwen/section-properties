@@ -648,13 +648,17 @@ class Geometry:
         :rtype: :class:`sections.pre.sections.Geometry`
 
         The following example expands the sides of a rectangle, one point at a time,
-        to make it a square.
+        to make it a square::
 
             import sectionproperties.pre.sections as sections
 
             geometry = sections.rectangular_section(d=200, b=150)
-            one_pt_shifted_geom = geometry.shift_points(point_idxs=1, dx=50) # Using relative shifting
-            both_pts_shift_geom = one_pt_shift_geom.shift_points(point_idxs=2, abs_x=200) # Using absolute relocation
+
+            # Using relative shifting
+            one_pt_shifted_geom = geometry.shift_points(point_idxs=1, dx=50)
+
+            # Using absolute relocation
+            both_pts_shift_geom = one_pt_shift_geom.shift_points(point_idxs=2, abs_x=200)
         """
         current_points = copy.copy(self.points)
         current_facets = copy.copy(self.facets)
@@ -1522,7 +1526,7 @@ def rectangular_section(b, d, material: pre.Material = pre.DEFAULT_MATERIAL) -> 
         import sectionproperties.pre.sections as sections
 
         geometry = sections.rectangular_section(d=100, b=50)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/rectangle_geometry.png
         :align: center
@@ -1555,7 +1559,7 @@ def circular_section(d: float, n: int, material: pre.Material = pre.DEFAULT_MATE
         import sectionproperties.pre.sections as sections
 
         geometry = sections.circular_section(d=50, n=64)
-        mesh = geometry.create_mesh(mesh_sizes=[2.5])
+        geometry.create_mesh(mesh_sizes=[2.5])
 
     ..  figure:: ../images/sections/circle_geometry.png
         :align: center
@@ -1654,7 +1658,7 @@ def elliptical_section(d_y: float, d_x: float, n: int, material: pre.Material = 
         import sectionproperties.pre.sections as sections
 
         geometry = sections.elliptical_section(d_y=25, d_x=50, n=40)
-        mesh = geometry.create_mesh(mesh_sizes=[1.0])
+        geometry.create_mesh(mesh_sizes=[1.0])
 
     ..  figure:: ../images/sections/ellipse_geometry.png
         :align: center
@@ -1704,7 +1708,7 @@ def elliptical_hollow_section(d_y: float, d_x: float, t: float, n: int, material
         import sectionproperties.pre.sections as sections
 
         geometry = sections.elliptical_hollow_section(d_y=25, d_x=50, t=2.0, n=64)
-        mesh = geometry.create_mesh(mesh_sizes=[0.5])
+        geometry.create_mesh(mesh_sizes=[0.5])
 
     ..  figure:: ../images/sections/ehs_geometry.png
         :align: center
@@ -1760,7 +1764,7 @@ def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: 
         import sectionproperties.pre.sections as sections
 
         geometry = sections.rectangular_hollow_section(d=100, b=50, t=6, r_out=9, n_r=8)
-        mesh = geometry.create_mesh(mesh_sizes=[2.0])
+        geometry.create_mesh(mesh_sizes=[2.0])
 
     ..  figure:: ../images/sections/rhs_geometry.png
         :align: center
@@ -1816,7 +1820,7 @@ def i_section(
         import sectionproperties.pre.sections as sections
 
         geometry = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=16)
-        mesh = geometry.create_mesh(mesh_sizes=[3.0])
+        geometry.create_mesh(mesh_sizes=[3.0])
 
     ..  figure:: ../images/sections/isection_geometry.png
         :align: center
@@ -1891,7 +1895,7 @@ def mono_i_section(d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, material: pre.Material 
         geometry = sections.mono_i_section(
             d=200, b_t=50, b_b=130, t_ft=12, t_fb=8, t_w=6, r=8, n_r=16
         )
-        mesh = geometry.create_mesh(mesh_sizes=[3.0])
+        geometry.create_mesh(mesh_sizes=[3.0])
 
     ..  figure:: ../images/sections/monoisection_geometry.png
         :align: center
@@ -1969,7 +1973,7 @@ def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre
         geometry = sections.tapered_flange_i_section(
             d=588, b=191, t_f=27.2, t_w=15.2, r_r=17.8, r_f=8.9, alpha=8, n_r=16
         )
-        mesh = geometry.create_mesh(mesh_sizes=[20.0])
+        geometry.create_mesh(mesh_sizes=[20.0])
 
     ..  figure:: ../images/sections/taperedisection_geometry.png
         :align: center
@@ -2157,7 +2161,7 @@ def channel_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT
         import sectionproperties.pre.sections as sections
 
         geometry = sections.channel_section(d=250, b=90, t_f=15, t_w=8, r=12, n_r=8)
-        mesh = geometry.create_mesh(mesh_sizes=[5.0])
+        geometry.create_mesh(mesh_sizes=[5.0])
 
     ..  figure:: ../images/sections/pfc_geometry.png
         :align: center
@@ -2222,7 +2226,7 @@ def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.M
         geometry = sections.tapered_flange_channel(
             d=10, b=3.5, t_f=0.575, t_w=0.475, r_r=0.575, r_f=0.4, alpha=8, n_r=16
         )
-        mesh = geometry.create_mesh(mesh_sizes=[0.02])
+        geometry.create_mesh(mesh_sizes=[0.02])
 
     ..  figure:: ../images/sections/taperedchannel_geometry.png
         :align: center
@@ -2344,7 +2348,7 @@ def tee_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MAT
         import sectionproperties.pre.sections as sections
 
         geometry = sections.tee_section(d=200, b=100, t_f=12, t_w=6, r=8, n_r=8)
-        mesh = geometry.create_mesh(mesh_sizes=[3.0])
+        geometry.create_mesh(mesh_sizes=[3.0])
 
     ..  figure:: ../images/sections/tee_geometry.png
         :align: center
@@ -2401,7 +2405,7 @@ def angle_section(d, b, t, r_r, r_t, n_r, material: pre.Material = pre.DEFAULT_M
         import sectionproperties.pre.sections as sections
 
         geometry = sections.angle_section(d=150, b=100, t=8, r_r=12, r_t=5, n_r=16)
-        mesh = geometry.create_mesh(mesh_sizes=[2.0])
+        geometry.create_mesh(mesh_sizes=[2.0])
 
     ..  figure:: ../images/sections/angle_geometry.png
         :align: center
@@ -2465,7 +2469,7 @@ def cee_section(d, b, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MAT
         import sectionproperties.pre.sections as sections
 
         geometry = sections.cee_section(d=125, b=50, l=30, t=1.5, r_out=6, n_r=8)
-        mesh = geometry.create_mesh(mesh_sizes=[0.25])
+        geometry.create_mesh(mesh_sizes=[0.25])
 
     ..  figure:: ../images/sections/cee_geometry.png
         :align: center
@@ -2546,7 +2550,7 @@ def zed_section(d, b_l, b_r, l, t, r_out, n_r, material: pre.Material = pre.DEFA
         import sectionproperties.pre.sections as sections
 
         geometry = sections.zed_section(d=100, b_l=40, b_r=50, l=20, t=1.2, r_out=5, n_r=8)
-        mesh = geometry.create_mesh(mesh_sizes=[0.15])
+        geometry.create_mesh(mesh_sizes=[0.15])
 
     ..  figure:: ../images/sections/zed_geometry.png
         :align: center
@@ -2624,7 +2628,7 @@ def cruciform_section(d, b, t, r, n_r, material: pre.Material = pre.DEFAULT_MATE
         import sectionproperties.pre.sections as sections
 
         geometry = sections.cruciform_section(d=250, b=175, t=12, r=16, n_r=16)
-        mesh = geometry.create_mesh(mesh_sizes=[5.0])
+        geometry.create_mesh(mesh_sizes=[5.0])
 
     ..  figure:: ../images/sections/cruciform_geometry.png
         :align: center
@@ -2699,7 +2703,7 @@ def polygon_hollow_section(d, t, n_sides, r_in=0, n_r=1, rot=0, material: pre.Ma
         import sectionproperties.pre.sections as sections
 
         geometry = sections.polygon_hollow_section(d=200, t=6, n_sides=8, r_in=20, n_r=12)
-        mesh = geometry.create_mesh(mesh_sizes=[5])
+        geometry.create_mesh(mesh_sizes=[5])
 
     ..  figure:: ../images/sections/polygon_geometry.png
         :align: center
@@ -2832,7 +2836,7 @@ def box_girder_section(d, b_t, b_b, t_ft, t_fb, t_w, material: pre.Material = pr
         import sectionproperties.pre.sections as sections
 
         geometry = sections.box_girder_section(d=1200, b_t=1200, b_b=400, t_ft=100, t_fb=80, t_w=50)
-        mesh = geometry.create_mesh(mesh_sizes=[200.0])
+        geometry.create_mesh(mesh_sizes=[200.0])
 
     ..  figure:: ../images/sections/box_girder_geometry.png
         :align: center
