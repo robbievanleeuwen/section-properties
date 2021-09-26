@@ -9,7 +9,6 @@ stores the structural geometry and finite element mesh and provides methods to
 perform various types of sectional analyses.
 
 ..  autoclass:: sectionproperties.analysis.cross_section.Section
-    :show-inheritance:
     :noindex:
 
 Checking the Mesh Quality

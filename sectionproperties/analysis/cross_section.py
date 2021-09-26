@@ -32,8 +32,6 @@ class Section:
 
     :param geometry: Cross-section geometry object used to generate the mesh
     :type geometry: :class:`~sectionproperties.pre.sections.Geometry`
-    :param mesh: Mesh object returned by meshpy
-    :type mesh: :class:`meshpy.triangle.MeshInfo`
     :param bool time_info: If set to True, a detailed description of the computation and the time
         cost is printed to the terminal for every computation performed.
 
