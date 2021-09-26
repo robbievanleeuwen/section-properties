@@ -10,6 +10,7 @@ from shapely.geometry import (
     MultiPolygon,
     LinearRing,
     Point,
+    box,
 )
 from shapely.ops import split, unary_union
 import shapely
@@ -1152,7 +1153,12 @@ class CompoundGeometry(Geometry):
         new_geom = CompoundGeometry(geoms_acc)
         return new_geom
 
-    def rotate_section(self, angle, rot_point=None, use_radians=False):
+    def rotate_section(
+        self,
+        angle: float,
+        rot_point: Union[List[float], str] = "center",
+        use_radians: bool = False,
+    ):
         """Rotates the compound geometry and specified angle about a point. If the rotation point is not
         provided, rotates the section about the center of the compound geometry's bounding box.
 
@@ -1176,6 +1182,8 @@ class CompoundGeometry(Geometry):
             new_compound = compound.rotate_section(angle=-30)
         """
         geoms_acc = []
+        if rot_point =='center':
+            rot_point = box(*MultiPolygon(self.geom).bounds).centroid
         for geom in self.geoms:
             geoms_acc.append(geom.rotate_section(angle, rot_point, use_radians))
         new_geom = CompoundGeometry(geoms_acc)
