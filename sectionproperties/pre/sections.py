@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
-
+import sectionproperties.pre.rhino as rhino_importer
 
 class Geometry:
     """Class for defining the geometry of a contiguous section of a single material.
@@ -204,6 +204,103 @@ class Geometry:
         :vartype dxf_filepath: Union[str, pathlib.Path]
         """
         return load_dxf(dxf_filepath)
+
+    @classmethod
+    def from_3dm(cls, filepath: Union[str, pathlib.Path], **kwargs) -> Geometry:
+        """Class method to create a `Geometry` from the objects in a Rhino `.3dm` file.
+
+        :param filepath: 
+            File path to the rhino `.3dm` file.
+        :type filepath: Union[str, pathlib.Path]
+        :param \**kwargs:
+            See below.
+        :raises RuntimeError: 
+            A RuntimeError is raised if two or more polygons are found. 
+            This is dependent on the keyword arguments. 
+            Try adjusting the keyword arguments if this error is raised. 
+        :return: 
+            A Geometry object.
+        :rtype: :class:`sectionproperties.pre.sections.Geometry`
+
+        :Keyword Arguments:
+            * *refine_num* (``int, optional``) --
+                Bézier curve interpolation number. In Rhino a surface's edges are nurb based curves.
+                Shapely does not support nurbs, so the individual Bézier curves are interpolated using straight lines.
+                This parameter sets the number of straight lines used in the interpolation. 
+                Default is 1.
+            * *vec1* (``numpy.ndarray, optional``) --
+                A 3d vector in the Shapely plane. Rhino is a 3D geometry environment.
+                Shapely is a 2D geometric library.
+                Thus a 2D plane needs to be defined in Rhino that represents the Shapely coordinate system.
+                `vec1` represents the 1st vector of this plane. It will be used as Shapely's x direction.
+                Default is [1,0,0].
+            * *vec2* (``numpy.ndarray, optional``) --
+                Continuing from `vec1`, `vec2` is another vector to define the Shapely plane.
+                It must not be [0,0,0] and it's only requirement is that it is any vector in the Shapely plane (but not equal to `vec1`).
+                Default is [0,1,0].
+            * *plane_distance* (``float, optional``) --
+                The distance to the Shapely plane.
+                Default is 0.
+            * *project* (``boolean, optional``) --
+                Controls if the breps are projected onto the plane in the direction of the Shapley plane's normal.
+                Default is True.
+            * *parallel* (``boolean, optional``) --
+                Controls if only the rhino surfaces that have the same normal as the Shapely plane are yielded.
+                If true, all non parallel surfaces are filtered out.
+                Default is False.
+        """
+        geom = None
+        list_poly = rhino_importer.load_3dm(filepath,**kwargs)
+        if (len(list_poly)==1):
+            geom = cls(geom=list_poly[0])
+        else:
+            raise RuntimeError(
+                f"Multiple surfaces extracted from the file. "
+                f"Either use CompoundGeometry or extract individual surfaces manually via pre.rhino."
+            )
+        return geom
+
+    @classmethod
+    def from_rhino_encoding(cls, r3dm_brep: str, **kwargs) -> Geometry:
+        """Load an encoded single surface planer brep.
+
+        :param r3dm_brep: 
+            A Rhino3dm.Brep encoded as a string.
+        :type r3dm_brep: str
+        :param \**kwargs:
+            See below.
+        :return: 
+            A Geometry object found in the encoded string.
+        :rtype: :class:`sectionproperties.pre.sections.Geometry`
+
+        :Keyword Arguments:
+            * *refine_num* (``int, optional``) --
+                Bézier curve interpolation number. In Rhino a surface's edges are nurb based curves.
+                Shapely does not support nurbs, so the individual Bézier curves are interpolated using straight lines.
+                This parameter sets the number of straight lines used in the interpolation. 
+                Default is 1.
+            * *vec1* (``numpy.ndarray, optional``) --
+                A 3d vector in the Shapely plane. Rhino is a 3D geometry environment.
+                Shapely is a 2D geometric library.
+                Thus a 2D plane needs to be defined in Rhino that represents the Shapely coordinate system.
+                `vec1` represents the 1st vector of this plane. It will be used as Shapely's x direction.
+                Default is [1,0,0].
+            * *vec2* (``numpy.ndarray, optional``) --
+                Continuing from `vec1`, `vec2` is another vector to define the Shapely plane.
+                It must not be [0,0,0] and it's only requirement is that it is any vector in the Shapely plane (but not equal to `vec1`).
+                Default is [0,1,0].
+            * *plane_distance* (``float, optional``) --
+                The distance to the Shapely plane.
+                Default is 0.
+            * *project* (``boolean, optional``) --
+                Controls if the breps are projected onto the plane in the direction of the Shapley plane's normal.
+                Default is True.
+            * *parallel* (``boolean, optional``) --
+                Controls if only the rhino surfaces that have the same normal as the Shapely plane are yielded.
+                If true, all non parallel surfaces are filtered out.
+                Default is False.
+        """ 
+        return cls(geom = rhino_importer.load_brep_encoding(r3dm_brep, **kwargs)[0])
 
     def create_facets_and_control_points(self):
         self.perimeter = None
@@ -1098,6 +1195,49 @@ class CompoundGeometry(Geometry):
         else:
             interior_geometry = MultiPolygon(interiors)
             return CompoundGeometry(exterior_geometry - interior_geometry)
+
+    @classmethod
+    def from_3dm(cls, filepath: Union[str, pathlib.Path], **kwargs) -> CompoundGeometry:
+        """Class method to create a `CompoundGeometry` from the objects in a Rhino `3dm` file.
+
+        :param filepath: 
+            File path to the rhino `.3dm` file.
+        :type filepath: Union[str, pathlib.Path]
+        :param \**kwargs:
+            See below.
+        :return: 
+            A `CompoundGeometry` object.
+        :rtype: :class:`sectionproperties.pre.sections.CompoundGeometry`
+
+        :Keyword Arguments:
+            * *refine_num* (``int, optional``) --
+                Bézier curve interpolation number. In Rhino a surface's edges are nurb based curves.
+                Shapely does not support nurbs, so the individual Bézier curves are interpolated using straight lines.
+                This parameter sets the number of straight lines used in the interpolation. 
+                Default is 1.
+            * *vec1* (``numpy.ndarray, optional``) --
+                A 3d vector in the Shapely plane. Rhino is a 3D geometry environment.
+                Shapely is a 2D geometric library.
+                Thus a 2D plane needs to be defined in Rhino that represents the Shapely coordinate system.
+                `vec1` represents the 1st vector of this plane. It will be used as Shapely's x direction.
+                Default is [1,0,0].
+            * *vec2* (``numpy.ndarray, optional``) --
+                Continuing from `vec1`, `vec2` is another vector to define the Shapely plane.
+                It must not be [0,0,0] and it's only requirement is that it is any vector in the Shapely plane (but not equal to `vec1`).
+                Default is [0,1,0].
+            * *plane_distance* (``float, optional``) --
+                The distance to the Shapely plane.
+                Default is 0.
+            * *project* (``boolean, optional``) --
+                Controls if the breps are projected onto the plane in the direction of the Shapley plane's normal.
+                Default is True.
+            * *parallel* (``boolean, optional``) --
+                Controls if only the rhino surfaces that have the same normal as the Shapely plane are yielded.
+                If true, all non parallel surfaces are filtered out.
+                Default is False.
+        """  
+        list_poly = rhino_importer.load_3dm(filepath, **kwargs)
+        return cls(geoms = MultiPolygon(list_poly))
 
     def create_mesh(self, mesh_sizes: List[float]):
         """Creates a quadratic triangular mesh from the Geometry object.
