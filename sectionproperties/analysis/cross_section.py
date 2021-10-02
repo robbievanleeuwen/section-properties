@@ -733,7 +733,7 @@ class Section:
 
             # create a new Section with the origin shifted to the centroid for calculation of
             # the warping properties
-            warping_section = Section(self.geometry, self.materials)
+            warping_section = Section(self.geometry, self.time_info)
 
             # shift the coordinates of each element N.B. the mesh class attribute remains unshifted
             for el in warping_section.elements:
