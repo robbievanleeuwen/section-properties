@@ -866,13 +866,15 @@ class Geometry:
         """
         Perform union on Geometry objects with the | operator
         """
+        material = self.material or other.material
         try:
             new_polygon = self.geom | other.geom
             if isinstance(new_polygon, MultiPolygon):
+                
                 return CompoundGeometry(
-                    [Geometry(polygon, self.material) for polygon in new_polygon.geoms]
+                    [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
-            return Geometry(new_polygon, self.material, self.control_points[0])
+            return Geometry(new_polygon, material, self.control_points[0])
         except:
             raise ValueError(
                 f"Cannot perform 'union' on these two objects: {self} | {other}"
@@ -882,13 +884,14 @@ class Geometry:
         """
         Perform symmetric difference on Geometry objects with the ^ operator
         """
+        material = self.material or other.material
         try:
             new_polygon = self.geom ^ other.geom
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
-                    [Geometry(polygon, self.material) for polygon in new_polygon.geoms]
+                    [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
-            return Geometry(new_polygon, self.material)
+            return Geometry(new_polygon, material)
         except:
             raise ValueError(
                 f"Cannot perform 'symmetric difference' on these two objects: {self} ^ {other}"
@@ -898,16 +901,17 @@ class Geometry:
         """
         Perform difference on Geometry objects with the - operator
         """
+        material = self.material or other.material
         try:
             new_polygon = self.geom - other.geom
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
-                    [Geometry(polygon, self.material) for polygon in new_polygon.geoms]
+                    [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
             # Check to see if assigned_control_point is still valid
             if self.assigned_control_point and new_polygon.contains(self.assigned_control_point):
-                return Geometry(new_polygon, self.material, self.control_points[0])
-            return Geometry(new_polygon, self.material)
+                return Geometry(new_polygon, material, self.control_points[0])
+            return Geometry(new_polygon, material)
         except:
             raise ValueError(
                 f"Cannot perform 'difference' on these two objects: {self} - {other}"
@@ -928,13 +932,14 @@ class Geometry:
         """
         Perform intersection on Geometry objects with the & operator
         """
+        material = self.material or other.material
         try:
             new_polygon = self.geom & other.geom
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
-                    [Geometry(polygon, self.material) for polygon in new_polygon.geoms]
+                    [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
-            return Geometry(new_polygon, self.material)
+            return Geometry(new_polygon, material)
         except:
             raise ValueError(
                 f"Cannot perform 'intersection' on these two Geometry instances: {self} & {other}"

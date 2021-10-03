@@ -30,16 +30,12 @@ def finish_plot(ax, pause, title="", size=1000, dpi=96):
     """
     ax.set_title(title, fontdict={"fontsize": 2*size/dpi})
     ax.set_aspect("equal", anchor="C")
-    handles, labels = ax.get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))
-    ax.legend(by_label.values(), by_label.keys(), loc='center left', bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
 
     if pause:
         plt.show()
     else:
         plt.show()
-        # plt.pause(0.001)
 
 
 def draw_principal_axis(ax, phi, cx, cy):
