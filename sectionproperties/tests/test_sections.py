@@ -145,9 +145,8 @@ def test_geometry_from_3dm_file_simple():
         pathlib.Path.cwd() / "sectionproperties" / "tests" / "3in x 2in.3dm"
     )
     exp = Polygon([(0,0), (0,3), (2,3), (2,0), (0,0)])
-    test = load_3dm(section)
-    assert len(test) == 1
-    assert (test[0]-exp).is_empty
+    test = Geometry.from_3dm(section)
+    assert (test.geom-exp).is_empty
 
 def test_geometry_from_3dm_file_complex():
     section_3dm = (
@@ -159,9 +158,8 @@ def test_geometry_from_3dm_file_complex():
     with open(section_wkt) as file:
         wkt_str = file.readlines()
     exp = wkt.loads(wkt_str[0])
-    test = load_3dm(section_3dm)
-    assert len(test) == 1
-    assert (test[0]-exp).is_empty
+    test = Geometry.from_3dm(section_3dm)
+    assert (test.geom-exp).is_empty
 
 def test_geometry_from_3dm_file_compound():
     section_3dm = (
@@ -173,9 +171,8 @@ def test_geometry_from_3dm_file_compound():
     with open(section_wkt) as file:
         wkt_str = file.readlines()
     exp = [wkt.loads(wkt_str[0]), wkt.loads(wkt_str[1])]
-    test = load_3dm(section_3dm)
-    assert len(test) == 2
-    assert (MultiPolygon(test)-MultiPolygon(exp)).is_empty
+    test = CompoundGeometry.from_3dm(section_3dm)
+    assert (MultiPolygon([ii.geom for ii in test.geoms])-MultiPolygon(exp)).is_empty
 
 def test_geometry_from_3dm_encode():
     section_3dm = (
@@ -184,6 +181,5 @@ def test_geometry_from_3dm_encode():
     with open(section_3dm) as file:
         brep_encoded = json.load(file)
     exp = Polygon([(0,0), (1,0), (1,1), (0,1), (0,0)])
-    test = load_brep_encoding(brep_encoded)
-    assert len(test) == 1
-    assert (test[0]-exp).is_empty 
+    test = Geometry.from_rhino_encoding(brep_encoded)
+    assert (test.geom-exp).is_empty 
