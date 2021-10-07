@@ -428,7 +428,7 @@ class Geometry:
         if self.assigned_control_point:
             rotate_point = rot_point
             if rot_point == "center":
-                rotate_point = self.geom.centroid
+                rotate_point = box(*self.geom.bounds).centroid
             new_ctrl_point = shapely.affinity.rotate(
                 self.assigned_control_point, angle, rotate_point, use_radians
                 ).coords[0]
