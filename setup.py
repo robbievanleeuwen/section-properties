@@ -20,7 +20,7 @@ if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] <
 
 install_requires = [
     'numpy', 'scipy', 'pytest_check', 'more_itertools', 'matplotlib', 'shapely', 'pybind11',
-    'meshpy', 'rhino-shapley-interop~=0.0.1'
+    'meshpy', 'rhino-shapley-interop'
 ]
 
 setup(
