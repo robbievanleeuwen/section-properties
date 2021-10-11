@@ -338,9 +338,9 @@ Major Principal Stress (:math:`\sigma_{1}`)
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_1
     :noindex:
 
-Minor Principal Stress (:math:`\sigma_{2}`)
+Minor Principal Stress (:math:`\sigma_{3}`)
 """"""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_2
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_3
     :noindex:
 
 von Mises Stress (:math:`\sigma_{vM}`)
@@ -348,6 +348,10 @@ von Mises Stress (:math:`\sigma_{vM}`)
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vm
     :noindex:
 
+Mohr's Circles for Stresses at a Point
+""""""""""""""""""""""""""""""""""""
+..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_mohrs_circles
+    :noindex:
 
 Retrieving Cross-Section Stress
 -------------------------------
