@@ -3809,8 +3809,8 @@ class StressPost:
         return self.plot_stress_vector(sigxs, sigys, title, pause)
 
     def plot_stress_1(self, pause=True):
-        """Produces a contour plot of the Major principal stress :math:`\sigma_{1}` resulting from all
-        actions.
+        """Produces a contour plot of the major principal stress :math:`\sigma_{1}` resulting from
+        all actions.
 
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
@@ -3818,8 +3818,8 @@ class StressPost:
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
-        The following example plots a contour of the Major principal stress within a 150x90x12 UA section
-        resulting from the following actions:
+        The following example plots a contour of the Major principal stress within a 150x90x12 UA
+        section resulting from the following actions:
 
         * :math:`N = 50` kN
         * :math:`M_{xx} = -5` kN.m
@@ -3849,7 +3849,7 @@ class StressPost:
             :align: center
             :scale: 75 %
 
-            Contour plot of the Major Principal stress.
+            Contour plot of the major principal stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{1}$'
@@ -3870,8 +3870,8 @@ class StressPost:
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
 
-        The following example plots a contour of the Minor principal stress within a 150x90x12 UA section
-        resulting from the following actions:
+        The following example plots a contour of the Minor principal stress within a 150x90x12 UA
+        section resulting from the following actions:
 
         * :math:`N = 50` kN
         * :math:`M_{xx} = -5` kN.m
@@ -3901,7 +3901,7 @@ class StressPost:
             :align: center
             :scale: 75 %
 
-            Contour plot of the Minor Principal stress.
+            Contour plot of the minor principal stress.
         """
 
         title = 'Stress Contour Plot - $\sigma_{3}$'
@@ -3912,7 +3912,6 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause)
 
-    
     def plot_stress_vm(self, pause=True):
         """Produces a contour plot of the von Mises stress :math:`\sigma_{vM}` resulting from all
         actions.
@@ -4275,7 +4274,6 @@ class StressResult:
         self.sig_zz = self.sig_zz_n + self.sig_zz_m
         self.sig_zx = self.sig_zx_mzz + self.sig_zx_v
         self.sig_zy = self.sig_zy_mzz + self.sig_zy_v
-        self.sig_zxy = (self.sig_zx ** 2 + self.sig_zy ** 2) ** 0.5
         self.sig_1 = self.sig_zz / 2 + np.sqrt( (self.sig_zz / 2) ** 2 + self.sig_zxy ** 2)
         self.sig_3 = self.sig_zz / 2 - np.sqrt( (self.sig_zz / 2) ** 2 + self.sig_zxy ** 2)
         self.sig_vm = (self.sig_zz ** 2 + 3 * self.sig_zxy ** 2) ** 0.5
