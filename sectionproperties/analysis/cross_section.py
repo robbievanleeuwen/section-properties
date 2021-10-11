@@ -3860,7 +3860,7 @@ class StressPost:
 
         return self.plot_stress_contour(sigs, title, pause)
 
-    def plot_stress_2(self, pause=True):
+    def plot_stress_3(self, pause=True):
         """Produces a contour plot of the Minor principal stress :math:`\sigma_{3}` resulting from all
         actions.
 
