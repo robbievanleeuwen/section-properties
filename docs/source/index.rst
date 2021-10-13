@@ -70,6 +70,14 @@ tracker using one of the `issue templates
 If you have a request for a feature to be added to the *sectionproperties* package,
 please don't hesitate to get in touch
 
+Disclaimer
+----------
+
+*sectionproperties* is an open source engineering tool that continues to benefit from the
+collaboration of many contributors. Although efforts have been made to ensure the that relevant
+engineering theories have been correctly implemented, it remains the user's responsibility to
+confirm and accept the output.
+
 License
 -------
 
