@@ -3,6 +3,10 @@ import pathlib
 from sectionproperties.pre.sections import *
 from sectionproperties.analysis.cross_section import Section
 from sectionproperties.pre.pre import Material
+from sectionproperties.pre.rhino import load_3dm, load_brep_encoding
+from shapely.geometry import Polygon, MultiPolygon
+from shapely import wkt
+import json
 
 big_sq = rectangular_section(d=300, b=250)
 small_sq = rectangular_section(d=100, b=75)
@@ -135,3 +139,47 @@ def test_geometry_from_dxf():
         "14.54754079586294 3.34417866368126, 14.54754079586294 27.38289816310137, "
         "1.548825807287628 27.38289816310137, 1.548825807287628 3.34417866368126))"
     )
+
+def test_geometry_from_3dm_file_simple():
+    section = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "3in x 2in.3dm"
+    )
+    exp = Polygon([(0,0), (0,3), (2,3), (2,0), (0,0)])
+    test = Geometry.from_3dm(section)
+    assert (test.geom-exp).is_empty
+
+def test_geometry_from_3dm_file_complex():
+    section_3dm = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "complex_shape.3dm"
+    )
+    section_wkt = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "complex_shape.txt"
+    )
+    with open(section_wkt) as file:
+        wkt_str = file.readlines()
+    exp = wkt.loads(wkt_str[0])
+    test = Geometry.from_3dm(section_3dm)
+    assert (test.geom-exp).is_empty
+
+def test_geometry_from_3dm_file_compound():
+    section_3dm = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "compound_shape.3dm"
+    )
+    section_wkt = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "compound_shape.txt"
+    )
+    with open(section_wkt) as file:
+        wkt_str = file.readlines()
+    exp = [wkt.loads(wkt_str[0]), wkt.loads(wkt_str[1])]
+    test = CompoundGeometry.from_3dm(section_3dm)
+    assert (MultiPolygon([ii.geom for ii in test.geoms])-MultiPolygon(exp)).is_empty
+
+def test_geometry_from_3dm_encode():
+    section_3dm = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "rhino_data.json"
+    )
+    with open(section_3dm) as file:
+        brep_encoded = json.load(file)
+    exp = Polygon([(0,0), (1,0), (1,1), (0,1), (0,0)])
+    test = Geometry.from_rhino_encoding(brep_encoded)
+    assert (test.geom-exp).is_empty 

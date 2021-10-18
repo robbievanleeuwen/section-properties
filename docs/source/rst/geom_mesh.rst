@@ -88,12 +88,14 @@ In addition to creating geometries directly from :class:`shapely.geometry.Polygo
 analysis:
 
 #. From lists of points, facets, hole regions, and control regions
-#. From ``.dxf`` files
 #. From *sectionproperties*'s "factory functions" of common shapes
+#. From ``.dxf`` files
+#. From ``.3dm`` files
+#. From Rhino encodings
 #. Using transformation methods on existing geometries and/or by applying set operations
    (e.g. `|`, `+`, `-`, `&`, `^`)
 
-For the first three approaches, an optional ``.material`` parameter can be passed containing a
+For the first two approaches, an optional ``.material`` parameter can be passed containing a
 :class:`~sectionproperties.pre.pre.Material` (or list of `Material` objects) to associate with the
 newly created geometry(ies). The material attribute can be altered afterward in a
 :class:`~sectionproperties.pre.sections.Geometry` object at any time by simply assigning a
@@ -135,6 +137,44 @@ file (i.e. the number of contiguous regions).
    :noindex:
 
 ..  autofunction:: sectionproperties.pre.sections.CompoundGeometry.from_dxf
+   :noindex:
+
+Geometry from Rhino
+-------------------
+
+Geometries can now be created from .3dm files and BREP encodings. 
+Various limitations and assumptions need to be acknowledged:
+
+* sectional analysis is based in 2d and Rhino is a 3d environment.
+* the recognized Rhino geometries are limited to planer-single-surfaced BREPs.
+* Rhino uses NURBS for surface boundaries and *sectionproperties* uses piecewise linear boundaries.
+* a search plane is defined.
+
+See the keyword arguments below that are used to search and simplify the Rhino geometry.
+
+Rhino files are read via the class methods :attr:`sectionproperties.pre.sections.Geometry.from_3dm()` and 
+:attr:`sectionproperties.pre.sections.CompoundGeometry.from_3dm()`.
+Each class method returns the respective objects.
+
+..  autofunction:: sectionproperties.pre.sections.Geometry.from_3dm
+   :noindex:
+
+..  autofunction:: sectionproperties.pre.sections.CompoundGeometry.from_3dm
+   :noindex:
+
+Geometry objects can also be created from encodings of Rhino BREP.
+
+..  autofunction:: sectionproperties.pre.sections.Geometry.from_rhino_encoding
+   :noindex:
+
+More advanced filtering can be achieved by working with the Shapely geometries directly.
+These can be accessed by :attr:`sectionproperties.pre.rhino.load_3dm()` and 
+:attr:`sectionproperties.pre.rhino.load_rhino_brep_encoding()`.
+
+..  autofunction:: sectionproperties.pre.rhino.load_3dm
+   :noindex:
+
+..  autofunction:: sectionproperties.pre.rhino.load_brep_encoding
    :noindex:
 
 
