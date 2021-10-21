@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import CrossSection
+from sectionproperties.analysis.cross_section import Section
 
 # rectangle dimensions
 d_list = []
@@ -21,15 +21,15 @@ for b in b_list:
     ms = d * b / n
 
     # perform a warping analysis on rectangle
-    geometry = sections.RectangularSection(d=d, b=b)
-    mesh = geometry.create_mesh(mesh_sizes=[ms])
-    section = CrossSection(geometry, mesh)
+    geometry = sections.rectangular_section(d=d, b=b)
+    geometry.create_mesh(mesh_sizes=[ms])
+    section = Section(geometry)
     section.calculate_geometric_properties()
     section.calculate_warping_properties()
 
     # get the torsion constant
     j = section.get_j()
-    print("d/b = {0:.3f}; J = {1:.5e}".format(d / b, j))
+    print("d/b = {0:.3f}; J = {1:.5e}".format(d/b, j))
     j_list.append(j)
 
 # plot the torsion constant as a function of the aspect ratio

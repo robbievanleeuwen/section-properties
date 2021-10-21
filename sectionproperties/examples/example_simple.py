@@ -1,21 +1,21 @@
 import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import CrossSection
+from sectionproperties.analysis.cross_section import Section
 
 # create a 50 diameter circle discretised by 64 points
-geometry = sections.CircularSection(d=50, n=64)
+geometry = sections.circular_section(d=50, n=64)
 geometry.plot_geometry()  # plot the geometry
 
 # create a mesh with a mesh size of 2.5
-mesh = geometry.create_mesh(mesh_sizes=[2.5])
+geometry.create_mesh(mesh_sizes=[2.5])
 
-section = CrossSection(geometry, mesh)  # create a CrossSection object
+section = Section(geometry, time_info=True)  # create a Section object
 section.display_mesh_info()  # display the mesh information
 section.plot_mesh()  # plot the generated mesh
 
 # perform a geometric, warping and plastic analysis, displaying the time info
-section.calculate_geometric_properties(time_info=True)
-section.calculate_warping_properties(time_info=True)
-section.calculate_plastic_properties(time_info=True)
+section.calculate_geometric_properties()
+section.calculate_warping_properties()
+section.calculate_plastic_properties()
 
 # print the results to the terminal
 section.display_results()

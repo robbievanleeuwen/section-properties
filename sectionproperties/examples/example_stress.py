@@ -1,14 +1,14 @@
 import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import CrossSection
+from sectionproperties.analysis.cross_section import Section
 
 # create a 150x100x6 RHS on its side
-geometry = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8)
+geometry = sections.rectangular_hollow_section(d=100, b=150, t=6, r_out=15, n_r=8)
 
 # create a mesh with a maximum area of 2
-mesh = geometry.create_mesh(mesh_sizes=[2])
+geometry.create_mesh(mesh_sizes=[2])
 
-# create a CrossSection object
-section = CrossSection(geometry, mesh)
+# create a Section object
+section = Section(geometry)
 
 # perform a geometry and warping analysis
 section.calculate_geometric_properties()

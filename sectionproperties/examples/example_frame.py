@@ -2,10 +2,10 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import CrossSection
+from sectionproperties.analysis.cross_section import Section
 
 # create a rectangular section
-geometry = sections.RectangularSection(d=100, b=50)
+geometry = sections.rectangular_section(d=100, b=50)
 
 # create a list of mesh sizes to analyse
 mesh_sizes = [1.5, 2, 2.5, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
@@ -14,8 +14,8 @@ t_calc = []  # list to store computation times
 
 # loop through mesh sizes
 for mesh_size in mesh_sizes:
-    mesh = geometry.create_mesh(mesh_sizes=[mesh_size])  # create mesh
-    section = CrossSection(geometry, mesh)  # create a CrossSection object
+    geometry.create_mesh(mesh_sizes=[mesh_size])  # create mesh
+    section = Section(geometry)  # create a Section object
     start_time = time.time()  # start timing
     # calculate the frame properties
     (_, _, _, _, j, _) = section.calculate_frame_properties()
