@@ -357,7 +357,7 @@ von Mises Stress (:math:`\sigma_{vM}`)
     :noindex:
 
 Mohr's Circles for Stresses at a Point
-""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_mohrs_circles
     :noindex:
 
