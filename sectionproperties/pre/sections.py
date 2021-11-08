@@ -1223,6 +1223,44 @@ class CompoundGeometry(Geometry):
         new_geom = CompoundGeometry(geoms_acc)
         return new_geom
 
+
+    def align_center(self, align_to: Optional[Geometry] = None):
+        """
+        Returns a new Geometry object, translated in both x and y, so that the
+        center-point of the new object's centroid will be aligned with
+        centroid of the object in 'align_to'. If 'align_to' is None then the new
+        object will be aligned with it's centroid at the origin.
+
+        :param align_to: Another Geometry to align to or None (default is None)
+        :type align_to: Optional[sectionproperties.pre.sections.Geometry]
+
+        :return: Geometry object translated to new alignment
+        :rtype: :class:`sections.pre.sections.Geometry`
+        """
+        EA_sum = sum([geom.material.elastic_modulus * geom.calculate_area() for geom in self.geoms])
+        cx_EA_acc = 0
+        cy_EA_acc = 0
+        for geom in self.geoms:
+            E = geom.material.elastic_modulus
+            A = geom.calculate_area()
+            EA = E*A
+            cx, cy = list(geom.geom.centroid.coords[0])
+            cx_EA_acc += cx*EA
+            cy_EA_acc += cy*EA
+        weighted_cx = cx_EA_acc / (EA_sum)
+        weighted_cy = cy_EA_acc / (EA_sum)
+
+        if align_to is None:
+            shift_x, shift_y = round(-weighted_cx, self.tol), round(-weighted_cy, self.tol)
+
+        else:
+            align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
+            shift_x = round(align_cx - weighted_cx, self.tol)
+            shift_y = round(align_cy - weighted_cy, self.tol)
+        new_geom = self.shift_section(x_offset=shift_x, y_offset=shift_y)
+        return new_geom
+
+
     def split_section(
         self,
         point_i: Tuple[float, float],

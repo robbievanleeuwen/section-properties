@@ -48,7 +48,7 @@ def group_top_and_bottom_polys(
     """
     top_acc = []
     bot_acc = []
-    for poly in polys:
+    for poly in polys.geoms:
         m, b = line_mx_plus_b(line)
         px, py = poly.representative_point().coords[0]
         if b is not None:  # Not a vertical line (special case)
