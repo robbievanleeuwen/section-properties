@@ -1430,7 +1430,7 @@ def load_dxf(dxf_filepath: pathlib.Path):
     try:
         import cad_to_shapely as c2s  # type: ignore
     except ImportError as e:
-        print(e.message)
+        print(e)
         print("To use 'from_dxf(...)' you need to 'pip install cad_to_shapely'")
         return
 
