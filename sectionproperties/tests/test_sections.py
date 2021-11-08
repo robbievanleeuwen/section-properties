@@ -4,6 +4,10 @@ import pytest
 from sectionproperties.pre.sections import *
 from sectionproperties.analysis.cross_section import Section
 from sectionproperties.pre.pre import Material
+from sectionproperties.pre.rhino import load_3dm, load_brep_encoding
+from shapely.geometry import Polygon, MultiPolygon
+from shapely import wkt
+import json
 
 big_sq = rectangular_section(d=300, b=250)
 small_sq = rectangular_section(d=100, b=75)
@@ -144,7 +148,7 @@ def test_plastic_centroid():
     # materials, this tests that the plastic centroid takes into account the 
     # correct "center" of the original section which is affected by EA of each
     # of the constituent geometries.
-    
+
     steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3,
                     yield_strength=500, color='grey')
     timber = Material(name='Timber', elastic_modulus=5e3, poissons_ratio=0.35,
@@ -176,4 +180,49 @@ def test_plastic_centroid():
     assert y_pc == pytest.approx(250.360654576)
 
 
+def test_geometry_from_3dm_file_simple():
+    section = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "3in x 2in.3dm"
+    )
+    exp = Polygon([(0,0), (0,3), (2,3), (2,0), (0,0)])
+    test = Geometry.from_3dm(section)
+    assert (test.geom-exp).is_empty
 
+
+def test_geometry_from_3dm_file_complex():
+    section_3dm = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "complex_shape.3dm"
+    )
+    section_wkt = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "complex_shape.txt"
+    )
+    with open(section_wkt) as file:
+        wkt_str = file.readlines()
+    exp = wkt.loads(wkt_str[0])
+    test = Geometry.from_3dm(section_3dm)
+    assert (test.geom-exp).is_empty
+
+
+def test_geometry_from_3dm_file_compound():
+    section_3dm = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "compound_shape.3dm"
+    )
+    section_wkt = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "compound_shape.txt"
+    )
+    with open(section_wkt) as file:
+        wkt_str = file.readlines()
+    exp = [wkt.loads(wkt_str[0]), wkt.loads(wkt_str[1])]
+    test = CompoundGeometry.from_3dm(section_3dm)
+    assert (MultiPolygon([ii.geom for ii in test.geoms])-MultiPolygon(exp)).is_empty
+
+
+def test_geometry_from_3dm_encode():
+    section_3dm = (
+        pathlib.Path.cwd() / "sectionproperties" / "tests" / "rhino_data.json"
+    )
+    with open(section_3dm) as file:
+        brep_encoded = json.load(file)
+    exp = Polygon([(0,0), (1,0), (1,1), (0,1), (0,0)])
+    test = Geometry.from_rhino_encoding(brep_encoded)
+    assert (test.geom-exp).is_empty 
