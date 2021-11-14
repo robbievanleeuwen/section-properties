@@ -1366,10 +1366,15 @@ class CompoundGeometry(Geometry):
 
     def align_center(self, align_to: Optional[Geometry] = None):
         """
-        Returns a new Geometry object, translated in both x and y, so that the
-        center-point of the new object's centroid will be aligned with
+        Returns a new CompoundGeometry object, translated in both x and y, so that the
+        center-point of the new object's material-weighted centroid will be aligned with
         centroid of the object in 'align_to'. If 'align_to' is None then the new
         object will be aligned with it's centroid at the origin.
+
+        Note: The material-weighted centroid refers to when individual geometries within
+        the CompoundGeometry object have been assigned differing materials. The centroid
+        of the compound geometry is calculated by using the E modulus of each
+        geometry's assigned material.
 
         :param align_to: Another Geometry to align to or None (default is None)
         :type align_to: Optional[sectionproperties.pre.sections.Geometry]
