@@ -169,21 +169,21 @@ Here, we will simply combine two squares with the default material::
 
 ..  figure:: ../images/examples/two_squares_basic.png
     :align: center
-    :scale: 50 %
+    :scale: 100 %
 
 From the shapely vector representation, we can see that the squares are shaded red.
-This indicates an `"invalid" geometry from shapely's perspective <https://shapely.readthedocs.io/en/stable/manual.html#polygons>`
+This indicates an `"invalid" geometry from shapely's perspective <https://shapely.readthedocs.io/en/stable/manual.html#polygons>`_ 
 because there are two polygons that share an edge. For this geometry, the intention is to have two squares
 that are connected on one side and so the red shading provided by the shapely representation tells us that
 we are getting what we expect. 
 
 Now, say this is not our final geometry and we actually want to have it rotated by 30 degrees::
-    
+
     geometry = geometry.rotate_section(30)
 
 ..  figure:: ../images/examples/two_squares_basic_rotated.png
     :align: center
-    :scale: 50 %  
+    :scale: 100 %  
 
 Here, we can see that the shapely representation is now showing as green indicating a "valid" shapely geometry.
 Even though it is now valid for shapely, because it is green we know that these two polygons no longer share an edge
@@ -204,7 +204,7 @@ do not perfectly align, they will be considered as discontinuous.
 
 ..  figure:: ../images/examples/two_squares_basic_rotated_plot.png
     :align: center
-    :scale: 50 %  
+    :scale: 100 %  
 
 To remedy this, take the same approach as in the preceding example by creating intermediate nodes where the two polygons
 intersect by using set operations. If we subtract ``s2`` from ``s1`` then we will have the larger square with intermediate nodes created::
@@ -213,7 +213,7 @@ intersect by using set operations. If we subtract ``s2`` from ``s1`` then we wil
 
 .. figure:: ../images/examples/two_squares_large_square_int_points.png
     :align: center
-    :scale: 50 %
+    :scale: 100 %
 
 Now, if we build the compound geometry up from this larger square with the intermediate points, then our section will work.::
 
@@ -226,4 +226,4 @@ Now, if we build the compound geometry up from this larger square with the inter
 
 .. figure:: ../images/examples/two_squares_fixed_plot.png
     :align: center
-    :scale: 50 %
+    :scale: 100 %
