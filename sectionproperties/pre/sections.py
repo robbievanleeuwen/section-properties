@@ -1153,15 +1153,18 @@ class CompoundGeometry(Geometry):
                 continue
             prev_j_idx = prev_facet[1]
             if i_idx != prev_j_idx:  # If there is a break in the chain of edges...
+                # ... then add the last point, close off the polygon, 
+                # and add the polygon to the all_polygons accumulator....
                 current_polygon_points.append(points[prev_j_idx])
                 all_polygons.append(Polygon(current_polygon_points))
+                # Then start collecting the points of the new polygon
                 current_polygon_points = [points[i_idx]]
             else:
                 current_polygon_points.append(
                     points[i_idx]
                 )  # Only need i_idx b/c shapely auto-closes polygons
             prev_facet = facet
-        else:
+        else: # Use the for...else clause to add the last point and close the last polygon.
             current_polygon_points.append(points[j_idx])
             all_polygons.append(Polygon(current_polygon_points))
 
