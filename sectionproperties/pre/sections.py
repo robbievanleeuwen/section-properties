@@ -1153,15 +1153,18 @@ class CompoundGeometry(Geometry):
                 continue
             prev_j_idx = prev_facet[1]
             if i_idx != prev_j_idx:  # If there is a break in the chain of edges...
+                # ... then add the last point, close off the polygon, 
+                # and add the polygon to the all_polygons accumulator....
                 current_polygon_points.append(points[prev_j_idx])
                 all_polygons.append(Polygon(current_polygon_points))
+                # Then start collecting the points of the new polygon
                 current_polygon_points = [points[i_idx]]
             else:
                 current_polygon_points.append(
                     points[i_idx]
                 )  # Only need i_idx b/c shapely auto-closes polygons
             prev_facet = facet
-        else:
+        else: # Use the for...else clause to add the last point and close the last polygon.
             current_polygon_points.append(points[j_idx])
             all_polygons.append(Polygon(current_polygon_points))
 
@@ -1363,6 +1366,49 @@ class CompoundGeometry(Geometry):
         new_geom = CompoundGeometry(geoms_acc)
         return new_geom
 
+
+    def align_center(self, align_to: Optional[Geometry] = None):
+        """
+        Returns a new CompoundGeometry object, translated in both x and y, so that the
+        center-point of the new object's material-weighted centroid will be aligned with
+        centroid of the object in 'align_to'. If 'align_to' is None then the new
+        object will be aligned with it's centroid at the origin.
+
+        Note: The material-weighted centroid refers to when individual geometries within
+        the CompoundGeometry object have been assigned differing materials. The centroid
+        of the compound geometry is calculated by using the E modulus of each
+        geometry's assigned material.
+
+        :param align_to: Another Geometry to align to or None (default is None)
+        :type align_to: Optional[sectionproperties.pre.sections.Geometry]
+
+        :return: Geometry object translated to new alignment
+        :rtype: :class:`sections.pre.sections.Geometry`
+        """
+        EA_sum = sum([geom.material.elastic_modulus * geom.calculate_area() for geom in self.geoms])
+        cx_EA_acc = 0
+        cy_EA_acc = 0
+        for geom in self.geoms:
+            E = geom.material.elastic_modulus
+            A = geom.calculate_area()
+            EA = E*A
+            cx, cy = list(geom.geom.centroid.coords[0])
+            cx_EA_acc += cx*EA
+            cy_EA_acc += cy*EA
+        weighted_cx = cx_EA_acc / (EA_sum)
+        weighted_cy = cy_EA_acc / (EA_sum)
+
+        if align_to is None:
+            shift_x, shift_y = round(-weighted_cx, self.tol), round(-weighted_cy, self.tol)
+
+        else:
+            align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
+            shift_x = round(align_cx - weighted_cx, self.tol)
+            shift_y = round(align_cy - weighted_cy, self.tol)
+        new_geom = self.shift_section(x_offset=shift_x, y_offset=shift_y)
+        return new_geom
+
+
     def split_section(
         self,
         point_i: Tuple[float, float],
@@ -1532,7 +1578,7 @@ def load_dxf(dxf_filepath: pathlib.Path):
     try:
         import cad_to_shapely as c2s  # type: ignore
     except ImportError as e:
-        print(e.message)
+        print(e)
         print("To use 'from_dxf(...)' you need to 'pip install cad_to_shapely'")
         return
 

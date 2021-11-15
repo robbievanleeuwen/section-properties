@@ -1,4 +1,5 @@
 import pathlib
+import pytest
 
 from sectionproperties.pre.sections import *
 from sectionproperties.analysis.cross_section import Section
@@ -140,6 +141,45 @@ def test_geometry_from_dxf():
         "1.548825807287628 27.38289816310137, 1.548825807287628 3.34417866368126))"
     )
 
+
+def test_plastic_centroid():
+    ## Test created in response to #114
+    # Since the section being tested is a compound geometry with two different
+    # materials, this tests that the plastic centroid takes into account the 
+    # correct "center" of the original section which is affected by EA of each
+    # of the constituent geometries.
+
+    steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3,
+                    yield_strength=500, color='grey')
+    timber = Material(name='Timber', elastic_modulus=5e3, poissons_ratio=0.35,
+                    yield_strength=20, color='burlywood')
+
+    # create 310UB40.4
+    ub = i_section(d=304, b=165, t_f=10.2, t_w=6.1, r=11.4, n_r=8, material=steel)
+
+    # create timber panel on top of the UB
+    panel = rectangular_section(d=50, b=600, material=timber)
+    panel = panel.align_center(ub).align_to(ub, on="top")
+
+    # merge the two sections into one geometry object
+    geometry = CompoundGeometry([ub, panel])
+
+    # create a mesh - use a mesh size of 5 for the UB, 20 for the panel
+    geometry.create_mesh(mesh_sizes=[100, 100])
+
+    # create a Section object
+    section = Section(geometry)
+
+    # perform a geometric, warping and plastic analysis
+    section.calculate_geometric_properties()
+    section.calculate_warping_properties()
+    section.calculate_plastic_properties()
+
+    x_pc, y_pc = section.get_pc()
+    assert x_pc == pytest.approx(82.5)
+    assert y_pc == pytest.approx(250.360654576)
+
+
 def test_geometry_from_3dm_file_simple():
     section = (
         pathlib.Path.cwd() / "sectionproperties" / "tests" / "3in x 2in.3dm"
@@ -147,6 +187,7 @@ def test_geometry_from_3dm_file_simple():
     exp = Polygon([(0,0), (0,3), (2,3), (2,0), (0,0)])
     test = Geometry.from_3dm(section)
     assert (test.geom-exp).is_empty
+
 
 def test_geometry_from_3dm_file_complex():
     section_3dm = (
@@ -161,6 +202,7 @@ def test_geometry_from_3dm_file_complex():
     test = Geometry.from_3dm(section_3dm)
     assert (test.geom-exp).is_empty
 
+
 def test_geometry_from_3dm_file_compound():
     section_3dm = (
         pathlib.Path.cwd() / "sectionproperties" / "tests" / "compound_shape.3dm"
@@ -173,6 +215,7 @@ def test_geometry_from_3dm_file_compound():
     exp = [wkt.loads(wkt_str[0]), wkt.loads(wkt_str[1])]
     test = CompoundGeometry.from_3dm(section_3dm)
     assert (MultiPolygon([ii.geom for ii in test.geoms])-MultiPolygon(exp)).is_empty
+
 
 def test_geometry_from_3dm_encode():
     section_3dm = (

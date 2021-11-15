@@ -78,7 +78,8 @@ Preventing Ambiguity
 --------------------
 
 To prevent ambiguity between geometries and their analytical regions, there are a few options we can take. We can perform a simple union operation but that will lose
-the material information for one of our sections, whichever section comes first in the operation. In this example, we will use ``|`` (union)
+the material information for one of our sections: whichever section comes first in the operation will have
+it's information preserved. In this example, we will use ``|`` (union)
 with ``i_sec2`` taking precedence by being the first object in the operation::
 
     i_sec2 | i_sec1
@@ -152,3 +153,77 @@ And when we create our mesh and analysis section::
     :scale: 50 %
 
 We can see that the mesh represents how we expect the section to be.
+
+Another example
+---------------
+
+Here, we will simply combine two squares with the default material::
+
+    import sectionproperties.pre.sections as sections
+    from sectionproperties.analysis.cross_section import Section
+
+    s1 = sections.rectangular_section(1,1)
+    s2 = sections.rectangular_section(0.5,0.5).shift_section(1,0.25)
+    geometry = s1 + s2
+    geometry
+
+..  figure:: ../images/examples/two_squares_basic.png
+    :align: center
+    :scale: 100 %
+
+From the shapely vector representation, we can see that the squares are shaded red.
+This indicates an `"invalid" geometry from shapely's perspective <https://shapely.readthedocs.io/en/stable/manual.html#polygons>`_ 
+because there are two polygons that share an edge. For this geometry, the intention is to have two squares
+that are connected on one side and so the red shading provided by the shapely representation tells us that
+we are getting what we expect. 
+
+Now, say this is not our final geometry and we actually want to have it rotated by 30 degrees::
+
+    geometry = geometry.rotate_section(30)
+
+..  figure:: ../images/examples/two_squares_basic_rotated.png
+    :align: center
+    :scale: 100 %  
+
+Here, we can see that the shapely representation is now showing as green indicating a "valid" shapely geometry.
+Even though it is now valid for shapely, because it is green we know that these two polygons no longer share an edge
+because there is a miniscule separation between them as a result of a floating point error.
+
+When we try to mesh this geometry, we will actually cause a crash with triangle, the meshing tool used behind-the-scenes
+by sectionproperties::
+
+    geometry.create_mesh(mesh_sizes=[0.2, 0.1]) # This may crash the kernel
+
+The crash occurs because the distance between the two polygons is so small, even though they are separated and
+the space between them will not be meshed. The same crash would occur if the polygons were overlapping by this same
+small distance.
+
+If we plot the geometry, you can see that each of the two squares has only four nodes and four facets and their relationship
+is only incidental. If their edges happen to perfectly align, they will be considered as one continuous section. If their edges
+do not perfectly align, they will be considered as discontinuous.
+
+..  figure:: ../images/examples/two_squares_basic_rotated_plot.png
+    :align: center
+    :scale: 100 %  
+
+To remedy this, take the same approach as in the preceding example by creating intermediate nodes where the two polygons
+intersect by using set operations. If we subtract ``s2`` from ``s1`` then we will have the larger square with intermediate nodes created::
+    
+    (s1 - s2).plot_geometry(labels=['points'])
+
+.. figure:: ../images/examples/two_squares_large_square_int_points.png
+    :align: center
+    :scale: 100 %
+
+Now, if we build the compound geometry up from this larger square with the intermediate points, then our section will work.::
+
+    geometry_fixed = (s1 - s2) + s2
+    geometry_fixed_rotated = geometry_fixed.rotate_section(angle=30)
+    geometry_rot.create_mesh(mesh_sizes=[0.2, 0.1])
+    geometry_rot.plot_geometry(labels=["points", "facets"])
+    section = Section(geometry_rot)
+    section.display_mesh_info()
+
+.. figure:: ../images/examples/two_squares_fixed_plot.png
+    :align: center
+    :scale: 100 %
