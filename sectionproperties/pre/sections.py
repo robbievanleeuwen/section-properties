@@ -1103,7 +1103,7 @@ class CompoundGeometry(Geometry):
         points: List[List[float]],
         facets: List[List[int]],
         holes: List[List[float]],
-        control_points: Optional[List[List[float]]] = None,
+        control_points: Optional[List[List[float]]],
         materials: Optional[List[pre.Material]] = None,
     ):
         """
@@ -1114,7 +1114,7 @@ class CompoundGeometry(Geometry):
             If facets are not provided, it is a assumed the that the list of points are ordered
             around the perimeter, either clockwise or anti-clockwise
         :vartype points: list[list[float]]
-        :cvar facets: Optional. A list of *(start, end)* indexes of vertices defining the edges
+        :cvar facets: A list of *(start, end)* indexes of vertices defining the edges
             of the section geoemtry. Can be used to define both external and internal perimeters of holes.
             Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
             interior perimeter 2, etc.
@@ -1140,6 +1140,8 @@ class CompoundGeometry(Geometry):
                 "Materials cannot be assigned without control_points. "
                 "Please provide corresponding control_points for each material."
                 )
+        if control_points is None:
+            control_points = list()
 
         # First, generate all invidual polygons from points and facets
         current_polygon_points = []
@@ -1172,10 +1174,12 @@ class CompoundGeometry(Geometry):
         exteriors = []
         interiors = []
         ext_ctrl_pnts = []
+        ctrl_coord_in_polygon = []
         for polygon in all_polygons:
             hole_coord_in_polygon = (
                 [polygon.contains(Point(hole_coord)) for hole_coord in holes]
             )
+
             ctrl_coord_in_polygon = (
                 [ctrl_coord for ctrl_coord in control_points if polygon.contains(Point(ctrl_coord))]
             )
@@ -1187,6 +1191,11 @@ class CompoundGeometry(Geometry):
                 ext_ctrl_pnts += ctrl_coord_in_polygon
 
         # Create the holes by subtracting interior regions from exterior regions
+        if len(exteriors) != len(control_points):
+            raise ValueError(
+                f"The number of exterior regions ({len(exteriors)}) "
+                f"does not match the number of control_points given ({len(control_points)})."
+                )
         exterior_geometry = MultiPolygon(exteriors)
         if not interiors:
             return CompoundGeometry(
