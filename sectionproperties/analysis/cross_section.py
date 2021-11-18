@@ -2478,6 +2478,8 @@ class StressPost:
         * *'sig_zy'*: *y*-component of the shear stress :math:`\sigma_{zy}` resulting from all
           actions
         * *'sig_zxy'*: Resultant shear stress :math:`\sigma_{zxy}` resulting from all actions
+        * *'sig_1'*: Major principal stress :math:`\sigma_{1}` resulting from all actions
+        * *'sig_3'*: Minor principal stress :math:`\sigma_{3}` resulting from all actions
         * *'sig_vm'*: von Mises stress :math:`\sigma_{vM}` resulting from all actions
 
         The following example returns the normal stress within a 150x90x12 UA section resulting
@@ -2530,6 +2532,8 @@ class StressPost:
                     "sig_zx": group.stress_result.sig_zx,
                     "sig_zy": group.stress_result.sig_zy,
                     "sig_zxy": group.stress_result.sig_zxy,
+                    "sig_1": group.stress_result.sig_1,
+                    "sig_3": group.stress_result.sig_3,
                     "sig_vm": group.stress_result.sig_vm,
                 }
             )
@@ -3802,6 +3806,109 @@ class StressPost:
 
         return self.plot_stress_vector(sigxs, sigys, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
+    def plot_stress_1(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
+        """Produces a contour plot of the major principal stress :math:`\sigma_{1}` resulting from all
+        actions.
+
+        :param bool pause: If set to true, the figure pauses the script until the window is closed.
+            If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
+
+        The following example plots a contour of the major principal stress within a 150x90x12 UA
+        section resulting from the following actions:
+        * :math:`N = 50` kN
+        * :math:`M_{xx} = -5` kN.m
+        * :math:`M_{22} = 2.5` kN.m
+        * :math:`M_{zz} = 1.5` kN.m
+        * :math:`V_{x} = 10` kN
+        * :math:`V_{y} = 5` kN
+
+        ::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(
+                N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3
+            )
+
+            stress_post.plot_stress_1()
+
+        ..  figure:: ../images/stress/stress_1.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the major principal stress.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{1}$'
+        sigs = []
+
+        for group in self.material_groups:
+            sigs.append(group.stress_result.sig_1)
+
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
+
+    def plot_stress_3(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
+        """Produces a contour plot of the Minor principal stress :math:`\sigma_{3}` resulting from all
+        actions.
+
+        :param bool pause: If set to true, the figure pauses the script until the window is closed.
+            If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
+
+        The following example plots a contour of the Minor principal stress within a 150x90x12 UA
+        section resulting from the following actions:
+
+        * :math:`N = 50` kN
+        * :math:`M_{xx} = -5` kN.m
+        * :math:`M_{22} = 2.5` kN.m
+        * :math:`M_{zz} = 1.5` kN.m
+        * :math:`V_{x} = 10` kN
+        * :math:`V_{y} = 5` kN
+
+        ::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import CrossSection
+
+            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = CrossSection(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(
+                N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3
+            )
+
+            stress_post.plot_stress_2()
+
+        ..  figure:: ../images/stress/stress_2.png
+            :align: center
+            :scale: 75 %
+
+            Contour plot of the minor principal stress.
+        """
+
+        title = 'Stress Contour Plot - $\sigma_{3}$'
+        sigs = []
+
+        for group in self.material_groups:
+            sigs.append(group.stress_result.sig_3)
+
+        return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
+
     def plot_stress_vm(self, pause=True, cmap="coolwarm", normalize=True, size=500, dpi=96):
         """Produces a contour plot of the von Mises stress :math:`\sigma_{vM}` resulting from all
         actions.
@@ -3858,6 +3965,155 @@ class StressPost:
             sigs.append(group.stress_result.sig_vm)
 
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
+    
+    
+    def plot_mohrs_circles(self,x,y,pause=True, cmap="coolwarm", size=500, dpi=96):
+        """Plots Mohr's Circles of the 3D stress state at position x,y
+
+        :params x,y: Coordinates of the point to draw Mohr's Circle
+        :type x,y: float
+        :param bool pause: If set to true, the figure pauses the script until the window is closed.
+            If set to false, the script continues immediately after the window is rendered.
+
+        :return: Matplotlib figure and axes objects (fig, ax)
+        :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
+        
+        The following example plots the Mohr's Circles for the 3D stress state within a 150x90x12 UA section
+        resulting from the following actions:
+
+        * :math:`N = 50` kN
+        * :math:`M_{xx} = -5` kN.m
+        * :math:`M_{22} = 2.5` kN.m
+        * :math:`M_{zz} = 1.5` kN.m
+        * :math:`V_{x} = 10` kN
+        * :math:`V_{y} = 5` kN
+        
+        at the point (10,88.9)
+
+        ::
+
+            import sectionproperties.pre.sections as sections
+            from sectionproperties.analysis.cross_section import Section
+
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            mesh = geometry.create_mesh(mesh_sizes=[2.5])
+            section = Section(geometry, mesh)
+
+            section.calculate_geometric_properties()
+            section.calculate_warping_properties()
+            stress_post = section.calculate_stress(
+                N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3
+            )
+            
+            stress_post.plot_mohrs_circles(10,88.9)
+
+        ..  figure:: ../images/stress/mohrs_circles.png
+            :align: center
+            :scale: 75 %
+
+            Mohr's Circles of the 3D stress state at (10,88.9).
+        
+        """
+        
+        pt = (x,y)
+        nodes = self.cross_section.mesh_nodes
+        ele = self.cross_section.mesh_elements        
+        triang = tri.Triangulation(nodes[:, 0], nodes[:, 1], ele[:, 0:3])
+        
+        # Find in which material group the point lies
+        pt_group = None
+        for group in self.material_groups:            
+            mask_array = np.ones(len(self.cross_section.elements), dtype=bool)
+            mask_array[group.el_ids] = False
+            triang.set_mask(mask_array)
+            trifinder = triang.get_trifinder()
+            if trifinder(*pt) != -1:
+                pt_group = group
+            triang.set_mask(None)
+        
+        if pt_group is None:
+            raise Exception(f"Point {(*pt,)} is not within mesh")
+        
+        # Assesmble the stress results from the relevant material group
+        sigma_zz_v = pt_group.stress_result.sig_zz
+        tau_xz_v = pt_group.stress_result.sig_zx
+        tau_yz_v = pt_group.stress_result.sig_zy
+            
+        # Get the interpolators
+        sigma_zz_interp = tri.LinearTriInterpolator(triang, sigma_zz_v)
+        tau_xz_interp = tri.LinearTriInterpolator(triang, tau_xz_v)
+        tau_yz_interp = tri.LinearTriInterpolator(triang, tau_yz_v)
+        
+        # Get the stresses at the point
+        sigma_zz = sigma_zz_interp(*pt).item()
+        tau_xz = tau_xz_interp(*pt).item()
+        tau_yz = tau_yz_interp(*pt).item()
+        
+        # Assemble the stress tensor
+        sigma_xx = 0
+        sigma_yy = 0
+        tau_xy = 0
+        sigma = np.array([[sigma_xx, tau_xy, tau_xz],
+                          [tau_xy, sigma_yy, tau_yz],
+                          [tau_xz, tau_yz, sigma_zz]])
+        
+        # Solve for the principal stresses using the general approach
+        s, n = np.linalg.eig(sigma)
+        sigma_3, sigma_2, sigma_1 = np.sort(s)        
+        s_l = s.tolist()
+        sigma_1i, sigma_2i, sigma_3i = s_l.index(sigma_1), s_l.index(sigma_2), s_l.index(sigma_3)
+        n1, n2, n3 = n[:,sigma_1i], n[:,sigma_2i], n[:,sigma_3i]
+        
+        # The tractions on each plane in cartesian coords wrt principal axes
+        n_inv = np.linalg.inv(n)
+        tractions = []
+        for col in range(3):
+            ss = n_inv[:,col].T @ np.diag(s) @ n_inv[:,col]
+            ts = np.sqrt(np.linalg.norm(np.diag(s) @ n_inv[:,col])**2 - ss**2)
+            tractions.append((ss,ts))
+            
+        def plot_circle(ax,c,R,col,label=None,fill=None):
+            circ = plt.Circle(c, R, fill=fill, ec=col, label=label)
+            ax.add_patch(circ)
+            ax.set_aspect(1)
+            ax.autoscale_view()
+        
+        fig, ax = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi) 
+        plot_circle(ax, (0.5*(sigma_2+sigma_3),0), 0.5*(sigma_2-sigma_3),'r', r"C1: ($\sigma_2$, $\sigma_3$)")
+        plot_circle(ax, (0.5*(sigma_1+sigma_3),0), 0.5*(sigma_1-sigma_3),'b', r"C2: ($\sigma_1$, $\sigma_3$)")
+        plot_circle(ax, (0.5*(sigma_1+sigma_2),0), 0.5*(sigma_1-sigma_2),'k', r"C3: ($\sigma_1$, $\sigma_2$)")
+        for i,plane,col in zip(range(3),['X','Y','Z'],['r','b','k']):
+            ax.plot(*tractions[i],f'{col}.', label=rf"{plane}-face")
+        
+        ax.set_axisbelow(True)
+        ax.grid(which='both')
+        ax.legend(loc='upper left', bbox_to_anchor=(1.0, 1.0))
+        
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        
+        ax.set_ylabel(r'Shear stress $\tau$ (MPa)')
+        ax.set_xlabel(r'Direct stress $\sigma$ (MPa)')
+        
+        ax.xaxis.set_tick_params(bottom=True, top=False, direction='inout')
+        ax.yaxis.set_tick_params(left=True, right=False, direction='inout')
+        
+        #
+        # The following is just to get the labels positioned outside the axes
+        #
+        # Store default label positions
+        x_lbl_pos = ax.xaxis.label.get_position()
+        y_lbl_pos = ax.yaxis.label.get_position()
+        # Make spines pass through zero of the other axis
+        ax.spines['bottom'].set_position('zero')
+        ax.spines['left'].set_position('zero')
+        # Now set the coords
+        ax.xaxis.set_label_coords(*x_lbl_pos)
+        ax.yaxis.set_label_coords(*y_lbl_pos)
+        
+        fig.subplots_adjust(right=0.8)        
+        post.finish_plot(ax, pause, f"Mohr's Circles for 3D Stress State at {(*pt,)}", size=size, dpi=dpi)
+        return (fig, ax)
 
 
 class MaterialGroup:
@@ -3968,6 +4224,10 @@ class StressResult:
     :cvar sig_zxy: Combined resultant shear stress (:math:`\sigma_{zxy}`) resulting from all
         actions
     :vartype sig_zxy: :class:`numpy.ndarray`
+    :cvar sig_1: Major principal stress (:math:`\sigma_{1}`) resulting from all actions
+    :vartype sig_1: :class:`numpy.ndarray`
+    :cvar sig_3: Minor principal stress (:math:`\sigma_{3}`) resulting from all actions
+    :vartype sig_3: :class:`numpy.ndarray`
     :cvar sig_vm: von Mises stress (:math:`\sigma_{VM}`) resulting from all actions
     :vartype sig_vm: :class:`numpy.ndarray`
     """
@@ -4000,6 +4260,8 @@ class StressResult:
         self.sig_zx = np.zeros(num_nodes)
         self.sig_zy = np.zeros(num_nodes)
         self.sig_zxy = np.zeros(num_nodes)
+        self.sig_1 = np.zeros(num_nodes)
+        self.sig_3 = np.zeros(num_nodes)
         self.sig_vm = np.zeros(num_nodes)
 
     def calculate_combined_stresses(self):
@@ -4018,6 +4280,8 @@ class StressResult:
         self.sig_zx = self.sig_zx_mzz + self.sig_zx_v
         self.sig_zy = self.sig_zy_mzz + self.sig_zy_v
         self.sig_zxy = (self.sig_zx ** 2 + self.sig_zy ** 2) ** 0.5
+        self.sig_1 = self.sig_zz / 2 + np.sqrt( (self.sig_zz / 2) ** 2 + self.sig_zxy ** 2)
+        self.sig_3 = self.sig_zz / 2 - np.sqrt( (self.sig_zz / 2) ** 2 + self.sig_zxy ** 2)
         self.sig_vm = (self.sig_zz ** 2 + 3 * self.sig_zxy ** 2) ** 0.5
 
 
