@@ -194,17 +194,11 @@ def print_results(cross_section, fmt):
 
     j = cross_section.get_j()
     if j is not None:
-        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
-            print("E.J\t = {:>{fmt}}".format(j, fmt=fmt))
-        else:
-            print("J\t = {:>{fmt}}".format(j, fmt=fmt))
+        print(prefix + "J\t = {:>{fmt}}".format(j, fmt=fmt))
 
     gamma = cross_section.get_gamma()
     if gamma is not None:
-        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
-            print("E.Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
-        else:
-            print("Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
+        print(prefix + "Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
 
     (x_se, y_se) = cross_section.get_sc()
     if x_se is not None:
@@ -223,49 +217,13 @@ def print_results(cross_section, fmt):
 
     (A_sx, A_sy) = cross_section.get_As()
     if A_sx is not None:
-        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
-            print(
-                "A_sx\t = {:>{fmt}}".format(
-                    A_sx
-                    * cross_section.section_props.area
-                    / cross_section.section_props.ea,
-                    fmt=fmt,
-                )
-            )
-            print(
-                "A_sy\t = {:>{fmt}}".format(
-                    A_sy
-                    * cross_section.section_props.area
-                    / cross_section.section_props.ea,
-                    fmt=fmt,
-                )
-            )
-        else:
-            print("A_sx\t = {:>{fmt}}".format(A_sx, fmt=fmt))
-            print("A_sy\t = {:>{fmt}}".format(A_sy, fmt=fmt))
+        print(prefix + "A_sx\t = {:>{fmt}}".format(A_sx, fmt=fmt))
+        print(prefix + "A_sy\t = {:>{fmt}}".format(A_sy, fmt=fmt))
 
     (A_s11, A_s22) = cross_section.get_As_p()
     if A_s11 is not None:
-        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
-            print(
-                "A_s11\t = {:>{fmt}}".format(
-                    A_s11
-                    * cross_section.section_props.area
-                    / cross_section.section_props.ea,
-                    fmt=fmt,
-                )
-            )
-            print(
-                "A_s22\t = {:>{fmt}}".format(
-                    A_s22
-                    * cross_section.section_props.area
-                    / cross_section.section_props.ea,
-                    fmt=fmt,
-                )
-            )
-        else:
-            print("A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))
-            print("A_s22\t = {:>{fmt}}".format(A_s22, fmt=fmt))
+        print(prefix + "A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))
+        print(prefix + "A_s22\t = {:>{fmt}}".format(A_s22, fmt=fmt))
 
     (beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus) = cross_section.get_beta()
     if beta_x_plus is not None:
