@@ -194,6 +194,10 @@ def print_results(cross_section, fmt):
             print("E_eff\t = {:>{fmt}}".format(e_eff, fmt=fmt))
             print("G_eff\t = {:>{fmt}}".format(g_eff, fmt=fmt))
 
+        nu_eff = cross_section.get_nu_eff()
+        if nu_eff is not None:
+            print("nu_eff\t = {:>{fmt}}".format(nu_eff, fmt=fmt))
+
     j = cross_section.get_j()
     if j is not None:
         print(prefix + "J\t = {:>{fmt}}".format(j, fmt=fmt))
