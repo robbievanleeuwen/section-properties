@@ -190,22 +190,14 @@ def print_results(cross_section, fmt):
     j = cross_section.get_j()
     if j is not None:
         if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
-            print(
-                "G.J\t = {:>{fmt}}".format(
-                    j / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt
-                )
-            )
+            print("E.J\t = {:>{fmt}}".format(j, fmt=fmt))
         else:
             print("J\t = {:>{fmt}}".format(j, fmt=fmt))
 
     gamma = cross_section.get_gamma()
     if gamma is not None:
         if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
-            print(
-                "G.Iw\t = {:>{fmt}}".format(
-                    gamma / (2 * (1 + cross_section.section_props.nu_eff)), fmt=fmt
-                )
-            )
+            print("E.Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
         else:
             print("Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
 
