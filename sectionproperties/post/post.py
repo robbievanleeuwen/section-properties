@@ -187,6 +187,11 @@ def print_results(cross_section, fmt):
         print("r11\t = {:>{fmt}}".format(r11, fmt=fmt))
         print("r22\t = {:>{fmt}}".format(r22, fmt=fmt))
 
+    if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
+        nu_eff = cross_section.get_nu_eff()
+        if nu_eff is not None:
+            print("nu_eff\t = {:>{fmt}}".format(nu_eff, fmt=fmt))
+
     j = cross_section.get_j()
     if j is not None:
         if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
