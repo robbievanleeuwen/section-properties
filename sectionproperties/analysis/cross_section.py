@@ -2027,31 +2027,32 @@ class PlasticSection:
             self.print_verbose(x11_pc, r, "22-axis")
 
         # if there are no materials specified, calculate shape factors
-        cross_section.section_props.sf_xx_plus = (
-            cross_section.section_props.sxx / cross_section.section_props.zxx_plus
-        )
-        cross_section.section_props.sf_xx_minus = (
-            cross_section.section_props.sxx / cross_section.section_props.zxx_minus
-        )
-        cross_section.section_props.sf_yy_plus = (
-            cross_section.section_props.syy / cross_section.section_props.zyy_plus
-        )
-        cross_section.section_props.sf_yy_minus = (
-            cross_section.section_props.syy / cross_section.section_props.zyy_minus
-        )
+        if list(set(cross_section.materials)) == [pre.DEFAULT_MATERIAL]:
+            cross_section.section_props.sf_xx_plus = (
+                cross_section.section_props.sxx / cross_section.section_props.zxx_plus
+            )
+            cross_section.section_props.sf_xx_minus = (
+                cross_section.section_props.sxx / cross_section.section_props.zxx_minus
+            )
+            cross_section.section_props.sf_yy_plus = (
+                cross_section.section_props.syy / cross_section.section_props.zyy_plus
+            )
+            cross_section.section_props.sf_yy_minus = (
+                cross_section.section_props.syy / cross_section.section_props.zyy_minus
+            )
 
-        cross_section.section_props.sf_11_plus = (
-            cross_section.section_props.s11 / cross_section.section_props.z11_plus
-        )
-        cross_section.section_props.sf_11_minus = (
-            cross_section.section_props.s11 / cross_section.section_props.z11_minus
-        )
-        cross_section.section_props.sf_22_plus = (
-            cross_section.section_props.s22 / cross_section.section_props.z22_plus
-        )
-        cross_section.section_props.sf_22_minus = (
-            cross_section.section_props.s22 / cross_section.section_props.z22_minus
-        )
+            cross_section.section_props.sf_11_plus = (
+                cross_section.section_props.s11 / cross_section.section_props.z11_plus
+            )
+            cross_section.section_props.sf_11_minus = (
+                cross_section.section_props.s11 / cross_section.section_props.z11_minus
+            )
+            cross_section.section_props.sf_22_plus = (
+                cross_section.section_props.s22 / cross_section.section_props.z22_plus
+            )
+            cross_section.section_props.sf_22_minus = (
+                cross_section.section_props.s22 / cross_section.section_props.z22_minus
+            )
 
     def check_convergence(self, root_result, axis):
         """Checks that the function solver converged and if not, raises a helpful error.
