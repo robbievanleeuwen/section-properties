@@ -244,6 +244,8 @@ class Section:
             self.section_props.nu_eff = (
                 self.section_props.ea / (2 * self.section_props.ga) - 1
             )
+            self.section_props.e_eff = self.section_props.ea / self.section_props.area
+            self.section_props.g_eff = self.section_props.ga / self.section_props.area
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(self.mesh)
 
@@ -1550,11 +1552,37 @@ class Section:
 
             section = Section(geometry)
             section.calculate_geometric_properties()
-            section.calculate_warping_properties()
             nu_eff = section.get_nu_eff()
         """
 
         return self.section_props.nu_eff
+
+    def get_e_eff(self):
+        """
+        :return: Effective elastic modulus based on area
+        :rtype: float
+
+        ::
+            section = Section(geometry)
+            section.calculate_warping_properties()
+            e_eff = section.get_e_eff()
+        """
+
+        return self.section_props.e_eff
+
+    def get_g_eff(self):
+        """
+        :return: Effective shear modulus based on area
+        :rtype: float
+
+        ::
+
+            section = Section(geometry)
+            section.calculate_geometric_properties()
+            g_eff = section.get_g_eff()
+        """
+
+        return self.section_props.g_eff
 
     def get_j(self):
         """
@@ -4312,6 +4340,8 @@ class SectionProperties:
     :cvar float ea: Modulus weighted area (axial rigidity)
     :cvar float ga: Modulus weighted product of shear modulus and area
     :cvar float nu_eff: Effective Poisson's ratio
+    :cvar float e_eff: Effective elastic modulus
+    :cvar float g_eff: Effective shear modulus
     :cvar float qx: First moment of area about the x-axis
     :cvar float qy: First moment of area about the y-axis
     :cvar float ixx_g: Second moment of area about the global x-axis
@@ -4410,6 +4440,8 @@ class SectionProperties:
     ea: Optional[float] = None
     ga: Optional[float] = None
     nu_eff: Optional[float] = None
+    e_eff: Optional[float] = None
+    g_eff: Optional[float] = None
     qx: Optional[float] = None
     qy: Optional[float] = None
     ixx_g: Optional[float] = None

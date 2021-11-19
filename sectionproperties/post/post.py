@@ -188,6 +188,12 @@ def print_results(cross_section, fmt):
         print("r22\t = {:>{fmt}}".format(r22, fmt=fmt))
 
     if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
+        e_eff = cross_section.get_e_eff()
+        g_eff = cross_section.get_g_eff()
+        if e_eff is not None:
+            print("E_eff\t = {:>{fmt}}".format(e_eff, fmt=fmt))
+            print("G_eff\t = {:>{fmt}}".format(g_eff, fmt=fmt))
+
         nu_eff = cross_section.get_nu_eff()
         if nu_eff is not None:
             print("nu_eff\t = {:>{fmt}}".format(nu_eff, fmt=fmt))
