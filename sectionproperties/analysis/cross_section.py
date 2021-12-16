@@ -66,6 +66,7 @@ class Section:
     :vartype section_props: :class:`~sectionproperties.analysis.cross_section.SectionProperties`
 
     :raises AssertionError: If the number of materials does not equal the number of regions
+    :raises ValueError: If geometry does not contain a mesh
     """
 
     def __init__(
@@ -204,6 +205,7 @@ class Section:
         * Centroidal section moduli
         * Radii of gyration
         * Principal axis properties
+        * Area weighted material properties, composite only ($E{_eff}$, $G_{eff}$, $\nu_{eff}$)
 
         If materials are specified for the cross-section, the moments of area and section moduli
         are elastic modulus weighted.
@@ -274,8 +276,8 @@ class Section:
         If materials are specified, the values calculated for the torsion constant, warping
         constant and shear area are elastic modulus weighted.
 
-        Note that the geometric properties must be calculated first for the calculation of the
-        warping properties to be correct::
+        Note that the geometric properties must be calculated prior to the calculation of the
+        warping properties::
 
             section = Section(geometry)
             section.calculate_geometric_properties()
