@@ -330,43 +330,161 @@ Calculation of Cross-Section Properties
 Cross-Sectional Area
 ^^^^^^^^^^^^^^^^^^^^
 
-area
+The area A of the cross-section is given by [2]:
+
+.. math::
+  A = \int_A dx \, dy = \sum_e A_e = \sum_e \int_{\Omega} J_e \, d\eta \, d\xi \, d\zeta
+
+As the Jacobian is constant over the element, the integration over the element domain in the above
+equation can be performed using one point integration:
+
+.. math::
+  A = \sum_e \sum_{i=1}^1 w_i J_i
+
 
 First Moments of Area
 ^^^^^^^^^^^^^^^^^^^^^
 
-area
+The first moments of area are defined by [2]:
+
+.. math::
+  Q_x &= \int_A y \, dA = \sum_e \int_{\Omega} \textbf{N} \textbf{y}_e J_e \, d\eta \, d\xi \, d\zeta \\
+  Q_y &= \int_A x \, dA = \sum_e \int_{\Omega} \textbf{N} \textbf{x}_e J_e \, d\eta \, d\xi \, d\zeta \\
+
+where :math:`\textbf{x}_e` and :math:`\textbf{y}_e` are column vectors containing the cartesian
+coordinates of the element nodes. The above equations can be evaluated using three point
+integration as the shape functions (:math:`\textbf{N}`) are quadratic:
+
+.. math::
+  Q_x &= \sum_e \sum_{i=1}^3 w_i \textbf{N}_i \textbf{y}_e J_e \\
+  Q_y &= \sum_e \sum_{i=1}^3 w_i \textbf{N}_i \textbf{x}_e J_e \\
+
 
 Centroids
 ^^^^^^^^^
 
-centroid
+The coordinates of the centroid are found from [2]:
+
+.. math::
+  x_c &= \frac{Q_y}{A} \\
+  y_c &= \frac{Q_x}{A} \\
+
 
 Second Moments of Area
 ^^^^^^^^^^^^^^^^^^^^^^
 
-area
+The second moments of area are defined by [2]:
+
+.. math::
+  I_{xx} &= \int_A y^2 \, dA = \sum_e \int_{\Omega} (\textbf{N} \textbf{y}_e)^2 J_e \, d\eta \, d\xi \, d\zeta \\
+  I_{yy} &= \int_A x^2 \, dA = \sum_e \int_{\Omega} (\textbf{N} \textbf{x}_e)^2 J_e \, d\eta \, d\xi \, d\zeta \\
+  I_{xy} &= \int_A xy \, dA = \sum_e \int_{\Omega} \textbf{N} \textbf{y}_e \textbf{N} \textbf{x}_e  J_e \, d\eta \, d\xi \, d\zeta \\
+
+The above equations can be evaluated using six point integration as the square of the shape
+functions are quartic:
+
+.. math::
+  I_{xx} &= \sum_e \sum_{i=1}^6 w_i (\textbf{N}_i \textbf{y}_e)^2 J_e \\
+  I_{yy} &= \sum_e \sum_{i=1}^6 w_i (\textbf{N}_i \textbf{x}_e)^2 J_e \\
+  I_{xy} &= \sum_e \sum_{i=1}^6 w_i \textbf{N} \textbf{y}_e \textbf{N} \textbf{x}_e J_e \\
+
+The above equations list the second moments of area about the global coordinate system axis, which
+is chosen arbitrarily by the user. These properties can be found about the centroidal axis of the
+cross-section by using the parallel axis theorem:
+
+.. math::
+  I_{\overline{xx}} &= I_{xx} - {y_c}^2 A = I_{xx} - \frac{{Q_x}^2}{A} \\
+  I_{\overline{yy}} &= I_{yy} - {x_c}^2 A = I_{yy} - \frac{{Q_y}^2}{A} \\
+  I_{\overline{xy}} &= I_{xy} - x_c y_c A = I_{xy} - \frac{Q_x Q_y}{A} \\
+
 
 Radii of Gyration
 ^^^^^^^^^^^^^^^^^
 
-radii
+The radii of gyration can be calculated from the second moments of area and the cross-sectional
+area as follows [2]:
 
+.. math::
+  r_x = \sqrt{\frac{I_{xx}}{A}} \\
+  r_y = \sqrt{\frac{I_{yy}}{A}} \\
+
+.. _label-theory-elastic-section-moduli:
 
 Elastic Section Moduli
 ^^^^^^^^^^^^^^^^^^^^^^
 
-moduli
+The elastic section modulii can be calculated from the second moments of area and the extreme (min.
+and max.) coordinates of the cross-section in the x and y-directions [2]:
+
+.. math::
+  Z_{xx}^+ = \frac{I_{\overline{xx}}}{y_{max} - y_c} \\
+  Z_{xx}^- = \frac{I_{\overline{xx}}}{y_c - y_{min}} \\
+  Z_{yy}^+ = \frac{I_{\overline{yy}}}{x_{max} - x_c} \\
+  Z_{yy}^- = \frac{I_{\overline{yy}}}{x_c - x_{min}} \\
+
+.. _label-theory-plastic-section-moduli:
 
 Plastic Section Moduli
 ^^^^^^^^^^^^^^^^^^^^^^
 
-moduli
+For a homogenous section, the plastic centroid can be determined by by finding the intersection of
+the two lines that evenly divide the cross-sectional area in both the :math:`x` and :math:`y`
+directions. A suitable procedure could not be found in literature and thus an algorithm involving
+the iterative incrementation of the plastic centroid was developed. The algorithm is described in
+the figure below:
+
+INSERT FIGURE
+
+Once the plastic centroid has been located, the plastic section moduli can be readily computed
+using the following expression:
+
+.. math::
+  S_{xx} &= \frac{A}{2} \left| y_{c,t} - y_{c,b} \right| \\
+  S_{yy} &= \frac{A}{2} \left| x_{c,t} - x_{c,b} \right|
+
+where :math:`A` is the cross-sectional area, and :math:`x_{c,t}` and :math:`x_{c,b}` refer to the
+centroids of the top half section and bottom half section respectively.
+
 
 Principal Axis Properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-prinicpal
+The principal bending axes are determined by calculating the principal moments of inertia[2]:
+
+.. math::
+  I_{11} &= \frac{I_{\overline{xx}} + I_{\overline{yy}}}{2} + \Delta \\
+  I_{22} &= \frac{I_{\overline{xx}} + I_{\overline{yy}}}{2} - \Delta \\
+
+where:
+
+.. math::
+  \Delta = \sqrt{\left(\frac{I_{\overline{xx}} - I_{\overline{yy}}}{2}\right)^2 + {I_{\overline{xy}}}^2}
+
+The angle between the :math:`\bar{x}` axis and the axis belonging to the largest principal moment
+of inertia can be computed as follows:
+
+.. math::
+  \phi = {\tan}^{-1} \frac{I_{\overline{xx}} - I_{11}}{I_{\overline{xy}}}
+
+The prinicpal section moduli require the calculation of the perpendicular distance from the
+principal axes to the extreme fibres. All the nodes in the mesh are considered with vector algebra
+used to compute the perpendicular distances and the minimum and maximum distances identified. The
+perpendicular distance from a point :math:`P` to a line parallel to :math:`\overrightarrow{u}` that
+passes through :math:`Q` is given by:
+
+.. math::
+  d = | \, \overrightarrow{PQ} \times \overrightarrow{u} \, |
+
+The location of the point is checked to see whether it is above or below the principal axis. Again
+vector algebra is used to check this condition. The condition in the below equation will result in
+the point being above the :math:`\overrightarrow{u}` axis.
+
+.. math::
+  \overrightarrow{QP} \times \overrightarrow{u} < 0
+
+Using the above equations, the principal section moduli can be computed similar to that in the
+calculation of the :ref:`label-theory-elastic-section-moduli` and
+:ref:`label-theory-plastic-section-moduli`.
 
 .. _label-theory-torsion:
 
