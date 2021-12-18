@@ -491,29 +491,268 @@ calculation of the :ref:`label-theory-elastic-section-moduli` and
 Torsion Constant
 ^^^^^^^^^^^^^^^^
 
-torsion
+The Saint-Venant torsion constant (:math:`J`) can be obtained by solving the below partial
+differential equation for the warping function, :math:`\omega`:
+
+.. math::
+  \nabla^2 \omega = 0
+
+subject to the boundary condition described below:
+
+.. math::
+  \frac{\partial \omega}{\partial x} n_x + \frac{\partial \omega}{\partial y} n_y = y n_x - x n_y
+
+Pilkey [2] shows that by using the finite element method, this problem can be reduced to a set of
+linear equations of the form:
+
+.. math::
+  \textbf{K} \boldsymbol{\omega} = \textbf{F}
+
+where :math:`\textbf{K}` and :math:`\textbf{F}` are assembled through summation at element level.
+The element equations for the :math:`e^{\textrm{th}}` element are:
+
+.. math::
+  \textbf{k}^e \boldsymbol{\omega}^e = \textbf{f}^e
+
+with the stiffness matrix defined as:
+
+.. math::
+  \textbf{k}^e = \int_{\Omega} \textbf{B}^{\rm T} \textbf{B} J_e \, d\eta \, d\xi \, d\zeta
+
+and the load vector defined as:
+
+.. math::
+  \textbf{f}^e = \int_{\Omega} \textbf{B}^{\rm T}
+  \begin{bmatrix}
+    \textbf{N} \textbf{y} \\
+    -\textbf{N} \textbf{x} \\
+  \end{bmatrix}
+  J_e \, d\eta \, d\xi \, d\zeta
+
+Applying numerical integration to the stiffness matrix and load vector results in the following
+expressions:
+
+.. math::
+  \textbf{k}^e &= \sum_{i=1}^3 w_i \textbf{B}_i^{\rm T} \textbf{B}_i J_e \\
+  \textbf{f}^e &= \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T}
+  \begin{bmatrix}
+    \textbf{N}_i \textbf{y}_e \\
+    -\textbf{N}_i \textbf{x}_e \\
+  \end{bmatrix} J_e
+
+Once the warping function has been evaluated, the Saint-Venant torsion constant can be calculated
+as follows:
+
+.. math::
+  J = I_{xx} + I_{yy} - \boldsymbol{\omega}^{\rm T} \textbf{K} \boldsymbol{\omega}
+
 
 .. _label-theory-shear:
 
 Shear Properties
 ^^^^^^^^^^^^^^^^
 
-shear
+The shear behaviour of the cross-section can be described by Saint-Venant's elasticity solution for
+a homogenous prismatic beam subjected to transverse shear loads [2]. Through cross-section
+equilibrium and linear-elasticity, an expression for the shear stresses resulting from a transverse
+shear load can be derived. Pilkey [2] explains that this is best done through the introduction of
+shear functions, :math:`\Psi` and :math:`\Phi`, which describe the distribution of shear stress
+within a cross-section resulting from an applied transverse load in the :math:`x` and :math:`y`
+directions respectively. These shear functions can be obtained by solving the following uncoupled
+partial differential equations:
+
+.. math::
+  \nabla^2 \Psi &= 2(I_{\overline{xy}}  y - I_{\overline{xx}} x) \\
+  \nabla^2 \Phi &= 2(I_{\overline{xy}} x - I_{\overline{yy}} y)
+
+subject to the respective boundary conditions:
+
+.. math::
+  \frac{\partial \Psi}{\partial n} &= \textbf{n} \cdot \textbf{d} \\
+  \frac{\partial \Phi}{\partial n} &= \textbf{n} \cdot \textbf{h}
+
+where :math:`\textbf{n}` is the normal unit vector at the boundary and :math:`\textbf{d}` and
+:math:`\textbf{h}` are defined as follows:
+
+.. math::
+  \textbf{d} &= \nu \left(I_{\overline{xx}} \frac{x^2 -y^2}{2} - I_{\overline{xy}} xy\right) \textbf{i} + \nu \left(I_{\overline{xx}} xy + I_{\overline{xy}} \frac{x^2 -y^2}{2}\right) \textbf{j} \\
+  \textbf{h} &= \nu \left(I_{\overline{yy}} xy - I_{\overline{xy}} \frac{x^2 -y^2}{2}\right) \textbf{i} - \nu \left(I_{\overline{xy}} xy + I_{\overline{yy}} \frac{x^2 -y^2}{2}\right) \textbf{j}
+
+Pilkey [2] shows that the shear equations subject to the boundary conditions can be solved using
+the finite element method. This results in a set of linear equations at element level of the form:
+
+.. math::
+  \textbf{k}^e \boldsymbol{\Psi}^e &= \textbf{f}^e_x \\
+  \textbf{k}^e \boldsymbol{\Phi}^e &= \textbf{f}^e_y
+
+The local stiffness matrix, :math:`\textbf{k}^e`, is identical to the matrix used to determine the
+torsion constant:
+
+.. math::
+  \textbf{k}^e = \int_{\Omega} \textbf{B}^{\rm T} \textbf{B} J_e \, d\eta \, d\xi \, d\zeta
+
+The load vectors are defined as:
+
+.. math::
+  \textbf{f}^e_x &= \int_{\Omega} \left[\frac{\nu}{2} \textbf{B}^{\rm T}
+  \begin{bmatrix}
+    d_1 \\
+    d_2\\
+  \end{bmatrix}
+  + 2 (1 + \nu) \textbf{N}^{\rm T} (I_{\overline{xx}} \textbf{N} \textbf{x} - I_{\overline{xy}} \textbf{N} \textbf{y}) \right] J_e \, d\eta \, d\xi \, d\zeta \\
+  \textbf{f}^e_y &= \int_{\Omega} \left[\frac{\nu}{2} \textbf{B}^{\rm T}
+  \begin{bmatrix}
+    h_1 \\
+    h_2\\
+  \end{bmatrix}
+  + 2 (1 + \nu) \textbf{N}^{\rm T} (I_{\overline{yy}} \textbf{N} \textbf{y} - I_{\overline{xy}} \textbf{N} \textbf{x}) \right] J_e \, d\eta \, d\xi \, d\zeta \\
+
+where:
+
+.. math::
+  d_1 &= I_{\overline{xx}} r - I_{\overline{xy}} q & d_2 &= I_{\overline{xy}} r + I_{\overline{xx}} q \\
+  h_1 &= -I_{\overline{xy}} r + I_{\overline{yy}} q & h_2 &= -I_{\overline{yy}} r - I_{\overline{xy}} q \\
+  r &= (\textbf{N} \textbf{x})^2 - (\textbf{N} \textbf{y})^2 & q &= 2 \textbf{N} \textbf{x} \textbf{N} \textbf{y}
+
+Applying numerical integration to the stiffness matrix and load vector results in the following
+expressions:
+
+.. math::
+  \textbf{k}^e &= \sum_{i=1}^3 w_i \textbf{B}_i^{\rm T} \textbf{B}_i J_e \\
+  \textbf{f}^e_x &= \sum_{i=1}^6 w_i \left[\frac{\nu}{2} \textbf{B}_i^{\rm T}
+  \begin{bmatrix}
+    d_{1,i} \\
+    d_{2,i} \\
+  \end{bmatrix}
+  + 2 (1 + \nu) \textbf{N}_i^{\rm T} (I_{\overline{xx}} \textbf{N}_i \textbf{x}_e - I_{\overline{xy}} \textbf{N}_i \textbf{y}_e) \right] J_e \\
+  \textbf{f}^e_y &= \sum_{i=1}^6 w_i \left[\frac{\nu}{2} \textbf{B}_i^{\rm T}
+  \begin{bmatrix}
+    h_{1,i} \\
+    h_{2,i} \\
+  \end{bmatrix}
+  + 2 (1 + \nu) \textbf{N}_i^{\rm T} (I_{\overline{yy}} \textbf{N}_i \textbf{y}_e - I_{\overline{xy}} \textbf{N}_i \textbf{x}_e) \right] J_e \\
+
 
 Shear Centre
 """"""""""""
 
-shear
+The shear centre can be computed consistently based on elasticity, or through Trefftz's definition,
+which is based on thin-wall assumptions [2].
+
+**Elasticity:** Pilkey [2] demonstrates that the coordinates of the shear centre are given by the following
+expressions:
+
+.. math::
+  x_s &= \frac{1}{\Delta_s} \left[ \frac{\nu}{2} \int_{\Omega} (I_{\overline{yy}} x + I_{\overline{xy}} y)\left(x^2+y^2 \right) \, d \Omega - \int_{\Omega} \textbf{g} \cdot \boldsymbol{\nabla \Phi} \, d \Omega\right] \\
+  y_s &= \frac{1}{\Delta_s} \left[ \frac{\nu}{2} \int_{\Omega} (I_{\overline{xx}} y + I_{\overline{xy}} x)\left(x^2+y^2 \right) \, d \Omega + \int_{\Omega} \textbf{g} \cdot \boldsymbol{\nabla \Psi} \, d \Omega\right] \\
+
+where:
+
+.. math::
+  \Delta_s &= 2 (1 + \nu)(I_{\overline{xx}} I_{\overline{yy}} - {I_{\overline{xy}}}^2) \\
+  \textbf{g} &= y \textbf{i} - x \textbf{j}
+
+The first integral in shear centre equations can be evaluated using quadrature for each element.
+The second integral can be simplified once the shear functions, :math:`\Psi` and :math:`\Phi`,
+have been obtained:
+
+.. math::
+  \int_{\Omega} \textbf{g} \cdot \boldsymbol{\nabla \Phi} \, d \Omega &= \textbf{F}^{\rm T} \boldsymbol{\Phi} \\
+  \int_{\Omega} \textbf{g} \cdot \boldsymbol{\nabla \Psi} \, d \Omega &= \textbf{F}^{\rm T} \boldsymbol{\Psi}
+
+where :math:`\textbf{F}` is the global load vector determined for the torsion problem in
+:ref:`label-theory-torsion`. The resulting expression for the shear centre therefore becomes:
+
+.. math::
+  x_s &= \frac{1}{\Delta_s} \Bigg[\Bigg(\frac{\nu}{2} \sum_{i=1}^6 w_i (I_{\overline{yy}} \textbf{N}_i \textbf{x}_e + I_{\overline{xy}} \textbf{N}_i \textbf{y}_e)\Big((\textbf{N}_i \textbf{x}_e)^2 + (\textbf{N}_i \textbf{y}_e)^2 \Big) J_e \Bigg) - \textbf{F}^{\rm T} \boldsymbol{\Phi} \Bigg] \\
+  y_s &= \frac{1}{\Delta_s} \Bigg[ \Bigg(\frac{\nu}{2} \sum_{i=1}^6 w_i (I_{\overline{xx}} \textbf{N}_i \textbf{y}_e + I_{\overline{xy}} \textbf{N}_i \textbf{x}_e)\Big((\textbf{N}_i \textbf{x}_e)^2 + (\textbf{N}_i \textbf{y}_e)^2 \Big) J_e \Bigg) + \textbf{F}^{\rm T} \boldsymbol{\Psi} \Bigg]
+
+**Trefftz's Definition:** Using thin walled assumptions, the shear centre coordinates according to
+Trefftz's definition are given by:
+
+.. math::
+  x_s &= \frac{I_{\overline{xy}} I_{x \omega} - I_{\overline{yy}} I_{y \omega}}{I_{\overline{xx}} I_{\overline{yy}}  - {I_{\overline{xy}}}^2} \\
+  y_s &= \frac{I_{\overline{xx}} I_{x \omega} - I_{\overline{xy}} I_{y \omega}}{I_{\overline{xx}} I_{\overline{yy}}  - {I_{\overline{xy}}}^2}
+
+where the sectorial products of area are defined as:
+
+.. math::
+  I_{x\omega} &= \int_{\Omega} x \omega(x,y) \, d \Omega \\
+  I_{y\omega} &= \int_{\Omega} y \omega(x,y) \, d \Omega
+
+The finite element implementation of the above integrals are shown below:
+
+.. math::
+  I_{x\omega} &= \sum_e \sum_{i=1}^6 w_i \textbf{N}_i \textbf{x}_e \textbf{N}_i \boldsymbol{\omega}_e J_e \\
+  I_{y\omega} &= \sum_e \sum_{i=1}^6 w_i \textbf{N}_i \textbf{y}_e \textbf{N}_i \boldsymbol{\omega}_e J_e \\
+
 
 Shear Deformation Coefficients
 """"""""""""""""""""""""""""""
 
-shear
+The shear deformation coefficients are used to calculate the shear area of the section as a result
+of transverse loading. The shear area is defined as :math:`A_s = k_s A`. Pilkey [2] describes the
+finite element formulation used to determine the shear deformation coefficients:
+
+.. math::
+  \kappa_x &= \sum_e \int_{\Omega} \left(\boldsymbol{\Psi}^{e\rm{T}} \textbf{B}^{\rm{T}} - \textbf{d}^{\rm{T}}\right) \left(\textbf{B} \boldsymbol{\Psi}^e - \textbf{d}\right) J_e \, d\Omega \\
+  \kappa_y &= \sum_e \int_{\Omega} \left(\boldsymbol{\Phi}^{e\rm{T}} \textbf{B}^{\rm{T}} - \textbf{h}^{\rm{T}}\right) \left(\textbf{B} \boldsymbol{\Phi}^e - \textbf{h}\right) J_e \, d\Omega \\
+  \kappa_{xy} &= \sum_e \int_{\Omega} \left(\boldsymbol{\Psi}^{e\rm{T}} \textbf{B}^{\rm{T}} - \textbf{d}^{\rm{T}}\right) \left(\textbf{B} \boldsymbol{\Phi}^e - \textbf{h}\right) J_e \, d\Omega \\
+
+where the shear areas are related to :math:`\kappa_x` and :math:`\kappa_y` by:
+
+.. math::
+  k_{s,x} A &= \frac{{\Delta_s}^2}{\kappa_x} \\
+  k_{s,y} A &= \frac{{\Delta_s}^2}{\kappa_y} \\
+  k_{s,xy} A &= \frac{{\Delta_s}^2}{\kappa_{xy}} \\
+
+The finite element formulation of the shear deformation coefficients is described below:
+
+.. math::
+  \kappa_x &= \sum_e \sum_{i=1}^6 w_i \left(\boldsymbol{\Psi}^{e\rm{T}} \textbf{B}_i^{\rm{T}} - \frac{\nu}{2}
+  \begin{bmatrix}
+    d_{1,i} \\
+    d_{2,i} \\
+  \end{bmatrix}^{\rm{T}}\right) \left(\textbf{B}_i \boldsymbol{\Psi}^e - \frac{\nu}{2}
+  \begin{bmatrix}
+    d_{1,i} \\
+    d_{2,i} \\
+  \end{bmatrix}\right) J_e \\
+  \kappa_y &= \sum_e \sum_{i=1}^6 w_i \left(\boldsymbol{\Phi}^{e\rm{T}} \textbf{B}_i^{\rm{T}} - \frac{\nu}{2}
+  \begin{bmatrix}
+    h_{1,i} \\
+    h_{2,i} \\
+  \end{bmatrix}^{\rm{T}}\right) \left(\textbf{B}_i \boldsymbol{\Phi}^e - \frac{\nu}{2}
+  \begin{bmatrix}
+    h_{1,i} \\
+    h_{2,i} \\
+  \end{bmatrix}\right) J_e \\
+  \kappa_{xy} &= \sum_e \sum_{i=1}^6 w_i \left(\boldsymbol{\Psi}^{e\rm{T}} \textbf{B}_i^{\rm{T}} - \frac{\nu}{2}
+  \begin{bmatrix}
+    d_{1,i} \\
+    d_{2,i} \\
+  \end{bmatrix}^{\rm{T}}\right) \left(\textbf{B}_i \boldsymbol{\Phi}^e - \frac{\nu}{2}
+  \begin{bmatrix}
+    h_{1,i} \\
+    h_{2,i} \\
+  \end{bmatrix}\right) J_e \\
+
 
 Warping Constant
 """"""""""""""""
 
-warp
+The warping constant, :math:`\Gamma`, can be calculated from the warping function (:math:`\omega`)
+and the coordinates of the shear centre [2]:
+
+.. math::
+  \Gamma = I_{\omega} - \frac{{Q_{\omega}}^2}{A} - y_s I_{x\omega} + x_s I_{y\omega}
+
+where the warping moments are calculated as follows:
+
+.. math::
+  Q_{\omega} &= \int_{\Omega} \omega \, d\Omega = \sum_e \sum_{i=1}^3 w_i \textbf{N}_i \boldsymbol{\omega}_e J_e \\
+  I_{\omega} &= \int_{\Omega} \omega^2 \, d\Omega = \sum_e \sum_{i=1}^6 w_i (\textbf{N}_i \boldsymbol{\omega}_e)^2 J_e
+
 
 Cross-Section Stresses
 ----------------------
