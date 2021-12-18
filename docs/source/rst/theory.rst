@@ -431,10 +431,9 @@ Plastic Section Moduli
 For a homogenous section, the plastic centroid can be determined by by finding the intersection of
 the two lines that evenly divide the cross-sectional area in both the :math:`x` and :math:`y`
 directions. A suitable procedure could not be found in literature and thus an algorithm involving
-the iterative incrementation of the plastic centroid was developed. The algorithm is described in
-the figure below:
-
-INSERT FIGURE
+the iterative incrementation of the plastic centroid was developed. The algorithm uses
+`Brent's method <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.brentq.html>`_
+to efficiently locate the plastic centroidal axes in the global and principal directions.
 
 Once the plastic centroid has been located, the plastic section moduli can be readily computed
 using the following expression:
@@ -758,8 +757,18 @@ where the warping moments are calculated as follows:
 Monosymmetry Constants
 ^^^^^^^^^^^^^^^^^^^^^^
 
-TBC
+The monosymmetry constants are used to evaluate buckling in sections with unequal flanges. The
+constants are calculated in accordance with the formula provided is AS4100-1998 [4]:
 
+.. math::
+  \beta_x &= \frac{1}{I_{xx}} \int_{\Omega} x^2 y + y^3 d\Omega - 2y_s \\
+  \beta_y &= \frac{1}{I_{yy}} \int_{\Omega} x y^2 + x^3 d\Omega - 2x_s \\
+
+The finite element formulation of the above integrals is described below:
+
+.. math::
+  \int_{\Omega} x^2 y + y^3 d\Omega &= \sum_e \sum_{i=1}^6 w_i \left[(\textbf{N}_i \textbf{x}_e)^2 \textbf{N}_i \textbf{y}_e + (\textbf{N}_i \textbf{y}_e)^3 \right] J_e \\
+  \int_{\Omega} x y^2 + x^3 d\Omega &= \sum_e \sum_{i=1}^6 w_i \left[\textbf{N}_i \textbf{x}_e (\textbf{N}_i \textbf{y}_e)^2 + (\textbf{N}_i \textbf{x}_e)^3 \right] J_e \\
 
 Cross-Section Stresses
 ----------------------
@@ -843,7 +852,12 @@ point :math:`i` within an element :math:`e` are given by [2]:
 Principal Stresses
 ^^^^^^^^^^^^^^^^^^
 
-principal stress - to be completed...
+The principal stresses can be determined from the net axial and shear stress as follows [2]:
+
+.. math::
+  \sigma_1 &= \frac{\sigma_{zz}}{2} + \sqrt{\left(\frac{\sigma_{zz}}{2}\right)^2 + \tau_{z,xy}^2} \\
+  \sigma_2 &= 0 \\
+  \sigma_3 &= \frac{\sigma_{zz}}{2} - \sqrt{\left(\frac{\sigma_{zz}}{2}\right)^2 + \tau_{z,xy}^2}
 
 von Mises Stresses
 ^^^^^^^^^^^^^^^^^^
@@ -883,3 +897,5 @@ References
 2. W. D. Pilkey, Analysis and Design of Elastic Beams: Computational Methods, John Wiley & Sons, Inc., New York, 2002.
 
 3. M. G. Larson, F. Bengzon, The Finite Element Method: Theory, Implementation, and Applications, Vol. 10, Springer, Berlin, Heidelberg, 2013. doi:10.1007/978-3-642-33287-6.
+
+4. AS 4100 - 1998: Steel Structures. (1998, June). Standards Australia.
