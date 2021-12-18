@@ -262,6 +262,7 @@ where the sum is taken over the integration points, :math:`w_i` is the weight of
 integration point and :math:`J_i` is the Jacobian at the current integration point (recall that the
 Jacobian is constant for the superparametric six noded triangular element).
 
+.. _label-extrapolation:
 
 Extrapolation to Nodes
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -754,15 +755,28 @@ where the warping moments are calculated as follows:
   I_{\omega} &= \int_{\Omega} \omega^2 \, d\Omega = \sum_e \sum_{i=1}^6 w_i (\textbf{N}_i \boldsymbol{\omega}_e)^2 J_e
 
 
+Monosymmetry Constants
+^^^^^^^^^^^^^^^^^^^^^^
+
+TBC
+
+
 Cross-Section Stresses
 ----------------------
 
-stresses
+Cross-section stresses resulting from an axial force, bending moments, a torsion moment and shear
+forces, can be evaluated at the integration points within each element. :ref:`label-extrapolation`
+describes the process of extrapolating the stresses to the element nodes and the combination of the
+results with the adjacent elements through nodal averaging.
 
 Axial Stresses
 ^^^^^^^^^^^^^^
 
-axial
+The normal stress resulting from an axial force :math:`N_{zz}` at any point :math:`i` is given by:
+
+.. math::
+  \sigma_{zz} = \frac{N_{zz}}{A}
+
 
 Bending Stresses
 ^^^^^^^^^^^^^^^^
@@ -770,37 +784,81 @@ Bending Stresses
 Global Axis Bending
 """""""""""""""""""
 
-bend
+The normal stress resulting from a bending moments :math:`M_{xx}` and :math:`M_{yy}` at any point
+:math:`i` is given by [2]:
+
+.. math::
+  \sigma_{zz} = -\frac{I_{\overline{xy}} M_{xx} + I_{\overline{xx}} M_{yy}}{I_{\overline{xx}} I_{\overline{yy}} - {I_{\overline{xy}}}^2} \overline{x}_i + \frac{I_{\overline{yy}} M_{xx} + I_{\overline{xy}} M_{yy}}{I_{\overline{xx}} I_{\overline{yy}} - {I_{\overline{xy}}}^2} \overline{y}_i
+
 
 Principal Axis Bending
 """"""""""""""""""""""
 
-bend
+Similarly, the normal stress resulting from a bending moments :math:`M_{11}` and :math:`M_{22}` at
+any point :math:`i` is given by:
+
+.. math::
+  \sigma_{zz} = -\frac{M_{22}}{I_{\overline{22}}} \overline{x}_{1,i} + \frac{M_{11}}{I_{\overline{11}}} \overline{y}_{2,i}
+
 
 Torsion Stresses
 ^^^^^^^^^^^^^^^^
 
-twist
+The shear stresses resulting from a torsion moment :math:`M_{zz}`` at any point :math:`i` within an
+element :math:`e` are given by [2]:
+
+.. math::
+  \boldsymbol{\tau}^e =
+  \begin{bmatrix}
+    \tau_{zx} \\
+    \tau_{zy} \\
+  \end{bmatrix}^e = \frac{M_{zz}}{J} \left(\textbf{B}_i \boldsymbol{\omega}^e -
+  \begin{bmatrix}
+    \textbf{N}_i \textbf{y}_e \\
+    -\textbf{N}_i \textbf{x}_e \\
+  \end{bmatrix}\right)
+
 
 Shear Stresses
 ^^^^^^^^^^^^^^
 
-shear
+The shear stresses resulting from transverse shear forces :math:`V_{xx}` and :math:`V_{yy}` at any
+point :math:`i` within an element :math:`e` are given by [2]:
+
+.. math::
+  \begin{bmatrix}
+    \tau_{zx} \\
+    \tau_{zy} \\
+  \end{bmatrix}^e = \frac{V_{xx}}{\Delta_s} \left(\textbf{B}_i \boldsymbol{\Psi}^e - \frac{\nu}{2}
+  \begin{bmatrix}
+    d_{1,i} \\
+    d_{2,i} \\
+  \end{bmatrix}\right) + \frac{V_{yy}}{\Delta_s} \left(\textbf{B}_i \boldsymbol{\Phi}^e - \frac{\nu}{2}
+  \begin{bmatrix}
+    h_{1,i} \\
+    h_{2,i} \\
+  \end{bmatrix}\right)
+
 
 Principal Stresses
 ^^^^^^^^^^^^^^^^^^
 
-principal
+principal stress - to be completed...
 
 von Mises Stresses
 ^^^^^^^^^^^^^^^^^^
 
-vm
+The von Mises stress can be determined from the net axial and shear stress as follows [2]:
+
+.. math::
+  \sigma_{vM} = \sqrt{{\sigma_{zz}}^2 + 3({\tau_{zx}}^2 + {\tau_{zy}}^2)}
+
 
 Mohr's Circle
 ^^^^^^^^^^^^^
 
-mohr
+mohr's circle - to be completed...
+
 
 .. _label-theory-composite:
 
