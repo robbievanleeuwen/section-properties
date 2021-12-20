@@ -879,15 +879,38 @@ mohr's circle - to be completed...
 Composite Cross-Sections
 ------------------------
 
-composite
+Pilkey [2] explains that composite cross-sections can be analysed using a modulus-weighted approach
+in which the differential area element is multiplied by the elastic modulus for the element,
+:math:`E_e`:
 
-..  Mention that Poisson's ratios should be relatively close as if the Poisson's
-    ratio is largely variable, the basic contention that sig_x = sig_y = sig_xy = 0
-    ceases to be applicable.
+.. math::
+  d \widetilde{A} = E_e \, dA
 
-..  In this program an effective Poisson's ratio is calculated by determining a
-    weighted E and G and then deriving a nu that is effective for the entire
-    cross-section.
+The expression for section properties after the application of numerical integration then becomes:
+
+.. math::
+  \int f(x,y) \, d \widetilde{A} = \sum_i^n w_i f(\eta_i, \xi_i, \zeta_i) \, J_i E_e
+
+Pilkey [2] also notes that an assumption of the elastic cross-sectional analysis of warping and
+shear is that:
+
+.. math::
+  \sigma_x = \sigma_y = \tau_{xy} = 0
+
+However, for composite sections with variable Poisson's ratios, this assumption does not hold.
+Pilkey [2] does mention that engineering materials often have very similar Poisson's ratios and
+therefore the difference can be negligible.
+
+.. note::
+  If the Poisson's ratio of two materials used in a composite analysis are vastly different, the
+  assumptions used in *sectionproperties* may not hold, see Chapter 5 & 6 of [2].
+
+For the warping and shear analysis of composite cross-sections, *sectionproperties* defines an area
+based effective Poisson's ratio that is used to calculate the relevant properties described above:
+
+.. math::
+  \nu_{eff} = \frac{(E.A)_g}{2 (G.A)_g} - 1
+
 
 References
 ----------
