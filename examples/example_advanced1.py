@@ -1,17 +1,35 @@
+r"""
+.. _ref_ex_advanced1:
+
+Torsion Constant of a Rectangle
+-------------------------------
+
+Plot the variation of the torsion constant with aspect ratio of a rectangle section.
+
+In this example, the aspect ratio of a rectangular section is varied whilst keeping a constant
+cross-sectional area and the torsion constant calculated. The variation of the torsion constant
+with the aspect ratio is then plotted.
+"""
+
+# sphinx_gallery_thumbnail_number = 1
+
 import numpy as np
 import matplotlib.pyplot as plt
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import Section
 
-# rectangle dimensions
+# %%
+# Rectangle dimensions
 d_list = []
 b_list = np.linspace(0.2, 1, 20)
 j_list = []  # list holding torsion constant results
 
-# number of elements for each analysis
+# %%
+# Number of elements for each analysis
 n = 500
 
-# loop through all the widths
+# %%
+# Loop through all the widths
 for b in b_list:
     # calculate d assuming area = 1
     d = 1 / b
@@ -32,7 +50,8 @@ for b in b_list:
     print("d/b = {0:.3f}; J = {1:.5e}".format(d/b, j))
     j_list.append(j)
 
-# plot the torsion constant as a function of the aspect ratio
+# %%
+# Plot the torsion constant as a function of the aspect ratio
 (fig, ax) = plt.subplots()
 ax.plot(np.array(d_list) / b_list, j_list, "kx-")
 ax.set_xlabel("Aspect Ratio [d/b]")
