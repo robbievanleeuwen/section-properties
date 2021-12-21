@@ -2408,7 +2408,7 @@ class StressPost:
         post.setup_plot(ax, pause)
 
         # plot the finite element mesh
-        self.cross_section.plot_mesh(ax, pause, alpha=0.5)
+        self.cross_section.plot_mesh(ax, pause, materials=False, alpha=0.5)
 
         # set up the colormap
         cmap = cm.get_cmap(name=cmap)
