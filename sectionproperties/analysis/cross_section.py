@@ -2530,7 +2530,7 @@ class StressPost:
 
         The following example returns stresses for each material within a composite section, note
         that a result is generated for each node in the mesh for all materials irrespective of
-        whethter the materials exists at that point or not.
+        whether the materials exists at that point or not.
 
         ::
 
