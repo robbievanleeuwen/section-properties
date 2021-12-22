@@ -79,8 +79,8 @@ def test_geometry_from_points():
     new_geom = Geometry.from_points(points, facets, holes, control_points=[])
     assert (
         new_geom.geom.wkt
-        == 'POLYGON ((-6 10, 6 10, 6 -10, -6 -10, -6 10), (-4 8, -4 4, 4 4, 4 8, -4 8), (-4 -8, 4 -8, 4 -4, -4 -4, -4 -8))'
-    )
+        == 'POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))'
+    ) # Note, the order of point coordinates can change based on geometry operations, e.g. +/- and how many; seems to be a shapely issue
 
 
 def test_compound_geometry_from_points():
