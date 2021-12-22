@@ -88,12 +88,13 @@ In addition to creating geometries directly from :class:`shapely.geometry.Polygo
 analysis:
 
 #. From lists of points, facets, hole regions, and control regions
-#. From *sectionproperties*'s "factory functions" of common shapes
 #. From ``.dxf`` files
 #. From ``.3dm`` files
 #. From Rhino encodings
 #. Using transformation methods on existing geometries and/or by applying set operations
    (e.g. `|`, `+`, `-`, `&`, `^`)
+#. From *sectionproperties*'s section library
+
 
 For the first two approaches, an optional ``.material`` parameter can be passed containing a
 :class:`~sectionproperties.pre.pre.Material` (or list of `Material` objects) to associate with the
@@ -142,7 +143,7 @@ file (i.e. the number of contiguous regions).
 Geometry from Rhino
 -------------------
 
-Geometries can now be created from .3dm files and BREP encodings. 
+Geometries can now be created from .3dm files and BREP encodings.
 Various limitations and assumptions need to be acknowledged:
 
 * sectional analysis is based in 2d and Rhino is a 3d environment.
@@ -152,7 +153,7 @@ Various limitations and assumptions need to be acknowledged:
 
 See the keyword arguments below that are used to search and simplify the Rhino geometry.
 
-Rhino files are read via the class methods :attr:`sectionproperties.pre.sections.Geometry.from_3dm()` and 
+Rhino files are read via the class methods :attr:`sectionproperties.pre.sections.Geometry.from_3dm()` and
 :attr:`sectionproperties.pre.sections.CompoundGeometry.from_3dm()`.
 Each class method returns the respective objects.
 
@@ -168,7 +169,7 @@ Geometry objects can also be created from encodings of Rhino BREP.
    :noindex:
 
 More advanced filtering can be achieved by working with the Shapely geometries directly.
-These can be accessed by :attr:`sectionproperties.pre.rhino.load_3dm()` and 
+These can be accessed by :attr:`sectionproperties.pre.rhino.load_3dm()` and
 :attr:`sectionproperties.pre.rhino.load_rhino_brep_encoding()`.
 
 ..  autofunction:: sectionproperties.pre.rhino.load_3dm
@@ -178,104 +179,6 @@ These can be accessed by :attr:`sectionproperties.pre.rhino.load_3dm()` and
    :noindex:
 
 
-Creating Common Structural Geometries
--------------------------------------
-
-In order to make your life easier, there are a number of built-in functions that generate typical
-structural cross-sections, resulting in :class:`~sectionproperties.pre.sections.Geometry` objects.
-
-
-Rectangular Section
-^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.rectangular_section
-    :noindex:
-
-Circular Section
-^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.circular_section
-    :noindex:
-
-Circular Hollow Section (CHS)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.circular_hollow_section
-    :noindex:
-
-Elliptical Section
-^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.elliptical_section
-    :noindex:
-
-Elliptical Hollow Section (EHS)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.elliptical_hollow_section
-    :noindex:
-
-Rectangular Hollow Section (RHS)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.rectangular_hollow_section
-    :noindex:
-
-I-Section
-^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.i_section
-      :noindex:
-
-Monosymmetric I-Section
-^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.mono_i_section
-      :noindex:
-
-Tapered Flange I-Section
-^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.tapered_flange_i_section
-      :noindex:
-
-Parallel Flange Channel (PFC) Section
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.channel_section
-      :noindex:
-
-Tapered Flange Channel Section
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.tapered_flange_channel
-      :noindex:
-
-Tee Section
-^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.tee_section
-      :noindex:
-
-Angle Section
-^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.angle_section
-      :noindex:
-
-Cee Section
-^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.cee_section
-      :noindex:
-
-Zed Section
-^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.zed_section
-      :noindex:
-
-Cruciform Section
-^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.cruciform_section
-      :noindex:
-
-Polygon Hollow Section
-^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.polygon_hollow_section
-      :noindex:
-
-Box Girder Section
-^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.box_girder_section
-      :noindex:
-
-
 Combining Geometries Using Set Operations
 -----------------------------------------
 
@@ -283,14 +186,121 @@ Both `Geometry` and `CompoundGeometry` objects can be manipulated using Python's
 
 - ``|``  Bitwise OR - Performs a union on the two geometries
 - ``-``  Bitwise DIFFERENCE - Performs a subtraction, subtracting the second geometry from the
-  first
+ first
 - ``&``  Bitwise AND - Performs an intersection operation, returning the regions of geometry common
-  to both
+ to both
 - ``^``  Bitwise XOR - Performs a symmetric difference operation, returning the regions of geometry
-  that are not overlapping
+ that are not overlapping
 - ``+``  Addition - Combines two geometries into a `CompoundGeometry`
 
 See :ref:`label-advanced_geom` for an example using set operations.
+
+
+Creating Geometry from the Section Library
+==========================================
+
+In order to make your life easier, there are a number of built-in functions that generate typical
+structural cross-sections, resulting in :class:`~sectionproperties.pre.sections.Geometry` objects.
+These typical cross-sections reside in the ``sectionproperties.pre.library`` module.
+
+Standard Sections Library
+-------------------------
+
+Rectangular Section
+^^^^^^^^^^^^^^^^^^^
+..  autofunction:: sectionproperties.pre.library.standard_sections.rectangular_section
+    :noindex:
+
+Circular Section
+^^^^^^^^^^^^^^^^
+..  autofunction:: sectionproperties.pre.library.standard_sections.circular_section
+    :noindex:
+
+Elliptical Section
+^^^^^^^^^^^^^^^^^^
+..  autofunction:: sectionproperties.pre.library.standard_sections.elliptical_section
+    :noindex:
+
+
+Cruciform Section
+^^^^^^^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.standard_sections.cruciform_section
+      :noindex:
+
+
+Steel Sections Library
+----------------------
+
+Circular Hollow Section (CHS)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..  autofunction:: sectionproperties.pre.library.steel_sections.circular_hollow_section
+    :noindex:
+
+Elliptical Hollow Section (EHS)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..  autofunction:: sectionproperties.pre.library.steel_sections.elliptical_hollow_section
+    :noindex:
+
+Rectangular Hollow Section (RHS)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..  autofunction:: sectionproperties.pre.library.steel_sections.rectangular_hollow_section
+    :noindex:
+
+Polygon Hollow Section
+^^^^^^^^^^^^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.polygon_hollow_section
+      :noindex:
+
+I-Section
+^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.i_section
+      :noindex:
+
+Monosymmetric I-Section
+^^^^^^^^^^^^^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.mono_i_section
+      :noindex:
+
+Tapered Flange I-Section
+^^^^^^^^^^^^^^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.tapered_flange_i_section
+      :noindex:
+
+Parallel Flange Channel (PFC) Section
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.channel_section
+      :noindex:
+
+Tapered Flange Channel Section
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.tapered_flange_channel
+      :noindex:
+
+Tee Section
+^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.tee_section
+      :noindex:
+
+Angle Section
+^^^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.angle_section
+      :noindex:
+
+Cee Section
+^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.cee_section
+      :noindex:
+
+Zed Section
+^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.zed_section
+      :noindex:
+
+
+Box Girder Section
+^^^^^^^^^^^^^^^^^^
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.box_girder_section
+      :noindex:
 
 
 Manipulating Geometries

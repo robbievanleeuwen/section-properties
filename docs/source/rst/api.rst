@@ -18,9 +18,52 @@ CompoundGeometry Class
 """"""""""""""""""""""
 ..  autoclass:: sectionproperties.pre.sections.CompoundGeometry
     :show-inheritance:
-    
-*sections* Functions
-^^^^^^^^^^^^^^^^^^^^^
+
+load_dxf
+""""""""
+..  autofunction:: sectionproperties.pre.sections.load_dxf
+
+create_facets
+"""""""""""""
+..  autofunction:: sectionproperties.pre.sections.create_facets
+
+create_exterior_points
+""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.sections.create_exterior_points
+
+create_interior_points
+""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.sections.create_interior_points
+
+create_points_and_facets
+""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.sections.create_points_and_facets
+
+
+*pre* Module
+^^^^^^^^^^^^
+
+Material Class
+""""""""""""""
+
+  ..  autoclass:: sectionproperties.pre.pre.Material
+      :show-inheritance:
+      :members:
+
+create_mesh
+"""""""""""
+..  autofunction:: sectionproperties.pre.pre.create_mesh
+
+
+*rhino* Module
+^^^^^^^^^^^^^^
+
+load_3dm
+""""""""
+..  autofunction:: sectionproperties.pre.rhino.load_3dm
+
+
+
 
 rectangular_section
 """""""""""""""""""
@@ -112,22 +155,7 @@ box_girder_section
   ..  autofunction:: sectionproperties.pre.sections.box_girder_section
       :noindex:
 
-*pre* Module
-^^^^^^^^^^^^
 
-Material Class
-""""""""""""""
-
-  ..  autoclass:: sectionproperties.pre.pre.Material
-      :show-inheritance:
-      :members:
-
-pre Functions
-"""""""""""""
-
-create_mesh
-""""""""""""
-..  autofunction:: sectionproperties.pre.pre.create_mesh
 
 
 *nastran_sections* Module
