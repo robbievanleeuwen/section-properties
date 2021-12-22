@@ -18,7 +18,7 @@ in the calculation of these properties, which can be extended to arbitrary compl
 
 This section of the documentation describes the theory and application of the finite element method
 to cross-sectional analysis used by *sectionproperties*. The goal of *sectionproperties* is to
-perform cross-sectional and stress analysis on arbitrary cross-sections, see below figure. In it's
+perform cross-sectional and stress analysis on arbitrary cross-sections, see below figure. In its
 simplest form, an arbitrary cross-section can be defined by a series of points, segments and holes.
 
 .. figure:: ../images/theory/arbitrarySection.png
@@ -52,7 +52,7 @@ Finite Element Preliminaries
 Element Type
 ^^^^^^^^^^^^
 
-Quadratic six noded triangular elements were implemented in *sectionpropertes* in order to utilise
+Quadratic six noded triangular elements were implemented in *sectionproperties* in order to utilise
 the finite element formulations for calculating section properties. The figure below shows a
 generic six noded triangular element. As previously mentioned, *sectionproperties* implements
 superparametric elements, therefore the edges in the below image will always be straight and not
@@ -428,7 +428,7 @@ and max.) coordinates of the cross-section in the x and y-directions [2]:
 Plastic Section Moduli
 ^^^^^^^^^^^^^^^^^^^^^^
 
-For a homogenous section, the plastic centroid can be determined by by finding the intersection of
+For a homogenous section, the plastic centroid can be determined by finding the intersection of
 the two lines that evenly divide the cross-sectional area in both the :math:`x` and :math:`y`
 directions. A suitable procedure could not be found in literature and thus an algorithm involving
 the iterative incrementation of the plastic centroid was developed. The algorithm uses
@@ -906,7 +906,8 @@ therefore the difference can be negligible.
   assumptions used in *sectionproperties* may not hold, see Chapter 5 & 6 of [2].
 
 For the warping and shear analysis of composite cross-sections, *sectionproperties* defines an area
-based effective Poisson's ratio that is used to calculate the relevant properties described above:
+based on an effective Poisson's ratio that is used to calculate the relevant properties described
+above:
 
 .. math::
   \nu_{eff} = \frac{(E.A)_g}{2 (G.A)_g} - 1
