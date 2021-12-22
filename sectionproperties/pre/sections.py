@@ -1173,22 +1173,19 @@ class CompoundGeometry(Geometry):
         # Then classify all of the collected polygons as either "exterior" or "interior"
         exteriors = []
         interiors = []
-        ext_ctrl_pnts = []
-        ctrl_coord_in_polygon = []
+        
         for polygon in all_polygons:
             hole_coord_in_polygon = (
-                [polygon.contains(Point(hole_coord)) for hole_coord in holes]
+                [hole_coord for hole_coord in holes if polygon.contains(Point(hole_coord))]
             )
-
             ctrl_coord_in_polygon = (
                 [ctrl_coord for ctrl_coord in control_points if polygon.contains(Point(ctrl_coord))]
             )
-
             if any(hole_coord_in_polygon) and not any(ctrl_coord_in_polygon):
                 interiors.append(polygon)
             else:
                 exteriors.append(polygon)
-                ext_ctrl_pnts += ctrl_coord_in_polygon
+
 
         # Create the holes by subtracting interior regions from exterior regions
         if len(exteriors) != len(control_points):
@@ -1196,22 +1193,26 @@ class CompoundGeometry(Geometry):
                 f"The number of exterior regions ({len(exteriors)}) "
                 f"does not match the number of control_points given ({len(control_points)})."
                 )
-        exterior_geometry = MultiPolygon(exteriors)
         if not interiors:
             return CompoundGeometry(
                 [Geometry(exterior, control_points=control_points[idx]) for idx, exterior in enumerate(exteriors)]
                 )
-        if len(interiors) == 1:
-            interior_geometry = Polygon(interiors)
-            return (
-                CompoundGeometry(
-                [Geometry(exterior, control_points=control_points[idx]) for idx, exterior in enumerate(exteriors)]
-                )
-                - Geometry(interior_geometry)
-            )
         else:
-            interior_geometry = MultiPolygon(interiors)
-            return CompoundGeometry(exterior_geometry - interior_geometry)
+            # "Punch" all holes through each exterior geometry
+            punched_exteriors = []
+            punched_exterior_geometries = []
+            for exterior in exteriors:
+                punched_exterior = exterior
+                for interior in interiors:
+                    punched_exterior = punched_exterior - interior
+                exterior_control_point = next(
+                    control_point for control_point in control_points 
+                    if punched_exterior.contains(Point(control_point))
+                    )
+                exterior_geometry = Geometry(punched_exterior, control_points=exterior_control_point)
+                punched_exterior_geometries.append(exterior_geometry)
+            
+        return CompoundGeometry(punched_exterior_geometries)
 
     @classmethod
     def from_3dm(cls, filepath: Union[str, pathlib.Path], **kwargs) -> CompoundGeometry:
