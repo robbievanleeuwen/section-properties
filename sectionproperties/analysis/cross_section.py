@@ -1565,6 +1565,7 @@ class Section:
         :rtype: float
 
         ::
+
             section = Section(geometry)
             section.calculate_warping_properties()
             e_eff = section.get_e_eff()
@@ -2527,26 +2528,60 @@ class StressPost:
         * *'sig_3'*: Minor principal stress :math:`\sigma_{3}` resulting from all actions
         * *'sig_vm'*: von Mises stress :math:`\sigma_{vM}` resulting from all actions
 
-        The following example returns the normal stress within a 150x90x12 UA section resulting
-        from an axial force of 10 kN::
+        The following example returns stresses for each material within a composite section, note
+        that a result is generated for each node in the mesh for all materials irrespective of
+        whethter the materials exists at that point or not.
+
+        ::
 
             import sectionproperties.pre.sections as sections
+            from sectionproperties.pre.pre import Material
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            geometry.create_mesh(mesh_sizes=[20])
+            steel = Material(
+                name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
+                color='grey'
+            )
+            timber = Material(
+                name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
+                color='burlywood'
+            )
+
+            geom_steel = sections.rectangular_section(d=50, b=50, material=steel)
+            geom_timber = sections.rectangular_section(d=50, b=50, material=timber)
+            geometry = geom_timber.align_to(geom_steel, on="right") + geom_steel
+            geometry.create_mesh(mesh_sizes=[10, 5])
+
             section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
-            stress_post = section.calculate_stress(N=10e3)
-
+            stress_post = section.calculate_stress(
+                N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3
+            )
             stresses = stress_post.get_stress()
-            print('Material: {0}'.format(stresses[0]['Material']))
-            print('Axial Stresses: {0}'.format(stresses[0]['sig_zz_n']))
 
-            $ Material: default
-            $ Axial Stresses: [3.6402569 3.6402569 3.6402569 ... 3.6402569 3.6402569 3.6402569]
+            print("Number of nodes: {0}".format(section.num_nodes))
+
+            for stress in stresses:
+                print('Material: {0}'.format(stress['Material']))
+                print('List Size: {0}'.format(len(stress['sig_zz_n'])))
+                print('Normal Stresses: {0}'.format(stress['sig_zz_n']))
+                print('von Mises Stresses: {0}'.format(stress['sig_vm']))
+
+        ::
+
+            $ Number of nodes: 2465
+
+            $ Material: Timber
+            $ List Size: 2465
+            $ Normal Stresses: [0.76923077 0.76923077 0.76923077 ... 0.76923077 0.76923077 0.76923077]
+            $ von Mises Stresses: [7.6394625  5.38571866 3.84784964 ... 3.09532948 3.66992556 2.81976647]
+
+            $ Material: Steel
+            $ List Size: 2465
+            $ Normal Stresses: [19.23076923 0. 0. ... 0. 0. 0.]
+            $ von Mises Stresses: [134.78886419 0. 0. ... 0. 0. 0.]
         """
 
         stress = []
@@ -3863,6 +3898,7 @@ class StressPost:
 
         The following example plots a contour of the major principal stress within a 150x90x12 UA
         section resulting from the following actions:
+
         * :math:`N = 50` kN
         * :math:`M_{xx} = -5` kN.m
         * :math:`M_{22} = 2.5` kN.m
@@ -3873,11 +3909,11 @@ class StressPost:
         ::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3889,7 +3925,7 @@ class StressPost:
 
         ..  figure:: ../images/stress/stress_1.png
             :align: center
-            :scale: 75 %
+            :scale: 50 %
 
             Contour plot of the major principal stress.
         """
@@ -3925,11 +3961,11 @@ class StressPost:
         ::
 
             import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = CrossSection(geometry, mesh)
+            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -3937,11 +3973,11 @@ class StressPost:
                 N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3
             )
 
-            stress_post.plot_stress_2()
+            stress_post.plot_stress_3()
 
-        ..  figure:: ../images/stress/stress_2.png
+        ..  figure:: ../images/stress/stress_3.png
             :align: center
-            :scale: 75 %
+            :scale: 50 %
 
             Contour plot of the minor principal stress.
         """
@@ -4033,7 +4069,7 @@ class StressPost:
         * :math:`V_{x} = 10` kN
         * :math:`V_{y} = 5` kN
 
-        at the point (10,88.9)
+        at the point (10, 88.9).
 
         ::
 
@@ -4041,8 +4077,8 @@ class StressPost:
             from sectionproperties.analysis.cross_section import Section
 
             geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            mesh = geometry.create_mesh(mesh_sizes=[2.5])
-            section = Section(geometry, mesh)
+            geometry.create_mesh(mesh_sizes=[20])
+            section = Section(geometry)
 
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
@@ -4050,13 +4086,13 @@ class StressPost:
                 N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3
             )
 
-            stress_post.plot_mohrs_circles(10,88.9)
+            stress_post.plot_mohrs_circles(10, 88.9)
 
         ..  figure:: ../images/stress/mohrs_circles.png
             :align: center
-            :scale: 75 %
+            :scale: 100 %
 
-            Mohr's Circles of the 3D stress state at (10,88.9).
+            Mohr's Circles of the 3D stress state at (10, 88.9).
 
         """
 
