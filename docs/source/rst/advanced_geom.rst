@@ -24,10 +24,10 @@ Creating Merged Sections
 
 For this example, we will create a custom section out of two similar "I" sections::
 
-    import sectionproperties.pre.sections as sections
+    import sectionproperties.pre.library.steel_sections as steel_sections
     import sectionproperties.analysis.cross_section as cross_section
 
-    i_sec1 = sections.i_section(d=250, b=150, t_f=13, t_w=10, r=12, n_r=12)
+    i_sec1 = steel_sections.i_section(d=250, b=150, t_f=13, t_w=10, r=12, n_r=12)
     i_sec2 = i_sec1.rotate_section(45)
 
 ..  figure:: ../images/examples/i_sec1.png
@@ -159,11 +159,11 @@ Another example
 
 Here, we will simply combine two squares with the default material::
 
-    import sectionproperties.pre.sections as sections
+    import sectionproperties.pre.library.standard_sections as standard_sections
     from sectionproperties.analysis.cross_section import Section
 
-    s1 = sections.rectangular_section(1,1)
-    s2 = sections.rectangular_section(0.5,0.5).shift_section(1,0.25)
+    s1 = standard_sections.rectangular_section(1,1)
+    s2 = standard_sections.rectangular_section(0.5,0.5).shift_section(1,0.25)
     geometry = s1 + s2
     geometry
 
@@ -172,10 +172,10 @@ Here, we will simply combine two squares with the default material::
     :scale: 100 %
 
 From the shapely vector representation, we can see that the squares are shaded red.
-This indicates an `"invalid" geometry from shapely's perspective <https://shapely.readthedocs.io/en/stable/manual.html#polygons>`_ 
+This indicates an `"invalid" geometry from shapely's perspective <https://shapely.readthedocs.io/en/stable/manual.html#polygons>`_
 because there are two polygons that share an edge. For this geometry, the intention is to have two squares
 that are connected on one side and so the red shading provided by the shapely representation tells us that
-we are getting what we expect. 
+we are getting what we expect.
 
 Now, say this is not our final geometry and we actually want to have it rotated by 30 degrees::
 
@@ -183,7 +183,7 @@ Now, say this is not our final geometry and we actually want to have it rotated 
 
 ..  figure:: ../images/examples/two_squares_basic_rotated.png
     :align: center
-    :scale: 100 %  
+    :scale: 100 %
 
 Here, we can see that the shapely representation is now showing as green indicating a "valid" shapely geometry.
 Even though it is now valid for shapely, because it is green we know that these two polygons no longer share an edge
@@ -204,11 +204,11 @@ do not perfectly align, they will be considered as discontinuous.
 
 ..  figure:: ../images/examples/two_squares_basic_rotated_plot.png
     :align: center
-    :scale: 100 %  
+    :scale: 100 %
 
 To remedy this, take the same approach as in the preceding example by creating intermediate nodes where the two polygons
 intersect by using set operations. If we subtract ``s2`` from ``s1`` then we will have the larger square with intermediate nodes created::
-    
+
     (s1 - s2).plot_geometry(labels=['points'])
 
 .. figure:: ../images/examples/two_squares_large_square_int_points.png

@@ -1,12 +1,13 @@
 import pytest_check as check
 from shapely.geometry import Polygon
 import sectionproperties.pre.sections as sections
+import sectionproperties.pre.library.steel_sections as steel_sections
 from sectionproperties.analysis.cross_section import Section
 from sectionproperties.tests.helper_functions import validate_properties
 
 
 # Setup for angle section
-angle = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+angle = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
 angle.create_mesh(mesh_sizes=2.5)
 angle_section = Section(angle)
 angle_section.calculate_geometric_properties()

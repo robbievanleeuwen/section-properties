@@ -203,10 +203,10 @@ The examples shown in the methods below are performed on a 150x90x12 UA
 (unequal angle) section. The :class:`~sectionproperties.analysis.cross_section.Section`
 object is created below::
 
-  import sectionproperties.pre.sections as sections
+  import sectionproperties.pre.library.steel_sections as steel_sections
   from sectionproperties.analysis.cross_section import Section
 
-  geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+  geometry = steel_sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
   mesh = geometry.create_mesh(mesh_sizes=[2.5])
   section = Section(geometry, mesh)
 

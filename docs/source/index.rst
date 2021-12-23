@@ -27,6 +27,7 @@ can be found in the README file on github.
    rst/installation
    rst/structure
    rst/geom_mesh
+   rst/section_library
    rst/advanced_geom
    rst/analysis
    rst/post
@@ -36,14 +37,14 @@ can be found in the README file on github.
 
 Here's a quick example that harnesses some of the power of *sectionproperties* and shows its simplicity::
 
-  import sectionproperties.pre.sections as sections
+  import sectionproperties.pre.library.steel_sections as steel_sections
   from sectionproperties.analysis.cross_section import Section
 
   # create geometry of the cross-section
-  geometry = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+  geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
 
   # generate a finite element mesh
-  geometry.create_mesh(mesh_sizes=[2.5])
+  geometry.create_mesh(mesh_sizes=[10])
 
   # create a Section object for analysis
   section = Section(geometry)
@@ -58,9 +59,9 @@ Here's a quick example that harnesses some of the power of *sectionproperties* a
   print(section.get_ic())  # second moments of area about the centroidal axis
   >>>(23544664.29, 3063383.07, 0.00)
   print(section.get_j())  # torsion constant
-  >>>62907.79
+  >>>62954.43
   print(section.get_As())  # shear areas in the x & y directions
-  >>>(1842.17, 1120.18)
+  >>>(1842.24, 1120.19)
 
 Support
 -------

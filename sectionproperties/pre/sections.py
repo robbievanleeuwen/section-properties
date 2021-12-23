@@ -340,9 +340,9 @@ class Geometry:
         The following example creates a circular cross-section with a diameter of 50 with 64
         points, and generates a mesh with a maximum triangular area of 2.5::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.standard_sections as standard_sections
 
-            geometry = sections.CircularSection(d=50, n=64)
+            geometry = standard_sections.circular_section(d=50, n=64)
             geometry = geometry.create_mesh(mesh_sizes=2.5)
 
         ..  figure:: ../images/sections/circle_mesh.png
@@ -515,9 +515,9 @@ class Geometry:
 
         The following example rotates a 200UB25 section clockwise by 30 degrees::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
 
-            geometry = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+            geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
             new_geometry = geometry.rotate_section(angle=-30)
         """
         new_ctrl_point = None
@@ -550,9 +550,9 @@ class Geometry:
 
         The following example mirrors a 200PFC section about the y-axis and the point (0, 0)::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
 
-            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             new_geometry = geometry.mirror_section(axis='y', mirror_point=[0, 0])
         """
         x_mirror = 1
@@ -611,10 +611,10 @@ class Geometry:
 
         The following example splits a 200PFC section about the y-axis::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from shapely.geometry import LineString
 
-            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             right_geom, left_geom = geometry.split_section((0, 0), (0, 1))
         """
         if point_j:
@@ -657,9 +657,9 @@ class Geometry:
 
         The following example erodes a 200PFC section by 3::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
 
-            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             new_geometry = geometry.offset_perimeter(amount=-3)
         """
         if self.geom.interiors and where == "interior":
@@ -747,9 +747,9 @@ class Geometry:
         The following example expands the sides of a rectangle, one point at a time,
         to make it a square::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.standard_sections as standard_sections
 
-            geometry = sections.rectangular_section(d=200, b=150)
+            geometry = standard_sections.rectangular_section(d=200, b=150)
 
             # Using relative shifting
             one_pt_shifted_geom = geometry.shift_points(point_idxs=1, dx=50)
@@ -808,9 +808,9 @@ class Geometry:
         The following example creates a CHS discretised with 64 points, with a diameter of 48 and
         thickness of 3.2, and plots the geometry::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
 
-            geometry = sections.chs(d=48, t=3.2, n=64)
+            geometry = steel_sections.circular_hollow_section(d=48, t=3.2, n=64)
             geometry.plot_geometry()
 
         ..  figure:: ../images/sections/chs_geometry.png
@@ -1271,9 +1271,9 @@ class CompoundGeometry(Geometry):
         The following example creates a circular cross-section with a diameter of 50 with 64
         points, and generates a mesh with a maximum triangular area of 2.5::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.standard_sections as standard_sections
 
-            geometry = sections.circular_section(d=50, n=64)
+            geometry = standard_sections.circular_section(d=50, n=64)
             geometry = geometry.create_mesh(mesh_sizes=[2.5])
 
         ..  figure:: ../images/sections/circle_mesh.png
@@ -1328,12 +1328,13 @@ class CompoundGeometry(Geometry):
         :return: CompoundGeometry object rotated by 'angle' about 'rot_point'
         :rtype: :class:`sections.pre.sections.CompoundGeometry`
 
-        The following example rotates a 200UB25 section clockwise by 30 degrees::
+        The following example rotates a 200UB25 section with a plate clockwise by 30 degrees::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
+            import sectionproperties.pre.library.standard_sections as standard_sections
 
-            geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry_2 = sections.rectangular_section(d=20, b=133)
+            geometry_1 = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+            geometry_2 = standard_sections.rectangular_section(d=20, b=133)
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_compound = compound.rotate_section(angle=-30)
         """
@@ -1359,14 +1360,15 @@ class CompoundGeometry(Geometry):
         :return: Geometry object mirrored on 'axis' about 'mirror_point'
         :rtype: :class:`sections.pre.sections.Geometry`
 
-        The following example mirrors a 200PFC section about the y-axis and the point (0, 0)::
+        The following example mirrors a 200PFC section with a plate about the y-axis and the point (0, 0)::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
+            import sectionproperties.pre.library.standard_sections as standard_sections
 
-            geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry_2 = sections.rectangular_section(d=20, b=133)
+            geometry_1 = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry_2 = standard_sections.rectangular_section(d=20, b=133)
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
-            new_compound = compound.mirror_section(axis='y')
+            new_compound = compound.mirror_section(axis='y', mirror_point=[0,0])
         """
         geoms_acc = []
         for geom in self.geoms:
@@ -1452,10 +1454,10 @@ class CompoundGeometry(Geometry):
 
         The following example splits a 200PFC section about the y-axis::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from shapely.geometry import LineString
 
-            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             right_geom, left_geom = geometry.split_section((0, 0), (0, 1))
         """
         top_geoms_acc = []
@@ -1486,14 +1488,15 @@ class CompoundGeometry(Geometry):
         :return: Geometry object translated to new alignment
         :rtype: :class:`sections.pre.sections.Geometry`
 
-        The following example erodes a 200PFC section by 3::
+        The following example erodes a 200UB25 section with a plate by 2 mm::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
+            import sectionproperties.pre.library.standard_sections as standard_sections
 
-            geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry_2 = sections.rectangular_section(d=20, b=133)
+            geometry_1 = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+            geometry_2 = standard_sections.rectangular_section(d=20, b=133)
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
-            new_geometry = compound.offset_section_perimeter(amount=-3)
+            new_geometry = compound.offset_perimeter(amount=-2)
         """
         geoms_acc = []
         for geom in self.geoms:

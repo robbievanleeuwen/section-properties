@@ -20,6 +20,7 @@ Section Geometry
 * The :class:`~sectionproperties.pre.sections.CompoundGeometry` class, comprised of two or more
   `Geometry` objects
 
+
 Geometry Class
 --------------
 
@@ -35,6 +36,7 @@ A :class:`~sectionproperties.pre.sections.Geometry` is instantiated with two arg
    If a :class:`~sectionproperties.pre.pre.Material` is not given, then the default material is
    assigned to the ``Geometry.material`` attribute. The default material has an elastic modulus of
    1, a Poisson's ratio of 0 and a yield strength of 1.
+
 
 CompoundGeometry Class
 ----------------------
@@ -95,13 +97,14 @@ analysis:
    (e.g. `|`, `+`, `-`, `&`, `^`)
 #. From *sectionproperties*'s section library
 
-
 For the first two approaches, an optional ``.material`` parameter can be passed containing a
 :class:`~sectionproperties.pre.pre.Material` (or list of `Material` objects) to associate with the
 newly created geometry(ies). The material attribute can be altered afterward in a
 :class:`~sectionproperties.pre.sections.Geometry` object at any time by simply assigning a
 different :class:`~sectionproperties.pre.pre.Material` to the ``.material`` attribute.
 
+
+.. _label-from-points:
 
 Geometry from points, facets, holes, and control_points
 -------------------------------------------------------
@@ -139,6 +142,7 @@ file (i.e. the number of contiguous regions).
 
 ..  autofunction:: sectionproperties.pre.sections.CompoundGeometry.from_dxf
    :noindex:
+
 
 Geometry from Rhino
 -------------------
@@ -186,121 +190,20 @@ Both `Geometry` and `CompoundGeometry` objects can be manipulated using Python's
 
 - ``|``  Bitwise OR - Performs a union on the two geometries
 - ``-``  Bitwise DIFFERENCE - Performs a subtraction, subtracting the second geometry from the
- first
+  first
 - ``&``  Bitwise AND - Performs an intersection operation, returning the regions of geometry common
- to both
+  to both
 - ``^``  Bitwise XOR - Performs a symmetric difference operation, returning the regions of geometry
- that are not overlapping
+  that are not overlapping
 - ``+``  Addition - Combines two geometries into a `CompoundGeometry`
 
 See :ref:`label-advanced_geom` for an example using set operations.
 
 
-Creating Geometry from the Section Library
-==========================================
+*sectionproperties* Section Library
+-----------------------------------
 
-In order to make your life easier, there are a number of built-in functions that generate typical
-structural cross-sections, resulting in :class:`~sectionproperties.pre.sections.Geometry` objects.
-These typical cross-sections reside in the ``sectionproperties.pre.library`` module.
-
-Standard Sections Library
--------------------------
-
-Rectangular Section
-^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.library.standard_sections.rectangular_section
-    :noindex:
-
-Circular Section
-^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.library.standard_sections.circular_section
-    :noindex:
-
-Elliptical Section
-^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.library.standard_sections.elliptical_section
-    :noindex:
-
-
-Cruciform Section
-^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.standard_sections.cruciform_section
-      :noindex:
-
-
-Steel Sections Library
-----------------------
-
-Circular Hollow Section (CHS)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.library.steel_sections.circular_hollow_section
-    :noindex:
-
-Elliptical Hollow Section (EHS)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.library.steel_sections.elliptical_hollow_section
-    :noindex:
-
-Rectangular Hollow Section (RHS)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.library.steel_sections.rectangular_hollow_section
-    :noindex:
-
-Polygon Hollow Section
-^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.steel_sections.polygon_hollow_section
-      :noindex:
-
-I-Section
-^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.steel_sections.i_section
-      :noindex:
-
-Monosymmetric I-Section
-^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.steel_sections.mono_i_section
-      :noindex:
-
-Tapered Flange I-Section
-^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.steel_sections.tapered_flange_i_section
-      :noindex:
-
-Parallel Flange Channel (PFC) Section
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.steel_sections.channel_section
-      :noindex:
-
-Tapered Flange Channel Section
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.steel_sections.tapered_flange_channel
-      :noindex:
-
-Tee Section
-^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.steel_sections.tee_section
-      :noindex:
-
-Angle Section
-^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.steel_sections.angle_section
-      :noindex:
-
-Cee Section
-^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.steel_sections.cee_section
-      :noindex:
-
-Zed Section
-^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.steel_sections.zed_section
-      :noindex:
-
-
-Box Girder Section
-^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.library.steel_sections.box_girder_section
-      :noindex:
+See :ref:`label-section-library`.
 
 
 Manipulating Geometries
@@ -326,17 +229,20 @@ Aligning
   ..  autofunction:: sectionproperties.pre.sections.Geometry.align_to
       :noindex:
 
+
 Mirroring
 ---------
 
   ..  autofunction:: sectionproperties.pre.sections.Geometry.mirror_section
       :noindex:
 
+
 Rotating
 --------
 
   ..  autofunction:: sectionproperties.pre.sections.Geometry.rotate_section
       :noindex:
+
 
 Shifting
 --------
@@ -347,11 +253,13 @@ Shifting
   ..  autofunction:: sectionproperties.pre.sections.Geometry.shift_section
       :noindex:
 
+
 Splitting
 ---------
 
   ..  autofunction:: sectionproperties.pre.sections.Geometry.split_section
       :noindex:
+
 
 Offsetting the Perimeter
 ------------------------

@@ -101,22 +101,18 @@ sum_poly_areas
 rectangular_section
 """""""""""""""""""
 ..  autofunction:: sectionproperties.pre.library.standard_sections.rectangular_section
-    :noindex:
 
 circular_section
 """"""""""""""""
 ..  autofunction:: sectionproperties.pre.library.standard_sections.circular_section
-    :noindex:
 
 elliptical_section
 """"""""""""""""""
 ..  autofunction:: sectionproperties.pre.library.standard_sections.elliptical_section
-    :noindex:
 
 cruciform_section
 """"""""""""""""""
   ..  autofunction:: sectionproperties.pre.library.standard_sections.cruciform_section
-      :noindex:
 
 
 *steel_sections* Module
@@ -125,78 +121,74 @@ cruciform_section
 circular_hollow_section
 """""""""""""""""""""""
 ..  autofunction:: sectionproperties.pre.library.steel_sections.circular_hollow_section
-    :noindex:
 
 elliptical_hollow_section
 """""""""""""""""""""""""
 ..  autofunction:: sectionproperties.pre.library.steel_sections.elliptical_hollow_section
-    :noindex:
 
 rectangular_hollow_section
 """"""""""""""""""""""""""
 ..  autofunction:: sectionproperties.pre.library.steel_sections.rectangular_hollow_section
-    :noindex:
 
 polygon_hollow_section
 """""""""""""""""""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.polygon_hollow_section
-      :noindex:
 
 i_section
 """""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.i_section
-      :noindex:
 
 mono_i_section
 """"""""""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.mono_i_section
-      :noindex:
 
 tapered_flange_i_section
 """"""""""""""""""""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.tapered_flange_i_section
-      :noindex:
 
 channel_section
 """""""""""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.channel_section
-      :noindex:
 
 tapered_flange_channel
 """"""""""""""""""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.tapered_flange_channel
-      :noindex:
 
 tee_section
 """""""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.tee_section
-      :noindex:
 
 angle_section
 """"""""""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.angle_section
-      :noindex:
 
 cee_section
 """"""""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.cee_section
-      :noindex:
 
 zed_section
 """""""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.zed_section
-      :noindex:
 
 box_girder_section
 """""""""""""""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.box_girder_section
-      :noindex:
 
 
 *concrete_sections* Module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TBC
+concrete_rectangular_section
+""""""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_rectangular_section
+
+concrete_tee_section
+""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_tee_section
+
+concrete_circular_section
+"""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_circular_section
 
 
 *bridge_sections* Module
@@ -204,6 +196,8 @@ TBC
 
 TBC
 
+
+.. _label-nastran-sections:
 
 *nastran_sections* Module
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -213,122 +207,98 @@ such as MYSTRAN and ASTROS.
 nastran_bar
 """""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_bar
-    :noindex:
 
 nastran_box
 """""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_box
-    :noindex:
 
 nastran_box1
 """"""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_box1
-    :noindex:
 
 nastran_chan
 """"""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_chan
-    :noindex:
 
 nastran_chan1
 """""""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_chan1
-    :noindex:
 
 nastran_chan2
 """""""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_chan2
-    :noindex:
 
 nastran_cross
 """""""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_cross
-    :noindex:
 
 nastran_dbox
 """"""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_dbox
-    :noindex:
 
 nastran_fcross
 """"""""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_fcross
-    :noindex:
 
 nastran_gbox
 """"""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_gbox
-    :noindex:
 
 nastran_h
 """"""""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_h
-    :noindex:
 
 nastran_hat
 """""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_hat
-    :noindex:
 
 nastran_hat1
 """"""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_hat1
-    :noindex:
 
 nastran_hexa
 """"""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_hexa
-    :noindex:
 
 nastran_i
 """""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_i
-    :noindex:
 
 nastran_i1
 """"""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_i1
-    :noindex:
 
 nastran_l
 """""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_l
-    :noindex:
 
 nastran_rod
 """""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_rod
-    :noindex:
 
 nastran_tee
 """""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_tee
-    :noindex:
 
 nastran_tee1
 """"""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_tee1
-    :noindex:
 
 nastran_tee2
 """"""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_tee2
-    :noindex:
 
 nastran_tube
 """"""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_tube
-    :noindex:
 
 nastran_tube2
 """""""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_tube2
-    :noindex:
 
 nastran_zed
 """""""""""
 ..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_zed
-    :noindex:
 
 Nastran References
 """"""""""""""""""

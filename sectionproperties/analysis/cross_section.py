@@ -38,10 +38,10 @@ class Section:
     The following example creates a :class:`~sectionproperties.analysis.cross_section.Section`
     object of a 100D x 50W rectangle using a mesh size of 5::
 
-        import sectionproperties.pre.sections as sections
+        import sectionproperties.pre.library.standard_sections as standard_sections
         from sectionproperties.analysis.cross_section import Section
 
-        geometry = sections.rectangular_section(d=100, b=50)
+        geometry = standard_sections.rectangular_section(d=100, b=50)
         geometry.create_mesh(mesh_sizes=[5])
         section = Section(geometry)
 
@@ -1073,7 +1073,7 @@ class Section:
         listed under the :class:`~sectionproperties.analysis.cross_section.Section` object
         definition::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.standard_sections as standard_sections
             from sectionproperties.pre.pre import Material
             from sectionproperties.analysis.cross_section import Section
 
@@ -1086,8 +1086,8 @@ class Section:
                 color='burlywood'
             )
 
-            geom_steel = sections.rectangular_section(d=50, b=50, material=steel)
-            geom_timber = sections.rectangular_section(d=50, b=50, material=timber)
+            geom_steel = standard_sections.rectangular_section(d=50, b=50, material=steel)
+            geom_timber = standard_sections.rectangular_section(d=50, b=50, material=timber)
             geometry = geom_timber.align_to(geom_steel, on="right") + geom_steel
 
             geometry.create_mesh(mesh_sizes=[10, 5])
@@ -1177,10 +1177,10 @@ class Section:
         The following example analyses a 200 PFC section and displays a plot of
         the centroids::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
 
             section = Section(geometry)
@@ -1199,10 +1199,10 @@ class Section:
         The following example analyses a 150x90x12 UA section and displays a plot of the
         centroids::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
 
             section = Section(geometry)
@@ -1286,11 +1286,11 @@ class Section:
         The following example displays the mesh statistics for a Tee section merged from two
         rectangles::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.standard_sections as standard_sections
             from sectionproperties.analysis.cross_section import Section
 
-            rec1 = sections.rectangular_section(d=100, b=25)
-            rec2 = sections.rectangular_section(d=25, b=100)
+            rec1 = standard_sections.rectangular_section(d=100, b=25)
+            rec2 = standard_sections.rectangular_section(d=25, b=100)
             rec1 = rec1.shift_section(x_offset=-12.5)
             rec2 = rec2.shift_section(x_offset=-50, y_offset=100)
 
@@ -1327,10 +1327,10 @@ class Section:
         The following example displays the geometric section properties for a 100D x 50W rectangle
         with three digits after the decimal point::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.standard_sections as standard_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.rectangular_section(d=100, b=50)
+            geometry = standard_sections.rectangular_section(d=100, b=50)
             geometry.create_mesh(mesh_sizes=[5])
 
             section = Section(geometry)
@@ -2528,10 +2528,10 @@ class StressPost:
         The following example returns the normal stress within a 150x90x12 UA section resulting
         from an axial force of 10 kN::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -2601,10 +2601,10 @@ class StressPost:
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         an axial force of 10 kN::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -2647,10 +2647,10 @@ class StressPost:
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         a bending moment about the x-axis of 5 kN.m::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -2693,10 +2693,10 @@ class StressPost:
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         a bending moment about the y-axis of 2 kN.m::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -2739,10 +2739,10 @@ class StressPost:
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         a bending moment about the 11-axis of 5 kN.m::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -2785,10 +2785,10 @@ class StressPost:
         The following example plots the normal stress within a 150x90x12 UA section resulting from
         a bending moment about the 22-axis of 2 kN.m::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -2832,10 +2832,10 @@ class StressPost:
         a bending moment about the x-axis of 5 kN.m, a bending moment about the y-axis of 2 kN.m
         and a bending moment of 3 kN.m about the 11-axis::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -2878,10 +2878,10 @@ class StressPost:
         The following example plots the x-component of the shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -2924,10 +2924,10 @@ class StressPost:
         The following example plots the y-component of the shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -2970,10 +2970,10 @@ class StressPost:
         The following example plots a contour of the resultant shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3016,10 +3016,10 @@ class StressPost:
         The following example generates a vector plot of the shear stress within a 150x90x12 UA
         section resulting from a torsion moment of 1 kN.m::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3064,10 +3064,10 @@ class StressPost:
         The following example plots the x-component of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the x-direction of 15 kN::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3110,10 +3110,10 @@ class StressPost:
         The following example plots the y-component of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the x-direction of 15 kN::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3156,10 +3156,10 @@ class StressPost:
         The following example plots a contour of the resultant shear stress within a 150x90x12 UA
         section resulting from a shear force in the x-direction of 15 kN::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3202,10 +3202,10 @@ class StressPost:
         The following example generates a vector plot of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the x-direction of 15 kN::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3250,10 +3250,10 @@ class StressPost:
         The following example plots the x-component of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the y-direction of 30 kN::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3296,10 +3296,10 @@ class StressPost:
         The following example plots the y-component of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the y-direction of 30 kN::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3342,10 +3342,10 @@ class StressPost:
         The following example plots a contour of the resultant shear stress within a 150x90x12 UA
         section resulting from a shear force in the y-direction of 30 kN::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3388,10 +3388,10 @@ class StressPost:
         The following example generates a vector plot of the shear stress within a 150x90x12 UA
         section resulting from a shear force in the y-direction of 30 kN::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3438,10 +3438,10 @@ class StressPost:
         section resulting from a shear force of 15 kN in the x-direction and 30 kN in the
         y-direction::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3486,10 +3486,10 @@ class StressPost:
         section resulting from a shear force of 15 kN in the x-direction and 30 kN in the
         y-direction::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3534,10 +3534,10 @@ class StressPost:
         section resulting from a shear force of 15 kN in the x-direction and 30 kN in the
         y-direction::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3582,10 +3582,10 @@ class StressPost:
         section resulting from a shear force of 15 kN in the x-direction and 30 kN in the
         y-direction::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3631,10 +3631,10 @@ class StressPost:
         an axial force of 100 kN, a bending moment about the x-axis of 5 kN.m and a bending moment
         about the y-axis of 2 kN.m::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3678,10 +3678,10 @@ class StressPost:
         section resulting from a torsion moment of 1 kN.m and a shear force of 30 kN in the
         y-direction::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3725,10 +3725,10 @@ class StressPost:
         section resulting from a torsion moment of 1 kN.m and a shear force of 30 kN in the
         y-direction::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3772,10 +3772,10 @@ class StressPost:
         section resulting from a torsion moment of 1 kN.m and a shear force of 30 kN in the
         y-direction::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3819,10 +3819,10 @@ class StressPost:
         section resulting from a torsion moment of 1 kN.m and a shear force of 30 kN in the
         y-direction::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -3870,10 +3870,10 @@ class StressPost:
 
         ::
 
-            import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            import sectionproperties.pre.library.steel_sections as steel_sections
+            from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
             section = CrossSection(geometry, mesh)
 
@@ -3922,10 +3922,10 @@ class StressPost:
 
         ::
 
-            import sectionproperties.pre.sections as sections
-            from sectionproperties.analysis.cross_section import CrossSection
+            import sectionproperties.pre.library.steel_sections as steel_sections
+            from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
             section = CrossSection(geometry, mesh)
 
@@ -3979,10 +3979,10 @@ class StressPost:
 
         ::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             geometry.create_mesh(mesh_sizes=[20])
             section = Section(geometry)
 
@@ -4035,10 +4035,10 @@ class StressPost:
 
         ::
 
-            import sectionproperties.pre.sections as sections
+            import sectionproperties.pre.library.steel_sections as steel_sections
             from sectionproperties.analysis.cross_section import Section
 
-            geometry = sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+            geometry = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
             mesh = geometry.create_mesh(mesh_sizes=[2.5])
             section = Section(geometry, mesh)
 

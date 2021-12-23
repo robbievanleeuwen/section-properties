@@ -2,6 +2,8 @@ import pathlib
 import pytest
 
 from sectionproperties.pre.sections import *
+from sectionproperties.pre.library.standard_sections import *
+from sectionproperties.pre.library.steel_sections import *
 from sectionproperties.analysis.cross_section import Section
 from sectionproperties.pre.pre import Material
 from sectionproperties.pre.rhino import load_3dm, load_brep_encoding
@@ -145,7 +147,7 @@ def test_geometry_from_dxf():
 def test_plastic_centroid():
     ## Test created in response to #114
     # Since the section being tested is a compound geometry with two different
-    # materials, this tests that the plastic centroid takes into account the 
+    # materials, this tests that the plastic centroid takes into account the
     # correct "center" of the original section which is affected by EA of each
     # of the constituent geometries.
 
@@ -225,4 +227,4 @@ def test_geometry_from_3dm_encode():
         brep_encoded = json.load(file)
     exp = Polygon([(0,0), (1,0), (1,1), (0,1), (0,0)])
     test = Geometry.from_rhino_encoding(brep_encoded)
-    assert (test.geom-exp).is_empty 
+    assert (test.geom-exp).is_empty
