@@ -126,6 +126,30 @@ def test_compound_geometry_from_points():
     )
 
 
+def test_nested_compound_geometry_from_points():
+    """
+    Tests a nested compound geometry can be built .from_points, that the control_points
+    and hole nodes persist in the right locations, and that ...
+    """
+    points = [
+        [-50.0, 50.0], [50.0, 50.0], [50.0, -50.0], [-50.0, -50.0], [37.5, -37.5], [37.5, 37.5], [-37.5, 37.5], [-37.5, -37.5], [25.0, -25.0], [25.0, 25.0], [-25.0, 25.0], [-25.0, -25.0], [12.5, -12.5], [12.5, 12.5], [-12.5, 12.5], [-12.5, -12.5]
+    ]
+    facets = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [8, 9], [9, 10], [10, 11], [11, 8], [12, 13], [13, 14], [14, 15], [15, 12]] 
+    control_points = [[-43.75, 0.0], [-31.25, 0.0], [-18.75, 0.0]] 
+    holes = [[0, 0]]
+    nested_compound = CompoundGeometry.from_points(
+        points=points, 
+        facets=facets, 
+        control_points=control_points, 
+        holes=holes
+        )
+    assert (
+        nested_compound.geom.wkt
+        == 'MULTIPOLYGON (((50 50, 50 -50, -50 -50, -50 50, 50 50), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-37.5 -37.5, -37.5 37.5, 37.5 37.5, 37.5 -37.5, -37.5 -37.5), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-25 -25, -25 25, 25 25, 25 -25, -25 -25), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)))'
+    )
+    assert nested_compound.control_points == [[-43.75, 0.0], [-31.25, 0.0], [-18.75, 0.0]]
+    assert nested_compound.holes == [[0, 0]]
+
 def test_geometry_from_dxf():
     section_holes_dxf = (
         pathlib.Path.cwd() / "sectionproperties" / "tests" / "section_holes.dxf"
