@@ -227,3 +227,122 @@ Now, if we build the compound geometry up from this larger square with the inter
 .. figure:: ../images/examples/two_squares_fixed_plot.png
     :align: center
     :scale: 100 %
+
+Another example (but with nested geometries)
+--------------------------------------------
+
+This example demonstrates creating nested geometries using two different approaches.
+These approaches reflect the differences between how shapely (geometry pre-processor) "perceives" geometry 
+and how meshpy/Triangle (meshing tool) "perceives" geometry and how the modeller might adapt their
+input style depending on the situation.
+
+The nested geometry we are trying to create looks as follows:
+
+.. figure:: ../images/examples/nested_compound.png
+    :align: center
+    :scale: 100 %
+
+In creating this geometry consider the following:
+
+- shapely has a concept of "z-ordering" where it is possible for one geometry to be "over"
+  another geometry and for an overlap section to exist. When a hole is created in a polygon,
+  it is only local to that polygon.
+
+.. figure:: ../images/examples/shapely_z_order.png
+    :align: center
+    :scale: 100 %
+
+- meshpy/Triangle does not have a concept of "z-ordering" so there is only a single plane which
+  may have regions of different materials (specified with control points). When a hole is created
+  in the plane, it "punches" through "all" polygons in the plane.
+
+.. figure:: ../images/examples/triangle_no_z_order.png
+    :align: center
+    :scale: 100 %
+
+To create the nested geometry using shapely, the code would be as follows:
+
+    mat1 = Material(name="Material 1", elastic_modulus=100, poissons_ratio=0.3, yield_strength=10, color="yellow")
+    mat2 = Material(name="Material 2", elastic_modulus=100, poissons_ratio=0.3, yield_strength=10, color="orange")
+    mat3 = Material(name="Material 3", elastic_modulus=100, poissons_ratio=0.3, yield_strength=10, color="red")
+
+    sq1 = sections.rectangular_section(100, 100, material=mat1).align_center()
+    sq2 = sections.rectangular_section(75, 75, material=mat2).align_center()
+    sq3 = sections.rectangular_section(50, 50, material=mat3).align_center()
+    hole = sections.rectangular_section(25, 25).align_center()
+
+    compound = (
+        (sq1 - sq2) # Create a big square with a medium hole in it and stack it over...
+        + (sq2 - sq3) # ... a medium square with a medium-small hole in it and stack it over...
+        + (sq3 - hole) # ...a medium-small square with a small hole in it.
+    )
+    compound
+
+.. figure:: ../images/examples/nested_compound_via_shapely.png
+    :align: center
+    :scale: 100 %
+
+To create the nested geometry using the Triangle interface, the code would be as follows:
+
+    points = [ # Points for four squares are created
+        [-50.0, 50.0], # Square 1
+        [50.0, 50.0],
+        [50.0, -50.0],
+        [-50.0, -50.0],
+        [37.5, -37.5], # Square 2
+        [37.5, 37.5],
+        [-37.5, 37.5],
+        [-37.5, -37.5],
+        [25.0, -25.0], # Square 3
+        [25.0, 25.0],
+        [-25.0, 25.0],
+        [-25.0, -25.0],
+        [12.5, -12.5], # Square 4 (hole)
+        [12.5, 12.5],
+        [-12.5, 12.5],
+        [-12.5, -12.5],
+    ]
+
+    facets = [ # Facets trace each of the four squares
+        [0, 1], # Square 1
+        [1, 2],
+        [2, 3],
+        [3, 0],
+        [4, 5], # Square 2
+        [5, 6],
+        [6, 7],
+        [7, 4],
+        [8, 9], # Square 3
+        [9, 10],
+        [10, 11],
+        [11, 8],
+        [12, 13], # Square 4 (hole)
+        [13, 14],
+        [14, 15],
+        [15, 12],
+    ]
+
+    control_points = [[-43.75, 0.0], [-31.25, 0.0], [-18.75, 0.0]] # Three squares
+    holes = [[0, 0]]
+
+    nested_compound = CompoundGeometry.from_points(
+        points=points, facets=facets, control_points=control_points, holes=holes
+    )
+    nested_compound
+
+.. figure:: ../images/examples/nested_compound_via_triangle.png
+    :align: center
+    :scale: 100 %
+
+Notice how the shapely representation shows the squares overlapping each other instead of the squares
+fitting into the "hole below".
+
+Is one of these methods better than the other? Not necessarily. The shapely approach is suitable
+for manually creating the geometry whereas the Triangle approach is suitable for reading in serialized
+data from a file, for example.
+
+And, for either case, when the compound geometry is meshed, we see this:
+
+.. figure:: ../images/examples/nested_compound.png
+    :align: center
+    :scale: 100 %
