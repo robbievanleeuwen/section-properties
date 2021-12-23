@@ -79,8 +79,8 @@ def test_geometry_from_points():
     new_geom = Geometry.from_points(points, facets, holes, control_points=[])
     assert (
         new_geom.geom.wkt
-        == 'POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))'
-    ) # Note, the order of point coordinates can change based on geometry operations, e.g. +/- and how many; seems to be a shapely issue
+        == "POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))"
+    )  # Note, the order of point coordinates can change based on geometry operations, e.g. +/- and how many; seems to be a shapely issue
 
 
 def test_compound_geometry_from_points():
@@ -132,23 +132,57 @@ def test_nested_compound_geometry_from_points():
     and hole nodes persist in the right locations, and that ...
     """
     points = [
-        [-50.0, 50.0], [50.0, 50.0], [50.0, -50.0], [-50.0, -50.0], [37.5, -37.5], [37.5, 37.5], [-37.5, 37.5], [-37.5, -37.5], [25.0, -25.0], [25.0, 25.0], [-25.0, 25.0], [-25.0, -25.0], [12.5, -12.5], [12.5, 12.5], [-12.5, 12.5], [-12.5, -12.5]
+        [-50.0, 50.0],
+        [50.0, 50.0],
+        [50.0, -50.0],
+        [-50.0, -50.0],
+        [37.5, -37.5],
+        [37.5, 37.5],
+        [-37.5, 37.5],
+        [-37.5, -37.5],
+        [25.0, -25.0],
+        [25.0, 25.0],
+        [-25.0, 25.0],
+        [-25.0, -25.0],
+        [12.5, -12.5],
+        [12.5, 12.5],
+        [-12.5, 12.5],
+        [-12.5, -12.5],
     ]
-    facets = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [8, 9], [9, 10], [10, 11], [11, 8], [12, 13], [13, 14], [14, 15], [15, 12]] 
-    control_points = [[-43.75, 0.0], [-31.25, 0.0], [-18.75, 0.0]] 
+    facets = [
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 0],
+        [4, 5],
+        [5, 6],
+        [6, 7],
+        [7, 4],
+        [8, 9],
+        [9, 10],
+        [10, 11],
+        [11, 8],
+        [12, 13],
+        [13, 14],
+        [14, 15],
+        [15, 12],
+    ]
+    control_points = [[-43.75, 0.0], [-31.25, 0.0], [-18.75, 0.0]]
     holes = [[0, 0]]
     nested_compound = CompoundGeometry.from_points(
-        points=points, 
-        facets=facets, 
-        control_points=control_points, 
-        holes=holes
-        )
+        points=points, facets=facets, control_points=control_points, holes=holes
+    )
     assert (
         nested_compound.geom.wkt
-        == 'MULTIPOLYGON (((50 50, 50 -50, -50 -50, -50 50, 50 50), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-37.5 -37.5, -37.5 37.5, 37.5 37.5, 37.5 -37.5, -37.5 -37.5), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-25 -25, -25 25, 25 25, 25 -25, -25 -25), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)))'
+        == "MULTIPOLYGON (((50 50, 50 -50, -50 -50, -50 50, 50 50), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-37.5 -37.5, -37.5 37.5, 37.5 37.5, 37.5 -37.5, -37.5 -37.5), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-25 -25, -25 25, 25 25, 25 -25, -25 -25), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)))"
     )
-    assert nested_compound.control_points == [[-43.75, 0.0], [-31.25, 0.0], [-18.75, 0.0]]
+    assert nested_compound.control_points == [
+        [-43.75, 0.0],
+        [-31.25, 0.0],
+        [-18.75, 0.0],
+    ]
     assert nested_compound.holes == [[0, 0]]
+
 
 def test_geometry_from_dxf():
     section_holes_dxf = (
@@ -169,14 +203,24 @@ def test_geometry_from_dxf():
 def test_plastic_centroid():
     ## Test created in response to #114
     # Since the section being tested is a compound geometry with two different
-    # materials, this tests that the plastic centroid takes into account the 
+    # materials, this tests that the plastic centroid takes into account the
     # correct "center" of the original section which is affected by EA of each
     # of the constituent geometries.
 
-    steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3,
-                    yield_strength=500, color='grey')
-    timber = Material(name='Timber', elastic_modulus=5e3, poissons_ratio=0.35,
-                    yield_strength=20, color='burlywood')
+    steel = Material(
+        name="Steel",
+        elastic_modulus=200e3,
+        poissons_ratio=0.3,
+        yield_strength=500,
+        color="grey",
+    )
+    timber = Material(
+        name="Timber",
+        elastic_modulus=5e3,
+        poissons_ratio=0.35,
+        yield_strength=20,
+        color="burlywood",
+    )
 
     # create 310UB40.4
     ub = i_section(d=304, b=165, t_f=10.2, t_w=6.1, r=11.4, n_r=8, material=steel)
@@ -205,12 +249,10 @@ def test_plastic_centroid():
 
 
 def test_geometry_from_3dm_file_simple():
-    section = (
-        pathlib.Path.cwd() / "sectionproperties" / "tests" / "3in x 2in.3dm"
-    )
-    exp = Polygon([(0,0), (0,3), (2,3), (2,0), (0,0)])
+    section = pathlib.Path.cwd() / "sectionproperties" / "tests" / "3in x 2in.3dm"
+    exp = Polygon([(0, 0), (0, 3), (2, 3), (2, 0), (0, 0)])
     test = Geometry.from_3dm(section)
-    assert (test.geom-exp).is_empty
+    assert (test.geom - exp).is_empty
 
 
 def test_geometry_from_3dm_file_complex():
@@ -224,7 +266,7 @@ def test_geometry_from_3dm_file_complex():
         wkt_str = file.readlines()
     exp = wkt.loads(wkt_str[0])
     test = Geometry.from_3dm(section_3dm)
-    assert (test.geom-exp).is_empty
+    assert (test.geom - exp).is_empty
 
 
 def test_geometry_from_3dm_file_compound():
@@ -238,15 +280,13 @@ def test_geometry_from_3dm_file_compound():
         wkt_str = file.readlines()
     exp = [wkt.loads(wkt_str[0]), wkt.loads(wkt_str[1])]
     test = CompoundGeometry.from_3dm(section_3dm)
-    assert (MultiPolygon([ii.geom for ii in test.geoms])-MultiPolygon(exp)).is_empty
+    assert (MultiPolygon([ii.geom for ii in test.geoms]) - MultiPolygon(exp)).is_empty
 
 
 def test_geometry_from_3dm_encode():
-    section_3dm = (
-        pathlib.Path.cwd() / "sectionproperties" / "tests" / "rhino_data.json"
-    )
+    section_3dm = pathlib.Path.cwd() / "sectionproperties" / "tests" / "rhino_data.json"
     with open(section_3dm) as file:
         brep_encoded = json.load(file)
-    exp = Polygon([(0,0), (1,0), (1,1), (0,1), (0,0)])
+    exp = Polygon([(0, 0), (1, 0), (1, 1), (0, 1), (0, 0)])
     test = Geometry.from_rhino_encoding(brep_encoded)
-    assert (test.geom-exp).is_empty 
+    assert (test.geom - exp).is_empty
