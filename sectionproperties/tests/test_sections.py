@@ -75,8 +75,9 @@ def test_geometry_from_points():
         [10, 11],
         [11, 7],
     ]
+    control_points = [[0, 0]]
     holes = [[0, 6], [0, -6]]
-    new_geom = Geometry.from_points(points, facets, holes, control_points=[])
+    new_geom = Geometry.from_points(points=points, facets=facets, control_points=control_points, holes=holes)
     assert (
         new_geom.geom.wkt
         == "POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))"
@@ -117,9 +118,8 @@ def test_compound_geometry_from_points():
         [8, 9],
         [9, 6],
     ]
-    holes = []
     control_points = [[0, 0], [0, -2 * a - t / 2]]
-    new_geom = CompoundGeometry.from_points(points, facets, holes, control_points)
+    new_geom = CompoundGeometry.from_points(points, facets, control_points)
     assert (
         new_geom.geom.wkt
         == "MULTIPOLYGON (((-0.05 -2, 0.05 -2, 0.05 -0.05, 1 -0.05, 1 0.05, -0.05 0.05, -0.05 -2)), ((-1 -2, 1 -2, 1 -2.1, -1 -2.1, -1 -2)))"
@@ -177,11 +177,11 @@ def test_nested_compound_geometry_from_points():
         == "MULTIPOLYGON (((50 50, 50 -50, -50 -50, -50 50, 50 50), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-37.5 -37.5, -37.5 37.5, 37.5 37.5, 37.5 -37.5, -37.5 -37.5), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-25 -25, -25 25, 25 25, 25 -25, -25 -25), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)))"
     )
     assert nested_compound.control_points == [
-        [-43.75, 0.0],
-        [-31.25, 0.0],
-        [-18.75, 0.0],
+        (-43.75, 0.0),
+        (-31.25, 0.0),
+        (-18.75, 0.0),
     ]
-    assert nested_compound.holes == [[0, 0]]
+    assert nested_compound.holes == [(0, 0), (0, 0), (0, 0)]
 
 
 def test_geometry_from_dxf():

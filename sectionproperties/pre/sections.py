@@ -105,10 +105,10 @@ class Geometry:
     @staticmethod
     def from_points(
         points: List[List[float]],
-        facets: Optional[List[List[int]]] = None,
-        holes: Optional[List[List[float]]] = None,
-        control_points: Optional[List[float]] = None,
-        material: pre.Material = pre.DEFAULT_MATERIAL,
+        facets: List[List[int]],
+        control_points: List[List[float]],
+        holes: Optional[List[List[float]]],
+        material: Optional[pre.Material] = pre.DEFAULT_MATERIAL,
     ):
         """
         An interface for the creation of Geometry objects through the definition of points,
@@ -118,35 +118,29 @@ class Geometry:
             If facets are not provided, it is a assumed the that the list of points are ordered
             around the perimeter, either clockwise or anti-clockwise.
         :vartype points: list[list[float, float]]
-        :cvar facets: Optional. A list of *(start, end)* indexes of vertices defining the edges
+        :cvar facets: A list of *(start, end)* indexes of vertices defining the edges
             of the section geoemtry. Can be used to define both external and internal perimeters of holes.
             Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
             interior perimeter 2, etc.
         :vartype facets: list[list[int, int]]
         :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-            being holes or voids. The point can be located anywhere within the hole region. If
-            facets is provided, then holes must also be provided.
+            being holes or voids. The point can be located anywhere within the hole region. 
             Only one point is required per hole region.
         :vartype holes: list[list[float, float]]
-        :cvar control_points: Optional. An *(x, y)* coordinate that describes the distinct, contiguous,
-            region of a single material within the geometry.
-            Exactly one point is required for each geometry with a distinct material.
-            If not provided, a control point will be auto-generated for the geometry using
-            shapely.geometry.Polygon.represenative_point()
+        :cvar control_points: An *(x, y)* coordinate that describes the distinct, contiguous,
+            region of a single material within the geometry. Must be entered as a list of coordinates,
+            e.g. [[0.5, 3.2]]
+            Exactly one point is required for each geometry with a distinct material. 
+            If there are multiple distinct regions, then use CompoundGeometry.from_points()
         :vartype control_point: list[float, float]
         """
-        if facets is None and holes is None and control_points is None:
-            return Geometry(Polygon(points))
-        if holes is not None and facets is None:
+        if len(control_points) != 1:
             raise ValueError(
-                "If holes coordinates are provided then facets must also be provided "
-                "to distinguish between exterior and interior edges."
-            )
-        if control_points and len(control_points) != 2:
-            raise ValueError(
-                "A Geometry object can only have one contiguous region (with holes)."
-                "Did you mean to use CompoundGeometry.from_points()?"
-            )
+                "Control points for Geometry instances must have exactly "
+                "one x, y coordinate and entered as a list of list of float, e.g. [[0.1, 3.4]]."
+                "CompoundGeometry.from_points() can accept multiple control points\n"
+                f"Control points received: {control_points}"
+                )
         if holes is None:
             holes = []
         prev_facet = []
@@ -1102,13 +1096,15 @@ class CompoundGeometry(Geometry):
     def from_points(
         points: List[List[float]],
         facets: List[List[int]],
-        holes: List[List[float]],
-        control_points: Optional[List[List[float]]],
+        control_points: List[List[float]],
+        holes: Optional[List[List[float]]] = None,
         materials: Optional[List[pre.Material]] = None,
     ):
         """
         An interface for the creation of CompoundGeometry objects through the definition of points,
-        facets, holes, and control_points.
+        facets, holes, and control_points. Geometries created through this method are expected to 
+        be non-ambiguous meaning that no "overlapping" geometries exists and that nodal connectivity
+        is maintained (e.g. there are no nodes "overlapping" with facets without nodal connectivity).
 
         :cvar points: List of points *(x, y)* defining the vertices of the section geometry.
             If facets are not provided, it is a assumed the that the list of points are ordered
@@ -1140,8 +1136,8 @@ class CompoundGeometry(Geometry):
                 "Materials cannot be assigned without control_points. "
                 "Please provide corresponding control_points for each material."
                 )
-        if control_points is None:
-            control_points = list()
+        if holes is None:
+            holes = list()
 
         # First, generate all invidual polygons from points and facets
         current_polygon_points = []
@@ -1205,10 +1201,16 @@ class CompoundGeometry(Geometry):
                 punched_exterior = exterior
                 for interior in interiors:
                     punched_exterior = punched_exterior - interior
-                exterior_control_point = next(
-                    control_point for control_point in control_points 
-                    if punched_exterior.contains(Point(control_point))
-                    )
+                    try:
+                        exterior_control_point = next(
+                            control_point for control_point in control_points 
+                            if punched_exterior.contains(Point(control_point))
+                            )
+                    except StopIteration:
+                        raise ValueError(
+                            f"Control points given are not contained within the geometry"
+                            f" once holes are subtracted: {control_points}"
+                            )
                 exterior_geometry = Geometry(punched_exterior, control_points=exterior_control_point)
                 punched_exterior_geometries.append(exterior_geometry)
             
