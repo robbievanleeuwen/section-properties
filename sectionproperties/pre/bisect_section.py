@@ -11,14 +11,14 @@ def create_line_segment(
     bounds: tuple,
 ):
     """
-    Return a LineString of a line that contains 'point_on_line' in the direction of 'unit_vector' 
+    Return a LineString of a line that contains 'point_on_line' in the direction of 'unit_vector'
     bounded by 'bounds'.
     'bounds' is a tuple of float containing a max ordinate and min ordinate.
     """
     p_x, p_y = point_on_line
     b_2 = max(bounds)
     b_1 = min(bounds)
-    if vector[0] != 0:  # Not a vertical line
+    if abs(vector[0]) > 1e-12:  # Not a vertical line
         scale_factor_2 = (b_2 - p_x) / vector[0]
         y_2 = scale_factor_2 * vector[1] + p_y
 
@@ -38,11 +38,11 @@ def group_top_and_bottom_polys(
     polys: shapely.geometry.GeometryCollection, line: shapely.geometry.LineString,
 ) -> Tuple[list, list]:
     """
-    Returns tuple of two lists representing the list of Polygons in 'polys' on the "top" side of 'line' and the 
-    list of Polygons on the "bottom" side of the 'line' after the original geometry has been split by 'line'. 
-    
+    Returns tuple of two lists representing the list of Polygons in 'polys' on the "top" side of 'line' and the
+    list of Polygons on the "bottom" side of the 'line' after the original geometry has been split by 'line'.
+
     The 0-th tuple element is the "top" polygons and the 1-st element is the "bottom" polygons.
-    
+
     In the event that 'line' is a perfectly vertical line, the "top" polys are the polygons on the "right" of the
     'line' and the "bottom" polys are the polygons on the "left" of the 'line'.
     """
