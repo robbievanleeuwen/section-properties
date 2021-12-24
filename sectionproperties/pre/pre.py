@@ -23,6 +23,7 @@ class Material:
     :param float elastic_modulus: Material modulus of elasticity
     :param float poissons_ratio: Material Poisson's ratio
     :param float yield_strength: Material yield strength
+    :param float density: Material density (mass per unit volume)
     :param color: Material color for rendering
     :type color: :class:`matplotlib.colors`
 
@@ -31,6 +32,7 @@ class Material:
     :cvar float poissons_ratio: Material Poisson's ratio
     :cvar float shear_modulus: Material shear modulus, derived from the elastic modulus and
         Poisson's ratio assuming an isotropic material
+    :cvar float density: Material density (mass per unit volume)
     :cvar float yield_strength: Material yield strength
     :cvar color: Material color for rendering
     :vartype color: :class:`matplotlib.colors`
@@ -40,16 +42,16 @@ class Material:
         from sectionproperties.pre.pre import Material
 
         concrete = Material(
-            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
-                color='lightgrey'
+            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, density=2.4e-6,
+                yield_strength=32, color='lightgrey'
         )
         steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
-                color='grey'
+            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
+                yield_strength=500, color='grey'
         )
         timber = Material(
-            name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
-                color='burlywood'
+            name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, density=6.5e-7,
+                yield_strength=20, color='burlywood'
         )
     """
 
@@ -57,6 +59,7 @@ class Material:
     elastic_modulus: float
     poissons_ratio: float
     yield_strength: float
+    density: float
     color: str
 
     @property
@@ -64,7 +67,7 @@ class Material:
         return self.elastic_modulus / (2 * (1 + self.poissons_ratio))
 
 
-DEFAULT_MATERIAL = Material("default", 1, 0, 1, "w")
+DEFAULT_MATERIAL = Material("default", 1, 0, 1, 1, "w")
 
 
 def create_mesh(

@@ -33,7 +33,7 @@ def test_material_persistence():
     # returns a new Geometry object.
     # The material assignment should persist through all of the
     # transformations
-    steel = Material("steel", 200e3, 0.3, 400, "grey")
+    steel = Material("steel", 200e3, 0.3, 7.85e-6, 400, "grey")
     big_sq.material = steel
     new_geom = (
         big_sq.align_to(small_sq, on="left", inner=False)
@@ -207,20 +207,10 @@ def test_plastic_centroid():
     # correct "center" of the original section which is affected by EA of each
     # of the constituent geometries.
 
-    steel = Material(
-        name="Steel",
-        elastic_modulus=200e3,
-        poissons_ratio=0.3,
-        yield_strength=500,
-        color="grey",
-    )
-    timber = Material(
-        name="Timber",
-        elastic_modulus=5e3,
-        poissons_ratio=0.35,
-        yield_strength=20,
-        color="burlywood",
-    )
+    steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
+                    yield_strength=500, color='grey')
+    timber = Material(name='Timber', elastic_modulus=5e3, poissons_ratio=0.35, density=6.5e-7,
+                    yield_strength=20, color='burlywood')
 
     # create 310UB40.4
     ub = i_section(d=304, b=165, t_f=10.2, t_w=6.1, r=11.4, n_r=8, material=steel)
@@ -240,7 +230,6 @@ def test_plastic_centroid():
 
     # perform a geometric, warping and plastic analysis
     section.calculate_geometric_properties()
-    section.calculate_warping_properties()
     section.calculate_plastic_properties()
 
     x_pc, y_pc = section.get_pc()
@@ -289,4 +278,4 @@ def test_geometry_from_3dm_encode():
         brep_encoded = json.load(file)
     exp = Polygon([(0, 0), (1, 0), (1, 1), (0, 1), (0, 0)])
     test = Geometry.from_rhino_encoding(brep_encoded)
-    assert (test.geom - exp).is_empty
+    assert (test.geom-exp).is_empty

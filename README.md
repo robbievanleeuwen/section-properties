@@ -1,4 +1,4 @@
-![alt text](logo.png "sectionproperties")
+![alt text](docs/source/images/logo.png "sectionproperties")
 
 [![Build Status](https://travis-ci.com/robbievanleeuwen/section-properties.svg?branch=master)](https://travis-ci.com/robbievanleeuwen/section-properties) [![Documentation Status](https://readthedocs.org/projects/sectionproperties/badge/?version=latest)](https://sectionproperties.readthedocs.io/en/latest/?badge=latest)
 

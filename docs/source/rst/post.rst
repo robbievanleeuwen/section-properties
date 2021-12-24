@@ -3,6 +3,8 @@
 Viewing the Results
 ===================
 
+.. _label-print-properties:
+
 Printing a List of the Section Properties
 -----------------------------------------
 
@@ -14,6 +16,8 @@ method that belongs to every
 ..  automethod:: sectionproperties.analysis.cross_section.Section.display_results
     :noindex:
 
+.. _label-get-methods:
+
 Getting Specific Section Properties
 -----------------------------------
 
@@ -22,15 +26,21 @@ Alternatively, there are a number of methods that can be called on the
 a specific section property:
 
 Section Area
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.Section.get_area
     :noindex:
 
 Section Perimeter
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.Section.get_perimeter
+    :noindex:
+
+Section Mass
+^^^^^^^^^^^^
+
+..  automethod:: sectionproperties.analysis.cross_section.Section.get_mass
     :noindex:
 
 Axial Rigidity
@@ -90,6 +100,18 @@ Principal Axis Angle
 ^^^^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.analysis.cross_section.Section.get_phi
+    :noindex:
+
+Effective Material Properties
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+..  automethod:: sectionproperties.analysis.cross_section.Section.get_e_eff
+    :noindex:
+
+..  automethod:: sectionproperties.analysis.cross_section.Section.get_g_eff
+    :noindex:
+
+..  automethod:: sectionproperties.analysis.cross_section.Section.get_nu_eff
     :noindex:
 
 
@@ -172,7 +194,73 @@ Shape Factors
 How Material Properties Affect Results
 --------------------------------------
 
-PLACEHOLDER
+If a :class:`~sectionproperties.pre.sections.Geometry` containing a user defined
+:class:`~sectioproperties.pre.pre.Material` is used to build a
+:class:`~sectionproperties.analysis.cross_section.Section`, *sectionproperties* will assume you
+are performing a **composite analysis** and this will affect the way some of the results are
+stored and presented.
+
+In general, the calculation of gross composite section properties takes into account the elastic
+modulus, Poisson's ratio and yield strength of each material in the section. Unlike many design
+codes, *sectionproperties* is 'material property agnostic' and does not transform sections based on
+a defined material property, e.g. in reinforced concrete analysis it is commonplace to transform
+the reinforcing steel area based on the ratio between the elastic moduli,
+:math:`n = E_{steel} / E_{conc}`. *sectionproperties* instead calculates the gross material
+weighted properties, which is analogous to transforming with respect to a material property with
+elastic modulus, :math:`E = 1`.
+
+Using the example of a reinforced concrete section, *sectionproperties* will calculate the gross
+section bending stiffness, :math:`(EI)_g`, rather than an effective concrete second moment of area,
+:math:`I_{c,eff}`:
+
+.. math::
+  (EI)_g = E_s \times I_s + E_c \times I_c
+
+If the user wanted to obtain the effective concrete second moment of area for a code calculation,
+they could simply divide the gross bending stiffness by the elastic modulus for concrete:
+
+.. math::
+  I_{c,eff} = \frac{(EI)_g}{E_c}
+
+With reference to the ``get`` methods described in :ref:`label-print-properties`, a
+**composite analysis** will modify the following properties:
+
+* First moments of area :func:`~sectionproperties.analysis.Section.get_q` - returns elastic
+  modulus weighted first moments of area :math:`E.Q`
+* Second moments of area :func:`~sectionproperties.analysis.Section.get_ig`,
+  :func:`~sectionproperties.analysis.Section.get_ic`,
+  :func:`~sectionproperties.analysis.Section.get_ip` - return elastic modulus weighted second
+  moments of area :math:`E.I`
+* Section moduli :func:`~sectionproperties.analysis.Section.get_z`,
+  :func:`~sectionproperties.analysis.Section.get_zp` - return elastic modulus weighted section
+  moduli :math:`E.Z`
+* Torsion constant :func:`~sectionproperties.analysis.Section.get_j` - returns elastic
+  modulus weighted torsion constant :math:`E.J`
+* Warping constant :func:`~sectionproperties.analysis.Section.get_gamma` - returns elastic
+  modulus weighted warping constant :math:`E.\Gamma`
+* Shear areas :func:`~sectionproperties.analysis.Section.get_As`,
+  :func:`~sectionproperties.analysis.Section.get_As_p` - return elastic modulus weighted shear
+  areas :math:`E.A_s`
+* Plastic section moduli :func:`~sectionproperties.analysis.Section.get_s`,
+  :func:`~sectionproperties.analysis.Section.get_sp` - return yield strength weighted plastic
+  section moduli, i.e. plastic moments :math:`M_p = f_y.S`
+
+A **composite analysis** will also enable the user to retrieve effective gross section
+area-weighted material properties:
+
+* Effective elastic modulus :math:`E_{eff}` - :func:`~sectionproperties.analysis.Section.get_e_eff`
+* Effective shear modulus :math:`G_{eff}` - :func:`~sectionproperties.analysis.Section.get_g_eff`
+* Effective Poisson's ratio :math:`\nu_{eff}` -
+  :func:`~sectionproperties.analysis.Section.get_nu_eff`
+
+These values may be used to transform composite properties output by *sectionproperties* for
+practical use, e.g. to calculate torsional rigidity:
+
+.. math::
+  (GJ)_g = \frac{G_{eff}}{E_{eff}} (EJ)_g
+
+For further information, see the theoretical background to the calculation of
+:ref:`label-theory-composite`.
 
 
 Section Property Centroids Plots
@@ -186,7 +274,7 @@ the finite element mesh in the background:
 
 
 Plotting Section Stresses
--------------------------------
+-------------------------
 
 There are a number of methods that can be called from a :class:`~sectionproperties.analysis.cross_section.StressResult`
 object to plot the various cross-section stresses. These methods take the following form:
@@ -319,22 +407,22 @@ Combined Stress Plots
 ^^^^^^^^^^^^^^^^^^^^^
 
 Normal Stress (:math:`\sigma_{zz}`)
-""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zz
     :noindex:
 
 Shear Stress (:math:`\sigma_{zx}`)
-"""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zx
     :noindex:
 
 Shear Stress (:math:`\sigma_{zy}`)
-"""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zxy}`)
-""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zxy
     :noindex:
 
@@ -342,12 +430,12 @@ Shear Stress (:math:`\sigma_{zxy}`)
     :noindex:
 
 Major Principal Stress (:math:`\sigma_{1}`)
-""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_1
     :noindex:
 
 Minor Principal Stress (:math:`\sigma_{3}`)
-""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_3
     :noindex:
 
@@ -357,12 +445,12 @@ von Mises Stress (:math:`\sigma_{vM}`)
     :noindex:
 
 Mohr's Circles for Stresses at a Point
-""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""
 ..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_mohrs_circles
     :noindex:
 
 Retrieving Section Stress
--------------------------------
+-------------------------
 
 All cross-section stresses can be recovered using the :func:`~sectionproperties.analysis.cross_section.StressPost.get_stress`
 method that belongs to every

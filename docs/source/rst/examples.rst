@@ -717,9 +717,9 @@ to the terminal and a plot of the centroids and cross-section stresses generated
   from sectionproperties.analysis.cross_section import Section
 
   # create material properties
-  steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3,
+  steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
                    yield_strength=500, color='grey')
-  timber = Material(name='Timber', elastic_modulus=8e3, poissons_ratio=0.35,
+  timber = Material(name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, density=6.5e-7,
                     yield_strength=20, color='burlywood')
 
   # create 310UB40.4
