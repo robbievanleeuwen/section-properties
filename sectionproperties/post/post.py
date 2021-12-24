@@ -18,7 +18,7 @@ def setup_plot(ax, pause):
         plt.ioff()
 
 
-def finish_plot(ax, pause, title="", size=1000, dpi=96):
+def finish_plot(ax, pause, title="", size=500, dpi=96):
     """Executes code required to finish a matplotlib figure.
 
     :param ax: Axes object on which to plot
@@ -30,6 +30,18 @@ def finish_plot(ax, pause, title="", size=1000, dpi=96):
     ax.set_title(title, fontdict={"fontsize": 2*size/dpi})
     ax.set_aspect("equal", anchor="C")
     plt.tight_layout()
+
+    fig = plt.gcf()
+    fig_size = fig.get_size_inches() * fig.dpi
+    fig_ratio = fig_size[0] / fig_size[1]
+
+    if fig_ratio > 1:
+        new_size = [size * fig_ratio / dpi, size / dpi]
+    else:
+        new_size = [size / dpi, size * fig_ratio / dpi]
+
+    fig.set_size_inches(new_size)
+    fig.set_dpi(dpi)
 
     plt.show()
 

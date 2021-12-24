@@ -1109,7 +1109,7 @@ class Section:
         # if no axes object is supplied, create and setup the plot
         if ax is None:
             ax_supplied = False
-            (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
+            (fig, ax) = plt.subplots()
             post.setup_plot(ax, pause)
         else:
             ax_supplied = True
@@ -1224,7 +1224,7 @@ class Section:
         """
 
         # create plot and setup the plot
-        fig, ax = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
+        fig, ax = plt.subplots()
         post.setup_plot(ax, pause)
 
         # plot the finite element mesh
@@ -2344,7 +2344,7 @@ class StressPost:
         """
 
         # create plot and setup the plot
-        (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
+        (fig, ax) = plt.subplots()
         post.setup_plot(ax, pause)
 
         # plot the finite element mesh
@@ -2395,8 +2395,6 @@ class StressPost:
 
         fig.colorbar(trictr, label="Stress", format="%.4e", ticks=ticks, cax=cax)
 
-        # TODO: display stress values in the toolbar (format_coord)
-
         # finish the plot
         post.finish_plot(ax, pause, title, size=size, dpi=dpi)
 
@@ -2423,7 +2421,7 @@ class StressPost:
         """
 
         # create plot and setup the plot
-        (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
+        (fig, ax) = plt.subplots()
         post.setup_plot(ax, pause)
 
         # plot the finite element mesh
@@ -4064,7 +4062,7 @@ class StressPost:
         return self.plot_stress_contour(sigs, title, pause, cmap, normalize=normalize, size=size, dpi=dpi)
 
 
-    def plot_mohrs_circles(self,x,y,pause=True, cmap="coolwarm", size=500, dpi=96):
+    def plot_mohrs_circles(self, x, y, pause=True, cmap="coolwarm", size=500, dpi=96):
         """Plots Mohr's Circles of the 3D stress state at position x,y
 
         :params x,y: Coordinates of the point to draw Mohr's Circle
@@ -4175,7 +4173,7 @@ class StressPost:
             ax.set_aspect(1)
             ax.autoscale_view()
 
-        fig, ax = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
+        fig, ax = plt.subplots()
         plot_circle(ax, (0.5*(sigma_2+sigma_3),0), 0.5*(sigma_2-sigma_3),'r', r"C1: ($\sigma_2$, $\sigma_3$)")
         plot_circle(ax, (0.5*(sigma_1+sigma_3),0), 0.5*(sigma_1-sigma_3),'b', r"C2: ($\sigma_1$, $\sigma_3$)")
         plot_circle(ax, (0.5*(sigma_1+sigma_2),0), 0.5*(sigma_1-sigma_2),'k', r"C3: ($\sigma_1$, $\sigma_2$)")

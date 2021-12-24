@@ -819,7 +819,7 @@ class Geometry:
 
         if ax is None:
             ax_supplied = False
-            (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
+            (fig, ax) = plt.subplots()
             post.setup_plot(ax, pause)
         else:
             ax_supplied = True
@@ -886,8 +886,10 @@ class Geometry:
 
                     ax.annotate(str(i), xy=xy, color="b")
 
-        # if no axes object is supplied, finish the plot
+        # display the legend
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
+        # if no axes object is supplied, finish the plot
         if not ax_supplied:
             post.finish_plot(ax, pause, title="Cross-Section Geometry", size=size, dpi=dpi)
             return (fig, ax)
