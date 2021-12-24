@@ -75,12 +75,13 @@ def test_geometry_from_points():
         [10, 11],
         [11, 7],
     ]
+    control_points = [[0, 0]]
     holes = [[0, 6], [0, -6]]
-    new_geom = Geometry.from_points(points, facets, holes, control_points=[])
+    new_geom = Geometry.from_points(points=points, facets=facets, control_points=control_points, holes=holes)
     assert (
         new_geom.geom.wkt
-        == 'POLYGON ((-6 10, 6 10, 6 -10, -6 -10, -6 10), (-4 8, -4 4, 4 4, 4 8, -4 8), (-4 -8, 4 -8, 4 -4, -4 -4, -4 -8))'
-    )
+        == "POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))"
+    )  # Note, the order of point coordinates can change based on geometry operations, e.g. +/- and how many; seems to be a shapely issue
 
 
 def test_compound_geometry_from_points():
@@ -117,13 +118,70 @@ def test_compound_geometry_from_points():
         [8, 9],
         [9, 6],
     ]
-    holes = []
     control_points = [[0, 0], [0, -2 * a - t / 2]]
-    new_geom = CompoundGeometry.from_points(points, facets, holes, control_points)
+    new_geom = CompoundGeometry.from_points(points, facets, control_points)
     assert (
         new_geom.geom.wkt
         == "MULTIPOLYGON (((-0.05 -2, 0.05 -2, 0.05 -0.05, 1 -0.05, 1 0.05, -0.05 0.05, -0.05 -2)), ((-1 -2, 1 -2, 1 -2.1, -1 -2.1, -1 -2)))"
     )
+
+
+def test_nested_compound_geometry_from_points():
+    """
+    Tests a nested compound geometry can be built .from_points, that the control_points
+    and hole nodes persist in the right locations, and that ...
+    """
+    points = [
+        [-50.0, 50.0],
+        [50.0, 50.0],
+        [50.0, -50.0],
+        [-50.0, -50.0],
+        [37.5, -37.5],
+        [37.5, 37.5],
+        [-37.5, 37.5],
+        [-37.5, -37.5],
+        [25.0, -25.0],
+        [25.0, 25.0],
+        [-25.0, 25.0],
+        [-25.0, -25.0],
+        [12.5, -12.5],
+        [12.5, 12.5],
+        [-12.5, 12.5],
+        [-12.5, -12.5],
+    ]
+    facets = [
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 0],
+        [4, 5],
+        [5, 6],
+        [6, 7],
+        [7, 4],
+        [8, 9],
+        [9, 10],
+        [10, 11],
+        [11, 8],
+        [12, 13],
+        [13, 14],
+        [14, 15],
+        [15, 12],
+    ]
+    control_points = [[-43.75, 0.0], [-31.25, 0.0], [-18.75, 0.0]]
+    holes = [[0, 0]]
+    nested_compound = CompoundGeometry.from_points(
+        points=points, facets=facets, control_points=control_points, holes=holes
+    )
+    assert (
+        nested_compound.geom.wkt
+        == "MULTIPOLYGON (((50 50, 50 -50, -50 -50, -50 50, 50 50), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-37.5 -37.5, -37.5 37.5, 37.5 37.5, 37.5 -37.5, -37.5 -37.5), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-25 -25, -25 25, 25 25, 25 -25, -25 -25), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)))"
+    )
+    assert nested_compound.control_points == [
+        (-43.75, 0.0),
+        (-31.25, 0.0),
+        (-18.75, 0.0),
+    ]
+    assert nested_compound.holes == [(0, 0), (0, 0), (0, 0)]
 
 
 def test_geometry_from_dxf():
@@ -180,12 +238,10 @@ def test_plastic_centroid():
 
 
 def test_geometry_from_3dm_file_simple():
-    section = (
-        pathlib.Path.cwd() / "sectionproperties" / "tests" / "3in x 2in.3dm"
-    )
-    exp = Polygon([(0,0), (0,3), (2,3), (2,0), (0,0)])
+    section = pathlib.Path.cwd() / "sectionproperties" / "tests" / "3in x 2in.3dm"
+    exp = Polygon([(0, 0), (0, 3), (2, 3), (2, 0), (0, 0)])
     test = Geometry.from_3dm(section)
-    assert (test.geom-exp).is_empty
+    assert (test.geom - exp).is_empty
 
 
 def test_geometry_from_3dm_file_complex():
@@ -199,7 +255,7 @@ def test_geometry_from_3dm_file_complex():
         wkt_str = file.readlines()
     exp = wkt.loads(wkt_str[0])
     test = Geometry.from_3dm(section_3dm)
-    assert (test.geom-exp).is_empty
+    assert (test.geom - exp).is_empty
 
 
 def test_geometry_from_3dm_file_compound():
@@ -213,15 +269,13 @@ def test_geometry_from_3dm_file_compound():
         wkt_str = file.readlines()
     exp = [wkt.loads(wkt_str[0]), wkt.loads(wkt_str[1])]
     test = CompoundGeometry.from_3dm(section_3dm)
-    assert (MultiPolygon([ii.geom for ii in test.geoms])-MultiPolygon(exp)).is_empty
+    assert (MultiPolygon([ii.geom for ii in test.geoms]) - MultiPolygon(exp)).is_empty
 
 
 def test_geometry_from_3dm_encode():
-    section_3dm = (
-        pathlib.Path.cwd() / "sectionproperties" / "tests" / "rhino_data.json"
-    )
+    section_3dm = pathlib.Path.cwd() / "sectionproperties" / "tests" / "rhino_data.json"
     with open(section_3dm) as file:
         brep_encoded = json.load(file)
-    exp = Polygon([(0,0), (1,0), (1,1), (0,1), (0,0)])
+    exp = Polygon([(0, 0), (1, 0), (1, 1), (0, 1), (0, 0)])
     test = Geometry.from_rhino_encoding(brep_encoded)
     assert (test.geom-exp).is_empty

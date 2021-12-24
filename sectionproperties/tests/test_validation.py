@@ -41,18 +41,26 @@ def test_angle_all_properties():
     check.almost_equal(angle_section.section_props.r11_c, 5.035048e1)
     check.almost_equal(angle_section.section_props.r22_c, 1.946350e1)
     check.almost_equal(angle_section.section_props.sxx, 1.135392e5)
-    check.almost_equal(angle_section.section_props.syy, 4.572267e4) # Altered from 4.572269e4
+    check.almost_equal(
+        angle_section.section_props.syy, 4.572267e4
+    )  # Altered from 4.572269e4
     check.almost_equal(angle_section.section_props.sf_xx_plus, 1.788366)
     check.almost_equal(angle_section.section_props.sf_xx_minus, 9.207672e-1)
-    check.almost_equal(angle_section.section_props.sf_yy_plus, 1.829943) # Altered from 1.829944
-    check.almost_equal(angle_section.section_props.sf_yy_minus, 5.646721e-1) # Altered from 5.646723e-1
+    check.almost_equal(
+        angle_section.section_props.sf_yy_plus, 1.829943
+    )  # Altered from 1.829944
+    check.almost_equal(
+        angle_section.section_props.sf_yy_minus, 5.646721e-1
+    )  # Altered from 5.646723e-1
     check.almost_equal(angle_section.section_props.s11, 1.210275e5)
     check.almost_equal(angle_section.section_props.s22, 4.376054e4)
     check.almost_equal(angle_section.section_props.sf_11_plus, 1.238049)
     check.almost_equal(angle_section.section_props.sf_11_minus, 1.744103)
     check.almost_equal(angle_section.section_props.sf_22_plus, 1.564994)
     check.almost_equal(angle_section.section_props.sf_22_minus, 2.107303)
-    check.almost_equal(angle_section.section_props.j, 1.354663e5) # Altered from 1.354663e5
+    check.almost_equal(
+        angle_section.section_props.j, 1.354663e5
+    )  # Altered from 1.354663e5
     check.almost_equal(angle_section.section_props.gamma, 162220735.49)
     check.almost_equal(angle_section.section_props.A_s11, 8.855951e2)
     check.almost_equal(angle_section.section_props.A_s22, 1.460240e3)
