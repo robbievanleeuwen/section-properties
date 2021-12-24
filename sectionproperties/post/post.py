@@ -14,7 +14,6 @@ def setup_plot(ax, pause):
 
     if not pause:
         plt.ion()
-        # plt.show()
     else:
         plt.ioff()
 
@@ -32,10 +31,7 @@ def finish_plot(ax, pause, title="", size=1000, dpi=96):
     ax.set_aspect("equal", anchor="C")
     plt.tight_layout()
 
-    if pause:
-        plt.show()
-    else:
-        plt.show()
+    plt.show()
 
 
 def draw_principal_axis(ax, phi, cx, cy):
