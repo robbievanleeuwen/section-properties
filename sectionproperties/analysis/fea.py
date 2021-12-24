@@ -45,7 +45,7 @@ class Tri6:
         """Calculates the geometric properties for the current finite element.
 
         :return: Tuple containing the geometric properties and the elastic and shear moduli of the
-            element: *(area, qx, qy, ixx, iyy, ixy, e, g)*
+            element: *(area, qx, qy, ixx, iyy, ixy, e, g, rho)*
         :rtype: tuple(float)
         """
 
@@ -88,6 +88,7 @@ class Tri6:
             ixy,
             self.material.elastic_modulus,
             self.material.shear_modulus,
+            self.material.density
         )
 
     def torsion_properties(self):

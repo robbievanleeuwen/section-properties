@@ -130,6 +130,11 @@ def print_results(cross_section, fmt):
         print("Perim.\t = {:>{fmt}}".format(perimeter, fmt=fmt))
 
     if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
+        mass = cross_section.get_mass()
+        if mass is not None:
+            print("Mass\t = {:>{fmt}}".format(mass, fmt=fmt))
+
+    if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
         ea = cross_section.get_ea()
         if ea is not None:
             print("E.A\t = {:>{fmt}}".format(ea, fmt=fmt))

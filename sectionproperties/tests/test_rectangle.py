@@ -25,6 +25,7 @@ def test_rectangular_section_geometric():
     check.almost_equal(
         rectangle_section.section_props.perimeter, 2 * 100 + 2 * 50, rel=tol
     )
+    check.almost_equal(rectangle_section.section_props.mass, 1 * 100 * 50, rel=tol)
     check.almost_equal(rectangle_section.section_props.ea, 1 * 100 * 50, rel=tol)
     check.almost_equal(rectangle_section.section_props.qx, 100 * 50 * 50, rel=tol)
     check.almost_equal(rectangle_section.section_props.qy, 100 * 50 * 25, rel=tol)

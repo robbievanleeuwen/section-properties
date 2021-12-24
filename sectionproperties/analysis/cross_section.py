@@ -197,6 +197,7 @@ class Section:
 
         * Cross-sectional area
         * Cross-sectional perimeter
+        * Cross-sectional mass
         * Modulus weighted area (axial rigidity)
         * First moments of area
         * Second moments of area about the global axis
@@ -220,6 +221,7 @@ class Section:
             # initialise properties
             self.section_props.area = 0
             self.section_props.perimeter = 0
+            self.section_props.mass = 0
             self.section_props.ea = 0
             self.section_props.ga = 0
             self.section_props.qx = 0
@@ -233,8 +235,9 @@ class Section:
 
             # calculate global geometric properties
             for el in self.elements:
-                (area, qx, qy, ixx_g, iyy_g, ixy_g, e, g) = el.geometric_properties()
+                (area, qx, qy, ixx_g, iyy_g, ixy_g, e, g, rho) = el.geometric_properties()
                 self.section_props.area += area
+                self.section_props.mass += area * rho
                 self.section_props.ea += area * e
                 self.section_props.ga += area * g
                 self.section_props.qx += qx * e
@@ -687,7 +690,7 @@ class Section:
 
             # calculate global geometric properties
             for el in self.elements:
-                (area, qx, qy, ixx_g, iyy_g, ixy_g, e, _) = el.geometric_properties()
+                (area, qx, qy, ixx_g, iyy_g, ixy_g, e, _, _) = el.geometric_properties()
 
                 self.section_props.area += area
                 self.section_props.ea += area * e
@@ -1080,12 +1083,12 @@ class Section:
             from sectionproperties.analysis.cross_section import Section
 
             steel = Material(
-                name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
-                color='grey'
+                name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
+                yield_strength=250, color='grey'
             )
             timber = Material(
-                name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
-                color='burlywood'
+                name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, density=6.5e-7,
+                yield_strength=20, color='burlywood'
             )
 
             geom_steel = sections.rectangular_section(d=50, b=50, material=steel)
@@ -1370,6 +1373,20 @@ class Section:
         """
 
         return self.section_props.perimeter
+
+    def get_mass(self):
+        """
+        :return: Cross-section mass
+        :rtype: float
+
+        ::
+
+            section = Section(geometry)
+            section.calculate_geometric_properties()
+            perimeter = section.get_mass()
+        """
+
+        return self.section_props.mass
 
     def get_ea(self):
         """
@@ -2539,12 +2556,12 @@ class StressPost:
             from sectionproperties.analysis.cross_section import Section
 
             steel = Material(
-                name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=250,
-                color='grey'
+                name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
+                yield_strength=250, color='grey'
             )
             timber = Material(
-                name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
-                color='burlywood'
+                name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, density=6.5e-7,
+                yield_strength=20, color='burlywood'
             )
 
             geom_steel = sections.rectangular_section(d=50, b=50, material=steel)
@@ -4375,6 +4392,7 @@ class SectionProperties:
 
     :cvar float area: Cross-sectional area
     :cvar float perimeter: Cross-sectional perimeter
+    :cvar float mass: Cross-sectional mass
     :cvar float ea: Modulus weighted area (axial rigidity)
     :cvar float ga: Modulus weighted product of shear modulus and area
     :cvar float nu_eff: Effective Poisson's ratio
@@ -4475,6 +4493,7 @@ class SectionProperties:
 
     area: Optional[float] = None
     perimeter: Optional[float] = None
+    mass: Optional[float] = None
     ea: Optional[float] = None
     ga: Optional[float] = None
     nu_eff: Optional[float] = None

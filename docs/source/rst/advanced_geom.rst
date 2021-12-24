@@ -42,8 +42,8 @@ Assign a unique material to each geometry::
 
     from sectionproperties.pre.pre import Material
 
-    mat1 = Material("Material_1", 200e3, 0.3, 400, "red")
-    mat2 = Material("Material_2", 150e3, 0.2, 200, "blue")  # Just some differing properties
+    mat1 = Material("Material_1", 200e3, 0.3, 100, 400, "red")
+    mat2 = Material("Material_2", 150e3, 0.2, 100, 200, "blue")  # Just some differing properties
 
     i_sec1.material = mat1
     i_sec2.material = mat2
@@ -172,10 +172,10 @@ Here, we will simply combine two squares with the default material::
     :scale: 100 %
 
 From the shapely vector representation, we can see that the squares are shaded red.
-This indicates an `"invalid" geometry from shapely's perspective <https://shapely.readthedocs.io/en/stable/manual.html#polygons>`_ 
+This indicates an `"invalid" geometry from shapely's perspective <https://shapely.readthedocs.io/en/stable/manual.html#polygons>`_
 because there are two polygons that share an edge. For this geometry, the intention is to have two squares
 that are connected on one side and so the red shading provided by the shapely representation tells us that
-we are getting what we expect. 
+we are getting what we expect.
 
 Now, say this is not our final geometry and we actually want to have it rotated by 30 degrees::
 
@@ -183,7 +183,7 @@ Now, say this is not our final geometry and we actually want to have it rotated 
 
 ..  figure:: ../images/examples/two_squares_basic_rotated.png
     :align: center
-    :scale: 100 %  
+    :scale: 100 %
 
 Here, we can see that the shapely representation is now showing as green indicating a "valid" shapely geometry.
 Even though it is now valid for shapely, because it is green we know that these two polygons no longer share an edge
@@ -204,11 +204,11 @@ do not perfectly align, they will be considered as discontinuous.
 
 ..  figure:: ../images/examples/two_squares_basic_rotated_plot.png
     :align: center
-    :scale: 100 %  
+    :scale: 100 %
 
 To remedy this, take the same approach as in the preceding example by creating intermediate nodes where the two polygons
 intersect by using set operations. If we subtract ``s2`` from ``s1`` then we will have the larger square with intermediate nodes created::
-    
+
     (s1 - s2).plot_geometry(labels=['points'])
 
 .. figure:: ../images/examples/two_squares_large_square_int_points.png
