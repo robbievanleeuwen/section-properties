@@ -37,6 +37,12 @@ Section Perimeter
 ..  automethod:: sectionproperties.analysis.cross_section.Section.get_perimeter
     :noindex:
 
+Section Mass
+^^^^^^^^^^^^
+
+..  automethod:: sectionproperties.analysis.cross_section.Section.get_mass
+    :noindex:
+
 Axial Rigidity
 ^^^^^^^^^^^^^^
 

@@ -44,8 +44,8 @@ class. The following example creates a steel material object::
 
       from sectionproperties.pre.pre import Material
 
-      steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
-                       color='grey')
+      steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
+                       yield_strength=500, color='grey')
 
 Refer to :ref:`label-geom_mesh` for a more detailed explanation of the pre-processing
 stage.
@@ -76,8 +76,8 @@ property::
   from sectionproperties.pre.pre import Material
 
 
-  steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
-                   color='grey')
+  steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
+                   yield_strength=500, color='grey')
   geometry = sections.circular_section(d=50, n=64, material=steel)
   geometry.create_mesh(mesh_sizes=[2.5])  # Adds the mesh to the geometry
 
