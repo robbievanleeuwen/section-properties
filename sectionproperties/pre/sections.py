@@ -107,7 +107,7 @@ class Geometry:
         points: List[List[float]],
         facets: List[List[int]],
         control_points: List[List[float]],
-        holes: Optional[List[List[float]]],
+        holes: Optional[List[List[float]]] = None,
         material: Optional[pre.Material] = pre.DEFAULT_MATERIAL,
     ):
         """
@@ -123,16 +123,20 @@ class Geometry:
             Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
             interior perimeter 2, etc.
         :vartype facets: list[list[int, int]]
-        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-            being holes or voids. The point can be located anywhere within the hole region. 
-            Only one point is required per hole region.
-        :vartype holes: list[list[float, float]]
         :cvar control_points: An *(x, y)* coordinate that describes the distinct, contiguous,
             region of a single material within the geometry. Must be entered as a list of coordinates,
             e.g. [[0.5, 3.2]]
-            Exactly one point is required for each geometry with a distinct material. 
+            Exactly one point is required for each geometry with a distinct material.
             If there are multiple distinct regions, then use CompoundGeometry.from_points()
         :vartype control_point: list[float, float]
+        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
+            being holes or voids. The point can be located anywhere within the hole region.
+            Only one point is required per hole region.
+        :vartype holes: list[list[float, float]]
+        :cvar materials: Optional. A list of sectionproperties.pre.pre.Material objects that are to be
+            assigned, in order, to the regions defined by the given control_points. If not given, then
+            the sectionproperties.pre.pre.DEFAULT_MATERIAL will be used for each region.
+        :vartype materials: list[sectionproperties.pre.pre.Material]
         """
         if len(control_points) != 1:
             raise ValueError(
@@ -203,16 +207,16 @@ class Geometry:
     def from_3dm(cls, filepath: Union[str, pathlib.Path], **kwargs) -> Geometry:
         """Class method to create a `Geometry` from the objects in a Rhino `.3dm` file.
 
-        :param filepath: 
+        :param filepath:
             File path to the rhino `.3dm` file.
         :type filepath: Union[str, pathlib.Path]
         :param \**kwargs:
             See below.
-        :raises RuntimeError: 
-            A RuntimeError is raised if two or more polygons are found. 
-            This is dependent on the keyword arguments. 
-            Try adjusting the keyword arguments if this error is raised. 
-        :return: 
+        :raises RuntimeError:
+            A RuntimeError is raised if two or more polygons are found.
+            This is dependent on the keyword arguments.
+            Try adjusting the keyword arguments if this error is raised.
+        :return:
             A Geometry object.
         :rtype: :class:`sectionproperties.pre.sections.Geometry`
 
@@ -220,7 +224,7 @@ class Geometry:
             * *refine_num* (``int, optional``) --
                 Bézier curve interpolation number. In Rhino a surface's edges are nurb based curves.
                 Shapely does not support nurbs, so the individual Bézier curves are interpolated using straight lines.
-                This parameter sets the number of straight lines used in the interpolation. 
+                This parameter sets the number of straight lines used in the interpolation.
                 Default is 1.
             * *vec1* (``numpy.ndarray, optional``) --
                 A 3d vector in the Shapely plane. Rhino is a 3D geometry environment.
@@ -258,12 +262,12 @@ class Geometry:
     def from_rhino_encoding(cls, r3dm_brep: str, **kwargs) -> Geometry:
         """Load an encoded single surface planer brep.
 
-        :param r3dm_brep: 
+        :param r3dm_brep:
             A Rhino3dm.Brep encoded as a string.
         :type r3dm_brep: str
         :param \**kwargs:
             See below.
-        :return: 
+        :return:
             A Geometry object found in the encoded string.
         :rtype: :class:`sectionproperties.pre.sections.Geometry`
 
@@ -271,7 +275,7 @@ class Geometry:
             * *refine_num* (``int, optional``) --
                 Bézier curve interpolation number. In Rhino a surface's edges are nurb based curves.
                 Shapely does not support nurbs, so the individual Bézier curves are interpolated using straight lines.
-                This parameter sets the number of straight lines used in the interpolation. 
+                This parameter sets the number of straight lines used in the interpolation.
                 Default is 1.
             * *vec1* (``numpy.ndarray, optional``) --
                 A 3d vector in the Shapely plane. Rhino is a 3D geometry environment.
@@ -293,7 +297,7 @@ class Geometry:
                 Controls if only the rhino surfaces that have the same normal as the Shapely plane are yielded.
                 If true, all non parallel surfaces are filtered out.
                 Default is False.
-        """ 
+        """
         return cls(geom = rhino_importer.load_brep_encoding(r3dm_brep, **kwargs)[0])
 
     def create_facets_and_control_points(self):
@@ -961,7 +965,7 @@ class Geometry:
         try:
             new_polygon = self.geom | other.geom
             if isinstance(new_polygon, MultiPolygon):
-                
+
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
@@ -1098,11 +1102,11 @@ class CompoundGeometry(Geometry):
         facets: List[List[int]],
         control_points: List[List[float]],
         holes: Optional[List[List[float]]] = None,
-        materials: Optional[List[pre.Material]] = None,
+        materials: Optional[List[pre.Material]] = pre.DEFAULT_MATERIAL,
     ):
         """
         An interface for the creation of CompoundGeometry objects through the definition of points,
-        facets, holes, and control_points. Geometries created through this method are expected to 
+        facets, holes, and control_points. Geometries created through this method are expected to
         be non-ambiguous meaning that no "overlapping" geometries exists and that nodal connectivity
         is maintained (e.g. there are no nodes "overlapping" with facets without nodal connectivity).
 
@@ -1115,10 +1119,6 @@ class CompoundGeometry(Geometry):
             Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
             interior perimeter 2, etc.
         :vartype facets: list[list[int]]
-        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-            being holes or voids. The point can be located anywhere within the hole region.
-            Only one point is required per hole region.
-        :vartype holes: list[list[float]]
         :cvar control_points: Optional. A list of points *(x, y)* that define non-interior regions as
             being distinct, contiguous, and having one material. The point can be located anywhere within
             region. Only one point is permitted per region. The order of control_points must be given in the
@@ -1126,6 +1126,10 @@ class CompoundGeometry(Geometry):
             If not given, then points will be assigned automatically using
             shapely.geometry.Polygon.representative_point()
         :vartype control_points: list[list[float]]
+        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
+            being holes or voids. The point can be located anywhere within the hole region.
+            Only one point is required per hole region.
+        :vartype holes: list[list[float]]
         :cvar materials: Optional. A list of sectionproperties.pre.pre.Material objects that are to be
             assigned, in order, to the regions defined by the given control_points. If not given, then
             the sectionproperties.pre.pre.DEFAULT_MATERIAL will be used for each region.
@@ -1151,7 +1155,7 @@ class CompoundGeometry(Geometry):
                 continue
             prev_j_idx = prev_facet[1]
             if i_idx != prev_j_idx:  # If there is a break in the chain of edges...
-                # ... then add the last point, close off the polygon, 
+                # ... then add the last point, close off the polygon,
                 # and add the polygon to the all_polygons accumulator....
                 current_polygon_points.append(points[prev_j_idx])
                 all_polygons.append(Polygon(current_polygon_points))
@@ -1169,7 +1173,7 @@ class CompoundGeometry(Geometry):
         # Then classify all of the collected polygons as either "exterior" or "interior"
         exteriors = []
         interiors = []
-        
+
         for polygon in all_polygons:
             hole_coord_in_polygon = (
                 [hole_coord for hole_coord in holes if polygon.contains(Point(hole_coord))]
@@ -1203,7 +1207,7 @@ class CompoundGeometry(Geometry):
                     punched_exterior = punched_exterior - interior
                     try:
                         exterior_control_point = next(
-                            control_point for control_point in control_points 
+                            control_point for control_point in control_points
                             if punched_exterior.contains(Point(control_point))
                             )
                     except StopIteration:
@@ -1213,19 +1217,19 @@ class CompoundGeometry(Geometry):
                             )
                 exterior_geometry = Geometry(punched_exterior, control_points=exterior_control_point)
                 punched_exterior_geometries.append(exterior_geometry)
-            
+
         return CompoundGeometry(punched_exterior_geometries)
 
     @classmethod
     def from_3dm(cls, filepath: Union[str, pathlib.Path], **kwargs) -> CompoundGeometry:
         """Class method to create a `CompoundGeometry` from the objects in a Rhino `3dm` file.
 
-        :param filepath: 
+        :param filepath:
             File path to the rhino `.3dm` file.
         :type filepath: Union[str, pathlib.Path]
         :param \**kwargs:
             See below.
-        :return: 
+        :return:
             A `CompoundGeometry` object.
         :rtype: :class:`sectionproperties.pre.sections.CompoundGeometry`
 
@@ -1233,7 +1237,7 @@ class CompoundGeometry(Geometry):
             * *refine_num* (``int, optional``) --
                 Bézier curve interpolation number. In Rhino a surface's edges are nurb based curves.
                 Shapely does not support nurbs, so the individual Bézier curves are interpolated using straight lines.
-                This parameter sets the number of straight lines used in the interpolation. 
+                This parameter sets the number of straight lines used in the interpolation.
                 Default is 1.
             * *vec1* (``numpy.ndarray, optional``) --
                 A 3d vector in the Shapely plane. Rhino is a 3D geometry environment.
@@ -1255,7 +1259,7 @@ class CompoundGeometry(Geometry):
                 Controls if only the rhino surfaces that have the same normal as the Shapely plane are yielded.
                 If true, all non parallel surfaces are filtered out.
                 Default is False.
-        """  
+        """
         list_poly = rhino_importer.load_3dm(filepath, **kwargs)
         return cls(geoms = MultiPolygon(list_poly))
 
