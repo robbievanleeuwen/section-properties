@@ -824,6 +824,8 @@ class Geometry:
             ax_supplied = True
 
         for (i, f) in enumerate(self.facets):
+            linewidth = 1.5
+
             # plot the points and facets
             if i == 0:
                 ax.plot(
@@ -1489,11 +1491,16 @@ class CompoundGeometry(Geometry):
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_geometry = compound.offset_section_perimeter(amount=-3)
         """
-        geoms_acc = []
-        for geom in self.geoms:
-            geoms_acc.append(geom.offset_perimeter(amount, where, resolution))
-        new_geom = CompoundGeometry(geoms_acc)
-        return new_geom
+        # geoms_acc = []
+        # for geom in self.geoms:
+        #     geoms_acc.append(geom.offset_perimeter(amount, where, resolution))
+        # new_geom = CompoundGeometry(geoms_acc)
+        # return new_geom
+
+        unionized_poly = unary_union([geom.geom for geom in self.geoms])
+        geom = Geometry(unionized_poly)
+        return geom.offset_perimeter(amount, where, resolution)
+
 
     def compile_geometry(self):
         """
