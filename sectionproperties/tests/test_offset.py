@@ -2,6 +2,8 @@ import pytest_check as check
 import numpy as np
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import Section
+from shapely.geometry import Polygon
+from sectionproperties.pre.sections import Geometry
 
 
 r_tol = 1e-3
@@ -81,17 +83,17 @@ def test_box_offset():
     check.almost_equal(section.get_area(), area, rel=r_tol)
 
 def test_compound_rectangular_offset():
-    # This fails to generate the correct offset geometry
     rect1 = sections.rectangular_section(d=50, b=50)
     rect2 = sections.rectangular_section(d=50, b=50).align_to(rect1, "right")
     geom = rect1 + rect2
     geom = geom.offset_perimeter(amount=-5, where='exterior')
     geom.create_mesh([50])
     section = Section(geom)
-    section.plot_mesh()
+    section.calculate_geometric_properties()
+    area = 90 * 40
+    check.almost_equal(section.get_area(), area, rel=r_tol)
 
-def test_compound_rectangular_isection_offset():
-    # This fails to generate the correct offset geometry
+def test_compound_rectangular_isection_offset_corrode():
     d = 300
     b = 150
     tf = 10
@@ -101,8 +103,36 @@ def test_compound_rectangular_isection_offset():
     t_p = 16
     ub = sections.i_section(d=d, b=b, t_f=tf, t_w=tw, r=r, n_r=16)
     plate = sections.rectangular_section(b=b_p, d=t_p).align_center(ub).align_to(ub, on="top")
-    geom = ub + plate
-    geom = geom.offset_perimeter(amount=-2, where='exterior')
-    geom.create_mesh([100])
-    section = Section(geom)
-    section.plot_mesh()
+    geom_test = ub + plate
+    geom_test = geom_test.offset_perimeter(amount=-2, where='exterior')
+    geom_test.create_mesh([100])
+    section_test = Section(geom_test)
+    section_test.calculate_geometric_properties()
+
+    ub_corroded = sections.mono_i_section(d=298, b_t=146, b_b=146, t_ft=8, t_fb=6, t_w=4, r=14, n_r=16)
+    plate_corroded1 = sections.rectangular_section(b=146, d=2).align_center(ub_corroded).align_to(ub_corroded, "top")
+    plate_corroded2 = sections.rectangular_section(b=246, d=12).align_center(ub_corroded).align_to(plate_corroded1, "top")
+    rad_l = draw_radius(2, 8).align_to(plate_corroded1, "left").align_to(plate_corroded2, "bottom")
+    rad_r = draw_radius(2, 8).mirror_section('y',[2,0]).align_to(plate_corroded1, "right").align_to(plate_corroded2, "bottom")
+    geom_corroded = ub_corroded + plate_corroded1 + plate_corroded2 + rad_l + rad_r
+    geom_corroded.create_mesh([100])
+    section_corroded = Section(geom_corroded)
+    section_corroded.calculate_geometric_properties()
+
+    check.almost_equal(section_test.get_area(), section_corroded.get_area(), rel=r_tol)
+
+def draw_radius(r, n):
+    points = []
+
+    # calculate radius of points
+    for i in range(n):
+        # determine angle
+        t = i * 1.0 / max(1, n - 1) * np.pi * 0.5
+
+        x = r * np.cos(t)
+        y = r * np.sin(t)
+        points.append([x, y])
+
+    points.append([r, r])
+
+    return Geometry(Polygon(points))
