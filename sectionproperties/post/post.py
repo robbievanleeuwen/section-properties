@@ -27,7 +27,6 @@ def finish_plot(ax, pause, title="", size=500, dpi=96):
         set to false, the script continues immediately after the window is rendered.
     :param str title: Plot title
     """
-    ax.set_title(title, fontdict={"fontsize": 2*size/dpi})
     ax.set_aspect("equal", anchor="C")
     plt.tight_layout()
 
@@ -42,6 +41,9 @@ def finish_plot(ax, pause, title="", size=500, dpi=96):
 
     fig.set_size_inches(new_size)
     fig.set_dpi(dpi)
+    ax.set_title(title, fontdict={"fontsize": 4*size/dpi})
+    ax.tick_params(labelsize=2.5*size/dpi)
+    
 
     plt.show()
 
