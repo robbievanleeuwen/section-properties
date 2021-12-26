@@ -1491,15 +1491,42 @@ class CompoundGeometry(Geometry):
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_geometry = compound.offset_section_perimeter(amount=-3)
         """
-        # geoms_acc = []
-        # for geom in self.geoms:
-        #     geoms_acc.append(geom.offset_perimeter(amount, where, resolution))
-        # new_geom = CompoundGeometry(geoms_acc)
-        # return new_geom
+        if amount < 0: # Eroding condition
+            unionized_poly = unary_union([geom.geom for geom in self.geoms])
+            offset_geom = Geometry(unionized_poly).offset_perimeter(amount, where, resolution)
 
-        unionized_poly = unary_union([geom.geom for geom in self.geoms])
-        geom = Geometry(unionized_poly)
-        return geom.offset_perimeter(amount, where, resolution)
+            # Using the offset_geom as a "mask"
+            geoms_acc = []
+            for geom in self.geoms:
+                # Use symmetric intersection to find the region of the original
+                # that intersects with the eroded unionized shape
+                geoms_acc.append(geom & offset_geom) 
+            new_geom = CompoundGeometry(geoms_acc)
+            return new_geom
+
+        elif amount > 0: # Ballooning condition
+            # This produces predictable results up to a point.
+            # That point is when the offset is so great it exceeds the thickness
+            # of the material at an interface of two materials.
+            # e.g. A 50 deep plate on top of the top flange of an I-section with a flange depth of 10
+            # When the offset exceeds 10 (the depth of the flange at the intersection), the meshed
+            # material regions will become unpredictable.
+            
+            geoms_acc = []
+            for i_idx, geom in enumerate(self.geoms):
+                # Offset each geom...
+                offset_geom = geom.offset_perimeter(amount, where, resolution)
+                for j_idx, orig_geom in enumerate(self.geoms):
+                    if i_idx != j_idx:
+                        # ... then remove the parts that intersect with the other
+                        # constituents of the compound geometry (because they are
+                        # occupying that space already)
+                        offset_geom = offset_geom - orig_geom
+                geoms_acc.append(offset_geom) 
+            new_geom = CompoundGeometry(geoms_acc)
+            return new_geom
+        else:
+            return self
 
 
     def compile_geometry(self):
