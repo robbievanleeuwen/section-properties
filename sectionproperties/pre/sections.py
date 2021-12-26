@@ -1500,7 +1500,10 @@ class CompoundGeometry(Geometry):
             for geom in self.geoms:
                 # Use symmetric intersection to find the region of the original
                 # that intersects with the eroded unionized shape
-                geoms_acc.append(geom & offset_geom) 
+                try:
+                    geoms_acc.append(geom & offset_geom)
+                except ValueError:
+                    raise ValueError(f"Try a smaller offset. Section as completely eroded away...")
             new_geom = CompoundGeometry(geoms_acc)
             return new_geom
 
