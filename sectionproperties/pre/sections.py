@@ -16,7 +16,6 @@ from shapely.ops import split, unary_union
 import shapely
 import matplotlib
 import matplotlib.pyplot as plt
-# from IPython.display import display_svg
 import sectionproperties.pre.pre as pre
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
@@ -780,7 +779,7 @@ class Geometry:
             )
         return new_geom
 
-    def plot_geometry(self, ax: Optional[matplotlib.axes.Axes]=None, labels=["control_points"], size=500, dpi=96, pause=False):
+    def plot_geometry(self, ax: Optional[matplotlib.axes.Axes]=None, labels=["control_points"], size=500, dpi=96, pause=True):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
         figure and axis is created. Allows for 'size' and 'dpi' arguments to be given however the
         function dynamically sizes nodes and lineweights so that they appear appropriately sized at
@@ -821,11 +820,11 @@ class Geometry:
         # if no axes object is supplied, create and setup the plot
         perimeter = None  # To be implemented for CompoundGeometry at a later date
         fig = None
-        # plt.figure(figsize=(2*width, width), dpi=100)
+
         if ax is None:
             ax_supplied = False
-            (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
-            # post.setup_plot(ax, pause)
+            (fig, ax) = plt.subplots()
+            post.setup_plot(ax, pause)
         else:
             ax_supplied = True
 
@@ -891,8 +890,10 @@ class Geometry:
 
                     ax.annotate(str(i), xy=xy, color="b")
 
-        # if no axes object is supplied, finish the plot
+        # display the legend
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
+        # if no axes object is supplied, finish the plot
         if not ax_supplied:
             post.finish_plot(ax, pause, title="Cross-Section Geometry", size=size, dpi=dpi)
             return (fig, ax)
