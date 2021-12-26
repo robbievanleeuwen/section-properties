@@ -14,12 +14,11 @@ def setup_plot(ax, pause):
 
     if not pause:
         plt.ion()
-        # plt.show()
     else:
         plt.ioff()
 
 
-def finish_plot(ax, pause, title="", size=1000, dpi=96):
+def finish_plot(ax, pause, title="", size=500, dpi=96):
     """Executes code required to finish a matplotlib figure.
 
     :param ax: Axes object on which to plot
@@ -28,14 +27,24 @@ def finish_plot(ax, pause, title="", size=1000, dpi=96):
         set to false, the script continues immediately after the window is rendered.
     :param str title: Plot title
     """
-    ax.set_title(title, fontdict={"fontsize": 2*size/dpi})
     ax.set_aspect("equal", anchor="C")
     plt.tight_layout()
 
-    if pause:
-        plt.show()
+    fig = plt.gcf()
+    fig_size = fig.get_size_inches() * fig.dpi
+    fig_ratio = fig_size[0] / fig_size[1]
+
+    if fig_ratio > 1:
+        new_size = [size * fig_ratio / dpi, size / dpi]
     else:
-        plt.show()
+        new_size = [size / dpi, size * fig_ratio / dpi]
+
+    fig.set_size_inches(new_size)
+    fig.set_dpi(dpi)
+    ax.set_title(title, fontdict={"fontsize": 4*size/dpi})
+    ax.tick_params(labelsize=2.5*size/dpi)
+
+    plt.show()
 
 
 def draw_principal_axis(ax, phi, cx, cy):
