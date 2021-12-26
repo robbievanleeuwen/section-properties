@@ -824,7 +824,7 @@ class Geometry:
             ax_supplied = True
 
         for (i, f) in enumerate(self.facets):
-            linewidth = 1.5
+            linewidth = 0.15*size/dpi
 
             # plot the points and facets
             if i == 0:
@@ -1511,7 +1511,7 @@ class CompoundGeometry(Geometry):
             # e.g. A 50 deep plate on top of the top flange of an I-section with a flange depth of 10
             # When the offset exceeds 10 (the depth of the flange at the intersection), the meshed
             # material regions will become unpredictable.
-            
+
             geoms_acc = []
             for i_idx, geom in enumerate(self.geoms):
                 # Offset each geom...
