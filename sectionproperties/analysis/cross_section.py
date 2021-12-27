@@ -79,7 +79,7 @@ class Section:
             raise ValueError(
                 "Selected Geometry or CompoundGeometry "
                 "object does not contain a mesh.\n"
-                "Try running {geometry}.create_mesh() before adding to"
+                "Try running {geometry}.create_mesh() before adding to "
                 "a Section object for analysis."
             )
         self.geometry = geometry
