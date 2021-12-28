@@ -8,3 +8,4 @@ meshpy
 Sphinx
 sphinx-rtd-theme
 sphinx-gallery
+rhino-shapley-interop
