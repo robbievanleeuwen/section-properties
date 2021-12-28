@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import List, Optional, Union, Tuple
+from ntpath import join
+from typing import List, Optional, Union, Tuple, Any
 
 import copy
 import pathlib
@@ -8,9 +9,11 @@ import numpy as np
 from shapely.geometry import (
     Polygon,
     MultiPolygon,
+    LineString,
     LinearRing,
     Point,
     box,
+    GeometryCollection
 )
 from shapely.ops import split, unary_union
 import shapely
@@ -20,6 +23,9 @@ import sectionproperties.pre.pre as pre
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
 import sectionproperties.pre.rhino as rhino_importer
+
+## DEBUGGING
+from IPython.display import display_svg
 
 class Geometry:
     """Class for defining the geometry of a contiguous section of a single material.
@@ -52,8 +58,10 @@ class Geometry:
         if isinstance(geom, MultiPolygon):
             raise ValueError(f"Use CompoundGeometry(...) for a MultiPolygon object.")
         if not isinstance(geom, Polygon):
+            print("Init geom")
+            display_svg(geom)
             raise ValueError(
-                f"Argument is not a valid shapely.geometry.Polygon object: {geom}"
+                f"Argument is not a valid shapely.geometry.Polygon object: {repr(geom)}"
             )
         self.assigned_control_point = None
         if control_points is not None and len(control_points) == 2:
@@ -659,7 +667,7 @@ class Geometry:
         if self.geom.interiors and where == "interior":
             exterior_polygon = Polygon(self.geom.exterior)
             for interior in self.geom.interiors:
-                buffered_interior = Polygon(interior).buffer(distance=amount, join_style=1, resolution=resolution)
+                buffered_interior = buffer_polygon(Polygon(interior), amount, resolution)
                 exterior_polygon = exterior_polygon - buffered_interior
             if isinstance(exterior_polygon, MultiPolygon):
                 return CompoundGeometry([Geometry(poly, self.material) for poly in exterior_polygon])
@@ -674,12 +682,12 @@ class Geometry:
 
         elif where == "exterior":
             exterior_polygon = Polygon(self.geom.exterior)
-            buffered_exterior = exterior_polygon.buffer(distance=amount, join_style=1, resolution=resolution)
+            buffered_exterior = buffer_polygon(exterior_polygon, amount, resolution)
             for interior in self.geom.interiors:
                 interior_poly = Polygon(interior)
                 buffered_exterior = buffered_exterior - interior_poly
             if isinstance(buffered_exterior, MultiPolygon):
-                return CompoundGeometry([Geometry(poly, self.material) for poly in buffered_exterior])
+                return CompoundGeometry([Geometry(poly, self.material) for poly in buffered_exterior.geoms])
 
             # Check to see if assigned_control_point is still valid
             if self.assigned_control_point and buffered_exterior.contains(self.assigned_control_point):
@@ -687,9 +695,7 @@ class Geometry:
             return Geometry(buffered_exterior, self.material)
 
         elif where == "all":
-            buffered_geom = self.geom.buffer(
-                distance=amount, join_style=1, resolution=resolution
-            )
+            buffered_geom = buffer_polygon(self.geom, amount, resolution)
             if isinstance(buffered_geom, MultiPolygon):
                 compound_geom = CompoundGeometry(
                     [Geometry(poly, self.material) for poly in buffered_geom]
@@ -951,13 +957,14 @@ class Geometry:
         """
         material = self.material or other.material
         try:
-            new_polygon = self.geom | other.geom
+            new_polygon = filter_non_polygons(self.geom | other.geom)
             if isinstance(new_polygon, MultiPolygon):
 
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
             return Geometry(new_polygon, material, self.control_points[0])
+
         except:
             raise ValueError(
                 f"Cannot perform 'union' on these two objects: {self} | {other}"
@@ -969,7 +976,7 @@ class Geometry:
         """
         material = self.material or other.material
         try:
-            new_polygon = self.geom ^ other.geom
+            new_polygon = filter_non_polygons(self.geom ^ other.geom)
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
@@ -986,7 +993,7 @@ class Geometry:
         """
         material = self.material or other.material
         try:
-            new_polygon = self.geom - other.geom
+            new_polygon = filter_non_polygons(self.geom - other.geom)
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
@@ -1017,7 +1024,8 @@ class Geometry:
         """
         material = self.material or other.material
         try:
-            new_polygon = self.geom & other.geom
+            new_polygon = filter_non_polygons(self.geom & other.geom)
+            print(type(new_polygon))
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
@@ -1494,6 +1502,9 @@ class CompoundGeometry(Geometry):
         if amount < 0: # Eroding condition
             unionized_poly = unary_union([geom.geom for geom in self.geoms])
             offset_geom = Geometry(unionized_poly).offset_perimeter(amount, where, resolution)
+            print("Offset geom: ")
+            display_svg(offset_geom)
+            print("After offset geom")
 
             # Using the offset_geom as a "mask"
             geoms_acc = []
@@ -1503,6 +1514,8 @@ class CompoundGeometry(Geometry):
                 try:
                     geoms_acc.append(geom & offset_geom)
                 except ValueError:
+                    print("Error geom:")
+                    display_svg(geom.geom & offset_geom.geom)
                     raise ValueError(f"Try a smaller offset. Section as completely eroded away...")
             new_geom = CompoundGeometry(geoms_acc)
             return new_geom
@@ -1714,6 +1727,48 @@ def create_points_and_facets(shape: Polygon, tol=12) -> tuple:
         points += int_points
 
     return points, facets
+
+def buffer_polygon(polygon: Polygon, amount: float, resolution: int):
+    buffered_polygon = polygon.buffer(distance=amount, join_style=1, resolution=resolution)
+    if isinstance(buffered_polygon, GeometryCollection):
+        remaining_polygons = []
+        for item in buffered_polygon.geoms:
+            if isinstance(item, Polygon):
+                remaining_polygons.append(Polygon)
+        if len(remaining_polygons) == 1:
+            return remaining_polygons[0]
+        else:
+            return MultiPolygon(remaining_polygons)
+    elif isinstance(buffered_polygon, MultiPolygon) or isinstance(buffered_polygon, Polygon):
+        return buffered_polygon
+    else:
+        return Polygon()
+
+
+def filter_non_polygons(input_geom: Union[GeometryCollection, LineString, Point, Polygon, MultiPolygon]) -> Union[Polygon, MultiPolygon]:
+    """
+    Returns a Polygon or a MultiPolygon representing any such Polygon on MultiPolygon that
+    may exist in the 'input_geom'. If 'input_geom' is a LineString or Point, an empty Polygon is
+    returned.
+    """
+    if isinstance(input_geom, (Polygon, MultiPolygon)):
+        return input_geom
+    elif isinstance(input_geom, GeometryCollection):
+        acc = []
+        for item in input_geom.geoms:
+            print("Item: ", item)
+            if isinstance(item, MultiPolygon):
+                acc.append(item)
+            elif isinstance(item, Polygon):
+                acc.append(item)
+        if len(acc) == 0:
+            return Polygon()
+        elif len(acc) == 1:
+            return acc[0]
+        else:
+            return MultiPolygon(acc)
+    elif isinstance(input_geom, (Point, LineString)):
+        return Polygon()
 
 
 def draw_radius(
