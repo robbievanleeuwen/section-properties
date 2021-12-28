@@ -13,7 +13,7 @@ from shapely.geometry import (
     LinearRing,
     Point,
     box,
-    GeometryCollection
+    GeometryCollection,
 )
 from shapely.ops import split, unary_union
 import shapely
@@ -23,6 +23,7 @@ import sectionproperties.pre.pre as pre
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
 import sectionproperties.pre.rhino as rhino_importer
+
 
 class Geometry:
     """Class for defining the geometry of a contiguous section of a single material.
@@ -70,7 +71,9 @@ class Geometry:
         self.holes = []
         self.perimeter = []
         self._recovery_points = []
-        self.tol = 12 # Represents num of decimal places of precision for point locations
+        self.tol = (
+            12  # Represents num of decimal places of precision for point locations
+        )
         self.compile_geometry()
 
     def _repr_svg_(self):
@@ -146,7 +149,7 @@ class Geometry:
                 "one x, y coordinate and entered as a list of list of float, e.g. [[0.1, 3.4]]."
                 "CompoundGeometry.from_points() can accept multiple control points\n"
                 f"Control points received: {control_points}"
-                )
+            )
         if holes is None:
             holes = []
         prev_facet = []
@@ -192,11 +195,15 @@ class Geometry:
         exterior_geometry = Polygon(exterior)
         interior_polys = [Polygon(interior) for interior in interiors]
         interior_geometry = MultiPolygon(interior_polys)
-        geometry = Geometry(exterior_geometry - interior_geometry, material, control_points)
+        geometry = Geometry(
+            exterior_geometry - interior_geometry, material, control_points
+        )
         return geometry
 
     @staticmethod
-    def from_dxf(dxf_filepath: Union[str, pathlib.Path]) -> Union[Geometry, CompoundGeometry]:
+    def from_dxf(
+        dxf_filepath: Union[str, pathlib.Path]
+    ) -> Union[Geometry, CompoundGeometry]:
         """
         An interface for the creation of Geometry objects from CAD .dxf files.
 
@@ -250,8 +257,8 @@ class Geometry:
                 Default is False.
         """
         geom = None
-        list_poly = rhino_importer.load_3dm(filepath,**kwargs)
-        if (len(list_poly)==1):
+        list_poly = rhino_importer.load_3dm(filepath, **kwargs)
+        if len(list_poly) == 1:
             geom = cls(geom=list_poly[0])
         else:
             raise RuntimeError(
@@ -300,7 +307,7 @@ class Geometry:
                 If true, all non parallel surfaces are filtered out.
                 Default is False.
         """
-        return cls(geom = rhino_importer.load_brep_encoding(r3dm_brep, **kwargs)[0])
+        return cls(geom=rhino_importer.load_brep_encoding(r3dm_brep, **kwargs)[0])
 
     def create_facets_and_control_points(self):
         self.perimeter = None
@@ -325,7 +332,6 @@ class Geometry:
         the data in the shapely geometry.
         """
         self.create_facets_and_control_points()
-
 
     def create_mesh(self, mesh_sizes: Union[float, List[float]]):
         """Creates a quadratic triangular mesh from the Geometry object.
@@ -489,9 +495,13 @@ class Geometry:
         # Move assigned control point
         new_ctrl_point = None
         if self.assigned_control_point:
-            new_ctrl_point = shapely.affinity.translate(self.assigned_control_point, x_offset, y_offset).coords[0]
+            new_ctrl_point = shapely.affinity.translate(
+                self.assigned_control_point, x_offset, y_offset
+            ).coords[0]
         new_geom = Geometry(
-            shapely.affinity.translate(self.geom, x_offset, y_offset), self.material, new_ctrl_point
+            shapely.affinity.translate(self.geom, x_offset, y_offset),
+            self.material,
+            new_ctrl_point,
         )
         return new_geom
 
@@ -528,10 +538,11 @@ class Geometry:
                 rotate_point = box(*self.geom.bounds).centroid
             new_ctrl_point = shapely.affinity.rotate(
                 self.assigned_control_point, angle, rotate_point, use_radians
-                ).coords[0]
+            ).coords[0]
         new_geom = Geometry(
             shapely.affinity.rotate(self.geom, angle, rot_point, use_radians),
-            self.material, new_ctrl_point
+            self.material,
+            new_ctrl_point,
         )
         return new_geom
 
@@ -572,7 +583,11 @@ class Geometry:
         new_ctrl_point = None
         if self.assigned_control_point:
             new_ctrl_point = shapely.affinity.scale(
-                self.assigned_control_point, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=mirror_point
+                self.assigned_control_point,
+                xfact=y_mirror,
+                yfact=x_mirror,
+                zfact=1.0,
+                origin=mirror_point,
             ).coords[0]
         new_geom = Geometry(mirrored_geom, self.material, new_ctrl_point)
         return new_geom
@@ -640,7 +655,9 @@ class Geometry:
 
         return (top_right_geoms, bottom_left_geoms)
 
-    def offset_perimeter(self, amount: float = 0, where: str = "exterior", resolution: float = 12):
+    def offset_perimeter(
+        self, amount: float = 0, where: str = "exterior", resolution: float = 12
+    ):
         """Dilates or erodes the section perimeter by a discrete amount.
 
         :param amount: Distance to offset the section by. A -ve value "erodes" the section.
@@ -666,18 +683,26 @@ class Geometry:
         if self.geom.interiors and where == "interior":
             exterior_polygon = Polygon(self.geom.exterior)
             for interior in self.geom.interiors:
-                buffered_interior = buffer_polygon(Polygon(interior), amount, resolution)
+                buffered_interior = buffer_polygon(
+                    Polygon(interior), amount, resolution
+                )
                 exterior_polygon = exterior_polygon - buffered_interior
             if isinstance(exterior_polygon, MultiPolygon):
-                return CompoundGeometry([Geometry(poly, self.material) for poly in exterior_polygon])
+                return CompoundGeometry(
+                    [Geometry(poly, self.material) for poly in exterior_polygon]
+                )
 
             # Check to see if assigned_control_point is still valid
-            if self.assigned_control_point and exterior_polygon.contains(self.assigned_control_point):
+            if self.assigned_control_point and exterior_polygon.contains(
+                self.assigned_control_point
+            ):
                 return Geometry(exterior_polygon, self.material, self.control_points[0])
             return Geometry(exterior_polygon, self.material)
 
         elif not self.geom.interiors and where == "interior":
-            raise ValueError("Cannot buffer interior of Geometry object if it has no holes.")
+            raise ValueError(
+                "Cannot buffer interior of Geometry object if it has no holes."
+            )
 
         elif where == "exterior":
             exterior_polygon = Polygon(self.geom.exterior)
@@ -686,11 +711,17 @@ class Geometry:
                 interior_poly = Polygon(interior)
                 buffered_exterior = buffered_exterior - interior_poly
             if isinstance(buffered_exterior, MultiPolygon):
-                return CompoundGeometry([Geometry(poly, self.material) for poly in buffered_exterior.geoms])
+                return CompoundGeometry(
+                    [Geometry(poly, self.material) for poly in buffered_exterior.geoms]
+                )
 
             # Check to see if assigned_control_point is still valid
-            if self.assigned_control_point and buffered_exterior.contains(self.assigned_control_point):
-                return Geometry(buffered_exterior, self.material, self.control_points[0])
+            if self.assigned_control_point and buffered_exterior.contains(
+                self.assigned_control_point
+            ):
+                return Geometry(
+                    buffered_exterior, self.material, self.control_points[0]
+                )
             return Geometry(buffered_exterior, self.material)
 
         elif where == "all":
@@ -702,8 +733,12 @@ class Geometry:
                 return compound_geom
 
             # Check to see if assigned_control_point is still valid
-            if self.assigned_control_point and buffered_geom.contains(self.assigned_control_point):
-                single_geom = Geometry(buffered_geom, self.material, self.control_points[0])
+            if self.assigned_control_point and buffered_geom.contains(
+                self.assigned_control_point
+            ):
+                single_geom = Geometry(
+                    buffered_geom, self.material, self.control_points[0]
+                )
                 return single_geom
             return Geometry(buffered_geom, self.material)
 
@@ -772,15 +807,32 @@ class Geometry:
             current_points[point_idx] = (new_x, new_y)
 
         new_geom = Geometry.from_points(
-            current_points, current_facets, current_holes, control_points=None, materials=current_materials
+            current_points,
+            current_facets,
+            current_holes,
+            control_points=None,
+            materials=current_materials,
         )
-        if self.assigned_control_point and new_geom.geom.contains(self.assigned_control_point):
+        if self.assigned_control_point and new_geom.geom.contains(
+            self.assigned_control_point
+        ):
             new_geom = Geometry.from_points(
-                current_points, current_facets, current_holes, current_control_points[0], current_materials
+                current_points,
+                current_facets,
+                current_holes,
+                current_control_points[0],
+                current_materials,
             )
         return new_geom
 
-    def plot_geometry(self, ax: Optional[matplotlib.axes.Axes]=None, labels=["control_points"], size=500, dpi=96, pause=True):
+    def plot_geometry(
+        self,
+        ax: Optional[matplotlib.axes.Axes] = None,
+        labels=["control_points"],
+        size=500,
+        dpi=96,
+        pause=True,
+    ):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
         figure and axis is created. Allows for 'size' and 'dpi' arguments to be given however the
         function dynamically sizes nodes and lineweights so that they appear appropriately sized at
@@ -829,7 +881,7 @@ class Geometry:
             ax_supplied = True
 
         for (i, f) in enumerate(self.facets):
-            linewidth = 0.15*size/dpi
+            linewidth = 0.15 * size / dpi
 
             # plot the points and facets
             if i == 0:
@@ -837,7 +889,7 @@ class Geometry:
                     [self.points[f[0]][0], self.points[f[1]][0]],
                     [self.points[f[0]][1], self.points[f[1]][1]],
                     "ko-",
-                    markersize=0.15*size/dpi,
+                    markersize=0.15 * size / dpi,
                     linewidth=linewidth,
                     label="Points & Facets",
                 )
@@ -846,23 +898,42 @@ class Geometry:
                     [self.points[f[0]][0], self.points[f[1]][0]],
                     [self.points[f[0]][1], self.points[f[1]][1]],
                     "ko-",
-                    markersize=0.15*size/dpi,
+                    markersize=0.15 * size / dpi,
                     linewidth=linewidth,
                 )
 
         for (i, h) in enumerate(self.holes):
             # plot the holes
             if i == 0:
-                ax.plot(h[0], h[1], "rx", markersize=1*size/dpi, markeredgewidth=0.2*size/dpi, label="Holes")
+                ax.plot(
+                    h[0],
+                    h[1],
+                    "rx",
+                    markersize=1 * size / dpi,
+                    markeredgewidth=0.2 * size / dpi,
+                    label="Holes",
+                )
             else:
-                ax.plot(h[0], h[1], "rx", markersize=1*size/dpi, markeredgewidth=0.2*size/dpi)
+                ax.plot(
+                    h[0],
+                    h[1],
+                    "rx",
+                    markersize=1 * size / dpi,
+                    markeredgewidth=0.2 * size / dpi,
+                )
 
         for (i, cp) in enumerate(self.control_points):
             # plot the control points
             if i == 0:
-                ax.plot(cp[0], cp[1], "bo", markersize=1*size/dpi, label="Control Points")
+                ax.plot(
+                    cp[0],
+                    cp[1],
+                    "bo",
+                    markersize=1 * size / dpi,
+                    label="Control Points",
+                )
             else:
-                ax.plot(cp[0], cp[1], "bo", markersize=1*size/dpi)
+                ax.plot(cp[0], cp[1], "bo", markersize=1 * size / dpi)
 
         # display the labels
         for label in labels:
@@ -885,11 +956,13 @@ class Geometry:
                     ax.annotate(str(i), xy=xy, color="b")
 
         # display the legend
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 
         # if no axes object is supplied, finish the plot
         if not ax_supplied:
-            post.finish_plot(ax, pause, title="Cross-Section Geometry", size=size, dpi=dpi)
+            post.finish_plot(
+                ax, pause, title="Cross-Section Geometry", size=size, dpi=dpi
+            )
             return (fig, ax)
         return (fig, ax)
 
@@ -928,7 +1001,7 @@ class Geometry:
         :return: Geometry centroid.
         :rtype: Tuple[float, float]
         """
-        cx, cy = self.geom.centroid.coords[0] # Nested list
+        cx, cy = self.geom.centroid.coords[0]  # Nested list
         return (cx, cy)
 
     @property
@@ -1000,7 +1073,9 @@ class Geometry:
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
             # Check to see if assigned_control_point is still valid
-            if self.assigned_control_point and new_polygon.contains(self.assigned_control_point):
+            if self.assigned_control_point and new_polygon.contains(
+                self.assigned_control_point
+            ):
                 return Geometry(new_polygon, material, self.control_points[0])
             return Geometry(new_polygon, material)
         except:
@@ -1035,7 +1110,10 @@ class Geometry:
             raise ValueError(
                 f"Cannot perform 'intersection' on these two Geometry instances: {self} & {other}"
             )
+
+
 ###
+
 
 class CompoundGeometry(Geometry):
     """Class for defining a geometry of multiple distinct regions, each potentially
@@ -1054,9 +1132,12 @@ class CompoundGeometry(Geometry):
         instance.
     :vartype geoms: Union[shapely.geometry.MultiPolygon, List[sectionproperties.pre.sections.Geometry]]
     """
+
     def __init__(self, geoms: Union[MultiPolygon, List[Geometry]]):
         if isinstance(geoms, MultiPolygon):
-            self.geoms = [Geometry(poly, material=pre.DEFAULT_MATERIAL) for poly in geoms.geoms]
+            self.geoms = [
+                Geometry(poly, material=pre.DEFAULT_MATERIAL) for poly in geoms.geoms
+            ]
             self.geom = geoms
         elif isinstance(geoms, list):
             processed_geoms = []
@@ -1090,7 +1171,6 @@ class CompoundGeometry(Geometry):
         print(f"object at: {hex(id(self))}")
         print(f"Materials incl.: {list(set(materials_list))}")
         return self.geom._repr_svg_()
-
 
     @staticmethod
     def from_points(
@@ -1135,7 +1215,7 @@ class CompoundGeometry(Geometry):
             raise ValueError(
                 "Materials cannot be assigned without control_points. "
                 "Please provide corresponding control_points for each material."
-                )
+            )
         if holes is None:
             holes = list()
 
@@ -1162,7 +1242,7 @@ class CompoundGeometry(Geometry):
                     points[i_idx]
                 )  # Only need i_idx b/c shapely auto-closes polygons
             prev_facet = facet
-        else: # Use the for...else clause to add the last point and close the last polygon.
+        else:  # Use the for...else clause to add the last point and close the last polygon.
             current_polygon_points.append(points[j_idx])
             all_polygons.append(Polygon(current_polygon_points))
 
@@ -1171,28 +1251,34 @@ class CompoundGeometry(Geometry):
         interiors = []
 
         for polygon in all_polygons:
-            hole_coord_in_polygon = (
-                [hole_coord for hole_coord in holes if polygon.contains(Point(hole_coord))]
-            )
-            ctrl_coord_in_polygon = (
-                [ctrl_coord for ctrl_coord in control_points if polygon.contains(Point(ctrl_coord))]
-            )
+            hole_coord_in_polygon = [
+                hole_coord
+                for hole_coord in holes
+                if polygon.contains(Point(hole_coord))
+            ]
+            ctrl_coord_in_polygon = [
+                ctrl_coord
+                for ctrl_coord in control_points
+                if polygon.contains(Point(ctrl_coord))
+            ]
             if any(hole_coord_in_polygon) and not any(ctrl_coord_in_polygon):
                 interiors.append(polygon)
             else:
                 exteriors.append(polygon)
-
 
         # Create the holes by subtracting interior regions from exterior regions
         if len(exteriors) != len(control_points):
             raise ValueError(
                 f"The number of exterior regions ({len(exteriors)}) "
                 f"does not match the number of control_points given ({len(control_points)})."
-                )
+            )
         if not interiors:
             return CompoundGeometry(
-                [Geometry(exterior, control_points=control_points[idx]) for idx, exterior in enumerate(exteriors)]
-                )
+                [
+                    Geometry(exterior, control_points=control_points[idx])
+                    for idx, exterior in enumerate(exteriors)
+                ]
+            )
         else:
             # "Punch" all holes through each exterior geometry
             punched_exteriors = []
@@ -1203,15 +1289,18 @@ class CompoundGeometry(Geometry):
                     punched_exterior = punched_exterior - interior
                     try:
                         exterior_control_point = next(
-                            control_point for control_point in control_points
+                            control_point
+                            for control_point in control_points
                             if punched_exterior.contains(Point(control_point))
-                            )
+                        )
                     except StopIteration:
                         raise ValueError(
                             f"Control points given are not contained within the geometry"
                             f" once holes are subtracted: {control_points}"
-                            )
-                exterior_geometry = Geometry(punched_exterior, control_points=exterior_control_point)
+                        )
+                exterior_geometry = Geometry(
+                    punched_exterior, control_points=exterior_control_point
+                )
                 punched_exterior_geometries.append(exterior_geometry)
 
         return CompoundGeometry(punched_exterior_geometries)
@@ -1257,7 +1346,7 @@ class CompoundGeometry(Geometry):
                 Default is False.
         """
         list_poly = rhino_importer.load_3dm(filepath, **kwargs)
-        return cls(geoms = MultiPolygon(list_poly))
+        return cls(geoms=MultiPolygon(list_poly))
 
     def create_mesh(self, mesh_sizes: List[float]):
         """Creates a quadratic triangular mesh from the Geometry object.
@@ -1342,7 +1431,7 @@ class CompoundGeometry(Geometry):
             new_compound = compound.rotate_section(angle=-30)
         """
         geoms_acc = []
-        if rot_point =='center':
+        if rot_point == "center":
             rot_point = box(*MultiPolygon(self.geom).bounds).centroid
         for geom in self.geoms:
             geoms_acc.append(geom.rotate_section(angle, rot_point, use_radians))
@@ -1378,7 +1467,6 @@ class CompoundGeometry(Geometry):
         new_geom = CompoundGeometry(geoms_acc)
         return new_geom
 
-
     def align_center(self, align_to: Optional[Geometry] = None):
         """
         Returns a new CompoundGeometry object, translated in both x and y, so that the
@@ -1397,21 +1485,29 @@ class CompoundGeometry(Geometry):
         :return: Geometry object translated to new alignment
         :rtype: :class:`sections.pre.sections.Geometry`
         """
-        EA_sum = sum([geom.material.elastic_modulus * geom.calculate_area() for geom in self.geoms])
+        EA_sum = sum(
+            [
+                geom.material.elastic_modulus * geom.calculate_area()
+                for geom in self.geoms
+            ]
+        )
         cx_EA_acc = 0
         cy_EA_acc = 0
         for geom in self.geoms:
             E = geom.material.elastic_modulus
             A = geom.calculate_area()
-            EA = E*A
+            EA = E * A
             cx, cy = list(geom.geom.centroid.coords[0])
-            cx_EA_acc += cx*EA
-            cy_EA_acc += cy*EA
+            cx_EA_acc += cx * EA
+            cy_EA_acc += cy * EA
         weighted_cx = cx_EA_acc / (EA_sum)
         weighted_cy = cy_EA_acc / (EA_sum)
 
         if align_to is None:
-            shift_x, shift_y = round(-weighted_cx, self.tol), round(-weighted_cy, self.tol)
+            shift_x, shift_y = (
+                round(-weighted_cx, self.tol),
+                round(-weighted_cy, self.tol),
+            )
 
         else:
             align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
@@ -1419,7 +1515,6 @@ class CompoundGeometry(Geometry):
             shift_y = round(align_cy - weighted_cy, self.tol)
         new_geom = self.shift_section(x_offset=shift_x, y_offset=shift_y)
         return new_geom
-
 
     def split_section(
         self,
@@ -1470,8 +1565,9 @@ class CompoundGeometry(Geometry):
             bottom_geoms_acc += bottom_geoms
         return (top_geoms_acc, bottom_geoms_acc)
 
-
-    def offset_perimeter(self, amount: float = 0, where = "exterior", resolution: float = 12):
+    def offset_perimeter(
+        self, amount: float = 0, where="exterior", resolution: float = 12
+    ):
         """Dilates or erodes perimeter of the individual geometries within the CompoundGeometry
         object by a discrete amount. Note, because the individual geometries have their own
         perimeters offset independently, sections don't "stick" as though they were a joined section.
@@ -1499,9 +1595,11 @@ class CompoundGeometry(Geometry):
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_geometry = compound.offset_section_perimeter(amount=-3)
         """
-        if amount < 0: # Eroding condition
+        if amount < 0:  # Eroding condition
             unionized_poly = unary_union([geom.geom for geom in self.geoms])
-            offset_geom = Geometry(unionized_poly).offset_perimeter(amount, where, resolution)
+            offset_geom = Geometry(unionized_poly).offset_perimeter(
+                amount, where, resolution
+            )
 
             # Using the offset_geom as a "mask"
             geoms_acc = []
@@ -1512,7 +1610,7 @@ class CompoundGeometry(Geometry):
             new_geom = CompoundGeometry(geoms_acc)
             return new_geom
 
-        elif amount > 0: # Ballooning condition
+        elif amount > 0:  # Ballooning condition
             # This produces predictable results up to a point.
             # That point is when the offset is so great it exceeds the thickness
             # of the material at an interface of two materials.
@@ -1522,7 +1620,7 @@ class CompoundGeometry(Geometry):
 
             geoms_acc = []
             for i_idx, geom in enumerate(self.geoms):
-                # Offset each geom...                     
+                # Offset each geom...
                 offset_geom = geom.offset_perimeter(amount, where, resolution)
                 for j_idx, orig_geom in enumerate(self.geoms):
                     if i_idx != j_idx:
@@ -1531,12 +1629,11 @@ class CompoundGeometry(Geometry):
                         # occupying that space already)
                         offset_geom = offset_geom - orig_geom
 
-                geoms_acc.append(offset_geom) 
+                geoms_acc.append(offset_geom)
             new_geom = CompoundGeometry(geoms_acc)
             return new_geom
         else:
             return self
-
 
     def compile_geometry(self):
         """
@@ -1613,6 +1710,7 @@ class CompoundGeometry(Geometry):
 
 
 ### Helper functions for Geometry
+
 
 def load_dxf(dxf_filepath: pathlib.Path):
     """
@@ -1721,8 +1819,11 @@ def create_points_and_facets(shape: Polygon, tol=12) -> tuple:
 
     return points, facets
 
+
 def buffer_polygon(polygon: Polygon, amount: float, resolution: int):
-    buffered_polygon = polygon.buffer(distance=amount, join_style=1, resolution=resolution)
+    buffered_polygon = polygon.buffer(
+        distance=amount, join_style=1, resolution=resolution
+    )
     if isinstance(buffered_polygon, GeometryCollection):
         remaining_polygons = []
         for item in buffered_polygon.geoms:
@@ -1732,13 +1833,17 @@ def buffer_polygon(polygon: Polygon, amount: float, resolution: int):
             return remaining_polygons[0]
         else:
             return MultiPolygon(remaining_polygons)
-    elif isinstance(buffered_polygon, MultiPolygon) or isinstance(buffered_polygon, Polygon):
+    elif isinstance(buffered_polygon, MultiPolygon) or isinstance(
+        buffered_polygon, Polygon
+    ):
         return buffered_polygon
     else:
         return Polygon()
 
 
-def filter_non_polygons(input_geom: Union[GeometryCollection, LineString, Point, Polygon, MultiPolygon]) -> Union[Polygon, MultiPolygon]:
+def filter_non_polygons(
+    input_geom: Union[GeometryCollection, LineString, Point, Polygon, MultiPolygon]
+) -> Union[Polygon, MultiPolygon]:
     """
     Returns a Polygon or a MultiPolygon representing any such Polygon on MultiPolygon that
     may exist in the 'input_geom'. If 'input_geom' is a LineString or Point, an empty Polygon is
@@ -1797,7 +1902,9 @@ def draw_radius(
     return points
 
 
-def rectangular_section(b, d, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def rectangular_section(
+    b, d, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a rectangular section with the bottom left corner at the origin *(0, 0)*, with
     depth *d* and width *b*.
 
@@ -1830,7 +1937,9 @@ def rectangular_section(b, d, material: pre.Material = pre.DEFAULT_MATERIAL) -> 
     return Geometry(rectangle, material)
 
 
-def circular_section(d: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def circular_section(
+    d: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a solid circle centered at the origin *(0, 0)* with diameter *d* and using *n*
     points to construct the circle.
 
@@ -1876,7 +1985,9 @@ def circular_section(d: float, n: int, material: pre.Material = pre.DEFAULT_MATE
     return Geometry(circle, material)
 
 
-def circular_hollow_section(d: float, t: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def circular_hollow_section(
+    d: float, t: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a circular hollow section (CHS) centered at the origin *(0, 0)*, with diameter *d* and
     thickness *t*, using *n* points to construct the inner and outer circles.
 
@@ -1927,7 +2038,9 @@ def circular_hollow_section(d: float, t: float, n: int, material: pre.Material =
     return Geometry(outer_circle - inner_circle, material)
 
 
-def elliptical_section(d_y: float, d_x: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def elliptical_section(
+    d_y: float, d_x: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a solid ellipse centered at the origin *(0, 0)* with vertical diameter *d_y* and
     horizontal diameter *d_x*, using *n* points to construct the ellipse.
 
@@ -1975,7 +2088,13 @@ def elliptical_section(d_y: float, d_x: float, n: int, material: pre.Material = 
     return Geometry(ellipse, material)
 
 
-def elliptical_hollow_section(d_y: float, d_x: float, t: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def elliptical_hollow_section(
+    d_y: float,
+    d_x: float,
+    t: float,
+    n: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs an elliptical hollow section (EHS) centered at the origin *(0, 0)*, with outer vertical
     diameter *d_y*, outer horizontal diameter *d_x*, and thickness *t*, using *n* points to
     construct the inner and outer ellipses.
@@ -2029,7 +2148,14 @@ def elliptical_hollow_section(d_y: float, d_x: float, t: float, n: int, material
     return Geometry(outer - inner, material)
 
 
-def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def rectangular_hollow_section(
+    b: float,
+    d: float,
+    t: float,
+    r_out: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs a rectangular hollow section (RHS) centered at *(b/2, d/2)*, with depth *d*, width *b*,
     thickness *t* and outer radius *r_out*, using *n_r* points to construct the inner and outer
     radii. If the outer radius is less than the thickness of the RHS, the inner radius is set to
@@ -2084,7 +2210,13 @@ def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: 
 
 
 def i_section(
-    d: float, b: float, t_f: float, t_w: float, r: float, n_r: int, material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b: float,
+    t_f: float,
+    t_w: float,
+    r: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:  # More specific description and less ambiguous? e.g. not an "S" section.
     """Constructs an I-section centered at *(b/2, d/2)*, with depth *d*, width *b*, flange
     thickness *t_f*, web thickness *t_w*, and root radius *r*, using *n_r* points to construct the
@@ -2154,7 +2286,9 @@ def i_section(
     return Geometry(i_section, material)
 
 
-def mono_i_section(d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def mono_i_section(
+    d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a monosymmetric I-section centered at *(max(b_t, b_b)/2, d/2)*, with depth *d*,
     top flange width *b_t*, bottom flange width *b_b*, top flange thickness *t_ft*, top flange
     thickness *t_fb*, web thickness *t_w*, and root radius *r*, using *n_r* points to construct the
@@ -2232,7 +2366,9 @@ def mono_i_section(d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, material: pre.Material 
     return Geometry(polygon, material)
 
 
-def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def tapered_flange_i_section(
+    d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a Tapered Flange I-section centered at *(b/2, d/2)*, with depth *d*, width *b*,
     mid-flange thickness *t_f*, web thickness *t_w*, root radius *r_r*, flange radius *r_f* and
     flange angle *alpha*, using *n_r* points to construct the radii.
@@ -2424,7 +2560,9 @@ def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre
     return Geometry(polygon, material)
 
 
-def channel_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def channel_section(
+    d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a parallel-flange channel (PFC) section with the bottom left corner at the origin *(0, 0)*, with depth *d*,
     width *b*, flange thickness *t_f*, web  thickness *t_w* and root radius *r*, using *n_r* points
     to construct the root radius.
@@ -2484,7 +2622,9 @@ def channel_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT
     return Geometry(polygon, material)
 
 
-def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def tapered_flange_channel(
+    d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a Tapered Flange Channel section with the bottom left corner at the origin
     *(0, 0)*, with depth *d*, width *b*, mid-flange thickness *t_f*, web thickness *t_w*, root
     radius *r_r*, flange radius *r_f* and flange angle *alpha*, using *n_r* points to construct the
@@ -2613,7 +2753,9 @@ def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.M
     return Geometry(polygon, material)
 
 
-def tee_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def tee_section(
+    d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a Tee section with the top left corner at *(0, d)*, with depth *d*, width *b*,
     flange thickness *t_f*, web thickness *t_w* and root radius *r*, using *n_r* points to
     construct the root radius.
@@ -2670,7 +2812,9 @@ def tee_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MAT
     return Geometry(polygon, material)
 
 
-def angle_section(d, b, t, r_r, r_t, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def angle_section(
+    d, b, t, r_r, r_t, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs an angle section with the bottom left corner at the origin *(0, 0)*, with depth
     *d*, width *b*, thickness *t*, root radius *r_r* and toe radius *r_t*, using *n_r* points to
     construct the radii.
@@ -2732,7 +2876,9 @@ def angle_section(d, b, t, r_r, r_t, n_r, material: pre.Material = pre.DEFAULT_M
     return Geometry(polygon, material)
 
 
-def cee_section(d, b, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def cee_section(
+    d, b, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a Cee section (typical of cold-formed steel) with the bottom left corner at the
     origin *(0, 0)*, with depth *d*, width *b*, lip *l*, thickness *t* and outer radius *r_out*,
     using *n_r* points to construct the radius. If the outer radius is less than the thickness
@@ -2813,7 +2959,9 @@ def cee_section(d, b, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MAT
     return Geometry(polygon, material)
 
 
-def zed_section(d, b_l, b_r, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def zed_section(
+    d, b_l, b_r, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a zed section with the bottom left corner at the origin *(0, 0)*, with depth *d*,
     left flange width *b_l*, right flange width *b_r*, lip *l*, thickness *t* and outer radius
     *r_out*, using *n_r* points to construct the radius. If the outer radius is less than the
@@ -2896,7 +3044,9 @@ def zed_section(d, b_l, b_r, l, t, r_out, n_r, material: pre.Material = pre.DEFA
 zee_section = zed_section  # An alias for our American friends (and friends who use "American English")
 
 
-def cruciform_section(d, b, t, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def cruciform_section(
+    d, b, t, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a cruciform section centered at the origin *(0, 0)*, with depth *d*, width *b*,
     thickness *t* and root radius *r*, using *n_r* points to construct the root radius.
 
@@ -2963,7 +3113,9 @@ def cruciform_section(d, b, t, r, n_r, material: pre.Material = pre.DEFAULT_MATE
     return Geometry(polygon, material)
 
 
-def polygon_hollow_section(d, t, n_sides, r_in=0, n_r=1, rot=0, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def polygon_hollow_section(
+    d, t, n_sides, r_in=0, n_r=1, rot=0, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a regular hollow polygon section centered at *(0, 0)*, with a pitch circle
     diameter of bounding polygon *d*, thickness *t*, number of sides *n_sides* and an optional
     inner radius *r_in*, using *n_r* points to construct the inner and outer radii (if radii is
@@ -3102,7 +3254,9 @@ def rotate(point, angle: float):
     return [new_x, new_y]
 
 
-def box_girder_section(d, b_t, b_b, t_ft, t_fb, t_w, material: pre.Material = pre.DEFAULT_MATERIAL):
+def box_girder_section(
+    d, b_t, b_b, t_ft, t_fb, t_w, material: pre.Material = pre.DEFAULT_MATERIAL
+):
     """Constructs a box girder section centered at at *(max(b_t, b_b)/2, d/2)*, with depth *d*, top
     width *b_t*, bottom width *b_b*, top flange thickness *t_ft*, bottom flange thickness *t_fb*
     and web thickness *t_w*.
