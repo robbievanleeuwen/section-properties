@@ -121,6 +121,24 @@ def test_compound_rectangular_isection_offset_corrode():
 
     check.almost_equal(section_test.get_area(), section_corroded.get_area(), rel=r_tol)
 
+def test_compound_stiffened_isection():
+    uc = sections.i_section(d=400,b=400,t_f=25,t_w=25,r=30,n_r=8)
+    plate1 = sections.rectangular_section(b=500,d=10).align_center(uc).align_to(uc,"top")
+    plate2 = sections.rectangular_section(b=500,d=10).align_center(uc).align_to(uc,"bottom")
+    geom = uc + plate1 + plate2
+
+    new_geom = geom.offset_perimeter(-9)
+    new_geom.create_mesh([100])
+    section = Section(new_geom)
+
+    new_geom = geom.offset_perimeter(-10)
+    new_geom.create_mesh([100])
+    section = Section(new_geom)
+
+    new_geom = geom.offset_perimeter(-11)
+    new_geom.create_mesh([100])
+    section = Section(new_geom)
+
 def draw_radius(r, n):
     points = []
 
