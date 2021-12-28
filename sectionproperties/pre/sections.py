@@ -1471,7 +1471,7 @@ class CompoundGeometry(Geometry):
         return (top_geoms_acc, bottom_geoms_acc)
 
 
-    def offset_perimeter(self, amount: float = 0, where = "exterior", resolution: float = 12, geom_index: Optional[int] = 0):
+    def offset_perimeter(self, amount: float = 0, where = "exterior", resolution: float = 12):
         """Dilates or erodes perimeter of the individual geometries within the CompoundGeometry
         object by a discrete amount. Note, because the individual geometries have their own
         perimeters offset independently, sections don't "stick" as though they were a joined section.
@@ -1487,9 +1487,6 @@ class CompoundGeometry(Geometry):
         :type where: str
         :param resolution: Number of segments used to approximate a quarter circle around a point
         :type resolution: float
-        :param geom_index: Optional. The index of the Geometry in the CompoundGeometry that is to be offset.
-            Default is None which will offset the whole CompoundGeometry.
-        :type geom_index: int
         :return: Geometry object translated to new alignment
         :rtype: :class:`sections.pre.sections.Geometry`
 
@@ -1511,11 +1508,7 @@ class CompoundGeometry(Geometry):
             for idx, geom in enumerate(self.geoms):
                 # Use symmetric intersection to find the region of the original
                 # that intersects with the eroded unionized shape
-                if geom_index is not None:
-                    if idx == geom_index:
-                        geoms_acc.append(geom & offset_geom)
-                else:
-                    geoms_acc.append(geom & offset_geom)
+                geoms_acc.append(geom & offset_geom)
             new_geom = CompoundGeometry(geoms_acc)
             return new_geom
 
@@ -1537,11 +1530,8 @@ class CompoundGeometry(Geometry):
                         # constituents of the compound geometry (because they are
                         # occupying that space already)
                         offset_geom = offset_geom - orig_geom
-                if geom_index is not None:
-                    if geom_index == i_idx:
-                        geoms_acc.append(offset_geom)
-                else:
-                    geoms_acc.append(offset_geom) 
+
+                geoms_acc.append(offset_geom) 
             new_geom = CompoundGeometry(geoms_acc)
             return new_geom
         else:
