@@ -1,5 +1,8 @@
 scipy
 numpy
+shapely
+matplotlib
+more_itertools
 Sphinx
 sphinx-rtd-theme
 sphinx-gallery
