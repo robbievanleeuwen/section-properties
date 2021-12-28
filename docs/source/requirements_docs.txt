@@ -3,6 +3,8 @@ numpy
 shapely
 matplotlib
 more_itertools
+rhino_shapely_interop
+mpl_toolkits
 Sphinx
 sphinx-rtd-theme
 sphinx-gallery
