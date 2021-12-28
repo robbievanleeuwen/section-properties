@@ -3,7 +3,6 @@ numpy
 shapely
 matplotlib
 more_itertools
-mpl_toolkits
 pybind11
 meshpy
 Sphinx
