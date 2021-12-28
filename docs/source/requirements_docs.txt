@@ -1,0 +1,10 @@
+scipy
+numpy
+shapely
+matplotlib
+more_itertools
+pybind11
+meshpy
+Sphinx
+sphinx-rtd-theme
+sphinx-gallery
