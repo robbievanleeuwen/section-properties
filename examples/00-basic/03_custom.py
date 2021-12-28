@@ -17,7 +17,7 @@ remove the overlapping facet at the junction of the angle and the plate. A
 geometric, warping and plastic analysis is then carried out.
 
 The geometry and mesh are plotted before the analysis is carried out. Once the
-analysis is complete, a plot of the various calculated centroids is generated
+analysis is complete, a plot of the various calculated centroids is generated.
 """
 
 # sphinx_gallery_thumbnail_number = 2
