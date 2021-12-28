@@ -8,7 +8,7 @@ import matplotlib.tri as tri
 import matplotlib.cm as cm
 import matplotlib.patches as mpatches
 from matplotlib.colors import ListedColormap, CenteredNorm
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
 import numpy as np
 from scipy.sparse import csc_matrix, coo_matrix, linalg
