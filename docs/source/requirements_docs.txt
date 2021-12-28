@@ -3,8 +3,9 @@ numpy
 shapely
 matplotlib
 more_itertools
-rhino_shapely_interop
 mpl_toolkits
+pybind11
+meshpy
 Sphinx
 sphinx-rtd-theme
 sphinx-gallery
