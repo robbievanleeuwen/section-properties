@@ -24,9 +24,6 @@ import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
 import sectionproperties.pre.rhino as rhino_importer
 
-## DEBUGGING
-from IPython.display import display_svg
-
 class Geometry:
     """Class for defining the geometry of a contiguous section of a single material.
 
@@ -58,8 +55,6 @@ class Geometry:
         if isinstance(geom, MultiPolygon):
             raise ValueError(f"Use CompoundGeometry(...) for a MultiPolygon object.")
         if not isinstance(geom, Polygon):
-            print("Init geom")
-            display_svg(geom)
             raise ValueError(
                 f"Argument is not a valid shapely.geometry.Polygon object: {repr(geom)}"
             )
@@ -1025,7 +1020,6 @@ class Geometry:
         material = self.material or other.material
         try:
             new_polygon = filter_non_polygons(self.geom & other.geom)
-            print(type(new_polygon))
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
@@ -1471,7 +1465,7 @@ class CompoundGeometry(Geometry):
         return (top_geoms_acc, bottom_geoms_acc)
 
 
-    def offset_perimeter(self, amount: float = 0, where = "exterior", resolution: float = 12):
+    def offset_perimeter(self, amount: float = 0, where = "exterior", resolution: float = 12, geom_index: Optional[int] = 0):
         """Dilates or erodes perimeter of the individual geometries within the CompoundGeometry
         object by a discrete amount. Note, because the individual geometries have their own
         perimeters offset independently, sections don't "stick" as though they were a joined section.
@@ -1481,12 +1475,15 @@ class CompoundGeometry(Geometry):
         :param amount: Distance to offset the section by. A -ve value "erodes" the section. A +ve
             value "dilates" the section.
         :type amount: float
-        :param resolution: Number of segments used to approximate a quarter circle around a point
-        :type resolution: float
         :param where: One of either "exterior", "interior", or "all" to specify which edges of the
             geometry to offset. If geometry has no interiors, then this parameter has no effect.
             Default is "exterior".
         :type where: str
+        :param resolution: Number of segments used to approximate a quarter circle around a point
+        :type resolution: float
+        :param geom_index: Optional. The index of the Geometry in the CompoundGeometry that is to be offset.
+            Default is None which will offset the whole CompoundGeometry.
+        :type geom_index: int
         :return: Geometry object translated to new alignment
         :rtype: :class:`sections.pre.sections.Geometry`
 
@@ -1502,21 +1499,17 @@ class CompoundGeometry(Geometry):
         if amount < 0: # Eroding condition
             unionized_poly = unary_union([geom.geom for geom in self.geoms])
             offset_geom = Geometry(unionized_poly).offset_perimeter(amount, where, resolution)
-            print("Offset geom: ")
-            display_svg(offset_geom)
-            print("After offset geom")
 
             # Using the offset_geom as a "mask"
             geoms_acc = []
-            for geom in self.geoms:
+            for idx, geom in enumerate(self.geoms):
                 # Use symmetric intersection to find the region of the original
                 # that intersects with the eroded unionized shape
-                try:
+                if geom_index is not None:
+                    if idx == geom_index:
+                        geoms_acc.append(geom & offset_geom)
+                else:
                     geoms_acc.append(geom & offset_geom)
-                except ValueError:
-                    print("Error geom:")
-                    display_svg(geom.geom & offset_geom.geom)
-                    raise ValueError(f"Try a smaller offset. Section as completely eroded away...")
             new_geom = CompoundGeometry(geoms_acc)
             return new_geom
 
@@ -1530,7 +1523,7 @@ class CompoundGeometry(Geometry):
 
             geoms_acc = []
             for i_idx, geom in enumerate(self.geoms):
-                # Offset each geom...
+                # Offset each geom...                     
                 offset_geom = geom.offset_perimeter(amount, where, resolution)
                 for j_idx, orig_geom in enumerate(self.geoms):
                     if i_idx != j_idx:
@@ -1538,7 +1531,11 @@ class CompoundGeometry(Geometry):
                         # constituents of the compound geometry (because they are
                         # occupying that space already)
                         offset_geom = offset_geom - orig_geom
-                geoms_acc.append(offset_geom) 
+                if geom_index is not None:
+                    if geom_index == i_idx:
+                        geoms_acc.append(offset_geom)
+                else:
+                    geoms_acc.append(offset_geom) 
             new_geom = CompoundGeometry(geoms_acc)
             return new_geom
         else:
@@ -1756,7 +1753,6 @@ def filter_non_polygons(input_geom: Union[GeometryCollection, LineString, Point,
     elif isinstance(input_geom, GeometryCollection):
         acc = []
         for item in input_geom.geoms:
-            print("Item: ", item)
             if isinstance(item, MultiPolygon):
                 acc.append(item)
             elif isinstance(item, Polygon):
