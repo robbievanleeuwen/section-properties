@@ -109,7 +109,7 @@ class Geometry:
         points: List[List[float]],
         facets: List[List[int]],
         control_points: List[List[float]],
-        holes: Optional[List[List[float]]],
+        holes: Optional[List[List[float]]] = None,
         material: Optional[pre.Material] = pre.DEFAULT_MATERIAL,
     ):
         """
@@ -125,16 +125,20 @@ class Geometry:
             Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
             interior perimeter 2, etc.
         :vartype facets: list[list[int, int]]
-        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-            being holes or voids. The point can be located anywhere within the hole region.
-            Only one point is required per hole region.
-        :vartype holes: list[list[float, float]]
         :cvar control_points: An *(x, y)* coordinate that describes the distinct, contiguous,
             region of a single material within the geometry. Must be entered as a list of coordinates,
             e.g. [[0.5, 3.2]]
             Exactly one point is required for each geometry with a distinct material.
             If there are multiple distinct regions, then use CompoundGeometry.from_points()
         :vartype control_point: list[float, float]
+        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
+            being holes or voids. The point can be located anywhere within the hole region.
+            Only one point is required per hole region.
+        :vartype holes: list[list[float, float]]
+        :cvar materials: Optional. A list of sectionproperties.pre.pre.Material objects that are to be
+            assigned, in order, to the regions defined by the given control_points. If not given, then
+            the sectionproperties.pre.pre.DEFAULT_MATERIAL will be used for each region.
+        :vartype materials: list[sectionproperties.pre.pre.Material]
         """
         if len(control_points) != 1:
             raise ValueError(
@@ -776,7 +780,7 @@ class Geometry:
             )
         return new_geom
 
-    def plot_geometry(self, ax: Optional[matplotlib.axes.Axes]=None, labels=["control_points"], size=500, dpi=96, pause=False):
+    def plot_geometry(self, ax: Optional[matplotlib.axes.Axes]=None, labels=["control_points"], size=500, dpi=96, pause=True):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
         figure and axis is created. Allows for 'size' and 'dpi' arguments to be given however the
         function dynamically sizes nodes and lineweights so that they appear appropriately sized at
@@ -816,11 +820,11 @@ class Geometry:
         """
         # if no axes object is supplied, create and setup the plot
         fig = None
-        # plt.figure(figsize=(2*width, width), dpi=100)
+
         if ax is None:
             ax_supplied = False
-            (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
-            # post.setup_plot(ax, pause)
+            (fig, ax) = plt.subplots()
+            post.setup_plot(ax, pause)
         else:
             ax_supplied = True
 
@@ -880,8 +884,10 @@ class Geometry:
 
                     ax.annotate(str(i), xy=xy, color="b")
 
-        # if no axes object is supplied, finish the plot
+        # display the legend
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
+        # if no axes object is supplied, finish the plot
         if not ax_supplied:
             post.finish_plot(ax, pause, title="Cross-Section Geometry", size=size, dpi=dpi)
             return (fig, ax)
@@ -1092,7 +1098,7 @@ class CompoundGeometry(Geometry):
         facets: List[List[int]],
         control_points: List[List[float]],
         holes: Optional[List[List[float]]] = None,
-        materials: Optional[List[pre.Material]] = None,
+        materials: Optional[List[pre.Material]] = pre.DEFAULT_MATERIAL,
     ):
         """
         An interface for the creation of CompoundGeometry objects through the definition of points,
@@ -1109,10 +1115,6 @@ class CompoundGeometry(Geometry):
             Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
             interior perimeter 2, etc.
         :vartype facets: list[list[int]]
-        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-            being holes or voids. The point can be located anywhere within the hole region.
-            Only one point is required per hole region.
-        :vartype holes: list[list[float]]
         :cvar control_points: Optional. A list of points *(x, y)* that define non-interior regions as
             being distinct, contiguous, and having one material. The point can be located anywhere within
             region. Only one point is permitted per region. The order of control_points must be given in the
@@ -1120,6 +1122,10 @@ class CompoundGeometry(Geometry):
             If not given, then points will be assigned automatically using
             shapely.geometry.Polygon.representative_point()
         :vartype control_points: list[list[float]]
+        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
+            being holes or voids. The point can be located anywhere within the hole region.
+            Only one point is required per hole region.
+        :vartype holes: list[list[float]]
         :cvar materials: Optional. A list of sectionproperties.pre.pre.Material objects that are to be
             assigned, in order, to the regions defined by the given control_points. If not given, then
             the sectionproperties.pre.pre.DEFAULT_MATERIAL will be used for each region.
