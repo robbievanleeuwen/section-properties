@@ -44,7 +44,7 @@ control_points = [[0, 0], [0, -2 * a - t / 2]]
 # %%
 # Because we have two separate geometry regions (as indicated by our control_points)
 # we create a CompoundGeometry from points
-geometry = sections.CompoundGeometry.from_points(points, facets, holes, control_points)
+geometry = sections.CompoundGeometry.from_points(points, facets, control_points, holes)
 
 # %%
 # Create the mesh and section. For the mesh, use a smaller refinement for the angle region.
