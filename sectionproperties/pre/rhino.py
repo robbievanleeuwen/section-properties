@@ -3,19 +3,20 @@ from typing import List, Union
 from shapely.geometry.polygon import Polygon
 from rhino_shapely_interop.importers import RhImporter
 
+
 def load_3dm(r3dm_filepath: Union[pathlib.Path, str], **kwargs) -> List[Polygon]:
     """Load a Rhino `.3dm` file and import the single surface planer breps.
 
-    :param r3dm_filepath: 
+    :param r3dm_filepath:
         File path to the rhino `.3dm` file.
     :type r3dm_filepath: pathlib.Path or string
     :param \**kwargs:
         See below.
-    :raises RuntimeError: 
-        A RuntimeError is raised if no polygons are found in the file. 
-        This is dependent on the keyword arguments. 
-        Try adjusting the keyword arguments if this error is raised. 
-    :return: 
+    :raises RuntimeError:
+        A RuntimeError is raised if no polygons are found in the file.
+        This is dependent on the keyword arguments.
+        Try adjusting the keyword arguments if this error is raised.
+    :return:
         List of Polygons found in the file.
     :rtype: List[shapely.geometry.Polygon]
 
@@ -23,7 +24,7 @@ def load_3dm(r3dm_filepath: Union[pathlib.Path, str], **kwargs) -> List[Polygon]
         * *refine_num* (``int, optional``) --
             Bézier curve interpolation number. In Rhino a surface's edges are nurb based curves.
             Shapely does not support nurbs, so the individual Bézier curves are interpolated using straight lines.
-            This parameter sets the number of straight lines used in the interpolation. 
+            This parameter sets the number of straight lines used in the interpolation.
             Default is 1.
         * *vec1* (``numpy.ndarray, optional``) --
             A 3d vector in the Shapely plane. Rhino is a 3D geometry environment.
@@ -48,27 +49,28 @@ def load_3dm(r3dm_filepath: Union[pathlib.Path, str], **kwargs) -> List[Polygon]
     """
     rhi = RhImporter.from_file(str(r3dm_filepath))
     list_polygons = list(rhi.get_planer_brep(**kwargs))
-    if len(list_polygons)==0:
+    if len(list_polygons) == 0:
         raise RuntimeError(
             f"No shapely.Polygon objects found. "
             f"Consider adjusting the keyword arguments. "
             f"File name: {r3dm_filepath}. "
-            )
+        )
     return list_polygons
+
 
 def load_brep_encoding(brep: str, **kwargs) -> Polygon:
     """Load an encoded single surface planer brep.
 
-    :param brep: 
+    :param brep:
         Rhino3dm.Brep encoded as a string.
     :type brep: str
     :param \**kwargs:
         See below.
-    :raises RuntimeError: 
-        A RuntimeError is raised if no polygons are found in the encoding. 
-        This is dependent on the keyword arguments. 
-        Try adjusting the keyword arguments if this error is raised. 
-    :return: 
+    :raises RuntimeError:
+        A RuntimeError is raised if no polygons are found in the encoding.
+        This is dependent on the keyword arguments.
+        Try adjusting the keyword arguments if this error is raised.
+    :return:
         The Polygons found in the encoding string.
     :rtype: shapely.geometry.Polygon
 
@@ -76,7 +78,7 @@ def load_brep_encoding(brep: str, **kwargs) -> Polygon:
         * *refine_num* (``int, optional``) --
             Bézier curve interpolation number. In Rhino a surface's edges are nurb based curves.
             Shapely does not support nurbs, so the individual Bézier curves are interpolated using straight lines.
-            This parameter sets the number of straight lines used in the interpolation. 
+            This parameter sets the number of straight lines used in the interpolation.
             Default is 1.
         * *vec1* (``numpy.ndarray, optional``) --
             A 3d vector in the Shapely plane. Rhino is a 3D geometry environment.
@@ -98,9 +100,9 @@ def load_brep_encoding(brep: str, **kwargs) -> Polygon:
             Controls if only the rhino surfaces that have the same normal as the Shapely plane are yielded.
             If true, all non parallel surfaces are filtered out.
             Default is False.
-    """    
+    """
     rhi = RhImporter.from_serialzed_brep(brep)
     geom = list(rhi.get_planer_brep(**kwargs))
-    if len(geom)==0:
+    if len(geom) == 0:
         raise RuntimeError(f"No shapely.Polygon objects found for encoded object")
     return geom
