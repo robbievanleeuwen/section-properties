@@ -28,8 +28,8 @@ def finish_plot(ax, pause, title="", size=500, dpi=96):
     :param str title: Plot title
     """
     ax.set_aspect("equal", anchor="C")
-    ax.set_title(title, fontdict={"fontsize": 4*size/dpi})
-    ax.tick_params(labelsize=2.5*size/dpi)
+    ax.set_title(title, fontdict={"fontsize": 4 * size / dpi})
+    ax.tick_params(labelsize=2.5 * size / dpi)
     plt.tight_layout()
 
     fig = plt.gcf()
