@@ -572,10 +572,10 @@ class Geometry:
         if mirror_point != "center":
             x, y = mirror_point
             mirror_point = (x, y, 0)
-            if axis == "x":
-                x_mirror = -x_mirror
-            elif axis == "y":
-                y_mirror = -y_mirror
+        if axis == "x":
+            x_mirror = -x_mirror
+        elif axis == "y":
+            y_mirror = -y_mirror
         mirrored_geom = shapely.affinity.scale(
             self.geom, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=mirror_point
         )
@@ -794,7 +794,7 @@ class Geometry:
         current_points = copy.copy(self.points)
         current_facets = copy.copy(self.facets)
         current_holes = copy.copy(self.holes)
-        current_materials = copy.copy(self.materials)
+        current_material = copy.copy(self.material)
         current_control_points = copy.copy(self.control_points)
 
         if isinstance(point_idxs, int):
@@ -807,21 +807,13 @@ class Geometry:
             current_points[point_idx] = (new_x, new_y)
 
         new_geom = Geometry.from_points(
-            current_points,
-            current_facets,
-            current_holes,
-            control_points=None,
-            materials=current_materials,
+            current_points, current_facets, current_control_points, current_holes, material=current_material
         )
         if self.assigned_control_point and new_geom.geom.contains(
             self.assigned_control_point
         ):
             new_geom = Geometry.from_points(
-                current_points,
-                current_facets,
-                current_holes,
-                current_control_points[0],
-                current_materials,
+                current_points, current_facets, current_control_points[0], current_holes, current_material
             )
         return new_geom
 
