@@ -151,7 +151,7 @@ def test_compound_rectangular_isection_offset_corrode():
 
 def test_compound_stiffened_isection():
     """
-    Tests that plates 1 and 2 can be eroded to nothing and a valid Section can 
+    Tests that plates 1 and 2 can be eroded to nothing and a valid Section can
     still be generated without errors.
     """
     uc = sections.i_section(d=400, b=400, t_f=25, t_w=25, r=30, n_r=8)
