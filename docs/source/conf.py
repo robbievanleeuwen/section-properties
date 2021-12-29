@@ -7,7 +7,6 @@
 # http://www.sphinx-doc.org/en/master/config
 
 from sphinx_gallery.sorting import FileNameSortKey
-import locale
 
 # -- Path setup --------------------------------------------------------------
 
@@ -20,7 +19,6 @@ import sys
 sys.path.insert(0, os.path.abspath('../../'))
 from sectionproperties import __version__ as ver
 autodoc_mock_imports = ['rhino_shapely_interop', 'mpl_toolkits']
-print(locale.getlocale(locale.LC_NUMERIC))
 
 # -- Project information -----------------------------------------------------
 
