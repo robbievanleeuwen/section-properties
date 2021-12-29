@@ -2,6 +2,7 @@ scipy
 numpy
 shapely
 matplotlib
+mpl_toolkits
 more_itertools
 pybind11
 meshpy
