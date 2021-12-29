@@ -6,9 +6,9 @@ from sectionproperties.pre.sections import Geometry, CompoundGeometry
 
 def load_dxf(dxf_filepath: pathlib.Path):
     """
-            Import any-old-shape in dxf format for analysis.
-            Code by aegis1980 and connorferster
-        """
+    Import any-old-shape in dxf format for analysis.
+    Code by aegis1980 and connorferster
+    """
     if not dxf_filepath.exists():
         raise ValueError(f"The filepath does not exist: {dxf_filepath}")
 
