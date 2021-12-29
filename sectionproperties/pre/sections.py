@@ -673,12 +673,12 @@ class Geometry:
         :return: Geometry object translated to new alignment
         :rtype: :class:`sections.pre.sections.Geometry`
 
-        The following example erodes a 200PFC section by 3::
+        The following example erodes a 200PFC section by 2 mm::
 
             import sectionproperties.pre.sections as sections
 
             geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-            new_geometry = geometry.offset_perimeter(amount=-3)
+            new_geometry = geometry.offset_perimeter(amount=-2)
         """
         if self.geom.interiors and where == "interior":
             exterior_polygon = Polygon(self.geom.exterior)
@@ -1564,11 +1564,7 @@ class CompoundGeometry(Geometry):
     def offset_perimeter(
         self, amount: float = 0, where="exterior", resolution: float = 12
     ):
-        """Dilates or erodes perimeter of the individual geometries within the CompoundGeometry
-        object by a discrete amount. Note, because the individual geometries have their own
-        perimeters offset independently, sections don't "stick" as though they were a joined section.
-        Any aligned geometries within the CompoundGeometry will need to be re-aligned after
-        the perimeter offset.
+        """Dilates or erodes the perimeter of a CompoundGeometry object by a discrete amount.
 
         :param amount: Distance to offset the section by. A -ve value "erodes" the section. A +ve
             value "dilates" the section.
@@ -1582,14 +1578,20 @@ class CompoundGeometry(Geometry):
         :return: Geometry object translated to new alignment
         :rtype: :class:`sections.pre.sections.Geometry`
 
-        The following example erodes a 200PFC section by 3::
+        The following example erodes a 200UB25 with a 12 plate stiffener section by 2 mm::
 
             import sectionproperties.pre.sections as sections
 
             geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry_2 = sections.rectangular_section(d=20, b=133)
+            geometry_2 = sections.rectangular_section(d=12, b=133)
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
-            new_geometry = compound.offset_section_perimeter(amount=-3)
+            new_geometry = compound.offset_perimeter(amount=-2)
+
+        .. note::
+
+            If performing a positive offset on a CompoundGeometry with multiple materials, ensure
+            that the materials propagate as desired by performing a .plot_mesh() prior to performing
+            any analysis.
         """
         if amount < 0:  # Eroding condition
             unionized_poly = unary_union([geom.geom for geom in self.geoms])
