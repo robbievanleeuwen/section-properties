@@ -6,7 +6,7 @@ from sectionproperties.pre.nastran_sections import *
 from sectionproperties.analysis.cross_section import Section
 from sectionproperties.pre.pre import Material
 from sectionproperties.pre.rhino import load_3dm, load_brep_encoding
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon, MultiPolygon, LineString, Point, GeometryCollection
 from shapely import wkt
 import json
 
@@ -293,3 +293,19 @@ def test_mirror_section():
     assert assymetrical_chan.mirror_section(axis="y").geom.wkt == 'POLYGON ((75 0, 0 -10, 0 16, 67 16, 67 184, 0 184, 0 200, 75 200, 75 0))'
     assert assymetrical_chan.mirror_section(axis='y', mirror_point=[50, 50]).geom.wkt == 'POLYGON ((100 0, 25 -10, 25 16, 92 16, 92 184, 25 184, 25 200, 100 200, 100 0))'
     assert assymetrical_chan.mirror_section(axis='x', mirror_point=[50, 50]).geom.wkt == 'POLYGON ((0 100, 75 110, 75 84, 8 84, 8 -84, 75 -84, 75 -100, 0 -100, 0 100))'
+
+    
+def test_filter_non_polygons():
+    point1 = Point([0, 0])
+    point2 = Point([1, 1])
+    point3 = Point([1, 0])
+    line = LineString([point1, point2])
+    poly = Polygon([point1, point2, point3])
+    multi_poly = MultiPolygon([poly, poly])
+    collection = GeometryCollection([poly, point1, line])
+    out = filter_non_polygons(collection)
+    assert filter_non_polygons(poly) == poly
+    assert filter_non_polygons(multi_poly) == multi_poly
+    assert filter_non_polygons(point1) == Polygon()
+    assert filter_non_polygons(line) == Polygon()
+    assert filter_non_polygons(collection) == poly
