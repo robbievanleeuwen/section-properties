@@ -1055,6 +1055,8 @@ class Geometry:
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
+            if isinstance(new_polygon, GeometryCollection):
+                return None
             return Geometry(new_polygon, material)
         except:
             raise ValueError(
@@ -1072,6 +1074,8 @@ class Geometry:
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
+            if isinstance(new_polygon, GeometryCollection):
+                return None
             # Check to see if assigned_control_point is still valid
             if self.assigned_control_point and new_polygon.contains(
                 self.assigned_control_point
@@ -1101,7 +1105,7 @@ class Geometry:
         material = self.material or other.material
         try:
             new_polygon = filter_non_polygons(self.geom & other.geom)
-            if isinstance(new_polygon, MultiPolygon):
+            if isinstance(new_polygon, MultiPolygon) and len(new_polygon.geoms) > 1:
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
@@ -1600,13 +1604,14 @@ class CompoundGeometry(Geometry):
             offset_geom = Geometry(unionized_poly).offset_perimeter(
                 amount, where, resolution
             )
-
             # Using the offset_geom as a "mask"
             geoms_acc = []
-            for idx, geom in enumerate(self.geoms):
+            for geom in self.geoms:
                 # Use symmetric intersection to find the region of the original
                 # that intersects with the eroded unionized shape
-                geoms_acc.append(geom & offset_geom)
+                intersection_geom = geom & offset_geom
+                if not intersection_geom.geom.is_empty:
+                    geoms_acc.append(intersection_geom)
             new_geom = CompoundGeometry(geoms_acc)
             return new_geom
 
@@ -1628,8 +1633,8 @@ class CompoundGeometry(Geometry):
                         # constituents of the compound geometry (because they are
                         # occupying that space already)
                         offset_geom = offset_geom - orig_geom
-
-                geoms_acc.append(offset_geom)
+                if not offset_geom.geom.is_empty:
+                    geoms_acc.append(offset_geom)
             new_geom = CompoundGeometry(geoms_acc)
             return new_geom
         else:
