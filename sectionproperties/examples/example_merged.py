@@ -9,7 +9,9 @@ points = [[0, 0], [50, 0], [25, 50]]
 facets = [[0, 1], [1, 2], [2, 0]]
 holes = []
 control_points = [[25, 25]]
-triangle = sections.CustomSection(points, facets, holes, control_points, shift=[25, 150])
+triangle = sections.CustomSection(
+    points, facets, holes, control_points, shift=[25, 150]
+)
 
 # create a 100x100x6 EA on the right of the RHS
 angle = sections.AngleSection(d=100, b=100, t=6, r_r=8, r_t=5, n_r=8, shift=[100, 25])

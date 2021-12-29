@@ -35,8 +35,12 @@ class TestRectangle(unittest.TestCase):
         val_list.append({"prop": "zxx_minus", "val": 50 * 100 ** 2 / 6, "tol": None})
         val_list.append({"prop": "zyy_plus", "val": 100 * 50 ** 2 / 6, "tol": None})
         val_list.append({"prop": "zyy_minus", "val": 100 * 50 ** 2 / 6, "tol": None})
-        val_list.append({"prop": "rx", "val": (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None})
-        val_list.append({"prop": "ry", "val": (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None})
+        val_list.append(
+            {"prop": "rx", "val": (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None}
+        )
+        val_list.append(
+            {"prop": "ry", "val": (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5, "tol": None}
+        )
         val_list.append({"prop": "i11_c", "val": 50 * 100 ** 3 / 12, "tol": None})
         val_list.append({"prop": "i22_c", "val": 100 * 50 ** 3 / 12, "tol": None})
         val_list.append({"prop": "phi", "val": 0, "tol": None})

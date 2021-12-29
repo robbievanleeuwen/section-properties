@@ -67,10 +67,11 @@ class Geometry(pre.GeometryCleanerMixin):
         msg = "Number of mesh_sizes ({0}), should match the number of regions ({1})".format(
             len(mesh_sizes), len(self.control_points)
         )
-        assert(len(mesh_sizes) == len(self.control_points)), msg
+        assert len(mesh_sizes) == len(self.control_points), msg
 
         return pre.create_mesh(
-            self.points, self.facets, self.holes, self.control_points, mesh_sizes)
+            self.points, self.facets, self.holes, self.control_points, mesh_sizes
+        )
 
     def shift_section(self):
         """Shifts the cross-section parameters by the class variable vector *shift*."""
@@ -143,7 +144,7 @@ class Geometry(pre.GeometryCleanerMixin):
         for cp in self.control_points:
             rotate_point(cp, rot_point, rot_phi)
 
-    def mirror_section(self, axis='x', mirror_point=None):
+    def mirror_section(self, axis="x", mirror_point=None):
         """Mirrors the geometry about a point on either the x or y-axis. If no point is provided,
         mirrors the geometry about the first control point in the list of control points of the
         :class:`~sectionproperties.pre.sections.Geometry` object.
@@ -165,9 +166,9 @@ class Geometry(pre.GeometryCleanerMixin):
             mirror_point = self.control_points[0]
 
         # select the axis to mirror
-        if axis == 'x':
+        if axis == "x":
             i = 1
-        elif axis == 'y':
+        elif axis == "y":
             i = 0
         else:
             raise RuntimeError("Enter a valid axis: 'x' or 'y'")
@@ -298,37 +299,45 @@ class Geometry(pre.GeometryCleanerMixin):
 
             # plot the points and facets
             if i == 0:
-                ax.plot([self.points[f[0]][0], self.points[f[1]][0]],
-                        [self.points[f[0]][1], self.points[f[1]][1]],
-                        'ko-', markersize=2, linewidth=linewidth, label='Points & Facets')
+                ax.plot(
+                    [self.points[f[0]][0], self.points[f[1]][0]],
+                    [self.points[f[0]][1], self.points[f[1]][1]],
+                    "ko-",
+                    markersize=2,
+                    linewidth=linewidth,
+                    label="Points & Facets",
+                )
             else:
-                ax.plot([self.points[f[0]][0], self.points[f[1]][0]],
-                        [self.points[f[0]][1], self.points[f[1]][1]],
-                        'ko-', markersize=2, linewidth=linewidth)
+                ax.plot(
+                    [self.points[f[0]][0], self.points[f[1]][0]],
+                    [self.points[f[0]][1], self.points[f[1]][1]],
+                    "ko-",
+                    markersize=2,
+                    linewidth=linewidth,
+                )
 
         for (i, h) in enumerate(self.holes):
             # plot the holes
             if i == 0:
-                ax.plot(h[0], h[1], 'rx', markersize=5, label='Holes')
+                ax.plot(h[0], h[1], "rx", markersize=5, label="Holes")
             else:
-                ax.plot(h[0], h[1], 'rx', markersize=5)
+                ax.plot(h[0], h[1], "rx", markersize=5)
 
         for (i, cp) in enumerate(self.control_points):
             # plot the control points
             if i == 0:
-                ax.plot(cp[0], cp[1], 'bo', markersize=5,
-                        label='Control Points')
+                ax.plot(cp[0], cp[1], "bo", markersize=5, label="Control Points")
             else:
-                ax.plot(cp[0], cp[1], 'bo', markersize=5)
+                ax.plot(cp[0], cp[1], "bo", markersize=5)
 
         # display the legend
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 
         # display the labels
         if labels:
             # plot node labels
             for (i, pt) in enumerate(self.points):
-                ax.annotate(str(i), xy=pt, color='r')
+                ax.annotate(str(i), xy=pt, color="r")
 
             # plot facet labels
             for (i, fct) in enumerate(self.facets):
@@ -336,7 +345,7 @@ class Geometry(pre.GeometryCleanerMixin):
                 pt2 = self.points[fct[1]]
                 xy = [(pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2]
 
-                ax.annotate(str(i), xy=xy, color='b')
+                ax.annotate(str(i), xy=xy, color="b")
 
         if ax_supplied:
             # if an axis is supplied, return None for figure and axes to indicate that it is not
@@ -344,7 +353,7 @@ class Geometry(pre.GeometryCleanerMixin):
             return None, None
 
         # if no axes object is supplied, finish the plot and return the figure and axes
-        post.finish_plot(ax, pause, title='Cross-Section Geometry')
+        post.finish_plot(ax, pause, title="Cross-Section Geometry")
         return (fig, ax)
 
     def calculate_extents(self):
@@ -492,7 +501,9 @@ class CustomSection(Geometry):
         Mesh generated from the above geometry.
     """
 
-    def __init__(self, points, facets, holes, control_points, shift=(0, 0), perimeter=()):
+    def __init__(
+        self, points, facets, holes, control_points, shift=(0, 0), perimeter=()
+    ):
         """Inits the CustomSection class."""
 
         super().__init__(control_points, shift)
@@ -1179,9 +1190,8 @@ class TaperedFlangeISection(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    3.0 / 2 * np.pi - alpha_rad) - (i * 1.0 / max(1, n_r - 1) * (
-                        np.pi * 0.5 - alpha_rad)
+                theta = (3.0 / 2 * np.pi - alpha_rad) - (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
                 )
 
                 # calculate the locations of the radius points
@@ -1212,8 +1222,7 @@ class TaperedFlangeISection(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    3.0 * np.pi / 2 + alpha_rad) + i * 1.0 / max(1, n_r - 1) * (
+                theta = (3.0 * np.pi / 2 + alpha_rad) + i * 1.0 / max(1, n_r - 1) * (
                     np.pi * 0.5 - alpha_rad
                 )
 
@@ -1249,9 +1258,8 @@ class TaperedFlangeISection(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    np.pi * 0.5 - alpha_rad) - (i * 1.0 / max(1, n_r - 1) * (
-                        np.pi * 0.5 - alpha_rad)
+                theta = (np.pi * 0.5 - alpha_rad) - (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
                 )
 
                 # calculate the locations of the radius points
@@ -1282,9 +1290,8 @@ class TaperedFlangeISection(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    np.pi * 0.5 + alpha_rad) + (i * 1.0 / max(1, n_r - 1) * (
-                        np.pi * 0.5 - alpha_rad)
+                theta = (np.pi * 0.5 + alpha_rad) + (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
                 )
 
                 # calculate the locations of the radius points
@@ -1470,9 +1477,8 @@ class TaperedFlangeChannel(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    3.0 / 2 * np.pi - alpha_rad) - (i * 1.0 / max(1, n_r - 1) * (
-                        np.pi * 0.5 - alpha_rad)
+                theta = (3.0 / 2 * np.pi - alpha_rad) - (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
                 )
 
                 # calculate the locations of the radius points
@@ -1492,8 +1498,7 @@ class TaperedFlangeChannel(Geometry):
 
                 # calculate the locations of the radius points
                 x = t_w + r_r + r_r * np.cos(theta)
-                y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(
-                    theta)
+                y = d - t_f - y2 - r_r * np.cos(alpha_rad) + r_r * np.sin(theta)
 
                 # append the current points to the points list
                 self.points.append([x, y])
@@ -1504,9 +1509,8 @@ class TaperedFlangeChannel(Geometry):
         else:
             for i in range(n_r):
                 # determine polar angle
-                theta = (
-                    3.0 * np.pi / 2 + alpha_rad) + (i * 1.0 / max(1, n_r - 1) * (
-                        np.pi * 0.5 - alpha_rad)
+                theta = (3.0 * np.pi / 2 + alpha_rad) + (
+                    i * 1.0 / max(1, n_r - 1) * (np.pi * 0.5 - alpha_rad)
                 )
 
                 # calculate the locations of the radius points
@@ -1726,7 +1730,7 @@ class CeeSection(Geometry):
 
         # ensure the lip length is greater than the outer radius
         if l < r_out:
-            raise Exception('Lip length must be greater than the outer radius')
+            raise Exception("Lip length must be greater than the outer radius")
 
         # assign control point
         control_points = [[t * 0.5, d * 0.5]]
@@ -1757,8 +1761,7 @@ class CeeSection(Geometry):
         self.draw_radius([t + r_in, d - t - r_in], r_in, np.pi, n_r, False)
 
         # construct the inner top right radius
-        self.draw_radius(
-            [b - t - r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
+        self.draw_radius([b - t - r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
 
         if r_out != l:
             # add next two points
@@ -1827,7 +1830,7 @@ class ZedSection(Geometry):
 
         # ensure the lip length is greater than the outer radius
         if l < r_out:
-            raise Exception('Lip length must be greater than the outer radius')
+            raise Exception("Lip length must be greater than the outer radius")
 
         # assign control point
         control_points = [[t * 0.5, d * 0.5]]
@@ -2016,7 +2019,7 @@ class PolygonSection(Geometry):
         """Inits the PolygonSection class."""
 
         if n_sides < 3:
-            msg = 'n_sides required to be greater than 3 for PolygonSection class'
+            msg = "n_sides required to be greater than 3 for PolygonSection class"
             raise Exception(msg)
 
         # initial rotation
