@@ -13,7 +13,6 @@ sphinx:
 
 # Default is HTML
 formats:
-  - html
   - pdf
 
 # Optionally declare the Python requirements required to build your docs
