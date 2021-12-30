@@ -97,7 +97,7 @@ class Section:
             # extract mesh data
             nodes = np.array(mesh["vertices"], dtype=np.dtype(float))
             elements = np.array(mesh["triangles"], dtype=np.dtype(int))
-            attributes = np.array(mesh["triangle_attributes"], dtype=np.dtype(int))
+            attributes = np.array(mesh["triangle_attributes"].T[0], dtype=np.dtype(int))
 
             # swap mid-node order to retain node ordering consistency
             elements[:, [3, 4, 5]] = elements[:, [5, 3, 4]]
