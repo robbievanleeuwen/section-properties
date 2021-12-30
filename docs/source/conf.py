@@ -10,8 +10,7 @@ from sphinx_gallery.sorting import FileNameSortKey
 import locale
 
 
-prev_num_locale = locale.getlocale(locale.LC_NUMERIC)
-locale.setlocale(locale.LC_NUMERIC, prev_num_locale)
+locale.setlocale(locale.LC_ALL, '')
 
 # -- Path setup --------------------------------------------------------------
 
