@@ -232,8 +232,8 @@ Another example (but with nested geometries)
 --------------------------------------------
 
 This example demonstrates creating nested geometries using two different approaches.
-These approaches reflect the differences between how shapely (geometry pre-processor) "perceives" geometry 
-and how meshpy/Triangle (meshing tool) "perceives" geometry and how the modeller might adapt their
+These approaches reflect the differences between how shapely (geometry pre-processor) "perceives" geometry
+and how Triangle (meshing tool) "perceives" geometry and how the modeller might adapt their
 input style depending on the situation.
 
 The nested geometry we are trying to create looks as follows:
@@ -252,7 +252,7 @@ In creating this geometry consider the following:
     :align: center
     :scale: 100 %
 
-- meshpy/Triangle does not have a concept of "z-ordering" so there is only a single plane which
+- Triangle does not have a concept of "z-ordering" so there is only a single plane which
   may have regions of different materials (specified with control points). When a hole is created
   in the plane, it "punches" through "all" polygons in the plane.
 
