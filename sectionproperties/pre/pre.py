@@ -75,7 +75,6 @@ def create_mesh(
     holes: List[List[float]],
     control_points: List[List[float]],
     mesh_sizes: Union[List[float], float],
-    atol=1.0e-8,
 ):
     """Creates a quadratic triangular mesh using the triangle module, which utilises the code
     'Triangle', by Jonathan Shewchuk.
@@ -92,20 +91,19 @@ def create_mesh(
     :type control_points: list[list[float, float]]
     :param mesh_sizes: List of maximum element areas for each region defined by a control point
     :type mesh_sizes: list[float]
-    :param atol: minimum permissable point distance from any section facet
-    :type atol: float
 
     :return: Dictionary containing mesh data
     :rtype: dict()
     """
-    # check_geometry(points, facets, holes, control_points, atol=atol)
     if not isinstance(mesh_sizes, list):
         mesh_sizes = [mesh_sizes]
 
     tri = {}  # create tri dictionary
     tri["vertices"] = points  # set point
     tri["segments"] = facets  # set facets
-    # tri["holes"] = holes  # set holes
+
+    if holes:
+        tri["holes"] = holes  # set holes
 
     # prepare regions
     regions = []
@@ -117,6 +115,5 @@ def create_mesh(
 
     # generate mesh
     mesh = triangle.triangulate(tri, 'pq30Aao2')
-    print(mesh)
 
     return mesh
