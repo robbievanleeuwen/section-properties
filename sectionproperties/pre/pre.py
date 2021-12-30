@@ -1,8 +1,7 @@
 from typing import Union, List
 from dataclasses import dataclass
 import numpy as np
-import meshpy.triangle as triangle
-import meshpy
+import triangle
 
 
 class GeometryError(Exception):
@@ -77,8 +76,8 @@ def create_mesh(
     control_points: List[List[float]],
     mesh_sizes: Union[List[float], float],
     atol=1.0e-8,
-) -> meshpy.triangle.MeshInfo:
-    """Creates a quadratic triangular mesh using the meshpy module, which utilises the code
+):
+    """Creates a quadratic triangular mesh using the triangle module, which utilises the code
     'Triangle', by Jonathan Shewchuk.
 
     :param points: List of points *(x, y)* defining the vertices of the cross-section
@@ -96,32 +95,28 @@ def create_mesh(
     :param atol: minimum permissable point distance from any section facet
     :type atol: float
 
-    :return: Object containing generated mesh data
-    :rtype: :class:`meshpy.triangle.MeshInfo`
+    :return: Dictionary containing mesh data
+    :rtype: dict()
     """
     # check_geometry(points, facets, holes, control_points, atol=atol)
     if not isinstance(mesh_sizes, list):
         mesh_sizes = [mesh_sizes]
-    mesh = triangle.MeshInfo()  # create mesh info object
-    mesh.set_points(points)  # set points
-    mesh.set_facets(facets)  # set facets
-    mesh.set_holes(holes)  # set holes
 
-    # set regions
-    mesh.regions.resize(len(control_points))  # resize regions list
-    region_id = 0  # initialise region ID variable
+    tri = {}  # create tri dictionary
+    tri["vertices"] = points  # set point
+    tri["segments"] = facets  # set facets
+    # tri["holes"] = holes  # set holes
+
+    # prepare regions
+    regions = []
 
     for (i, cp) in enumerate(control_points):
-        mesh.regions[i] = [cp[0], cp[1], region_id, mesh_sizes[i]]
-        region_id += 1
+        regions.append([cp[0], cp[1], i, mesh_sizes[i]])
 
-    mesh = triangle.build(
-        mesh,
-        min_angle=30,
-        mesh_order=2,
-        quality_meshing=True,
-        attributes=True,
-        volume_constraints=True,
-    )
+    tri["regions"] = regions  # set regions
+
+    # generate mesh
+    mesh = triangle.triangulate(tri, 'pq30Aao2')
+    print(mesh)
 
     return mesh
