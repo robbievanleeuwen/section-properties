@@ -7,8 +7,8 @@ your local machine. You will need a working copy of python on your machine.
 Installing *sectionproperties*
 ------------------------------
 
-*sectionproperties* uses `*shapely* <https://github.com/shapely/shapely>`_ to prepare the
-cross-section geometry and `*triangle* <https://github.com/drufat/triangle>`_ to efficiently
+*sectionproperties* uses `shapely <https://github.com/shapely/shapely>`_ to prepare the
+cross-section geometry and `triangle <https://github.com/drufat/triangle>`_ to efficiently
 generate a conforming triangular mesh in order to perform a finite element analysis of the
 structural cross-section.
 
