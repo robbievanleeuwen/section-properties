@@ -5,7 +5,9 @@ from sectionproperties.pre import pre
 from sectionproperties.pre.sections import draw_radius
 
 
-def nastran_bar(DIM1: float, DIM2: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_bar(
+    DIM1: float, DIM2: float, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a BAR section with the center at the origin *(0, 0)*, with two parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for definition of
     parameters. Added by JohnDN90.
@@ -49,8 +51,14 @@ def nastran_bar(DIM1: float, DIM2: float, material: pre.Material = pre.DEFAULT_M
     return geometry
 
 
-def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
-    """ Constructs a BOX section with the center at the origin *(0, 0)*, with four parameters
+def nastran_box(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
+    """Constructs a BOX section with the center at the origin *(0, 0)*, with four parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for definition of
     parameters. Added by JohnDN90.
 
@@ -104,7 +112,13 @@ def nastran_box(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pr
 
 
 def nastran_box1(
-    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float, material: pre.Material = pre.DEFAULT_MATERIAL
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    DIM5: float,
+    DIM6: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a BOX1 section with the center at the origin *(0, 0)*, with six parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details. Added by
@@ -166,8 +180,14 @@ def nastran_box1(
     return geometry
 
 
-def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
-    """ Constructs a CHAN (C-Channel) section with the web's middle center at the origin *(0, 0)*,
+def nastran_chan(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
+    """Constructs a CHAN (C-Channel) section with the web's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Added by JohnDN90.
 
@@ -224,8 +244,14 @@ def nastran_chan(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: p
     return geometry
 
 
-def nastran_chan1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
-    """ Constructs a CHAN1 (C-Channel) section with the web's middle center at the origin *(0, 0)*,
+def nastran_chan1(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
+    """Constructs a CHAN1 (C-Channel) section with the web's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Added by JohnDN90.
 
@@ -280,8 +306,14 @@ def nastran_chan1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: 
     return geometry
 
 
-def nastran_chan2(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
-    """ Constructs a CHAN2 (C-Channel) section with the bottom web's middle center at the origin
+def nastran_chan2(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
+    """Constructs a CHAN2 (C-Channel) section with the bottom web's middle center at the origin
     *(0, 0)*, with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_
     [4]_ for more details. Added by JohnDN90.
 
@@ -336,8 +368,14 @@ def nastran_chan2(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: 
     return geometry
 
 
-def nastran_cross(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
-    """ Constructs Nastran's cruciform/cross section with the intersection's middle center at the
+def nastran_cross(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
+    """Constructs Nastran's cruciform/cross section with the intersection's middle center at the
     origin *(0, 0)*, with four parameters defining dimensions. See Nastran documentation [1]_ [2]_
     [3]_ [4]_ for more details. Added by JohnDN90.
 
@@ -405,9 +443,9 @@ def nastran_fcross(
     DIM6: float,
     DIM7: float,
     DIM8: float,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
-    """ Constructs a flanged cruciform/cross section with the intersection's middle center at the
+    """Constructs a flanged cruciform/cross section with the intersection's middle center at the
     origin *(0, 0)*, with eight parameters defining dimensions. Added by JohnDN90.
 
     :param float DIM1: Depth (y) of flanged cruciform
@@ -502,9 +540,9 @@ def nastran_dbox(
     DIM8: float,
     DIM9: float,
     DIM10: float,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
-    """ Constructs a DBOX section with the center at the origin *(0, 0)*, with ten parameters
+    """Constructs a DBOX section with the center at the origin *(0, 0)*, with ten parameters
     defining dimensions. See MSC Nastran documentation [1]_ for more details. Added by JohnDN90.
 
     :param float DIM1: Width (x) of the DBOX-section
@@ -581,9 +619,15 @@ def nastran_dbox(
 
 
 def nastran_gbox(
-    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float, material: pre.Material = pre.DEFAULT_MATERIAL
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    DIM5: float,
+    DIM6: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
-    """ Constructs a GBOX section with the center at the origin *(0, 0)*, with six parameters
+    """Constructs a GBOX section with the center at the origin *(0, 0)*, with six parameters
     defining dimensions. See ASTROS documentation [5]_ for more details. Added by JohnDN90.
 
     :param float DIM1: Width (x) of the GBOX-section
@@ -653,7 +697,13 @@ def nastran_gbox(
     return geometry
 
 
-def nastran_h(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_h(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs a H section with the middle web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -714,7 +764,13 @@ def nastran_h(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.
     return geometry
 
 
-def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_hat(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs a Hat section with the top most section's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Note that HAT in ASTROS is actually HAT1 in this code. Added by JohnDN90.
@@ -774,8 +830,15 @@ def nastran_hat(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pr
     return geometry
 
 
-def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
-    """ Constructs a HAT1 section with the bottom plate's bottom center at the origin *(0, 0)*,
+def nastran_hat1(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    DIM5: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
+    """Constructs a HAT1 section with the bottom plate's bottom center at the origin *(0, 0)*,
     with five parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [5]_ for
     definition of parameters. Note that in ASTROS, HAT1 is called HAT. Added by JohnDN90.
 
@@ -821,7 +884,9 @@ def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
 
     hat = nastran_hat(DIM1=d1, DIM2=d2, DIM3=d3, DIM4=d4)
     # Merge the two sections into one geometry
-    geometry = hat.align_center(bottom_plate).align_to(bottom_plate, on="top") + bottom_plate
+    geometry = (
+        hat.align_center(bottom_plate).align_to(bottom_plate, on="top") + bottom_plate
+    )
 
     C = (-0.5 * DIM1, 0)
     D = (0.5 * DIM1, 0)
@@ -834,8 +899,10 @@ def nastran_hat1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float
     return geometry
 
 
-def nastran_hexa(DIM1: float, DIM2: float, DIM3: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
-    """ Constructs a HEXA (hexagon) section with the center at the origin *(0, 0)*, with three
+def nastran_hexa(
+    DIM1: float, DIM2: float, DIM3: float, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
+    """Constructs a HEXA (hexagon) section with the center at the origin *(0, 0)*, with three
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
 
@@ -888,7 +955,13 @@ def nastran_hexa(DIM1: float, DIM2: float, DIM3: float, material: pre.Material =
 
 
 def nastran_i(
-    DIM1: float, DIM2: float, DIM3: float, DIM4: float, DIM5: float, DIM6: float, material: pre.Material = pre.DEFAULT_MATERIAL
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    DIM5: float,
+    DIM6: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs Nastran's I section with the bottom flange's middle center at the origin
     *(0, 0)*, with six parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_
@@ -957,7 +1030,13 @@ def nastran_i(
     return geometry
 
 
-def nastran_i1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_i1(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs a I1 section with the web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -1019,7 +1098,13 @@ def nastran_i1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre
     return geometry
 
 
-def nastran_l(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_l(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs a L section with the intersection's center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ for more details.
     Added by JohnDN90.
@@ -1068,7 +1153,9 @@ def nastran_l(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.
     return geometry
 
 
-def nastran_rod(DIM1: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_rod(
+    DIM1: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a circular rod section with the center at the origin *(0, 0)*, with one parameter
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details. Added by
     JohnDN90.
@@ -1123,7 +1210,13 @@ def nastran_rod(DIM1: float, n: int, material: pre.Material = pre.DEFAULT_MATERI
     return geometry
 
 
-def nastran_tee(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_tee(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs a T section with the top flange's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for more
     details. Added by JohnDN90.
@@ -1196,7 +1289,13 @@ def nastran_tee(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pr
     return geometry
 
 
-def nastran_tee1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_tee1(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs a T1 section with the right flange's middle center at the origin *(0, 0)*, with
     four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1254,7 +1353,13 @@ def nastran_tee1(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: p
     return geometry
 
 
-def nastran_tee2(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_tee2(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs a T2 section with the bottom flange's middle center at the origin *(0, 0)*, with
     four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1312,7 +1417,9 @@ def nastran_tee2(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: p
     return geometry
 
 
-def nastran_tube(DIM1: float, DIM2: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_tube(
+    DIM1: float, DIM2: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a circular tube section with the center at the origin *(0, 0)*, with two
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1378,7 +1485,9 @@ def nastran_tube(DIM1: float, DIM2: float, n: int, material: pre.Material = pre.
     return geometry
 
 
-def nastran_tube2(DIM1: float, DIM2: float, n: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_tube2(
+    DIM1: float, DIM2: float, n: float, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a circular TUBE2 section with the center at the origin *(0, 0)*, with two
     parameters defining dimensions. See MSC Nastran documentation [1]_ for more details. Added by
     JohnDN90.
@@ -1445,7 +1554,13 @@ def nastran_tube2(DIM1: float, DIM2: float, n: float, material: pre.Material = p
         return geometry
 
 
-def nastran_zed(DIM1: float, DIM2: float, DIM3: float, DIM4: float, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def nastran_zed(
+    DIM1: float,
+    DIM2: float,
+    DIM3: float,
+    DIM4: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs a Z section with the web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
