@@ -77,7 +77,7 @@ class Geometry:
         self.compile_geometry()
 
     def _repr_svg_(self):
-        print("sectionproperties.pre.sections.Geometry")
+        print("sectionproperties.pre.geometry.Geometry")
         print(f"object at: {hex(id(self))}")
         print(f"Material: {self.material.name}")
         return self.geom._repr_svg_()
@@ -227,7 +227,7 @@ class Geometry:
             Try adjusting the keyword arguments if this error is raised.
         :return:
             A Geometry object.
-        :rtype: :class:`sectionproperties.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
 
         :Keyword Arguments:
             * *refine_num* (``int, optional``) --
@@ -278,7 +278,7 @@ class Geometry:
             See below.
         :return:
             A Geometry object found in the encoded string.
-        :rtype: :class:`sectionproperties.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
 
         :Keyword Arguments:
             * *refine_num* (``int, optional``) --
@@ -307,11 +307,7 @@ class Geometry:
                 If true, all non parallel surfaces are filtered out.
                 Default is False.
         """
-<<<<<<< HEAD:sectionproperties/pre/geometry.py
         return cls(geom = rhino_importer.load_brep_encoding(r3dm_brep, **kwargs)[0])
-=======
-        return cls(geom=rhino_importer.load_brep_encoding(r3dm_brep, **kwargs)[0])
->>>>>>> 83fdfbd4c10a451e3145eb6166821795c92ad933:sectionproperties/pre/sections.py
 
     def create_facets_and_control_points(self):
         self.perimeter = None
@@ -346,7 +342,7 @@ class Geometry:
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
             Geometry-object is self, not a new instance.
-        :rtype: :class:`sectionproperties.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
 
         The following example creates a circular cross-section with a diameter of 50 with 64
         points, and generates a mesh with a maximum triangular area of 2.5::
@@ -389,7 +385,7 @@ class Geometry:
 
         :param other: Either another Geometry or a tuple representing an
             *(x,y)* coordinate point that 'self' should align to.
-        :type other: Union[sectionproperties.pre.sections.Geometry, Tuple[float, float]]
+        :type other: Union[sectionproperties.pre.geometry.Geometry, Tuple[float, float]]
 
         :param on: A str of either "left", "right", "bottom", or "top" indicating which
             side of 'other' that self should be aligned to.
@@ -400,7 +396,7 @@ class Geometry:
         :type inner: bool
 
         :return: Geometry object translated to alignment location
-        :rtype: :class:`sections.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
         """
         # Mappings are for indexes in the list of bbox extents of both
         # 'self' and 'align_to'. i.e. a mapping of which "word" corresponds
@@ -462,10 +458,10 @@ class Geometry:
         object will be aligned with it's centroid at the origin.
 
         :param align_to: Another Geometry to align to or None (default is None)
-        :type align_to: Optional[sectionproperties.pre.sections.Geometry]
+        :type align_to: Optional[sectionproperties.pre.geometry.Geometry]
 
         :return: Geometry object translated to new alignment
-        :rtype: :class:`sections.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
         """
         cx, cy = list(self.geom.centroid.coords)[0]
         # Suggested by Agent 6-6-6: Hard-rounding of cx and cy allows
@@ -494,7 +490,7 @@ class Geometry:
         :type y_offset: float
 
         :return: New Geometry-object shifted by 'x_offset' and 'y_offset'
-        :rtype: :class:`sections.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
         """
         # Move assigned control point
         new_ctrl_point = None
@@ -526,7 +522,7 @@ class Geometry:
         :param use_radians: Boolean to indicate whether 'angle' is in degrees or radians. If True, 'angle' is interpreted as radians.
 
         :return: New Geometry-object rotated by 'angle' about 'rot_point'
-        :rtype: :class:`sections.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
 
         The following example rotates a 200UB25 section clockwise by 30 degrees::
 
@@ -562,7 +558,7 @@ class Geometry:
         :type mirror_point: Union[list[float, float], str]
 
         :return: New Geometry-object mirrored on 'axis' about 'mirror_point'
-        :rtype: :class:`sections.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
 
         The following example mirrors a 200PFC section about the y-axis and the point (0, 0)::
 
@@ -675,19 +671,14 @@ class Geometry:
         :type resolution: float
 
         :return: Geometry object translated to new alignment
-        :rtype: :class:`sections.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
 
         The following example erodes a 200PFC section by 2 mm::
 
             import sectionproperties.pre.library.steel_sections as steel_sections
 
-<<<<<<< HEAD:sectionproperties/pre/geometry.py
-            geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-            new_geometry = geometry.offset_perimeter(amount=-3)
-=======
             geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             new_geometry = geometry.offset_perimeter(amount=-2)
->>>>>>> 83fdfbd4c10a451e3145eb6166821795c92ad933:sectionproperties/pre/sections.py
         """
         if self.geom.interiors and where == "interior":
             exterior_polygon = Polygon(self.geom.exterior)
@@ -785,7 +776,7 @@ class Geometry:
         :type abs_y: Optional[float]
 
         :return: Geometry object with selected points translated to the new location.
-        :rtype: :class:`sections.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
 
         The following example expands the sides of a rectangle, one point at a time,
         to make it a square::
@@ -1116,11 +1107,6 @@ class Geometry:
                 f"Cannot perform 'intersection' on these two Geometry instances: {self} & {other}"
             )
 
-<<<<<<< HEAD:sectionproperties/pre/geometry.py
-=======
-
-###
->>>>>>> 83fdfbd4c10a451e3145eb6166821795c92ad933:sectionproperties/pre/sections.py
 
 
 class CompoundGeometry(Geometry):
@@ -1138,7 +1124,7 @@ class CompoundGeometry(Geometry):
 
     :cvar geoms: either a list of Geometry objects or a shapely.geometry.MultiPolygon
         instance.
-    :vartype geoms: Union[shapely.geometry.MultiPolygon, List[sectionproperties.pre.sections.Geometry]]
+    :vartype geoms: Union[shapely.geometry.MultiPolygon, List[sectionproperties.pre.geometry.Geometry]]
     """
 
     def __init__(self, geoms: Union[MultiPolygon, List[Geometry]]):
@@ -1367,7 +1353,7 @@ class CompoundGeometry(Geometry):
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
             Geometry-object is self, not a new instance.
-        :rtype: :class:`sectionproperties.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
 
         The following example creates a circular cross-section with a diameter of 50 with 64
         points, and generates a mesh with a maximum triangular area of 2.5::
@@ -1402,7 +1388,7 @@ class CompoundGeometry(Geometry):
         :type y_offset: float
 
         :return: CompoundGeometry object shifted by 'x_offset' and 'y_offset'
-        :rtype: :class:`sections.pre.sections.CompoundGeometry`
+        :rtype: :class:`sectionproperties.pre.sections.CompoundGeometry`
         """
         geoms_acc = []
         for geom in self.geoms:
@@ -1427,7 +1413,7 @@ class CompoundGeometry(Geometry):
         :param use_radians: Boolean to indicate whether 'angle' is in degrees or radians. If True, 'angle' is interpreted as radians.
 
         :return: CompoundGeometry object rotated by 'angle' about 'rot_point'
-        :rtype: :class:`sections.pre.sections.CompoundGeometry`
+        :rtype: :class:`sectionproperties.pre.sections.CompoundGeometry`
 
         The following example rotates a 200UB25 section with a plate clockwise by 30 degrees::
 
@@ -1459,7 +1445,7 @@ class CompoundGeometry(Geometry):
         :type mirror_point: Union[list[float, float], str]
 
         :return: Geometry object mirrored on 'axis' about 'mirror_point'
-        :rtype: :class:`sections.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
 
         The following example mirrors a 200PFC section with a plate about the y-axis and the point (0, 0)::
 
@@ -1490,10 +1476,10 @@ class CompoundGeometry(Geometry):
         geometry's assigned material.
 
         :param align_to: Another Geometry to align to or None (default is None)
-        :type align_to: Optional[sectionproperties.pre.sections.Geometry]
+        :type align_to: Optional[sectionproperties.pre.geometry.Geometry]
 
         :return: Geometry object translated to new alignment
-        :rtype: :class:`sections.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
         """
         EA_sum = sum(
             [
@@ -1590,25 +1576,15 @@ class CompoundGeometry(Geometry):
         :param resolution: Number of segments used to approximate a quarter circle around a point
         :type resolution: float
         :return: Geometry object translated to new alignment
-        :rtype: :class:`sections.pre.sections.Geometry`
+        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
 
-<<<<<<< HEAD:sectionproperties/pre/geometry.py
-        The following example erodes a 200UB25 section with a plate by 2 mm::
-=======
         The following example erodes a 200UB25 with a 12 plate stiffener section by 2 mm::
->>>>>>> 83fdfbd4c10a451e3145eb6166821795c92ad933:sectionproperties/pre/sections.py
 
             import sectionproperties.pre.library.steel_sections as steel_sections
             import sectionproperties.pre.library.standard_sections as standard_sections
 
-<<<<<<< HEAD:sectionproperties/pre/geometry.py
             geometry_1 = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry_2 = standard_sections.rectangular_section(d=20, b=133)
-            compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
-            new_geometry = compound.offset_perimeter(amount=-2)
-=======
-            geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry_2 = sections.rectangular_section(d=12, b=133)
+            geometry_2 = standard_sections.rectangular_section(d=12, b=133)
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_geometry = compound.offset_perimeter(amount=-2)
 
@@ -1617,7 +1593,6 @@ class CompoundGeometry(Geometry):
             If performing a positive offset on a CompoundGeometry with multiple materials, ensure
             that the materials propagate as desired by performing a .plot_mesh() prior to performing
             any analysis.
->>>>>>> 83fdfbd4c10a451e3145eb6166821795c92ad933:sectionproperties/pre/sections.py
         """
         if amount < 0:  # Eroding condition
             unionized_poly = unary_union([geom.geom for geom in self.geoms])

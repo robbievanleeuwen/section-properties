@@ -1,5 +1,4 @@
 from typing import Tuple, Union, List, Optional
-from sectionproperties.pre import sections
 
 import numpy as np
 import shapely

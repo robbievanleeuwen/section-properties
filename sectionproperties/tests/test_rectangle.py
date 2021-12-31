@@ -3,10 +3,10 @@ import pytest_check as check
 # import unittest
 import sectionproperties.pre.library.standard_sections as standard_sections
 import sectionproperties.pre.pre as pre
-from sectionproperties.analysis.cross_section import Section
+from sectionproperties.analysis.section import Section
 from sectionproperties.tests.helper_functions import validate_properties
 
-import sectionproperties.analysis.cross_section as file
+import sectionproperties.analysis.section as file
 
 # Rectangle section setup
 rectangle_geometry = standard_sections.rectangular_section(b=50, d=100)

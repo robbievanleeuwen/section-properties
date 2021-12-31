@@ -5,7 +5,7 @@ from sectionproperties.pre.geometry import *
 from sectionproperties.pre.library.standard_sections import *
 from sectionproperties.pre.library.steel_sections import *
 from sectionproperties.pre.library.nastran_sections import *
-from sectionproperties.analysis.cross_section import Section
+from sectionproperties.analysis.section import Section
 from sectionproperties.pre.pre import Material
 from sectionproperties.pre.rhino import load_3dm, load_brep_encoding
 from shapely.geometry import Polygon, MultiPolygon, LineString, Point, GeometryCollection
