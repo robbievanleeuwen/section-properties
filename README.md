@@ -10,25 +10,6 @@ A python package for the analysis of arbitrary cross-sections using the finite e
 
 For more detailed installation instructions, refer to the [documentation](https://sectionproperties.readthedocs.io/).
 
-### UNIX (MacOS/Linux):
-
-```
-$ pip install sectionproperties
-```
-
-### Windows
-
-Install *meshpy* by downloading the appropriate [installation wheel](https://www.lfd.uci.edu/~gohlke/pythonlibs/#meshpy).
-
-Navigate to the location of the downloaded wheel and install using pip:
-
-```
-$ cd Downloads
-$ pip install MeshPy‑2018.2.1‑cp36‑cp36m‑win_amd64.whl
-```
-
-Once *meshpy* has been installed, *sectionproperties* can be installed:
-
 ```
 $ pip install sectionproperties
 ```

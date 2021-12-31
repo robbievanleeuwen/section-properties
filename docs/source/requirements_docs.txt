@@ -3,8 +3,8 @@ numpy
 shapely
 matplotlib
 more_itertools
-pybind11
-meshpy
+triangle
 Sphinx
 sphinx-rtd-theme
 sphinx-gallery
+rhino-shapley-interop

@@ -32,11 +32,11 @@ from sectionproperties.analysis.cross_section import Section
 rhs = sections.rectangular_hollow_section(d=150, b=100, t=6, r_out=15, n_r=8)
 
 # %%
-# Create a triangular section from points
-# only the points are needed because they are in sequential order
-# and represent only a single, contiguous region
+# Create a triangular section from points, facets, and control points
 points = [[0, 0], [50, 0], [25, 50]]
-triangle = sections.Geometry.from_points(points)
+facets = [[0, 1], [1, 2], [2, 0]]
+control_points = [[25,25]]
+triangle = sections.Geometry.from_points(points, facets, control_points)
 triangle = triangle.align_center(rhs).align_to(rhs, on="top")
 
 # %%

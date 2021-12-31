@@ -142,7 +142,7 @@ file (i.e. the number of contiguous regions).
 Geometry from Rhino
 -------------------
 
-Geometries can now be created from .3dm files and BREP encodings. 
+Geometries can now be created from .3dm files and BREP encodings.
 Various limitations and assumptions need to be acknowledged:
 
 * sectional analysis is based in 2d and Rhino is a 3d environment.
@@ -152,7 +152,7 @@ Various limitations and assumptions need to be acknowledged:
 
 See the keyword arguments below that are used to search and simplify the Rhino geometry.
 
-Rhino files are read via the class methods :attr:`sectionproperties.pre.sections.Geometry.from_3dm()` and 
+Rhino files are read via the class methods :attr:`sectionproperties.pre.sections.Geometry.from_3dm()` and
 :attr:`sectionproperties.pre.sections.CompoundGeometry.from_3dm()`.
 Each class method returns the respective objects.
 
@@ -168,7 +168,7 @@ Geometry objects can also be created from encodings of Rhino BREP.
    :noindex:
 
 More advanced filtering can be achieved by working with the Shapely geometries directly.
-These can be accessed by :attr:`sectionproperties.pre.rhino.load_3dm()` and 
+These can be accessed by :attr:`sectionproperties.pre.rhino.load_3dm()` and
 :attr:`sectionproperties.pre.rhino.load_rhino_brep_encoding()`.
 
 ..  autofunction:: sectionproperties.pre.rhino.load_3dm
@@ -347,6 +347,9 @@ Offsetting the Perimeter
 ------------------------
 
   ..  autofunction:: sectionproperties.pre.sections.Geometry.offset_perimeter
+      :noindex:
+
+  ..  autofunction:: sectionproperties.pre.sections.CompoundGeometry.offset_perimeter
       :noindex:
 
 
