@@ -17,8 +17,8 @@ def readme():
         return f.read()
 
 
-if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 8:
-    sys.exit("Sorry, Python < 3.8 is not supported")
+if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 7:
+    sys.exit("Sorry, Python < 3.7 is not supported")
 
 install_requires = [
     "numpy",
