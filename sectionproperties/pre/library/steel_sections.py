@@ -5,7 +5,9 @@ import sectionproperties.pre.pre as pre
 from sectionproperties.pre.library.utils import draw_radius, rotate
 
 
-def circular_hollow_section(d: float, t: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def circular_hollow_section(
+    d: float, t: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a circular hollow section (CHS) centered at the origin *(0, 0)*, with diameter *d* and
     thickness *t*, using *n* points to construct the inner and outer circles.
 
@@ -56,7 +58,13 @@ def circular_hollow_section(d: float, t: float, n: int, material: pre.Material =
     return Geometry(outer_circle - inner_circle, material)
 
 
-def elliptical_hollow_section(d_y: float, d_x: float, t: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def elliptical_hollow_section(
+    d_y: float,
+    d_x: float,
+    t: float,
+    n: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs an elliptical hollow section (EHS) centered at the origin *(0, 0)*, with outer vertical
     diameter *d_y*, outer horizontal diameter *d_x*, and thickness *t*, using *n* points to
     construct the inner and outer ellipses.
@@ -110,7 +118,14 @@ def elliptical_hollow_section(d_y: float, d_x: float, t: float, n: int, material
     return Geometry(outer - inner, material)
 
 
-def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def rectangular_hollow_section(
+    b: float,
+    d: float,
+    t: float,
+    r_out: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> Geometry:
     """Constructs a rectangular hollow section (RHS) centered at *(b/2, d/2)*, with depth *d*, width *b*,
     thickness *t* and outer radius *r_out*, using *n_r* points to construct the inner and outer
     radii. If the outer radius is less than the thickness of the RHS, the inner radius is set to
@@ -164,7 +179,9 @@ def rectangular_hollow_section(b: float, d: float, t: float, r_out: float, n_r: 
     return Geometry(outer - inner, material)
 
 
-def polygon_hollow_section(d, t, n_sides, r_in=0, n_r=1, rot=0, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def polygon_hollow_section(
+    d, t, n_sides, r_in=0, n_r=1, rot=0, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a regular hollow polygon section centered at *(0, 0)*, with a pitch circle
     diameter of bounding polygon *d*, thickness *t*, number of sides *n_sides* and an optional
     inner radius *r_in*, using *n_r* points to construct the inner and outer radii (if radii is
@@ -283,7 +300,13 @@ def polygon_hollow_section(d, t, n_sides, r_in=0, n_r=1, rot=0, material: pre.Ma
 
 
 def i_section(
-    d: float, b: float, t_f: float, t_w: float, r: float, n_r: int, material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b: float,
+    t_f: float,
+    t_w: float,
+    r: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:  # More specific description and less ambiguous? e.g. not an "S" section.
     """Constructs an I-section centered at *(b/2, d/2)*, with depth *d*, width *b*, flange
     thickness *t_f*, web thickness *t_w*, and root radius *r*, using *n_r* points to construct the
@@ -353,7 +376,9 @@ def i_section(
     return Geometry(i_section, material)
 
 
-def mono_i_section(d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def mono_i_section(
+    d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a monosymmetric I-section centered at *(max(b_t, b_b)/2, d/2)*, with depth *d*,
     top flange width *b_t*, bottom flange width *b_b*, top flange thickness *t_ft*, top flange
     thickness *t_fb*, web thickness *t_w*, and root radius *r*, using *n_r* points to construct the
@@ -431,7 +456,9 @@ def mono_i_section(d, b_t, b_b, t_fb, t_ft, t_w, r, n_r, material: pre.Material 
     return Geometry(polygon, material)
 
 
-def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def tapered_flange_i_section(
+    d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a Tapered Flange I-section centered at *(b/2, d/2)*, with depth *d*, width *b*,
     mid-flange thickness *t_f*, web thickness *t_w*, root radius *r_r*, flange radius *r_f* and
     flange angle *alpha*, using *n_r* points to construct the radii.
@@ -623,7 +650,9 @@ def tapered_flange_i_section(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre
     return Geometry(polygon, material)
 
 
-def channel_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def channel_section(
+    d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a parallel-flange channel (PFC) section with the bottom left corner at the origin *(0, 0)*, with depth *d*,
     width *b*, flange thickness *t_f*, web  thickness *t_w* and root radius *r*, using *n_r* points
     to construct the root radius.
@@ -683,7 +712,9 @@ def channel_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT
     return Geometry(polygon, material)
 
 
-def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def tapered_flange_channel(
+    d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a Tapered Flange Channel section with the bottom left corner at the origin
     *(0, 0)*, with depth *d*, width *b*, mid-flange thickness *t_f*, web thickness *t_w*, root
     radius *r_r*, flange radius *r_f* and flange angle *alpha*, using *n_r* points to construct the
@@ -812,7 +843,9 @@ def tapered_flange_channel(d, b, t_f, t_w, r_r, r_f, alpha, n_r, material: pre.M
     return Geometry(polygon, material)
 
 
-def tee_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def tee_section(
+    d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a Tee section with the top left corner at *(0, d)*, with depth *d*, width *b*,
     flange thickness *t_f*, web thickness *t_w* and root radius *r*, using *n_r* points to
     construct the root radius.
@@ -869,7 +902,9 @@ def tee_section(d, b, t_f, t_w, r, n_r, material: pre.Material = pre.DEFAULT_MAT
     return Geometry(polygon, material)
 
 
-def angle_section(d, b, t, r_r, r_t, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def angle_section(
+    d, b, t, r_r, r_t, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs an angle section with the bottom left corner at the origin *(0, 0)*, with depth
     *d*, width *b*, thickness *t*, root radius *r_r* and toe radius *r_t*, using *n_r* points to
     construct the radii.
@@ -931,7 +966,9 @@ def angle_section(d, b, t, r_r, r_t, n_r, material: pre.Material = pre.DEFAULT_M
     return Geometry(polygon, material)
 
 
-def cee_section(d, b, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def cee_section(
+    d, b, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a Cee section (typical of cold-formed steel) with the bottom left corner at the
     origin *(0, 0)*, with depth *d*, width *b*, lip *l*, thickness *t* and outer radius *r_out*,
     using *n_r* points to construct the radius. If the outer radius is less than the thickness
@@ -1012,7 +1049,9 @@ def cee_section(d, b, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MAT
     return Geometry(polygon, material)
 
 
-def zed_section(d, b_l, b_r, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def zed_section(
+    d, b_l, b_r, l, t, r_out, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a zed section with the bottom left corner at the origin *(0, 0)*, with depth *d*,
     left flange width *b_l*, right flange width *b_r*, lip *l*, thickness *t* and outer radius
     *r_out*, using *n_r* points to construct the radius. If the outer radius is less than the
@@ -1092,7 +1131,9 @@ def zed_section(d, b_l, b_r, l, t, r_out, n_r, material: pre.Material = pre.DEFA
     return Geometry(polygon, material)
 
 
-def box_girder_section(d, b_t, b_b, t_ft, t_fb, t_w, material: pre.Material = pre.DEFAULT_MATERIAL):
+def box_girder_section(
+    d, b_t, b_b, t_ft, t_fb, t_w, material: pre.Material = pre.DEFAULT_MATERIAL
+):
     """Constructs a box girder section centered at at *(max(b_t, b_b)/2, d/2)*, with depth *d*, top
     width *b_t*, bottom width *b_b*, top flange thickness *t_ft*, bottom flange thickness *t_fb*
     and web thickness *t_w*.

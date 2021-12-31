@@ -6,8 +6,14 @@ import sectionproperties.pre.library.standard_sections as standard_sections
 
 
 def concrete_rectangular_section(
-    b: float, d: float, dia: float, n_bar: int, n_circle: int, cover: float,
-    conc_mat: pre.Material = pre.DEFAULT_MATERIAL, steel_mat: pre.Material = pre.DEFAULT_MATERIAL
+    b: float,
+    d: float,
+    dia: float,
+    n_bar: int,
+    n_circle: int,
+    cover: float,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a concrete rectangular section of width *b* and depth *d*, with *n_bar* steel bars
     of diameter *dia*, discretised with *n_circle* points with equal side and bottom *cover* to the
@@ -71,9 +77,18 @@ def concrete_rectangular_section(
 
     return geom
 
+
 def concrete_tee_section(
-    b: float, d: float, b_f: float, d_f: float, dia: float, n_bar: int, n_circle: int, cover: float,
-    conc_mat: pre.Material = pre.DEFAULT_MATERIAL, steel_mat: pre.Material = pre.DEFAULT_MATERIAL
+    b: float,
+    d: float,
+    b_f: float,
+    d_f: float,
+    dia: float,
+    n_bar: int,
+    n_circle: int,
+    cover: float,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a concrete tee section of width *b*, depth *d*, flange width *b_f* and flange
     depth *d_f* with *n_bar* steel bars of diameter *dia*, discretised with *n_circle* points with
@@ -129,7 +144,7 @@ def concrete_tee_section(
     if n_bar < 2:
         raise ValueError("Please provide 2 or more steel reinforcing bars.")
 
-    geom = standard_sections.rectangular_section(b=b, d=d-d_f, material=conc_mat)
+    geom = standard_sections.rectangular_section(b=b, d=d - d_f, material=conc_mat)
     flange = standard_sections.rectangular_section(b=b_f, d=d_f, material=conc_mat)
     geom += flange.align_center(align_to=geom).align_to(other=geom, on="top")
     # geom += flange.align_center(align_to=geom)
@@ -143,9 +158,16 @@ def concrete_tee_section(
 
     return geom
 
+
 def concrete_circular_section(
-    d: float, n: int, dia: float, n_bar: int, n_circle: int, cover: float,
-    conc_mat: pre.Material = pre.DEFAULT_MATERIAL, steel_mat: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    n: int,
+    dia: float,
+    n_bar: int,
+    n_circle: int,
+    cover: float,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a concrete circular section of diameter *d* discretised with *n* points, with
     *n_bar* steel bars of diameter *dia*, discretised with *n_circle* points with equal side and
@@ -205,6 +227,8 @@ def concrete_circular_section(
 
     for i in range(n_bar):
         bar = standard_sections.circular_section(d=dia, n=n_circle, material=steel_mat)
-        geom += bar.shift_section(x_offset=r * np.cos(i * d_theta), y_offset=r * np.sin(i * d_theta))
+        geom += bar.shift_section(
+            x_offset=r * np.cos(i * d_theta), y_offset=r * np.sin(i * d_theta)
+        )
 
     return geom

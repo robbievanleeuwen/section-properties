@@ -1955,7 +1955,9 @@ class PlasticSection:
     :type c_bot: list[float, float]
     """
 
-    def __init__(self, geom: Union[section_geometry.Geometry, section_geometry.CompoundGeometry]):
+    def __init__(
+        self, geom: Union[section_geometry.Geometry, section_geometry.CompoundGeometry]
+    ):
         """Inits the PlasticSection class."""
         self.geometry = geom.align_center()
         self.geometry.compile_geometry()
@@ -4240,7 +4242,7 @@ class StressPost:
 
         """
 
-        pt = (x,y)
+        pt = (x, y)
         nodes = self.section.mesh_nodes
         ele = self.section.mesh_elements
         triang = tri.Triangulation(nodes[:, 0], nodes[:, 1], ele[:, 0:3])

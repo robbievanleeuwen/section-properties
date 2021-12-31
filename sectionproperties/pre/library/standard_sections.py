@@ -5,7 +5,9 @@ import sectionproperties.pre.pre as pre
 from sectionproperties.pre.library.utils import draw_radius
 
 
-def rectangular_section(b, d, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def rectangular_section(
+    b, d, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a rectangular section with the bottom left corner at the origin *(0, 0)*, with
     depth *d* and width *b*.
 
@@ -38,7 +40,9 @@ def rectangular_section(b, d, material: pre.Material = pre.DEFAULT_MATERIAL) -> 
     return Geometry(rectangle, material)
 
 
-def circular_section(d: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def circular_section(
+    d: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a solid circle centered at the origin *(0, 0)* with diameter *d* and using *n*
     points to construct the circle.
 
@@ -84,7 +88,9 @@ def circular_section(d: float, n: int, material: pre.Material = pre.DEFAULT_MATE
     return Geometry(circle, material)
 
 
-def elliptical_section(d_y: float, d_x: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def elliptical_section(
+    d_y: float, d_x: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a solid ellipse centered at the origin *(0, 0)* with vertical diameter *d_y* and
     horizontal diameter *d_x*, using *n* points to construct the ellipse.
 
@@ -132,7 +138,9 @@ def elliptical_section(d_y: float, d_x: float, n: int, material: pre.Material = 
     return Geometry(ellipse, material)
 
 
-def cruciform_section(d, b, t, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def cruciform_section(
+    d, b, t, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a cruciform section centered at the origin *(0, 0)*, with depth *d*, width *b*,
     thickness *t* and root radius *r*, using *n_r* points to construct the root radius.
 
