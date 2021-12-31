@@ -8,7 +8,13 @@ from sectionproperties.pre.library.nastran_sections import *
 from sectionproperties.analysis.section import Section
 from sectionproperties.pre.pre import Material
 from sectionproperties.pre.rhino import load_3dm, load_brep_encoding
-from shapely.geometry import Polygon, MultiPolygon, LineString, Point, GeometryCollection
+from shapely.geometry import (
+    Polygon,
+    MultiPolygon,
+    LineString,
+    Point,
+    GeometryCollection,
+)
 from shapely import wkt
 import json
 
@@ -80,11 +86,13 @@ def test_geometry_from_points():
     ]
     control_points = [[0, 0]]
     holes = [[0, 6], [0, -6]]
-    new_geom = Geometry.from_points(points=points, facets=facets, control_points=control_points, holes=holes)
-    assert (
-        new_geom.geom.wkt
-        == "POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))"
-    )  # Note, the order of point coordinates can change based on geometry operations, e.g. +/- and how many; seems to be a shapely issue
+    new_geom = Geometry.from_points(
+        points=points, facets=facets, control_points=control_points, holes=holes
+    )
+    wkt_test_geom = shapely.wkt.loads(
+        "POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))"
+    )
+    assert (new_geom.geom - wkt_test_geom) == Polygon()
 
 
 def test_compound_geometry_from_points():
@@ -123,10 +131,10 @@ def test_compound_geometry_from_points():
     ]
     control_points = [[0, 0], [0, -2 * a - t / 2]]
     new_geom = CompoundGeometry.from_points(points, facets, control_points)
-    assert (
-        new_geom.geom.wkt
-        == "MULTIPOLYGON (((-0.05 -2, 0.05 -2, 0.05 -0.05, 1 -0.05, 1 0.05, -0.05 0.05, -0.05 -2)), ((-1 -2, 1 -2, 1 -2.1, -1 -2.1, -1 -2)))"
+    wkt_test_geom = shapely.wkt.loads(
+        "MULTIPOLYGON (((-0.05 -2, 0.05 -2, 0.05 -0.05, 1 -0.05, 1 0.05, -0.05 0.05, -0.05 -2)), ((-1 -2, 1 -2, 1 -2.1, -1 -2.1, -1 -2)))"
     )
+    assert (new_geom.geom - wkt_test_geom) == Polygon()
 
 
 def test_nested_compound_geometry_from_points():
@@ -175,10 +183,11 @@ def test_nested_compound_geometry_from_points():
     nested_compound = CompoundGeometry.from_points(
         points=points, facets=facets, control_points=control_points, holes=holes
     )
-    assert (
-        nested_compound.geom.wkt
-        == "MULTIPOLYGON (((50 50, 50 -50, -50 -50, -50 50, 50 50), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-37.5 -37.5, -37.5 37.5, 37.5 37.5, 37.5 -37.5, -37.5 -37.5), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-25 -25, -25 25, 25 25, 25 -25, -25 -25), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)))"
+    wkt_test_geom = shapely.wkt.loads(
+        "MULTIPOLYGON (((50 50, 50 -50, -50 -50, -50 50, 50 50), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-37.5 -37.5, -37.5 37.5, 37.5 37.5, 37.5 -37.5, -37.5 -37.5), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-25 -25, -25 25, 25 25, 25 -25, -25 -25), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)))"
     )
+    assert (nested_compound.geom - wkt_test_geom) == Polygon()
+
     assert nested_compound.control_points == [
         (-43.75, 0.0),
         (-31.25, 0.0),
@@ -210,10 +219,22 @@ def test_plastic_centroid():
     # correct "center" of the original section which is affected by EA of each
     # of the constituent geometries.
 
-    steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
-                    yield_strength=500, color='grey')
-    timber = Material(name='Timber', elastic_modulus=5e3, poissons_ratio=0.35, density=6.5e-7,
-                    yield_strength=20, color='burlywood')
+    steel = Material(
+        name="Steel",
+        elastic_modulus=200e3,
+        poissons_ratio=0.3,
+        density=7.85e-6,
+        yield_strength=500,
+        color="grey",
+    )
+    timber = Material(
+        name="Timber",
+        elastic_modulus=5e3,
+        poissons_ratio=0.35,
+        density=6.5e-7,
+        yield_strength=20,
+        color="burlywood",
+    )
 
     # create 310UB40.4
     ub = i_section(d=304, b=165, t_f=10.2, t_w=6.1, r=11.4, n_r=8, material=steel)
@@ -281,22 +302,37 @@ def test_geometry_from_3dm_encode():
         brep_encoded = json.load(file)
     exp = Polygon([(0, 0), (1, 0), (1, 1), (0, 1), (0, 0)])
     test = Geometry.from_rhino_encoding(brep_encoded)
-    assert (test.geom-exp).is_empty
+    assert (test.geom - exp).is_empty
 
 
 def test_shift_points():
     assymetrical_chan = nastran_chan(75, 200, 8, 16).shift_points(1, dy=-10)
-    assert assymetrical_chan.geom.wkt == 'POLYGON ((0 0, 75 -10, 75 16, 8 16, 8 184, 75 184, 75 200, 0 200, 0 0))'
+    assert (
+        assymetrical_chan.geom.wkt
+        == "POLYGON ((0 0, 75 -10, 75 16, 8 16, 8 184, 75 184, 75 200, 0 200, 0 0))"
+    )
 
 
 def test_mirror_section():
     assymetrical_chan = nastran_chan(75, 200, 8, 16).shift_points(1, dy=-10)
-    assert assymetrical_chan.mirror_section(axis="x").geom.wkt == 'POLYGON ((0 190, 75 200, 75 174, 8 174, 8 6, 75 6, 75 -10, 0 -10, 0 190))'
-    assert assymetrical_chan.mirror_section(axis="y").geom.wkt == 'POLYGON ((75 0, 0 -10, 0 16, 67 16, 67 184, 0 184, 0 200, 75 200, 75 0))'
-    assert assymetrical_chan.mirror_section(axis='y', mirror_point=[50, 50]).geom.wkt == 'POLYGON ((100 0, 25 -10, 25 16, 92 16, 92 184, 25 184, 25 200, 100 200, 100 0))'
-    assert assymetrical_chan.mirror_section(axis='x', mirror_point=[50, 50]).geom.wkt == 'POLYGON ((0 100, 75 110, 75 84, 8 84, 8 -84, 75 -84, 75 -100, 0 -100, 0 100))'
+    assert (
+        assymetrical_chan.mirror_section(axis="x").geom.wkt
+        == "POLYGON ((0 190, 75 200, 75 174, 8 174, 8 6, 75 6, 75 -10, 0 -10, 0 190))"
+    )
+    assert (
+        assymetrical_chan.mirror_section(axis="y").geom.wkt
+        == "POLYGON ((75 0, 0 -10, 0 16, 67 16, 67 184, 0 184, 0 200, 75 200, 75 0))"
+    )
+    assert (
+        assymetrical_chan.mirror_section(axis="y", mirror_point=[50, 50]).geom.wkt
+        == "POLYGON ((100 0, 25 -10, 25 16, 92 16, 92 184, 25 184, 25 200, 100 200, 100 0))"
+    )
+    assert (
+        assymetrical_chan.mirror_section(axis="x", mirror_point=[50, 50]).geom.wkt
+        == "POLYGON ((0 100, 75 110, 75 84, 8 84, 8 -84, 75 -84, 75 -100, 0 -100, 0 100))"
+    )
 
-    
+
 def test_filter_non_polygons():
     point1 = Point([0, 0])
     point2 = Point([1, 1])

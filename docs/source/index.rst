@@ -31,7 +31,7 @@ can be found in the README file on github.
    rst/advanced_geom
    rst/analysis
    rst/post
-   rst/examples
+   sphinx_gallery_examples/index
    rst/api
    rst/theory
 

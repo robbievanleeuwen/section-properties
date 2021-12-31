@@ -51,8 +51,7 @@ class Geometry:
         material: pre.Material = pre.DEFAULT_MATERIAL,
         control_points: Optional[List[float, float]] = None,
     ):
-        """Inits the Geometry class.
-        """
+        """Inits the Geometry class."""
         if isinstance(geom, MultiPolygon):
             raise ValueError(f"Use CompoundGeometry(...) for a MultiPolygon object.")
         if not isinstance(geom, Polygon):
@@ -373,7 +372,10 @@ class Geometry:
         return self
 
     def align_to(
-        self, other: Union[Geometry, Tuple[float, float]], on: str, inner: bool = False,
+        self,
+        other: Union[Geometry, Tuple[float, float]],
+        on: str,
+        inner: bool = False,
     ) -> Geometry:
         """
         Returns a new Geometry object, representing 'self' translated so that is aligned
@@ -479,7 +481,9 @@ class Geometry:
         return new_geom
 
     def shift_section(
-        self, x_offset=0.0, y_offset=0.0,
+        self,
+        x_offset=0.0,
+        y_offset=0.0,
     ):
         """
         Returns a new Geometry object translated by 'x_offset' and 'y_offset'.
@@ -634,7 +638,12 @@ class Geometry:
             right_geom, left_geom = geometry.split_section((0, 0), (0, 1))
         """
         if point_j:
-            vector = np.array([point_j[0] - point_i[0], point_j[1] - point_i[1],])
+            vector = np.array(
+                [
+                    point_j[0] - point_i[0],
+                    point_j[1] - point_i[1],
+                ]
+            )
         elif vector is not None:
             vector = np.array(vector)
         elif not point_j and not vector:
@@ -807,13 +816,21 @@ class Geometry:
             current_points[point_idx] = (new_x, new_y)
 
         new_geom = Geometry.from_points(
-            current_points, current_facets, current_control_points, current_holes, material=current_material
+            current_points,
+            current_facets,
+            current_control_points,
+            current_holes,
+            material=current_material,
         )
         if self.assigned_control_point and new_geom.geom.contains(
             self.assigned_control_point
         ):
             new_geom = Geometry.from_points(
-                current_points, current_facets, current_control_points[0], current_holes, current_material
+                current_points,
+                current_facets,
+                current_control_points[0],
+                current_holes,
+                current_material,
             )
         return new_geom
 

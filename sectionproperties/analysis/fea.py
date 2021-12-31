@@ -88,7 +88,7 @@ class Tri6:
             ixy,
             self.material.elastic_modulus,
             self.material.shear_modulus,
-            self.material.density
+            self.material.density,
         )
 
     def torsion_properties(self):
