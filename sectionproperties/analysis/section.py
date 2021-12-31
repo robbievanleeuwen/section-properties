@@ -1142,7 +1142,7 @@ class Section:
             self.mesh_nodes[:, 0],
             self.mesh_nodes[:, 1],
             self.mesh_elements[:, 0:3],
-            lw=0.10*size/dpi,
+            lw=0.10 * size / dpi,
             color="black",
             alpha=alpha,
             mask=mask,
