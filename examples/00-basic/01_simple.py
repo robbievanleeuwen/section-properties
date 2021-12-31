@@ -35,7 +35,7 @@ geometry.create_mesh(mesh_sizes=[2.5])
 
 section = Section(geometry, time_info=True)
 section.display_mesh_info()
-section.plot_mesh() 
+section.plot_mesh()
 
 # %%
 # perform a geometric, warping and plastic analysis, displaying the time info

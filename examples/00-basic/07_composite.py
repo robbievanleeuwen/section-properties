@@ -27,14 +27,28 @@ from sectionproperties.analysis.section import Section
 
 # %%
 # Create material properties
-steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3,
-                 yield_strength=500, density=8.05e-6 ,color='grey')
-timber = Material(name='Timber', elastic_modulus=8e3, poissons_ratio=0.35,
-                  yield_strength=20, density=0.78e-6, color='burlywood')
+steel = Material(
+    name="Steel",
+    elastic_modulus=200e3,
+    poissons_ratio=0.3,
+    yield_strength=500,
+    density=8.05e-6,
+    color="grey",
+)
+timber = Material(
+    name="Timber",
+    elastic_modulus=8e3,
+    poissons_ratio=0.35,
+    yield_strength=20,
+    density=0.78e-6,
+    color="burlywood",
+)
 
 # %%
 # Create 310UB40.4
-ub = steel_sections.i_section(d=304, b=165, t_f=10.2, t_w=6.1, r=11.4, n_r=8, material=steel)
+ub = steel_sections.i_section(
+    d=304, b=165, t_f=10.2, t_w=6.1, r=11.4, n_r=8, material=steel
+)
 
 # %%
 # Create timber panel on top of the UB

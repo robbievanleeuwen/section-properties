@@ -36,7 +36,7 @@ rhs = steel_sections.rectangular_hollow_section(d=150, b=100, t=6, r_out=15, n_r
 # Create a triangular section from points, facets, and control points
 points = [[0, 0], [50, 0], [25, 50]]
 facets = [[0, 1], [1, 2], [2, 0]]
-control_points = [[25,25]]
+control_points = [[25, 25]]
 triangle = Geometry.from_points(points, facets, control_points)
 triangle = triangle.align_center(rhs).align_to(rhs, on="top")
 
@@ -51,7 +51,7 @@ geometry = rhs + triangle + angle
 geometry.plot_geometry()  # plot the geometry
 
 # %%
-# Create a mesh and section. For the mesh, use a mesh size of 2.5 for 
+# Create a mesh and section. For the mesh, use a mesh size of 2.5 for
 # the RHS, 5 for the triangle and 3 for the angle.
 geometry.create_mesh(mesh_sizes=[2.5, 5, 3])
 
