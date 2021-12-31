@@ -1,0 +1,9 @@
+scipy
+numpy
+shapely
+matplotlib
+more_itertools
+triangle
+Sphinx
+sphinx-rtd-theme
+sphinx-gallery

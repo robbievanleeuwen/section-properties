@@ -267,6 +267,9 @@ Offsetting the Perimeter
   ..  autofunction:: sectionproperties.pre.sections.Geometry.offset_perimeter
       :noindex:
 
+  ..  autofunction:: sectionproperties.pre.sections.CompoundGeometry.offset_perimeter
+      :noindex:
+
 
 Visualising the Geometry
 ========================

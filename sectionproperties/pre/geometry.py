@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import List, Optional, Union, Tuple
+from ntpath import join
+from typing import List, Optional, Union, Tuple, Any
 
 import copy
 import pathlib
@@ -8,9 +9,11 @@ import numpy as np
 from shapely.geometry import (
     Polygon,
     MultiPolygon,
+    LineString,
     LinearRing,
     Point,
     box,
+    GeometryCollection,
 )
 from shapely.ops import split, unary_union
 import shapely
@@ -20,6 +23,7 @@ import sectionproperties.pre.pre as pre
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
 import sectionproperties.pre.rhino as rhino_importer
+
 
 class Geometry:
     """Class for defining the geometry of a contiguous section of a single material.
@@ -53,7 +57,7 @@ class Geometry:
             raise ValueError(f"Use CompoundGeometry(...) for a MultiPolygon object.")
         if not isinstance(geom, Polygon):
             raise ValueError(
-                f"Argument is not a valid shapely.geometry.Polygon object: {geom}"
+                f"Argument is not a valid shapely.geometry.Polygon object: {repr(geom)}"
             )
         self.assigned_control_point = None
         if control_points is not None and len(control_points) == 2:
@@ -67,7 +71,9 @@ class Geometry:
         self.holes = []
         self.perimeter = []
         self._recovery_points = []
-        self.tol = 12 # Represents num of decimal places of precision for point locations
+        self.tol = (
+            12  # Represents num of decimal places of precision for point locations
+        )
         self.compile_geometry()
 
     def _repr_svg_(self):
@@ -104,10 +110,10 @@ class Geometry:
     @staticmethod
     def from_points(
         points: List[List[float]],
-        facets: Optional[List[List[int]]] = None,
+        facets: List[List[int]],
+        control_points: List[List[float]],
         holes: Optional[List[List[float]]] = None,
-        control_points: Optional[List[float]] = None,
-        material: pre.Material = pre.DEFAULT_MATERIAL,
+        material: Optional[pre.Material] = pre.DEFAULT_MATERIAL,
     ):
         """
         An interface for the creation of Geometry objects through the definition of points,
@@ -117,34 +123,32 @@ class Geometry:
             If facets are not provided, it is a assumed the that the list of points are ordered
             around the perimeter, either clockwise or anti-clockwise.
         :vartype points: list[list[float, float]]
-        :cvar facets: Optional. A list of *(start, end)* indexes of vertices defining the edges
+        :cvar facets: A list of *(start, end)* indexes of vertices defining the edges
             of the section geoemtry. Can be used to define both external and internal perimeters of holes.
             Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
             interior perimeter 2, etc.
         :vartype facets: list[list[int, int]]
+        :cvar control_points: An *(x, y)* coordinate that describes the distinct, contiguous,
+            region of a single material within the geometry. Must be entered as a list of coordinates,
+            e.g. [[0.5, 3.2]]
+            Exactly one point is required for each geometry with a distinct material.
+            If there are multiple distinct regions, then use CompoundGeometry.from_points()
+        :vartype control_point: list[float, float]
         :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-            being holes or voids. The point can be located anywhere within the hole region. If
-            facets is provided, then holes must also be provided.
+            being holes or voids. The point can be located anywhere within the hole region.
             Only one point is required per hole region.
         :vartype holes: list[list[float, float]]
-        :cvar control_points: Optional. An *(x, y)* coordinate that describes the distinct, contiguous,
-            region of a single material within the geometry.
-            Exactly one point is required for each geometry with a distinct material.
-            If not provided, a control point will be auto-generated for the geometry using
-            shapely.geometry.Polygon.represenative_point()
-        :vartype control_point: list[float, float]
+        :cvar materials: Optional. A list of sectionproperties.pre.pre.Material objects that are to be
+            assigned, in order, to the regions defined by the given control_points. If not given, then
+            the sectionproperties.pre.pre.DEFAULT_MATERIAL will be used for each region.
+        :vartype materials: list[sectionproperties.pre.pre.Material]
         """
-        if facets is None and holes is None and control_points is None:
-            return Geometry(Polygon(points))
-        if holes is not None and facets is None:
+        if len(control_points) != 1:
             raise ValueError(
-                "If holes coordinates are provided then facets must also be provided "
-                "to distinguish between exterior and interior edges."
-            )
-        if control_points and len(control_points) != 2:
-            raise ValueError(
-                "A Geometry object can only have one contiguous region (with holes)."
-                "Did you mean to use CompoundGeometry.from_points()?"
+                "Control points for Geometry instances must have exactly "
+                "one x, y coordinate and entered as a list of list of float, e.g. [[0.1, 3.4]]."
+                "CompoundGeometry.from_points() can accept multiple control points\n"
+                f"Control points received: {control_points}"
             )
         if holes is None:
             holes = []
@@ -191,11 +195,15 @@ class Geometry:
         exterior_geometry = Polygon(exterior)
         interior_polys = [Polygon(interior) for interior in interiors]
         interior_geometry = MultiPolygon(interior_polys)
-        geometry = Geometry(exterior_geometry - interior_geometry, material, control_points)
+        geometry = Geometry(
+            exterior_geometry - interior_geometry, material, control_points
+        )
         return geometry
 
     @staticmethod
-    def from_dxf(dxf_filepath: Union[str, pathlib.Path]) -> Union[Geometry, CompoundGeometry]:
+    def from_dxf(
+        dxf_filepath: Union[str, pathlib.Path]
+    ) -> Union[Geometry, CompoundGeometry]:
         """
         An interface for the creation of Geometry objects from CAD .dxf files.
 
@@ -249,8 +257,8 @@ class Geometry:
                 Default is False.
         """
         geom = None
-        list_poly = rhino_importer.load_3dm(filepath,**kwargs)
-        if (len(list_poly)==1):
+        list_poly = rhino_importer.load_3dm(filepath, **kwargs)
+        if len(list_poly) == 1:
             geom = cls(geom=list_poly[0])
         else:
             raise RuntimeError(
@@ -299,7 +307,11 @@ class Geometry:
                 If true, all non parallel surfaces are filtered out.
                 Default is False.
         """
+<<<<<<< HEAD:sectionproperties/pre/geometry.py
         return cls(geom = rhino_importer.load_brep_encoding(r3dm_brep, **kwargs)[0])
+=======
+        return cls(geom=rhino_importer.load_brep_encoding(r3dm_brep, **kwargs)[0])
+>>>>>>> 83fdfbd4c10a451e3145eb6166821795c92ad933:sectionproperties/pre/sections.py
 
     def create_facets_and_control_points(self):
         self.perimeter = None
@@ -324,7 +336,6 @@ class Geometry:
         the data in the shapely geometry.
         """
         self.create_facets_and_control_points()
-
 
     def create_mesh(self, mesh_sizes: Union[float, List[float]]):
         """Creates a quadratic triangular mesh from the Geometry object.
@@ -488,9 +499,13 @@ class Geometry:
         # Move assigned control point
         new_ctrl_point = None
         if self.assigned_control_point:
-            new_ctrl_point = shapely.affinity.translate(self.assigned_control_point, x_offset, y_offset).coords[0]
+            new_ctrl_point = shapely.affinity.translate(
+                self.assigned_control_point, x_offset, y_offset
+            ).coords[0]
         new_geom = Geometry(
-            shapely.affinity.translate(self.geom, x_offset, y_offset), self.material, new_ctrl_point
+            shapely.affinity.translate(self.geom, x_offset, y_offset),
+            self.material,
+            new_ctrl_point,
         )
         return new_geom
 
@@ -527,10 +542,11 @@ class Geometry:
                 rotate_point = box(*self.geom.bounds).centroid
             new_ctrl_point = shapely.affinity.rotate(
                 self.assigned_control_point, angle, rotate_point, use_radians
-                ).coords[0]
+            ).coords[0]
         new_geom = Geometry(
             shapely.affinity.rotate(self.geom, angle, rot_point, use_radians),
-            self.material, new_ctrl_point
+            self.material,
+            new_ctrl_point,
         )
         return new_geom
 
@@ -560,10 +576,10 @@ class Geometry:
         if mirror_point != "center":
             x, y = mirror_point
             mirror_point = (x, y, 0)
-            if axis == "x":
-                x_mirror = -x_mirror
-            elif axis == "y":
-                y_mirror = -y_mirror
+        if axis == "x":
+            x_mirror = -x_mirror
+        elif axis == "y":
+            y_mirror = -y_mirror
         mirrored_geom = shapely.affinity.scale(
             self.geom, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=mirror_point
         )
@@ -571,7 +587,11 @@ class Geometry:
         new_ctrl_point = None
         if self.assigned_control_point:
             new_ctrl_point = shapely.affinity.scale(
-                self.assigned_control_point, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=mirror_point
+                self.assigned_control_point,
+                xfact=y_mirror,
+                yfact=x_mirror,
+                zfact=1.0,
+                origin=mirror_point,
             ).coords[0]
         new_geom = Geometry(mirrored_geom, self.material, new_ctrl_point)
         return new_geom
@@ -639,7 +659,9 @@ class Geometry:
 
         return (top_right_geoms, bottom_left_geoms)
 
-    def offset_perimeter(self, amount: float = 0, where: str = "exterior", resolution: float = 12):
+    def offset_perimeter(
+        self, amount: float = 0, where: str = "exterior", resolution: float = 12
+    ):
         """Dilates or erodes the section perimeter by a discrete amount.
 
         :param amount: Distance to offset the section by. A -ve value "erodes" the section.
@@ -655,47 +677,64 @@ class Geometry:
         :return: Geometry object translated to new alignment
         :rtype: :class:`sections.pre.sections.Geometry`
 
-        The following example erodes a 200PFC section by 3::
+        The following example erodes a 200PFC section by 2 mm::
 
             import sectionproperties.pre.library.steel_sections as steel_sections
 
+<<<<<<< HEAD:sectionproperties/pre/geometry.py
             geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             new_geometry = geometry.offset_perimeter(amount=-3)
+=======
+            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+            new_geometry = geometry.offset_perimeter(amount=-2)
+>>>>>>> 83fdfbd4c10a451e3145eb6166821795c92ad933:sectionproperties/pre/sections.py
         """
         if self.geom.interiors and where == "interior":
             exterior_polygon = Polygon(self.geom.exterior)
             for interior in self.geom.interiors:
-                buffered_interior = Polygon(interior).buffer(distance=amount, join_style=1, resolution=resolution)
+                buffered_interior = buffer_polygon(
+                    Polygon(interior), amount, resolution
+                )
                 exterior_polygon = exterior_polygon - buffered_interior
             if isinstance(exterior_polygon, MultiPolygon):
-                return CompoundGeometry([Geometry(poly, self.material) for poly in exterior_polygon])
+                return CompoundGeometry(
+                    [Geometry(poly, self.material) for poly in exterior_polygon]
+                )
 
             # Check to see if assigned_control_point is still valid
-            if self.assigned_control_point and exterior_polygon.contains(self.assigned_control_point):
+            if self.assigned_control_point and exterior_polygon.contains(
+                self.assigned_control_point
+            ):
                 return Geometry(exterior_polygon, self.material, self.control_points[0])
             return Geometry(exterior_polygon, self.material)
 
         elif not self.geom.interiors and where == "interior":
-            raise ValueError("Cannot buffer interior of Geometry object if it has no holes.")
+            raise ValueError(
+                "Cannot buffer interior of Geometry object if it has no holes."
+            )
 
         elif where == "exterior":
             exterior_polygon = Polygon(self.geom.exterior)
-            buffered_exterior = exterior_polygon.buffer(distance=amount, join_style=1, resolution=resolution)
+            buffered_exterior = buffer_polygon(exterior_polygon, amount, resolution)
             for interior in self.geom.interiors:
                 interior_poly = Polygon(interior)
                 buffered_exterior = buffered_exterior - interior_poly
             if isinstance(buffered_exterior, MultiPolygon):
-                return CompoundGeometry([Geometry(poly, self.material) for poly in buffered_exterior])
+                return CompoundGeometry(
+                    [Geometry(poly, self.material) for poly in buffered_exterior.geoms]
+                )
 
             # Check to see if assigned_control_point is still valid
-            if self.assigned_control_point and buffered_exterior.contains(self.assigned_control_point):
-                return Geometry(buffered_exterior, self.material, self.control_points[0])
+            if self.assigned_control_point and buffered_exterior.contains(
+                self.assigned_control_point
+            ):
+                return Geometry(
+                    buffered_exterior, self.material, self.control_points[0]
+                )
             return Geometry(buffered_exterior, self.material)
 
         elif where == "all":
-            buffered_geom = self.geom.buffer(
-                distance=amount, join_style=1, resolution=resolution
-            )
+            buffered_geom = buffer_polygon(self.geom, amount, resolution)
             if isinstance(buffered_geom, MultiPolygon):
                 compound_geom = CompoundGeometry(
                     [Geometry(poly, self.material) for poly in buffered_geom]
@@ -703,8 +742,12 @@ class Geometry:
                 return compound_geom
 
             # Check to see if assigned_control_point is still valid
-            if self.assigned_control_point and buffered_geom.contains(self.assigned_control_point):
-                single_geom = Geometry(buffered_geom, self.material, self.control_points[0])
+            if self.assigned_control_point and buffered_geom.contains(
+                self.assigned_control_point
+            ):
+                single_geom = Geometry(
+                    buffered_geom, self.material, self.control_points[0]
+                )
                 return single_geom
             return Geometry(buffered_geom, self.material)
 
@@ -760,7 +803,7 @@ class Geometry:
         current_points = copy.copy(self.points)
         current_facets = copy.copy(self.facets)
         current_holes = copy.copy(self.holes)
-        current_materials = copy.copy(self.materials)
+        current_material = copy.copy(self.material)
         current_control_points = copy.copy(self.control_points)
 
         if isinstance(point_idxs, int):
@@ -773,15 +816,24 @@ class Geometry:
             current_points[point_idx] = (new_x, new_y)
 
         new_geom = Geometry.from_points(
-            current_points, current_facets, current_holes, control_points=None, materials=current_materials
+            current_points, current_facets, current_control_points, current_holes, material=current_material
         )
-        if self.assigned_control_point and new_geom.geom.contains(self.assigned_control_point):
+        if self.assigned_control_point and new_geom.geom.contains(
+            self.assigned_control_point
+        ):
             new_geom = Geometry.from_points(
-                current_points, current_facets, current_holes, current_control_points[0], current_materials
+                current_points, current_facets, current_control_points[0], current_holes, current_material
             )
         return new_geom
 
-    def plot_geometry(self, ax: Optional[matplotlib.axes.Axes]=None, labels=["control_points"], size=500, dpi=96, pause=False):
+    def plot_geometry(
+        self,
+        ax: Optional[matplotlib.axes.Axes] = None,
+        labels=["control_points"],
+        size=500,
+        dpi=96,
+        pause=True,
+    ):
         """Plots the geometry defined by the input section. If no axes object is supplied a new
         figure and axis is created. Allows for 'size' and 'dpi' arguments to be given however the
         function dynamically sizes nodes and lineweights so that they appear appropriately sized at
@@ -820,24 +872,17 @@ class Geometry:
             Geometry generated by the above example.
         """
         # if no axes object is supplied, create and setup the plot
-        perimeter = None  # To be implemented for CompoundGeometry at a later date
         fig = None
-        # plt.figure(figsize=(2*width, width), dpi=100)
+
         if ax is None:
             ax_supplied = False
-            (fig, ax) = plt.subplots(figsize=(size/dpi, size/dpi), dpi=dpi)
-            # post.setup_plot(ax, pause)
+            (fig, ax) = plt.subplots()
+            post.setup_plot(ax, pause)
         else:
             ax_supplied = True
 
         for (i, f) in enumerate(self.facets):
-            if perimeter:
-                if i in self.perimeter:
-                    linewidth = 0.3*size/dpi
-                else:
-                    linewidth = 0.15*size/dpi
-            else:
-                linewidth = 0.15*size/dpi
+            linewidth = 0.15 * size / dpi
 
             # plot the points and facets
             if i == 0:
@@ -845,7 +890,7 @@ class Geometry:
                     [self.points[f[0]][0], self.points[f[1]][0]],
                     [self.points[f[0]][1], self.points[f[1]][1]],
                     "ko-",
-                    markersize=0.15*size/dpi,
+                    markersize=0.15 * size / dpi,
                     linewidth=linewidth,
                     label="Points & Facets",
                 )
@@ -854,23 +899,42 @@ class Geometry:
                     [self.points[f[0]][0], self.points[f[1]][0]],
                     [self.points[f[0]][1], self.points[f[1]][1]],
                     "ko-",
-                    markersize=0.15*size/dpi,
+                    markersize=0.15 * size / dpi,
                     linewidth=linewidth,
                 )
 
         for (i, h) in enumerate(self.holes):
             # plot the holes
             if i == 0:
-                ax.plot(h[0], h[1], "rx", markersize=1*size/dpi, markeredgewidth=0.2*size/dpi, label="Holes")
+                ax.plot(
+                    h[0],
+                    h[1],
+                    "rx",
+                    markersize=1 * size / dpi,
+                    markeredgewidth=0.2 * size / dpi,
+                    label="Holes",
+                )
             else:
-                ax.plot(h[0], h[1], "rx", markersize=1*size/dpi, markeredgewidth=0.2*size/dpi)
+                ax.plot(
+                    h[0],
+                    h[1],
+                    "rx",
+                    markersize=1 * size / dpi,
+                    markeredgewidth=0.2 * size / dpi,
+                )
 
         for (i, cp) in enumerate(self.control_points):
             # plot the control points
             if i == 0:
-                ax.plot(cp[0], cp[1], "bo", markersize=1*size/dpi, label="Control Points")
+                ax.plot(
+                    cp[0],
+                    cp[1],
+                    "bo",
+                    markersize=1 * size / dpi,
+                    label="Control Points",
+                )
             else:
-                ax.plot(cp[0], cp[1], "bo", markersize=1*size/dpi)
+                ax.plot(cp[0], cp[1], "bo", markersize=1 * size / dpi)
 
         # display the labels
         for label in labels:
@@ -892,10 +956,14 @@ class Geometry:
 
                     ax.annotate(str(i), xy=xy, color="b")
 
-        # if no axes object is supplied, finish the plot
+        # display the legend
+        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 
+        # if no axes object is supplied, finish the plot
         if not ax_supplied:
-            post.finish_plot(ax, pause, title="Cross-Section Geometry", size=size, dpi=dpi)
+            post.finish_plot(
+                ax, pause, title="Cross-Section Geometry", size=size, dpi=dpi
+            )
             return (fig, ax)
         return (fig, ax)
 
@@ -934,7 +1002,7 @@ class Geometry:
         :return: Geometry centroid.
         :rtype: Tuple[float, float]
         """
-        cx, cy = self.geom.centroid.coords[0] # Nested list
+        cx, cy = self.geom.centroid.coords[0]  # Nested list
         return (cx, cy)
 
     @property
@@ -964,13 +1032,14 @@ class Geometry:
         """
         material = self.material or other.material
         try:
-            new_polygon = self.geom | other.geom
+            new_polygon = filter_non_polygons(self.geom | other.geom)
             if isinstance(new_polygon, MultiPolygon):
 
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
             return Geometry(new_polygon, material, self.control_points[0])
+
         except:
             raise ValueError(
                 f"Cannot perform 'union' on these two objects: {self} | {other}"
@@ -982,11 +1051,13 @@ class Geometry:
         """
         material = self.material or other.material
         try:
-            new_polygon = self.geom ^ other.geom
+            new_polygon = filter_non_polygons(self.geom ^ other.geom)
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
+            if isinstance(new_polygon, GeometryCollection):
+                return None
             return Geometry(new_polygon, material)
         except:
             raise ValueError(
@@ -999,13 +1070,17 @@ class Geometry:
         """
         material = self.material or other.material
         try:
-            new_polygon = self.geom - other.geom
+            new_polygon = filter_non_polygons(self.geom - other.geom)
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
+            if isinstance(new_polygon, GeometryCollection):
+                return None
             # Check to see if assigned_control_point is still valid
-            if self.assigned_control_point and new_polygon.contains(self.assigned_control_point):
+            if self.assigned_control_point and new_polygon.contains(
+                self.assigned_control_point
+            ):
                 return Geometry(new_polygon, material, self.control_points[0])
             return Geometry(new_polygon, material)
         except:
@@ -1030,8 +1105,8 @@ class Geometry:
         """
         material = self.material or other.material
         try:
-            new_polygon = self.geom & other.geom
-            if isinstance(new_polygon, MultiPolygon):
+            new_polygon = filter_non_polygons(self.geom & other.geom)
+            if isinstance(new_polygon, MultiPolygon) and len(new_polygon.geoms) > 1:
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
@@ -1040,6 +1115,12 @@ class Geometry:
             raise ValueError(
                 f"Cannot perform 'intersection' on these two Geometry instances: {self} & {other}"
             )
+
+<<<<<<< HEAD:sectionproperties/pre/geometry.py
+=======
+
+###
+>>>>>>> 83fdfbd4c10a451e3145eb6166821795c92ad933:sectionproperties/pre/sections.py
 
 
 class CompoundGeometry(Geometry):
@@ -1059,9 +1140,12 @@ class CompoundGeometry(Geometry):
         instance.
     :vartype geoms: Union[shapely.geometry.MultiPolygon, List[sectionproperties.pre.sections.Geometry]]
     """
+
     def __init__(self, geoms: Union[MultiPolygon, List[Geometry]]):
         if isinstance(geoms, MultiPolygon):
-            self.geoms = [Geometry(poly, material=pre.DEFAULT_MATERIAL) for poly in geoms.geoms]
+            self.geoms = [
+                Geometry(poly, material=pre.DEFAULT_MATERIAL) for poly in geoms.geoms
+            ]
             self.geom = geoms
         elif isinstance(geoms, list):
             processed_geoms = []
@@ -1096,18 +1180,19 @@ class CompoundGeometry(Geometry):
         print(f"Materials incl.: {list(set(materials_list))}")
         return self.geom._repr_svg_()
 
-
     @staticmethod
     def from_points(
         points: List[List[float]],
         facets: List[List[int]],
-        holes: List[List[float]],
-        control_points: Optional[List[List[float]]],
-        materials: Optional[List[pre.Material]] = None,
+        control_points: List[List[float]],
+        holes: Optional[List[List[float]]] = None,
+        materials: Optional[List[pre.Material]] = pre.DEFAULT_MATERIAL,
     ):
         """
         An interface for the creation of CompoundGeometry objects through the definition of points,
-        facets, holes, and control_points.
+        facets, holes, and control_points. Geometries created through this method are expected to
+        be non-ambiguous meaning that no "overlapping" geometries exists and that nodal connectivity
+        is maintained (e.g. there are no nodes "overlapping" with facets without nodal connectivity).
 
         :cvar points: List of points *(x, y)* defining the vertices of the section geometry.
             If facets are not provided, it is a assumed the that the list of points are ordered
@@ -1118,10 +1203,6 @@ class CompoundGeometry(Geometry):
             Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
             interior perimeter 2, etc.
         :vartype facets: list[list[int]]
-        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-            being holes or voids. The point can be located anywhere within the hole region.
-            Only one point is required per hole region.
-        :vartype holes: list[list[float]]
         :cvar control_points: Optional. A list of points *(x, y)* that define non-interior regions as
             being distinct, contiguous, and having one material. The point can be located anywhere within
             region. Only one point is permitted per region. The order of control_points must be given in the
@@ -1129,6 +1210,10 @@ class CompoundGeometry(Geometry):
             If not given, then points will be assigned automatically using
             shapely.geometry.Polygon.representative_point()
         :vartype control_points: list[list[float]]
+        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
+            being holes or voids. The point can be located anywhere within the hole region.
+            Only one point is required per hole region.
+        :vartype holes: list[list[float]]
         :cvar materials: Optional. A list of sectionproperties.pre.pre.Material objects that are to be
             assigned, in order, to the regions defined by the given control_points. If not given, then
             the sectionproperties.pre.pre.DEFAULT_MATERIAL will be used for each region.
@@ -1138,9 +1223,9 @@ class CompoundGeometry(Geometry):
             raise ValueError(
                 "Materials cannot be assigned without control_points. "
                 "Please provide corresponding control_points for each material."
-                )
-        if control_points is None:
-            control_points = list()
+            )
+        if holes is None:
+            holes = list()
 
         # First, generate all invidual polygons from points and facets
         current_polygon_points = []
@@ -1165,52 +1250,68 @@ class CompoundGeometry(Geometry):
                     points[i_idx]
                 )  # Only need i_idx b/c shapely auto-closes polygons
             prev_facet = facet
-        else: # Use the for...else clause to add the last point and close the last polygon.
+        else:  # Use the for...else clause to add the last point and close the last polygon.
             current_polygon_points.append(points[j_idx])
             all_polygons.append(Polygon(current_polygon_points))
 
         # Then classify all of the collected polygons as either "exterior" or "interior"
         exteriors = []
         interiors = []
-        ext_ctrl_pnts = []
-        ctrl_coord_in_polygon = []
+
         for polygon in all_polygons:
-            hole_coord_in_polygon = (
-                [polygon.contains(Point(hole_coord)) for hole_coord in holes]
-            )
-
-            ctrl_coord_in_polygon = (
-                [ctrl_coord for ctrl_coord in control_points if polygon.contains(Point(ctrl_coord))]
-            )
-
+            hole_coord_in_polygon = [
+                hole_coord
+                for hole_coord in holes
+                if polygon.contains(Point(hole_coord))
+            ]
+            ctrl_coord_in_polygon = [
+                ctrl_coord
+                for ctrl_coord in control_points
+                if polygon.contains(Point(ctrl_coord))
+            ]
             if any(hole_coord_in_polygon) and not any(ctrl_coord_in_polygon):
                 interiors.append(polygon)
             else:
                 exteriors.append(polygon)
-                ext_ctrl_pnts += ctrl_coord_in_polygon
 
         # Create the holes by subtracting interior regions from exterior regions
         if len(exteriors) != len(control_points):
             raise ValueError(
                 f"The number of exterior regions ({len(exteriors)}) "
                 f"does not match the number of control_points given ({len(control_points)})."
-                )
-        exterior_geometry = MultiPolygon(exteriors)
+            )
         if not interiors:
             return CompoundGeometry(
-                [Geometry(exterior, control_points=control_points[idx]) for idx, exterior in enumerate(exteriors)]
-                )
-        if len(interiors) == 1:
-            interior_geometry = Polygon(interiors)
-            return (
-                CompoundGeometry(
-                [Geometry(exterior, control_points=control_points[idx]) for idx, exterior in enumerate(exteriors)]
-                )
-                - Geometry(interior_geometry)
+                [
+                    Geometry(exterior, control_points=control_points[idx])
+                    for idx, exterior in enumerate(exteriors)
+                ]
             )
         else:
-            interior_geometry = MultiPolygon(interiors)
-            return CompoundGeometry(exterior_geometry - interior_geometry)
+            # "Punch" all holes through each exterior geometry
+            punched_exteriors = []
+            punched_exterior_geometries = []
+            for exterior in exteriors:
+                punched_exterior = exterior
+                for interior in interiors:
+                    punched_exterior = punched_exterior - interior
+                    try:
+                        exterior_control_point = next(
+                            control_point
+                            for control_point in control_points
+                            if punched_exterior.contains(Point(control_point))
+                        )
+                    except StopIteration:
+                        raise ValueError(
+                            f"Control points given are not contained within the geometry"
+                            f" once holes are subtracted: {control_points}"
+                        )
+                exterior_geometry = Geometry(
+                    punched_exterior, control_points=exterior_control_point
+                )
+                punched_exterior_geometries.append(exterior_geometry)
+
+        return CompoundGeometry(punched_exterior_geometries)
 
     @classmethod
     def from_3dm(cls, filepath: Union[str, pathlib.Path], **kwargs) -> CompoundGeometry:
@@ -1253,7 +1354,7 @@ class CompoundGeometry(Geometry):
                 Default is False.
         """
         list_poly = rhino_importer.load_3dm(filepath, **kwargs)
-        return cls(geoms = MultiPolygon(list_poly))
+        return cls(geoms=MultiPolygon(list_poly))
 
     def create_mesh(self, mesh_sizes: List[float]):
         """Creates a quadratic triangular mesh from the Geometry object.
@@ -1339,7 +1440,7 @@ class CompoundGeometry(Geometry):
             new_compound = compound.rotate_section(angle=-30)
         """
         geoms_acc = []
-        if rot_point =='center':
+        if rot_point == "center":
             rot_point = box(*MultiPolygon(self.geom).bounds).centroid
         for geom in self.geoms:
             geoms_acc.append(geom.rotate_section(angle, rot_point, use_radians))
@@ -1376,7 +1477,6 @@ class CompoundGeometry(Geometry):
         new_geom = CompoundGeometry(geoms_acc)
         return new_geom
 
-
     def align_center(self, align_to: Optional[Geometry] = None):
         """
         Returns a new CompoundGeometry object, translated in both x and y, so that the
@@ -1395,21 +1495,29 @@ class CompoundGeometry(Geometry):
         :return: Geometry object translated to new alignment
         :rtype: :class:`sections.pre.sections.Geometry`
         """
-        EA_sum = sum([geom.material.elastic_modulus * geom.calculate_area() for geom in self.geoms])
+        EA_sum = sum(
+            [
+                geom.material.elastic_modulus * geom.calculate_area()
+                for geom in self.geoms
+            ]
+        )
         cx_EA_acc = 0
         cy_EA_acc = 0
         for geom in self.geoms:
             E = geom.material.elastic_modulus
             A = geom.calculate_area()
-            EA = E*A
+            EA = E * A
             cx, cy = list(geom.geom.centroid.coords[0])
-            cx_EA_acc += cx*EA
-            cy_EA_acc += cy*EA
+            cx_EA_acc += cx * EA
+            cy_EA_acc += cy * EA
         weighted_cx = cx_EA_acc / (EA_sum)
         weighted_cy = cy_EA_acc / (EA_sum)
 
         if align_to is None:
-            shift_x, shift_y = round(-weighted_cx, self.tol), round(-weighted_cy, self.tol)
+            shift_x, shift_y = (
+                round(-weighted_cx, self.tol),
+                round(-weighted_cy, self.tol),
+            )
 
         else:
             align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
@@ -1417,7 +1525,6 @@ class CompoundGeometry(Geometry):
             shift_y = round(align_cy - weighted_cy, self.tol)
         new_geom = self.shift_section(x_offset=shift_x, y_offset=shift_y)
         return new_geom
-
 
     def split_section(
         self,
@@ -1468,41 +1575,90 @@ class CompoundGeometry(Geometry):
             bottom_geoms_acc += bottom_geoms
         return (top_geoms_acc, bottom_geoms_acc)
 
-
-    def offset_perimeter(self, amount: float = 0, where = "exterior", resolution: float = 12):
-        """Dilates or erodes perimeter of the individual geometries within the CompoundGeometry
-        object by a discrete amount. Note, because the individual geometries have their own
-        perimeters offset independently, sections don't "stick" as though they were a joined section.
-        Any aligned geometries within the CompoundGeometry will need to be re-aligned after
-        the perimeter offset.
+    def offset_perimeter(
+        self, amount: float = 0, where="exterior", resolution: float = 12
+    ):
+        """Dilates or erodes the perimeter of a CompoundGeometry object by a discrete amount.
 
         :param amount: Distance to offset the section by. A -ve value "erodes" the section. A +ve
             value "dilates" the section.
         :type amount: float
-        :param resolution: Number of segments used to approximate a quarter circle around a point
-        :type resolution: float
         :param where: One of either "exterior", "interior", or "all" to specify which edges of the
             geometry to offset. If geometry has no interiors, then this parameter has no effect.
             Default is "exterior".
         :type where: str
+        :param resolution: Number of segments used to approximate a quarter circle around a point
+        :type resolution: float
         :return: Geometry object translated to new alignment
         :rtype: :class:`sections.pre.sections.Geometry`
 
+<<<<<<< HEAD:sectionproperties/pre/geometry.py
         The following example erodes a 200UB25 section with a plate by 2 mm::
+=======
+        The following example erodes a 200UB25 with a 12 plate stiffener section by 2 mm::
+>>>>>>> 83fdfbd4c10a451e3145eb6166821795c92ad933:sectionproperties/pre/sections.py
 
             import sectionproperties.pre.library.steel_sections as steel_sections
             import sectionproperties.pre.library.standard_sections as standard_sections
 
+<<<<<<< HEAD:sectionproperties/pre/geometry.py
             geometry_1 = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
             geometry_2 = standard_sections.rectangular_section(d=20, b=133)
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_geometry = compound.offset_perimeter(amount=-2)
+=======
+            geometry_1 = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+            geometry_2 = sections.rectangular_section(d=12, b=133)
+            compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
+            new_geometry = compound.offset_perimeter(amount=-2)
+
+        .. note::
+
+            If performing a positive offset on a CompoundGeometry with multiple materials, ensure
+            that the materials propagate as desired by performing a .plot_mesh() prior to performing
+            any analysis.
+>>>>>>> 83fdfbd4c10a451e3145eb6166821795c92ad933:sectionproperties/pre/sections.py
         """
-        geoms_acc = []
-        for geom in self.geoms:
-            geoms_acc.append(geom.offset_perimeter(amount, where, resolution))
-        new_geom = CompoundGeometry(geoms_acc)
-        return new_geom
+        if amount < 0:  # Eroding condition
+            unionized_poly = unary_union([geom.geom for geom in self.geoms])
+            offset_geom = Geometry(unionized_poly).offset_perimeter(
+                amount, where, resolution
+            )
+            # Using the offset_geom as a "mask"
+            geoms_acc = []
+            for geom in self.geoms:
+                # Use symmetric intersection to find the region of the original
+                # that intersects with the eroded unionized shape
+                intersection_geom = geom & offset_geom
+                if not intersection_geom.geom.is_empty:
+                    geoms_acc.append(intersection_geom)
+            new_geom = CompoundGeometry(geoms_acc)
+            return new_geom
+
+        elif amount > 0:  # Ballooning condition
+            # This produces predictable results up to a point.
+            # That point is when the offset is so great it exceeds the thickness
+            # of the material at an interface of two materials.
+            # e.g. A 50 deep plate on top of the top flange of an I-section with a flange depth of 10
+            # When the offset exceeds 10 (the depth of the flange at the intersection), the meshed
+            # material regions will become unpredictable.
+
+            geoms_acc = []
+            for i_idx, geom in enumerate(self.geoms):
+                # Offset each geom...
+                offset_geom = geom.offset_perimeter(amount, where, resolution)
+                for j_idx, orig_geom in enumerate(self.geoms):
+                    if i_idx != j_idx:
+                        # ... then remove the parts that intersect with the other
+                        # constituents of the compound geometry (because they are
+                        # occupying that space already)
+                        offset_geom = offset_geom - orig_geom
+                if not offset_geom.geom.is_empty:
+                    geoms_acc.append(offset_geom)
+            new_geom = CompoundGeometry(geoms_acc)
+            return new_geom
+        else:
+            return self
 
     def compile_geometry(self):
         """
@@ -1579,6 +1735,7 @@ class CompoundGeometry(Geometry):
 
 
 ### Helper functions for Geometry
+
 
 def load_dxf(dxf_filepath: pathlib.Path):
     """
@@ -1686,3 +1843,50 @@ def create_points_and_facets(shape: Polygon, tol=12) -> tuple:
         points += int_points
 
     return points, facets
+
+def buffer_polygon(polygon: Polygon, amount: float, resolution: int):
+    buffered_polygon = polygon.buffer(
+        distance=amount, join_style=1, resolution=resolution
+    )
+    if isinstance(buffered_polygon, GeometryCollection):
+        remaining_polygons = []
+        for item in buffered_polygon.geoms:
+            if isinstance(item, Polygon):
+                remaining_polygons.append(Polygon)
+        if len(remaining_polygons) == 1:
+            return remaining_polygons[0]
+        else:
+            return MultiPolygon(remaining_polygons)
+    elif isinstance(buffered_polygon, MultiPolygon) or isinstance(
+        buffered_polygon, Polygon
+    ):
+        return buffered_polygon
+    else:
+        return Polygon()
+
+
+def filter_non_polygons(
+    input_geom: Union[GeometryCollection, LineString, Point, Polygon, MultiPolygon]
+) -> Union[Polygon, MultiPolygon]:
+    """
+    Returns a Polygon or a MultiPolygon representing any such Polygon on MultiPolygon that
+    may exist in the 'input_geom'. If 'input_geom' is a LineString or Point, an empty Polygon is
+    returned.
+    """
+    if isinstance(input_geom, (Polygon, MultiPolygon)):
+        return input_geom
+    elif isinstance(input_geom, GeometryCollection):
+        acc = []
+        for item in input_geom.geoms:
+            if isinstance(item, MultiPolygon):
+                acc.append(item)
+            elif isinstance(item, Polygon):
+                acc.append(item)
+        if len(acc) == 0:
+            return Polygon()
+        elif len(acc) == 1:
+            return acc[0]
+        else:
+            return MultiPolygon(acc)
+    elif isinstance(input_geom, (Point, LineString)):
+        return Polygon()

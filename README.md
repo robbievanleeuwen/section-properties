@@ -1,4 +1,4 @@
-![alt text](logo.png "sectionproperties")
+![alt text](docs/source/images/logo.png "sectionproperties")
 
 [![Build Status](https://travis-ci.com/robbievanleeuwen/section-properties.svg?branch=master)](https://travis-ci.com/robbievanleeuwen/section-properties) [![Documentation Status](https://readthedocs.org/projects/sectionproperties/badge/?version=latest)](https://sectionproperties.readthedocs.io/en/latest/?badge=latest)
 
@@ -9,25 +9,6 @@ A python package for the analysis of arbitrary cross-sections using the finite e
 ## Installation:
 
 For more detailed installation instructions, refer to the [documentation](https://sectionproperties.readthedocs.io/).
-
-### UNIX (MacOS/Linux):
-
-```
-$ pip install sectionproperties
-```
-
-### Windows
-
-Install *meshpy* by downloading the appropriate [installation wheel](https://www.lfd.uci.edu/~gohlke/pythonlibs/#meshpy).
-
-Navigate to the location of the downloaded wheel and install using pip:
-
-```
-$ cd Downloads
-$ pip install MeshPy‑2018.2.1‑cp36‑cp36m‑win_amd64.whl
-```
-
-Once *meshpy* has been installed, *sectionproperties* can be installed:
 
 ```
 $ pip install sectionproperties
