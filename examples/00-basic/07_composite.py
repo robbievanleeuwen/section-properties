@@ -57,7 +57,7 @@ panel = panel.align_center(ub).align_to(ub, on="top")
 
 # %%
 # Merge the two sections into one geometry object
-section_geometry = sections.CompoundGeometry([ub, panel])
+section_geometry = CompoundGeometry([ub, panel])
 
 # %%
 # Create a mesh and a Section object. For the mesh use a mesh size of 5 for
