@@ -18,12 +18,12 @@ After the analysis is performed, various plots of the stresses are generated.
 
 # sphinx_gallery_thumbnail_number = 1
 
-import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import Section
+import sectionproperties.pre.library.steel_sections as steel_sections
+from sectionproperties.analysis.section import Section
 
 # %%
 # Create a 150x100x6 RHS on its side
-geometry = sections.rectangular_hollow_section(d=100, b=150, t=6, r_out=15, n_r=8)
+geometry = steel_sections.rectangular_hollow_section(d=100, b=150, t=6, r_out=15, n_r=8)
 
 # %%
 # Create a mesh and section object. For the mesh, use a maximum area of 2

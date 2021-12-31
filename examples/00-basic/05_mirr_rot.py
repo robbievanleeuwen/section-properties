@@ -23,13 +23,13 @@ calculated centroids is generated.
 
 # sphinx_gallery_thumbnail_number = 1
 
-import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import Section
+import sectionproperties.pre.library.steel_sections as steel_sections
+from sectionproperties.analysis.section import Section
 
 # %%
 # Create a 200PFC and a 150PFC
-pfc1 = sections.channel_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-pfc2 = sections.channel_section(
+pfc1 = steel_sections.channel_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+pfc2 = steel_sections.channel_section(
     d=150, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8).shift_section(0, 26.5)
 
 # %%

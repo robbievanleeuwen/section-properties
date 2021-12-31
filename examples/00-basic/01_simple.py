@@ -21,8 +21,8 @@ second moments of area.
 
 # sphinx_gallery_thumbnail_number = 1
 
-import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import Section
+import sectionproperties.pre.library.standard_sections as sections
+from sectionproperties.analysis.section import Section
 
 # %%
 # Create a 50 diameter circle discretised by 64 points

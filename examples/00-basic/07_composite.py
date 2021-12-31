@@ -19,9 +19,11 @@ to the terminal and a plot of the centroids and cross-section stresses generated
 
 # sphinx_gallery_thumbnail_number = 2
 
-import sectionproperties.pre.sections as sections
+import sectionproperties.pre.library.standard_sections as sections
+import sectionproperties.pre.library.steel_sections as steel_sections
+from sectionproperties.pre.geometry import CompoundGeometry
 from sectionproperties.pre.pre import Material
-from sectionproperties.analysis.cross_section import Section
+from sectionproperties.analysis.section import Section
 
 # %%
 # Create material properties
@@ -32,7 +34,7 @@ timber = Material(name='Timber', elastic_modulus=8e3, poissons_ratio=0.35,
 
 # %%
 # Create 310UB40.4
-ub = sections.i_section(d=304, b=165, t_f=10.2, t_w=6.1, r=11.4, n_r=8, material=steel)
+ub = steel_sections.i_section(d=304, b=165, t_f=10.2, t_w=6.1, r=11.4, n_r=8, material=steel)
 
 # %%
 # Create timber panel on top of the UB

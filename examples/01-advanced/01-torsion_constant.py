@@ -15,8 +15,8 @@ with the aspect ratio is then plotted.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import Section
+import sectionproperties.pre.library.standard_sections as sections
+from sectionproperties.analysis.section import Section
 
 # %%
 # Rectangle dimensions
