@@ -34,7 +34,8 @@ def create_line_segment(
 
 
 def group_top_and_bottom_polys(
-    polys: shapely.geometry.GeometryCollection, line: shapely.geometry.LineString,
+    polys: shapely.geometry.GeometryCollection,
+    line: shapely.geometry.LineString,
 ) -> Tuple[list, list]:
     """
     Returns tuple of two lists representing the list of Polygons in 'polys' on the "top" side of 'line' and the
@@ -65,7 +66,9 @@ def group_top_and_bottom_polys(
     return top_acc, bot_acc
 
 
-def line_mx_plus_b(line: shapely.geometry.LineString,) -> Tuple[float, float]:
+def line_mx_plus_b(
+    line: shapely.geometry.LineString,
+) -> Tuple[float, float]:
     """
     Returns a tuple representing the values of "m" and "b" from the definition of 'line' as "y = mx + b".
     """
@@ -83,7 +86,8 @@ def line_mx_plus_b(line: shapely.geometry.LineString,) -> Tuple[float, float]:
 
 
 def perp_mx_plus_b(
-    m_slope: float, point_on_line: Tuple[float, float],
+    m_slope: float,
+    point_on_line: Tuple[float, float],
 ) -> Tuple[float, float]:
     """
     Returns a tuple representing the values of "m" and "b" from
@@ -97,7 +101,10 @@ def perp_mx_plus_b(
 
 
 def line_intersection(
-    m_1: float, b_1: float, m_2: float, b_2: float,
+    m_1: float,
+    b_1: float,
+    m_2: float,
+    b_2: float,
 ) -> Optional[float]:
     """
     Returns a float representing the x-ordinate of the intersection
@@ -112,7 +119,9 @@ def line_intersection(
     return x
 
 
-def sum_poly_areas(lop: List[shapely.geometry.Polygon],) -> float:
+def sum_poly_areas(
+    lop: List[shapely.geometry.Polygon],
+) -> float:
     """
     Returns a float representing the total area of all polygons
     in 'lop', the list of polygons.

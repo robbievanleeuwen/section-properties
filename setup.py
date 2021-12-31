@@ -50,7 +50,9 @@ setup(
     author="Robbie van Leeuwen",
     author_email="robbie.vanleeuwen@gmail.com",
     license="MIT",
-    packages=["sectionproperties",],
+    packages=[
+        "sectionproperties",
+    ],
     install_requires=install_requires,
     include_package_data=True,
     zip_safe=False,
