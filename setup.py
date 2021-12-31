@@ -16,21 +16,12 @@ def readme():
     with open("README.md") as f:
         return f.read()
 
-
-if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 7:
-    sys.exit("Sorry, Python < 3.7 is not supported")
+if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 8:
+    sys.exit('Sorry, Python < 3.8 is not supported')
 
 install_requires = [
-    "numpy",
-    "scipy",
-    "pytest_check",
-    "more_itertools",
-    "matplotlib",
-    "shapely",
-    "pybind11",
-    "meshpy",
-    "rhino-shapley-interop",
-    "cad_to_shapely",
+    'numpy', 'scipy', 'pytest_check', 'more_itertools', 'matplotlib', 'shapely', 'triangle',
+    'rhino-shapley-interop'
 ]
 
 setup(
