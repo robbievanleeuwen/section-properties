@@ -54,6 +54,8 @@ ub = steel_sections.i_section(
 # Create timber panel on top of the UB
 panel = sections.rectangular_section(d=50, b=600, material=timber)
 panel = panel.align_center(ub).align_to(ub, on="top")
+ # Create intermediate nodes in panel to match nodes in ub
+panel = (panel - ub) | panel
 
 # %%
 # Merge the two sections into one geometry object

@@ -1074,7 +1074,7 @@ class Section:
         self,
         ax=None,
         pause=True,
-        alpha=0.3,
+        alpha=0.2,
         materials=True,
         mask=None,
         size=500,
@@ -1142,7 +1142,7 @@ class Section:
             self.mesh_nodes[:, 0],
             self.mesh_nodes[:, 1],
             self.mesh_elements[:, 0:3],
-            lw=0.15*size/dpi,
+            lw=0.10*size/dpi,
             color="black",
             alpha=alpha,
             mask=mask,
@@ -2373,7 +2373,7 @@ class StressPost:
         post.setup_plot(ax, pause)
 
         # plot the finite element mesh
-        self.section.plot_mesh(ax, pause, materials=False, alpha=0.5)
+        self.section.plot_mesh(ax, pause, materials=False)
 
         # set up the colormap
         cmap = cm.get_cmap(name=cmap)
