@@ -23,8 +23,8 @@ sum of the second moments of area.
 # sphinx_gallery_thumbnail_number = 1
 
 from typing import get_origin
-import sectionproperties.pre.nastran_sections as nsections
-from sectionproperties.analysis.cross_section import Section
+import sectionproperties.pre.library.nastran_sections as nsections
+from sectionproperties.analysis.section import Section
 
 # %%
 # Create a HAT1 section

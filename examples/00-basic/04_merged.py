@@ -24,24 +24,25 @@ the centroids are plotted.
 
 # sphinx_gallery_thumbnail_number = 1
 
-import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import Section
+import sectionproperties.pre.library.steel_sections as steel_sections
+from sectionproperties.pre.geometry import Geometry
+from sectionproperties.analysis.section import Section
 
 # %%
 # Create a 150x100x6 RHS
-rhs = sections.rectangular_hollow_section(d=150, b=100, t=6, r_out=15, n_r=8)
+rhs = steel_sections.rectangular_hollow_section(d=150, b=100, t=6, r_out=15, n_r=8)
 
 # %%
 # Create a triangular section from points, facets, and control points
 points = [[0, 0], [50, 0], [25, 50]]
 facets = [[0, 1], [1, 2], [2, 0]]
-control_points = [[25,25]]
-triangle = sections.Geometry.from_points(points, facets, control_points)
+control_points = [[25, 25]]
+triangle = Geometry.from_points(points, facets, control_points)
 triangle = triangle.align_center(rhs).align_to(rhs, on="top")
 
 # %%
 # Create a 100x100x6 angle and position it on the right of the RHS
-angle = sections.angle_section(d=100, b=100, t=6, r_r=8, r_t=5, n_r=8)
+angle = steel_sections.angle_section(d=100, b=100, t=6, r_r=8, r_t=5, n_r=8)
 angle = angle.shift_section(x_offset=100, y_offset=25)
 
 # %%
@@ -50,7 +51,7 @@ geometry = rhs + triangle + angle
 geometry.plot_geometry()  # plot the geometry
 
 # %%
-# Create a mesh and section. For the mesh, use a mesh size of 2.5 for 
+# Create a mesh and section. For the mesh, use a mesh size of 2.5 for
 # the RHS, 5 for the triangle and 3 for the angle.
 geometry.create_mesh(mesh_sizes=[2.5, 5, 3])
 

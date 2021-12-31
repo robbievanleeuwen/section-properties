@@ -23,18 +23,19 @@ calculated centroids is generated.
 
 # sphinx_gallery_thumbnail_number = 1
 
-import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import Section
+import sectionproperties.pre.library.steel_sections as steel_sections
+from sectionproperties.analysis.section import Section
 
 # %%
 # Create a 200PFC and a 150PFC
-pfc1 = sections.channel_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-pfc2 = sections.channel_section(
-    d=150, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8).shift_section(0, 26.5)
+pfc1 = steel_sections.channel_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+pfc2 = steel_sections.channel_section(
+    d=150, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8
+).shift_section(0, 26.5)
 
 # %%
 # Mirror the 200 PFC about the y-axis
-pfc1 = pfc1.mirror_section(axis='y', mirror_point=[0, 0])
+pfc1 = pfc1.mirror_section(axis="y", mirror_point=[0, 0])
 
 # %%
 # Merge the pfc sections
@@ -43,7 +44,7 @@ geometry = ((pfc1 - pfc2) | pfc1) + pfc2
 # %%
 # Rotate the geometry counter-clockwise by 30 degrees
 geometry = geometry.rotate_section(angle=30)
-geometry.plot_geometry()  
+geometry.plot_geometry()
 
 # %%
 # Create a mesh and section. For the mesh, use a mesh size of 5 for the 200PFC

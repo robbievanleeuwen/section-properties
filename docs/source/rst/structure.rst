@@ -12,14 +12,15 @@ Creating a Geometry and Mesh
 ----------------------------
 
 The dimensions and shape of the cross-section to be analysed define the *geometry*
-of the cross-section. The :ref:`label-sections-module` provides a number of functions
-to easily generate either commonly used structural sections or an arbitrary
-cross-section, defined by an ordered list of points.
+of the cross-section. The :ref:`Section Library<label-section-library>` provides a number of
+functions to easily generate either commonly used structural sections. Alternatively,
+arbitrary cross-sections can be built from a list of user-defined points, see
+:ref:`label-from-points`.
 
 The final stage in the pre-processor involves generating a finite element mesh of
 the *geometry* that the solver can use to calculate the cross-section properties.
-This can easily be performed using the :func:`~sectionproperties.pre.sections.Geometry.create_mesh`
-method that all :class:`~sectionproperties.pre.sections.Geometry` objects have
+This can easily be performed using the :func:`~sectionproperties.pre.geometry.Geometry.create_mesh`
+method that all :class:`~sectionproperties.pre.geometry.Geometry` objects have
 access to.
 
 The following example creates a geometry object with a circular cross-section.
@@ -27,9 +28,9 @@ The diameter of the circle is 50 and 64 points are used to discretise the circum
 of the circle. A finite element mesh is generated with a maximum triangular area
 of 2.5::
 
-      import sectionproperties.pre.sections as sections
+      import sectionproperties.pre.library.standard_sections as standard_sections
 
-      geometry = sections.circular_section(d=50, n=64)
+      geometry = standard_sections.circular_section(d=50, n=64)
       geometry.create_mesh(mesh_sizes=[2.5])
 
 ..  figure:: ../images/sections/circle_mesh.png
@@ -71,14 +72,14 @@ The following example performs a geometric and warping analysis on the circular
 cross-section defined in the previous section with steel used as the material
 property::
 
-  import sectionproperties.pre.sections as sections
+  import sectionproperties.pre.library.standard_sections as standard_sections
   from sectionproperties.analysis.cross_section import Section
   from sectionproperties.pre.pre import Material
 
 
   steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
                    yield_strength=500, color='grey')
-  geometry = sections.circular_section(d=50, n=64, material=steel)
+  geometry = standard_sections.circular_section(d=50, n=64, material=steel)
   geometry.create_mesh(mesh_sizes=[2.5])  # Adds the mesh to the geometry
 
   section = Section(geometry)
@@ -99,10 +100,10 @@ displayed and the cross-section stresses visualised in a contour plot.
 The following example analyses a 200 PFC section. The cross-section properties
 are printed to the terminal and a plot of the centroids is displayed::
 
-  import sectionproperties.pre.sections as sections
+  import sectionproperties.pre.library.steel_sections as steel_sections
   from sectionproperties.analysis.cross_section import Section
 
-  geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+  geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
   geometry.create_mesh(mesh_sizes=[2.5])  # Adds the mesh to the geometry
 
   section = Section(geometry)
@@ -188,5 +189,4 @@ method::
   SF_22+  = 1.802381e+00
   SF_22-  = 8.688337e-01
 
-Refer to :ref:`label-post` for a more detailed explanation of the post-processing
-stage.
+Refer to :ref:`label-post` for a more detailed explanation of the post-processing stage.

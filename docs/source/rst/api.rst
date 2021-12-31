@@ -18,99 +18,27 @@ CompoundGeometry Class
 """"""""""""""""""""""
 ..  autoclass:: sectionproperties.pre.sections.CompoundGeometry
     :show-inheritance:
-    
-*sections* Functions
-^^^^^^^^^^^^^^^^^^^^^
 
-rectangular_section
-"""""""""""""""""""
-..  autofunction:: sectionproperties.pre.sections.rectangular_section
-    :noindex:
+load_dxf
+""""""""
+..  autofunction:: sectionproperties.pre.sections.load_dxf
 
-circular_section
-""""""""""""""""
-..  autofunction:: sectionproperties.pre.sections.circular_section
-    :noindex:
+create_facets
+"""""""""""""
+..  autofunction:: sectionproperties.pre.sections.create_facets
 
-circular_hollow_section
-"""""""""""""""""""""""
-..  autofunction:: sectionproperties.pre.sections.circular_hollow_section
-    :noindex:
-
-elliptical_section
-""""""""""""""""""
-..  autofunction:: sectionproperties.pre.sections.elliptical_section
-    :noindex:
-
-elliptical_hollow_section
-"""""""""""""""""""""""""
-..  autofunction:: sectionproperties.pre.sections.elliptical_hollow_section
-    :noindex:
-
-rectangular_hollow_section
-""""""""""""""""""""""""""
-..  autofunction:: sectionproperties.pre.sections.rectangular_hollow_section
-    :noindex:
-
-i_section
-"""""""""
-  ..  autofunction:: sectionproperties.pre.sections.i_section
-      :noindex:
-
-mono_i_section
-""""""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.mono_i_section
-      :noindex:
-
-tapered_flange_i_section
-""""""""""""""""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.tapered_flange_i_section
-      :noindex:
-
-channel_section
-"""""""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.channel_section
-      :noindex:
-
-tapered_flange_channel
+create_exterior_points
 """"""""""""""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.tapered_flange_channel
-      :noindex:
+..  autofunction:: sectionproperties.pre.sections.create_exterior_points
 
-tee_section
-"""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.tee_section
-      :noindex:
+create_interior_points
+""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.sections.create_interior_points
 
-angle_section
-""""""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.angle_section
-      :noindex:
+create_points_and_facets
+""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.sections.create_points_and_facets
 
-cee_section
-""""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.cee_section
-      :noindex:
-
-zed_section
-"""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.zed_section
-      :noindex:
-
-cruciform_section
-""""""""""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.cruciform_section
-      :noindex:
-
-polygon_hollow_section
-"""""""""""""""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.polygon_hollow_section
-      :noindex:
-
-box_girder_section
-"""""""""""""""""""
-  ..  autofunction:: sectionproperties.pre.sections.box_girder_section
-      :noindex:
 
 *pre* Module
 ^^^^^^^^^^^^
@@ -122,13 +50,154 @@ Material Class
       :show-inheritance:
       :members:
 
-pre Functions
-"""""""""""""
-
 create_mesh
-""""""""""""
+"""""""""""
 ..  autofunction:: sectionproperties.pre.pre.create_mesh
 
+
+*rhino* Module
+^^^^^^^^^^^^^^
+
+load_3dm
+""""""""
+..  autofunction:: sectionproperties.pre.rhino.load_3dm
+
+load_brep_encoding
+""""""""""""""""""
+..  autofunction:: sectionproperties.pre.rhino.load_brep_encoding
+
+
+*bisect_section* Module
+^^^^^^^^^^^^^^^^^^^^^^^
+
+create_line_segment
+"""""""""""""""""""
+..  autofunction:: sectionproperties.pre.bisect_section.create_line_segment
+
+group_top_and_bottom_polys
+""""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.bisect_section.group_top_and_bottom_polys
+
+line_mx_plus_b
+""""""""""""""
+..  autofunction:: sectionproperties.pre.bisect_section.line_mx_plus_b
+
+perp_mx_plus_b
+""""""""""""""
+..  autofunction:: sectionproperties.pre.bisect_section.perp_mx_plus_b
+
+line_intersection
+"""""""""""""""""
+..  autofunction:: sectionproperties.pre.bisect_section.line_intersection
+
+sum_poly_areas
+""""""""""""""
+..  autofunction:: sectionproperties.pre.bisect_section.sum_poly_areas
+
+
+*standard_sections* Module
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+rectangular_section
+"""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.standard_sections.rectangular_section
+
+circular_section
+""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.standard_sections.circular_section
+
+elliptical_section
+""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.standard_sections.elliptical_section
+
+cruciform_section
+""""""""""""""""""
+  ..  autofunction:: sectionproperties.pre.library.standard_sections.cruciform_section
+
+
+*steel_sections* Module
+^^^^^^^^^^^^^^^^^^^^^^^
+
+circular_hollow_section
+"""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.steel_sections.circular_hollow_section
+
+elliptical_hollow_section
+"""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.steel_sections.elliptical_hollow_section
+
+rectangular_hollow_section
+""""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.steel_sections.rectangular_hollow_section
+
+polygon_hollow_section
+"""""""""""""""""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.polygon_hollow_section
+
+i_section
+"""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.i_section
+
+mono_i_section
+""""""""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.mono_i_section
+
+tapered_flange_i_section
+""""""""""""""""""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.tapered_flange_i_section
+
+channel_section
+"""""""""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.channel_section
+
+tapered_flange_channel
+""""""""""""""""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.tapered_flange_channel
+
+tee_section
+"""""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.tee_section
+
+angle_section
+""""""""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.angle_section
+
+cee_section
+""""""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.cee_section
+
+zed_section
+"""""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.zed_section
+
+box_girder_section
+"""""""""""""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.box_girder_section
+
+
+*concrete_sections* Module
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+concrete_rectangular_section
+""""""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_rectangular_section
+
+concrete_tee_section
+""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_tee_section
+
+concrete_circular_section
+"""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_circular_section
+
+
+*bridge_sections* Module
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+TBC
+
+
+.. _label-nastran-sections:
 
 *nastran_sections* Module
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -136,127 +205,103 @@ This module contains sections as defined by Nastran and Nastran-based programs,
 such as MYSTRAN and ASTROS.
 
 nastran_bar
-""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_bar
-    :noindex:
+"""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_bar
 
 nastran_box
-""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_box
-    :noindex:
+"""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_box
 
 nastran_box1
-"""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_box1
-    :noindex:
+""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_box1
 
 nastran_chan
-"""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_chan
-    :noindex:
+""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_chan
 
 nastran_chan1
-""""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_chan1
-    :noindex:
+"""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_chan1
 
 nastran_chan2
-""""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_chan2
-    :noindex:
+"""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_chan2
 
 nastran_cross
-"""""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_cross
-    :noindex:
+"""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_cross
 
 nastran_dbox
-"""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_dbox
-    :noindex:
+""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_dbox
 
 nastran_fcross
-"""""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_fcross
-    :noindex:
+""""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_fcross
 
 nastran_gbox
-"""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_gbox
-    :noindex:
+""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_gbox
 
 nastran_h
 """"""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_h
-    :noindex:
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_h
 
 nastran_hat
-""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_hat
-    :noindex:
+"""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_hat
 
 nastran_hat1
-"""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_hat1
-    :noindex:
+""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_hat1
 
 nastran_hexa
-"""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_hexa
-    :noindex:
+""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_hexa
 
 nastran_i
-"""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_i
-    :noindex:
+"""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_i
 
 nastran_i1
-"""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_i1
-    :noindex:
+""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_i1
 
 nastran_l
-""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_l
-    :noindex:
+"""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_l
 
 nastran_rod
-""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_rod
-    :noindex:
+"""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_rod
 
 nastran_tee
-""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tee
-    :noindex:
+"""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_tee
 
 nastran_tee1
-"""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tee1
-    :noindex:
+""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_tee1
 
 nastran_tee2
-"""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tee2
-    :noindex:
+""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_tee2
 
 nastran_tube
-"""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tube
-    :noindex:
+""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_tube
 
 nastran_tube2
-""""""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_tube2
-    :noindex:
+"""""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_tube2
 
 nastran_zed
-""""""""""""""
-..  autofunction:: sectionproperties.pre.nastran_sections.nastran_zed
-    :noindex:
+"""""""""""
+..  autofunction:: sectionproperties.pre.library.nastran_sections.nastran_zed
 
-References
-""""""""""
+Nastran References
+""""""""""""""""""
 .. [1]  MSC Nastran Quick Reference Guide 2012,
         PBEAML - Simple Beam Cross-Section Property, pp. 2890-2894
         https://simcompanion.mscsoftware.com/infocenter/index?page=content&id=DOC10351
@@ -273,6 +318,7 @@ References
         Section 5.1.3.2, pp. 56
         https://apps.dtic.mil/dtic/tr/fulltext/u2/a308134.pdf
 
+
 Analysis Package
 ----------------
 
@@ -280,7 +326,7 @@ Analysis Package
 ^^^^^^^^^^^^^^^^^^^^^^
 
 Section Class
-""""""""""""""""""
+"""""""""""""
 
   ..  autoclass:: sectionproperties.analysis.cross_section.Section
       :show-inheritance:
@@ -331,27 +377,54 @@ Tri6 Class
     :show-inheritance:
     :members:
 
-fea Functions
-"""""""""""""
-
+gauss_points
+""""""""""""
 ..  autofunction:: sectionproperties.analysis.fea.gauss_points
+
+shape_function
+""""""""""""""
 ..  autofunction:: sectionproperties.analysis.fea.shape_function
+
+extrapolate_to_nodes
+""""""""""""""""""""
 ..  autofunction:: sectionproperties.analysis.fea.extrapolate_to_nodes
+
+principal_coordinate
+""""""""""""""""""""
 ..  autofunction:: sectionproperties.analysis.fea.principal_coordinate
+
+global_coordinate
+"""""""""""""""""
 ..  autofunction:: sectionproperties.analysis.fea.global_coordinate
+
+point_above_line
+""""""""""""""""
 ..  autofunction:: sectionproperties.analysis.fea.point_above_line
+
 
 *solver* Module
 ^^^^^^^^^^^^^^^
 
-solver Functions
-""""""""""""""""
-
+solve_cgs
+"""""""""
 ..  autofunction:: sectionproperties.analysis.solver.solve_cgs
+
+solve_cgs_lagrange
+""""""""""""""""""
 ..  autofunction:: sectionproperties.analysis.solver.solve_cgs_lagrange
+
+solve_direct
+""""""""""""
 ..  autofunction:: sectionproperties.analysis.solver.solve_direct
+
+solve_direct_lagrange
+"""""""""""""""""""""
 ..  autofunction:: sectionproperties.analysis.solver.solve_direct_lagrange
+
+function_timer
+""""""""""""""
 ..  autofunction:: sectionproperties.analysis.solver.function_timer
+
 
 Post-Processor Package
 ----------------------
@@ -359,10 +432,18 @@ Post-Processor Package
 *post* Module
 ^^^^^^^^^^^^^
 
-post Functions
-""""""""""""""
-
+setup_plot
+""""""""""
 ..  autofunction:: sectionproperties.post.post.setup_plot
+
+finish_plot
+"""""""""""
 ..  autofunction:: sectionproperties.post.post.finish_plot
+
+draw_principal_axis
+"""""""""""""""""""
 ..  autofunction:: sectionproperties.post.post.draw_principal_axis
+
+print_results
+"""""""""""""
 ..  autofunction:: sectionproperties.post.post.print_results

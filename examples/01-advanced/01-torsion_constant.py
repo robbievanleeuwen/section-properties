@@ -15,8 +15,8 @@ with the aspect ratio is then plotted.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import Section
+import sectionproperties.pre.library.standard_sections as sections
+from sectionproperties.analysis.section import Section
 
 # %%
 # Rectangle dimensions
@@ -47,7 +47,7 @@ for b in b_list:
 
     # get the torsion constant
     j = section.get_j()
-    print("d/b = {0:.3f}; J = {1:.5e}".format(d/b, j))
+    print("d/b = {0:.3f}; J = {1:.5e}".format(d / b, j))
     j_list.append(j)
 
 # %%

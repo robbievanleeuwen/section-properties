@@ -16,8 +16,8 @@ compared to reducing the mesh area size for the entire section.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import Section
+import sectionproperties.pre.library.steel_sections as steel_sections
+from sectionproperties.analysis.section import Section
 
 # %%
 # Define mesh sizes
@@ -33,7 +33,7 @@ nr_elements = []
 
 # %%
 # Calculate reference solution
-geometry = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=64)
+geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=64)
 geometry.create_mesh(mesh_sizes=[0.5])  # create mesh
 section = Section(geometry)  # create a Section object
 section.calculate_geometric_properties()
@@ -43,7 +43,7 @@ j_reference = section.get_j()  # get the torsion constant
 # %%
 # Run through mesh_sizes with n_r = 16
 for mesh_size in mesh_size_list:
-    geometry = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=16)
+    geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=16)
     geometry.create_mesh(mesh_sizes=[mesh_size])  # create mesh
     section = Section(geometry)  # create a Section object
     section.calculate_geometric_properties()
@@ -55,7 +55,7 @@ for mesh_size in mesh_size_list:
 # %%
 # Run through n_r with mesh_size = 3
 for n_r in nr_list:
-    geometry = sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=n_r)
+    geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=n_r)
     geometry.create_mesh(mesh_sizes=[3])  # create mesh
     section = Section(geometry)  # create a Section object
     section.calculate_geometric_properties()
@@ -74,10 +74,10 @@ nr_error_vals = (nr_results - j_reference) / nr_results * 100
 # %%
 # Plot the results
 (fig, ax) = plt.subplots()
-ax.loglog(mesh_elements, mesh_error_vals, 'kx-', label='Mesh Size Refinement')
-ax.loglog(nr_elements, nr_error_vals, 'rx-', label='Root Radius Refinement')
+ax.loglog(mesh_elements, mesh_error_vals, "kx-", label="Mesh Size Refinement")
+ax.loglog(nr_elements, nr_error_vals, "rx-", label="Root Radius Refinement")
 plt.xlabel("Number of Elements")
 plt.ylabel("Torsion Constant Error [%]")
-plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 plt.tight_layout()
 plt.show()

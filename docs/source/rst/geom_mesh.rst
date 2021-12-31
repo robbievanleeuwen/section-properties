@@ -20,6 +20,7 @@ Section Geometry
 * The :class:`~sectionproperties.pre.sections.CompoundGeometry` class, comprised of two or more
   `Geometry` objects
 
+
 Geometry Class
 --------------
 
@@ -35,6 +36,7 @@ A :class:`~sectionproperties.pre.sections.Geometry` is instantiated with two arg
    If a :class:`~sectionproperties.pre.pre.Material` is not given, then the default material is
    assigned to the ``Geometry.material`` attribute. The default material has an elastic modulus of
    1, a Poisson's ratio of 0 and a yield strength of 1.
+
 
 CompoundGeometry Class
 ----------------------
@@ -88,12 +90,12 @@ In addition to creating geometries directly from :class:`shapely.geometry.Polygo
 analysis:
 
 #. From lists of points, facets, hole regions, and control regions
-#. From *sectionproperties*'s "factory functions" of common shapes
 #. From ``.dxf`` files
 #. From ``.3dm`` files
 #. From Rhino encodings
 #. Using transformation methods on existing geometries and/or by applying set operations
    (e.g. `|`, `+`, `-`, `&`, `^`)
+#. From *sectionproperties*'s section library
 
 For the first two approaches, an optional ``.material`` parameter can be passed containing a
 :class:`~sectionproperties.pre.pre.Material` (or list of `Material` objects) to associate with the
@@ -101,6 +103,8 @@ newly created geometry(ies). The material attribute can be altered afterward in 
 :class:`~sectionproperties.pre.sections.Geometry` object at any time by simply assigning a
 different :class:`~sectionproperties.pre.pre.Material` to the ``.material`` attribute.
 
+
+.. _label-from-points:
 
 Geometry from points, facets, holes, and control_points
 -------------------------------------------------------
@@ -138,6 +142,7 @@ file (i.e. the number of contiguous regions).
 
 ..  autofunction:: sectionproperties.pre.sections.CompoundGeometry.from_dxf
    :noindex:
+
 
 Geometry from Rhino
 -------------------
@@ -178,104 +183,6 @@ These can be accessed by :attr:`sectionproperties.pre.rhino.load_3dm()` and
    :noindex:
 
 
-Creating Common Structural Geometries
--------------------------------------
-
-In order to make your life easier, there are a number of built-in functions that generate typical
-structural cross-sections, resulting in :class:`~sectionproperties.pre.sections.Geometry` objects.
-
-
-Rectangular Section
-^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.rectangular_section
-    :noindex:
-
-Circular Section
-^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.circular_section
-    :noindex:
-
-Circular Hollow Section (CHS)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.circular_hollow_section
-    :noindex:
-
-Elliptical Section
-^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.elliptical_section
-    :noindex:
-
-Elliptical Hollow Section (EHS)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.elliptical_hollow_section
-    :noindex:
-
-Rectangular Hollow Section (RHS)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-..  autofunction:: sectionproperties.pre.sections.rectangular_hollow_section
-    :noindex:
-
-I-Section
-^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.i_section
-      :noindex:
-
-Monosymmetric I-Section
-^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.mono_i_section
-      :noindex:
-
-Tapered Flange I-Section
-^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.tapered_flange_i_section
-      :noindex:
-
-Parallel Flange Channel (PFC) Section
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.channel_section
-      :noindex:
-
-Tapered Flange Channel Section
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.tapered_flange_channel
-      :noindex:
-
-Tee Section
-^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.tee_section
-      :noindex:
-
-Angle Section
-^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.angle_section
-      :noindex:
-
-Cee Section
-^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.cee_section
-      :noindex:
-
-Zed Section
-^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.zed_section
-      :noindex:
-
-Cruciform Section
-^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.cruciform_section
-      :noindex:
-
-Polygon Hollow Section
-^^^^^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.polygon_hollow_section
-      :noindex:
-
-Box Girder Section
-^^^^^^^^^^^^^^^^^^
-  ..  autofunction:: sectionproperties.pre.sections.box_girder_section
-      :noindex:
-
-
 Combining Geometries Using Set Operations
 -----------------------------------------
 
@@ -291,6 +198,12 @@ Both `Geometry` and `CompoundGeometry` objects can be manipulated using Python's
 - ``+``  Addition - Combines two geometries into a `CompoundGeometry`
 
 See :ref:`label-advanced_geom` for an example using set operations.
+
+
+*sectionproperties* Section Library
+-----------------------------------
+
+See :ref:`label-section-library`.
 
 
 Manipulating Geometries
@@ -316,17 +229,20 @@ Aligning
   ..  autofunction:: sectionproperties.pre.sections.Geometry.align_to
       :noindex:
 
+
 Mirroring
 ---------
 
   ..  autofunction:: sectionproperties.pre.sections.Geometry.mirror_section
       :noindex:
 
+
 Rotating
 --------
 
   ..  autofunction:: sectionproperties.pre.sections.Geometry.rotate_section
       :noindex:
+
 
 Shifting
 --------
@@ -337,11 +253,13 @@ Shifting
   ..  autofunction:: sectionproperties.pre.sections.Geometry.shift_section
       :noindex:
 
+
 Splitting
 ---------
 
   ..  autofunction:: sectionproperties.pre.sections.Geometry.split_section
       :noindex:
+
 
 Offsetting the Perimeter
 ------------------------

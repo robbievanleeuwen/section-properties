@@ -1,9 +1,10 @@
 import pytest_check as check
 import numpy as np
-import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import Section
+import sectionproperties.pre.library.standard_sections as sections
+import sectionproperties.pre.library.steel_sections as steel_sections
+from sectionproperties.analysis.section import Section
 from shapely.geometry import Polygon
-from sectionproperties.pre.sections import Geometry
+from sectionproperties.pre.geometry import Geometry
 
 
 r_tol = 1e-3
@@ -31,7 +32,7 @@ def test_rectangular_offset():
 
 def test_box_offset():
     # exterior negative offset
-    box = sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
+    box = steel_sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
     box = box.offset_perimeter(amount=-5, where="exterior")
     box.create_mesh([50])
     section = Section(box)
@@ -40,7 +41,7 @@ def test_box_offset():
     check.almost_equal(section.get_area(), area, rel=r_tol)
 
     # exterior positve offset
-    box = sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
+    box = steel_sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
     box = box.offset_perimeter(amount=5, where="exterior")
     box.create_mesh([50])
     section = Section(box)
@@ -49,7 +50,7 @@ def test_box_offset():
     check.almost_equal(section.get_area(), area, rel=r_tol)
 
     # interior negative offset
-    box = sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
+    box = steel_sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
     box = box.offset_perimeter(amount=-5, where="interior")
     box.create_mesh([50])
     section = Section(box)
@@ -58,7 +59,7 @@ def test_box_offset():
     check.almost_equal(section.get_area(), area, rel=r_tol)
 
     # interior positive offset
-    box = sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
+    box = steel_sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
     box = box.offset_perimeter(amount=5, where="interior")
     box.create_mesh([50])
     section = Section(box)
@@ -67,7 +68,7 @@ def test_box_offset():
     check.almost_equal(section.get_area(), area, rel=r_tol)
 
     # all negative offset
-    box = sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
+    box = steel_sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
     box = box.offset_perimeter(amount=-2.5, where="all")
     box.create_mesh([50])
     section = Section(box)
@@ -76,7 +77,7 @@ def test_box_offset():
     check.almost_equal(section.get_area(), area, rel=r_tol)
 
     # all positive offset
-    box = sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
+    box = steel_sections.rectangular_hollow_section(d=200, b=100, t=10, r_out=0, n_r=1)
     box = box.offset_perimeter(amount=5, where="all")
     box.create_mesh([50])
     section = Section(box)
@@ -105,7 +106,7 @@ def test_compound_rectangular_isection_offset_corrode():
     r = 12
     b_p = 250
     t_p = 16
-    ub = sections.i_section(d=d, b=b, t_f=tf, t_w=tw, r=r, n_r=16)
+    ub = steel_sections.i_section(d=d, b=b, t_f=tf, t_w=tw, r=r, n_r=16)
     plate = (
         sections.rectangular_section(b=b_p, d=t_p)
         .align_center(ub)
@@ -117,7 +118,7 @@ def test_compound_rectangular_isection_offset_corrode():
     section_test = Section(geom_test)
     section_test.calculate_geometric_properties()
 
-    ub_corroded = sections.mono_i_section(
+    ub_corroded = steel_sections.mono_i_section(
         d=298, b_t=146, b_b=146, t_ft=8, t_fb=6, t_w=4, r=14, n_r=16
     )
     plate_corroded1 = (
@@ -154,7 +155,7 @@ def test_compound_stiffened_isection():
     Tests that plates 1 and 2 can be eroded to nothing and a valid Section can
     still be generated without errors.
     """
-    uc = sections.i_section(d=400, b=400, t_f=25, t_w=25, r=30, n_r=8)
+    uc = steel_sections.i_section(d=400, b=400, t_f=25, t_w=25, r=30, n_r=8)
     plate1 = (
         sections.rectangular_section(b=500, d=10).align_center(uc).align_to(uc, "top")
     )

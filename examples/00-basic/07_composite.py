@@ -19,20 +19,36 @@ to the terminal and a plot of the centroids and cross-section stresses generated
 
 # sphinx_gallery_thumbnail_number = 2
 
-import sectionproperties.pre.sections as sections
+import sectionproperties.pre.library.standard_sections as sections
+import sectionproperties.pre.library.steel_sections as steel_sections
+from sectionproperties.pre.geometry import CompoundGeometry
 from sectionproperties.pre.pre import Material
-from sectionproperties.analysis.cross_section import Section
+from sectionproperties.analysis.section import Section
 
 # %%
 # Create material properties
-steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3,
-                 yield_strength=500, density=8.05e-6 ,color='grey')
-timber = Material(name='Timber', elastic_modulus=8e3, poissons_ratio=0.35,
-                  yield_strength=20, density=0.78e-6, color='burlywood')
+steel = Material(
+    name="Steel",
+    elastic_modulus=200e3,
+    poissons_ratio=0.3,
+    yield_strength=500,
+    density=8.05e-6,
+    color="grey",
+)
+timber = Material(
+    name="Timber",
+    elastic_modulus=8e3,
+    poissons_ratio=0.35,
+    yield_strength=20,
+    density=0.78e-6,
+    color="burlywood",
+)
 
 # %%
 # Create 310UB40.4
-ub = sections.i_section(d=304, b=165, t_f=10.2, t_w=6.1, r=11.4, n_r=8, material=steel)
+ub = steel_sections.i_section(
+    d=304, b=165, t_f=10.2, t_w=6.1, r=11.4, n_r=8, material=steel
+)
 
 # %%
 # Create timber panel on top of the UB
@@ -41,36 +57,36 @@ panel = panel.align_center(ub).align_to(ub, on="top")
 
 # %%
 # Merge the two sections into one geometry object
-geometry = sections.CompoundGeometry([ub, panel])
+section_geometry = sections.CompoundGeometry([ub, panel])
 
 # %%
 # Create a mesh and a Section object. For the mesh use a mesh size of 5 for
 # the UB, 20 for the panel
-geometry.create_mesh(mesh_sizes=[5, 20])
-section = Section(geometry, time_info=True)
-section.display_mesh_info()  # display the mesh information
+section_geometry.create_mesh(mesh_sizes=[5, 20])
+comp_section = Section(section_geometry, time_info=True)
+comp_section.display_mesh_info()  # display the mesh information
 
 # %%
 # Plot the mesh with coloured materials and a line transparency of 0.6
-section.plot_mesh(materials=True, alpha=0.6)
+comp_section.plot_mesh(materials=True, alpha=0.6)
 
 # %%
 # Perform a geometric, warping and plastic analysis
-section.calculate_geometric_properties()
-section.calculate_warping_properties()
-section.calculate_plastic_properties(verbose=True)
+comp_section.calculate_geometric_properties()
+comp_section.calculate_warping_properties()
+comp_section.calculate_plastic_properties(verbose=True)
 
 # %%
 # Perform a stress analysis with N = 100 kN, Mxx = 120 kN.m and Vy = 75 kN
-stress_post = section.calculate_stress(N=-100e3, Mxx=-120e6, Vy=-75e3)
+stress_post = comp_section.calculate_stress(N=-100e3, Mxx=-120e6, Vy=-75e3)
 
 # %%
 # Print the results to the terminal
-section.display_results()
+comp_section.display_results()
 
 # %%
 # Plot the centroids
-section.plot_centroids()
+comp_section.plot_centroids()
 
 # %%
 # Plot the axial stress

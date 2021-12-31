@@ -24,10 +24,10 @@ Creating Merged Sections
 
 For this example, we will create a custom section out of two similar "I" sections::
 
-    import sectionproperties.pre.sections as sections
+    import sectionproperties.pre.library.steel_sections as steel_sections
     import sectionproperties.analysis.cross_section as cross_section
 
-    i_sec1 = sections.i_section(d=250, b=150, t_f=13, t_w=10, r=12, n_r=12)
+    i_sec1 = steel_sections.i_section(d=250, b=150, t_f=13, t_w=10, r=12, n_r=12)
     i_sec2 = i_sec1.rotate_section(45)
 
 ..  figure:: ../images/examples/i_sec1.png
@@ -159,11 +159,11 @@ Another example
 
 Here, we will simply combine two squares with the default material::
 
-    import sectionproperties.pre.sections as sections
+    import sectionproperties.pre.library.standard_sections as standard_sections
     from sectionproperties.analysis.cross_section import Section
 
-    s1 = sections.rectangular_section(1,1)
-    s2 = sections.rectangular_section(0.5,0.5).shift_section(1,0.25)
+    s1 = standard_sections.rectangular_section(1,1)
+    s2 = standard_sections.rectangular_section(0.5,0.5).shift_section(1,0.25)
     geometry = s1 + s2
     geometry
 

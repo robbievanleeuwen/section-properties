@@ -22,8 +22,8 @@ analysis is complete, a plot of the various calculated centroids is generated.
 
 # sphinx_gallery_thumbnail_number = 2
 
-import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import Section
+from sectionproperties.pre.geometry import CompoundGeometry
+from sectionproperties.analysis.section import Section
 
 # %%
 # Define parameters for the angle section
@@ -33,18 +33,37 @@ t = 0.1
 
 # %%
 # Build the lists of points, facets, holes and control points
-points = [[-t/2, -2*a], [t/2, -2*a], [t/2, -t/2], [a, -t/2], [a, t/2],
-          [-t/2, t/2], [-b/2, -2*a], [b/2, -2*a], [b/2, -2*a-t],
-          [-b/2, -2*a-t]]
-facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [6, 7], [7, 8],
-          [8, 9], [9, 6]]
+points = [
+    [-t / 2, -2 * a],
+    [t / 2, -2 * a],
+    [t / 2, -t / 2],
+    [a, -t / 2],
+    [a, t / 2],
+    [-t / 2, t / 2],
+    [-b / 2, -2 * a],
+    [b / 2, -2 * a],
+    [b / 2, -2 * a - t],
+    [-b / 2, -2 * a - t],
+]
+facets = [
+    [0, 1],
+    [1, 2],
+    [2, 3],
+    [3, 4],
+    [4, 5],
+    [5, 0],
+    [6, 7],
+    [7, 8],
+    [8, 9],
+    [9, 6],
+]
 holes = []
 control_points = [[0, 0], [0, -2 * a - t / 2]]
 
 # %%
 # Because we have two separate geometry regions (as indicated by our control_points)
 # we create a CompoundGeometry from points
-geometry = sections.CompoundGeometry.from_points(points, facets, control_points, holes)
+geometry = CompoundGeometry.from_points(points, facets, control_points, holes)
 
 # %%
 # Create the mesh and section. For the mesh, use a smaller refinement for the angle region.

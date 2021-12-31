@@ -1,7 +1,9 @@
 import pytest_check as check
 import numpy as np
-import sectionproperties.pre.sections as sections
-from sectionproperties.analysis.cross_section import Section
+import sectionproperties.pre.library.standard_sections as sections
+import sectionproperties.pre.library.steel_sections as steel_sections
+from sectionproperties.pre.geometry import Geometry
+from sectionproperties.analysis.section import Section
 
 
 r_tol = 1e-3
@@ -16,7 +18,9 @@ def test_rectangular_perimeter():
 
 
 def test_i_section():
-    i_section = sections.i_section(d=308, b=305, t_f=15.4, t_w=9.9, r=16.5, n_r=16)
+    i_section = steel_sections.i_section(
+        d=308, b=305, t_f=15.4, t_w=9.9, r=16.5, n_r=16
+    )
     i_section.create_mesh([100])
     section = Section(i_section)
     section.calculate_geometric_properties()
@@ -31,7 +35,7 @@ def test_i_section():
 
 
 def test_box_girder_perimeter():
-    box_girder = sections.box_girder_section(
+    box_girder = steel_sections.box_girder_section(
         d=400, b_t=700, b_b=100, t_ft=20, t_fb=20, t_w=12
     )
     box_girder.create_mesh([100])
@@ -44,7 +48,7 @@ def test_custom_geometry_perimeter():
     points = [[0, 0], [5, 0], [11, 8], [3, 2], [0, 2]]
     facets = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]]
     control_points = [[5, 5]]
-    custom = sections.Geometry.from_points(points, facets, control_points, holes=None)
+    custom = Geometry.from_points(points, facets, control_points, holes=None)
     custom.create_mesh([100])
     section = Section(custom)
     section.calculate_geometric_properties()
@@ -77,7 +81,7 @@ def test_compound_rectangular_isection_perimeter1():
     r = 12
     b_p = 250
     t_p = 16
-    ub = sections.i_section(d=d, b=b, t_f=tf, t_w=tw, r=r, n_r=16)
+    ub = steel_sections.i_section(d=d, b=b, t_f=tf, t_w=tw, r=r, n_r=16)
     plate = (
         sections.rectangular_section(b=b_p, d=t_p)
         .align_center(ub)
@@ -101,7 +105,9 @@ def test_compound_rectangular_isection_perimeter1():
 
 
 def test_compound_rectangular_isection_perimeter2():
-    i_section = sections.i_section(d=308, b=305, t_f=15.4, t_w=9.9, r=16.5, n_r=16)
+    i_section = steel_sections.i_section(
+        d=308, b=305, t_f=15.4, t_w=9.9, r=16.5, n_r=16
+    )
     rect1 = (
         sections.rectangular_section(d=330, b=16)
         .align_center(i_section)
@@ -126,7 +132,7 @@ def test_compound_rhs_isection_perimeter():
     r = 15
     b_p = 250
     t_p = 16
-    rhs = sections.rectangular_hollow_section(d=d, b=b, t=t, r_out=r, n_r=16)
+    rhs = steel_sections.rectangular_hollow_section(d=d, b=b, t=t, r_out=r, n_r=16)
     plate1 = (
         sections.rectangular_section(b=b_p, d=t_p)
         .align_center(rhs)

@@ -1,8 +1,8 @@
 import numpy as np
 from shapely.geometry import Polygon
-from sectionproperties.pre.sections import Geometry, CompoundGeometry
-from sectionproperties.pre import pre
-from sectionproperties.pre.sections import draw_radius
+from sectionproperties.pre.geometry import Geometry
+import sectionproperties.pre.pre as pre
+from sectionproperties.pre.library.utils import draw_radius
 
 
 def nastran_bar(
@@ -19,9 +19,9 @@ def nastran_bar(
     The following example creates a BAR cross-section with a depth of 1.5 and width of 2.0, and
     generates a mesh with a maximum triangular area of 0.001::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_bar
 
-        geometry = nsections.nastran_bar(DIM1=2.0, DIM2=1.5)
+        geometry = nastran_bar(DIM1=2.0, DIM2=1.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/bar_geometry.png
@@ -71,9 +71,9 @@ def nastran_box(
     The following example creates a BOX cross-section with a depth of 3.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.001::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_box
 
-        geometry = nsections.nastran_box(DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5)
+        geometry = nastran_box(DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/box_geometry.png
@@ -91,23 +91,30 @@ def nastran_box(
     # Ensure dimensions are physically relevant
     np.testing.assert_(2.0 * DIM4 < DIM1, "Invalid geometry specified.")
     np.testing.assert_(2.0 * DIM3 < DIM2, "Invalid geometry specified.")
-
-    points = [
+    points_outer = [
         [-0.5 * DIM1, -0.5 * DIM2],
         [0.5 * DIM1, -0.5 * DIM2],
         [0.5 * DIM1, 0.5 * DIM2],
         [-0.5 * DIM1, 0.5 * DIM2],
+    ]
+    points_inner = [
         [-0.5 * DIM1 + DIM4, -0.5 * DIM2 + DIM3],
         [0.5 * DIM1 - DIM4, -0.5 * DIM2 + DIM3],
         [0.5 * DIM1 - DIM4, 0.5 * DIM2 - DIM3],
         [-0.5 * DIM1 + DIM4, 0.5 * DIM2 - DIM3],
     ]
-    geometry = Geometry(Polygon(points), material)
+
+    inner_box = Polygon(points_inner)
+    outer_box = Polygon(points_outer)
+
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
     E = (-0.5 * DIM1, -0.5 * DIM2)
     F = (-0.5 * DIM1, 0.5 * DIM2)
+
+    geometry = Geometry(outer_box - inner_box, material)
     geometry.recovery_points = [C, D, E, F]
+
     return geometry
 
 
@@ -135,9 +142,9 @@ def nastran_box1(
     The following example creates a BOX1 cross-section with a depth of 3.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.007::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_box1
 
-        geometry = nsections.nastran_box1(
+        geometry = nastran_box1(
             DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5, DIM5=0.25, DIM6=0.75
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.007])
@@ -200,9 +207,9 @@ def nastran_chan(
     The following example creates a CHAN cross-section with a depth of 4.0 and width of 2.0, and
     generates a mesh with a maximum triangular area of 0.008::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_chan
 
-        geometry = nsections.nastran_chan(DIM1=2.0, DIM2=4.0, DIM3=0.25, DIM4=0.5)
+        geometry = nastran_chan(DIM1=2.0, DIM2=4.0, DIM3=0.25, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.008])
 
     ..  figure:: ../images/sections/chan_geometry.png
@@ -264,9 +271,9 @@ def nastran_chan1(
     The following example creates a CHAN1 cross-section with a depth of 4.0 and width of 1.75, and
     generates a mesh with a maximum triangular area of 0.01::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_chan1
 
-        geometry = nsections.nastran_chan1(DIM1=0.75, DIM2=1.0, DIM3=3.5, DIM4=4.0)
+        geometry = nastran_chan1(DIM1=0.75, DIM2=1.0, DIM3=3.5, DIM4=4.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/chan1_geometry.png
@@ -326,9 +333,9 @@ def nastran_chan2(
     The following example creates a CHAN2 cross-section with a depth of 2.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.01::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_chan2
 
-        geometry = nsections.nastran_chan2(DIM1=0.375, DIM2=0.5, DIM3=2.0, DIM4=4.0)
+        geometry = nastran_chan2(DIM1=0.375, DIM2=0.5, DIM3=2.0, DIM4=4.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/chan2_geometry.png
@@ -389,9 +396,9 @@ def nastran_cross(
     The following example creates a rectangular cross-section with a depth of 3.0 and width of
     1.875, and generates a mesh with a maximum triangular area of 0.008::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_cross
 
-        geometry = nsections.nastran_cross(DIM1=1.5, DIM2=0.375, DIM3=3.0, DIM4=0.25)
+        geometry = nastran_cross(DIM1=1.5, DIM2=0.375, DIM3=3.0, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.008])
 
     ..  figure:: ../images/sections/cross_geometry.png
@@ -460,9 +467,9 @@ def nastran_fcross(
 
     The following example demonstrates the creation of a flanged cross section::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_fcross
 
-        geometry = nsections.nastran_fcross(
+        geometry = nastran_fcross(
             DIM1=9.0, DIM2=6.0, DIM3=0.75, DIM4=0.625, DIM5=2.1, DIM6=0.375, DIM7=4.5, DIM8=0.564
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.03])
@@ -560,9 +567,9 @@ def nastran_dbox(
     The following example creates a DBOX cross-section with a depth of 3.0 and width of 8.0, and
     generates a mesh with a maximum triangular area of 0.01::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_dbox
 
-        geometry = nsections.nastran_dbox(
+        geometry = nastran_dbox(
             DIM1=8.0, DIM2=3.0, DIM3=3.0, DIM4=0.5, DIM5=0.625, DIM6=0.75, DIM7=0.375, DIM8=0.25,
             DIM9=0.5, DIM10=0.375
         )
@@ -641,9 +648,9 @@ def nastran_gbox(
     The following example creates a GBOX cross-section with a depth of 2.5 and width of 6.0, and
     generates a mesh with a maximum triangular area of 0.01::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_gbox
 
-        geometry = nsections.nastran_gbox(
+        geometry = nastran_gbox(
             DIM1=6.0, DIM2=2.5, DIM3=0.375, DIM4=0.25, DIM5=0.625, DIM6=1.0
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
@@ -717,9 +724,9 @@ def nastran_h(
     The following example creates a H cross-section with a depth of 3.5 and width of 2.75, and
     generates a mesh with a maximum triangular area of 0.005::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_h
 
-        geometry = nsections.nastran_h(DIM1=2.0, DIM2=0.75, DIM3=3.5, DIM4=0.25)
+        geometry = nastran_h(DIM1=2.0, DIM2=0.75, DIM3=3.5, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/h_geometry.png
@@ -784,9 +791,9 @@ def nastran_hat(
     The following example creates a HAT cross-section with a depth of 1.25 and width of 2.5, and
     generates a mesh with a maximum triangular area of 0.001::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_hat
 
-        geometry = nsections.nastran_hat(DIM1=1.25, DIM2=0.25, DIM3=1.5, DIM4=0.5)
+        geometry = nastran_hat(DIM1=1.25, DIM2=0.25, DIM3=1.5, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/hat_geometry.png
@@ -852,9 +859,9 @@ def nastran_hat1(
     The following example creates a HAT1 cross-section with a depth of 2.0 and width of 4.0, and
     generates a mesh with a maximum triangular area of 0.005::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_hat1
 
-        geometry = nsections.nastran_hat1(DIM1=4.0, DIM2=2.0, DIM3=1.5, DIM4=0.1875, DIM5=0.375)
+        geometry = nastran_hat1(DIM1=4.0, DIM2=2.0, DIM3=1.5, DIM4=0.1875, DIM5=0.375)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/hat1_geometry.png
@@ -914,9 +921,9 @@ def nastran_hexa(
     The following example creates a rectangular cross-section with a depth of 1.5 and width of 2.0,
     and generates a mesh with a maximum triangular area of 0.005::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_hexa
 
-        geometry = nsections.nastran_hexa(DIM1=0.5, DIM2=2.0, DIM3=1.5)
+        geometry = nastran_hexa(DIM1=0.5, DIM2=2.0, DIM3=1.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/hexa_geometry.png
@@ -978,9 +985,9 @@ def nastran_i(
     The following example creates a Nastran I cross-section with a depth of 5.0, and generates a
     mesh with a maximum triangular area of 0.008::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_i
 
-        geometry = nsections.nastran_i(
+        geometry = nastran_i(
             DIM1=5.0, DIM2=2.0, DIM3=3.0, DIM4=0.25, DIM5=0.375, DIM6=0.5
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.008])
@@ -1051,9 +1058,9 @@ def nastran_i1(
     5.0 and width of 1.75, and generates a mesh with a maximum triangular area of
     0.02::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_i1
 
-        geometry = nsections.nastran_i1(DIM1=1.0, DIM2=0.75, DIM3=4.0, DIM4=5.0)
+        geometry = nastran_i1(DIM1=1.0, DIM2=0.75, DIM3=4.0, DIM4=5.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.02])
 
     ..  figure:: ../images/sections/i1_geometry.png
@@ -1118,9 +1125,9 @@ def nastran_l(
     The following example creates a L cross-section with a depth of 6.0 and width of 3.0, and
     generates a mesh with a maximum triangular area of 0.01::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_l
 
-        geometry = nsections.nastran_l(DIM1=3.0, DIM2=6.0, DIM3=0.375, DIM4=0.625)
+        geometry = nastran_l(DIM1=3.0, DIM2=6.0, DIM3=0.375, DIM4=0.625)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/l_geometry.png
@@ -1149,7 +1156,7 @@ def nastran_l(
     E = (-0.5 * DIM4, -0.5 * DIM3)
     F = (-0.5 * DIM4, DIM2 - 0.5 * DIM3)
 
-    geometry.recovery_points([C, D, E, F])
+    geometry.recovery_points = [C, D, E, F]
     return geometry
 
 
@@ -1167,9 +1174,9 @@ def nastran_rod(
     The following example creates a circular rod with a radius of 3.0 and 50 points discretising
     the boundary, and generates a mesh with a maximum triangular area of 0.01::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_rod
 
-        geometry = nsections.nastran_rod(DIM1=3.0, n=50)
+        geometry = nastran_rod(DIM1=3.0, n=50)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/rod_geometry.png
@@ -1205,7 +1212,7 @@ def nastran_rod(
     E = (0, -DIM1)
     F = (-DIM1, 0)
 
-    geometry.recovery_points([C, D, E, F])
+    geometry.recovery_points = [C, D, E, F]
 
     return geometry
 
@@ -1230,9 +1237,9 @@ def nastran_tee(
     The following example creates a T cross-section with a depth of 4.0 and width of 3.0, and
     generates a mesh with a maximum triangular area of 0.001::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_tee
 
-        geometry = nsections.nastran_t(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.25)
+        geometry = nastran_tee(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/t_geometry.png
@@ -1309,9 +1316,9 @@ def nastran_tee1(
     The following example creates a T1 cross-section with a depth of 3.0 and width of 3.875, and
     generates a mesh with a maximum triangular area of 0.001::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_tee1
 
-        geometry = nsections.nastran_t1(DIM1=3.0, DIM2=3.5, DIM3=0.375, DIM4=0.25)
+        geometry = nastran_tee1(DIM1=3.0, DIM2=3.5, DIM3=0.375, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/t1_geometry.png
@@ -1373,9 +1380,9 @@ def nastran_tee2(
     The following example creates a T2 cross-section with a depth of 4.0 and width of 3.0, and
     generates a mesh with a maximum triangular area of 0.005::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_tee2
 
-        geometry = nsections.nastran_t2(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.5)
+        geometry = nastran_tee2(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/t2_geometry.png
@@ -1433,9 +1440,9 @@ def nastran_tube(
     inner radius of 2.5, and generates a mesh with 37 points discretising the boundaries and a
     maximum triangular area of 0.01::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_tube
 
-        geometry = nsections.nastran_tube(DIM1=3.0, DIM2=2.5, n=37)
+        geometry = nastran_tube(DIM1=3.0, DIM2=2.5, n=37)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/tube_geometry.png
@@ -1501,9 +1508,9 @@ def nastran_tube2(
     wall thickness of 0.5, and generates a mesh with 37 point discretising the boundary and a
     maximum triangular area of 0.01::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_tube2
 
-        geometry = nsections.nastran_tube2(DIM1=3.0, DIM2=0.5, n=37)
+        geometry = nastran_tube2(DIM1=3.0, DIM2=0.5, n=37)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/tube2_geometry.png
@@ -1542,16 +1549,16 @@ def nastran_tube2(
         points_outer.append([x_outer, y_outer])
         points_inner.append([x_inner, y_inner])
 
-        exterior = Geometry(Polygon(points_outer), material)
-        interior = Geometry(Polygon(points_inner), material)
-        geometry = exterior - interior
+    exterior = Geometry(Polygon(points_outer), material)
+    interior = Geometry(Polygon(points_inner), material)
+    geometry = exterior - interior
 
-        C = (0, DIM1)
-        D = (DIM1, 0)
-        E = (0, -DIM1)
-        F = (-DIM1, 0)
-        geometry.recovery_points = [C, D, E, F]
-        return geometry
+    C = (0, DIM1)
+    D = (DIM1, 0)
+    E = (0, -DIM1)
+    F = (-DIM1, 0)
+    geometry.recovery_points = [C, D, E, F]
+    return geometry
 
 
 def nastran_zed(
@@ -1574,9 +1581,9 @@ def nastran_zed(
     The following example creates a rectangular cross-section with a depth of 4.0 and width of
     2.75, and generates a mesh with a maximum triangular area of 0.005::
 
-        import sectionproperties.pre.nastran_sections as nsections
+        from sectionproperties.pre.library.nastran_sections import nastran_zed
 
-        geometry = nsections.nastran_z(DIM1=1.125, DIM2=0.5, DIM3=3.5, DIM4=4.0)
+        geometry = nastran_zed(DIM1=1.125, DIM2=0.5, DIM3=3.5, DIM4=4.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/z_geometry.png
