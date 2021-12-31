@@ -14,7 +14,7 @@ import numpy as np
 from scipy.sparse import csc_matrix, coo_matrix, linalg
 from scipy.optimize import brentq
 import sectionproperties.pre.pre as pre
-import sectionproperties.pre.geometry as sections
+import sectionproperties.pre.geometry as section_geometry
 import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
@@ -71,7 +71,7 @@ class Section:
 
     def __init__(
         self,
-        geometry: Union[sections.Geometry, sections.CompoundGeometry],
+        geometry: Union[section_geometry.Geometry, section_geometry.CompoundGeometry],
         time_info: bool = False,
     ):
         """Inits the Section class."""
@@ -89,7 +89,7 @@ class Section:
         mesh = self.mesh
 
         def init():
-            if isinstance(self.geometry, sections.CompoundGeometry):
+            if isinstance(self.geometry, section_geometry.CompoundGeometry):
                 self.materials = [geom.material for geom in self.geometry.geoms]
             else:
                 self.materials = [self.geometry.material]
@@ -1934,7 +1934,7 @@ class PlasticSection:
     :type c_bot: list[float, float]
     """
 
-    def __init__(self, geom: Union[sections.Geometry, sections.CompoundGeometry]):
+    def __init__(self, geom: Union[section_geometry.Geometry, section_geometry.CompoundGeometry]):
         """Inits the PlasticSection class."""
         self.geometry = geom.align_center()
         self.geometry.compile_geometry()
@@ -1959,7 +1959,7 @@ class PlasticSection:
 
         # General case
         # loop through all the geometries
-        if isinstance(self.geometry, sections.CompoundGeometry):
+        if isinstance(self.geometry, section_geometry.CompoundGeometry):
             for geom in self.geometry.geoms:
                 e = geom.material.elastic_modulus
                 area = geom.calculate_area()
