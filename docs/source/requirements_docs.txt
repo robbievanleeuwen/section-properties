@@ -7,3 +7,4 @@ triangle
 Sphinx
 sphinx-rtd-theme
 sphinx-gallery
+rhino-shapley-interop

@@ -52,11 +52,6 @@ setup(
     license="MIT",
     packages=[
         "sectionproperties",
-        "sectionproperties.analysis",
-        "sectionproperties.post",
-        "sectionproperties.pre",
-        "sectionproperties.examples",
-        "sectionproperties.tests",
     ],
     install_requires=install_requires,
     include_package_data=True,

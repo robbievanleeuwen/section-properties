@@ -260,7 +260,7 @@ In creating this geometry consider the following:
     :align: center
     :scale: 100 %
 
-To create the nested geometry using shapely, the code would be as follows:
+To create the nested geometry using shapely, the code would be as follows::
 
     mat1 = Material(name="Material 1", elastic_modulus=100, poissons_ratio=0.3, yield_strength=10, color="yellow")
     mat2 = Material(name="Material 2", elastic_modulus=100, poissons_ratio=0.3, yield_strength=10, color="orange")
@@ -282,7 +282,7 @@ To create the nested geometry using shapely, the code would be as follows:
     :align: center
     :scale: 100 %
 
-To create the nested geometry using the Triangle interface, the code would be as follows:
+To create the nested geometry using the Triangle interface, the code would be as follows::
 
     points = [ # Points for four squares are created
         [-50.0, 50.0], # Square 1
