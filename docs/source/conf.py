@@ -9,6 +9,9 @@
 from sphinx_gallery.sorting import FileNameSortKey
 import locale
 
+
+locale.setlocale(locale.LC_ALL, '')
+
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
