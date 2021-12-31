@@ -114,6 +114,6 @@ def create_mesh(
     tri["regions"] = regions  # set regions
 
     # generate mesh
-    mesh = triangle.triangulate(tri, 'pq30Aao2')
+    mesh = triangle.triangulate(tri, "pq30Aao2")
 
     return mesh

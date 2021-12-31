@@ -84,11 +84,14 @@ def test_geometry_from_points():
     ]
     control_points = [[0, 0]]
     holes = [[0, 6], [0, -6]]
-    new_geom = Geometry.from_points(points=points, facets=facets, control_points=control_points, holes=holes)
+    new_geom = Geometry.from_points(
+        points=points, facets=facets, control_points=control_points, holes=holes
+    )
     wkt_test_geom = shapely.wkt.loads(
         "POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))"
     )
     assert (new_geom.geom - wkt_test_geom) == Polygon()
+
 
 def test_compound_geometry_from_points():
     # CompoundGeometry.from_points() tests a shape with an arbitrary
