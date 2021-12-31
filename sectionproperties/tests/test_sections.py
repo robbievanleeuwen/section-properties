@@ -79,11 +79,10 @@ def test_geometry_from_points():
     control_points = [[0, 0]]
     holes = [[0, 6], [0, -6]]
     new_geom = Geometry.from_points(points=points, facets=facets, control_points=control_points, holes=holes)
-    assert (
-        new_geom.geom.wkt
-        == "POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))"
-    )  # Note, the order of point coordinates can change based on geometry operations, e.g. +/- and how many; seems to be a shapely issue
-
+    wkt_test_geom = shapely.wkt.loads(
+        "POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))"
+    )
+    assert (new_geom.geom - wkt_test_geom) == Polygon()
 
 def test_compound_geometry_from_points():
     # CompoundGeometry.from_points() tests a shape with an arbitrary
@@ -121,10 +120,10 @@ def test_compound_geometry_from_points():
     ]
     control_points = [[0, 0], [0, -2 * a - t / 2]]
     new_geom = CompoundGeometry.from_points(points, facets, control_points)
-    assert (
-        new_geom.geom.wkt
-        == "MULTIPOLYGON (((-0.05 -2, 0.05 -2, 0.05 -0.05, 1 -0.05, 1 0.05, -0.05 0.05, -0.05 -2)), ((-1 -2, 1 -2, 1 -2.1, -1 -2.1, -1 -2)))"
+    wkt_test_geom = shapely.wkt.loads(
+        "MULTIPOLYGON (((-0.05 -2, 0.05 -2, 0.05 -0.05, 1 -0.05, 1 0.05, -0.05 0.05, -0.05 -2)), ((-1 -2, 1 -2, 1 -2.1, -1 -2.1, -1 -2)))"
     )
+    assert (new_geom.geom - wkt_test_geom) == Polygon()
 
 
 def test_nested_compound_geometry_from_points():
@@ -173,10 +172,11 @@ def test_nested_compound_geometry_from_points():
     nested_compound = CompoundGeometry.from_points(
         points=points, facets=facets, control_points=control_points, holes=holes
     )
-    assert (
-        nested_compound.geom.wkt
-        == "MULTIPOLYGON (((50 50, 50 -50, -50 -50, -50 50, 50 50), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-37.5 -37.5, -37.5 37.5, 37.5 37.5, 37.5 -37.5, -37.5 -37.5), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-25 -25, -25 25, 25 25, 25 -25, -25 -25), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)))"
+    wkt_test_geom = shapely.wkt.loads(
+        "MULTIPOLYGON (((50 50, 50 -50, -50 -50, -50 50, 50 50), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-37.5 -37.5, -37.5 37.5, 37.5 37.5, 37.5 -37.5, -37.5 -37.5), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-25 -25, -25 25, 25 25, 25 -25, -25 -25), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)))"
     )
+    assert (nested_compound.geom - wkt_test_geom) == Polygon()
+
     assert nested_compound.control_points == [
         (-43.75, 0.0),
         (-31.25, 0.0),
