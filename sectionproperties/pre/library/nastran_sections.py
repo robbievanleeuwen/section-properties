@@ -1,6 +1,6 @@
 import numpy as np
 from shapely.geometry import Polygon
-from sectionproperties.pre.sections import Geometry
+from sectionproperties.pre.geometry import Geometry
 import sectionproperties.pre.pre as pre
 from sectionproperties.pre.library.utils import draw_radius
 

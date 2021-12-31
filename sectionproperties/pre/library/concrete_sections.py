@@ -1,7 +1,7 @@
 import numpy as np
 from shapely.geometry import Polygon
 import sectionproperties.pre.pre as pre
-from sectionproperties.pre.sections import Geometry
+from sectionproperties.pre.geometry import Geometry
 import sectionproperties.pre.library.standard_sections as standard_sections
 
 
