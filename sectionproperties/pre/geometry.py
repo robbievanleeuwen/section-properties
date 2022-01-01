@@ -854,9 +854,8 @@ class Geometry:
             or a combination of 'points', 'facets', 'control_points', or an empty list
             to indicate no labels. Default is ['control_points']
         :type labels: list[str]
-        :param size: The size of the plot in pixels. Default is 500.
-        :type size: int
-        :param dpi: The resolution of the plot in dots-per-inch. Default is 96. If 'size'
+        :param int size: The size of the plot in pixels. Default is 500.
+        :param float dpi: The resolution of the plot in dots-per-inch. Default is 96. If 'size'
             is changed
         :param pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.

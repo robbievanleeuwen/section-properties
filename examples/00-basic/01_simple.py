@@ -23,7 +23,6 @@ second moments of area.
 
 import sectionproperties.pre.library.standard_sections as sections
 from sectionproperties.analysis.section import Section
-import matplotlib as mpl
 
 # %%
 # Create a 50 diameter circle discretised by 64 points
@@ -36,7 +35,7 @@ geometry.create_mesh(mesh_sizes=[2.5])
 
 section = Section(geometry, time_info=True)
 section.display_mesh_info()
-section.plot_mesh(alpha=1)
+section.plot_mesh(lw=0.3)
 
 # %%
 # perform a geometric, warping and plastic analysis, displaying the time info

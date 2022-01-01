@@ -1074,7 +1074,8 @@ class Section:
         self,
         ax=None,
         pause=True,
-        alpha=0.2,
+        alpha=0.5,
+        lw=0.1,
         materials=True,
         mask=None,
         size=500,
@@ -1088,11 +1089,15 @@ class Section:
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
         :param float alpha: Transparency of the mesh outlines: :math:`0 \leq \\alpha \leq 1`
+        :param float lw: Mesh triplot lineweight
         :param bool materials: If set to true and material properties have been provided to the
             :class:`~sectionproperties.analysis.section.Section` object, shades the
             elements with the specified material colours
         :param mask: Mask array, of length ``num_nodes``, to mask out triangles
         :type mask: list[bool]
+        :param int size: The size of the plot in pixels. Default is 500.
+        :param float dpi: The resolution of the plot in dots-per-inch. Default is 96. If 'size'
+            is changed
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -1142,7 +1147,7 @@ class Section:
             self.mesh_nodes[:, 0],
             self.mesh_nodes[:, 1],
             self.mesh_elements[:, 0:3],
-            lw=0.10 * size / dpi,
+            lw=lw * size / dpi,
             color="black",
             alpha=alpha,
             mask=mask,
@@ -1182,7 +1187,6 @@ class Section:
             ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), handles=legend_labels)
 
         # if no axes object is supplied, finish the plot
-        # matplotlib.pyplot.show(fig)
         if not ax_supplied:
             post.finish_plot(ax, pause, title="Finite Element Mesh", size=size, dpi=dpi)
             return (fig, ax)
@@ -2414,7 +2418,6 @@ class StressPost:
             trictr = ax.tricontourf(triang, sig, v, cmap=cmap, norm=norm)
 
         # display the colourbar
-
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.1)
 
