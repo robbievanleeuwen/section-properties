@@ -33,7 +33,7 @@ Mesh Generation
 ---------------
 
 The cross-section is meshed using quadratic superparametric triangular elements (Tri6) using the
-`triangle <https://github.com/drufat/triangle>`_ library for Python. Superparametric quadratic
+`triangle library <https://github.com/drufat/triangle>`_ for Python. Superparametric quadratic
 elements are defined as having straight edges and mid-nodes located at the mid-point between
 adjacent corner nodes. *triangle* implements
 `Triangle <https://www.cs.cmu.edu/~quake/triangle.html>`_, which is a two dimensional quality mesh
