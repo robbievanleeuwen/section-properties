@@ -198,6 +198,7 @@ class Section:
         * Cross-sectional area
         * Cross-sectional perimeter
         * Cross-sectional mass
+        * Area weighted material properties, composite only ($E{_eff}$, $G_{eff}$, $\nu_{eff}$)
         * Modulus weighted area (axial rigidity)
         * First moments of area
         * Second moments of area about the global axis
@@ -206,7 +207,6 @@ class Section:
         * Centroidal section moduli
         * Radii of gyration
         * Principal axis properties
-        * Area weighted material properties, composite only ($E{_eff}$, $G_{eff}$, $\nu_{eff}$)
 
         If materials are specified for the cross-section, the moments of area and section moduli
         are elastic modulus weighted.
@@ -1093,6 +1093,9 @@ class Section:
             elements with the specified material colours
         :param mask: Mask array, of length ``num_nodes``, to mask out triangles
         :type mask: list[bool]
+        :param int size: The size of the plot in pixels. Default is 500.
+        :param float dpi: The resolution of the plot in dots-per-inch. Default is 96. If 'size'
+            is changed
 
         :return: Matplotlib figure and axes objects (fig, ax)
         :rtype: (:class:`matplotlib.figure.Figure`, :class:`matplotlib.axes`)
@@ -1142,7 +1145,7 @@ class Section:
             self.mesh_nodes[:, 0],
             self.mesh_nodes[:, 1],
             self.mesh_elements[:, 0:3],
-            lw=0.5,
+            lw=0.1 * size / dpi,
             color="black",
             alpha=alpha,
             mask=mask,
@@ -1182,7 +1185,6 @@ class Section:
             ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), handles=legend_labels)
 
         # if no axes object is supplied, finish the plot
-        # matplotlib.pyplot.show(fig)
         if not ax_supplied:
             post.finish_plot(ax, pause, title="Finite Element Mesh", size=size, dpi=dpi)
             return (fig, ax)
@@ -2373,7 +2375,7 @@ class StressPost:
         post.setup_plot(ax, pause)
 
         # plot the finite element mesh
-        self.section.plot_mesh(ax, pause, materials=False, alpha=0.5)
+        self.section.plot_mesh(ax, pause, materials=False)
 
         # set up the colormap
         cmap = cm.get_cmap(name=cmap)
@@ -2414,7 +2416,6 @@ class StressPost:
             trictr = ax.tricontourf(triang, sig, v, cmap=cmap, norm=norm)
 
         # display the colourbar
-
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.1)
 

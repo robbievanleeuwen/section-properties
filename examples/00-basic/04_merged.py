@@ -9,7 +9,7 @@ Merge two sections together into a single larger section.
 The following example demonstrates how to combine multiple geometry objects into
 a single geometry object. A 150x100x6 RHS is modelled with a solid 50x50 triangular
 section on its top and a 100x100x6 angle section on its right side.
-The three geometry objects are combined together as a :class:`~sectionproperties.pre.sections.CompoundGeometry`
+The three geometry objects are combined together as a :class:`~sectionproperties.pre.geometry.CompoundGeometry`
 object using the `+` operator.
 
 To manipulate individual geometries into the final shape, there are a variety of
