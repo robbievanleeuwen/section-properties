@@ -9,11 +9,11 @@ Printing a List of the Section Properties
 -----------------------------------------
 
 A list of section properties that have been calculated by various analyses can
-be printed to the terminal using the :func:`~sectionproperties.analysis.cross_section.Section.display_results`
+be printed to the terminal using the :func:`~sectionproperties.analysis.section.Section.display_results`
 method that belongs to every
-:class:`~sectionproperties.analysis.cross_section.Section` object.
+:class:`~sectionproperties.analysis.section.Section` object.
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.display_results
+..  automethod:: sectionproperties.analysis.section.Section.display_results
     :noindex:
 
 .. _label-get-methods:
@@ -22,25 +22,25 @@ Getting Specific Section Properties
 -----------------------------------
 
 Alternatively, there are a number of methods that can be called on the
-:class:`~sectionproperties.analysis.cross_section.Section` object to return
+:class:`~sectionproperties.analysis.section.Section` object to return
 a specific section property:
 
 Section Area
 ^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_area
+..  automethod:: sectionproperties.analysis.section.Section.get_area
     :noindex:
 
 Section Perimeter
 ^^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_perimeter
+..  automethod:: sectionproperties.analysis.section.Section.get_perimeter
     :noindex:
 
 Section Mass
 ^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_mass
+..  automethod:: sectionproperties.analysis.section.Section.get_mass
     :noindex:
 
 Axial Rigidity
@@ -49,143 +49,143 @@ Axial Rigidity
 If material properties have been specified, returns the axial rigidity of the
 section.
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_ea
+..  automethod:: sectionproperties.analysis.section.Section.get_ea
     :noindex:
 
 First Moments of Area
 ^^^^^^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_q
+..  automethod:: sectionproperties.analysis.section.Section.get_q
     :noindex:
 
 Second Moments of Area
 ^^^^^^^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_ig
+..  automethod:: sectionproperties.analysis.section.Section.get_ig
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_ic
+..  automethod:: sectionproperties.analysis.section.Section.get_ic
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_ip
+..  automethod:: sectionproperties.analysis.section.Section.get_ip
     :noindex:
 
 Elastic Centroid
 ^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_c
+..  automethod:: sectionproperties.analysis.section.Section.get_c
     :noindex:
 
 
 Section Moduli
 ^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_z
+..  automethod:: sectionproperties.analysis.section.Section.get_z
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_zp
+..  automethod:: sectionproperties.analysis.section.Section.get_zp
     :noindex:
 
 Radii of Gyration
 ^^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_rc
+..  automethod:: sectionproperties.analysis.section.Section.get_rc
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_rp
+..  automethod:: sectionproperties.analysis.section.Section.get_rp
     :noindex:
 
 
 Principal Axis Angle
 ^^^^^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_phi
+..  automethod:: sectionproperties.analysis.section.Section.get_phi
     :noindex:
 
 Effective Material Properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_e_eff
+..  automethod:: sectionproperties.analysis.section.Section.get_e_eff
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_g_eff
+..  automethod:: sectionproperties.analysis.section.Section.get_g_eff
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_nu_eff
+..  automethod:: sectionproperties.analysis.section.Section.get_nu_eff
     :noindex:
 
 
 Torsion Constant
 ^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_j
+..  automethod:: sectionproperties.analysis.section.Section.get_j
     :noindex:
 
 Shear Centre
 ^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_sc
+..  automethod:: sectionproperties.analysis.section.Section.get_sc
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_sc_p
+..  automethod:: sectionproperties.analysis.section.Section.get_sc_p
     :noindex:
 
 Trefftz's Shear Centre
 ^^^^^^^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_sc_t
+..  automethod:: sectionproperties.analysis.section.Section.get_sc_t
     :noindex:
 
 Warping Constant
 ^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_gamma
+..  automethod:: sectionproperties.analysis.section.Section.get_gamma
     :noindex:
 
 Shear Area
 ^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_As
+..  automethod:: sectionproperties.analysis.section.Section.get_As
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_As_p
+..  automethod:: sectionproperties.analysis.section.Section.get_As_p
     :noindex:
 
 Monosymmetry Constants
 ^^^^^^^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_beta
+..  automethod:: sectionproperties.analysis.section.Section.get_beta
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_beta_p
+..  automethod:: sectionproperties.analysis.section.Section.get_beta_p
     :noindex:
 
 Plastic Centroid
 ^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_pc
+..  automethod:: sectionproperties.analysis.section.Section.get_pc
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_pc_p
+..  automethod:: sectionproperties.analysis.section.Section.get_pc_p
     :noindex:
 
 Plastic Section Moduli
 ^^^^^^^^^^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_s
+..  automethod:: sectionproperties.analysis.section.Section.get_s
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_sp
+..  automethod:: sectionproperties.analysis.section.Section.get_sp
     :noindex:
 
 
 Shape Factors
 ^^^^^^^^^^^^^
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_sf
+..  automethod:: sectionproperties.analysis.section.Section.get_sf
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.get_sf_p
+..  automethod:: sectionproperties.analysis.section.Section.get_sf_p
     :noindex:
 
 
@@ -194,9 +194,9 @@ Shape Factors
 How Material Properties Affect Results
 --------------------------------------
 
-If a :class:`~sectionproperties.pre.sections.Geometry` containing a user defined
+If a :class:`~sectionproperties.pre.geometry.Geometry` containing a user defined
 :class:`~sectioproperties.pre.pre.Material` is used to build a
-:class:`~sectionproperties.analysis.cross_section.Section`, *sectionproperties* will assume you
+:class:`~sectionproperties.analysis.section.Section`, *sectionproperties* will assume you
 are performing a **composite analysis** and this will affect the way some of the results are
 stored and presented.
 
@@ -269,17 +269,17 @@ Section Property Centroids Plots
 A plot of the centroids (elastic, plastic and shear centre) can be produced with
 the finite element mesh in the background:
 
-..  automethod:: sectionproperties.analysis.cross_section.Section.plot_centroids
+..  automethod:: sectionproperties.analysis.section.Section.plot_centroids
     :noindex:
 
 
 Plotting Section Stresses
 -------------------------
 
-There are a number of methods that can be called from a :class:`~sectionproperties.analysis.cross_section.StressResult`
+There are a number of methods that can be called from a :class:`~sectionproperties.analysis.section.StressResult`
 object to plot the various cross-section stresses. These methods take the following form:
 
-  :class:`~sectionproperties.analysis.cross_section.StressResult`.plot_(*stress/vector*)_(*action*)_(*stresstype*)
+  :class:`~sectionproperties.analysis.section.StressResult`.plot_(*stress/vector*)_(*action*)_(*stresstype*)
 
 where:
 
@@ -288,11 +288,11 @@ where:
 - *stresstype* denotes the type of stress that is being plotted e.g. *zx* for the *x*-component of shear stress.
 
 The examples shown in the methods below are performed on a 150x90x12 UA
-(unequal angle) section. The :class:`~sectionproperties.analysis.cross_section.Section`
+(unequal angle) section. The :class:`~sectionproperties.analysis.section.Section`
 object is created below::
 
   import sectionproperties.pre.library.steel_sections as steel_sections
-  from sectionproperties.analysis.cross_section import Section
+  from sectionproperties.analysis.section import Section
 
   geometry = steel_sections.AngleSection(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
   mesh = geometry.create_mesh(mesh_sizes=[2.5])
@@ -303,104 +303,104 @@ Primary Stress Plots
 
 Axial Stress (:math:`\sigma_{zz,N}`)
 """"""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_n_zz
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_n_zz
     :noindex:
 
 Bending Stress (:math:`\sigma_{zz,Mxx}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_mxx_zz
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_mxx_zz
     :noindex:
 
 Bending Stress (:math:`\sigma_{zz,Myy}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_myy_zz
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_myy_zz
     :noindex:
 
 Bending Stress (:math:`\sigma_{zz,M11}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_m11_zz
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_m11_zz
     :noindex:
 
 Bending Stress (:math:`\sigma_{zz,M22}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_m22_zz
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_m22_zz
     :noindex:
 
 Bending Stress (:math:`\sigma_{zz,\Sigma M}`)
 """""""""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_m_zz
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_m_zz
     :noindex:
 
 Torsion Stress (:math:`\sigma_{zx,Mzz}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zx
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_mzz_zx
     :noindex:
 
 Torsion Stress (:math:`\sigma_{zy,Mzz}`)
 """"""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_mzz_zy
     :noindex:
 
 Torsion Stress (:math:`\sigma_{zxy,Mzz}`)
 """""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_mzz_zxy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_mzz_zxy
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_vector_mzz_zxy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_vector_mzz_zxy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zx,Vx}`)
 """""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zx
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_vx_zx
     :noindex:
 
 Shear Stress (:math:`\sigma_{zy,Vx}`)
 """""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_vx_zy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zxy,Vx}`)
 """"""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vx_zxy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_vx_zxy
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_vector_vx_zxy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_vector_vx_zxy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zx,Vy}`)
 """""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zx
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_vy_zx
     :noindex:
 
 Shear Stress (:math:`\sigma_{zy,Vy}`)
 """""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_vy_zy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zxy,Vy}`)
 """"""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vy_zxy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_vy_zxy
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_vector_vy_zxy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_vector_vy_zxy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zx,\Sigma V}`)
 """""""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zx
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_v_zx
     :noindex:
 
 Shear Stress (:math:`\sigma_{zy,\Sigma V}`)
 """""""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_v_zy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zxy,\Sigma V}`)
 """"""""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_v_zxy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_v_zxy
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_vector_v_zxy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_vector_v_zxy
     :noindex:
 
 Combined Stress Plots
@@ -408,53 +408,53 @@ Combined Stress Plots
 
 Normal Stress (:math:`\sigma_{zz}`)
 """""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zz
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_zz
     :noindex:
 
 Shear Stress (:math:`\sigma_{zx}`)
 """"""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zx
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_zx
     :noindex:
 
 Shear Stress (:math:`\sigma_{zy}`)
 """"""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_zy
     :noindex:
 
 Shear Stress (:math:`\sigma_{zxy}`)
 """""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_zxy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_zxy
     :noindex:
 
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_vector_zxy
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_vector_zxy
     :noindex:
 
 Major Principal Stress (:math:`\sigma_{1}`)
 """""""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_1
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_1
     :noindex:
 
 Minor Principal Stress (:math:`\sigma_{3}`)
 """""""""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_3
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_3
     :noindex:
 
 von Mises Stress (:math:`\sigma_{vM}`)
 """""""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_stress_vm
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_stress_vm
     :noindex:
 
 Mohr's Circles for Stresses at a Point
 """"""""""""""""""""""""""""""""""""""
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.plot_mohrs_circles
+..  automethod:: sectionproperties.analysis.section.StressPost.plot_mohrs_circles
     :noindex:
 
 Retrieving Section Stress
 -------------------------
 
-All cross-section stresses can be recovered using the :func:`~sectionproperties.analysis.cross_section.StressPost.get_stress`
+All cross-section stresses can be recovered using the :func:`~sectionproperties.analysis.section.StressPost.get_stress`
 method that belongs to every
-:class:`~sectionproperties.analysis.cross_section.StressPost` object:
+:class:`~sectionproperties.analysis.section.StressPost` object:
 
-..  automethod:: sectionproperties.analysis.cross_section.StressPost.get_stress
+..  automethod:: sectionproperties.analysis.section.StressPost.get_stress
     :noindex:

@@ -5,7 +5,7 @@ Creating Section Geometries from the Section Library
 ====================================================
 
 In order to make your life easier, there are a number of built-in functions that generate typical
-structural cross-sections, resulting in :class:`~sectionproperties.pre.sections.Geometry` objects.
+structural cross-sections, resulting in :class:`~sectionproperties.pre.geometry.Geometry` objects.
 These typical cross-sections reside in the ``sectionproperties.pre.library`` module.
 
 Standard Sections Library

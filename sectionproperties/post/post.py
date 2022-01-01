@@ -121,7 +121,7 @@ def print_results(cross_section, fmt):
     """Prints the results that have been calculated to the terminal.
 
     :param cross_section: structural cross-section object
-    :type cross_section: :class:`~sectionproperties.analysis.cross_section.CrossSection`
+    :type cross_section: :class:`~sectionproperties.analysis.section.CrossSection`
     :param string fmt: Number format
     """
     if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:

@@ -1177,7 +1177,7 @@ class CompoundGeometry(Geometry):
         self.geom._repr_svg_()
         """
         materials_list = [geom.material.name for geom in self.geoms]
-        print("sectionproperties.pre.sections.CompoundGeometry")
+        print("sectionproperties.pre.geometry.CompoundGeometry")
         print(f"object at: {hex(id(self))}")
         print(f"Materials incl.: {list(set(materials_list))}")
         return self.geom._repr_svg_()
@@ -1326,7 +1326,7 @@ class CompoundGeometry(Geometry):
             See below.
         :return:
             A `CompoundGeometry` object.
-        :rtype: :class:`sectionproperties.pre.sections.CompoundGeometry`
+        :rtype: :class:`sectionproperties.pre.geometry.CompoundGeometry`
 
         :Keyword Arguments:
             * *refine_num* (``int, optional``) --
@@ -1404,7 +1404,7 @@ class CompoundGeometry(Geometry):
         :type y_offset: float
 
         :return: CompoundGeometry object shifted by 'x_offset' and 'y_offset'
-        :rtype: :class:`sectionproperties.pre.sections.CompoundGeometry`
+        :rtype: :class:`sectionproperties.pre.geometry.CompoundGeometry`
         """
         geoms_acc = []
         for geom in self.geoms:
@@ -1429,7 +1429,7 @@ class CompoundGeometry(Geometry):
         :param use_radians: Boolean to indicate whether 'angle' is in degrees or radians. If True, 'angle' is interpreted as radians.
 
         :return: CompoundGeometry object rotated by 'angle' about 'rot_point'
-        :rtype: :class:`sectionproperties.pre.sections.CompoundGeometry`
+        :rtype: :class:`sectionproperties.pre.geometry.CompoundGeometry`
 
         The following example rotates a 200UB25 section with a plate clockwise by 30 degrees::
 

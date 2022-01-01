@@ -8,9 +8,9 @@ Mirror and rotate a cross section.
 
 The following example demonstrates how geometry objects can be mirrored and
 rotated. A 200PFC and 150PFC are placed back-to-back by using the
-:func:`~sectionproperties.pre.sections.Geometry.mirror_section` method and are
+:func:`~sectionproperties.pre.geometry.Geometry.mirror_section` method and are
 rotated counter-clockwise by 30 degrees by using the
-:func:`~sectionproperties.pre.sections.Geometry.rotate_section` method. The
+:func:`~sectionproperties.pre.geometry.Geometry.rotate_section` method. The
 geometry is cleaned to ensure there are no overlapping facets along the junction
 between the two PFCs. A geometric, warping and plastic analysis is then carried out.
 

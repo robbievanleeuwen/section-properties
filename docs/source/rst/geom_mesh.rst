@@ -15,19 +15,19 @@ Section Geometry
 
 **New in** ``v2.0.0`` - There are two types of geometry objects in sectionproperties:
 
-* The :class:`~sectionproperties.pre.sections.Geometry` class, for section geometries with a
+* The :class:`~sectionproperties.pre.geometry.Geometry` class, for section geometries with a
   single, contiguous region
-* The :class:`~sectionproperties.pre.sections.CompoundGeometry` class, comprised of two or more
+* The :class:`~sectionproperties.pre.geometry.CompoundGeometry` class, comprised of two or more
   `Geometry` objects
 
 
 Geometry Class
 --------------
 
-..  autoclass:: sectionproperties.pre.sections.Geometry
+..  autoclass:: sectionproperties.pre.geometry.Geometry
    :noindex:
 
-A :class:`~sectionproperties.pre.sections.Geometry` is instantiated with two arguments:
+A :class:`~sectionproperties.pre.geometry.Geometry` is instantiated with two arguments:
 
 #. A :class:`shapely.geometry.Polygon` object
 #. An optional :class:`~sectionproperties.pre.pre.Material` object
@@ -41,26 +41,26 @@ A :class:`~sectionproperties.pre.sections.Geometry` is instantiated with two arg
 CompoundGeometry Class
 ----------------------
 
-..  autoclass:: sectionproperties.pre.sections.CompoundGeometry
+..  autoclass:: sectionproperties.pre.geometry.CompoundGeometry
    :noindex:
 
-A :class:`~sectionproperties.pre.sections.CompoundGeometry` is instantiated with **one argument**
+A :class:`~sectionproperties.pre.geometry.CompoundGeometry` is instantiated with **one argument**
 which can be one of **two types**:
 
-#. A list of :class:`~sectionproperties.pre.sections.Geometry` objects; or
+#. A list of :class:`~sectionproperties.pre.geometry.Geometry` objects; or
 #. A :class:`shapely.geometry.MultiPolygon`
 
 .. note::
-   A :class:`~sectionproperties.pre.sections.CompoundGeometry` does not have a ``.material``
+   A :class:`~sectionproperties.pre.geometry.CompoundGeometry` does not have a ``.material``
    attribute and therefore, a :class:`~sectionproperties.pre.pre.Material` cannot be assigned to a
-   :class:`~sectionproperties.pre.sections.CompoundGeometry` directly. Since a
-   :class:`~sectionproperties.pre.sections.CompoundGeometry` is simply a combination of
-   :class:`~sectionproperties.pre.sections.Geometry` objects, the Material(s) should be assigned to
-   the individual :class:`~sectionproperties.pre.sections.Geometry` objects that comprise the
-   :class:`~sectionproperties.pre.sections.CompoundGeometry`.
-   :class:`~sectionproperties.pre.sections.CompoundGeometry` objects created from a
+   :class:`~sectionproperties.pre.geometry.CompoundGeometry` directly. Since a
+   :class:`~sectionproperties.pre.geometry.CompoundGeometry` is simply a combination of
+   :class:`~sectionproperties.pre.geometry.Geometry` objects, the Material(s) should be assigned to
+   the individual :class:`~sectionproperties.pre.geometry.Geometry` objects that comprise the
+   :class:`~sectionproperties.pre.geometry.CompoundGeometry`.
+   :class:`~sectionproperties.pre.geometry.CompoundGeometry` objects created from a
    :class:`shapely.geometry.MultiPolygon` will have its constituent
-   :class:`~sectionproperties.pre.sections.Geometry` objects assigned the default material.
+   :class:`~sectionproperties.pre.geometry.Geometry` objects assigned the default material.
 
 
 Defining Material Properties
@@ -72,7 +72,7 @@ Materials are defined in *sectionproperties* by creating a
 ..  autoclass:: sectionproperties.pre.pre.Material
     :noindex:
 
-Each :class:`~sectionproperties.pre.sections.Geometry` contains its own material definition,
+Each :class:`~sectionproperties.pre.geometry.Geometry` contains its own material definition,
 which is stored in the ``.material`` attribute. A geometry's material may be altered at any time by
 simply assigning a new :class:`~sectionproperties.pre.pre.Material` to the ``.material`` attribute.
 
@@ -100,7 +100,7 @@ analysis:
 For the first two approaches, an optional ``.material`` parameter can be passed containing a
 :class:`~sectionproperties.pre.pre.Material` (or list of `Material` objects) to associate with the
 newly created geometry(ies). The material attribute can be altered afterward in a
-:class:`~sectionproperties.pre.sections.Geometry` object at any time by simply assigning a
+:class:`~sectionproperties.pre.geometry.Geometry` object at any time by simply assigning a
 different :class:`~sectionproperties.pre.pre.Material` to the ``.material`` attribute.
 
 
@@ -111,36 +111,36 @@ Geometry from points, facets, holes, and control_points
 
 In sectionproperties ``v1.x.x``, geometries were created by specifying lists of `points`, `facets`,
 `holes`, and `control_points`. This functionality has been preserved in ``v2.0.0`` by using the
-:attr:`~sectionproperties.pre.sections.Geometry.from_points()` class method.
+:attr:`~sectionproperties.pre.geometry.Geometry.from_points()` class method.
 
-..  autofunction:: sectionproperties.pre.sections.Geometry.from_points
+..  autofunction:: sectionproperties.pre.geometry.Geometry.from_points
    :noindex:
 
 For simple geometries (i.e. single-region shapes without holes), if the points are an ordered sequence of coordinates, only the `points`
 argument is required (`facets`, `holes`, and `control_points` are optional). If the geometry has holes, then all arguments are required.
 
 If the geometry has multiple regions, then the
-:attr:`~sectionproperties.pre.sections.CompoundGeometry.from_points()` class method must be used.
+:attr:`~sectionproperties.pre.geometry.CompoundGeometry.from_points()` class method must be used.
 
-..  autofunction:: sectionproperties.pre.sections.CompoundGeometry.from_points
+..  autofunction:: sectionproperties.pre.geometry.CompoundGeometry.from_points
    :noindex:
 
-See :ref:`label-example-custom` for an example of this implementation.
+See :ref:`ref_ex_custom` for an example of this implementation.
 
 
 Geometry from .dxf Files
 ------------------------
 
 Geometries can now be created from ``.dxf`` files using the
-:attr:`sectionproperties.pre.sections.Geometry.from_dxf()` method. The returned geometry will
-either be a :class:`~sectionproperties.pre.sections.Geometry` or
-:class:`~sectionproperties.pre.sections.CompoundGeometry` object depending on the geometry in the
+:attr:`sectionproperties.pre.geometry.Geometry.from_dxf()` method. The returned geometry will
+either be a :class:`~sectionproperties.pre.geometry.Geometry` or
+:class:`~sectionproperties.pre.geometry.CompoundGeometry` object depending on the geometry in the
 file (i.e. the number of contiguous regions).
 
-..  autofunction:: sectionproperties.pre.sections.Geometry.from_dxf
+..  autofunction:: sectionproperties.pre.geometry.Geometry.from_dxf
    :noindex:
 
-..  autofunction:: sectionproperties.pre.sections.CompoundGeometry.from_dxf
+..  autofunction:: sectionproperties.pre.geometry.CompoundGeometry.from_dxf
    :noindex:
 
 
@@ -157,19 +157,19 @@ Various limitations and assumptions need to be acknowledged:
 
 See the keyword arguments below that are used to search and simplify the Rhino geometry.
 
-Rhino files are read via the class methods :attr:`sectionproperties.pre.sections.Geometry.from_3dm()` and
-:attr:`sectionproperties.pre.sections.CompoundGeometry.from_3dm()`.
+Rhino files are read via the class methods :attr:`sectionproperties.pre.geometry.Geometry.from_3dm()` and
+:attr:`sectionproperties.pre.geometry.CompoundGeometry.from_3dm()`.
 Each class method returns the respective objects.
 
-..  autofunction:: sectionproperties.pre.sections.Geometry.from_3dm
+..  autofunction:: sectionproperties.pre.geometry.Geometry.from_3dm
    :noindex:
 
-..  autofunction:: sectionproperties.pre.sections.CompoundGeometry.from_3dm
+..  autofunction:: sectionproperties.pre.geometry.CompoundGeometry.from_3dm
    :noindex:
 
 Geometry objects can also be created from encodings of Rhino BREP.
 
-..  autofunction:: sectionproperties.pre.sections.Geometry.from_rhino_encoding
+..  autofunction:: sectionproperties.pre.geometry.Geometry.from_rhino_encoding
    :noindex:
 
 More advanced filtering can be achieved by working with the Shapely geometries directly.
@@ -223,51 +223,51 @@ that the user may require.
 Aligning
 --------
 
-  ..  autofunction:: sectionproperties.pre.sections.Geometry.align_center
+  ..  autofunction:: sectionproperties.pre.geometry.Geometry.align_center
       :noindex:
 
-  ..  autofunction:: sectionproperties.pre.sections.Geometry.align_to
+  ..  autofunction:: sectionproperties.pre.geometry.Geometry.align_to
       :noindex:
 
 
 Mirroring
 ---------
 
-  ..  autofunction:: sectionproperties.pre.sections.Geometry.mirror_section
+  ..  autofunction:: sectionproperties.pre.geometry.Geometry.mirror_section
       :noindex:
 
 
 Rotating
 --------
 
-  ..  autofunction:: sectionproperties.pre.sections.Geometry.rotate_section
+  ..  autofunction:: sectionproperties.pre.geometry.Geometry.rotate_section
       :noindex:
 
 
 Shifting
 --------
 
-  ..  autofunction:: sectionproperties.pre.sections.Geometry.shift_points
+  ..  autofunction:: sectionproperties.pre.geometry.Geometry.shift_points
       :noindex:
 
-  ..  autofunction:: sectionproperties.pre.sections.Geometry.shift_section
+  ..  autofunction:: sectionproperties.pre.geometry.Geometry.shift_section
       :noindex:
 
 
 Splitting
 ---------
 
-  ..  autofunction:: sectionproperties.pre.sections.Geometry.split_section
+  ..  autofunction:: sectionproperties.pre.geometry.Geometry.split_section
       :noindex:
 
 
 Offsetting the Perimeter
 ------------------------
 
-  ..  autofunction:: sectionproperties.pre.sections.Geometry.offset_perimeter
+  ..  autofunction:: sectionproperties.pre.geometry.Geometry.offset_perimeter
       :noindex:
 
-  ..  autofunction:: sectionproperties.pre.sections.CompoundGeometry.offset_perimeter
+  ..  autofunction:: sectionproperties.pre.geometry.CompoundGeometry.offset_perimeter
       :noindex:
 
 
@@ -283,9 +283,9 @@ There are generally two ways to visualise geometry objects:
 #. In the Jupyter computing environment, geometry objects utilise their underlying
    ``shapely.geometry.Polygon`` object's ``_repr_svg_`` method to show the geometry
    as it's own representation.
-#. By using the :attr:`~sectionproperties.pre.sections.Geometry.plot_geometry()` method
+#. By using the :attr:`~sectionproperties.pre.geometry.Geometry.plot_geometry()` method
 
-..  automethod:: sectionproperties.pre.sections.Geometry.plot_geometry
+..  automethod:: sectionproperties.pre.geometry.Geometry.plot_geometry
     :noindex:
 
 .. note::
@@ -297,15 +297,15 @@ Generating a Mesh
 
 A finite element mesh is required to perform a cross-section analysis. After a geometry has been
 created, a finite element mesh can then be created for the geometry by using the
-:attr:`~sectionproperties.pre.sections.Geometry.create_mesh()` method:
+:attr:`~sectionproperties.pre.geometry.Geometry.create_mesh()` method:
 
-..  automethod:: sectionproperties.pre.sections.Geometry.create_mesh
+..  automethod:: sectionproperties.pre.geometry.Geometry.create_mesh
     :noindex:
 
 ..  warning:: The length of ``mesh_sizes`` must match the number of regions
   in the geometry object.
 
 Once the mesh has been created, it is stored within the geometry object and the geometry object
-can then be passed to :class:`~sectionproperties.analysis.cross_section.Section` for analysis.
+can then be passed to :class:`~sectionproperties.analysis.section.Section` for analysis.
 
 Please see :ref:`label-analysis` for further information on performing analyses.

@@ -11,33 +11,33 @@ Pre-Processor Package
 
 Geometry Class
 """"""""""""""
-..  autoclass:: sectionproperties.pre.sections.Geometry
+..  autoclass:: sectionproperties.pre.geometry.Geometry
     :members:
 
 CompoundGeometry Class
 """"""""""""""""""""""
-..  autoclass:: sectionproperties.pre.sections.CompoundGeometry
+..  autoclass:: sectionproperties.pre.geometry.CompoundGeometry
     :show-inheritance:
 
 load_dxf
 """"""""
-..  autofunction:: sectionproperties.pre.sections.load_dxf
+..  autofunction:: sectionproperties.pre.geometry.load_dxf
 
 create_facets
 """""""""""""
-..  autofunction:: sectionproperties.pre.sections.create_facets
+..  autofunction:: sectionproperties.pre.geometry.create_facets
 
 create_exterior_points
 """"""""""""""""""""""
-..  autofunction:: sectionproperties.pre.sections.create_exterior_points
+..  autofunction:: sectionproperties.pre.geometry.create_exterior_points
 
 create_interior_points
 """"""""""""""""""""""
-..  autofunction:: sectionproperties.pre.sections.create_interior_points
+..  autofunction:: sectionproperties.pre.geometry.create_interior_points
 
 create_points_and_facets
 """"""""""""""""""""""""
-..  autofunction:: sectionproperties.pre.sections.create_points_and_facets
+..  autofunction:: sectionproperties.pre.geometry.create_points_and_facets
 
 
 *pre* Module
@@ -328,42 +328,42 @@ Analysis Package
 Section Class
 """""""""""""
 
-  ..  autoclass:: sectionproperties.analysis.cross_section.Section
+  ..  autoclass:: sectionproperties.analysis.section.Section
       :show-inheritance:
       :members:
 
 PlasticSection Class
 """"""""""""""""""""
 
-  ..  autoclass:: sectionproperties.analysis.cross_section.PlasticSection
+  ..  autoclass:: sectionproperties.analysis.section.PlasticSection
       :show-inheritance:
       :members:
 
 StressPost Class
 """"""""""""""""
 
-..  autoclass:: sectionproperties.analysis.cross_section.StressPost
+..  autoclass:: sectionproperties.analysis.section.StressPost
     :show-inheritance:
     :members:
 
 MaterialGroup Class
 """""""""""""""""""
 
-  ..  autoclass:: sectionproperties.analysis.cross_section.MaterialGroup
+  ..  autoclass:: sectionproperties.analysis.section.MaterialGroup
       :show-inheritance:
       :members:
 
 StressResult Class
 """"""""""""""""""
 
-..  autoclass:: sectionproperties.analysis.cross_section.StressResult
+..  autoclass:: sectionproperties.analysis.section.StressResult
     :show-inheritance:
     :members:
 
 SectionProperties Class
 """""""""""""""""""""""
 
-..  autoclass:: sectionproperties.analysis.cross_section.SectionProperties
+..  autoclass:: sectionproperties.analysis.section.SectionProperties
     :show-inheritance:
     :members:
 

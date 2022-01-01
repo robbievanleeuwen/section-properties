@@ -38,7 +38,7 @@ can be found in the README file on github.
 Here's a quick example that harnesses some of the power of *sectionproperties* and shows its simplicity::
 
   import sectionproperties.pre.library.steel_sections as steel_sections
-  from sectionproperties.analysis.cross_section import Section
+  from sectionproperties.analysis.section import Section
 
   # create geometry of the cross-section
   geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
