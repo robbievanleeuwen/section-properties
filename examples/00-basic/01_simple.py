@@ -23,11 +23,14 @@ second moments of area.
 
 import sectionproperties.pre.library.standard_sections as sections
 from sectionproperties.analysis.section import Section
+import matplotlib as mpl
 
 # %%
 # Create a 50 diameter circle discretised by 64 points
 geometry = sections.circular_section(d=50, n=64)
 geometry.plot_geometry()
+
+print(mpl.rcParams)
 
 # %%
 # Create a mesh with a mesh size of 2.5 and display information about it
