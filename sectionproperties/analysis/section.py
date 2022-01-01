@@ -1075,7 +1075,6 @@ class Section:
         ax=None,
         pause=True,
         alpha=0.5,
-        lw=0.1,
         materials=True,
         mask=None,
         size=500,
@@ -1089,7 +1088,6 @@ class Section:
         :param bool pause: If set to true, the figure pauses the script until the window is closed.
             If set to false, the script continues immediately after the window is rendered.
         :param float alpha: Transparency of the mesh outlines: :math:`0 \leq \\alpha \leq 1`
-        :param float lw: Mesh triplot lineweight
         :param bool materials: If set to true and material properties have been provided to the
             :class:`~sectionproperties.analysis.section.Section` object, shades the
             elements with the specified material colours
@@ -1147,7 +1145,7 @@ class Section:
             self.mesh_nodes[:, 0],
             self.mesh_nodes[:, 1],
             self.mesh_elements[:, 0:3],
-            lw=lw * size / dpi,
+            lw=0.1 * size / dpi,
             color="black",
             alpha=alpha,
             mask=mask,
