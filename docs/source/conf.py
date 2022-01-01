@@ -180,20 +180,20 @@ texinfo_documents = [
 
 # --- Sphinx-Gallery options -----------------------------------------------------------------------
 
-class matplotlib_svg_scraper(object):
 
+class matplotlib_svg_scraper(object):
     def __repr__(self):
         return self.__class__.__name__
 
     def __call__(self, *args, **kwargs):
-        return matplotlib_scraper(*args, format='svg', **kwargs)
+        return matplotlib_scraper(*args, format="svg", **kwargs)
+
 
 sphinx_gallery_conf = {
     # convert rst to md for ipynb
     "pypandoc": False,
     # path to your examples scripts
     "examples_dirs": ["../../examples/"],
-    "ignore_pattern": r"examples\/01",
     # path where to save gallery generated examples
     "gallery_dirs": ["sphinx_gallery_examples"],
     # Patter to search for example files
