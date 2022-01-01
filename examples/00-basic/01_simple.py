@@ -25,14 +25,10 @@ import sectionproperties.pre.library.standard_sections as sections
 from sectionproperties.analysis.section import Section
 import matplotlib as mpl
 
-mpl.rcParams["savefig.jpeg_quality"] = 95
-
 # %%
 # Create a 50 diameter circle discretised by 64 points
 geometry = sections.circular_section(d=50, n=64)
 geometry.plot_geometry()
-
-print(mpl.rcParams)
 
 # %%
 # Create a mesh with a mesh size of 2.5 and display information about it
@@ -41,8 +37,6 @@ geometry.create_mesh(mesh_sizes=[2.5])
 section = Section(geometry, time_info=True)
 section.display_mesh_info()
 section.plot_mesh()
-
-print(mpl.rcParams)
 
 # %%
 # perform a geometric, warping and plastic analysis, displaying the time info

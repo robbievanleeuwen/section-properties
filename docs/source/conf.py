@@ -7,6 +7,7 @@
 # http://www.sphinx-doc.org/en/master/config
 
 from sphinx_gallery.sorting import FileNameSortKey
+from sphinx_gallery.scrapers import matplotlib_scraper
 import locale
 
 
@@ -179,6 +180,14 @@ texinfo_documents = [
 
 # --- Sphinx-Gallery options -----------------------------------------------------------------------
 
+class matplotlib_svg_scraper(object):
+
+    def __repr__(self):
+        return self.__class__.__name__
+
+    def __call__(self, *args, **kwargs):
+        return matplotlib_scraper(*args, format='svg', **kwargs)
+
 sphinx_gallery_conf = {
     # convert rst to md for ipynb
     "pypandoc": False,
@@ -197,7 +206,7 @@ sphinx_gallery_conf = {
     "backreferences_dir": None,
     # Modules for which function level galleries are created.  In
     "doc_module": "sectionproperties",
-    "image_scrapers": ("matplotlib",),
+    "image_scrapers": (matplotlib_svg_scraper(),),
     "first_notebook_cell": ("%matplotlib inline\n"),
 }
 
