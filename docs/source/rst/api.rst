@@ -194,7 +194,21 @@ concrete_circular_section
 *bridge_sections* Module
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-TBC
+super_t_girder_section
+""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.bridge_sections.super_t_girder_section
+
+i_girder_section
+""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.bridge_sections.i_girder_section
+
+get_super_t_girder_dims
+"""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.bridge_sections.get_super_t_girder_dims
+
+get_i_girder_dims
+"""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.bridge_sections.get_i_girder_dims
 
 
 .. _label-nastran-sections:
