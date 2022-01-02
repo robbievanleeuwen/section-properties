@@ -210,7 +210,12 @@ def triangular_radius_section(
 
 
 def cruciform_section(
-    d: float, b: float, t: float, r: float, n_r: int, material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b: float,
+    t: float,
+    r: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a cruciform section centered at the origin *(0, 0)*, with depth *d*, width *b*,
     thickness *t* and root radius *r*, using *n_r* points to construct the root radius.

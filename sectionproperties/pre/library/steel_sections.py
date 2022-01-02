@@ -180,8 +180,13 @@ def rectangular_hollow_section(
 
 
 def polygon_hollow_section(
-    d: float, t: float, n_sides: int, r_in: float = 0, n_r: int = 1, rot: float = 0,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    t: float,
+    n_sides: int,
+    r_in: float = 0,
+    n_r: int = 1,
+    rot: float = 0,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a regular hollow polygon section centered at *(0, 0)*, with a pitch circle
     diameter of bounding polygon *d*, thickness *t*, number of sides *n_sides* and an optional
@@ -378,8 +383,15 @@ def i_section(
 
 
 def mono_i_section(
-    d: float, b_t: float, b_b: float, t_fb: float, t_ft: float, t_w: float, r: float, n_r: int,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b_t: float,
+    b_b: float,
+    t_fb: float,
+    t_ft: float,
+    t_w: float,
+    r: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a monosymmetric I Section centered at *(max(b_t, b_b)/2, d/2)*, with depth *d*,
     top flange width *b_t*, bottom flange width *b_b*, top flange thickness *t_ft*, top flange
@@ -459,8 +471,15 @@ def mono_i_section(
 
 
 def tapered_flange_i_section(
-    d: float, b: float, t_f: float, t_w: float, r_r: float, r_f: float, alpha: float, n_r: int,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b: float,
+    t_f: float,
+    t_w: float,
+    r_r: float,
+    r_f: float,
+    alpha: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a Tapered Flange I Section centered at *(b/2, d/2)*, with depth *d*, width *b*,
     mid-flange thickness *t_f*, web thickness *t_w*, root radius *r_r*, flange radius *r_f* and
@@ -654,8 +673,13 @@ def tapered_flange_i_section(
 
 
 def channel_section(
-    d: float, b: float, t_f: float, t_w: float, r: float, n_r: int,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b: float,
+    t_f: float,
+    t_w: float,
+    r: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a parallel-flange channel (PFC) section with the bottom left corner at the origin *(0, 0)*, with depth *d*,
     width *b*, flange thickness *t_f*, web  thickness *t_w* and root radius *r*, using *n_r* points
@@ -717,8 +741,15 @@ def channel_section(
 
 
 def tapered_flange_channel(
-    d: float, b: float, t_f: float, t_w: float, r_r: float, r_f: float, alpha: float, n_r: int,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b: float,
+    t_f: float,
+    t_w: float,
+    r_r: float,
+    r_f: float,
+    alpha: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a Tapered Flange Channel section with the bottom left corner at the origin
     *(0, 0)*, with depth *d*, width *b*, mid-flange thickness *t_f*, web thickness *t_w*, root
@@ -849,8 +880,13 @@ def tapered_flange_channel(
 
 
 def tee_section(
-    d: float, b: float, t_f: float, t_w: float, r: float, n_r: int,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b: float,
+    t_f: float,
+    t_w: float,
+    r: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a Tee section with the top left corner at *(0, d)*, with depth *d*, width *b*,
     flange thickness *t_f*, web thickness *t_w* and root radius *r*, using *n_r* points to
@@ -909,8 +945,13 @@ def tee_section(
 
 
 def angle_section(
-    d: float, b: float, t: float, r_r: float, r_t: float, n_r: int,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b: float,
+    t: float,
+    r_r: float,
+    r_t: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs an angle section with the bottom left corner at the origin *(0, 0)*, with depth
     *d*, width *b*, thickness *t*, root radius *r_r* and toe radius *r_t*, using *n_r* points to
@@ -974,8 +1015,13 @@ def angle_section(
 
 
 def cee_section(
-    d: float, b: float, l: float, t: float, r_out: float, n_r: int,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b: float,
+    l: float,
+    t: float,
+    r_out: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a Cee section (typical of cold-formed steel) with the bottom left corner at the
     origin *(0, 0)*, with depth *d*, width *b*, lip *l*, thickness *t* and outer radius *r_out*,
@@ -1058,8 +1104,14 @@ def cee_section(
 
 
 def zed_section(
-    d: float, b_l: float, b_r: float, l: float, t: float, r_out: float, n_r: int,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b_l: float,
+    b_r: float,
+    l: float,
+    t: float,
+    r_out: float,
+    n_r: int,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a zed section with the bottom left corner at the origin *(0, 0)*, with depth *d*,
     left flange width *b_l*, right flange width *b_r*, lip *l*, thickness *t* and outer radius
@@ -1141,8 +1193,13 @@ def zed_section(
 
 
 def box_girder_section(
-    d: float, b_t: float, b_b: float, t_ft: float, t_fb: float, t_w: float,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float,
+    b_t: float,
+    b_b: float,
+    t_ft: float,
+    t_fb: float,
+    t_w: float,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ):
     """Constructs a box girder section centered at at *(max(b_t, b_b)/2, d/2)*, with depth *d*, top
     width *b_t*, bottom width *b_b*, top flange thickness *t_ft*, bottom flange thickness *t_fb*
