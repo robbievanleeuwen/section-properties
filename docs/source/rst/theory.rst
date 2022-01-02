@@ -897,21 +897,51 @@ shear is that:
 .. math::
   \sigma_x = \sigma_y = \tau_{xy} = 0
 
-However, for composite sections with variable Poisson's ratios, this assumption does not hold.
-Pilkey [2] does mention that engineering materials often have very similar Poisson's ratios and
-therefore the difference can be negligible.
+However, for composite sections with variable Poisson's ratios, this assumption does not hold. Pilkey [2] does mention that engineering materials often have very similar Poisson's ratios and therefore the difference can be negligible.
 
 .. note::
   If the Poisson's ratio of two materials used in a composite analysis are vastly different, the
   assumptions used in *sectionproperties* may not hold, see Chapter 5 & 6 of [2].
 
-For the warping and shear analysis of composite cross-sections, *sectionproperties* defines an area
-based on an effective Poisson's ratio that is used to calculate the relevant properties described
-above:
+For the warping and shear analysis of composite cross-sections, *sectionproperties* defines an area based on an effective Poisson's ratio that is used to calculate the relevant properties described above:
 
 .. math::
   \nu_{eff} = \frac{(E.A)_g}{2 (G.A)_g} - 1
 
+
+Principal Stresses
+------------------
+
+For a cross section subjection to axial force, shear in the :math:`x` and :math`y` axes which are perpendicular to the centroidal (:math:`z`) axis, and moments about all three axes, there are no axial stresses in the :math:`x` or :math:`y` axes, and so the stress tensor is given by:
+
+.. math::
+    \textbf{\sigma} = \begin{bmatrix} 0 & 0 & \tau_{zx} \\
+                               0 & 0 & \tau_{zy} \\
+                           \tau_{xz} & \tau_{yz} & \sigma_{zz} 
+                       \end{bmatrix}
+
+and of course the complementary shear stresses are equal, :math:`\tau_{zx}=\tau_{xz}`, :math:`\tau_{zy}=\tau_{yz}`.
+By definition, the principal stresses are those for which the stress tensor becomes a diagonal matrix through a coordinate transformation. Since this is the basic eigenvalue problem, the principal stresses are then given by:
+
+.. math::
+    \det (\textbf{\sigma} - \lambda \textbf{I}) = 0
+
+Of which the characteristic polynomial can then be written:
+    
+.. math::
+    \lambda^3 - I_1\lambda^2 + I_2\lambda - I_3 = 0
+
+where the stress invariants :math:`I` are then given by [5]:
+    
+.. math::
+    I_1 &= \textnormal(\textbf{\sigma}) = \sigma_{zz} \\
+    I_2 &= \frac{1}{2}\left[ (\textnormal(\textbf{\sigma})^2 - \textnormal(\textbf{\sigma}^2)) \right] = -\tau_{zx}^2 - \tau_{yz}^2 \\
+    I_3 &= \det(\textbf{\sigma}) = 0
+
+and thus, the cubic polynomial reduces to a quadratic, the two roots of which are then the first and third principal stresses (with :math:`\sigma_2 = 0`):
+
+.. math::
+    \sigma_{1,3} = \frac{\sigma_{zz}}{2} \pm \sqrt{ \left(\frac{\sigma_{zz}}{2}\right)^2 + \tau_{zx}^2 + \tau_{yz}^2  }
 
 References
 ----------
@@ -923,3 +953,5 @@ References
 3. M. G. Larson, F. Bengzon, The Finite Element Method: Theory, Implementation, and Applications, Vol. 10, Springer, Berlin, Heidelberg, 2013. doi:10.1007/978-3-642-33287-6.
 
 4. AS 4100 - 1998: Steel Structures. (1998, June). Standards Australia.
+
+5. Oñate, E. (2009), Structural Analysis with the Finite Element Method. Linear Statics. Volume 1 : The Basis and Solids, Springer Netherlands
