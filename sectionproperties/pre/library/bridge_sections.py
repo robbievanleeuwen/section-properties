@@ -5,8 +5,12 @@ import sectionproperties.pre.pre as pre
 
 
 def super_t_girder_section(
-    girder_type: int, girder_subtype: int = 2, w: float = 2100, t_w: float = None, t_f: float = 75,
-    material: pre.Material = pre.DEFAULT_MATERIAL
+    girder_type: int,
+    girder_subtype: int = 2,
+    w: float = 2100,
+    t_w: float = None,
+    t_f: float = 75,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> Geometry:
     """Constructs a Super T Girder section to AS5100.5.
 
@@ -161,7 +165,9 @@ def super_t_girder_section(
     return Geometry(Polygon(points), material)
 
 
-def i_girder_section(girder_type: int, material: pre.Material = pre.DEFAULT_MATERIAL) -> Geometry:
+def i_girder_section(
+    girder_type: int, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
     """Constructs a precast I girder section to AS5100.5.
 
     :param int girder_type: Type of I Girder (1 to 4)
