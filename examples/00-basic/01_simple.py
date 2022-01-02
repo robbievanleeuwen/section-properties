@@ -21,7 +21,7 @@ second moments of area.
 
 # sphinx_gallery_thumbnail_number = 1
 
-import sectionproperties.pre.library.standard_sections as sections
+import sectionproperties.pre.library.primitive_sections as sections
 from sectionproperties.analysis.section import Section
 
 # %%

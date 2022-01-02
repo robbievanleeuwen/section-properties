@@ -8,27 +8,37 @@ In order to make your life easier, there are a number of built-in functions that
 structural cross-sections, resulting in :class:`~sectionproperties.pre.geometry.Geometry` objects.
 These typical cross-sections reside in the ``sectionproperties.pre.library`` module.
 
-Standard Sections Library
-=========================
+Primitive Sections Library
+==========================
 
 Rectangular Section
 -------------------
-..  autofunction:: sectionproperties.pre.library.standard_sections.rectangular_section
+..  autofunction:: sectionproperties.pre.library.primitive_sections.rectangular_section
     :noindex:
 
 Circular Section
 ----------------
-..  autofunction:: sectionproperties.pre.library.standard_sections.circular_section
+..  autofunction:: sectionproperties.pre.library.primitive_sections.circular_section
     :noindex:
 
 Elliptical Section
 ------------------
-..  autofunction:: sectionproperties.pre.library.standard_sections.elliptical_section
+..  autofunction:: sectionproperties.pre.library.primitive_sections.elliptical_section
+    :noindex:
+
+Triangular Section
+------------------
+..  autofunction:: sectionproperties.pre.library.primitive_sections.triangular_section
+    :noindex:
+
+Triangular Radius Section
+-------------------------
+..  autofunction:: sectionproperties.pre.library.primitive_sections.triangular_radius_section
     :noindex:
 
 Cruciform Section
 -----------------
-  ..  autofunction:: sectionproperties.pre.library.standard_sections.cruciform_section
+  ..  autofunction:: sectionproperties.pre.library.primitive_sections.cruciform_section
       :noindex:
 
 
@@ -55,17 +65,17 @@ Polygon Hollow Section
   ..  autofunction:: sectionproperties.pre.library.steel_sections.polygon_hollow_section
       :noindex:
 
-I-Section
+I Section
 ---------
   ..  autofunction:: sectionproperties.pre.library.steel_sections.i_section
       :noindex:
 
-Monosymmetric I-Section
+Monosymmetric I Section
 -----------------------
   ..  autofunction:: sectionproperties.pre.library.steel_sections.mono_i_section
       :noindex:
 
-Tapered Flange I-Section
+Tapered Flange I Section
 ------------------------
   ..  autofunction:: sectionproperties.pre.library.steel_sections.tapered_flange_i_section
       :noindex:

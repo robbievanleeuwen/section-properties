@@ -19,7 +19,7 @@ to the terminal and a plot of the centroids and cross-section stresses generated
 
 # sphinx_gallery_thumbnail_number = 2
 
-import sectionproperties.pre.library.standard_sections as sections
+import sectionproperties.pre.library.primitive_sections as sections
 import sectionproperties.pre.library.steel_sections as steel_sections
 from sectionproperties.pre.geometry import CompoundGeometry
 from sectionproperties.pre.pre import Material

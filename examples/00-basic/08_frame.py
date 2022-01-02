@@ -19,7 +19,7 @@ accuracy of the result compared with the time taken to obtain the solution.
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-import sectionproperties.pre.library.standard_sections as sections
+import sectionproperties.pre.library.primitive_sections as sections
 from sectionproperties.analysis.section import Section
 
 # %%

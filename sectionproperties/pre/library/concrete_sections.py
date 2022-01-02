@@ -1,8 +1,8 @@
 import numpy as np
 from shapely.geometry import Polygon
 import sectionproperties.pre.pre as pre
-from sectionproperties.pre.geometry import Geometry
-import sectionproperties.pre.library.standard_sections as standard_sections
+from sectionproperties.pre.geometry import Geometry, CompoundGeometry
+import sectionproperties.pre.library.primitive_sections as primitive_sections
 
 
 def concrete_rectangular_section(
@@ -14,7 +14,7 @@ def concrete_rectangular_section(
     cover: float,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> CompoundGeometry:
     """Constructs a concrete rectangular section of width *b* and depth *d*, with *n_bar* steel bars
     of diameter *dia*, discretised with *n_circle* points with equal side and bottom *cover* to the
     steel.
@@ -66,13 +66,13 @@ def concrete_rectangular_section(
     if n_bar < 2:
         raise ValueError("Please provide 2 or more steel reinforcing bars.")
 
-    geom = standard_sections.rectangular_section(b=b, d=d, material=conc_mat)
+    geom = primitive_sections.rectangular_section(b=b, d=d, material=conc_mat)
 
     x_i = cover + dia / 2
     spacing = (b - 2 * cover - dia) / (n_bar - 1)
 
     for i in range(n_bar):
-        bar = standard_sections.circular_section(d=dia, n=n_circle, material=steel_mat)
+        bar = primitive_sections.circular_section(d=dia, n=n_circle, material=steel_mat)
         geom += bar.shift_section(x_offset=x_i + spacing * i, y_offset=cover + dia / 2)
 
     return geom
@@ -89,7 +89,7 @@ def concrete_tee_section(
     cover: float,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> CompoundGeometry:
     """Constructs a concrete tee section of width *b*, depth *d*, flange width *b_f* and flange
     depth *d_f* with *n_bar* steel bars of diameter *dia*, discretised with *n_circle* points with
     equal side and bottom *cover* to the steel.
@@ -144,16 +144,15 @@ def concrete_tee_section(
     if n_bar < 2:
         raise ValueError("Please provide 2 or more steel reinforcing bars.")
 
-    geom = standard_sections.rectangular_section(b=b, d=d - d_f, material=conc_mat)
-    flange = standard_sections.rectangular_section(b=b_f, d=d_f, material=conc_mat)
+    geom = primitive_sections.rectangular_section(b=b, d=d - d_f, material=conc_mat)
+    flange = primitive_sections.rectangular_section(b=b_f, d=d_f, material=conc_mat)
     geom += flange.align_center(align_to=geom).align_to(other=geom, on="top")
-    # geom += flange.align_center(align_to=geom)
 
     x_i = cover + dia / 2
     spacing = (b - 2 * cover - dia) / (n_bar - 1)
 
     for i in range(n_bar):
-        bar = standard_sections.circular_section(d=dia, n=n_circle, material=steel_mat)
+        bar = primitive_sections.circular_section(d=dia, n=n_circle, material=steel_mat)
         geom += bar.shift_section(x_offset=x_i + spacing * i, y_offset=cover + dia / 2)
 
     return geom
@@ -168,7 +167,7 @@ def concrete_circular_section(
     cover: float,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> CompoundGeometry:
     """Constructs a concrete circular section of diameter *d* discretised with *n* points, with
     *n_bar* steel bars of diameter *dia*, discretised with *n_circle* points with equal side and
     bottom *cover* to the steel.
@@ -220,13 +219,13 @@ def concrete_circular_section(
     if n_bar < 2:
         raise ValueError("Please provide 2 or more steel reinforcing bars.")
 
-    geom = standard_sections.circular_section(d=d, n=n, material=conc_mat)
+    geom = primitive_sections.circular_section(d=d, n=n, material=conc_mat)
 
     r = d / 2 - cover - dia / 2
     d_theta = 2 * np.pi / n_bar
 
     for i in range(n_bar):
-        bar = standard_sections.circular_section(d=dia, n=n_circle, material=steel_mat)
+        bar = primitive_sections.circular_section(d=dia, n=n_circle, material=steel_mat)
         geom += bar.shift_section(
             x_offset=r * np.cos(i * d_theta), y_offset=r * np.sin(i * d_theta)
         )

@@ -28,9 +28,9 @@ The diameter of the circle is 50 and 64 points are used to discretise the circum
 of the circle. A finite element mesh is generated with a maximum triangular area
 of 2.5::
 
-      import sectionproperties.pre.library.standard_sections as standard_sections
+      import sectionproperties.pre.library.primitive_sections as primitive_sections
 
-      geometry = standard_sections.circular_section(d=50, n=64)
+      geometry = primitive_sections.circular_section(d=50, n=64)
       geometry.create_mesh(mesh_sizes=[2.5])
 
 ..  figure:: ../images/sections/circle_mesh.png
@@ -72,14 +72,14 @@ The following example performs a geometric and warping analysis on the circular
 cross-section defined in the previous section with steel used as the material
 property::
 
-  import sectionproperties.pre.library.standard_sections as standard_sections
+  import sectionproperties.pre.library.primitive_sections as primitive_sections
   from sectionproperties.analysis.section import Section
   from sectionproperties.pre.pre import Material
 
 
   steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
                    yield_strength=500, color='grey')
-  geometry = standard_sections.circular_section(d=50, n=64, material=steel)
+  geometry = primitive_sections.circular_section(d=50, n=64, material=steel)
   geometry.create_mesh(mesh_sizes=[2.5])  # Adds the mesh to the geometry
 
   section = Section(geometry)

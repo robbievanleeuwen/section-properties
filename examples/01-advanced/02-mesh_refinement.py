@@ -6,7 +6,7 @@ Mesh Refinement
 Perform a mesh refinement study.
 
 In this example the convergence of the torsion constant is investigated through an analysis of an
-I-section. The mesh is refined both by modifying the mesh size and by specifying the number of
+I Section. The mesh is refined both by modifying the mesh size and by specifying the number of
 points making up the root radius. The figure below the example code shows that mesh refinement
 adjacent to the root radius is a far more efficient method in obtaining fast convergence when
 compared to reducing the mesh area size for the entire section.

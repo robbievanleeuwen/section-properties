@@ -159,11 +159,11 @@ Another example
 
 Here, we will simply combine two squares with the default material::
 
-    import sectionproperties.pre.library.standard_sections as standard_sections
+    import sectionproperties.pre.library.primitive_sections as primitive_sections
     from sectionproperties.analysis.section import Section
 
-    s1 = standard_sections.rectangular_section(1,1)
-    s2 = standard_sections.rectangular_section(0.5,0.5).shift_section(1,0.25)
+    s1 = primitive_sections.rectangular_section(1,1)
+    s2 = primitive_sections.rectangular_section(0.5,0.5).shift_section(1,0.25)
     geometry = s1 + s2
     geometry
 

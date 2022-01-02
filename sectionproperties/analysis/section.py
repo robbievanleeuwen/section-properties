@@ -38,10 +38,10 @@ class Section:
     The following example creates a :class:`~sectionproperties.analysis.section.Section`
     object of a 100D x 50W rectangle using a mesh size of 5::
 
-        import sectionproperties.pre.library.standard_sections as standard_sections
+        import sectionproperties.pre.library.primitive_sections as primitive_sections
         from sectionproperties.analysis.section import Section
 
-        geometry = standard_sections.rectangular_section(d=100, b=50)
+        geometry = primitive_sections.rectangular_section(d=100, b=50)
         geometry.create_mesh(mesh_sizes=[5])
         section = Section(geometry)
 
@@ -1104,7 +1104,7 @@ class Section:
         listed under the :class:`~sectionproperties.analysis.section.Section` object
         definition::
 
-            import sectionproperties.pre.library.standard_sections as standard_sections
+            import sectionproperties.pre.library.primitive_sections as primitive_sections
             from sectionproperties.pre.pre import Material
             from sectionproperties.analysis.section import Section
 
@@ -1117,8 +1117,8 @@ class Section:
                 yield_strength=20, color='burlywood'
             )
 
-            geom_steel = standard_sections.rectangular_section(d=50, b=50, material=steel)
-            geom_timber = standard_sections.rectangular_section(d=50, b=50, material=timber)
+            geom_steel = primitive_sections.rectangular_section(d=50, b=50, material=steel)
+            geom_timber = primitive_sections.rectangular_section(d=50, b=50, material=timber)
             geometry = geom_timber.align_to(geom_steel, on="right") + geom_steel
 
             geometry.create_mesh(mesh_sizes=[10, 5])
@@ -1313,11 +1313,11 @@ class Section:
         The following example displays the mesh statistics for a Tee section merged from two
         rectangles::
 
-            import sectionproperties.pre.library.standard_sections as standard_sections
+            import sectionproperties.pre.library.primitive_sections as primitive_sections
             from sectionproperties.analysis.section import Section
 
-            rec1 = standard_sections.rectangular_section(d=100, b=25)
-            rec2 = standard_sections.rectangular_section(d=25, b=100)
+            rec1 = primitive_sections.rectangular_section(d=100, b=25)
+            rec2 = primitive_sections.rectangular_section(d=25, b=100)
             rec1 = rec1.shift_section(x_offset=-12.5)
             rec2 = rec2.shift_section(x_offset=-50, y_offset=100)
 
@@ -1354,10 +1354,10 @@ class Section:
         The following example displays the geometric section properties for a 100D x 50W rectangle
         with three digits after the decimal point::
 
-            import sectionproperties.pre.library.standard_sections as standard_sections
+            import sectionproperties.pre.library.primitive_sections as primitive_sections
             from sectionproperties.analysis.section import Section
 
-            geometry = standard_sections.rectangular_section(d=100, b=50)
+            geometry = primitive_sections.rectangular_section(d=100, b=50)
             geometry.create_mesh(mesh_sizes=[5])
 
             section = Section(geometry)

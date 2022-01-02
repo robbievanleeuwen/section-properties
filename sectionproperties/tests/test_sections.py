@@ -2,7 +2,7 @@ import pathlib
 import pytest
 
 from sectionproperties.pre.geometry import *
-from sectionproperties.pre.library.standard_sections import *
+from sectionproperties.pre.library.primitive_sections import *
 from sectionproperties.pre.library.steel_sections import *
 from sectionproperties.pre.library.nastran_sections import *
 from sectionproperties.analysis.section import Section
@@ -57,7 +57,7 @@ def test_material_persistence():
 def test_for_incidental_holes():
     # One hole in the geometry was explicitly created through subtraction
     # Another hole in the geometry was created accidentally by sticking
-    # a I-section up against a rectangle.
+    # a I Section up against a rectangle.
     # There should be two holes created after .compile_geometry()
     assert len(composite.holes) == 2
 
