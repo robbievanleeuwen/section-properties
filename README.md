@@ -1,4 +1,5 @@
-![alt text](docs/source/images/logo.png "sectionproperties")
+![Logo Light](docs/source/images/logo.png#gh-dark-mode-only)
+![Logo Dark](docs/source/images/logo_dark.png#gh-light-mode-only)
 
 [![Build Status](https://travis-ci.com/robbievanleeuwen/section-properties.svg?branch=master)](https://travis-ci.com/robbievanleeuwen/section-properties) [![Documentation Status](https://readthedocs.org/projects/sectionproperties/badge/?version=latest)](https://sectionproperties.readthedocs.io/en/latest/?badge=latest)
 
