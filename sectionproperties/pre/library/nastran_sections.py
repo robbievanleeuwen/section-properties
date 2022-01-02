@@ -974,7 +974,7 @@ def nastran_i(
     *(0, 0)*, with six parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_
     [4]_ for definition of parameters. Added by JohnDN90.
 
-    :param float DIM1: Depth(y) of the I-section
+    :param float DIM1: Depth(y) of the I Section
     :param float DIM2: Width (x) of bottom flange
     :param float DIM3: Width (x) of top flange
     :param float DIM4: Thickness of web

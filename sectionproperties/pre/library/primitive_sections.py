@@ -6,7 +6,7 @@ from sectionproperties.pre.library.utils import draw_radius
 
 
 def rectangular_section(
-    b, d, material: pre.Material = pre.DEFAULT_MATERIAL
+    b: float, d: float, material: pre.Material = pre.DEFAULT_MATERIAL
 ) -> Geometry:
     """Constructs a rectangular section with the bottom left corner at the origin *(0, 0)*, with
     depth *d* and width *b*.
@@ -18,7 +18,7 @@ def rectangular_section(
     The following example creates a rectangular cross-section with a depth of 100 and width of 50,
     and generates a mesh with a maximum triangular area of 5::
 
-        from sectionproperties.pre.library.standard_sections import rectangular_section
+        from sectionproperties.pre.library.primitive_sections import rectangular_section
 
         geometry = rectangular_section(d=100, b=50)
         geometry.create_mesh(mesh_sizes=[5])
@@ -53,7 +53,7 @@ def circular_section(
     The following example creates a circular geometry with a diameter of 50 with 64 points,
     and generates a mesh with a maximum triangular area of 2.5::
 
-        from sectionproperties.pre.library.standard_sections import circular_section
+        from sectionproperties.pre.library.primitive_sections import circular_section
 
         geometry = circular_section(d=50, n=64)
         geometry.create_mesh(mesh_sizes=[2.5])
@@ -103,7 +103,7 @@ def elliptical_section(
     horizontal diameter of 50, with 40 points, and generates a mesh with a maximum triangular area
     of 1.0::
 
-        from sectionproperties.pre.library.standard_sections import elliptical_section
+        from sectionproperties.pre.library.primitive_sections import elliptical_section
 
         geometry = elliptical_section(d_y=25, d_x=50, n=40)
         geometry.create_mesh(mesh_sizes=[1.0])
@@ -138,8 +138,79 @@ def elliptical_section(
     return Geometry(ellipse, material)
 
 
+def triangular_section(
+    b: float, h: float, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
+    """Constructs a right angled triangle with points *(0, 0)*, *(b, 0)*, *(0, h)*.
+
+    :param float b: Base length of triangle
+    :param float h: Height of triangle
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
+
+    The following example creates a triangular cross-section with a base width of 10 and height of
+    10, and generates a mesh with a maximum triangular area of 0.5::
+
+        from sectionproperties.pre.library.primitive_sections import triangular_section
+
+        geometry = triangular_section(b=10, h=10)
+        geometry.create_mesh(mesh_sizes=[0.5])
+
+    ..  figure:: ../images/sections/triangle_geometry.png
+        :align: center
+        :scale: 40 %
+
+        Triangular section geometry.
+
+    ..  figure:: ../images/sections/triangle_mesh.png
+        :align: center
+        :scale: 40 %
+
+        Mesh generated from the above geometry.
+    """
+    points = [[0, 0], [b, 0], [0, h]]
+    triangle = Polygon(points)
+    return Geometry(triangle, material)
+
+
+def triangular_radius_section(
+    b: float, n_r: float, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> Geometry:
+    """Constructs a right angled isosceles triangle with points *(0, 0)*, *(b, 0)*, *(0, h)* and a
+    concave radius on the hypotenuse.
+
+    :param float b: Base length of triangle
+    :param int n_r: Number of points discretising the radius
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
+
+    The following example creates a triangular radius cross-section with a base width of 6, using
+    *n_r* points to construct the radius, and generates a mesh with a maximum triangular area of
+    0.5::
+
+        from sectionproperties.pre.library.primitive_sections import triangular_radius_section
+
+        geometry = triangular_radius_section(b=6, n_r=16)
+        geometry.create_mesh(mesh_sizes=[0.5])
+
+    ..  figure:: ../images/sections/triangle_radius_geometry.png
+        :align: center
+        :scale: 40 %
+
+        Triangular radius section geometry.
+
+    ..  figure:: ../images/sections/triangle_radius_mesh.png
+        :align: center
+        :scale: 40 %
+
+        Mesh generated from the above geometry.
+    """
+    points = [(0, 0)]
+    points += draw_radius(pt=[b, b], r=b, theta=3 * np.pi / 2, n=n_r, ccw=False)
+    triangle = Polygon(points)
+    return Geometry(triangle, material)
+
+
 def cruciform_section(
-    d, b, t, r, n_r, material: pre.Material = pre.DEFAULT_MATERIAL
+    d: float, b: float, t: float, r: float, n_r: int, material: pre.Material = pre.DEFAULT_MATERIAL
 ) -> Geometry:
     """Constructs a cruciform section centered at the origin *(0, 0)*, with depth *d*, width *b*,
     thickness *t* and root radius *r*, using *n_r* points to construct the root radius.
@@ -148,13 +219,14 @@ def cruciform_section(
     :param float b: Width of the cruciform section
     :param float t: Thickness of the cruciform section
     :param float r: Root radius of the cruciform section
+    :param int n_r: Number of points discretising the root radius
     :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
 
     The following example creates a cruciform section with a depth of 250, a width of 175, a
     thickness of 12 and a root radius of 16, using 16 points to discretise the radius. A mesh is
     generated with a maximum triangular area of 5.0::
 
-        from sectionproperties.pre.library.standard_sections import cruciform_section
+        from sectionproperties.pre.library.primitive_sections import cruciform_section
 
         geometry = cruciform_section(d=250, b=175, t=12, r=16, n_r=16)
         geometry.create_mesh(mesh_sizes=[5.0])

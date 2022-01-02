@@ -15,7 +15,7 @@ with the aspect ratio is then plotted.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import sectionproperties.pre.library.standard_sections as sections
+import sectionproperties.pre.library.primitive_sections as sections
 from sectionproperties.analysis.section import Section
 
 # %%

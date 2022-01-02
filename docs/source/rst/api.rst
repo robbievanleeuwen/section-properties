@@ -95,24 +95,32 @@ sum_poly_areas
 ..  autofunction:: sectionproperties.pre.bisect_section.sum_poly_areas
 
 
-*standard_sections* Module
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+*primitive_sections* Module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 rectangular_section
 """""""""""""""""""
-..  autofunction:: sectionproperties.pre.library.standard_sections.rectangular_section
+..  autofunction:: sectionproperties.pre.library.primitive_sections.rectangular_section
 
 circular_section
 """"""""""""""""
-..  autofunction:: sectionproperties.pre.library.standard_sections.circular_section
+..  autofunction:: sectionproperties.pre.library.primitive_sections.circular_section
 
 elliptical_section
 """"""""""""""""""
-..  autofunction:: sectionproperties.pre.library.standard_sections.elliptical_section
+..  autofunction:: sectionproperties.pre.library.primitive_sections.elliptical_section
+
+triangular_section
+""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.primitive_sections.triangular_section
+
+triangular_radius_section
+"""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.primitive_sections.triangular_radius_section
 
 cruciform_section
 """"""""""""""""""
-  ..  autofunction:: sectionproperties.pre.library.standard_sections.cruciform_section
+  ..  autofunction:: sectionproperties.pre.library.primitive_sections.cruciform_section
 
 
 *steel_sections* Module

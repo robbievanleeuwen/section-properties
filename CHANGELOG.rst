@@ -1,5 +1,5 @@
-Change Log:
-===========
+Changelog:
+==========
 
 v1.0.8:
 -------
@@ -33,7 +33,7 @@ v1.0.5:
 -------
 
 - Added calculation of monosymmetric constants
-- Added tapered flange I-section and channel sections
+- Added tapered flange I Section and channel sections
 - Added solid elliptical and hollow elliptical sections (BenjaminFraser)
 - Added polygonal section (Agent6-6-6)
 - Handle zero radius for all section classes; handle r_out < t for relevant sections
@@ -42,7 +42,7 @@ v1.0.5:
 v1.0.4:
 -------
 
-- Added a monosymmetric I-section class
+- Added a monosymmetric I Section class
 - Extend the plastic centroid search range to the entire section
 - Remove the pc_region variable from the plastic centroid calculation as it is no longer relevant
 - Better verbose output for the plastic centroid calculation

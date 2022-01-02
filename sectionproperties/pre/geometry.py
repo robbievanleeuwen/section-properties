@@ -346,9 +346,9 @@ class Geometry:
         The following example creates a circular cross-section with a diameter of 50 with 64
         points, and generates a mesh with a maximum triangular area of 2.5::
 
-            import sectionproperties.pre.library.standard_sections as standard_sections
+            import sectionproperties.pre.library.primitive_sections as primitive_sections
 
-            geometry = standard_sections.circular_section(d=50, n=64)
+            geometry = primitive_sections.circular_section(d=50, n=64)
             geometry = geometry.create_mesh(mesh_sizes=2.5)
 
         ..  figure:: ../images/sections/circle_mesh.png
@@ -790,9 +790,9 @@ class Geometry:
         The following example expands the sides of a rectangle, one point at a time,
         to make it a square::
 
-            import sectionproperties.pre.library.standard_sections as standard_sections
+            import sectionproperties.pre.library.primitive_sections as primitive_sections
 
-            geometry = standard_sections.rectangular_section(d=200, b=150)
+            geometry = primitive_sections.rectangular_section(d=200, b=150)
 
             # Using relative shifting
             one_pt_shifted_geom = geometry.shift_points(point_idxs=1, dx=50)
@@ -1373,9 +1373,9 @@ class CompoundGeometry(Geometry):
         The following example creates a circular cross-section with a diameter of 50 with 64
         points, and generates a mesh with a maximum triangular area of 2.5::
 
-            import sectionproperties.pre.library.standard_sections as standard_sections
+            import sectionproperties.pre.library.primitive_sections as primitive_sections
 
-            geometry = standard_sections.circular_section(d=50, n=64)
+            geometry = primitive_sections.circular_section(d=50, n=64)
             geometry = geometry.create_mesh(mesh_sizes=[2.5])
 
         ..  figure:: ../images/sections/circle_mesh.png
@@ -1433,10 +1433,10 @@ class CompoundGeometry(Geometry):
         The following example rotates a 200UB25 section with a plate clockwise by 30 degrees::
 
             import sectionproperties.pre.library.steel_sections as steel_sections
-            import sectionproperties.pre.library.standard_sections as standard_sections
+            import sectionproperties.pre.library.primitive_sections as primitive_sections
 
             geometry_1 = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry_2 = standard_sections.rectangular_section(d=20, b=133)
+            geometry_2 = primitive_sections.rectangular_section(d=20, b=133)
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_compound = compound.rotate_section(angle=-30)
         """
@@ -1465,10 +1465,10 @@ class CompoundGeometry(Geometry):
         The following example mirrors a 200PFC section with a plate about the y-axis and the point (0, 0)::
 
             import sectionproperties.pre.library.steel_sections as steel_sections
-            import sectionproperties.pre.library.standard_sections as standard_sections
+            import sectionproperties.pre.library.primitive_sections as primitive_sections
 
             geometry_1 = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-            geometry_2 = standard_sections.rectangular_section(d=20, b=133)
+            geometry_2 = primitive_sections.rectangular_section(d=20, b=133)
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_compound = compound.mirror_section(axis='y', mirror_point=[0,0])
         """
@@ -1596,10 +1596,10 @@ class CompoundGeometry(Geometry):
         The following example erodes a 200UB25 with a 12 plate stiffener section by 2 mm::
 
             import sectionproperties.pre.library.steel_sections as steel_sections
-            import sectionproperties.pre.library.standard_sections as standard_sections
+            import sectionproperties.pre.library.primitive_sections as primitive_sections
 
             geometry_1 = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            geometry_2 = standard_sections.rectangular_section(d=12, b=133)
+            geometry_2 = primitive_sections.rectangular_section(d=12, b=133)
             compound = geometry_2.align_center(geometry_1).align_to(geometry_1, on="top") + geometry_1
             new_geometry = compound.offset_perimeter(amount=-2)
 
@@ -1629,7 +1629,7 @@ class CompoundGeometry(Geometry):
             # This produces predictable results up to a point.
             # That point is when the offset is so great it exceeds the thickness
             # of the material at an interface of two materials.
-            # e.g. A 50 deep plate on top of the top flange of an I-section with a flange depth of 10
+            # e.g. A 50 deep plate on top of the top flange of an I Section with a flange depth of 10
             # When the offset exceeds 10 (the depth of the flange at the intersection), the meshed
             # material regions will become unpredictable.
 

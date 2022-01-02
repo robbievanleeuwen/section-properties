@@ -1,6 +1,6 @@
 import pytest_check as check
 import numpy as np
-import sectionproperties.pre.library.standard_sections as sections
+import sectionproperties.pre.library.primitive_sections as sections
 import sectionproperties.pre.library.steel_sections as steel_sections
 from sectionproperties.pre.geometry import Geometry
 from sectionproperties.analysis.section import Section
