@@ -128,7 +128,15 @@ Concrete Circular Section
 Bridge Sections Library
 =======================
 
-TBC
+Super Tee Girder Section
+------------------------
+..  autofunction:: sectionproperties.pre.library.bridge_sections.super_t_girder_section
+    :noindex:
+
+I Girder Section
+----------------
+..  autofunction:: sectionproperties.pre.library.bridge_sections.i_girder_section
+    :noindex:
 
 
 Nastran Sections Library
