@@ -9,7 +9,7 @@
 name: Build and Deploy
 
 on:
-  workflow_dispatch:
+  push:
   release:
     types: [published]
 
