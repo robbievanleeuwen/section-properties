@@ -14,7 +14,7 @@ information.
 Pre-Processor:
 ^^^^^^^^^^^^^^
 
-A special mention to`@connorferster <https://github.com/connorferster>`_ for a majority of this
+A special mention to `@connorferster <https://github.com/connorferster>`_ for a majority of this
 fantastic additions!
 
 - ``sections.py`` renamed to ``geometry.py``
