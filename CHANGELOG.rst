@@ -1,6 +1,75 @@
 Changelog:
 ==========
 
+v2.0.0:
+-------
+
+*sectionproperties* v2 incorporates significant changes to the pre-processor, which now uses the
+`Shapely <https://github.com/shapely/shapely>`_ package to power advanced geometry creation and
+manipulation, and vastly improves the performance and robustness of the plastic section property
+algorithm. v2.x.x introduces many breaking changes from v1.x.x when creating and manipulating
+``Geometry``, refer to the `documentation <https://sectionproperties.readthedocs.io>`_ for more
+information.
+
+Pre-Processor:
+^^^^^^^^^^^^^^
+
+A special mention to`@connorferster <https://github.com/connorferster>`_ for a majority of this
+fantastic additions!
+
+- ``sections.py`` renamed to ``geometry.py``
+- All ``Geometry`` objects are defined by a shapely ``Polygon``
+- Addition of new geometry manipulation methods and geometry set operators
+- Added .dxf import, thanks to `@aegis1980 <https://github.com/aegis1980>`_
+- Added .3dm import, thanks to `@normanrichardson <https://github.com/normanrichardson>`_
+- Introduction of a ``CompoundGeometry`` class for geometries with multiple regions
+- ``Geometry`` objects are assigned a ``Material`` property object, ``CompoundGeometry`` objects
+  can contain multiple ``Material`` objects enabling composite analysis
+- ``Geometry`` and ``CompoundGeometry`` objects contain mesh information and meshing must be
+  performed before initialising a ``Section`` object
+- Improved ``.offset_perimeter()`` logic
+- Meshing is now performed by `triangle <https://github.com/drufat/triangle>`_, *meshpy* is no
+  longer a dependency
+- ``Material`` class now requires a ``.density`` parameter
+- The section library (``sectionproperties.pre.library``) now contains the built-in
+  *sectionproperties* geometries
+- Added ``triangular_section()`` and ``triangular_radius_section()`` to the ``primitive_sections``
+  library
+- Added ``concrete_sections`` library - contains ``concrete_rectangular_section()``,
+  ``concrete_tee_section()`` and ``concrete_circular_section()``
+- Added ``bridge_section`` library, thanks to `@ccaprani <https://github.com/ccaprani>`_ - contains
+  ``super_t_girder_section()`` and ``i_girder_section()``
+
+Analysis:
+^^^^^^^^^
+
+- ``cross_section.py`` renamed to ``section.py``
+- ``CrossSection`` object renamed to ``Section`` and is now initialised with only a ``Geometry`` or
+  ``CompoundGeometry`` object
+- Added calculation of cross-section mass
+- Added calculation of weighted material properties - E_eff, G_eff, nu_eff
+- The plastic algorithm is now performed by shapely, improving performance and robustness
+- Added calculation of principal stresses, thanks to `@ccaprani <https://github.com/ccaprani>`_
+- Shape factors are no longer calculated for composite sections (irrelevant property)
+
+Post-Procesor:
+^^^^^^^^^^^^^^
+
+- Improved contour plotting behaviour
+- Added plotting of Mohr's circle of stresses for any given point, thanks to
+  `@ccaprani <https://github.com/ccaprani>`_
+- ``.display_results`` now reports E.J and E.Iw instead of G.J and G.Iw
+- ``.display_results`` now reports modulus weighted shear areas for composite sections
+
+Misc.:
+^^^^^^
+
+- Many spelling and code style fixes, thanks to `@Spectre5 <https://github.com/Spectre5>`_
+- Updated documentation to include theoretical background
+- Updated examples to be performed by sphinx-gallery, thanks to
+  `@normanrichardson <https://github.com/normanrichardson>`_ and
+  `@Spectre5 <https://github.com/Spectre5>`_
+
 v1.0.8:
 -------
 
