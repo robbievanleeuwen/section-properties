@@ -14,7 +14,7 @@ information.
 Pre-Processor:
 ^^^^^^^^^^^^^^
 
-A special mention to `@connorferster <https://github.com/connorferster>`_ for a majority of this
+A special mention to `@connorferster <https://github.com/connorferster>`_ for a majority of these
 fantastic additions!
 
 - ``sections.py`` renamed to ``geometry.py``
@@ -58,8 +58,8 @@ Post-Procesor:
 - Improved contour plotting behaviour
 - Added plotting of Mohr's circle of stresses for any given point, thanks to
   `@ccaprani <https://github.com/ccaprani>`_
-- ``.display_results`` now reports E.J and E.Iw instead of G.J and G.Iw
-- ``.display_results`` now reports modulus weighted shear areas for composite sections
+- ``.display_results()`` now reports E.J and E.Iw instead of G.J and G.Iw
+- ``.display_results()`` now reports modulus weighted shear areas for composite sections
 
 Misc.:
 ^^^^^^
