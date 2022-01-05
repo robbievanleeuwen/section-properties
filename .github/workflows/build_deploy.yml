@@ -9,7 +9,6 @@
 name: Build and Deploy
 
 on:
-  push:
   release:
     types: [published]
 
