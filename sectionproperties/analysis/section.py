@@ -198,7 +198,7 @@ class Section:
         * Cross-sectional area
         * Cross-sectional perimeter
         * Cross-sectional mass
-        * Area weighted material properties, composite only ($E{_eff}$, $G_{eff}$, $\nu_{eff}$)
+        * Area weighted material properties, composite only :math:`E_{eff}`, :math:`G_{eff}`, :math:`{nu}_{eff}`
         * Modulus weighted area (axial rigidity)
         * First moments of area
         * Second moments of area about the global axis

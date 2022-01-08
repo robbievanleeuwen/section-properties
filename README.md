@@ -23,20 +23,20 @@ $ pip install sectionproperties
 
 ### Pre-Processor:
 - [x] Python API
+- [x] Geometry manipulation by Shapely
+- [x] Common section geometry functions
 - [x] Custom section geometry input
-- [x] Common section geometry generators
-- [x] Multiple geometry merging
+- [x] Rhino .3dm import
+- [x] .dxf import
 - [x] Perimeter offset tool
-- [x] Geometry cleaning
-- [ ] JSON input file
-- [ ] .dxf import
 - [x] Quadratic triangular mesh generation
-- [x] Composite material properties
+- [x] Composite material definition
 
 ### Cross-Section Analysis:
 - [x] Global axis geometric section properties:
   - [x] Area
   - [x] Perimeter
+  - [x] Mass
   - [x] First moments of area
   - [x] Second moments of area
   - [x] Elastic centroid
@@ -59,12 +59,14 @@ $ pip install sectionproperties
 - [x] Warping section properties:
   - [x] Torsion constant
   - [x] Warping constant
+  - [x] Monosymmetry constants
 - [x] Shear section properties:
   - [x] Shear centre (elastic method)
   - [x] Shear centre (Trefftz's method)
   - [x] Shear areas (global axis)
   - [x] Shear areas (principal axis)
-- [x] Cross-section stresses
+- [x] Cross-section stress analysis
+- [x] Mohr's circles for stresses at a point
 
 ### Solver:
 - [x] Direct solver
@@ -78,12 +80,6 @@ $ pip install sectionproperties
 - [x] Plot cross-section stresses
 - [x] Retrieve cross-section stresses
 - [ ] Generate cross-section report
-- [ ] Export to Paraview
-
-### Additional Modules:
-- [ ] Optimisation
-- [ ] Reinforced Concrete
-- [ ] Steel
 
 ## Disclaimer:
 
