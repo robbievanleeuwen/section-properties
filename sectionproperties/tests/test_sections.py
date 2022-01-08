@@ -351,5 +351,10 @@ def test_round_polygon_vertices():
     test_shape = big_box - bottom_box - upper_box
     assert (
         test_shape.wkt
+        != "POLYGON ((0 200, 200 200, 200 0, 0 0, 0 200), (10 50, 10 10, 50 10, 50 50, 10 50), (170 170, 120 170, 120 120, 170 120, 170 170))"
+    )
+    test_shape_rounded = round_polygon_vertices(test_shape, 0)
+    assert (
+        test_shape_rounded.wkt
         == "POLYGON ((0 200, 200 200, 200 0, 0 0, 0 200), (10 50, 10 10, 50 10, 50 50, 10 50), (170 170, 120 170, 120 120, 170 120, 170 170))"
     )
