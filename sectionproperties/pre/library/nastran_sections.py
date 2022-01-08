@@ -1,13 +1,13 @@
 import numpy as np
 from shapely.geometry import Polygon
-from sectionproperties.pre.geometry import Geometry
+import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.pre as pre
 from sectionproperties.pre.library.utils import draw_radius
 
 
 def nastran_bar(
     DIM1: float, DIM2: float, material: pre.Material = pre.DEFAULT_MATERIAL
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a BAR section with the center at the origin *(0, 0)*, with two parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for definition of
     parameters. Added by JohnDN90.
@@ -21,7 +21,7 @@ def nastran_bar(
 
         from sectionproperties.pre.library.nastran_sections import nastran_bar
 
-        geometry = nastran_bar(DIM1=2.0, DIM2=1.5)
+        geom = nastran_bar(DIM1=2.0, DIM2=1.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/bar_geometry.png
@@ -42,13 +42,13 @@ def nastran_bar(
         [0.5 * DIM1, 0.5 * DIM2],
         [-0.5 * DIM1, 0.5 * DIM2],
     ]
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
     E = (-0.5 * DIM1, -0.5 * DIM2)
     F = (-0.5 * DIM1, 0.5 * DIM2)
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_box(
@@ -57,7 +57,7 @@ def nastran_box(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a BOX section with the center at the origin *(0, 0)*, with four parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for definition of
     parameters. Added by JohnDN90.
@@ -73,7 +73,7 @@ def nastran_box(
 
         from sectionproperties.pre.library.nastran_sections import nastran_box
 
-        geometry = nastran_box(DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5)
+        geom = nastran_box(DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/box_geometry.png
@@ -112,10 +112,10 @@ def nastran_box(
     E = (-0.5 * DIM1, -0.5 * DIM2)
     F = (-0.5 * DIM1, 0.5 * DIM2)
 
-    geometry = Geometry(outer_box - inner_box, material)
-    geometry.recovery_points = [C, D, E, F]
+    geom = geometry.Geometry(outer_box - inner_box, material)
+    geom.recovery_points = [C, D, E, F]
 
-    return geometry
+    return geom
 
 
 def nastran_box1(
@@ -126,7 +126,7 @@ def nastran_box1(
     DIM5: float,
     DIM6: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a BOX1 section with the center at the origin *(0, 0)*, with six parameters
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details. Added by
     JohnDN90.
@@ -144,7 +144,7 @@ def nastran_box1(
 
         from sectionproperties.pre.library.nastran_sections import nastran_box1
 
-        geometry = nastran_box1(
+        geom = nastran_box1(
             DIM1=4.0, DIM2=3.0, DIM3=0.375, DIM4=0.5, DIM5=0.25, DIM6=0.75
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.007])
@@ -177,14 +177,14 @@ def nastran_box1(
         [DIM1 - DIM5, DIM2 - DIM3],
         [DIM6, DIM2 - DIM3],
     ]
-    geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points), material)
+    geom = geometry.Geometry(Polygon(exterior_points) - Polygon(interior_points), material)
 
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
     E = (-0.5 * DIM1, -0.5 * DIM2)
     F = (-0.5 * DIM1, 0.5 * DIM2)
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_chan(
@@ -193,7 +193,7 @@ def nastran_chan(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a CHAN (C-Channel) section with the web's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Added by JohnDN90.
@@ -209,7 +209,7 @@ def nastran_chan(
 
         from sectionproperties.pre.library.nastran_sections import nastran_chan
 
-        geometry = nastran_chan(DIM1=2.0, DIM2=4.0, DIM3=0.25, DIM4=0.5)
+        geom = nastran_chan(DIM1=2.0, DIM2=4.0, DIM3=0.25, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.008])
 
     ..  figure:: ../images/sections/chan_geometry.png
@@ -240,15 +240,15 @@ def nastran_chan(
         [0.0, DIM2],
     ]
 
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
 
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
     E = (-0.5 * DIM1, -0.5 * DIM2)
     F = (-0.5 * DIM1, 0.5 * DIM2)
 
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_chan1(
@@ -257,7 +257,7 @@ def nastran_chan1(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a CHAN1 (C-Channel) section with the web's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Added by JohnDN90.
@@ -273,7 +273,7 @@ def nastran_chan1(
 
         from sectionproperties.pre.library.nastran_sections import nastran_chan1
 
-        geometry = nastran_chan1(DIM1=0.75, DIM2=1.0, DIM3=3.5, DIM4=4.0)
+        geom = nastran_chan1(DIM1=0.75, DIM2=1.0, DIM3=3.5, DIM4=4.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/chan1_geometry.png
@@ -303,14 +303,14 @@ def nastran_chan1(
         [DIM2 + DIM1, DIM4],
         [0, DIM4],
     ]
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
     C = (0.5 * DIM2 + DIM1, 0.5 * DIM4)
     D = (0.5 * DIM2 + DIM1, -0.5 * DIM4)
     E = (-0.5 * DIM2, -0.5 * DIM4)
     F = (-0.5 * DIM2, 0.5 * DIM4)
-    geometry.recovery_points = [C, D, E, F]
+    geom.recovery_points = [C, D, E, F]
 
-    return geometry
+    return geom
 
 
 def nastran_chan2(
@@ -319,7 +319,7 @@ def nastran_chan2(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a CHAN2 (C-Channel) section with the bottom web's middle center at the origin
     *(0, 0)*, with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_
     [4]_ for more details. Added by JohnDN90.
@@ -335,7 +335,7 @@ def nastran_chan2(
 
         from sectionproperties.pre.library.nastran_sections import nastran_chan2
 
-        geometry = nastran_chan2(DIM1=0.375, DIM2=0.5, DIM3=2.0, DIM4=4.0)
+        geom = nastran_chan2(DIM1=0.375, DIM2=0.5, DIM3=2.0, DIM4=4.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/chan2_geometry.png
@@ -365,14 +365,14 @@ def nastran_chan2(
         [DIM1, DIM3],
         [0.0, DIM3],
     ]
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
     C = (0.5 * DIM4, DIM3 - 0.5 * DIM2)
     D = (0.5 * DIM4, -0.5 * DIM2)
     E = (-0.5 * DIM4, -0.5 * DIM2)
     F = (-0.5 * DIM4, DIM3 - 0.5 * DIM2)
-    geometry.recovery_points = [C, D, E, F]
+    geom.recovery_points = [C, D, E, F]
 
-    return geometry
+    return geom
 
 
 def nastran_cross(
@@ -381,7 +381,7 @@ def nastran_cross(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs Nastran's cruciform/cross section with the intersection's middle center at the
     origin *(0, 0)*, with four parameters defining dimensions. See Nastran documentation [1]_ [2]_
     [3]_ [4]_ for more details. Added by JohnDN90.
@@ -398,7 +398,7 @@ def nastran_cross(
 
         from sectionproperties.pre.library.nastran_sections import nastran_cross
 
-        geometry = nastran_cross(DIM1=1.5, DIM2=0.375, DIM3=3.0, DIM4=0.25)
+        geom = nastran_cross(DIM1=1.5, DIM2=0.375, DIM3=3.0, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.008])
 
     ..  figure:: ../images/sections/cross_geometry.png
@@ -432,13 +432,13 @@ def nastran_cross(
         [0, d],
         [0.5 * DIM1, d],
     ]
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
     C = (0, 0.5 * DIM3)
     D = (0.5 * (DIM1 + DIM2), 0)
     E = (0, -0.5 * DIM3)
     F = (-0.5 * (DIM1 + DIM2), 0)
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_fcross(
@@ -451,7 +451,7 @@ def nastran_fcross(
     DIM7: float,
     DIM8: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a flanged cruciform/cross section with the intersection's middle center at the
     origin *(0, 0)*, with eight parameters defining dimensions. Added by JohnDN90.
 
@@ -469,7 +469,7 @@ def nastran_fcross(
 
         from sectionproperties.pre.library.nastran_sections import nastran_fcross
 
-        geometry = nastran_fcross(
+        geom = nastran_fcross(
             DIM1=9.0, DIM2=6.0, DIM3=0.75, DIM4=0.625, DIM5=2.1, DIM6=0.375, DIM7=4.5, DIM8=0.564
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.03])
@@ -526,14 +526,14 @@ def nastran_fcross(
         [0.5 * DIM5, -0.5 * DIM1 + DIM6],
         [0.5 * DIM3, -0.5 * DIM1 + DIM6],
     ]
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
 
     C = (0, 0.5 * DIM1)
     D = (0.5 * DIM2, 0)
     E = (0, -0.5 * DIM1)
     F = (-0.5 * DIM2, 0)
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_dbox(
@@ -548,7 +548,7 @@ def nastran_dbox(
     DIM9: float,
     DIM10: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a DBOX section with the center at the origin *(0, 0)*, with ten parameters
     defining dimensions. See MSC Nastran documentation [1]_ for more details. Added by JohnDN90.
 
@@ -569,7 +569,7 @@ def nastran_dbox(
 
         from sectionproperties.pre.library.nastran_sections import nastran_dbox
 
-        geometry = nastran_dbox(
+        geom = nastran_dbox(
             DIM1=8.0, DIM2=3.0, DIM3=3.0, DIM4=0.5, DIM5=0.625, DIM6=0.75, DIM7=0.375, DIM8=0.25,
             DIM9=0.5, DIM10=0.375
         )
@@ -612,7 +612,7 @@ def nastran_dbox(
         [DIM1 - DIM6, DIM2 - DIM9],
         [DIM3 + DIM5 / 2.0, DIM2 - DIM9],
     ]
-    geometry = Geometry(
+    geom = geometry.Geometry(
         Polygon(exterior_points)
         - Polygon(interior_points_1)
         - Polygon(interior_points_2)
@@ -621,8 +621,8 @@ def nastran_dbox(
     D = (0.5 * DIM1, -0.5 * DIM2)
     E = (-0.5 * DIM1, -0.5 * DIM2)
     F = (-0.5 * DIM1, 0.5 * DIM2)
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_gbox(
@@ -633,7 +633,7 @@ def nastran_gbox(
     DIM5: float,
     DIM6: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a GBOX section with the center at the origin *(0, 0)*, with six parameters
     defining dimensions. See ASTROS documentation [5]_ for more details. Added by JohnDN90.
 
@@ -650,7 +650,7 @@ def nastran_gbox(
 
         from sectionproperties.pre.library.nastran_sections import nastran_gbox
 
-        geometry = nastran_gbox(
+        geom = nastran_gbox(
             DIM1=6.0, DIM2=2.5, DIM3=0.375, DIM4=0.25, DIM5=0.625, DIM6=1.0
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
@@ -693,15 +693,15 @@ def nastran_gbox(
         [d + DIM5 + DIM6, DIM2 - DIM3],
         [d + DIM5, DIM2 - DIM3],
     ]
-    geometry = Geometry(Polygon(exterior_points) - Polygon(interior_points), material)
+    geom = geometry.Geometry(Polygon(exterior_points) - Polygon(interior_points), material)
 
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
     E = (-0.5 * DIM1, -0.5 * DIM2)
     F = (-0.5 * DIM1, 0.5 * DIM2)
-    geometry.recovery_points = [C, D, E, F]
+    geom.recovery_points = [C, D, E, F]
 
-    return geometry
+    return geom
 
 
 def nastran_h(
@@ -710,7 +710,7 @@ def nastran_h(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a H section with the middle web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -726,7 +726,7 @@ def nastran_h(
 
         from sectionproperties.pre.library.nastran_sections import nastran_h
 
-        geometry = nastran_h(DIM1=2.0, DIM2=0.75, DIM3=3.5, DIM4=0.25)
+        geom = nastran_h(DIM1=2.0, DIM2=0.75, DIM3=3.5, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/h_geometry.png
@@ -762,13 +762,13 @@ def nastran_h(
         [d2, DIM3],
         [0, DIM3],
     ]
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
     C = (0.5 * (DIM1 + DIM2), 0.5 * DIM3)
     D = (0.5 * (DIM1 + DIM2), -0.5 * DIM3)
     E = (-0.5 * (DIM1 + DIM2), -0.5 * DIM3)
     F = (-0.5 * (DIM1 + DIM2), 0.5 * DIM3)
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_hat(
@@ -777,7 +777,7 @@ def nastran_hat(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a Hat section with the top most section's middle center at the origin *(0, 0)*,
     with four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for
     more details. Note that HAT in ASTROS is actually HAT1 in this code. Added by JohnDN90.
@@ -793,7 +793,7 @@ def nastran_hat(
 
         from sectionproperties.pre.library.nastran_sections import nastran_hat
 
-        geometry = nastran_hat(DIM1=1.25, DIM2=0.25, DIM3=1.5, DIM4=0.5)
+        geom = nastran_hat(DIM1=1.25, DIM2=0.25, DIM3=1.5, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/hat_geometry.png
@@ -827,14 +827,14 @@ def nastran_hat(
         [0.0, DIM2],
     ]
 
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
     C = (0.5 * DIM3, 0.5 * DIM2)
     D = (0.5 * DIM3 + DIM4, -DIM1 + DIM2)
     E = (-0.5 * DIM3 - DIM4, -DIM1 + DIM2)
     F = (-0.5 * DIM3, 0.5 * DIM2)
-    geometry.recovery_points = [C, D, E, F]
+    geom.recovery_points = [C, D, E, F]
     # geometry.compile_geometry()
-    return geometry
+    return geom
 
 
 def nastran_hat1(
@@ -844,7 +844,7 @@ def nastran_hat1(
     DIM4: float,
     DIM5: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a HAT1 section with the bottom plate's bottom center at the origin *(0, 0)*,
     with five parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [5]_ for
     definition of parameters. Note that in ASTROS, HAT1 is called HAT. Added by JohnDN90.
@@ -861,7 +861,7 @@ def nastran_hat1(
 
         from sectionproperties.pre.library.nastran_sections import nastran_hat1
 
-        geometry = nastran_hat1(DIM1=4.0, DIM2=2.0, DIM3=1.5, DIM4=0.1875, DIM5=0.375)
+        geom = nastran_hat1(DIM1=4.0, DIM2=2.0, DIM3=1.5, DIM4=0.1875, DIM5=0.375)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/hat1_geometry.png
@@ -891,7 +891,7 @@ def nastran_hat1(
 
     hat = nastran_hat(DIM1=d1, DIM2=d2, DIM3=d3, DIM4=d4)
     # Merge the two sections into one geometry
-    geometry = (
+    geom = (
         hat.align_center(bottom_plate).align_to(bottom_plate, on="top") + bottom_plate
     )
 
@@ -900,15 +900,15 @@ def nastran_hat1(
     E = (-0.5 * DIM3, DIM2)
     F = (0.5 * DIM3, DIM2)
 
-    geometry.recovery_points = [C, D, E, F]
+    geom.recovery_points = [C, D, E, F]
     # geometry.compile_geometry()
 
-    return geometry
+    return geom
 
 
 def nastran_hexa(
     DIM1: float, DIM2: float, DIM3: float, material: pre.Material = pre.DEFAULT_MATERIAL
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a HEXA (hexagon) section with the center at the origin *(0, 0)*, with three
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -923,7 +923,7 @@ def nastran_hexa(
 
         from sectionproperties.pre.library.nastran_sections import nastran_hexa
 
-        geometry = nastran_hexa(DIM1=0.5, DIM2=2.0, DIM3=1.5)
+        geom = nastran_hexa(DIM1=0.5, DIM2=2.0, DIM3=1.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/hexa_geometry.png
@@ -952,13 +952,13 @@ def nastran_hexa(
         [0.0, 0.5 * DIM3],
     ]
 
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
     C = (0, 0.5 * DIM3)
     D = (0, -0.5 * DIM3)
     E = 0.5 * DIM2
     F = -0.5 * DIM2
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_i(
@@ -969,7 +969,7 @@ def nastran_i(
     DIM5: float,
     DIM6: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs Nastran's I section with the bottom flange's middle center at the origin
     *(0, 0)*, with six parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_
     [4]_ for definition of parameters. Added by JohnDN90.
@@ -987,7 +987,7 @@ def nastran_i(
 
         from sectionproperties.pre.library.nastran_sections import nastran_i
 
-        geometry = nastran_i(
+        geom = nastran_i(
             DIM1=5.0, DIM2=2.0, DIM3=3.0, DIM4=0.25, DIM5=0.375, DIM6=0.5
         )
         mesh = geometry.create_mesh(mesh_sizes=[0.008])
@@ -1026,15 +1026,15 @@ def nastran_i(
         [db, DIM5],
         [0, DIM5],
     ]
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
 
     C = (0.5 * DIM3, 0.5 * DIM1)
     D = (0.5 * DIM3, -0.5 * DIM1)
     E = (-0.5 * DIM3, -0.5 * DIM1)
     F = (-0.5 * DIM3, 0.5 * DIM1)
 
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_i1(
@@ -1043,7 +1043,7 @@ def nastran_i1(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a I1 section with the web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -1060,7 +1060,7 @@ def nastran_i1(
 
         from sectionproperties.pre.library.nastran_sections import nastran_i1
 
-        geometry = nastran_i1(DIM1=1.0, DIM2=0.75, DIM3=4.0, DIM4=5.0)
+        geom = nastran_i1(DIM1=1.0, DIM2=0.75, DIM3=4.0, DIM4=5.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.02])
 
     ..  figure:: ../images/sections/i1_geometry.png
@@ -1094,15 +1094,15 @@ def nastran_i1(
         [0.5 * DIM1, t],
         [0.0, t],
     ]
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
 
     C = (0.5 * (DIM1 + DIM2), 0.5 * DIM4)
     D = (0.5 * (DIM1 + DIM2), -0.5 * DIM4)
     E = (-0.5 * (DIM1 + DIM2), -0.5 * DIM4)
     F = (-0.5 * (DIM1 + DIM2), 0.5 * DIM4)
 
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_l(
@@ -1111,7 +1111,7 @@ def nastran_l(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a L section with the intersection's center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ for more details.
     Added by JohnDN90.
@@ -1127,7 +1127,7 @@ def nastran_l(
 
         from sectionproperties.pre.library.nastran_sections import nastran_l
 
-        geometry = nastran_l(DIM1=3.0, DIM2=6.0, DIM3=0.375, DIM4=0.625)
+        geom = nastran_l(DIM1=3.0, DIM2=6.0, DIM3=0.375, DIM4=0.625)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/l_geometry.png
@@ -1149,20 +1149,20 @@ def nastran_l(
     # construct the points and facets
     points = [[0, 0], [DIM1, 0], [DIM1, DIM3], [DIM4, DIM3], [DIM4, DIM2], [0, DIM2]]
 
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
 
     C = (0.5 * DIM4, DIM2 - 0.5 * DIM3)
     D = (DIM1 - 0.5 * DIM4, -0.5 * DIM3)
     E = (-0.5 * DIM4, -0.5 * DIM3)
     F = (-0.5 * DIM4, DIM2 - 0.5 * DIM3)
 
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_rod(
     DIM1: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a circular rod section with the center at the origin *(0, 0)*, with one parameter
     defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details. Added by
     JohnDN90.
@@ -1176,7 +1176,7 @@ def nastran_rod(
 
         from sectionproperties.pre.library.nastran_sections import nastran_rod
 
-        geometry = nastran_rod(DIM1=3.0, n=50)
+        geom = nastran_rod(DIM1=3.0, n=50)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/rod_geometry.png
@@ -1206,15 +1206,15 @@ def nastran_rod(
         # append the current point to the points list
         points.append([x, y])
 
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
     C = (0, DIM1)
     D = (DIM1, 0)
     E = (0, -DIM1)
     F = (-DIM1, 0)
 
-    geometry.recovery_points = [C, D, E, F]
+    geom.recovery_points = [C, D, E, F]
 
-    return geometry
+    return geom
 
 
 def nastran_tee(
@@ -1223,7 +1223,7 @@ def nastran_tee(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a T section with the top flange's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ [5]_ for more
     details. Added by JohnDN90.
@@ -1239,7 +1239,7 @@ def nastran_tee(
 
         from sectionproperties.pre.library.nastran_sections import nastran_tee
 
-        geometry = nastran_tee(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.25)
+        geom = nastran_tee(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/t_geometry.png
@@ -1285,15 +1285,15 @@ def nastran_tee(
     pt = [b * 0.5 - t_w * 0.5 - r, d - t_f - r]
     points += draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
 
     C = (0, 0.5 * DIM3)
     D = (0.5 * DIM1, 0.5 * DIM3)
     E = (0, 0.5 * DIM3 - DIM2)
     F = (-0.5 * DIM1, 0.5 * DIM3)
-    geometry.recovery_points = [C, D, E, F]
+    geom.recovery_points = [C, D, E, F]
 
-    return geometry
+    return geom
 
 
 def nastran_tee1(
@@ -1302,7 +1302,7 @@ def nastran_tee1(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a T1 section with the right flange's middle center at the origin *(0, 0)*, with
     four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1318,7 +1318,7 @@ def nastran_tee1(
 
         from sectionproperties.pre.library.nastran_sections import nastran_tee1
 
-        geometry = nastran_tee1(DIM1=3.0, DIM2=3.5, DIM3=0.375, DIM4=0.25)
+        geom = nastran_tee1(DIM1=3.0, DIM2=3.5, DIM3=0.375, DIM4=0.25)
         mesh = geometry.create_mesh(mesh_sizes=[0.001])
 
     ..  figure:: ../images/sections/t1_geometry.png
@@ -1349,15 +1349,15 @@ def nastran_tee1(
         [0, d1],
     ]
 
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
 
     C = (0.5 * DIM3, 0)
     D = (0.5 * DIM3, -0.5 * DIM1)
     E = (-0.5 * DIM3 - DIM2, 0)
     F = (0.5 * DIM3, 0.5 * DIM1)
-    geometry.recovery_points = [C, D, E, F]
+    geom.recovery_points = [C, D, E, F]
 
-    return geometry
+    return geom
 
 
 def nastran_tee2(
@@ -1366,7 +1366,7 @@ def nastran_tee2(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a T2 section with the bottom flange's middle center at the origin *(0, 0)*, with
     four parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1382,7 +1382,7 @@ def nastran_tee2(
 
         from sectionproperties.pre.library.nastran_sections import nastran_tee2
 
-        geometry = nastran_tee2(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.5)
+        geom = nastran_tee2(DIM1=3.0, DIM2=4.0, DIM3=0.375, DIM4=0.5)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/t2_geometry.png
@@ -1415,18 +1415,18 @@ def nastran_tee2(
         [0, DIM3],
     ]
 
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
     C = (0.5 * DIM4, DIM2 - 0.5 * DIM3)
     D = (0.5 * DIM1, -0.5 * DIM3)
     E = (-0.5 * DIM1, -0.5 * DIM3)
     F = (-0.5 * DIM4, DIM2 - 0.5 * DIM3)
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_tube(
     DIM1: float, DIM2: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a circular tube section with the center at the origin *(0, 0)*, with two
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more
     details. Added by JohnDN90.
@@ -1442,7 +1442,7 @@ def nastran_tube(
 
         from sectionproperties.pre.library.nastran_sections import nastran_tube
 
-        geometry = nastran_tube(DIM1=3.0, DIM2=2.5, n=37)
+        geom = nastran_tube(DIM1=3.0, DIM2=2.5, n=37)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/tube_geometry.png
@@ -1479,22 +1479,22 @@ def nastran_tube(
         points_outer.append([x_outer, y_outer])
         points_inner.append([x_inner, y_inner])
 
-    exterior = Geometry(Polygon(points_outer), material)
-    interior = Geometry(Polygon(points_inner), material)
+    exterior = geometry.Geometry(Polygon(points_outer), material)
+    interior = geometry.Geometry(Polygon(points_inner), material)
 
-    geometry = exterior - interior
+    geom = exterior - interior
 
     C = (0, DIM1)
     D = (DIM1, 0)
     E = (0, -DIM1)
     F = (-DIM1, 0)
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_tube2(
     DIM1: float, DIM2: float, n: float, material: pre.Material = pre.DEFAULT_MATERIAL
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a circular TUBE2 section with the center at the origin *(0, 0)*, with two
     parameters defining dimensions. See MSC Nastran documentation [1]_ for more details. Added by
     JohnDN90.
@@ -1510,7 +1510,7 @@ def nastran_tube2(
 
         from sectionproperties.pre.library.nastran_sections import nastran_tube2
 
-        geometry = nastran_tube2(DIM1=3.0, DIM2=0.5, n=37)
+        geom = nastran_tube2(DIM1=3.0, DIM2=0.5, n=37)
         mesh = geometry.create_mesh(mesh_sizes=[0.01])
 
     ..  figure:: ../images/sections/tube2_geometry.png
@@ -1549,16 +1549,16 @@ def nastran_tube2(
         points_outer.append([x_outer, y_outer])
         points_inner.append([x_inner, y_inner])
 
-    exterior = Geometry(Polygon(points_outer), material)
-    interior = Geometry(Polygon(points_inner), material)
-    geometry = exterior - interior
+    exterior = geometry.Geometry(Polygon(points_outer), material)
+    interior = geometry.Geometry(Polygon(points_inner), material)
+    geom = exterior - interior
 
     C = (0, DIM1)
     D = (DIM1, 0)
     E = (0, -DIM1)
     F = (-DIM1, 0)
-    geometry.recovery_points = [C, D, E, F]
-    return geometry
+    geom.recovery_points = [C, D, E, F]
+    return geom
 
 
 def nastran_zed(
@@ -1567,7 +1567,7 @@ def nastran_zed(
     DIM3: float,
     DIM4: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a Z section with the web's middle center at the origin *(0, 0)*, with four
     parameters defining dimensions. See Nastran documentation [1]_ [2]_ [3]_ [4]_ for more details.
     Added by JohnDN90.
@@ -1583,7 +1583,7 @@ def nastran_zed(
 
         from sectionproperties.pre.library.nastran_sections import nastran_zed
 
-        geometry = nastran_zed(DIM1=1.125, DIM2=0.5, DIM3=3.5, DIM4=4.0)
+        geom = nastran_zed(DIM1=1.125, DIM2=0.5, DIM3=3.5, DIM4=4.0)
         mesh = geometry.create_mesh(mesh_sizes=[0.005])
 
     ..  figure:: ../images/sections/z_geometry.png
@@ -1613,13 +1613,13 @@ def nastran_zed(
         [0.0, DIM4 - t],
         [DIM1, DIM4 - t],
     ]
-    geometry = Geometry(Polygon(points), material)
+    geom = geometry.Geometry(Polygon(points), material)
 
     C = (0.5 * DIM2, 0.5 * DIM4)
     D = (0.5 * DIM2 + DIM1, -0.5 * DIM4)
     E = (-0.5 * DIM2, -0.5 * DIM4)
     F = (-0.5 * DIM2 - DIM1, 0.5 * DIM4)
 
-    geometry.recovery_points = [C, D, E, F]
+    geom.recovery_points = [C, D, E, F]
 
-    return geometry
+    return geom

@@ -1,7 +1,7 @@
 import numpy as np
 from shapely.geometry import Polygon
 import sectionproperties.pre.pre as pre
-from sectionproperties.pre.geometry import Geometry, CompoundGeometry
+import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.library.primitive_sections as primitive_sections
 
 
@@ -14,7 +14,7 @@ def concrete_rectangular_section(
     cover: float,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> CompoundGeometry:
+) -> geometry.CompoundGeometry:
     """Constructs a concrete rectangular section of width *b* and depth *d*, with *n_bar* steel bars
     of diameter *dia*, discretised with *n_circle* points with equal side and bottom *cover* to the
     steel.
@@ -89,7 +89,7 @@ def concrete_tee_section(
     cover: float,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> CompoundGeometry:
+) -> geometry.CompoundGeometry:
     """Constructs a concrete tee section of width *b*, depth *d*, flange width *b_f* and flange
     depth *d_f* with *n_bar* steel bars of diameter *dia*, discretised with *n_circle* points with
     equal side and bottom *cover* to the steel.
@@ -167,7 +167,7 @@ def concrete_circular_section(
     cover: float,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> CompoundGeometry:
+) -> geometry.CompoundGeometry:
     """Constructs a concrete circular section of diameter *d* discretised with *n* points, with
     *n_bar* steel bars of diameter *dia*, discretised with *n_circle* points with equal side and
     bottom *cover* to the steel.
