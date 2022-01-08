@@ -24,8 +24,6 @@ import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
 import sectionproperties.pre.rhino as rhino_importer
 
-from IPython.display import display_svg
-
 
 class Geometry:
     """Class for defining the geometry of a contiguous section of a single material.

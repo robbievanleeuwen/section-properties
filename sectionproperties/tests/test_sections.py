@@ -14,6 +14,7 @@ from shapely.geometry import (
     LineString,
     Point,
     GeometryCollection,
+    box,
 )
 from shapely import wkt
 import json
@@ -341,3 +342,11 @@ def test_filter_non_polygons():
     assert filter_non_polygons(point1) == Polygon()
     assert filter_non_polygons(line) == Polygon()
     assert filter_non_polygons(collection) == poly
+
+
+def test_round_polygon_vertices():
+    big_box = box(0, 0, 200, 200)
+    bottom_box = box(10.00001, 10.000001, 50.100, 50.2)
+    upper_box = box(120.000011, 120.000032, 169.999987, 170.0001)
+    test_shape = big_box - bottom_box - upper_box
+    assert test_shape.wkt == 'POLYGON ((0 200, 200 200, 200 0, 0 0, 0 200), (10 50, 10 10, 50 10, 50 50, 10 50), (170 170, 120 170, 120 120, 170 120, 170 170))'
