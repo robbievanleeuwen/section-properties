@@ -177,7 +177,9 @@ def nastran_box1(
         [DIM1 - DIM5, DIM2 - DIM3],
         [DIM6, DIM2 - DIM3],
     ]
-    geom = geometry.Geometry(Polygon(exterior_points) - Polygon(interior_points), material)
+    geom = geometry.Geometry(
+        Polygon(exterior_points) - Polygon(interior_points), material
+    )
 
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)
@@ -693,7 +695,9 @@ def nastran_gbox(
         [d + DIM5 + DIM6, DIM2 - DIM3],
         [d + DIM5, DIM2 - DIM3],
     ]
-    geom = geometry.Geometry(Polygon(exterior_points) - Polygon(interior_points), material)
+    geom = geometry.Geometry(
+        Polygon(exterior_points) - Polygon(interior_points), material
+    )
 
     C = (0.5 * DIM1, 0.5 * DIM2)
     D = (0.5 * DIM1, -0.5 * DIM2)

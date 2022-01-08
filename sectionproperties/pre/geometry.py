@@ -56,7 +56,7 @@ class Geometry:
         geom: shapely.geometry.Polygon,
         material: pre.Material = pre.DEFAULT_MATERIAL,
         control_points: Optional[List[float, float]] = None,
-        tol = 12
+        tol=12,
     ):
         """Inits the Geometry class."""
         if isinstance(geom, MultiPolygon):
@@ -82,7 +82,6 @@ class Geometry:
         self._recovery_points = []
 
         self.compile_geometry()
-
 
     def _repr_svg_(self):
         print("sectionproperties.pre.geometry.Geometry")
@@ -430,7 +429,7 @@ class Geometry:
         other_as_point_map = {
             "left": 0,
             "right": 0,
-            "bottom": 1,#
+            "bottom": 1,  #
             "top": 1,
         }
 
@@ -441,7 +440,7 @@ class Geometry:
         else:
             align_to_idx = other_as_point_map[on]
 
-        self_extents = self.calculate_extents() #min x, max x, min y, max y
+        self_extents = self.calculate_extents()  # min x, max x, min y, max y
         self_align_coord = self_extents[self_align_idx]
         if inner:
             self_align_coord = self_extents[align_to_idx]
@@ -1905,7 +1904,3 @@ def round_polygon_vertices(poly: Polygon, tol: int) -> Polygon:
     if not rounded_exterior.any():
         return Polygon()
     return Polygon(rounded_exterior, rounded_interiors)
-
-
-
-
