@@ -1,6 +1,6 @@
 import numpy as np
 from shapely.geometry import Polygon
-from sectionproperties.pre.geometry import Geometry
+import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.pre as pre
 
 
@@ -11,7 +11,7 @@ def super_t_girder_section(
     t_w: float = None,
     t_f: float = 75,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a Super T Girder section to AS5100.5.
 
     :param int girder_type: Type of Super T (1 to 5)
@@ -162,12 +162,12 @@ def super_t_girder_section(
     points.append([0, y20])
     points.append([-x_inner, y_inner])
 
-    return Geometry(Polygon(points), material)
+    return geometry.Geometry(Polygon(points), material)
 
 
 def i_girder_section(
     girder_type: int, material: pre.Material = pre.DEFAULT_MATERIAL
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a precast I girder section to AS5100.5.
 
     :param int girder_type: Type of I Girder (1 to 4)
@@ -243,7 +243,7 @@ def i_girder_section(
     points.append([-b_tf / 2, -h_tf])
     points.append([-b_tf / 2, 0])
 
-    return Geometry(Polygon(points), material)
+    return geometry.Geometry(Polygon(points), material)
 
 
 def get_super_t_girder_dims(girder_type):

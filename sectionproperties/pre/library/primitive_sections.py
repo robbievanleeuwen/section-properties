@@ -1,13 +1,13 @@
 import numpy as np
 from shapely.geometry import Polygon
-from sectionproperties.pre.geometry import Geometry
+import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.pre as pre
 from sectionproperties.pre.library.utils import draw_radius
 
 
 def rectangular_section(
     b: float, d: float, material: pre.Material = pre.DEFAULT_MATERIAL
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a rectangular section with the bottom left corner at the origin *(0, 0)*, with
     depth *d* and width *b*.
 
@@ -37,12 +37,12 @@ def rectangular_section(
     """
     points = [[0, 0], [b, 0], [b, d], [0, d]]
     rectangle = Polygon(points)
-    return Geometry(rectangle, material)
+    return geometry.Geometry(rectangle, material)
 
 
 def circular_section(
     d: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a solid circle centered at the origin *(0, 0)* with diameter *d* and using *n*
     points to construct the circle.
 
@@ -85,12 +85,12 @@ def circular_section(
         points.append([x, y])
 
     circle = Polygon(points)
-    return Geometry(circle, material)
+    return geometry.Geometry(circle, material)
 
 
 def elliptical_section(
     d_y: float, d_x: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a solid ellipse centered at the origin *(0, 0)* with vertical diameter *d_y* and
     horizontal diameter *d_x*, using *n* points to construct the ellipse.
 
@@ -135,12 +135,12 @@ def elliptical_section(
         points.append([x, y])
 
     ellipse = Polygon(points)
-    return Geometry(ellipse, material)
+    return geometry.Geometry(ellipse, material)
 
 
 def triangular_section(
     b: float, h: float, material: pre.Material = pre.DEFAULT_MATERIAL
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a right angled triangle with points *(0, 0)*, *(b, 0)*, *(0, h)*.
 
     :param float b: Base length of triangle
@@ -169,12 +169,12 @@ def triangular_section(
     """
     points = [[0, 0], [b, 0], [0, h]]
     triangle = Polygon(points)
-    return Geometry(triangle, material)
+    return geometry.Geometry(triangle, material)
 
 
 def triangular_radius_section(
     b: float, n_r: float, material: pre.Material = pre.DEFAULT_MATERIAL
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a right angled isosceles triangle with points *(0, 0)*, *(b, 0)*, *(0, h)* and a
     concave radius on the hypotenuse.
 
@@ -206,7 +206,7 @@ def triangular_radius_section(
     points = [(0, 0)]
     points += draw_radius(pt=[b, b], r=b, theta=3 * np.pi / 2, n=n_r, ccw=False)
     triangle = Polygon(points)
-    return Geometry(triangle, material)
+    return geometry.Geometry(triangle, material)
 
 
 def cruciform_section(
@@ -216,7 +216,7 @@ def cruciform_section(
     r: float,
     n_r: int,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-) -> Geometry:
+) -> geometry.Geometry:
     """Constructs a cruciform section centered at the origin *(0, 0)*, with depth *d*, width *b*,
     thickness *t* and root radius *r*, using *n_r* points to construct the root radius.
 
@@ -281,4 +281,4 @@ def cruciform_section(
     points += draw_radius(pt, r, 0.5 * np.pi, n_r, False)
 
     polygon = Polygon(points)
-    return Geometry(polygon, material)
+    return geometry.Geometry(polygon, material)
