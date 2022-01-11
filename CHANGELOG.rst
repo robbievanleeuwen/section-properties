@@ -24,7 +24,8 @@ fantastic additions!
 - Added .3dm import, thanks to `@normanrichardson <https://github.com/normanrichardson>`_
 - Introduction of a ``CompoundGeometry`` class for geometries with multiple regions
 - ``Geometry`` objects are assigned a ``Material`` property object, ``CompoundGeometry`` objects
-  can contain multiple ``Material`` objects enabling composite analysis
+  can contain multiple ``Geometry`` objects (each with their own ``Material`` object) 
+  enabling composite analysis
 - ``Geometry`` and ``CompoundGeometry`` objects contain mesh information and meshing must be
   performed before initialising a ``Section`` object
 - Improved ``.offset_perimeter()`` logic
@@ -52,7 +53,7 @@ Analysis:
 - Added calculation of principal stresses, thanks to `@ccaprani <https://github.com/ccaprani>`_
 - Shape factors are no longer calculated for composite sections (irrelevant property)
 
-Post-Procesor:
+Post-Processor:
 ^^^^^^^^^^^^^^
 
 - Improved contour plotting behaviour
