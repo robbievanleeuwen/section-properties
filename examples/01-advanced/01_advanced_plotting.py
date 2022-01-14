@@ -33,5 +33,7 @@ section.plot_centroids(ax=fig.axes[2])  # plot the cetnroids
 
 # Perform a stress analysis with Mzz = 10 kN.m
 stress = section.calculate_stress(Mzz=10e6)
-stress.plot_vector_mzz_zxy(ax=fig.axes[3], title="Torsion Vectors")  # plot the torsion vectors
+stress.plot_vector_mzz_zxy(
+    ax=fig.axes[3], title="Torsion Vectors"
+)  # plot the torsion vectors
 plt.show()  # show the plot
