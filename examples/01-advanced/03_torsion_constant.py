@@ -1,5 +1,5 @@
 r"""
-.. _ref_ex_advanced1:
+.. _ref_ex_advanced3:
 
 Torsion Constant of a Rectangle
 -------------------------------

@@ -22,4 +22,4 @@ help:
 clean:
 	rm -rf $(BUILDDIR)/*
 	rm -rf auto_examples/
-	rm -rf sphinx_gallery_examples/
+	rm -rf $(SOURCEDIR)/sphinx_gallery_examples/
