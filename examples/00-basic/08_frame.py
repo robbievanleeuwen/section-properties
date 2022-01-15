@@ -4,7 +4,7 @@ r"""
 Frame Analysis Example
 ----------------------
 
-Analyse a frame.
+Analyse a cross-section to be used in frame analysis.
 
 The following example demonstrates how *sectionproperties* can be used to
 calculate the cross-section properties required for a frame analysis. Using this

@@ -1740,6 +1740,9 @@ def load_dxf(dxf_filepath: pathlib.Path):
         print("To use 'from_dxf(...)' you need to 'pip install cad_to_shapely'")
         return
 
+    if isinstance(dxf_filepath, str):
+        dxf_filepath = pathlib.Path(dxf_filepath)
+
     if not dxf_filepath.exists():
         raise ValueError(f"The filepath does not exist: {dxf_filepath}")
 
