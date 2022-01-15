@@ -921,6 +921,11 @@ class Geometry:
 
                         ax.annotate(str(i), xy=xy, color="b")
 
+                # plot hole labels
+                if label == "holes":
+                    for (i, pt) in enumerate(self.holes):
+                        ax.annotate(str(i), xy=pt, color="r")
+
             # display the legend
             ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 
