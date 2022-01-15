@@ -454,13 +454,9 @@ Post-Processor Package
 *post* Module
 ^^^^^^^^^^^^^
 
-setup_plot
-""""""""""
-..  autofunction:: sectionproperties.post.post.setup_plot
-
-finish_plot
-"""""""""""
-..  autofunction:: sectionproperties.post.post.finish_plot
+plotting_context
+""""""""""""""""
+..  autofunction:: sectionproperties.post.post.plotting_context
 
 draw_principal_axis
 """""""""""""""""""

@@ -1,7 +1,7 @@
 scipy
 numpy
 shapely
-matplotlib==3.4.2
+matplotlib
 more_itertools
 triangle
 Sphinx
