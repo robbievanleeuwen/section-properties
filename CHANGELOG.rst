@@ -7,7 +7,7 @@ v2.0.0:
 *sectionproperties* v2 incorporates significant changes to the pre-processor, which now uses the
 `Shapely <https://github.com/shapely/shapely>`_ package to power advanced geometry creation and
 manipulation, and vastly improves the performance and robustness of the plastic section property
-algorithm. v2.x.x introduces many breaking changes from v1.x.x when creating and manipulating
+algorithm. ``v2.x.x`` introduces many breaking changes from ``v1.x.x`` when creating and manipulating
 ``Geometry``, refer to the `documentation <https://sectionproperties.readthedocs.io>`_ for more
 information.
 
@@ -56,7 +56,7 @@ Analysis:
 Post-Processor:
 ^^^^^^^^^^^^^^
 
-- Added the ``plotting_context`` manager, allowing easily saving files, passing kwargs to ``pyplot.subplots()``
+- Added the ``plotting_context()`` manager, allowing easily saving files, passing kwargs to ``pyplot.subplots()``
   and much more! Many thanks to `@Spectre5 <https://github.com/Spectre5>`_
 - Improved contour plotting behaviour
 - Added plotting of Mohr's circle of stresses for any given point, thanks to
