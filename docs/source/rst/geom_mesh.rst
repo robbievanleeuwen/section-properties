@@ -157,8 +157,8 @@ Various limitations and assumptions need to be acknowledged:
 
 See the keyword arguments below that are used to search and simplify the Rhino geometry.
 
-Rhino files are read via the class methods :attr:`sectionproperties.pre.geometry.Geometry.from_3dm()` and
-:attr:`sectionproperties.pre.geometry.CompoundGeometry.from_3dm()`.
+Rhino files are read via the class methods :func:`sectionproperties.pre.geometry.Geometry.from_3dm()` and
+:func:`sectionproperties.pre.geometry.CompoundGeometry.from_3dm()`.
 Each class method returns the respective objects.
 
 ..  autofunction:: sectionproperties.pre.geometry.Geometry.from_3dm
@@ -173,8 +173,8 @@ Geometry objects can also be created from encodings of Rhino BREP.
    :noindex:
 
 More advanced filtering can be achieved by working with the Shapely geometries directly.
-These can be accessed by :attr:`sectionproperties.pre.rhino.load_3dm()` and
-:attr:`sectionproperties.pre.rhino.load_rhino_brep_encoding()`.
+These can be accessed by :func:`~sectionproperties.pre.rhino.load_3dm()` and
+:func:`~sectionproperties.pre.rhino.load_rhino_brep_encoding()`.
 
 ..  autofunction:: sectionproperties.pre.rhino.load_3dm
    :noindex:
@@ -283,7 +283,7 @@ There are generally two ways to visualise geometry objects:
 #. In the Jupyter computing environment, geometry objects utilise their underlying
    ``shapely.geometry.Polygon`` object's ``_repr_svg_`` method to show the geometry
    as it's own representation.
-#. By using the :attr:`~sectionproperties.pre.geometry.Geometry.plot_geometry()` method
+#. By using the :func:`~sectionproperties.pre.geometry.Geometry.plot_geometry()` method
 
 ..  automethod:: sectionproperties.pre.geometry.Geometry.plot_geometry
     :noindex:

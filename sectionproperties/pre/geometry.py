@@ -34,15 +34,15 @@ class Geometry:
     designating stress recovery points.
 
     :cvar geom: a Polygon object that defines the geometry
-    :vartype geom: shapely.geometry.Polygon
+    :vartype geom: :class:`shapely.geometry.Polygon`
 
     :cvar material: Optional, a Material to associate with this geometry
-    :vartype material: Optional[sectionproperties.pre.Material]
+    :vartype material: Optional[:class:`~sectionproperties.pre.Material`]
 
     :cvar control_point: Optional, an *(x, y)* coordinate within the geometry that
         represents a pre-assigned control point (aka, a region identification point)
         to be used instead of the automatically assigned control point generated
-        with shapely.geometry.Polygon.representative_point.
+        with :func:`shapely.geometry.Polygon.representative_point`.
 
     :cvar tol: Optional, default is 12. Number of decimal places to round the geometry vertices
         to. A lower value may reduce accuracy of geometry but increases precision when aligning
@@ -144,10 +144,10 @@ class Geometry:
             being holes or voids. The point can be located anywhere within the hole region.
             Only one point is required per hole region.
         :vartype holes: list[list[float, float]]
-        :cvar materials: Optional. A list of sectionproperties.pre.pre.Material objects that are to be
+        :cvar materials: Optional. A list of :class:`~sectionproperties.pre.pre.Material` objects that are to be
             assigned, in order, to the regions defined by the given control_points. If not given, then
-            the sectionproperties.pre.pre.DEFAULT_MATERIAL will be used for each region.
-        :vartype materials: list[sectionproperties.pre.pre.Material]
+            the :class:`~sectionproperties.pre.pre.DEFAULT_MATERIAL` will be used for each region.
+        :vartype materials: list[:class:`~sectionproperties.pre.pre.Material`]
         """
         if len(control_points) != 1:
             raise ValueError(
@@ -233,7 +233,7 @@ class Geometry:
             Try adjusting the keyword arguments if this error is raised.
         :return:
             A Geometry object.
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
 
         :Keyword Arguments:
             * *refine_num* (``int, optional``) --
@@ -284,7 +284,7 @@ class Geometry:
             See below.
         :return:
             A Geometry object found in the encoded string.
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
 
         :Keyword Arguments:
             * *refine_num* (``int, optional``) --
@@ -348,7 +348,7 @@ class Geometry:
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
             Geometry-object is self, not a new instance.
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
 
         The following example creates a circular cross-section with a diameter of 50 with 64
         points, and generates a mesh with a maximum triangular area of 2.5::
@@ -394,7 +394,7 @@ class Geometry:
 
         :param other: Either another Geometry or a tuple representing an
             *(x,y)* coordinate point that 'self' should align to.
-        :type other: Union[sectionproperties.pre.geometry.Geometry, Tuple[float, float]]
+        :type other: Union[:class:`~sectionproperties.pre.geometry.Geometry`, Tuple[float, float]]
 
         :param on: A str of either "left", "right", "bottom", or "top" indicating which
             side of 'other' that self should be aligned to.
@@ -405,7 +405,7 @@ class Geometry:
         :type inner: bool
 
         :return: Geometry object translated to alignment location
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
         """
         # Mappings are for indexes in the list of bbox extents of both
         # 'self' and 'align_to'. i.e. a mapping of which "word" corresponds
@@ -466,10 +466,10 @@ class Geometry:
         object will be aligned with it's centroid at the origin.
 
         :param align_to: Another Geometry to align to or None (default is None)
-        :type align_to: Optional[sectionproperties.pre.geometry.Geometry]
+        :type align_to: Optional[:class:`~sectionproperties.pre.geometry.Geometry`]
 
         :return: Geometry object translated to new alignment
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
         """
         cx, cy = list(self.geom.centroid.coords)[0]
         # Suggested by Agent 6-6-6: Hard-rounding of cx and cy allows
@@ -500,7 +500,7 @@ class Geometry:
         :type y_offset: float
 
         :return: New Geometry-object shifted by 'x_offset' and 'y_offset'
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
         """
         # Move assigned control point
         new_ctrl_point = None
@@ -532,7 +532,7 @@ class Geometry:
         :param use_radians: Boolean to indicate whether 'angle' is in degrees or radians. If True, 'angle' is interpreted as radians.
 
         :return: New Geometry-object rotated by 'angle' about 'rot_point'
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
 
         The following example rotates a 200UB25 section clockwise by 30 degrees::
 
@@ -568,7 +568,7 @@ class Geometry:
         :type mirror_point: Union[list[float, float], str]
 
         :return: New Geometry-object mirrored on 'axis' about 'mirror_point'
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
 
         The following example mirrors a 200PFC section about the y-axis and the point (0, 0)::
 
@@ -609,8 +609,8 @@ class Geometry:
         vector: Union[Optional[Tuple[float, float]], np.ndarray] = None,
     ) -> Tuple[List[Geometry], List[Geometry]]:
         """Splits, or bisects, the geometry about a line, as defined by two points
-        on the line or by one point on the line and a vector. Either 'point_j' or 'vector'
-        must be given. If 'point_j' is given, 'vector' is ignored.
+        on the line or by one point on the line and a vector. Either ``point_j`` or ``vector``
+        must be given. If ``point_j`` is given, ``vector`` is ignored.
 
         Returns a tuple of two lists each containing new Geometry instances representing the
         "top" and "bottom" portions, respectively, of the bisected geometry.
@@ -686,7 +686,7 @@ class Geometry:
         :type resolution: float
 
         :return: Geometry object translated to new alignment
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
 
         The following example erodes a 200PFC section by 2 mm::
 
@@ -771,7 +771,7 @@ class Geometry:
         with the selected point(s) shifted to the new location.
 
         Points are identified by their index, their relative location within the points
-        list found in self.points. You can call self.plot_geometry(labels="points") to
+        list found in ``self.points``. You can call ``self.plot_geometry(labels="points")`` to
         see a plot with the points labeled to find the appropriate point indexes.
 
         :param point_idxs: An integer representing an index location or a list of integer
@@ -791,7 +791,7 @@ class Geometry:
         :type abs_y: Optional[float]
 
         :return: Geometry object with selected points translated to the new location.
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
 
         The following example expands the sides of a rectangle, one point at a time,
         to make it a square::
@@ -979,7 +979,7 @@ class Geometry:
     def recovery_points(self):
         """
         Returns four stress recovery points for the section geometry. If the Geometry instance was
-        created by a NASTRAN geometry function, e.g. sectionproperties.pre.nastran_sections.nastran_bar(),
+        created by a NASTRAN geometry function, e.g. :func:`~sectionproperties.pre.nastran_sections.nastran_bar()`,
         then the recovery points will be pre-set on the Geometry instance.
         """
         return self._recovery_points
@@ -1100,9 +1100,10 @@ class CompoundGeometry(Geometry):
     CompoundGeometry objects can be created directly between two or more Geometry
     objects by using the + operator.
 
-    :cvar geoms: either a list of Geometry objects or a shapely.geometry.MultiPolygon
+    :cvar geoms: either a list of Geometry objects or a :class:`shapely.geometry.MultiPolygon`
         instance.
-    :vartype geoms: Union[shapely.geometry.MultiPolygon, List[sectionproperties.pre.geometry.Geometry]]
+    :vartype geoms: Union[:class:`shapely.geometry.MultiPolygon`,
+        List[:class:`~sectionproperties.pre.geometry.Geometry`]]
     """
 
     def __init__(self, geoms: Union[MultiPolygon, List[Geometry]]):
@@ -1135,8 +1136,8 @@ class CompoundGeometry(Geometry):
     def _repr_svg_(self):
         """
         Returns an svg representation of the CompoundGeometry.
-        Wraps shapely.geometry.MultiPolygon._repr_svg_() by returning
-        self.geom._repr_svg_()
+        Wraps :func:`shapely.geometry.MultiPolygon._repr_svg_()` by returning
+        ``self.geom._repr_svg_()``
         """
         materials_list = [geom.material.name for geom in self.geoms]
         print("sectionproperties.pre.geometry.CompoundGeometry")
@@ -1178,10 +1179,10 @@ class CompoundGeometry(Geometry):
             being holes or voids. The point can be located anywhere within the hole region.
             Only one point is required per hole region.
         :vartype holes: list[list[float]]
-        :cvar materials: Optional. A list of sectionproperties.pre.pre.Material objects that are to be
+        :cvar materials: Optional. A list of :class:`~sectionproperties.pre.pre.Material` objects that are to be
             assigned, in order, to the regions defined by the given control_points. If not given, then
-            the sectionproperties.pre.pre.DEFAULT_MATERIAL will be used for each region.
-        :vartype materials: list[sectionproperties.pre.pre.Material]
+            the :class:`~sectionproperties.pre.pre.DEFAULT_MATERIAL` will be used for each region.
+        :vartype materials: list[:class:`~sectionproperties.pre.pre.Material`]
         """
         if materials and not control_points:
             raise ValueError(
@@ -1288,7 +1289,7 @@ class CompoundGeometry(Geometry):
             See below.
         :return:
             A `CompoundGeometry` object.
-        :rtype: :class:`sectionproperties.pre.geometry.CompoundGeometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.CompoundGeometry`
 
         :Keyword Arguments:
             * *refine_num* (``int, optional``) --
@@ -1331,7 +1332,7 @@ class CompoundGeometry(Geometry):
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
             Geometry-object is self, not a new instance.
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
 
         The following example creates a circular cross-section with a diameter of 50 with 64
         points, and generates a mesh with a maximum triangular area of 2.5::
@@ -1366,7 +1367,7 @@ class CompoundGeometry(Geometry):
         :type y_offset: float
 
         :return: CompoundGeometry object shifted by 'x_offset' and 'y_offset'
-        :rtype: :class:`sectionproperties.pre.geometry.CompoundGeometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.CompoundGeometry`
         """
         geoms_acc = []
         for geom in self.geoms:
@@ -1391,7 +1392,7 @@ class CompoundGeometry(Geometry):
         :param use_radians: Boolean to indicate whether 'angle' is in degrees or radians. If True, 'angle' is interpreted as radians.
 
         :return: CompoundGeometry object rotated by 'angle' about 'rot_point'
-        :rtype: :class:`sectionproperties.pre.geometry.CompoundGeometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.CompoundGeometry`
 
         The following example rotates a 200UB25 section with a plate clockwise by 30 degrees::
 
@@ -1423,7 +1424,7 @@ class CompoundGeometry(Geometry):
         :type mirror_point: Union[list[float, float], str]
 
         :return: Geometry object mirrored on 'axis' about 'mirror_point'
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
 
         The following example mirrors a 200PFC section with a plate about the y-axis and the point (0, 0)::
 
@@ -1454,10 +1455,10 @@ class CompoundGeometry(Geometry):
         geometry's assigned material.
 
         :param align_to: Another Geometry to align to or None (default is None)
-        :type align_to: Optional[sectionproperties.pre.geometry.Geometry]
+        :type align_to: Optional[:class:`~sectionproperties.pre.geometry.Geometry`]
 
         :return: Geometry object translated to new alignment
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
         """
         EA_sum = sum(
             [
@@ -1497,8 +1498,8 @@ class CompoundGeometry(Geometry):
         vector: Union[Optional[Tuple[float, float]], np.ndarray] = None,
     ) -> Tuple[List[Geometry], List[Geometry]]:
         """Splits, or bisects, the geometry about an infinite line, as defined by two points
-        on the line or by one point on the line and a vector. Either 'point_j' or 'vector'
-        must be given. If 'point_j' is given, 'vector' is ignored.
+        on the line or by one point on the line and a vector. Either ``point_j`` or ``vector``
+        must be given. If ``point_j`` is given, ``vector`` is ignored.
 
         Returns a tuple of two lists each containing new Geometry instances representing the
         "top" and "bottom" portions, respectively, of the bisected geometry.
@@ -1554,7 +1555,7 @@ class CompoundGeometry(Geometry):
         :param resolution: Number of segments used to approximate a quarter circle around a point
         :type resolution: float
         :return: Geometry object translated to new alignment
-        :rtype: :class:`sectionproperties.pre.geometry.Geometry`
+        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
 
         The following example erodes a 200UB25 with a 12 plate stiffener section by 2 mm::
 
