@@ -1080,7 +1080,7 @@ class Section:
     ):
         r"""Plots the finite element mesh.
 
-        :param float alpha: Transparency of the mesh outlines: :math:`0 \leq \\alpha \leq 1`
+        :param float alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
         :param bool materials: If set to true shades the elements with the specified material
             colours
         :param mask: Mask array, of length ``num_nodes``, to mask out triangles
