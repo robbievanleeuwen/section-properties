@@ -1,6 +1,11 @@
 Changelog:
 ==========
 
+v2.0.1:
+-------
+
+Fix issue with library module
+
 v2.0.0:
 -------
 
