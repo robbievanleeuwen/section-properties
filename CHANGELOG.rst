@@ -24,7 +24,7 @@ fantastic additions!
 - Added .3dm import, thanks to `@normanrichardson <https://github.com/normanrichardson>`_
 - Introduction of a ``CompoundGeometry`` class for geometries with multiple regions
 - ``Geometry`` objects are assigned a ``Material`` property object, ``CompoundGeometry`` objects
-  can contain multiple ``Geometry`` objects (each with their own ``Material`` object) 
+  can contain multiple ``Geometry`` objects (each with their own ``Material`` object)
   enabling composite analysis
 - ``Geometry`` and ``CompoundGeometry`` objects contain mesh information and meshing must be
   performed before initialising a ``Section`` object
@@ -56,6 +56,8 @@ Analysis:
 Post-Processor:
 ^^^^^^^^^^^^^^
 
+- Added the ``plotting_context`` manager, allowing easily saving files, passing kwargs to ``pyplot.subplots()``
+  and much more! Many thanks to `@Spectre5 <https://github.com/Spectre5>`_
 - Improved contour plotting behaviour
 - Added plotting of Mohr's circle of stresses for any given point, thanks to
   `@ccaprani <https://github.com/ccaprani>`_

@@ -11,9 +11,8 @@ build:
 sphinx:
    configuration: docs/source/conf.py
 
-# Default is HTML
-formats:
-  - pdf
+# # Default is HTML
+# formats: []
 
 # Optionally declare the Python requirements required to build your docs
 python:
