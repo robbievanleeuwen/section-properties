@@ -10,7 +10,7 @@ A python package for the analysis of arbitrary cross-sections using the finite e
 
 ## Installation:
 
-For more detailed installation instructions, refer to the [documentation](https://sectionproperties.readthedocs.io/).
+For more detailed installation instructions, refer to the [documentation](https://sectionproperties.readthedocs.io/en/latest/rst/installation.html).
 
 ```
 $ pip install sectionproperties
@@ -18,7 +18,7 @@ $ pip install sectionproperties
 
 ## Documentation:
 
-*sectionproperties* has a fully documented python API which you can find at [https://sectionproperties.readthedocs.io/](https://sectionproperties.readthedocs.io/). To read more about the theory behind the program, its implementation and some more examples, check out my blog at [https://robbievanleeuwen.github.io/](https://robbievanleeuwen.github.io/).
+*sectionproperties* is fully documented including a user walkthrough, examples, background theory and an API guide. The documentation can find at [https://sectionproperties.readthedocs.io/](https://sectionproperties.readthedocs.io/).
 
 ## Current Capabilities:
 
