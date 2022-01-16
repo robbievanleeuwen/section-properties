@@ -27,25 +27,27 @@ can be found in the README file on github.
    rst/installation
    rst/structure
    rst/geom_mesh
+   rst/section_library
+   rst/advanced_geom
    rst/analysis
    rst/post
-   rst/examples
+   sphinx_gallery_examples/index
    rst/api
    rst/theory
 
 Here's a quick example that harnesses some of the power of *sectionproperties* and shows its simplicity::
 
-  import sectionproperties.pre.sections as sections
-  from sectionproperties.analysis.cross_section import CrossSection
+  import sectionproperties.pre.library.steel_sections as steel_sections
+  from sectionproperties.analysis.section import Section
 
   # create geometry of the cross-section
-  geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+  geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
 
   # generate a finite element mesh
-  mesh = geometry.create_mesh(mesh_sizes=[2.5])
+  geometry.create_mesh(mesh_sizes=[10])
 
-  # create a CrossSection object for analysis
-  section = CrossSection(geometry, mesh)
+  # create a Section object for analysis
+  section = Section(geometry)
 
   # calculate various cross-section properties
   section.calculate_geometric_properties()
@@ -57,26 +59,17 @@ Here's a quick example that harnesses some of the power of *sectionproperties* a
   print(section.get_ic())  # second moments of area about the centroidal axis
   >>>(23544664.29, 3063383.07, 0.00)
   print(section.get_j())  # torsion constant
-  >>>62907.79
+  >>>62954.43
   print(section.get_As())  # shear areas in the x & y directions
-  >>>(1842.17, 1120.18)
+  >>>(1842.24, 1120.19)
 
 Support
 -------
 
-Contact me on my email robbie.vanleeuwen@gmail.com or raise an issue on the github issue
-tracker using one of the `issue templates
-<https://github.com/robbievanleeuwen/section-properties/tree/master/.github/ISSUE_TEMPLATE>`_.
-If you have a request for a feature to be added to the *sectionproperties* package,
-please don't hesitate to get in touch
-
-Disclaimer
-----------
-
-*sectionproperties* is an open source engineering tool that continues to benefit from the
-collaboration of many contributors. Although efforts have been made to ensure the that relevant
-engineering theories have been correctly implemented, it remains the user's responsibility to
-confirm and accept the output.
+Raise an issue on the `GitHub issue tracker
+<https://github.com/robbievanleeuwen/section-properties/issues>`_ or contact me at
+`robbie.vanleeuwen@gmail.com <mailto:robbie.vanleeuwen@gmail.com>`_. If you have a request for a
+feature to be added to the *sectionproperties* package, please don't hesitate to get in touch
 
 License
 -------

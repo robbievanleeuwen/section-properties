@@ -126,7 +126,6 @@ def function_timer(text, function, *args):
     result = function(*args)
 
     if text != "":
-        print("----completed in {0:.6f} seconds---".format(
-            time.time() - start_time))
+        print("----completed in {0:.6f} seconds---\n".format(time.time() - start_time))
 
     return result

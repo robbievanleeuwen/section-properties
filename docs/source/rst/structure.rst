@@ -1,7 +1,7 @@
 Structure of an Analysis
 ========================
 
-The process of performing a cross-section analysis with *sectionproperties* can
+The process of performing a cross-section analysis with ``sectionproperties`` can
 be broken down into three stages:
 
 1. Pre-Processor: The input geometry and finite element mesh is created.
@@ -12,16 +12,15 @@ Creating a Geometry and Mesh
 ----------------------------
 
 The dimensions and shape of the cross-section to be analysed define the *geometry*
-of the cross-section. The :ref:`label-sections-module` provides a number of classes
-to easily generate either commonly used structural sections or an  arbitrary
-cross-section, defined by a list of points, facets and holes. All of the classes
-in the :ref:`label-sections-module` inherit from the
-:class:`~sectionproperties.pre.sections.Geometry` class.
+of the cross-section. The :ref:`Section Library<label-section-library>` provides a number of
+functions to easily generate either commonly used structural sections. Alternatively,
+arbitrary cross-sections can be built from a list of user-defined points, see
+:ref:`label-from-points`.
 
 The final stage in the pre-processor involves generating a finite element mesh of
 the *geometry* that the solver can use to calculate the cross-section properties.
-This can easily be performed using the :func:`~sectionproperties.pre.sections.Geometry.create_mesh`
-method that all :class:`~sectionproperties.pre.sections.Geometry` objects have
+This can easily be performed using the :func:`~sectionproperties.pre.geometry.Geometry.create_mesh`
+method that all :class:`~sectionproperties.pre.geometry.Geometry` objects have
 access to.
 
 The following example creates a geometry object with a circular cross-section.
@@ -29,10 +28,10 @@ The diameter of the circle is 50 and 64 points are used to discretise the circum
 of the circle. A finite element mesh is generated with a maximum triangular area
 of 2.5::
 
-      import sectionproperties.pre.sections as sections
+      import sectionproperties.pre.library.primitive_sections as primitive_sections
 
-      geometry = sections.CircularSection(d=50, n=64)
-      mesh = geometry.create_mesh(mesh_sizes=[2.5])
+      geometry = primitive_sections.circular_section(d=50, n=64)
+      geometry.create_mesh(mesh_sizes=[2.5])
 
 ..  figure:: ../images/sections/circle_mesh.png
     :align: center
@@ -46,8 +45,8 @@ class. The following example creates a steel material object::
 
       from sectionproperties.pre.pre import Material
 
-      steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
-                       color='grey')
+      steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
+                       yield_strength=500, color='grey')
 
 Refer to :ref:`label-geom_mesh` for a more detailed explanation of the pre-processing
 stage.
@@ -55,7 +54,7 @@ stage.
 Running an Analysis
 -------------------
 
-The solver operates on a :class:`~sectionproperties.analysis.cross_section.CrossSection`
+The solver operates on a :class:`~sectionproperties.analysis.section.Section`
 object and can perform four different analysis types:
 
 - Geometric Analysis: calculates area properties.
@@ -73,16 +72,17 @@ The following example performs a geometric and warping analysis on the circular
 cross-section defined in the previous section with steel used as the material
 property::
 
-  import sectionproperties.pre.sections as sections
-  from sectionproperties.analysis.cross_section import CrossSection
+  import sectionproperties.pre.library.primitive_sections as primitive_sections
+  from sectionproperties.analysis.section import Section
   from sectionproperties.pre.pre import Material
 
-  geometry = sections.CircularSection(d=50, n=64)
-  mesh = geometry.create_mesh(mesh_sizes=[2.5])
-  steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
-                   color='grey')
 
-  section = CrossSection(geometry, mesh, [steel])
+  steel = Material(name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
+                   yield_strength=500, color='grey')
+  geometry = primitive_sections.circular_section(d=50, n=64, material=steel)
+  geometry.create_mesh(mesh_sizes=[2.5])  # Adds the mesh to the geometry
+
+  section = Section(geometry)
   section.calculate_geometric_properties()
   section.calculate_warping_properties()
 
@@ -92,7 +92,7 @@ Viewing the Results
 -------------------
 
 Once an analysis has been performed, a number of methods belonging to the
-:class:`~sectionproperties.analysis.cross_section.CrossSection` object can be called
+:class:`~sectionproperties.analysis.section.Section` object can be called
 to present the cross-section results in a number of different formats. For example
 the cross-section properties can be printed to the terminal, a plot of the centroids
 displayed and the cross-section stresses visualised in a contour plot.
@@ -100,13 +100,13 @@ displayed and the cross-section stresses visualised in a contour plot.
 The following example analyses a 200 PFC section. The cross-section properties
 are printed to the terminal and a plot of the centroids is displayed::
 
-  import sectionproperties.pre.sections as sections
-  from sectionproperties.analysis.cross_section import CrossSection
+  import sectionproperties.pre.library.steel_sections as steel_sections
+  from sectionproperties.analysis.section import Section
 
-  geometry = sections.PfcSection(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-  mesh = geometry.create_mesh(mesh_sizes=[2.5])
+  geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
+  geometry.create_mesh(mesh_sizes=[2.5])  # Adds the mesh to the geometry
 
-  section = CrossSection(geometry, mesh)
+  section = Section(geometry)
   section.calculate_geometric_properties()
   section.calculate_plastic_properties()
   section.calculate_warping_properties()
@@ -119,13 +119,14 @@ are printed to the terminal and a plot of the centroids is displayed::
     :scale: 75 %
 
     Plot of the elastic centroid and shear centre for the above example generated
-    by :func:`~sectionproperties.analysis.cross_section.CrossSection.plot_centroids`
+    by :func:`~sectionproperties.analysis.section.Section.plot_centroids`
 
-Output generated by the :func:`~sectionproperties.analysis.cross_section.CrossSection.display_results`
+Output generated by the :func:`~sectionproperties.analysis.section.Section.display_results`
 method::
 
   Section Properties:
   A       = 2.919699e+03
+  Perim.  = 6.776201e+02
   Qx      = 2.919699e+05
   Qy      = 7.122414e+04
   cx      = 2.439434e+01
@@ -161,6 +162,16 @@ method::
   y2_se   = 4.905074e-06
   A_sx    = 9.468851e+02
   A_sy    = 1.106943e+03
+  A_s11   = 9.468854e+02
+  A_s22   = 1.106943e+03
+  betax+  = 1.671593e-05
+  betax-  = -1.671593e-05
+  betay+  = -2.013448e+02
+  betay-  = 2.013448e+02
+  beta11+ = 1.671593e-05
+  beta11- = -1.671593e-05
+  beta22+ = -2.013448e+02
+  beta22- = 2.013448e+02
   x_pc    = 1.425046e+01
   y_pc    = 1.000000e+02
   Sxx     = 2.210956e+05
@@ -178,5 +189,4 @@ method::
   SF_22+  = 1.802381e+00
   SF_22-  = 8.688337e-01
 
-Refer to :ref:`label-post` for a more detailed explanation of the post-processing
-stage.
+Refer to :ref:`label-post` for a more detailed explanation of the post-processing stage.

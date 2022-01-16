@@ -1,6 +1,7 @@
-![alt text](logo.png "sectionproperties")
+![Logo Dark](docs/source/images/logo_dark.png#gh-dark-mode-only)
+![Logo Light](docs/source/images/logo.png#gh-light-mode-only)
 
-[![Build Status](https://travis-ci.com/robbievanleeuwen/section-properties.svg?branch=master)](https://travis-ci.com/robbievanleeuwen/section-properties) [![Documentation Status](https://readthedocs.org/projects/sectionproperties/badge/?version=latest)](https://sectionproperties.readthedocs.io/en/latest/?badge=latest)
+[![Run Tests](https://github.com/robbievanleeuwen/section-properties/actions/workflows/tests.yml/badge.svg?branch=v2)](https://github.com/robbievanleeuwen/section-properties/actions/workflows/tests.yml) [![Lint with Black](https://github.com/robbievanleeuwen/section-properties/actions/workflows/black.yml/badge.svg?branch=v2)](https://github.com/robbievanleeuwen/section-properties/actions/workflows/black.yml) [![Documentation Status](https://readthedocs.org/projects/sectionproperties/badge/?version=v2)](https://sectionproperties.readthedocs.io/en/v2/?badge=v2) [![codecov](https://codecov.io/gh/robbievanleeuwen/section-properties/branch/v2/graph/badge.svg?token=QCH9J4SG6P)](https://codecov.io/gh/robbievanleeuwen/section-properties) [![PyPI version](https://badge.fury.io/py/sectionproperties.svg)](https://badge.fury.io/py/sectionproperties) [![Python versions](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue?style=flat&logo=python)](https://badge.fury.io/py/sectionproperties) [![GitHub license](https://img.shields.io/github/license/robbievanleeuwen/section-properties)](https://github.com/robbievanleeuwen/section-properties/blob/master/LICENSE)
 
 A python package for the analysis of arbitrary cross-sections using the finite element method written by Robbie van Leeuwen. *sectionproperties* can be used to determine section properties to be used in structural design and visualise cross-sectional stresses resulting from combinations of applied forces and bending moments.
 
@@ -9,25 +10,6 @@ A python package for the analysis of arbitrary cross-sections using the finite e
 ## Installation:
 
 For more detailed installation instructions, refer to the [documentation](https://sectionproperties.readthedocs.io/).
-
-### UNIX (MacOS/Linux):
-
-```
-$ pip install sectionproperties
-```
-
-### Windows
-
-Install *meshpy* by downloading the appropriate [installation wheel](https://www.lfd.uci.edu/~gohlke/pythonlibs/#meshpy).
-
-Navigate to the location of the downloaded wheel and install using pip:
-
-```
-$ cd Downloads
-$ pip install MeshPy‑2018.2.1‑cp36‑cp36m‑win_amd64.whl
-```
-
-Once *meshpy* has been installed, *sectionproperties* can be installed:
 
 ```
 $ pip install sectionproperties
@@ -41,20 +23,20 @@ $ pip install sectionproperties
 
 ### Pre-Processor:
 - [x] Python API
+- [x] Geometry manipulation by Shapely
+- [x] Common section geometry functions
 - [x] Custom section geometry input
-- [x] Common section geometry generators
-- [x] Multiple geometry merging
+- [x] Rhino .3dm import
+- [x] .dxf import
 - [x] Perimeter offset tool
-- [x] Geometry cleaning
-- [ ] JSON input file
-- [ ] .dxf import
 - [x] Quadratic triangular mesh generation
-- [x] Composite material properties
+- [x] Composite material definition
 
 ### Cross-Section Analysis:
 - [x] Global axis geometric section properties:
   - [x] Area
   - [x] Perimeter
+  - [x] Mass
   - [x] First moments of area
   - [x] Second moments of area
   - [x] Elastic centroid
@@ -77,12 +59,14 @@ $ pip install sectionproperties
 - [x] Warping section properties:
   - [x] Torsion constant
   - [x] Warping constant
+  - [x] Monosymmetry constants
 - [x] Shear section properties:
   - [x] Shear centre (elastic method)
   - [x] Shear centre (Trefftz's method)
   - [x] Shear areas (global axis)
   - [x] Shear areas (principal axis)
-- [x] Cross-section stresses
+- [x] Cross-section stress analysis
+- [x] Mohr's circles for stresses at a point
 
 ### Solver:
 - [x] Direct solver
@@ -96,12 +80,6 @@ $ pip install sectionproperties
 - [x] Plot cross-section stresses
 - [x] Retrieve cross-section stresses
 - [ ] Generate cross-section report
-- [ ] Export to Paraview
-
-### Additional Modules:
-- [ ] Optimisation
-- [ ] Reinforced Concrete
-- [ ] Steel
 
 ## Disclaimer:
 
