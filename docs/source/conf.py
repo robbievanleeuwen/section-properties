@@ -8,10 +8,7 @@
 
 from sphinx_gallery.sorting import FileNameSortKey
 from sphinx_gallery.scrapers import matplotlib_scraper
-import locale
 
-
-locale.setlocale(locale.LC_ALL, "")
 
 # -- Path setup --------------------------------------------------------------
 
@@ -25,7 +22,7 @@ import sys
 sys.path.insert(0, os.path.abspath("../../"))
 from sectionproperties import __version__ as ver
 
-autodoc_mock_imports = ["rhino_shapely_interop", "cad_to_shapely"]
+autodoc_mock_imports = []
 
 # -- Project information -----------------------------------------------------
 
