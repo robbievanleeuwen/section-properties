@@ -871,12 +871,12 @@ The von Mises stress can be determined from the net axial and shear stress as fo
 Principal Stresses
 ^^^^^^^^^^^^^^^^^^
 
-For a cross section subjected to axial force, shear in the :math:`x` and :math`y` axes which are
+For a cross section subjected to axial force, shear in the :math:`x` and :math:`y` axes which are
 perpendicular to the centroidal (:math:`z`) axis, and moments about all three axes, there are no
 axial stresses in the :math:`x` or :math:`y` axes, and so the stress tensor is given by:
 
 .. math::
-    \textbf{\sigma} = \begin{bmatrix} 0 & 0 & \tau_{zx} \\
+    \boldsymbol{\sigma} = \begin{bmatrix} 0 & 0 & \tau_{zx} \\
                                0 & 0 & \tau_{zy} \\
                            \tau_{xz} & \tau_{yz} & \sigma_{zz}
                        \end{bmatrix}
@@ -889,7 +889,7 @@ matrix through a coordinate transformation. Since this is the basic eigenvalue p
 principal stresses are then given by:
 
 .. math::
-    \det (\textbf{\sigma} - \lambda \textbf{I}) = 0
+    \det (\boldsymbol{\sigma} - \lambda \textbf{I}) = 0
 
 Of which the characteristic polynomial can then be written:
 
@@ -899,9 +899,9 @@ Of which the characteristic polynomial can then be written:
 where the stress invariants :math:`I` are then given by [5]:
 
 .. math::
-    I_1 &= \textnormal(\textbf{\sigma}) = \sigma_{zz} \\
-    I_2 &= \frac{1}{2}\left[ (\textnormal(\textbf{\sigma})^2 - \textnormal(\textbf{\sigma}^2)) \right] = -\tau_{zx}^2 - \tau_{yz}^2 \\
-    I_3 &= \det(\textbf{\sigma}) = 0
+    I_1 &= \textnormal(\boldsymbol{\sigma}) = \sigma_{zz} \\
+    I_2 &= \frac{1}{2}\left[ (\textnormal(\boldsymbol{\sigma})^2 - \textnormal(\boldsymbol{\sigma}^2)) \right] = -\tau_{zx}^2 - \tau_{yz}^2 \\
+    I_3 &= \det(\boldsymbol{\sigma}) = 0
 
 and thus, the cubic polynomial reduces to a quadratic, the two roots of which are then the first
 and third principal stresses (with :math:`\sigma_2 = 0`):
