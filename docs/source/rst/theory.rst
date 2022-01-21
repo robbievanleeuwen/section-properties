@@ -849,16 +849,6 @@ point :math:`i` within an element :math:`e` are given by [2]:
   \end{bmatrix}\right)
 
 
-Principal Stresses
-^^^^^^^^^^^^^^^^^^
-
-The principal stresses can be determined from the net axial and shear stress as follows [2]:
-
-.. math::
-  \sigma_1 &= \frac{\sigma_{zz}}{2} + \sqrt{\left(\frac{\sigma_{zz}}{2}\right)^2 + \tau_{z,xy}^2} \\
-  \sigma_2 &= 0 \\
-  \sigma_3 &= \frac{\sigma_{zz}}{2} - \sqrt{\left(\frac{\sigma_{zz}}{2}\right)^2 + \tau_{z,xy}^2}
-
 von Mises Stresses
 ^^^^^^^^^^^^^^^^^^
 
@@ -899,15 +889,15 @@ Of which the characteristic polynomial can then be written:
 where the stress invariants :math:`I` are then given by [5]:
 
 .. math::
-    I_1 &= \textnormal(\boldsymbol{\sigma}) = \sigma_{zz} \\
-    I_2 &= \frac{1}{2}\left[ (\textnormal(\boldsymbol{\sigma})^2 - \textnormal(\boldsymbol{\sigma}^2)) \right] = -\tau_{zx}^2 - \tau_{yz}^2 \\
+    I_1 &= \textrm{tr}(\boldsymbol{\sigma}) = \sigma_{zz} \\
+    I_2 &= \frac{1}{2}\left[\textrm{tr}(\boldsymbol{\sigma})^2 - \textrm{tr}(\boldsymbol{\sigma}^2) \right] = -\tau_{zx}^2 - \tau_{zy}^2 \\
     I_3 &= \det(\boldsymbol{\sigma}) = 0
 
 and thus, the cubic polynomial reduces to a quadratic, the two roots of which are then the first
 and third principal stresses (with :math:`\sigma_2 = 0`):
 
 .. math::
-    \sigma_{1,3} = \frac{\sigma_{zz}}{2} \pm \sqrt{ \left(\frac{\sigma_{zz}}{2}\right)^2 + \tau_{zx}^2 + \tau_{yz}^2  }
+    \sigma_{1,3} = \frac{\sigma_{zz}}{2} \pm \sqrt{ \left(\frac{\sigma_{zz}}{2}\right)^2 + \tau_{zx}^2 + \tau_{zy}^2  }
 
 .. _label-theory-composite:
 
@@ -959,4 +949,4 @@ References
 
 4. AS 4100 - 1998: Steel Structures. (1998, June). Standards Australia.
 
-5. Oñate, E. (2009), Structural Analysis with the Finite Element Method. Linear Statics. Volume 1 : The Basis and Solids, Springer Netherlands
+5. Oñate, E. (2009), Structural Analysis with the Finite Element Method. Linear Statics. Volume 1: The Basis and Solids, Springer Netherlands
