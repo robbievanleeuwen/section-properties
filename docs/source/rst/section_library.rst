@@ -21,6 +21,11 @@ Circular Section
 ..  autofunction:: sectionproperties.pre.library.primitive_sections.circular_section
     :noindex:
 
+Circular Section By Area
+------------------------
+..  autofunction:: sectionproperties.pre.library.primitive_sections.circular_section_by_area
+    :noindex:
+
 Elliptical Section
 ------------------
 ..  autofunction:: sectionproperties.pre.library.primitive_sections.elliptical_section

@@ -12,6 +12,7 @@ def concrete_rectangular_section(
     n_bar: int,
     n_circle: int,
     cover: float,
+    area: float = None,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
@@ -25,6 +26,9 @@ def concrete_rectangular_section(
     :param int n_bar: Number of steel reinforcing bars
     :param int n_circle: Number of points discretising the steel reinforcing bars
     :param float cover: Side and bottom cover to the steel reinforcing bars
+    :param float area: If provided, constructs reinforcing bars based on their area
+        rather than a diameter (prevents the underestimation of steel area due to
+        circle discretision)
     :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to associate with
         the concrete
     :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to associate with
@@ -39,10 +43,12 @@ def concrete_rectangular_section(
         from sectionproperties.pre.pre import Material
 
         concrete = Material(
-            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32, color='lightgrey'
+            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
+            density=2.4e-6, color='lightgrey'
         )
         steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500, color='grey'
+            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
+            density=7.85e-6, color='grey'
         )
 
         geometry = concrete_rectangular_section(
@@ -72,7 +78,15 @@ def concrete_rectangular_section(
     spacing = (b - 2 * cover - dia) / (n_bar - 1)
 
     for i in range(n_bar):
-        bar = primitive_sections.circular_section(d=dia, n=n_circle, material=steel_mat)
+        if area:
+            bar = primitive_sections.circular_section_by_area(
+                area=area, n=n_circle, material=steel_mat
+            )
+        else:
+            bar = primitive_sections.circular_section(
+                d=dia, n=n_circle, material=steel_mat
+            )
+
         geom += bar.shift_section(x_offset=x_i + spacing * i, y_offset=cover + dia / 2)
 
     return geom
@@ -87,6 +101,7 @@ def concrete_tee_section(
     n_bar: int,
     n_circle: int,
     cover: float,
+    area: float = None,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
@@ -102,6 +117,9 @@ def concrete_tee_section(
     :param int n_bar: Number of steel reinforcing bars
     :param int n_circle: Number of points discretising the steel reinforcing bars
     :param float cover: Side and bottom cover to the steel reinforcing bars
+    :param float area: If provided, constructs reinforcing bars based on their area
+        rather than a diameter (prevents the underestimation of steel area due to
+        circle discretision)
     :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to associate with
         the concrete
     :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to associate with
@@ -116,10 +134,12 @@ def concrete_tee_section(
         from sectionproperties.pre.pre import Material
 
         concrete = Material(
-            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32, color='lightgrey'
+            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
+            density=2.4e-6, color='lightgrey'
         )
         steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500, color='grey'
+            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
+            density=7.85e-6, color='grey'
         )
 
         geometry = concrete_tee_section(
@@ -152,7 +172,15 @@ def concrete_tee_section(
     spacing = (b - 2 * cover - dia) / (n_bar - 1)
 
     for i in range(n_bar):
-        bar = primitive_sections.circular_section(d=dia, n=n_circle, material=steel_mat)
+        if area:
+            bar = primitive_sections.circular_section_by_area(
+                area=area, n=n_circle, material=steel_mat
+            )
+        else:
+            bar = primitive_sections.circular_section(
+                d=dia, n=n_circle, material=steel_mat
+            )
+
         geom += bar.shift_section(x_offset=x_i + spacing * i, y_offset=cover + dia / 2)
 
     return geom
@@ -165,6 +193,7 @@ def concrete_circular_section(
     n_bar: int,
     n_circle: int,
     cover: float,
+    area: float = None,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
@@ -178,6 +207,9 @@ def concrete_circular_section(
     :param int n_bar: Number of steel reinforcing bars
     :param int n_circle: Number of points discretising the steel reinforcing bars
     :param float cover: Side and bottom cover to the steel reinforcing bars
+    :param float area: If provided, constructs reinforcing bars based on their area
+        rather than a diameter (prevents the underestimation of steel area due to
+        circle discretision)
     :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to associate with
         the concrete
     :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to associate with
@@ -192,10 +224,12 @@ def concrete_circular_section(
         from sectionproperties.pre.pre import Material
 
         concrete = Material(
-            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32, color='lightgrey'
+            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
+            density=2.4e-6, color='lightgrey'
         )
         steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500, color='grey'
+            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
+            density=7.85e-6, color='grey'
         )
 
         geometry = concrete_circular_section(
@@ -225,7 +259,15 @@ def concrete_circular_section(
     d_theta = 2 * np.pi / n_bar
 
     for i in range(n_bar):
-        bar = primitive_sections.circular_section(d=dia, n=n_circle, material=steel_mat)
+        if area:
+            bar = primitive_sections.circular_section_by_area(
+                area=area, n=n_circle, material=steel_mat
+            )
+        else:
+            bar = primitive_sections.circular_section(
+                d=dia, n=n_circle, material=steel_mat
+            )
+
         geom += bar.shift_section(
             x_offset=r * np.cos(i * d_theta), y_offset=r * np.sin(i * d_theta)
         )
