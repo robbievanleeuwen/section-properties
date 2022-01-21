@@ -40,6 +40,11 @@ A plastic analysis calculates the plastic properties of the section.
 ..  note:: A geometric analysis must be performed on the Section object before
   a plastic analysis is carried out.
 
+..  warning:: The plastic analysis in *sectionproperties* assumes all materials are
+  able to reach their yield stress defined in the material properties. Care should be
+  taken if analysing materials or cross-sections exhibiting non-linear behaviour, e.g.
+  reinforced concrete or non-compact steel sections.
+
 ..  automethod:: sectionproperties.analysis.section.Section.calculate_plastic_properties
     :noindex:
 
@@ -63,6 +68,9 @@ object which stores the section stresses and provides stress plotting functions.
 
 ..  note:: A geometric and warping analysis must be performed on the Section
   object before a stress analysis is carried out.
+
+..  warning:: The stress analysis in *sectionproperties* is linear-elastic and does not
+  account for the yielding of materials or any non-linearities.
 
 ..  automethod:: sectionproperties.analysis.section.Section.calculate_stress
     :noindex:
