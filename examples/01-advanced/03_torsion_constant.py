@@ -26,7 +26,7 @@ j_list = []  # list holding torsion constant results
 
 # %%
 # Number of elements for each analysis
-n = 500
+n = 100
 
 # %%
 # Loop through all the widths

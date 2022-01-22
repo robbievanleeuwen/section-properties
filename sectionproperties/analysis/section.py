@@ -793,7 +793,7 @@ class Section:
         )
 
     def calculate_plastic_properties(self, verbose=False, debug=False):
-        """Calculates the plastic properties of the cross-section and stores the, in the
+        """Calculates the plastic properties of the cross-section and stores them in the
         :class:`~sectionproperties.analysis.section.SectionProperties` object contained in
         the ``section_props`` class variable.
 

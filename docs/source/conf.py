@@ -177,15 +177,6 @@ texinfo_documents = [
 
 # --- Sphinx-Gallery options -----------------------------------------------------------------------
 
-
-class matplotlib_svg_scraper(object):
-    def __repr__(self):
-        return self.__class__.__name__
-
-    def __call__(self, *args, **kwargs):
-        return matplotlib_scraper(*args, format="svg", **kwargs)
-
-
 sphinx_gallery_conf = {
     # convert rst to md for ipynb
     "pypandoc": False,
@@ -203,7 +194,7 @@ sphinx_gallery_conf = {
     "backreferences_dir": None,
     # Modules for which function level galleries are created.  In
     "doc_module": "sectionproperties",
-    "image_scrapers": (matplotlib_svg_scraper(),),
+    "image_scrapers": ("matplotlib",),
     "first_notebook_cell": ("%matplotlib inline\n"),
 }
 

@@ -98,7 +98,6 @@ are as follows:
   N_4 &= 4 \eta \xi \\
   N_5 &= 4 \xi \zeta \\
   N_6 &= 4 \eta \zeta
-  :label: eq-shape-functions
 
 
 The above shape functions can be combined into the shape function row vector:
@@ -132,14 +131,13 @@ and the partial derivative matrix (:math:`\textbf{P}`):
     1 & 0 \\
     0 & 1 \\
   \end{bmatrix}
-  :label: eq-JP
 
 The determinant of the *Jacobian matrix* scaled by one half is equal to the Jacobian:
 
 .. math::
   J = \frac{1}{2} \textrm{det} \, \textbf{J}
 
-Equation :eq:`eq-JP` can be re-arranged to evaluate the partial derivate matrix
+The equation for \textbf{J P} can be re-arranged to evaluate the partial derivate matrix
 (:math:`\textbf{P}`):
 
 .. math::
@@ -166,7 +164,7 @@ expressions:
   \end{bmatrix}
 
 where the derivatives of the shape functions with respect to the isoparametric parameters can
-easily be evaluated from Equation :eq:`eq-shape-functions`, resulting in the following expression
+easily be evaluated from the equation for the shape functions, resulting in the following expression
 for the :math:`\textbf{B}` matrix:
 
 .. math::

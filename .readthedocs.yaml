@@ -12,7 +12,7 @@ sphinx:
    configuration: docs/source/conf.py
 
 # # Default is HTML
-# formats: []
+formats: all
 
 # Optionally declare the Python requirements required to build your docs
 python:
