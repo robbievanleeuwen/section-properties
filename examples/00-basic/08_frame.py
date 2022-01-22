@@ -28,7 +28,7 @@ geometry = sections.rectangular_section(d=100, b=50)
 
 # %%
 # Create a list of mesh sizes to analyse
-mesh_sizes = [1.5, 2, 2.5, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
+mesh_sizes = [3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 200]
 j_calc = []  # list to store torsion constants
 t_calc = []  # list to store computation times
 

@@ -21,8 +21,8 @@ from sectionproperties.analysis.section import Section
 
 # %%
 # Define mesh sizes
-mesh_size_list = [50, 20, 10, 5, 3, 2, 1]
-nr_list = [4, 8, 12, 16, 20, 24, 32, 64]
+mesh_size_list = [200, 100, 50, 20, 10, 5]
+nr_list = [4, 8, 12, 16, 20, 24, 32]
 
 # %%
 # Initialise result lists
@@ -33,17 +33,17 @@ nr_elements = []
 
 # %%
 # Calculate reference solution
-geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=64)
-geometry.create_mesh(mesh_sizes=[0.5])  # create mesh
+geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=32)
+geometry.create_mesh(mesh_sizes=[5])  # create mesh
 section = Section(geometry)  # create a Section object
 section.calculate_geometric_properties()
 section.calculate_warping_properties()
 j_reference = section.get_j()  # get the torsion constant
 
 # %%
-# Run through mesh_sizes with n_r = 16
+# Run through mesh_sizes with n_r = 8
 for mesh_size in mesh_size_list:
-    geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=16)
+    geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
     geometry.create_mesh(mesh_sizes=[mesh_size])  # create mesh
     section = Section(geometry)  # create a Section object
     section.calculate_geometric_properties()
@@ -53,10 +53,10 @@ for mesh_size in mesh_size_list:
     mesh_results.append(section.get_j())
 
 # %%
-# Run through n_r with mesh_size = 3
+# Run through n_r with mesh_size = 10
 for n_r in nr_list:
     geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=n_r)
-    geometry.create_mesh(mesh_sizes=[3])  # create mesh
+    geometry.create_mesh(mesh_sizes=[10])  # create mesh
     section = Section(geometry)  # create a Section object
     section.calculate_geometric_properties()
     section.calculate_warping_properties()
