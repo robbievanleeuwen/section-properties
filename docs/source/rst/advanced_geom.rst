@@ -262,9 +262,9 @@ In creating this geometry consider the following:
 
 To create the nested geometry using shapely, the code would be as follows::
 
-    mat1 = Material(name="Material 1", elastic_modulus=100, poissons_ratio=0.3, yield_strength=10, color="yellow")
-    mat2 = Material(name="Material 2", elastic_modulus=100, poissons_ratio=0.3, yield_strength=10, color="orange")
-    mat3 = Material(name="Material 3", elastic_modulus=100, poissons_ratio=0.3, yield_strength=10, color="red")
+    mat1 = Material(name="Material 1", elastic_modulus=100, poissons_ratio=0.3, yield_strength=10, density=1e-6, color="yellow")
+    mat2 = Material(name="Material 2", elastic_modulus=100, poissons_ratio=0.3, yield_strength=10, density=1e-6, color="orange")
+    mat3 = Material(name="Material 3", elastic_modulus=100, poissons_ratio=0.3, yield_strength=10, density=1e-6, color="red")
 
     sq1 = sections.rectangular_section(100, 100, material=mat1).align_center()
     sq2 = sections.rectangular_section(75, 75, material=mat2).align_center()
