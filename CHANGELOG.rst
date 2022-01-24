@@ -1,6 +1,14 @@
 Changelog:
 ==========
 
+v2.0.2:
+-------
+
+- Add circular_section_by_area() in the section library
+- Add option to define reinforcement by area rather than diameter for all concrete sections in the section library
+- Fix bug in super_t_girder_section() which caused type 5 to be returned in all cases
+- Require matplotlib >= 3.4 for CenteredNorm
+
 v2.0.1:
 -------
 
