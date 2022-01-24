@@ -262,10 +262,6 @@ def get_super_t_girder_dims(girder_type):
 
     key = f"T{girder_type}"
 
-    # Rather delicious code that assigns the values to the keys as variables
-    for key, val in girder_dims.items():
-        exec(key + "=val")
-
     d = girder_dims[key]["d"]
     t_b = girder_dims[key]["t_b"]
     t_w = girder_dims[key]["t_w"]
