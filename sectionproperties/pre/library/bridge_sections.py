@@ -25,7 +25,7 @@ def super_t_girder_section(
     different material properties::
 
         import sectionproperties.pre.library.bridge_sections as bridge_sections
-        import sectionproperties.pre.library.standard_sections as standard_sections
+        import sectionproperties.pre.library.primitive_sections as primitive_sections
         from sectionproperties.pre.pre import Material
         from sectionproperties.analysis.section import Section
 
@@ -49,7 +49,7 @@ def super_t_girder_section(
         )
 
         super_t = bridge_sections.super_t_girder_section(girder_type=5, w=w, material=precast)
-        slab = standard_sections.rectangular_section(
+        slab = primitive_sections.rectangular_section(
             d=Dslab, b=w, material=insitu
         ).shift_section(-w / 2, t_f)
 
