@@ -88,6 +88,44 @@ def circular_section(
     return geometry.Geometry(circle, material)
 
 
+def circular_section_by_area(
+    area: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
+) -> geometry.Geometry:
+    """Constructs a solid circle centered at the origin *(0, 0)* defined by its *area*,
+    using *n* points to construct the circle.
+
+    :param float area: Area of the circle
+    :param int n: Number of points discretising the circle
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
+
+    The following example creates a circular geometry with an area of 200 with 32 points,
+    and generates a mesh with a maximum triangular area of 5::
+
+        from sectionproperties.pre.library.primitive_sections import circular_section_by_area
+
+        geometry = circular_section_by_area(area=310, n=32)
+        geometry.create_mesh(mesh_sizes=[5])
+
+    ..  figure:: ../images/sections/circle_area_geometry.png
+        :align: center
+        :scale: 50 %
+
+        Circular section by area geometry.
+
+    ..  figure:: ../images/sections/circle_area_mesh.png
+        :align: center
+        :scale: 50 %
+
+        Mesh generated from the above geometry.
+    """
+
+    s = 2 * np.sqrt(area / n) * np.sqrt(np.tan(np.pi / n))
+    a = s / (2 * np.tan(np.pi / n))
+    d = np.sqrt(a * a + (0.5 * s) * (0.5 * s)) * 2
+
+    return circular_section(d=d, n=n, material=material)
+
+
 def elliptical_section(
     d_y: float, d_x: float, n: int, material: pre.Material = pre.DEFAULT_MATERIAL
 ) -> geometry.Geometry:

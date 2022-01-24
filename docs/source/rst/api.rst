@@ -106,6 +106,10 @@ circular_section
 """"""""""""""""
 ..  autofunction:: sectionproperties.pre.library.primitive_sections.circular_section
 
+circular_section_by_area
+""""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.primitive_sections.circular_section_by_area
+
 elliptical_section
 """"""""""""""""""
 ..  autofunction:: sectionproperties.pre.library.primitive_sections.elliptical_section
