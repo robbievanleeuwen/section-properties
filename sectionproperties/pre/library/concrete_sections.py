@@ -20,8 +20,8 @@ def concrete_rectangular_section(
     of diameter *dia*, discretised with *n_circle* points with equal side and bottom *cover* to the
     steel.
 
-    :param float b: Concrete section depth
-    :param float d: Concrete section width
+    :param float b: Concrete section width
+    :param float d: Concrete section depth
     :param float dia: Diameter of the steel reinforcing bars
     :param int n_bar: Number of steel reinforcing bars
     :param int n_circle: Number of points discretising the steel reinforcing bars
@@ -109,10 +109,10 @@ def concrete_tee_section(
     depth *d_f* with *n_bar* steel bars of diameter *dia*, discretised with *n_circle* points with
     equal side and bottom *cover* to the steel.
 
-    :param float b: Concrete section depth
-    :param float d: Concrete section width
-    :param float b_f: Concrete section flange depth
-    :param float d_f: Concrete section flange width
+    :param float b: Concrete section width
+    :param float d: Concrete section depth
+    :param float b_f: Concrete section flange width
+    :param float d_f: Concrete section flange depth
     :param float dia: Diameter of the steel reinforcing bars
     :param int n_bar: Number of steel reinforcing bars
     :param int n_circle: Number of points discretising the steel reinforcing bars
