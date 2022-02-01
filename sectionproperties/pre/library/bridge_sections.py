@@ -111,7 +111,7 @@ def super_t_girder_section(
 
     # Origin is middle at level of bottom of top flange
     # Some geometrics of the slope
-    web_hyp = np.sqrt(1 + web_slope ** 2)
+    web_hyp = np.sqrt(1 + web_slope**2)
     web_horiz = t_w * web_slope / web_hyp
     x_fillet = w_nom / 2 - d_fillet * 1 / web_hyp
 

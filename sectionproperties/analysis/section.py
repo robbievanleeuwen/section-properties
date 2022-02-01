@@ -492,7 +492,7 @@ class Section:
                 * (1 + self.section_props.nu_eff)
                 * (
                     self.section_props.ixx_c * self.section_props.iyy_c
-                    - self.section_props.ixy_c ** 2
+                    - self.section_props.ixy_c**2
                 )
             )
             x_se = (1 / Delta_s) * (
@@ -511,14 +511,14 @@ class Section:
                 - self.section_props.iyy_c * i_yomega
             ) / (
                 self.section_props.ixx_c * self.section_props.iyy_c
-                - self.section_props.ixy_c ** 2
+                - self.section_props.ixy_c**2
             )
             y_st = (
                 self.section_props.ixx_c * i_xomega
                 - self.section_props.ixy_c * i_yomega
             ) / (
                 self.section_props.ixx_c * self.section_props.iyy_c
-                - self.section_props.ixy_c ** 2
+                - self.section_props.ixy_c**2
             )
 
             return (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st)
@@ -543,7 +543,7 @@ class Section:
         # calculate warping constant
         self.section_props.gamma = (
             i_omega
-            - q_omega ** 2 / self.section_props.ea
+            - q_omega**2 / self.section_props.ea
             - y_se * i_xomega
             + x_se * i_yomega
         )
@@ -579,14 +579,14 @@ class Section:
             (kappa_x, kappa_y, kappa_xy) = assemble_shear_deformation()
 
         # calculate shear areas wrt global axis
-        self.section_props.A_sx = Delta_s ** 2 / kappa_x
-        self.section_props.A_sy = Delta_s ** 2 / kappa_y
-        self.section_props.A_sxy = Delta_s ** 2 / kappa_xy
+        self.section_props.A_sx = Delta_s**2 / kappa_x
+        self.section_props.A_sy = Delta_s**2 / kappa_y
+        self.section_props.A_sxy = Delta_s**2 / kappa_xy
 
         # calculate shear areas wrt principal bending axis:
-        alpha_xx = kappa_x * self.section_props.area / Delta_s ** 2
-        alpha_yy = kappa_y * self.section_props.area / Delta_s ** 2
-        alpha_xy = kappa_xy * self.section_props.area / Delta_s ** 2
+        alpha_xx = kappa_x * self.section_props.area / Delta_s**2
+        alpha_yy = kappa_y * self.section_props.area / Delta_s**2
+        alpha_xy = kappa_xy * self.section_props.area / Delta_s**2
 
         # rotate the tensor by the principal axis angle
         phi_rad = self.section_props.phi * np.pi / 180
@@ -716,11 +716,11 @@ class Section:
             # calculate second moments of area about the centroidal xy axis
             self.section_props.ixx_c = (
                 self.section_props.ixx_g
-                - self.section_props.qx ** 2 / self.section_props.ea
+                - self.section_props.qx**2 / self.section_props.ea
             )
             self.section_props.iyy_c = (
                 self.section_props.iyy_g
-                - self.section_props.qy ** 2 / self.section_props.ea
+                - self.section_props.qy**2 / self.section_props.ea
             )
             self.section_props.ixy_c = (
                 self.section_props.ixy_g
@@ -730,7 +730,7 @@ class Section:
             # calculate the principal axis angle
             Delta = (
                 ((self.section_props.ixx_c - self.section_props.iyy_c) / 2) ** 2
-                + self.section_props.ixy_c ** 2
+                + self.section_props.ixy_c**2
             ) ** 0.5
 
             i11_c = (self.section_props.ixx_c + self.section_props.iyy_c) / 2 + Delta
@@ -4248,7 +4248,7 @@ class StressPost:
         tractions = []
         for col in range(3):
             ss = n_inv[:, col].T @ np.diag(s) @ n_inv[:, col]
-            ts = np.sqrt(np.linalg.norm(np.diag(s) @ n_inv[:, col]) ** 2 - ss ** 2)
+            ts = np.sqrt(np.linalg.norm(np.diag(s) @ n_inv[:, col]) ** 2 - ss**2)
             tractions.append((ss, ts))
 
         def plot_circle(ax, c, R, col, label=None, fill=None):
@@ -4470,23 +4470,23 @@ class StressResult:
         self.sig_zz_m = (
             self.sig_zz_mxx + self.sig_zz_myy + self.sig_zz_m11 + self.sig_zz_m22
         )
-        self.sig_zxy_mzz = (self.sig_zx_mzz ** 2 + self.sig_zy_mzz ** 2) ** 0.5
-        self.sig_zxy_vx = (self.sig_zx_vx ** 2 + self.sig_zy_vx ** 2) ** 0.5
-        self.sig_zxy_vy = (self.sig_zx_vy ** 2 + self.sig_zy_vy ** 2) ** 0.5
+        self.sig_zxy_mzz = (self.sig_zx_mzz**2 + self.sig_zy_mzz**2) ** 0.5
+        self.sig_zxy_vx = (self.sig_zx_vx**2 + self.sig_zy_vx**2) ** 0.5
+        self.sig_zxy_vy = (self.sig_zx_vy**2 + self.sig_zy_vy**2) ** 0.5
         self.sig_zx_v = self.sig_zx_vx + self.sig_zx_vy
         self.sig_zy_v = self.sig_zy_vx + self.sig_zy_vy
-        self.sig_zxy_v = (self.sig_zx_v ** 2 + self.sig_zy_v ** 2) ** 0.5
+        self.sig_zxy_v = (self.sig_zx_v**2 + self.sig_zy_v**2) ** 0.5
         self.sig_zz = self.sig_zz_n + self.sig_zz_m
         self.sig_zx = self.sig_zx_mzz + self.sig_zx_v
         self.sig_zy = self.sig_zy_mzz + self.sig_zy_v
-        self.sig_zxy = (self.sig_zx ** 2 + self.sig_zy ** 2) ** 0.5
+        self.sig_zxy = (self.sig_zx**2 + self.sig_zy**2) ** 0.5
         self.sig_1 = self.sig_zz / 2 + np.sqrt(
-            (self.sig_zz / 2) ** 2 + self.sig_zxy ** 2
+            (self.sig_zz / 2) ** 2 + self.sig_zxy**2
         )
         self.sig_3 = self.sig_zz / 2 - np.sqrt(
-            (self.sig_zz / 2) ** 2 + self.sig_zxy ** 2
+            (self.sig_zz / 2) ** 2 + self.sig_zxy**2
         )
-        self.sig_vm = (self.sig_zz ** 2 + 3 * self.sig_zxy ** 2) ** 0.5
+        self.sig_vm = (self.sig_zz**2 + 3 * self.sig_zxy**2) ** 0.5
 
 
 @dataclass
@@ -4692,8 +4692,8 @@ class SectionProperties:
         """
 
         # calculate second moments of area about the centroidal xy axis
-        self.ixx_c = self.ixx_g - self.qx ** 2 / self.ea
-        self.iyy_c = self.iyy_g - self.qy ** 2 / self.ea
+        self.ixx_c = self.ixx_g - self.qx**2 / self.ea
+        self.iyy_c = self.iyy_g - self.qy**2 / self.ea
         self.ixy_c = self.ixy_g - self.qx * self.qy / self.ea
 
         # calculate section moduli about the centroidal xy axis
@@ -4712,7 +4712,7 @@ class SectionProperties:
         self.ry_c = (self.iyy_c / self.ea) ** 0.5
 
         # calculate principal 2nd moments of area about the centroidal xy axis
-        Delta = (((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c ** 2) ** 0.5
+        Delta = (((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c**2) ** 0.5
         self.i11_c = (self.ixx_c + self.iyy_c) / 2 + Delta
         self.i22_c = (self.ixx_c + self.iyy_c) / 2 - Delta
 
