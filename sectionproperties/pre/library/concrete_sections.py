@@ -28,7 +28,7 @@ def concrete_rectangular_section(
     :param float cover: Side and bottom cover to the steel reinforcing bars
     :param float area: If provided, constructs reinforcing bars based on their area
         rather than a diameter (prevents the underestimation of steel area due to
-        circle discretision)
+        circle discretisation)
     :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to associate with
         the concrete
     :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to associate with
@@ -119,7 +119,7 @@ def concrete_tee_section(
     :param float cover: Side and bottom cover to the steel reinforcing bars
     :param float area: If provided, constructs reinforcing bars based on their area
         rather than a diameter (prevents the underestimation of steel area due to
-        circle discretision)
+        circle discretisation)
     :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to associate with
         the concrete
     :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to associate with
@@ -209,7 +209,7 @@ def concrete_circular_section(
     :param float cover: Side and bottom cover to the steel reinforcing bars
     :param float area: If provided, constructs reinforcing bars based on their area
         rather than a diameter (prevents the underestimation of steel area due to
-        circle discretision)
+        circle discretisation)
     :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to associate with
         the concrete
     :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to associate with
