@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def draw_radius(pt: list, r: float, theta: float, n, ccw: bool = True):
+def draw_radius(pt: list, r: float, theta: float, n: int, ccw: bool = True):
     """Adds a quarter radius of points to the points list - centered at point *pt*, with radius
     *r*, starting at angle *theta*, with *n* points. If r = 0, adds pt only.
 
