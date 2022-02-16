@@ -1,7 +1,7 @@
 from typing import List
 import numpy as np
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from sectionproperties.pre.pre import Material
 
 
@@ -36,6 +36,25 @@ class Tri6:
     coords: np.ndarray
     node_ids: List[int]
     material: Material
+    # _M and _x0 are used for global coord to local coord mapping
+    _M: np.ndarray = field(init=False)
+    _x0: np.ndarray = field(init=False)
+
+    def __post_init__(self):
+        # Create a mapping from global elm to local elm (unit triangle)
+        # The result is used in the global to local mapping: (eta, xi) = _M(x_global-_x0), zeta = 1-eta-xi
+        (p0,p1,self._x0) = self.coords[:,0:3].transpose()
+        # Shift the triangle so the x_3 vertex (global) is on the origin ((eta, xi, zeta) = (0,0,1))
+        # Aside: This is chosen to be consistent with the shape function definitions.
+        # At (0,0,1), N3=1, N1=N2=N4=...=0 (see Theoretical Background documentation)
+        # since (x, y) = (sum(N_i(eta,xi,zeta)*x_i),  sum(N_i(eta,xi,zeta)*y_i)
+        # then at (0,0,1): (x,y) = (x_3,y_3). ie: (x_3, y_3) => (0,0,1)
+        r0 = p0-self._x0
+        r1 = p1-self._x0
+        # Asseble the equations to solve for the transformation for the unit triangle
+        x = np.array([r0,r1]).transpose()
+        b = np.array([[1, 0],[0, 1]])
+        self._M = np.linalg.solve(x,b)
 
     def __repr__(self):
         rep = f"el_id: {self.el_id}\ncoords: {self.coords}\nnode_ids: {self.node_ids}\nmaterial: {self.material}"
@@ -571,6 +590,18 @@ class Tri6:
         else:
             return False
 
+    def local_coord(self, p):
+        """Map a point `p` = (x, y) in the global coordinate system onto a 
+        point (eta, xi, zeta) in the local coordinate system.
+
+        :param p: Global coordinate (x,y)
+        :type p: :class:`numpy.ndarray`
+        :return: Point in local coordinate (eta, xi, zeta)
+        :rtype: :class:`numpy.ndarray`
+        """
+        (eta, xi) = np.dot(self._M, p-self._x0) 
+        zeta = 1 - eta - xi
+        return np.array([eta, xi, zeta])
 
 def gauss_points(n):
     """Returns the Gaussian weights and locations for *n* point Gaussian integration of a quadratic
