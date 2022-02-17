@@ -56,6 +56,11 @@ A warping analysis calculates the torsion and shear properties of the section.
 ..  note:: A geometric analysis must be performed on the Section object before
   a warping analysis is carried out.
 
+..  warning:: There must be connectivity between all elements of the mesh to perform a
+  valid warping analysis. This is a limitation of the elastic theory that this
+  implementation is based on, as there is no way to quantify the transfer of shear and
+  warping between two unconnected regions.
+
 ..  automethod:: sectionproperties.analysis.section.Section.calculate_warping_properties
     :noindex:
 
