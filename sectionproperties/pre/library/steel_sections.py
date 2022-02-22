@@ -1271,34 +1271,41 @@ def box_girder_section(
 
 
 def bulb_section(
+    d: float,
+    d_b: float,
     b: float,
     t: float,
-    c: float,
-    d: float,
     r: float,
     n_r: int,
     material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
-    """Constructs a bulb section centered at the origin *(0, 0)*, with depth *d*, width *b*,
-    thickness *t* and root radius *r*, using *n_r* points to construct the root radius.
-    :param float b: Depth of the bulb section
-    :param float t: web thickness
-    :param float c: Bulb width
-    :param float d: Bulb thickness
+    """Constructs a bulb section with the bottom left corner at the point
+    *(-t / 2, 0)*, with depth *d*, bulb depth *d_b*, bulb width *b*, web thickness *t*
+    and radius *r*, using *n_r* points to construct the radius.
+
+    :param float d: Depth of the section
+    :param float d_b: Depth of the bulb
+    :param float b: Bulb width
+    :param float t: Web thickness
     :param float r: Bulb radius
-    :param int n_r: Number of points discretising the root radius
-    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
+    :param int n_r: Number of points discretising the radius
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with
+        this geometry
+
     The following example creates a bulb section with a depth of 240, a width of 34, a
-    web thickness of 12 and a bulb radius of 16, using 16 points to discretise the radius. A mesh is
-    generated with a maximum triangular area of 5.0::
-        from sectionproperties.pre.library.steel_sections import  bulb_section
-        geometry = bulb_section(b=240, t=12, c=34, d=35.4, r=10, n_r=16)
+    web thickness of 12 and a bulb radius of 16, using 16 points to discretise the
+    radius. A mesh is generated with a maximum triangular area of 5.0::
+
+        from sectionproperties.pre.library.steel_sections import bulb_section
+
+        geometry = bulb_section(d=240, d_b=35.4, b=34, t=12, r=10, n_r=16)
         geometry.create_mesh(mesh_sizes=[5.0])
-        geometry.plot_geometry()
+
     ..  figure:: ../images/sections/cruciform_geometry.png
         :align: center
         :scale: 75 %
         Cruciform section geometry.
+
     ..  figure:: ../images/sections/cruciform_mesh.png
         :align: center
         :scale: 75 %
@@ -1311,13 +1318,12 @@ def bulb_section(
 
     # test of additional radius
     dc = r / np.sin(2 / 3 * np.pi / 2)
-    print(dc)
-    ptb0 = [t * 0.5 + dc * np.cos(np.pi / 6), b - d - dc * np.cos(np.pi / 3)]
-    print(ptb0)
-    points += draw_radius_60(ptb0, r, np.pi, n_r, False)
+    ptb0 = [t * 0.5 + dc * np.cos(np.pi / 6), d - d_b - dc * np.cos(np.pi / 3)]
+    points += draw_radius(ptb0, r, np.pi, n_r, False, np.pi / 3)
+
     # end of test of additional radius
-    ptb = [c + t * 0.5 - r, b - r]
-    dzero = ((c + t * 0.5 - r - t * 0.5) ** 2 + (b - r - b + d) ** 2) ** 0.5
+    ptb = [b + t * 0.5 - r, d - r]
+    dzero = ((b + t * 0.5 - r - t * 0.5) ** 2 + (d - r - d + d_b) ** 2) ** 0.5
     # build radius
     """
     to be update to include small radius on all sharp edge
@@ -1326,11 +1332,12 @@ def bulb_section(
                   r**2/dzero**2*(b-d)+r/dzero**2*(dzero**2-r**2)**0.5*(t*0.5)])
     points.append([(r**2)/(dzero**2)*(t * 0.5)-r/(dzero**2)*((dzero**2)-(r**2))**0.5*(d-b),
                   r**2/dzero**2*(b-d)-r/dzero**2*(dzero**2-r**2)**0.5*(t*0.5)])"""
-    points += draw_radius_60(ptb, r, -np.pi * 1 / 3, n_r, True)
+    points += draw_radius(ptb, r, -np.pi * 1 / 3, n_r, True, np.pi / 3)
     points += draw_radius(ptb, r, 0, n_r, True)
+
     # build the top part
-    points.append([c + t * 0.5 - r, b])
-    points.append([-t * 0.5, b])
+    points.append([b + t * 0.5 - r, d])
+    points.append([-t * 0.5, d])
 
     polygon = Polygon(points)
     return geometry.Geometry(polygon, material)

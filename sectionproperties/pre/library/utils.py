@@ -40,7 +40,7 @@ def draw_radius(
     # calculate radius of points
     for i in range(n):
         # determine angle
-        t = theta + mult * i * 1.0 / max(1, n - 1) * theta
+        t = theta + mult * i * 1.0 / max(1, n - 1) * phi
 
         x = pt[0] + r * np.cos(t)
         y = pt[1] + r * np.sin(t)
