@@ -1269,6 +1269,7 @@ def box_girder_section(
 
     return geometry.Geometry(outer_polygon - inner_polygon, material)
 
+
 def bulb_section(
     b: float,
     t: float,
@@ -1307,17 +1308,17 @@ def bulb_section(
     # add first two points
     points.append([-t * 0.5, 0])
     points.append([t * 0.5, 0])
-    
-    #test of additional radius
+
+    # test of additional radius
     dc = r / np.sin(2 / 3 * np.pi / 2)
     print(dc)
-    ptb0=[t * 0.5 + dc*np.cos(np.pi/6), b - d - dc * np.cos(np.pi / 3)]
+    ptb0 = [t * 0.5 + dc * np.cos(np.pi / 6), b - d - dc * np.cos(np.pi / 3)]
     print(ptb0)
-    points += draw_radius_60(ptb0, r, np.pi, n_r, False)    
-    #end of test of additional radius
-    ptb=[c+t*0.5-r, b-r]
-    dzero=((c+t*0.5-r-t *0.5)**2+(b-r-b+d)**2)**0.5
-    #build radius 
+    points += draw_radius_60(ptb0, r, np.pi, n_r, False)
+    # end of test of additional radius
+    ptb = [c + t * 0.5 - r, b - r]
+    dzero = ((c + t * 0.5 - r - t * 0.5) ** 2 + (b - r - b + d) ** 2) ** 0.5
+    # build radius
     """
     to be update to include small radius on all sharp edge
     to be update for tangence of the oblic line :
@@ -1325,10 +1326,10 @@ def bulb_section(
                   r**2/dzero**2*(b-d)+r/dzero**2*(dzero**2-r**2)**0.5*(t*0.5)])
     points.append([(r**2)/(dzero**2)*(t * 0.5)-r/(dzero**2)*((dzero**2)-(r**2))**0.5*(d-b),
                   r**2/dzero**2*(b-d)-r/dzero**2*(dzero**2-r**2)**0.5*(t*0.5)])"""
-    points += draw_radius_60(ptb, r, -np.pi*1/3, n_r, True)
+    points += draw_radius_60(ptb, r, -np.pi * 1 / 3, n_r, True)
     points += draw_radius(ptb, r, 0, n_r, True)
-    #build the top part
-    points.append([c + t * 0.5 - r , b])
+    # build the top part
+    points.append([c + t * 0.5 - r, b])
     points.append([-t * 0.5, b])
 
     polygon = Polygon(points)
