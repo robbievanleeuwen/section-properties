@@ -32,6 +32,7 @@ def draw_radius(pt: list, r: float, theta: float, n: int, ccw: bool = True):
         points.append([x, y])
     return points
 
+
 def draw_radius_60(pt: list, r: float, theta: float, n: int, ccw: bool = True):
     """Adds a quarter radius of points to the points list - centered at point *pt*, with radius
     *r*, starting at angle *theta*, with *n* points. If r = 0, adds pt only.
@@ -61,6 +62,7 @@ def draw_radius_60(pt: list, r: float, theta: float, n: int, ccw: bool = True):
         y = pt[1] + r * np.sin(t)
         points.append([x, y])
     return points
+
 
 def rotate(point, angle: float):
     """
