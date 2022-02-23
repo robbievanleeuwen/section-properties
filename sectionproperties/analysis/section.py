@@ -2146,7 +2146,7 @@ class PlasticSection:
         """Calculates the locations of the extreme fibres along and perpendicular to the axis
         specified by 'angle' using the elements stored in `self.elements`.
 
-        :param float angle: Angle (in radians) along which to calculate the extreme fibre locations
+        :param float angle: Angle (in degrees) along which to calculate the extreme fibre locations
         :return: The location of the extreme fibres parallel (u) and perpendicular (v) to the axis
             *(u_min, u_max, v_min, v_max)*
         :rtype: tuple(float, float, float, float)
