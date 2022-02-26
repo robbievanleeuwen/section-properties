@@ -1153,7 +1153,7 @@ class CompoundGeometry(Geometry):
         facets: List[List[int]],
         control_points: List[List[float]],
         holes: Optional[List[List[float]]] = None,
-        materials: Optional[List[pre.Material]] = pre.DEFAULT_MATERIAL,
+        materials: Optional[List[pre.Material]] = [pre.DEFAULT_MATERIAL],
     ):
         """
         An interface for the creation of CompoundGeometry objects through the definition of points,
