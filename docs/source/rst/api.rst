@@ -6,7 +6,7 @@ Pre-Processor Package
 
 .. _label-sections-module:
 
-*sections* Module
+*geometry* Module
 ^^^^^^^^^^^^^^^^^
 
 Geometry Class
@@ -348,7 +348,7 @@ Nastran References
 Analysis Package
 ----------------
 
-*cross_section* Module
+*section* Module
 ^^^^^^^^^^^^^^^^^^^^^^
 
 Section Class
