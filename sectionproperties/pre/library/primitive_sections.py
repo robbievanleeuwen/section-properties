@@ -70,7 +70,6 @@ def circular_section(
 
         Mesh generated from the above geometry.
     """
-    x_off, y_off = (0, 0)
     points = []
     # loop through each point on the circle
     for i in range(n):
@@ -78,8 +77,8 @@ def circular_section(
         theta = i * 2 * np.pi * 1.0 / n
 
         # calculate location of the point
-        x = 0.5 * d * np.cos(theta) + x_off
-        y = 0.5 * d * np.sin(theta) + y_off
+        x = 0.5 * d * np.cos(theta)
+        y = 0.5 * d * np.sin(theta)
 
         # append the current point to the points list
         points.append([x, y])

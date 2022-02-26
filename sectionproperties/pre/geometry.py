@@ -1250,12 +1250,17 @@ class CompoundGeometry(Geometry):
         if not interiors:
             return CompoundGeometry(
                 [
-                    Geometry(exterior, control_points=control_points[idx])
+                    Geometry(
+                        exterior,
+                        material=materials[idx],
+                        control_points=control_points[idx],
+                    )
                     for idx, exterior in enumerate(exteriors)
                 ]
             )
         else:
             # "Punch" all holes through each exterior geometry
+            # TODO - add metrial here as well?!
             punched_exteriors = []
             punched_exterior_geometries = []
             for exterior in exteriors:
