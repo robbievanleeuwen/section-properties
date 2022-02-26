@@ -155,7 +155,7 @@ class Tri6:
             Ny = np.dot(N, np.transpose(self.coords[1, :]))
 
             # determine shear parameters
-            r = Nx ** 2 - Ny ** 2
+            r = Nx**2 - Ny**2
             q = 2 * Nx * Ny
             d1 = ixx * r - ixy * q
             d2 = ixy * r + ixx * q
@@ -225,19 +225,19 @@ class Tri6:
             sc_xint += (
                 gp[0]
                 * (iyy * Nx + ixy * Ny)
-                * (Nx ** 2 + Ny ** 2)
+                * (Nx**2 + Ny**2)
                 * j
                 * self.material.elastic_modulus
             )
             sc_yint += (
                 gp[0]
                 * (ixx * Ny + ixy * Nx)
-                * (Nx ** 2 + Ny ** 2)
+                * (Nx**2 + Ny**2)
                 * j
                 * self.material.elastic_modulus
             )
             q_omega += gp[0] * Nomega * j * self.material.elastic_modulus
-            i_omega += gp[0] * Nomega ** 2 * j * self.material.elastic_modulus
+            i_omega += gp[0] * Nomega**2 * j * self.material.elastic_modulus
             i_xomega += gp[0] * Nx * Nomega * j * self.material.elastic_modulus
             i_yomega += gp[0] * Ny * Nomega * j * self.material.elastic_modulus
 
@@ -276,7 +276,7 @@ class Tri6:
             Ny = np.dot(N, np.transpose(self.coords[1, :]))
 
             # determine shear parameters
-            r = Nx ** 2 - Ny ** 2
+            r = Nx**2 - Ny**2
             q = 2 * Nx * Ny
             d1 = ixx * r - ixy * q
             d2 = ixy * r + ixx * q
@@ -466,7 +466,7 @@ class Tri6:
             (Nx_11, Ny_22) = principal_coordinate(phi, Nx, Ny)
 
             # determine shear parameters
-            r = Nx ** 2 - Ny ** 2
+            r = Nx**2 - Ny**2
             q = 2 * Nx * Ny
             d1 = ixx * r - ixy * q
             d2 = ixy * r + ixx * q
@@ -475,12 +475,12 @@ class Tri6:
 
             # calculate element stresses
             sig_zz_mxx_gp[i, :] = self.material.elastic_modulus * (
-                -(ixy * Mxx) / (ixx * iyy - ixy ** 2) * Nx
-                + (iyy * Mxx) / (ixx * iyy - ixy ** 2) * Ny
+                -(ixy * Mxx) / (ixx * iyy - ixy**2) * Nx
+                + (iyy * Mxx) / (ixx * iyy - ixy**2) * Ny
             )
             sig_zz_myy_gp[i, :] = self.material.elastic_modulus * (
-                -(ixx * Myy) / (ixx * iyy - ixy ** 2) * Nx
-                + (ixy * Myy) / (ixx * iyy - ixy ** 2) * Ny
+                -(ixx * Myy) / (ixx * iyy - ixy**2) * Nx
+                + (ixy * Myy) / (ixx * iyy - ixy**2) * Ny
             )
             sig_zz_m11_gp[i, :] = self.material.elastic_modulus * M11 / i11 * Ny_22
             sig_zz_m22_gp[i, :] = self.material.elastic_modulus * -M22 / i22 * Nx_11
