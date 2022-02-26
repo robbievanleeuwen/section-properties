@@ -339,12 +339,14 @@ class Geometry:
         """
         self.create_facets_and_control_points()
 
-    def create_mesh(self, mesh_sizes: Union[float, List[float]]):
+    def create_mesh(self, mesh_sizes: Union[float, List[float]], coarse: bool = False):
         """Creates a quadratic triangular mesh from the Geometry object.
 
         :param mesh_sizes: A float describing the maximum mesh element area to be used
             within the Geometry-object finite-element mesh.
         :type mesh_sizes: Union[float, List[float]]
+        :param bool coarse: If set to True, will create a coarse mesh (no area or
+            quality constraints)
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
             Geometry-object is self, not a new instance.
@@ -374,7 +376,7 @@ class Geometry:
                 f"a float, or a list of float with length of 1, not {mesh_sizes}."
             )
         self.mesh = pre.create_mesh(
-            self.points, self.facets, self.holes, self.control_points, mesh_size
+            self.points, self.facets, self.holes, self.control_points, mesh_size, coarse
         )
         return self
 
@@ -1321,7 +1323,7 @@ class CompoundGeometry(Geometry):
         list_poly = rhino_importer.load_3dm(filepath, **kwargs)
         return cls(geoms=MultiPolygon(list_poly))
 
-    def create_mesh(self, mesh_sizes: List[float]):
+    def create_mesh(self, mesh_sizes: List[float], coarse: bool = False):
         """Creates a quadratic triangular mesh from the Geometry object.
 
         :param mesh_size: A float describing the maximum mesh element area to be
@@ -1329,6 +1331,8 @@ class CompoundGeometry(Geometry):
             CompoundGeometry object. If a list of length 1 is passed, then the one
             size will be applied to all constituent Geometry meshes.
         :type mesh_sizes: List[float]
+        :param bool coarse: If set to True, will create a coarse mesh (no area or
+            quality constraints)
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
             Geometry-object is self, not a new instance.
@@ -1353,7 +1357,12 @@ class CompoundGeometry(Geometry):
         if len(mesh_sizes) == 1:
             mesh_sizes = mesh_sizes * len(self.control_points)
         self.mesh = pre.create_mesh(
-            self.points, self.facets, self.holes, self.control_points, mesh_sizes
+            self.points,
+            self.facets,
+            self.holes,
+            self.control_points,
+            mesh_sizes,
+            coarse,
         )
         return self
 

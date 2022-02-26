@@ -75,6 +75,7 @@ def create_mesh(
     holes: List[List[float]],
     control_points: List[List[float]],
     mesh_sizes: Union[List[float], float],
+    coarse: bool,
 ):
     """Creates a quadratic triangular mesh using the triangle module, which utilises the code
     'Triangle', by Jonathan Shewchuk.
@@ -91,10 +92,13 @@ def create_mesh(
     :type control_points: list[list[float, float]]
     :param mesh_sizes: List of maximum element areas for each region defined by a control point
     :type mesh_sizes: list[float]
+    :param bool coarse: If set to True, will create a coarse mesh (no area or quality
+        constraints)
 
     :return: Dictionary containing mesh data
     :rtype: dict()
     """
+
     if not isinstance(mesh_sizes, list):
         mesh_sizes = [mesh_sizes]
 
@@ -114,6 +118,9 @@ def create_mesh(
     tri["regions"] = regions  # set regions
 
     # generate mesh
-    mesh = triangle.triangulate(tri, "pq30Aao2")
+    if coarse:
+        mesh = triangle.triangulate(tri, "pAo2")
+    else:
+        mesh = triangle.triangulate(tri, "pq30Aao2")
 
     return mesh
