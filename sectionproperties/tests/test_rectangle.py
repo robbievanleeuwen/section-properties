@@ -30,10 +30,10 @@ def test_rectangular_section_geometric():
     check.almost_equal(rectangle_section.section_props.qx, 100 * 50 * 50, rel=tol)
     check.almost_equal(rectangle_section.section_props.qy, 100 * 50 * 25, rel=tol)
     check.almost_equal(
-        rectangle_section.section_props.ixx_g, 50 * 100**3 / 3, rel=tol
+        rectangle_section.section_props.ixx_g, 50 * 100 ** 3 / 3, rel=tol
     )
     check.almost_equal(
-        rectangle_section.section_props.iyy_g, 100 * 50**3 / 3, rel=tol
+        rectangle_section.section_props.iyy_g, 100 * 50 ** 3 / 3, rel=tol
     )
     check.almost_equal(
         rectangle_section.section_props.ixy_g, 100 * 50 * 50 * 25, rel=tol
@@ -41,61 +41,61 @@ def test_rectangular_section_geometric():
     check.almost_equal(rectangle_section.section_props.cx, 50 / 2, rel=tol)
     check.almost_equal(rectangle_section.section_props.cy, 100 / 2, rel=tol)
     check.almost_equal(
-        rectangle_section.section_props.ixx_c, 50 * 100**3 / 12, rel=tol
+        rectangle_section.section_props.ixx_c, 50 * 100 ** 3 / 12, rel=tol
     )
     check.almost_equal(
-        rectangle_section.section_props.iyy_c, 100 * 50**3 / 12, rel=tol
+        rectangle_section.section_props.iyy_c, 100 * 50 ** 3 / 12, rel=tol
     )
     check.almost_equal(rectangle_section.section_props.ixy_c, 0, abs=tol)
     check.almost_equal(
-        rectangle_section.section_props.zxx_plus, 50 * 100**2 / 6, rel=tol
+        rectangle_section.section_props.zxx_plus, 50 * 100 ** 2 / 6, rel=tol
     )
     check.almost_equal(
-        rectangle_section.section_props.zxx_minus, 50 * 100**2 / 6, rel=tol
+        rectangle_section.section_props.zxx_minus, 50 * 100 ** 2 / 6, rel=tol
     )
     check.almost_equal(
-        rectangle_section.section_props.zyy_plus, 100 * 50**2 / 6, rel=tol
+        rectangle_section.section_props.zyy_plus, 100 * 50 ** 2 / 6, rel=tol
     )
     check.almost_equal(
-        rectangle_section.section_props.zyy_minus, 100 * 50**2 / 6, rel=tol
+        rectangle_section.section_props.zyy_minus, 100 * 50 ** 2 / 6, rel=tol
     )
     check.almost_equal(
         rectangle_section.section_props.rx_c,
-        (50 * 100**3 / 12 / 100 / 50) ** 0.5,
+        (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5,
         rel=tol,
     )
     check.almost_equal(
         rectangle_section.section_props.ry_c,
-        (100 * 50**3 / 12 / 100 / 50) ** 0.5,
+        (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5,
         rel=tol,
     )
     check.almost_equal(
-        rectangle_section.section_props.i11_c, (50 * 100**3 / 12), rel=tol
+        rectangle_section.section_props.i11_c, (50 * 100 ** 3 / 12), rel=tol
     )
     check.almost_equal(
-        rectangle_section.section_props.i22_c, (100 * 50**3 / 12), rel=tol
+        rectangle_section.section_props.i22_c, (100 * 50 ** 3 / 12), rel=tol
     )
     check.almost_equal(rectangle_section.section_props.phi, 0, rel=tol)
     check.almost_equal(
-        rectangle_section.section_props.z11_plus, 50 * 100**2 / 6, rel=tol
+        rectangle_section.section_props.z11_plus, 50 * 100 ** 2 / 6, rel=tol
     )
     check.almost_equal(
-        rectangle_section.section_props.z11_minus, 50 * 100**2 / 6, rel=tol
+        rectangle_section.section_props.z11_minus, 50 * 100 ** 2 / 6, rel=tol
     )
     check.almost_equal(
-        rectangle_section.section_props.z22_plus, 100 * 50**2 / 6, rel=tol
+        rectangle_section.section_props.z22_plus, 100 * 50 ** 2 / 6, rel=tol
     )
     check.almost_equal(
-        rectangle_section.section_props.z22_minus, 100 * 50**2 / 6, rel=tol
+        rectangle_section.section_props.z22_minus, 100 * 50 ** 2 / 6, rel=tol
     )
     check.almost_equal(
         rectangle_section.section_props.r11_c,
-        (50 * 100**3 / 12 / 100 / 50) ** 0.5,
+        (50 * 100 ** 3 / 12 / 100 / 50) ** 0.5,
         rel=tol,
     )
     check.almost_equal(
         rectangle_section.section_props.r22_c,
-        (100 * 50**3 / 12 / 100 / 50) ** 0.5,
+        (100 * 50 ** 3 / 12 / 100 / 50) ** 0.5,
         rel=tol,
     )
 
@@ -104,10 +104,10 @@ def test_rectangular_section_plastic():
     check.almost_equal(rectangle_section.get_pc(), (50 / 2, 100 / 2))
     check.almost_equal(rectangle_section.get_pc_p(), (50 / 2, 100 / 2))
     check.almost_equal(
-        rectangle_section.get_s(), (50 * 100**2 / 4, 100 * 50**2 / 4)
+        rectangle_section.get_s(), (50 * 100 ** 2 / 4, 100 * 50 ** 2 / 4)
     )
     check.almost_equal(
-        rectangle_section.get_sp(), (50 * 100**2 / 4, 100 * 50**2 / 4)
+        rectangle_section.get_sp(), (50 * 100 ** 2 / 4, 100 * 50 ** 2 / 4)
     )
     check.almost_equal(rectangle_section.get_sf(), (1.5, 1.5, 1.5, 1.5))
     check.almost_equal(rectangle_section.get_sf_p(), (1.5, 1.5, 1.5, 1.5))
