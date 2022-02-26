@@ -13,4 +13,4 @@ jobs:
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         issue-message: 'Thanks for opening your first issue in *sectionproperties* :raised_hands: Pull requests are always welcome :wink:'
-        pr-message: 'Thank you for your contribution to *sectionproperties* :pray: We will reviewing your PR shortly :monocle_face:'
+        pr-message: 'Thank you for your contribution to *sectionproperties* :pray: We will be reviewing your PR shortly :monocle_face:'
