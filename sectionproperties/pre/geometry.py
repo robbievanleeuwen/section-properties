@@ -1677,7 +1677,11 @@ class CompoundGeometry(Geometry):
                     )
 
         elif isinstance(unionized_poly, Polygon):
-            inadvertent_holes += Geometry(unionized_poly).holes
+            if Geometry(unionized_poly).holes:
+                inadvertent_holes += Geometry(unionized_poly).holes
+            else:  # Holes have been destroyed through operations
+                inadvertent_holes = []
+                self.holes = []
 
         extra_holes = []
         if set(inadvertent_holes) - set(self.holes):
@@ -1872,3 +1876,14 @@ def round_polygon_vertices(poly: Polygon, tol: int) -> Polygon:
     if not rounded_exterior.any():
         return Polygon()
     return Polygon(rounded_exterior, rounded_interiors)
+
+
+def check_geometry_overlaps(lop: List[Polygon]) -> bool:
+    """
+    Returns True if any of the Polygon in the list of Polygons, 'lop',
+    are overlapping with any other Polygons in 'lop'. Returns False
+    if all Polygon are disjoint.
+    """
+    union_area = unary_union(lop).area
+    sum_polygons = sum([poly.area for poly in lop])
+    return union_area != sum_polygons

@@ -21,20 +21,28 @@ import json
 
 big_sq = rectangular_section(d=300, b=250)
 small_sq = rectangular_section(d=100, b=75)
-small_hole = rectangular_section(d=40, b=30)
+small_hole = rectangular_section(d=40, b=30).align_center(small_sq)
 i_sec = i_section(d=200, b=100, t_f=20, t_w=10, r=12, n_r=12)
-
-small_sq = small_sq - small_hole.align_center(small_sq)
+small_sq_w_hole = small_sq - small_hole
 composite = (
     big_sq
-    + small_sq.align_to(big_sq, on="top", inner=True).align_to(big_sq, on="top")
+    + small_sq_w_hole.align_to(big_sq, on="top", inner=True).align_to(big_sq, on="top")
     + i_sec.align_to(big_sq, on="bottom", inner=True).align_to(big_sq, on="right")
 )
-composite.compile_geometry()
 composite.create_mesh([200])
 comp_sec = Section(composite)
 comp_sec.calculate_geometric_properties()
 comp_sec.calculate_plastic_properties()
+
+# Subtractive modelling
+nested_geom = (small_sq - small_hole) + small_hole
+nested_geom.create_mesh([50])
+nested_sec = Section(nested_geom)
+
+# Overlapped modelling
+overlay_geom = small_sq + small_hole
+overlay_geom.create_mesh([50])
+overlay_sec = Section(overlay_geom)
 
 
 def test_material_persistence():
@@ -61,6 +69,7 @@ def test_for_incidental_holes():
     # a I Section up against a rectangle.
     # There should be two holes created after .compile_geometry()
     assert len(composite.holes) == 2
+    assert len(nested_geom.holes) == 0
 
 
 def test_geometry_from_points():
@@ -138,10 +147,13 @@ def test_compound_geometry_from_points():
     assert (new_geom.geom - wkt_test_geom) == Polygon()
 
 
-def test_nested_compound_geometry_from_points():
+def test_multinested_compound_geometry_from_points():
     """
-    Tests a nested compound geometry can be built .from_points, that the control_points
-    and hole nodes persist in the right locations, and that ...
+    Testing a multi-nested section. This section contains three nested materials in concentric
+    square rings with a hole going through the center of the whole section. This test confirms
+    that the section can be successfully built using .from_points, that the control_points
+    and hole nodes persist in the right locations, and that the plastic section calculation
+    raises a warning because the nested regions overlap.
     """
     points = [
         [-50.0, 50.0],
@@ -195,6 +207,15 @@ def test_nested_compound_geometry_from_points():
         (-18.75, 0.0),
     ]
     assert nested_compound.holes == [(0, 0), (0, 0), (0, 0)]
+
+    # Section contains overlapping geometries which will result in potentially incorrect
+    # plastic properties calculation (depends on user intent and geometry).
+    # Test to ensure a warning is raised about this to notify the user.
+    nested_compound.create_mesh([25, 30, 35])
+    nested_compound_sec = Section(nested_compound)
+    nested_compound_sec.calculate_geometric_properties()
+    with pytest.warns(UserWarning):
+        nested_compound_sec.calculate_plastic_properties()
 
 
 def test_geometry_from_dxf():
@@ -251,9 +272,24 @@ def test_plastic_centroid():
     section.calculate_geometric_properties()
     section.calculate_plastic_properties()
 
+    # Checking sections that were defined above
+    #
+    nested_sec.calculate_geometric_properties()
+    nested_sec.calculate_plastic_properties()
+    overlay_sec.calculate_geometric_properties()
+
+    with pytest.warns(UserWarning):
+        overlay_sec.calculate_plastic_properties()
+
+    # section
     x_pc, y_pc = section.get_pc()
     assert x_pc == pytest.approx(82.5)
     assert y_pc == pytest.approx(250.360654576)
+
+    # nested_sec
+    x_pc, y_pc = nested_sec.get_pc()
+    assert x_pc == pytest.approx(37.5)
+    assert y_pc == pytest.approx(50)
 
 
 def test_geometry_from_3dm_file_simple():
