@@ -394,3 +394,24 @@ def test_round_polygon_vertices():
         test_shape_rounded.wkt
         == "POLYGON ((0 200, 200 200, 200 0, 0 0, 0 200), (10 50, 10 10, 50 10, 50 50, 10 50), (170 170, 120 170, 120 120, 170 120, 170 170))"
     )
+
+
+def test_check_geometry_overlaps():
+    big_sq = rectangular_section(d=300, b=250)
+    small_sq = rectangular_section(d=100, b=75)
+    small_hole = rectangular_section(d=40, b=30).align_center(small_sq)
+
+    assert check_geometry_overlaps([small_sq.geom, small_hole.geom]) == True
+    assert check_geometry_overlaps([small_sq.geom, small_sq.geom]) == True
+    assert (
+        check_geometry_overlaps(
+            [big_sq.geom, small_sq.shift_section(x_offset=270).geom]
+        )
+        == False
+    )
+    assert (
+        check_geometry_overlaps(
+            [big_sq.geom, small_sq.shift_section(x_offset=200, y_offset=150).geom]
+        )
+        == True
+    )
