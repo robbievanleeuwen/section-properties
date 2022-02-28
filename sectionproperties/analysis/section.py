@@ -2,6 +2,7 @@ from typing import Union, Optional, Tuple
 
 import copy
 from dataclasses import dataclass, asdict
+import warnings
 
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
@@ -825,6 +826,20 @@ class Section:
         if self.section_props.cx is None:
             err = "Calculate geometric properties before performing a plastic analysis."
             raise RuntimeError(err)
+
+        # check if any geometry are overlapped
+        if isinstance(self.geometry, section_geometry.CompoundGeometry):
+            polygons = [sec_geom.geom for sec_geom in self.geometry.geoms]
+            overlapped_regions = section_geometry.check_geometry_overlaps(polygons)
+            if overlapped_regions:
+                warnings.warn(
+                    "\nThe section geometry contains overlapping regions and the area of these overlapped regions "
+                    "will be 'double counted' in the plastic analysis which may result in incorrect values.\n"
+                    "If you do not intend for this double counting to occur, use a subtractive modelling approach "
+                    "to remove the overlapping region.\n"
+                    "Please see https://sectionproperties.readthedocs.io/en/latest/rst/advanced_geom.html for more "
+                    "information."
+                )
 
         def calc_plastic():
             plastic_section = PlasticSection(self.geometry)
@@ -2002,6 +2017,7 @@ class PlasticSection:
         :param bool verbose: If set to True, the number of iterations required for each plastic
             axis is printed to the terminal.
         """
+
         # 1) Calculate plastic properties for centroidal axis
         # calculate distances to the extreme fibres
         fibres = self.calculate_extreme_fibres(
