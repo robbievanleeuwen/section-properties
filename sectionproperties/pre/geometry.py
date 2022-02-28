@@ -1058,25 +1058,53 @@ class Geometry:
         """
         Perform difference on Geometry objects with the - operator
         """
-        material = self.material or other.material
+        material = pre.DEFAULT_MATERIAL
+        if isinstance(self, Geometry):
+            material = self.material or other.material
         try:
             new_polygon = filter_non_polygons(self.geom - other.geom)
-            if isinstance(new_polygon, MultiPolygon):
+            if isinstance(new_polygon, GeometryCollection):  # Non-polygon results
+                return None
+            elif isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
-            if isinstance(new_polygon, GeometryCollection):
-                return None
-            # Check to see if assigned_control_point is still valid
-            if self.assigned_control_point and new_polygon.contains(
-                self.assigned_control_point
-            ):
-                return Geometry(new_polygon, material, self.control_points[0])
-            return Geometry(new_polygon, material)
+            elif isinstance(new_polygon, Polygon):
+                if not isinstance(self, CompoundGeometry):
+                    if self.assigned_control_point and new_polygon.contains(
+                        self.assigned_control_point
+                    ):
+                        return Geometry(
+                            new_polygon, material, self.assigned_control_point
+                        )
+                    else:
+                        return Geometry(new_polygon, material)
+                else:
+                    return Geometry(new_polygon, material)
         except:
             raise ValueError(
                 f"Cannot perform 'difference' on these two objects: {self} - {other}"
             )
+
+        # material = self.material or other.material
+        # try:
+        #     new_polygon = filter_non_polygons(self.geom - other.geom)
+        #     if isinstance(new_polygon, MultiPolygon):
+        #         return CompoundGeometry(
+        #             [Geometry(polygon, material) for polygon in new_polygon.geoms]
+        #         )
+        #     if isinstance(new_polygon, GeometryCollection):
+        #         return None
+        #     # Check to see if assigned_control_point is still valid
+        #     if self.assigned_control_point and new_polygon.contains(
+        #         self.assigned_control_point
+        #     ):
+        #         return Geometry(new_polygon, material, self.control_points[0])
+        #     return Geometry(new_polygon, material)
+        # except:
+        #     raise ValueError(
+        #         f"Cannot perform 'difference' on these two objects: {self} - {other}"
+        #     )
 
     def __add__(self, other):
         """
