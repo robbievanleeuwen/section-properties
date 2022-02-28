@@ -1,5 +1,5 @@
 import numpy as np
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, Point
 import sectionproperties.pre.pre as pre
 import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.library.primitive_sections as primitive_sections
@@ -9,7 +9,8 @@ def concrete_rectangular_section(
     b: float,
     d: float,
     dia: float,
-    n_bar: int,
+    n_rows: int,
+    n_cols: int,
     n_circle: int,
     cover: float,
     area: float = None,
@@ -68,28 +69,10 @@ def concrete_rectangular_section(
 
         Mesh generated from the above geometry.
     """
+    conc_geom = primitive_sections.rectangular_section(b=b, d=d, material=conc_mat)
+    bar_array = linear_bar_array(dia, n_circle, n_rows, n_cols, b, d, cover, steel_mat, False)
+    return (conc_geom - bar_array) + bar_array
 
-    if n_bar < 2:
-        raise ValueError("Please provide 2 or more steel reinforcing bars.")
-
-    geom = primitive_sections.rectangular_section(b=b, d=d, material=conc_mat)
-
-    x_i = cover + dia / 2
-    spacing = (b - 2 * cover - dia) / (n_bar - 1)
-
-    for i in range(n_bar):
-        if area:
-            bar = primitive_sections.circular_section_by_area(
-                area=area, n=n_circle, material=steel_mat
-            )
-        else:
-            bar = primitive_sections.circular_section(
-                d=dia, n=n_circle, material=steel_mat
-            )
-
-        geom += bar.shift_section(x_offset=x_i + spacing * i, y_offset=cover + dia / 2)
-
-    return geom
 
 
 def concrete_tee_section(
@@ -273,3 +256,52 @@ def concrete_circular_section(
         )
 
     return geom
+
+
+def linear_bar_array(
+    bar_diam: float,
+    n_points: int,
+    n_rows: int,
+    n_cols: int,
+    b: float,
+    d: float,
+    cover: float,
+    material: pre.Material,
+    perimeter_only: bool = False,
+    ) -> geometry.CompoundGeometry:
+    """
+    Returns a grid array of bars as a CompoundGeometry with equal spacing between
+    each bar.
+
+    :param float bar_diam: Diameter of each bar
+    :param int n_points: number of points to be used in each circle
+    :param int n_rows: number of rows in grid
+    :param int n_cols: number of cols in grid
+    :param float b: width of bounding rectangle of grid
+    :param float d: height of bounding rectangle of grid
+    :param float cover: clear cover to edge of bars
+    :param pre.Material material: material to be assigned to each bar
+    :param bool perimeter_only: If True, returns a grid of bars with bars only
+        on the perimeter of the array
+    """
+    array_max_x = b - 2*cover - bar_diam
+    array_max_y = d - 2*cover - bar_diam
+    array_min_x = cover + bar_diam/2
+    array_min_y = cover + bar_diam/2    
+    n_row_spaces = n_rows - 1
+    n_col_spaces = n_cols - 1
+    row_coords = np.arange(n_rows) * (array_max_y / n_row_spaces) + array_min_y
+    col_coords = np.arange(n_cols) * (array_max_x / n_col_spaces) + array_min_x
+    x2d, y2d = np.meshgrid(col_coords, row_coords)
+    coord_grid = np.column_stack((x2d.ravel(),y2d.ravel()))
+    # if perimeter_only == True:
+    #     coord_grid = np.where(coord_gri)
+    bars = []
+    for coords in coord_grid:
+        point = Point(coords)
+        bar_poly = point.buffer(bar_diam/2, resolution=n_points)
+        bar_geom = geometry.Geometry(bar_poly, material=material)
+        bars.append(bar_geom)
+    return geometry.CompoundGeometry(bars)
+
+
