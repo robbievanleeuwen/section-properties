@@ -22,7 +22,6 @@ import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.post.post as post
-import sectionproperties.pre.rhino as rhino_importer
 
 
 class Geometry:
@@ -262,6 +261,16 @@ class Geometry:
                 If true, all non parallel surfaces are filtered out.
                 Default is False.
         """
+        try:
+            import sectionproperties.pre.rhino as rhino_importer  # type: ignore
+        except ImportError as e:
+            print(e)
+            print(
+                "There is something wrong with your rhino library installation. "
+                "Please report this error at https://github.com/robbievanleeuwen/section-properties/issues"
+            )
+            return
+
         geom = None
         list_poly = rhino_importer.load_3dm(filepath, **kwargs)
         if len(list_poly) == 1:
@@ -313,6 +322,15 @@ class Geometry:
                 If true, all non parallel surfaces are filtered out.
                 Default is False.
         """
+        try:
+            import sectionproperties.pre.rhino as rhino_importer  # type: ignore
+        except ImportError as e:
+            print(e)
+            print(
+                "There is something wrong with your rhino library installation. "
+                "Please report this error at https://github.com/robbievanleeuwen/section-properties/issues"
+            )
+            return
         return cls(geom=rhino_importer.load_brep_encoding(r3dm_brep, **kwargs)[0])
 
     def create_facets_and_control_points(self):
@@ -1320,6 +1338,15 @@ class CompoundGeometry(Geometry):
                 If true, all non parallel surfaces are filtered out.
                 Default is False.
         """
+        try:
+            import sectionproperties.pre.rhino as rhino_importer  # type: ignore
+        except ImportError as e:
+            print(e)
+            print(
+                "There is something wrong with your rhino library installation. "
+                "Please report this error at https://github.com/robbievanleeuwen/section-properties/issues"
+            )
+            return
         list_poly = rhino_importer.load_3dm(filepath, **kwargs)
         return cls(geoms=MultiPolygon(list_poly))
 
