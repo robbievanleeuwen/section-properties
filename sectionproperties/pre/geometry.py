@@ -1059,18 +1059,23 @@ class Geometry:
         Perform difference on Geometry objects with the - operator
         """
         material = pre.DEFAULT_MATERIAL
-        if isinstance(self, Geometry):
-            material = self.material or other.material
-        try:
-            new_polygon = filter_non_polygons(self.geom - other.geom)
-            if isinstance(new_polygon, GeometryCollection):  # Non-polygon results
-                return None
-            elif isinstance(new_polygon, MultiPolygon):
-                return CompoundGeometry(
-                    [Geometry(polygon, material) for polygon in new_polygon.geoms]
-                )
-            elif isinstance(new_polygon, Polygon):
-                if not isinstance(self, CompoundGeometry):
+        if isinstance(self, CompoundGeometry):
+            subs_geom_acc = []
+            for geom in self.geoms:
+                new_geom = geom - other
+                subs_geom_acc.append(new_geom)
+            return CompoundGeometry(subs_geom_acc)
+        else:
+            material = self.material or pre.DEFAULT_MATERIAL
+            try:
+                new_polygon = filter_non_polygons(self.geom - other.geom)
+                if isinstance(new_polygon, GeometryCollection):  # Non-polygon results
+                    return None
+                elif isinstance(new_polygon, MultiPolygon):
+                    return CompoundGeometry(
+                        [Geometry(polygon, material) for polygon in new_polygon.geoms]
+                    )
+                elif isinstance(new_polygon, Polygon):
                     if self.assigned_control_point and new_polygon.contains(
                         self.assigned_control_point
                     ):
@@ -1079,12 +1084,10 @@ class Geometry:
                         )
                     else:
                         return Geometry(new_polygon, material)
-                else:
-                    return Geometry(new_polygon, material)
-        except:
-            raise ValueError(
-                f"Cannot perform 'difference' on these two objects: {self} - {other}"
-            )
+            except:
+                raise ValueError(
+                    f"Cannot perform 'difference' on these two objects: {self} - {other}"
+                )
 
         # material = self.material or other.material
         # try:
