@@ -75,7 +75,11 @@ def test_for_incidental_holes():
 
 def test__sub__():
     small_hole.material = steel
-    top_left = small_hole.align_to(big_sq, on="left").align_to(big_sq, on="top").shift_section(20, -20)
+    top_left = (
+        small_hole.align_to(big_sq, on="left")
+        .align_to(big_sq, on="top")
+        .shift_section(20, -20)
+    )
     top_right = top_left.shift_section(x_offset=200)
 
     compound = big_sq - top_left
@@ -84,7 +88,7 @@ def test__sub__():
     compound = compound + top_right
 
     assert len(compound.control_points) == 3
-    # Incomplete test to validate that the iterative __sub__ produces 
+    # Incomplete test to validate that the iterative __sub__ produces
     # three distinct regions with proper material assignments
 
 
