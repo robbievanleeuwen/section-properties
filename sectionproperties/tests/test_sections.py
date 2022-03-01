@@ -6,7 +6,7 @@ from sectionproperties.pre.library.primitive_sections import *
 from sectionproperties.pre.library.steel_sections import *
 from sectionproperties.pre.library.nastran_sections import *
 from sectionproperties.analysis.section import Section
-from sectionproperties.pre.pre import Material
+from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
 from sectionproperties.pre.rhino import load_3dm, load_brep_encoding
 from shapely.geometry import (
     Polygon,
@@ -44,6 +44,8 @@ overlay_geom = small_sq + small_hole
 overlay_geom.create_mesh([50])
 overlay_sec = Section(overlay_geom)
 
+steel = Material("steel", 200e3, 0.3, 7.85e-6, 400, "grey")
+
 
 def test_material_persistence():
     # Test ensures that the material attribute gets transformed
@@ -51,7 +53,6 @@ def test_material_persistence():
     # returns a new Geometry object.
     # The material assignment should persist through all of the
     # transformations
-    steel = Material("steel", 200e3, 0.3, 7.85e-6, 400, "grey")
     big_sq.material = steel
     new_geom = (
         big_sq.align_to(small_sq, on="left", inner=False)
@@ -70,6 +71,21 @@ def test_for_incidental_holes():
     # There should be two holes created after .compile_geometry()
     assert len(composite.holes) == 2
     assert len(nested_geom.holes) == 0
+
+
+def test__sub__():
+    small_hole.material = steel
+    top_left = small_hole.align_to(big_sq, on="left").align_to(big_sq, on="top").shift_section(20, -20)
+    top_right = top_left.shift_section(x_offset=200)
+
+    compound = big_sq - top_left
+    compound = compound + top_left
+    compound = compound - top_right
+    compound = compound + top_right
+
+    assert len(compound.control_points) == 3
+    # Incomplete test to validate that the iterative __sub__ produces 
+    # three distinct regions with proper material assignments
 
 
 def test_geometry_from_points():
