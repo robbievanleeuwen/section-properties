@@ -1,6 +1,19 @@
 Changelog:
 ==========
 
+v2.0.3:
+-------
+
+- Add top reinforcement to concrete section library sections
+- Add option to specify concrete circle area to ``concrete_circular_section()``
+- Update concrete section library to prevent overlapping geometries
+- Fix implementation of ``Geometry`` and ``CompoundGeometry`` ``.__sub__()`` method
+- Add method to detect overlapping geometry errors and generate warning
+- Add option to create coarse mesh (no angle or area constraints)
+- Update ``rhino-shapley-interop`` and ``cad_to_shapely`` requirements
+
+**Full changelog:** `2.0.2...2.0.3 <https://github.com/robbievanleeuwen/section-properties/compare/2.0.2...2.0.3>`_
+
 v2.0.2:
 -------
 
