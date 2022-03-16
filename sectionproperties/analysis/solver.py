@@ -1,5 +1,6 @@
 import time
 import numpy as np
+import progress.bar as prog_bar
 from scipy.sparse import linalg
 from scipy.sparse.linalg import spsolve
 
@@ -107,25 +108,9 @@ def solve_direct_lagrange(k_lg, f):
     return u[:-1]
 
 
-def function_timer(text, function, *args):
-    """Displays the message *text* and returns the time taken for a function, with arguments
-    *args*, to execute. The value returned by the timed function is also returned.
+class SPBar(prog_bar.IncrementalBar):
+    width = 20
 
-    :param string text: Message to display
-    :param function: Function to time and execute
-    :type function: function
-    :param args: Function arguments
-    :return: Value returned from the function
-    """
-
-    start_time = time.time()
-
-    if text != "":
-        print(text)
-
-    result = function(*args)
-
-    if text != "":
-        print("----completed in {0:.6f} seconds---\n".format(time.time() - start_time))
-
-    return result
+    @property
+    def elapsed_ms(self):
+        return time.monotonic() - self.start_ts

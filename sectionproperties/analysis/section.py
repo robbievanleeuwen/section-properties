@@ -89,7 +89,7 @@ class Section:
         self.materials = []
         mesh = self.mesh
 
-        def init():
+        def init(bar=None):
             if isinstance(self.geometry, section_geometry.CompoundGeometry):
                 self.materials = [geom.material for geom in self.geometry.geoms]
             else:
@@ -102,6 +102,9 @@ class Section:
 
             # swap mid-node order to retain node ordering consistency
             elements[:, [3, 4, 5]] = elements[:, [5, 3, 4]]
+
+            if bar is not None:
+                bar.max = len(elements)
 
             # save total number of nodes in mesh
             self.num_nodes = len(nodes)
@@ -174,6 +177,9 @@ class Section:
                         group.add_element(new_element)
                         break
 
+                if bar is not None:
+                    bar.next()
+
             # save mesh input
             self.mesh = mesh
             self.mesh_nodes = nodes
@@ -184,8 +190,11 @@ class Section:
             self.section_props = SectionProperties()
 
         if self.time_info:
-            text = "--Initialising the Section class..."
-            solver.function_timer(text, init)
+            with solver.SPBar(
+                message="-Initialising the Section class\t\t\t",
+                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+            ) as progress_bar:
+                init(bar=progress_bar)
         else:
             init()
 
@@ -218,7 +227,7 @@ class Section:
             section.calculate_geometric_properties()
         """
 
-        def calculate_geom():
+        def calculate_geom(bar=None):
             # initialise properties
             self.section_props.area = 0
             self.section_props.perimeter = 0
@@ -257,6 +266,9 @@ class Section:
                 self.section_props.iyy_g += iyy_g * e
                 self.section_props.ixy_g += ixy_g * e
 
+                if bar is not None:
+                    bar.next()
+
             self.section_props.nu_eff = (
                 self.section_props.ea / (2 * self.section_props.ga) - 1
             )
@@ -266,8 +278,12 @@ class Section:
             self.section_props.calculate_centroidal_properties(self.mesh)
 
         if self.time_info:
-            text = "--Calculating geometric section properties..."
-            solver.function_timer(text, calculate_geom)
+            with solver.SPBar(
+                message="-Calculating geometric section properties\t",
+                max=len(self.elements),
+                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+            ) as progress_bar:
+                calculate_geom(bar=progress_bar)
         else:
             calculate_geom()
 
@@ -321,12 +337,16 @@ class Section:
 
         # assemble stiffness matrix and load vector for warping function
         if self.time_info:
-            text = "--Assembling {0}x{0} stiffness matrix and load vector...".format(
-                self.num_nodes
-            )
-            (k, k_lg, f_torsion) = solver.function_timer(
-                text, warping_section.assemble_torsion
-            )
+            msg = "-Assembling {0}x{0} stiffness matrix\t\t".format(self.num_nodes)
+
+            with solver.SPBar(
+                message=msg,
+                max=len(warping_section.elements),
+                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+            ) as progress_bar:
+                (k, k_lg, f_torsion) = warping_section.assemble_torsion(
+                    bar=progress_bar
+                )
         else:
             (k, k_lg, f_torsion) = warping_section.assemble_torsion()
 
@@ -347,8 +367,14 @@ class Section:
         # if the cgs method is used, perform ILU decomposition
         if solver_type == "cgs":
             if self.time_info:
-                text = "--Performing ILU decomposition on the stiffness matrices..."
-                (k_precond, k_lg_precond) = solver.function_timer(text, ilu_decomp)
+                with solver.SPBar(
+                    message="-Performing ILU decomposition\t\t\t",
+                    max=2,
+                    suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+                ) as progress_bar:
+                    progress_bar.next()
+                    (k_precond, k_lg_precond) = ilu_decomp()
+                    progress_bar.next()
             else:
                 (k_precond, k_lg_precond) = ilu_decomp()
 
@@ -362,10 +388,16 @@ class Section:
             return omega
 
         if self.time_info:
-            text = "--Solving for the warping function using the {0} solver...".format(
-                solver_type
-            )
-            omega = solver.function_timer(text, solve_warping)
+            msg = "-Solving the warping function ({0} solver)\t".format(solver_type)
+
+            with solver.SPBar(
+                message=msg,
+                max=2,
+                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+            ) as progress_bar:
+                progress_bar.next()
+                omega = solve_warping()
+                progress_bar.next()
         else:
             omega = solve_warping()
 
@@ -373,21 +405,14 @@ class Section:
         self.section_props.omega = omega
 
         # determine the torsion constant
-        def j_func():
-            return (
-                self.section_props.ixx_c
-                + self.section_props.iyy_c
-                - omega.dot(k.dot(np.transpose(omega)))
-            )
-
-        if self.time_info:
-            text = "--Computing the torsion constant..."
-            self.section_props.j = solver.function_timer(text, j_func)
-        else:
-            self.section_props.j = j_func()
+        self.section_props.j = (
+            self.section_props.ixx_c
+            + self.section_props.iyy_c
+            - omega.dot(k.dot(np.transpose(omega)))
+        )
 
         # assemble shear function load vectors
-        def assemble_shear_load():
+        def assemble_shear_load(bar=None):
             f_psi = np.zeros(self.num_nodes)
             f_phi = np.zeros(self.num_nodes)
 
@@ -401,11 +426,18 @@ class Section:
                 f_psi[el.node_ids] += f_psi_el
                 f_phi[el.node_ids] += f_phi_el
 
+                if bar is not None:
+                    bar.next()
+
             return (f_psi, f_phi)
 
         if self.time_info:
-            text = "--Assembling shear function load vectors..."
-            (f_psi, f_phi) = solver.function_timer(text, assemble_shear_load)
+            with solver.SPBar(
+                message="-Assembling shear function vectors\t\t",
+                max=len(warping_section.elements),
+                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+            ) as progress_bar:
+                (f_psi, f_phi) = assemble_shear_load(bar=progress_bar)
         else:
             (f_psi, f_phi) = assemble_shear_load()
 
@@ -421,10 +453,16 @@ class Section:
             return (psi_shear, phi_shear)
 
         if self.time_info:
-            text = "--Solving for the shear functions using the {0} solver...".format(
-                solver_type
-            )
-            (psi_shear, phi_shear) = solver.function_timer(text, solve_shear_functions)
+            msg = "-Solving the shear functions ({0} solver)\t".format(solver_type)
+
+            with solver.SPBar(
+                message=msg,
+                max=2,
+                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+            ) as progress_bar:
+                progress_bar.next()
+                (psi_shear, phi_shear) = solve_shear_functions()
+                progress_bar.next()
         else:
             (psi_shear, phi_shear) = solve_shear_functions()
 
@@ -433,7 +471,7 @@ class Section:
         self.section_props.phi_shear = phi_shear
 
         # assemble shear centre and warping moment integrals
-        def assemble_sc_warping_integrals():
+        def assemble_sc_warping_integrals(bar=None):
             sc_xint = 0
             sc_yint = 0
             q_omega = 0
@@ -463,18 +501,25 @@ class Section:
                 i_xomega += i_xomega_el
                 i_yomega += i_yomega_el
 
+                if bar is not None:
+                    bar.next()
+
             return (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega)
 
         if self.time_info:
-            text = "--Assembling shear centre and warping moment integrals..."
-            (
-                sc_xint,
-                sc_yint,
-                q_omega,
-                i_omega,
-                i_xomega,
-                i_yomega,
-            ) = solver.function_timer(text, assemble_sc_warping_integrals)
+            with solver.SPBar(
+                message="-Assembling shear and warping integrals\t\t",
+                max=len(warping_section.elements),
+                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+            ) as progress_bar:
+                (
+                    sc_xint,
+                    sc_yint,
+                    q_omega,
+                    i_omega,
+                    i_xomega,
+                    i_yomega,
+                ) = assemble_sc_warping_integrals(bar=progress_bar)
         else:
             (
                 sc_xint,
@@ -485,52 +530,36 @@ class Section:
                 i_yomega,
             ) = assemble_sc_warping_integrals()
 
-        # calculate shear centres
-        def shear_centres():
-            # calculate shear centres (elasticity approach)
-            Delta_s = (
-                2
-                * (1 + self.section_props.nu_eff)
-                * (
-                    self.section_props.ixx_c * self.section_props.iyy_c
-                    - self.section_props.ixy_c**2
-                )
-            )
-            x_se = (1 / Delta_s) * (
-                (self.section_props.nu_eff / 2 * sc_xint) - f_torsion.dot(phi_shear)
-            )
-            y_se = (1 / Delta_s) * (
-                (self.section_props.nu_eff / 2 * sc_yint) + f_torsion.dot(psi_shear)
-            )
-            (x11_se, y22_se) = fea.principal_coordinate(
-                self.section_props.phi, x_se, y_se
-            )
-
-            # calculate shear centres (Trefftz's approach)
-            x_st = (
-                self.section_props.ixy_c * i_xomega
-                - self.section_props.iyy_c * i_yomega
-            ) / (
+        # calculate shear centres (elasticity approach)
+        Delta_s = (
+            2
+            * (1 + self.section_props.nu_eff)
+            * (
                 self.section_props.ixx_c * self.section_props.iyy_c
                 - self.section_props.ixy_c**2
             )
-            y_st = (
-                self.section_props.ixx_c * i_xomega
-                - self.section_props.ixy_c * i_yomega
-            ) / (
-                self.section_props.ixx_c * self.section_props.iyy_c
-                - self.section_props.ixy_c**2
-            )
+        )
+        x_se = (1 / Delta_s) * (
+            (self.section_props.nu_eff / 2 * sc_xint) - f_torsion.dot(phi_shear)
+        )
+        y_se = (1 / Delta_s) * (
+            (self.section_props.nu_eff / 2 * sc_yint) + f_torsion.dot(psi_shear)
+        )
+        (x11_se, y22_se) = fea.principal_coordinate(self.section_props.phi, x_se, y_se)
 
-            return (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st)
-
-        if self.time_info:
-            text = "--Calculating shear centres..."
-            (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st) = solver.function_timer(
-                text, shear_centres
-            )
-        else:
-            (Delta_s, x_se, y_se, x11_se, y22_se, x_st, y_st) = shear_centres()
+        # calculate shear centres (Trefftz's approach)
+        x_st = (
+            self.section_props.ixy_c * i_xomega - self.section_props.iyy_c * i_yomega
+        ) / (
+            self.section_props.ixx_c * self.section_props.iyy_c
+            - self.section_props.ixy_c**2
+        )
+        y_st = (
+            self.section_props.ixx_c * i_xomega - self.section_props.ixy_c * i_yomega
+        ) / (
+            self.section_props.ixx_c * self.section_props.iyy_c
+            - self.section_props.ixy_c**2
+        )
 
         # save shear centres
         self.section_props.Delta_s = Delta_s
@@ -549,7 +578,7 @@ class Section:
             + x_se * i_yomega
         )
 
-        def assemble_shear_deformation():
+        def assemble_shear_deformation(bar=None):
             # assemble shear deformation coefficients
             kappa_x = 0
             kappa_y = 0
@@ -569,13 +598,20 @@ class Section:
                 kappa_y += kappa_y_el
                 kappa_xy += kappa_xy_el
 
+                if bar is not None:
+                    bar.next()
+
             return (kappa_x, kappa_y, kappa_xy)
 
         if self.time_info:
-            text = "--Assembling shear deformation coefficients..."
-            (kappa_x, kappa_y, kappa_xy) = solver.function_timer(
-                text, assemble_shear_deformation
-            )
+            with solver.SPBar(
+                message="-Assembling shear deformation coefficients\t",
+                max=len(warping_section.elements),
+                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+            ) as progress_bar:
+                (kappa_x, kappa_y, kappa_xy) = assemble_shear_deformation(
+                    bar=progress_bar
+                )
         else:
             (kappa_x, kappa_y, kappa_xy) = assemble_shear_deformation()
 
@@ -604,7 +640,7 @@ class Section:
         self.section_props.A_s22 = self.section_props.area / rotatedAlpha[1, 1]
 
         # calculate the monosymmetry consants
-        def calculate_monosymmetry_integrals():
+        def calculate_monosymmetry_integrals(bar=None):
             int_x = 0
             int_y = 0
             int_11 = 0
@@ -620,13 +656,20 @@ class Section:
                 int_11 += int_11_el
                 int_22 += int_22_el
 
+                if bar is not None:
+                    bar.next()
+
             return (int_x, int_y, int_11, int_22)
 
         if self.time_info:
-            text = "--Assembling monosymmetry integrals..."
-            (int_x, int_y, int_11, int_22) = solver.function_timer(
-                text, calculate_monosymmetry_integrals
-            )
+            with solver.SPBar(
+                message="-Assembling monosymmetry integrals\t\t",
+                max=len(warping_section.elements),
+                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+            ) as progress_bar:
+                (int_x, int_y, int_11, int_22) = calculate_monosymmetry_integrals(
+                    bar=progress_bar
+                )
         else:
             (int_x, int_y, int_11, int_22) = calculate_monosymmetry_integrals()
 
@@ -684,105 +727,96 @@ class Section:
             (area, ixx, iyy, ixy, j, phi) = section.calculate_frame_properties()
         """
 
-        def calculate_frame():
-            # initialise geometric properties
-            self.section_props.area = 0
-            self.section_props.ea = 0
-            self.section_props.qx = 0
-            self.section_props.qy = 0
-            self.section_props.ixx_g = 0
-            self.section_props.iyy_g = 0
-            self.section_props.ixy_g = 0
-            self.section_props.ixx_c = 0
-            self.section_props.iyy_c = 0
-            self.section_props.ixy_c = 0
-            self.section_props.j = 0
+        # initialise geometric properties
+        self.section_props.area = 0
+        self.section_props.ea = 0
+        self.section_props.qx = 0
+        self.section_props.qy = 0
+        self.section_props.ixx_g = 0
+        self.section_props.iyy_g = 0
+        self.section_props.ixy_g = 0
+        self.section_props.ixx_c = 0
+        self.section_props.iyy_c = 0
+        self.section_props.ixy_c = 0
+        self.section_props.j = 0
+        self.section_props.phi = 0
+
+        # calculate global geometric properties
+        for el in self.elements:
+            (area, qx, qy, ixx_g, iyy_g, ixy_g, e, _, _) = el.geometric_properties()
+
+            self.section_props.area += area
+            self.section_props.ea += area * e
+            self.section_props.qx += qx * e
+            self.section_props.qy += qy * e
+            self.section_props.ixx_g += ixx_g * e
+            self.section_props.iyy_g += iyy_g * e
+            self.section_props.ixy_g += ixy_g * e
+
+        # calculate elastic centroid location
+        self.section_props.calculate_elastic_centroid()
+
+        # calculate second moments of area about the centroidal xy axis
+        self.section_props.ixx_c = (
+            self.section_props.ixx_g
+            - self.section_props.qx**2 / self.section_props.ea
+        )
+        self.section_props.iyy_c = (
+            self.section_props.iyy_g
+            - self.section_props.qy**2 / self.section_props.ea
+        )
+        self.section_props.ixy_c = (
+            self.section_props.ixy_g
+            - self.section_props.qx * self.section_props.qy / self.section_props.ea
+        )
+
+        # calculate the principal axis angle
+        Delta = (
+            ((self.section_props.ixx_c - self.section_props.iyy_c) / 2) ** 2
+            + self.section_props.ixy_c**2
+        ) ** 0.5
+
+        i11_c = (self.section_props.ixx_c + self.section_props.iyy_c) / 2 + Delta
+
+        # calculate initial principal axis angle
+        if abs(self.section_props.ixx_c - i11_c) < 1e-12 * i11_c:
             self.section_props.phi = 0
-
-            # calculate global geometric properties
-            for el in self.elements:
-                (area, qx, qy, ixx_g, iyy_g, ixy_g, e, _, _) = el.geometric_properties()
-
-                self.section_props.area += area
-                self.section_props.ea += area * e
-                self.section_props.qx += qx * e
-                self.section_props.qy += qy * e
-                self.section_props.ixx_g += ixx_g * e
-                self.section_props.iyy_g += iyy_g * e
-                self.section_props.ixy_g += ixy_g * e
-
-            # calculate elastic centroid location
-            self.section_props.calculate_elastic_centroid()
-
-            # calculate second moments of area about the centroidal xy axis
-            self.section_props.ixx_c = (
-                self.section_props.ixx_g
-                - self.section_props.qx**2 / self.section_props.ea
-            )
-            self.section_props.iyy_c = (
-                self.section_props.iyy_g
-                - self.section_props.qy**2 / self.section_props.ea
-            )
-            self.section_props.ixy_c = (
-                self.section_props.ixy_g
-                - self.section_props.qx * self.section_props.qy / self.section_props.ea
-            )
-
-            # calculate the principal axis angle
-            Delta = (
-                ((self.section_props.ixx_c - self.section_props.iyy_c) / 2) ** 2
-                + self.section_props.ixy_c**2
-            ) ** 0.5
-
-            i11_c = (self.section_props.ixx_c + self.section_props.iyy_c) / 2 + Delta
-
-            # calculate initial principal axis angle
-            if abs(self.section_props.ixx_c - i11_c) < 1e-12 * i11_c:
-                self.section_props.phi = 0
-            else:
-                self.section_props.phi = (
-                    np.arctan2(
-                        self.section_props.ixx_c - i11_c, self.section_props.ixy_c
-                    )
-                    * 180
-                    / np.pi
-                )
-
-            # create a new Section with the origin shifted to the centroid for calculation of
-            # the warping properties
-            warping_section = Section(self.geometry, self.time_info)
-
-            # shift the coordinates of each element N.B. the mesh class attribute remains unshifted
-            for el in warping_section.elements:
-                el.coords[0, :] -= self.section_props.cx
-                el.coords[1, :] -= self.section_props.cy
-
-            (k, _, f) = warping_section.assemble_torsion(lg=False)
-
-            # if the cgs method is used, perform ILU decomposition
-            if solver_type == "cgs":
-                k_precond = linalg.LinearOperator(
-                    (self.num_nodes, self.num_nodes), linalg.spilu(k).solve
-                )
-
-            # solve for warping function
-            if solver_type == "cgs":
-                omega = solver.solve_cgs(k, f, k_precond)
-            elif solver_type == "direct":
-                omega = solver.solve_direct(k, f)
-
-            # calculate the torsion constant
-            self.section_props.j = (
-                self.section_props.ixx_c
-                + self.section_props.iyy_c
-                - omega.dot(k.dot(np.transpose(omega)))
-            )
-
-        if self.time_info:
-            text = "--Calculating frame section properties..."
-            solver.function_timer(text, calculate_frame)
         else:
-            calculate_frame()
+            self.section_props.phi = (
+                np.arctan2(self.section_props.ixx_c - i11_c, self.section_props.ixy_c)
+                * 180
+                / np.pi
+            )
+
+        # create a new Section with the origin shifted to the centroid for calculation of
+        # the warping properties
+        warping_section = Section(self.geometry)
+
+        # shift the coordinates of each element N.B. the mesh class attribute remains unshifted
+        for el in warping_section.elements:
+            el.coords[0, :] -= self.section_props.cx
+            el.coords[1, :] -= self.section_props.cy
+
+        (k, _, f) = warping_section.assemble_torsion(lg=False)
+
+        # if the cgs method is used, perform ILU decomposition
+        if solver_type == "cgs":
+            k_precond = linalg.LinearOperator(
+                (self.num_nodes, self.num_nodes), linalg.spilu(k).solve
+            )
+
+        # solve for warping function
+        if solver_type == "cgs":
+            omega = solver.solve_cgs(k, f, k_precond)
+        elif solver_type == "direct":
+            omega = solver.solve_direct(k, f)
+
+        # calculate the torsion constant
+        self.section_props.j = (
+            self.section_props.ixx_c
+            + self.section_props.iyy_c
+            - omega.dot(k.dot(np.transpose(omega)))
+        )
 
         return (
             self.section_props.ea,
@@ -793,15 +827,13 @@ class Section:
             self.section_props.phi,
         )
 
-    def calculate_plastic_properties(self, verbose=False, debug=False):
+    def calculate_plastic_properties(self, verbose=False):
         """Calculates the plastic properties of the cross-section and stores them in the
         :class:`~sectionproperties.analysis.section.SectionProperties` object contained in
         the ``section_props`` class variable.
 
         :param bool verbose: If set to True, the number of iterations required for each plastic
             axis is printed to the terminal.
-        :param bool debug: If set to True, the geometry is plotted each time a new mesh is
-            generated by the plastic centroid algorithm.
 
         The following warping section properties are calculated:
 
@@ -841,13 +873,17 @@ class Section:
                     "information."
                 )
 
-        def calc_plastic():
+        def calc_plastic(bar=None):
             plastic_section = PlasticSection(self.geometry)
-            plastic_section.calculate_plastic_properties(self, verbose)
+            plastic_section.calculate_plastic_properties(self, verbose, bar)
 
         if self.time_info:
-            text = "--Calculating plastic properties..."
-            solver.function_timer(text, calc_plastic)
+            with solver.SPBar(
+                message="-Calculating plastic properties\t\t\t",
+                max=5,
+                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+            ) as progress_bar:
+                calc_plastic(bar=progress_bar)
         else:
             calc_plastic()
 
@@ -893,7 +929,7 @@ class Section:
             err = "Perform a geometric and warping analysis before carrying out a stress analysis."
             raise RuntimeError(err)
 
-        def calc_stress():
+        def calc_stress(bar=None):
             # create stress post object
             stress_post = StressPost(self)
 
@@ -985,6 +1021,9 @@ class Section:
                     # add nodal weights
                     nodal_weights[el.node_ids] += weights
 
+                    if bar is not None:
+                        bar.next()
+
                 # nodal averaging
                 for (i, weight) in enumerate(nodal_weights):
                     if weight != 0:
@@ -1006,15 +1045,19 @@ class Section:
             return stress_post
 
         if self.time_info:
-            text = "--Calculating cross-section stresses..."
-            stress_post = solver.function_timer(text, calc_stress)
+            with solver.SPBar(
+                message="-Calculating cross-section stresses\t\t",
+                max=len(self.elements),
+                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
+            ) as progress_bar:
+                stress_post = calc_stress(bar=progress_bar)
         else:
             stress_post = calc_stress()
 
         # return the stress_post object
         return stress_post
 
-    def assemble_torsion(self, lg=True):
+    def assemble_torsion(self, lg=True, bar=None):
         """Assembles stiffness matrices to be used for the computation of warping properties and
         the torsion load vector (f_torsion). Both a regular (k) and Lagrangian multiplier (k_lg)
         stiffness matrix are returned. The stiffness matrices are assembled using the sparse COO
@@ -1059,6 +1102,9 @@ class Section:
             row = np.hstack((row, r))
             col = np.hstack((col, c))
             data = np.hstack((data, k))
+
+            if bar is not None:
+                bar.next()
 
         k = coo_matrix((data, (row, col)), shape=(N, N))
 
@@ -1931,16 +1977,11 @@ class PlasticSection:
     :param section: Section object
     :type section: :class:`~sectionproperties.analysis.section.Section`
 
-    :param bool debug: If set to True, the geometry is plotted each time a new mesh is generated by
-        the plastic centroid algorithm.
-
     :cvar geometry: Deep copy of the Section geometry object provided to the constructor
     :vartype geometry: :class:`~sectionproperties.pre.geometry.Geometry`
     :cvar materials: A list of material properties corresponding to various regions in the geometry
         and mesh.
     :vartype materials: list[:class:`~sectionproperties.pre.pre.Material`]
-    :cvar bool debug: If set to True, the geometry is plotted each time a new mesh is generated by
-        the plastic centroid algorithm.
     :cvar mesh: Mesh dict returned by triangle
     :vartype mesh: dict(mesh)
     :cvar mesh_nodes: Array of node coordinates from the mesh
@@ -2006,7 +2047,7 @@ class PlasticSection:
 
         return (qy / ea, qx, ea)
 
-    def calculate_plastic_properties(self, section, verbose):
+    def calculate_plastic_properties(self, section, verbose, bar=None):
         """Calculates the location of the plastic centroid with respect to the centroidal and
         principal bending axes, the plastic section moduli and shape factors and stores the results
         to the supplied :class:`~sectionproperties.analysis.section.Section` object.
@@ -2017,6 +2058,9 @@ class PlasticSection:
         :param bool verbose: If set to True, the number of iterations required for each plastic
             axis is printed to the terminal.
         """
+
+        if bar is not None:
+            bar.next()
 
         # 1) Calculate plastic properties for centroidal axis
         # calculate distances to the extreme fibres
@@ -2036,6 +2080,9 @@ class PlasticSection:
         if verbose:
             self.print_verbose(y_pc, r, "x-axis")  # Location of axis for each iteration
 
+        if bar is not None:
+            bar.next()
+
         # 1b) Calculate y-axis plastic centroid
         (x_pc, r, f, c_top, c_bot) = self.pc_algorithm(
             np.array([0, 1]), fibres[0:2], 2, verbose
@@ -2047,6 +2094,9 @@ class PlasticSection:
 
         if verbose:
             self.print_verbose(x_pc, r, "y-axis")  # Location of axis for each iteration
+
+        if bar is not None:
+            bar.next()
 
         # 2) Calculate plastic properties for principal axis
         # convert principal axis angle to radians
@@ -2079,6 +2129,9 @@ class PlasticSection:
         if verbose:
             self.print_verbose(y22_pc, r, "11-axis")
 
+        if bar is not None:
+            bar.next()
+
         # 2b) Calculate 22-axis plastic centroid
         (x11_pc, r, f, c_top, c_bot) = self.pc_algorithm(
             uy, fibres[0:2], 2, verbose
@@ -2098,6 +2151,9 @@ class PlasticSection:
 
         if verbose:
             self.print_verbose(x11_pc, r, "22-axis")
+
+        if bar is not None:
+            bar.next()
 
         # if there are no materials specified, calculate shape factors
         if list(set(section.materials)) == [pre.DEFAULT_MATERIAL]:
