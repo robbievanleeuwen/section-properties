@@ -1058,7 +1058,6 @@ class Geometry:
         """
         Perform difference on Geometry objects with the - operator
         """
-        material = pre.DEFAULT_MATERIAL
         if isinstance(self, CompoundGeometry):
             subs_geom_acc = []
             for geom in self.geoms:
@@ -1717,35 +1716,32 @@ class CompoundGeometry(Geometry):
                 self.facets.append([i_pnt_idx, j_pnt_idx])
 
             # add holes
+            existing_geom_holes = []
             for hole in geom.holes:
-                self.holes.append(tuple(hole))
+                existing_geom_holes.append(tuple(hole))
 
             # add control points
             for control_point in geom.control_points:
                 self.control_points.append(tuple(control_point))
 
-        # Check for holes created inadvertently from combined sections
-        inadvertent_holes = []
+        # Determine if new holes have been created or if existing
+        # holes have been destroyed (or "filled in").
+        resultant_holes = []
         unionized_poly = unary_union([geom.geom for geom in self.geoms])
         if isinstance(unionized_poly, MultiPolygon):
             for poly in unionized_poly.geoms:
                 for interior in poly.interiors:
-                    inadvertent_holes.append(
+                    resultant_holes.append(
                         tuple(Polygon(interior).representative_point().coords[0])
                     )
 
         elif isinstance(unionized_poly, Polygon):
             if Geometry(unionized_poly).holes:
-                inadvertent_holes += Geometry(unionized_poly).holes
+                resultant_holes = Geometry(unionized_poly).holes
             else:  # Holes have been destroyed through operations
-                inadvertent_holes = []
-                self.holes = []
+                resultant_holes = []
 
-        extra_holes = []
-        if set(inadvertent_holes) - set(self.holes):
-            extra_holes = [hole for hole in inadvertent_holes if hole not in self.holes]
-
-        self.holes += extra_holes
+        self.holes = resultant_holes
 
     def calculate_perimeter(self) -> float:
         """
