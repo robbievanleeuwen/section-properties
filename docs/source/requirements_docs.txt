@@ -8,4 +8,4 @@ Sphinx
 sphinx-rtd-theme
 sphinx-gallery
 rhino-shapley-interop>=0.0.4
-cad_to_shapely>=0.3
+cad_to_shapely>=0.3.1
