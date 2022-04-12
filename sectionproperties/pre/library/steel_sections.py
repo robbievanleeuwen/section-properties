@@ -1284,7 +1284,7 @@ def bulb_section(
     and radius *r*, using *n_r* points to construct the radius.
 
     :param float d: Depth of the section
-    :param float d_b: Depth of the bulb
+    :param float d_b: Depth of the bulb (automatically field for standard section by inputing it you will become out of standard and will have sharp edges)
     :param float b: Bulb width
     :param float t: Web thickness
     :param float r: Bulb radius
@@ -1298,7 +1298,7 @@ def bulb_section(
 
         from sectionproperties.pre.library.steel_sections import bulb_section
 
-        geometry = bulb_section(d=240, d_b=35.4, b=34, t=12, r=10, n_r=16)
+        geometry = bulb_section(d=240, b=34, t=12, r=10, n_r=16)
         geometry.create_mesh(mesh_sizes=[5.0])
 
     ..  figure:: ../images/sections/cruciform_geometry.png
@@ -1310,6 +1310,9 @@ def bulb_section(
         :align: center
         :scale: 75 %
     """
+    if d_b == float:
+        d_b = r * np.cos(np.pi / 3) / np.cos(np.pi / 6) + r + c * np.tan(np.pi / 6)    
+    
     points = []
 
     # add first two points
@@ -1325,13 +1328,6 @@ def bulb_section(
     ptb = [b + t * 0.5 - r, d - r]
     dzero = ((b + t * 0.5 - r - t * 0.5) ** 2 + (d - r - d + d_b) ** 2) ** 0.5
     # build radius
-    """
-    to be update to include small radius on all sharp edge
-    to be update for tangence of the oblic line :
-    points.append([(r**2)/(dzero**2)*(t * 0.5)+r/(dzero**2)*((dzero**2)-(r**2))**0.5*(d-b),
-                  r**2/dzero**2*(b-d)+r/dzero**2*(dzero**2-r**2)**0.5*(t*0.5)])
-    points.append([(r**2)/(dzero**2)*(t * 0.5)-r/(dzero**2)*((dzero**2)-(r**2))**0.5*(d-b),
-                  r**2/dzero**2*(b-d)-r/dzero**2*(dzero**2-r**2)**0.5*(t*0.5)])"""
     points += draw_radius(ptb, r, -np.pi * 1 / 3, n_r, True, np.pi / 3)
     points += draw_radius(ptb, r, 0, n_r, True)
 
