@@ -290,9 +290,10 @@ class Section:
             )
             progress_table.add_row(panel)
 
-            with Live(progress_table, refresh_per_second=10):
+            with Live(progress_table, refresh_per_second=10) as live:
                 calculate_geom(progress=progress)
                 panel.border_style = "green"
+                live.refresh()
         else:
             calculate_geom()
 
@@ -799,7 +800,7 @@ class Section:
             )
             progress_table.add_row(panel)
 
-            with Live(progress_table, refresh_per_second=10):
+            with Live(progress_table, refresh_per_second=10) as live:
                 warping_analysis(progress)
 
                 progress.update(
@@ -808,6 +809,7 @@ class Section:
                 )
 
                 panel.border_style = "green"
+                live.refresh()
         else:
             warping_analysis()
 
@@ -1001,9 +1003,10 @@ class Section:
             )
             progress_table.add_row(panel)
 
-            with Live(progress_table, refresh_per_second=10):
+            with Live(progress_table, refresh_per_second=10) as live:
                 calc_plastic(progress=progress)
                 panel.border_style = "green"
+                live.refresh()
         else:
             calc_plastic()
 
@@ -1188,9 +1191,10 @@ class Section:
             )
             progress_table.add_row(panel)
 
-            with Live(progress_table, refresh_per_second=10):
+            with Live(progress_table, refresh_per_second=10) as live:
                 stress_post = calc_stress(progress=progress)
                 panel.border_style = "green"
+                live.refresh()
         else:
             stress_post = calc_stress()
 
