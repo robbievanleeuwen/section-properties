@@ -231,10 +231,11 @@ class Section:
             # calculate perimeter
             self.section_props.perimeter = self.geometry.calculate_perimeter()
 
-            task = progress.add_task(
-                description="[red]Calculating geometric properties",
-                total=len(self.elements),
-            )
+            if progress is not None:
+                task = progress.add_task(
+                    description="[red]Calculating geometric properties",
+                    total=len(self.elements),
+                )
 
             # calculate global geometric properties
             for el in self.elements:
@@ -270,10 +271,11 @@ class Section:
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(self.mesh)
 
-            progress.update(
-                task,
-                description="[bold green]:white_check_mark: Geometric analysis complete",
-            )
+            if progress is not None:
+                progress.update(
+                    task,
+                    description="[bold green]:white_check_mark: Geometric analysis complete",
+                )
 
         # conduct geometric analysis
         if self.time_info:
@@ -1048,10 +1050,11 @@ class Section:
             raise RuntimeError(err)
 
         def calc_stress(progress=None):
-            task = progress.add_task(
-                description="[red]Calculating cross-section stresses",
-                total=len(self.elements),
-            )
+            if progress is not None:
+                task = progress.add_task(
+                    description="[red]Calculating cross-section stresses",
+                    total=len(self.elements),
+                )
 
             # create stress post object
             stress_post = StressPost(self)
@@ -1165,10 +1168,11 @@ class Section:
                 # calculate combined stresses
                 group.stress_result.calculate_combined_stresses()
 
-            progress.update(
-                task,
-                description="[bold green]:white_check_mark: Stress analysis complete",
-            )
+            if progress is not None:
+                progress.update(
+                    task,
+                    description="[bold green]:white_check_mark: Stress analysis complete",
+                )
 
             return stress_post
 
@@ -2322,10 +2326,11 @@ class PlasticSection:
                 section.section_props.s22 / section.section_props.z22_minus
             )
 
-        progress.update(
-            task,
-            description="[bold green]:white_check_mark: Plastic analysis complete",
-        )
+        if progress is not None:
+            progress.update(
+                task,
+                description="[bold green]:white_check_mark: Plastic analysis complete",
+            )
 
     def check_convergence(self, root_result, axis):
         """Checks that the function solver converged and if not, raises a helpful error.
