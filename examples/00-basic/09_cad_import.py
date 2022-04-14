@@ -9,7 +9,7 @@ Demonstrates loading :class:`~sectionproperties.pre.geometry.Geometry` and
 files.
 """
 
-# sphinx_gallery_thumbnail_number = 5
+# sphinx_gallery_thumbnail_number = 8
 
 from sectionproperties.pre.geometry import Geometry, CompoundGeometry
 from sectionproperties.analysis.section import Section

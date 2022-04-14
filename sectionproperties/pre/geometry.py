@@ -1930,7 +1930,7 @@ def round_polygon_vertices(poly: Polygon, tol: int) -> Polygon:
     for interior in poly.interiors:
         rounded_interiors.append(np.round(interior.coords, tol))
     # print("Exterior: ", rounded_exterior)
-    # print("intterior: ", rounded_interiors)
+    # print("Interior: ", rounded_interiors)
     if not rounded_exterior.any():
         return Polygon()
     return Polygon(rounded_exterior, rounded_interiors)

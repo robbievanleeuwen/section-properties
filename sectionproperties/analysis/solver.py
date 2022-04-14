@@ -1,6 +1,8 @@
 import time
 import numpy as np
-import progress.bar as prog_bar
+from rich.progress import Progress, BarColumn, ProgressColumn, TextColumn, SpinnerColumn
+from rich.table import Column
+from rich.text import Text
 from scipy.sparse import linalg
 from scipy.sparse.linalg import spsolve
 
@@ -108,9 +110,32 @@ def solve_direct_lagrange(k_lg, f):
     return u[:-1]
 
 
-class SPBar(prog_bar.IncrementalBar):
-    width = 20
+class CustomTimeElapsedColumn(ProgressColumn):
+    """Renders time elapsed in milliseconds."""
 
-    @property
-    def elapsed_ms(self):
-        return time.monotonic() - self.start_ts
+    def render(self, task: "Task") -> Text:
+        """Show time remaining."""
+
+        elapsed = task.finished_time if task.finished else task.elapsed
+
+        if elapsed is None:
+            return Text("-:--:--", style="progress.elapsed")
+
+        elapsed_string = "[ {0:.4f} s ]".format(elapsed)
+
+        return Text(elapsed_string, style="progress.elapsed")
+
+
+def create_progress():
+    """Returns a Rich Progress class."""
+
+    return Progress(
+        SpinnerColumn(),
+        TextColumn(
+            "[progress.description]{task.description}", table_column=Column(ratio=1)
+        ),
+        BarColumn(bar_width=None, table_column=Column(ratio=1)),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        CustomTimeElapsedColumn(),
+        expand=True,
+    )

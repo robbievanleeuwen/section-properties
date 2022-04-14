@@ -9,4 +9,4 @@ sphinx-rtd-theme
 sphinx-gallery
 rhino-shapley-interop
 cad_to_shapely
-progress
+rich

@@ -11,6 +11,11 @@ import matplotlib.patches as mpatches
 from matplotlib.colors import ListedColormap, CenteredNorm
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
+from rich.live import Live
+from rich.table import Table
+from rich.panel import Panel
+from rich.progress import Progress
+
 import numpy as np
 from scipy.sparse import csc_matrix, coo_matrix, linalg
 from scipy.optimize import brentq
@@ -76,6 +81,7 @@ class Section:
         time_info: bool = False,
     ):
         """Inits the Section class."""
+
         if not hasattr(geometry, "mesh") or not geometry.mesh:
             raise ValueError(
                 "Selected Geometry or CompoundGeometry "
@@ -89,114 +95,96 @@ class Section:
         self.materials = []
         mesh = self.mesh
 
-        def init(bar=None):
-            if isinstance(self.geometry, section_geometry.CompoundGeometry):
-                self.materials = [geom.material for geom in self.geometry.geoms]
-            else:
-                self.materials = [self.geometry.material]
+        if isinstance(self.geometry, section_geometry.CompoundGeometry):
+            self.materials = [geom.material for geom in self.geometry.geoms]
+        else:
+            self.materials = [self.geometry.material]
 
-            # extract mesh data
-            nodes = np.array(mesh["vertices"], dtype=np.dtype(float))
-            elements = np.array(mesh["triangles"], dtype=np.dtype(int))
-            attributes = np.array(mesh["triangle_attributes"].T[0], dtype=np.dtype(int))
+        # extract mesh data
+        nodes = np.array(mesh["vertices"], dtype=np.dtype(float))
+        elements = np.array(mesh["triangles"], dtype=np.dtype(int))
+        attributes = np.array(mesh["triangle_attributes"].T[0], dtype=np.dtype(int))
 
-            # swap mid-node order to retain node ordering consistency
-            elements[:, [3, 4, 5]] = elements[:, [5, 3, 4]]
+        # swap mid-node order to retain node ordering consistency
+        elements[:, [3, 4, 5]] = elements[:, [5, 3, 4]]
 
-            if bar is not None:
-                bar.max = len(elements)
+        # save total number of nodes in mesh
+        self.num_nodes = len(nodes)
 
-            # save total number of nodes in mesh
-            self.num_nodes = len(nodes)
+        # initialise material_sections variable
+        self.material_groups = []
 
-            # initialise material_sections variable
-            self.material_groups = []
+        # if materials are specified, check that the right number of material properties are
+        # specified and then populate material_groups list
+        if self.materials:
+            msg = "Number of materials ({0}), ".format(len(self.materials))
+            msg += "should match the number of regions ({0}).".format(
+                max(attributes) + 1
+            )
+            assert len(self.materials) == max(attributes) + 1, msg
 
-            # if materials are specified, check that the right number of material properties are
-            # specified and then populate material_groups list
-            if self.materials:
-                msg = "Number of materials ({0}), ".format(len(self.materials))
-                msg += "should match the number of regions ({0}).".format(
-                    max(attributes) + 1
-                )
-                assert len(self.materials) == max(attributes) + 1, msg
-
-                # add a MaterialGroup object to the material_groups list for each uniquely
-                # encountered material
-                for (i, material) in enumerate(self.materials):
-                    # add the first material to the list
-                    if i == 0:
+            # add a MaterialGroup object to the material_groups list for each uniquely
+            # encountered material
+            for (i, material) in enumerate(self.materials):
+                # add the first material to the list
+                if i == 0:
+                    self.material_groups.append(MaterialGroup(material, self.num_nodes))
+                else:
+                    # if the material hasn't been encountered
+                    if material not in self.materials[:i]:
                         self.material_groups.append(
                             MaterialGroup(material, self.num_nodes)
                         )
-                    else:
-                        # if the material hasn't been encountered
-                        if material not in self.materials[:i]:
-                            self.material_groups.append(
-                                MaterialGroup(material, self.num_nodes)
-                            )
 
-            self.elements = []  # initialise list holding all element objects
+        self.elements = []  # initialise list holding all element objects
 
-            # build the mesh one element at a time
-            for (i, node_ids) in enumerate(elements):
-                x1 = nodes[node_ids[0]][0]
-                y1 = nodes[node_ids[0]][1]
-                x2 = nodes[node_ids[1]][0]
-                y2 = nodes[node_ids[1]][1]
-                x3 = nodes[node_ids[2]][0]
-                y3 = nodes[node_ids[2]][1]
-                x4 = nodes[node_ids[3]][0]
-                y4 = nodes[node_ids[3]][1]
-                x5 = nodes[node_ids[4]][0]
-                y5 = nodes[node_ids[4]][1]
-                x6 = nodes[node_ids[5]][0]
-                y6 = nodes[node_ids[5]][1]
+        # build the mesh one element at a time
+        for (i, node_ids) in enumerate(elements):
+            x1 = nodes[node_ids[0]][0]
+            y1 = nodes[node_ids[0]][1]
+            x2 = nodes[node_ids[1]][0]
+            y2 = nodes[node_ids[1]][1]
+            x3 = nodes[node_ids[2]][0]
+            y3 = nodes[node_ids[2]][1]
+            x4 = nodes[node_ids[3]][0]
+            y4 = nodes[node_ids[3]][1]
+            x5 = nodes[node_ids[4]][0]
+            y5 = nodes[node_ids[4]][1]
+            x6 = nodes[node_ids[5]][0]
+            y6 = nodes[node_ids[5]][1]
 
-                # create a list containing the vertex and mid-node coordinates
-                coords = np.array([[x1, x2, x3, x4, x5, x6], [y1, y2, y3, y4, y5, y6]])
+            # create a list containing the vertex and mid-node coordinates
+            coords = np.array([[x1, x2, x3, x4, x5, x6], [y1, y2, y3, y4, y5, y6]])
 
-                # if materials are specified, get the material
-                if self.materials:
-                    # get attribute index of current element
-                    att_el = attributes[i]
+            # if materials are specified, get the material
+            if self.materials:
+                # get attribute index of current element
+                att_el = attributes[i]
 
-                    # fetch the material
-                    material = self.materials[att_el]
-                # if there are no materials specified, use a default material
-                else:  # Should not happen but included as failsafe
-                    material = pre.DEFAULT_MATERIAL
+                # fetch the material
+                material = self.materials[att_el]
+            # if there are no materials specified, use a default material
+            else:  # Should not happen but included as failsafe
+                material = pre.DEFAULT_MATERIAL
 
-                # add tri6 elements to the mesh
-                new_element = fea.Tri6(i, coords, node_ids, material)
-                self.elements.append(new_element)
+            # add tri6 elements to the mesh
+            new_element = fea.Tri6(i, coords, node_ids, material)
+            self.elements.append(new_element)
 
-                # add element to relevant MaterialGroup
-                for group in self.material_groups:
-                    if material is group.material:
-                        group.add_element(new_element)
-                        break
+            # add element to relevant MaterialGroup
+            for group in self.material_groups:
+                if material is group.material:
+                    group.add_element(new_element)
+                    break
 
-                if bar is not None:
-                    bar.next()
+        # save mesh input
+        self.mesh = mesh
+        self.mesh_nodes = nodes
+        self.mesh_elements = elements
+        self.mesh_attributes = attributes
 
-            # save mesh input
-            self.mesh = mesh
-            self.mesh_nodes = nodes
-            self.mesh_elements = elements
-            self.mesh_attributes = attributes
-
-            # initialise class storing section properties
-            self.section_props = SectionProperties()
-
-        if self.time_info:
-            with solver.SPBar(
-                message="-Initialising the Section class\t\t\t",
-                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-            ) as progress_bar:
-                init(bar=progress_bar)
-        else:
-            init()
+        # initialise class storing section properties
+        self.section_props = SectionProperties()
 
     def calculate_geometric_properties(self):
         """Calculates the geometric properties of the cross-section and stores them in the
@@ -227,7 +215,7 @@ class Section:
             section.calculate_geometric_properties()
         """
 
-        def calculate_geom(bar=None):
+        def calculate_geom(progress=None):
             # initialise properties
             self.section_props.area = 0
             self.section_props.perimeter = 0
@@ -242,6 +230,11 @@ class Section:
 
             # calculate perimeter
             self.section_props.perimeter = self.geometry.calculate_perimeter()
+
+            task = progress.add_task(
+                description="[red]Calculating geometric properties",
+                total=len(self.elements),
+            )
 
             # calculate global geometric properties
             for el in self.elements:
@@ -266,8 +259,8 @@ class Section:
                 self.section_props.iyy_g += iyy_g * e
                 self.section_props.ixy_g += ixy_g * e
 
-                if bar is not None:
-                    bar.next()
+                if progress is not None:
+                    progress.update(task, advance=1)
 
             self.section_props.nu_eff = (
                 self.section_props.ea / (2 * self.section_props.ga) - 1
@@ -277,13 +270,27 @@ class Section:
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(self.mesh)
 
+            progress.update(
+                task,
+                description="[bold green]:white_check_mark: Geometric analysis complete",
+            )
+
+        # conduct geometric analysis
         if self.time_info:
-            with solver.SPBar(
-                message="-Calculating geometric section properties\t",
-                max=len(self.elements),
-                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-            ) as progress_bar:
-                calculate_geom(bar=progress_bar)
+            progress = solver.create_progress()
+
+            progress_table = Table.grid()
+            panel = Panel.fit(
+                progress,
+                title="[bold]Geometric Analysis",
+                border_style="red",
+                padding=(1, 1),
+            )
+            progress_table.add_row(panel)
+
+            with Live(progress_table, refresh_per_second=10):
+                calculate_geom(progress=progress)
+                panel.border_style = "green"
         else:
             calculate_geom()
 
@@ -335,183 +342,231 @@ class Section:
             el.coords[0, :] -= self.section_props.cx
             el.coords[1, :] -= self.section_props.cy
 
-        # assemble stiffness matrix and load vector for warping function
-        if self.time_info:
-            msg = "-Assembling {0}x{0} stiffness matrix\t\t".format(self.num_nodes)
-
-            with solver.SPBar(
-                message=msg,
-                max=len(warping_section.elements),
-                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-            ) as progress_bar:
+        # entire warping analysis is contained in following definition
+        def warping_analysis(progress=None):
+            # assemble stiffness matrix and load vector for warping function
+            if progress:
+                task = progress.add_task(
+                    description="[red]Assembling {0}x{0} stiffness matrix".format(
+                        self.num_nodes
+                    ),
+                    total=len(warping_section.elements),
+                )
                 (k, k_lg, f_torsion) = warping_section.assemble_torsion(
-                    bar=progress_bar
+                    progress=progress, task=task
                 )
-        else:
-            (k, k_lg, f_torsion) = warping_section.assemble_torsion()
 
-        # ILU decomposition of stiffness matrices
-        def ilu_decomp():
-            # ILU decomposition on regular stiffness matrix
-            k_precond = linalg.LinearOperator(
-                (self.num_nodes, self.num_nodes), linalg.spilu(k).solve
-            )
-
-            # ILU decomposition on Lagrangian stiffness matrix
-            k_lg_precond = linalg.LinearOperator(
-                (self.num_nodes + 1, self.num_nodes + 1), linalg.spilu(k_lg).solve
-            )
-
-            return (k_precond, k_lg_precond)
-
-        # if the cgs method is used, perform ILU decomposition
-        if solver_type == "cgs":
-            if self.time_info:
-                with solver.SPBar(
-                    message="-Performing ILU decomposition\t\t\t",
-                    max=2,
-                    suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-                ) as progress_bar:
-                    progress_bar.next()
-                    (k_precond, k_lg_precond) = ilu_decomp()
-                    progress_bar.next()
+                progress.update(
+                    task,
+                    description="[green]:white_check_mark: {0}x{0} stiffness matrix assembled".format(
+                        self.num_nodes
+                    ),
+                )
+                progress.update(0, advance=1)
             else:
-                (k_precond, k_lg_precond) = ilu_decomp()
+                (k, k_lg, f_torsion) = warping_section.assemble_torsion()
 
-        # solve for warping function
-        def solve_warping():
+            # ILU decomposition of stiffness matrices
+            def ilu_decomp(progress=None, task=None):
+                # ILU decomposition on regular stiffness matrix
+                k_precond = linalg.LinearOperator(
+                    (self.num_nodes, self.num_nodes), linalg.spilu(k).solve
+                )
+
+                if progress is not None:
+                    progress.update(task, advance=1)
+
+                # ILU decomposition on Lagrangian stiffness matrix
+                k_lg_precond = linalg.LinearOperator(
+                    (self.num_nodes + 1, self.num_nodes + 1), linalg.spilu(k_lg).solve
+                )
+
+                if progress is not None:
+                    progress.update(task, advance=1)
+
+                return (k_precond, k_lg_precond)
+
+            # if the cgs method is used, perform ILU decomposition
             if solver_type == "cgs":
-                omega = solver.solve_cgs(k, f_torsion, k_precond)
-            elif solver_type == "direct":
-                omega = solver.solve_direct(k, f_torsion)
+                if progress:
+                    task = progress.add_task(
+                        description="[red]Performing ILU decomposition",
+                        total=2,
+                    )
+                    (k_precond, k_lg_precond) = ilu_decomp(progress=progress, task=task)
 
-            return omega
+                    progress.update(
+                        task,
+                        description="[green]:white_check_mark: ILU decomposition complete",
+                    )
+                else:
+                    (k_precond, k_lg_precond) = ilu_decomp()
 
-        if self.time_info:
-            msg = "-Solving the warping function ({0} solver)\t".format(solver_type)
+            # solve for warping function
+            def solve_warping():
+                if solver_type == "cgs":
+                    omega = solver.solve_cgs(k, f_torsion, k_precond)
+                elif solver_type == "direct":
+                    omega = solver.solve_direct(k, f_torsion)
 
-            with solver.SPBar(
-                message=msg,
-                max=2,
-                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-            ) as progress_bar:
-                progress_bar.next()
+                return omega
+
+            if progress:
+                task = progress.add_task(
+                    description="[red]Solving warping function ({0})".format(
+                        solver_type
+                    ),
+                    total=1,
+                )
                 omega = solve_warping()
-                progress_bar.next()
-        else:
-            omega = solve_warping()
+                progress.update(task, advance=1)
 
-        # save the warping function
-        self.section_props.omega = omega
-
-        # determine the torsion constant
-        self.section_props.j = (
-            self.section_props.ixx_c
-            + self.section_props.iyy_c
-            - omega.dot(k.dot(np.transpose(omega)))
-        )
-
-        # assemble shear function load vectors
-        def assemble_shear_load(bar=None):
-            f_psi = np.zeros(self.num_nodes)
-            f_phi = np.zeros(self.num_nodes)
-
-            for el in warping_section.elements:
-                (f_psi_el, f_phi_el) = el.shear_load_vectors(
-                    self.section_props.ixx_c,
-                    self.section_props.iyy_c,
-                    self.section_props.ixy_c,
-                    self.section_props.nu_eff,
+                progress.update(
+                    task,
+                    description="[green]:white_check_mark: Warping function solved ({0})".format(
+                        solver_type
+                    ),
                 )
-                f_psi[el.node_ids] += f_psi_el
-                f_phi[el.node_ids] += f_phi_el
+                progress.update(0, advance=1)
+            else:
+                omega = solve_warping()
 
-                if bar is not None:
-                    bar.next()
+            # save the warping function
+            self.section_props.omega = omega
 
-            return (f_psi, f_phi)
+            # determine the torsion constant
+            self.section_props.j = (
+                self.section_props.ixx_c
+                + self.section_props.iyy_c
+                - omega.dot(k.dot(np.transpose(omega)))
+            )
 
-        if self.time_info:
-            with solver.SPBar(
-                message="-Assembling shear function vectors\t\t",
-                max=len(warping_section.elements),
-                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-            ) as progress_bar:
-                (f_psi, f_phi) = assemble_shear_load(bar=progress_bar)
-        else:
-            (f_psi, f_phi) = assemble_shear_load()
+            # assemble shear function load vectors
+            def assemble_shear_load(progress=None, task=None):
+                f_psi = np.zeros(self.num_nodes)
+                f_phi = np.zeros(self.num_nodes)
 
-        # solve for shear functions psi and phi
-        def solve_shear_functions():
-            if solver_type == "cgs":
-                psi_shear = solver.solve_cgs_lagrange(k_lg, f_psi, m=k_lg_precond)
-                phi_shear = solver.solve_cgs_lagrange(k_lg, f_phi, m=k_lg_precond)
-            elif solver_type == "direct":
-                psi_shear = solver.solve_direct_lagrange(k_lg, f_psi)
-                phi_shear = solver.solve_direct_lagrange(k_lg, f_phi)
+                for el in warping_section.elements:
+                    (f_psi_el, f_phi_el) = el.shear_load_vectors(
+                        self.section_props.ixx_c,
+                        self.section_props.iyy_c,
+                        self.section_props.ixy_c,
+                        self.section_props.nu_eff,
+                    )
+                    f_psi[el.node_ids] += f_psi_el
+                    f_phi[el.node_ids] += f_phi_el
 
-            return (psi_shear, phi_shear)
+                    if progress is not None:
+                        progress.update(task, advance=1)
 
-        if self.time_info:
-            msg = "-Solving the shear functions ({0} solver)\t".format(solver_type)
+                return (f_psi, f_phi)
 
-            with solver.SPBar(
-                message=msg,
-                max=2,
-                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-            ) as progress_bar:
-                progress_bar.next()
+            if progress:
+                task = progress.add_task(
+                    description="[red]Assembling shear function vectors",
+                    total=len(warping_section.elements),
+                )
+                (f_psi, f_phi) = assemble_shear_load(progress=progress, task=task)
+
+                progress.update(
+                    task,
+                    description="[green]:white_check_mark: Shear function vectors assembled",
+                )
+                progress.update(0, advance=1)
+            else:
+                (f_psi, f_phi) = assemble_shear_load()
+
+            # solve for shear functions psi and phi
+            def solve_shear_functions(progress=None, task=None):
+                if solver_type == "cgs":
+                    psi_shear = solver.solve_cgs_lagrange(k_lg, f_psi, m=k_lg_precond)
+
+                    if progress is not None:
+                        progress.update(task, advance=1)
+
+                    phi_shear = solver.solve_cgs_lagrange(k_lg, f_phi, m=k_lg_precond)
+
+                    if progress is not None:
+                        progress.update(task, advance=1)
+                elif solver_type == "direct":
+                    psi_shear = solver.solve_direct_lagrange(k_lg, f_psi)
+
+                    if progress is not None:
+                        progress.update(task, advance=1)
+
+                    phi_shear = solver.solve_direct_lagrange(k_lg, f_phi)
+
+                    if progress is not None:
+                        progress.update(task, advance=1)
+
+                return (psi_shear, phi_shear)
+
+            if progress:
+                task = progress.add_task(
+                    description="[red]Solving shear functions ({0})".format(
+                        solver_type
+                    ),
+                    total=2,
+                )
+                (psi_shear, phi_shear) = solve_shear_functions(
+                    progress=progress, task=task
+                )
+
+                progress.update(
+                    task,
+                    description="[green]:white_check_mark: Shear functions solved ({0})".format(
+                        solver_type
+                    ),
+                )
+                progress.update(0, advance=1)
+            else:
                 (psi_shear, phi_shear) = solve_shear_functions()
-                progress_bar.next()
-        else:
-            (psi_shear, phi_shear) = solve_shear_functions()
 
-        # save the shear functions
-        self.section_props.psi_shear = psi_shear
-        self.section_props.phi_shear = phi_shear
+            # save the shear functions
+            self.section_props.psi_shear = psi_shear
+            self.section_props.phi_shear = phi_shear
 
-        # assemble shear centre and warping moment integrals
-        def assemble_sc_warping_integrals(bar=None):
-            sc_xint = 0
-            sc_yint = 0
-            q_omega = 0
-            i_omega = 0
-            i_xomega = 0
-            i_yomega = 0
+            # assemble shear centre and warping moment integrals
+            def assemble_sc_warping_integrals(progress=None, task=None):
+                sc_xint = 0
+                sc_yint = 0
+                q_omega = 0
+                i_omega = 0
+                i_xomega = 0
+                i_yomega = 0
 
-            for el in warping_section.elements:
-                (
-                    sc_xint_el,
-                    sc_yint_el,
-                    q_omega_el,
-                    i_omega_el,
-                    i_xomega_el,
-                    i_yomega_el,
-                ) = el.shear_warping_integrals(
-                    self.section_props.ixx_c,
-                    self.section_props.iyy_c,
-                    self.section_props.ixy_c,
-                    omega[el.node_ids],
+                for el in warping_section.elements:
+                    (
+                        sc_xint_el,
+                        sc_yint_el,
+                        q_omega_el,
+                        i_omega_el,
+                        i_xomega_el,
+                        i_yomega_el,
+                    ) = el.shear_warping_integrals(
+                        self.section_props.ixx_c,
+                        self.section_props.iyy_c,
+                        self.section_props.ixy_c,
+                        omega[el.node_ids],
+                    )
+
+                    sc_xint += sc_xint_el
+                    sc_yint += sc_yint_el
+                    q_omega += q_omega_el
+                    i_omega += i_omega_el
+                    i_xomega += i_xomega_el
+                    i_yomega += i_yomega_el
+
+                    if progress is not None:
+                        progress.update(task, advance=1)
+
+                return (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega)
+
+            if progress:
+                task = progress.add_task(
+                    description="[red]Assembling shear and warping integrals",
+                    total=len(warping_section.elements),
                 )
-
-                sc_xint += sc_xint_el
-                sc_yint += sc_yint_el
-                q_omega += q_omega_el
-                i_omega += i_omega_el
-                i_xomega += i_xomega_el
-                i_yomega += i_yomega_el
-
-                if bar is not None:
-                    bar.next()
-
-            return (sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega)
-
-        if self.time_info:
-            with solver.SPBar(
-                message="-Assembling shear and warping integrals\t\t",
-                max=len(warping_section.elements),
-                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-            ) as progress_bar:
                 (
                     sc_xint,
                     sc_yint,
@@ -519,185 +574,240 @@ class Section:
                     i_omega,
                     i_xomega,
                     i_yomega,
-                ) = assemble_sc_warping_integrals(bar=progress_bar)
-        else:
-            (
-                sc_xint,
-                sc_yint,
-                q_omega,
-                i_omega,
-                i_xomega,
-                i_yomega,
-            ) = assemble_sc_warping_integrals()
+                ) = assemble_sc_warping_integrals(progress=progress, task=task)
 
-        # calculate shear centres (elasticity approach)
-        Delta_s = (
-            2
-            * (1 + self.section_props.nu_eff)
-            * (
+                progress.update(
+                    task,
+                    description="[green]:white_check_mark: Shear and warping integrals assembled",
+                )
+                progress.update(0, advance=1)
+            else:
+                (
+                    sc_xint,
+                    sc_yint,
+                    q_omega,
+                    i_omega,
+                    i_xomega,
+                    i_yomega,
+                ) = assemble_sc_warping_integrals()
+
+            # calculate shear centres (elasticity approach)
+            Delta_s = (
+                2
+                * (1 + self.section_props.nu_eff)
+                * (
+                    self.section_props.ixx_c * self.section_props.iyy_c
+                    - self.section_props.ixy_c**2
+                )
+            )
+            x_se = (1 / Delta_s) * (
+                (self.section_props.nu_eff / 2 * sc_xint) - f_torsion.dot(phi_shear)
+            )
+            y_se = (1 / Delta_s) * (
+                (self.section_props.nu_eff / 2 * sc_yint) + f_torsion.dot(psi_shear)
+            )
+            (x11_se, y22_se) = fea.principal_coordinate(
+                self.section_props.phi, x_se, y_se
+            )
+
+            # calculate shear centres (Trefftz's approach)
+            x_st = (
+                self.section_props.ixy_c * i_xomega
+                - self.section_props.iyy_c * i_yomega
+            ) / (
                 self.section_props.ixx_c * self.section_props.iyy_c
                 - self.section_props.ixy_c**2
             )
-        )
-        x_se = (1 / Delta_s) * (
-            (self.section_props.nu_eff / 2 * sc_xint) - f_torsion.dot(phi_shear)
-        )
-        y_se = (1 / Delta_s) * (
-            (self.section_props.nu_eff / 2 * sc_yint) + f_torsion.dot(psi_shear)
-        )
-        (x11_se, y22_se) = fea.principal_coordinate(self.section_props.phi, x_se, y_se)
+            y_st = (
+                self.section_props.ixx_c * i_xomega
+                - self.section_props.ixy_c * i_yomega
+            ) / (
+                self.section_props.ixx_c * self.section_props.iyy_c
+                - self.section_props.ixy_c**2
+            )
 
-        # calculate shear centres (Trefftz's approach)
-        x_st = (
-            self.section_props.ixy_c * i_xomega - self.section_props.iyy_c * i_yomega
-        ) / (
-            self.section_props.ixx_c * self.section_props.iyy_c
-            - self.section_props.ixy_c**2
-        )
-        y_st = (
-            self.section_props.ixx_c * i_xomega - self.section_props.ixy_c * i_yomega
-        ) / (
-            self.section_props.ixx_c * self.section_props.iyy_c
-            - self.section_props.ixy_c**2
-        )
+            # save shear centres
+            self.section_props.Delta_s = Delta_s
+            self.section_props.x_se = x_se
+            self.section_props.y_se = y_se
+            self.section_props.x11_se = x11_se
+            self.section_props.y22_se = y22_se
+            self.section_props.x_st = x_st
+            self.section_props.y_st = y_st
 
-        # save shear centres
-        self.section_props.Delta_s = Delta_s
-        self.section_props.x_se = x_se
-        self.section_props.y_se = y_se
-        self.section_props.x11_se = x11_se
-        self.section_props.y22_se = y22_se
-        self.section_props.x_st = x_st
-        self.section_props.y_st = y_st
+            # calculate warping constant
+            self.section_props.gamma = (
+                i_omega
+                - q_omega**2 / self.section_props.ea
+                - y_se * i_xomega
+                + x_se * i_yomega
+            )
 
-        # calculate warping constant
-        self.section_props.gamma = (
-            i_omega
-            - q_omega**2 / self.section_props.ea
-            - y_se * i_xomega
-            + x_se * i_yomega
-        )
+            def assemble_shear_deformation(progress=None, task=None):
+                # assemble shear deformation coefficients
+                kappa_x = 0
+                kappa_y = 0
+                kappa_xy = 0
 
-        def assemble_shear_deformation(bar=None):
-            # assemble shear deformation coefficients
-            kappa_x = 0
-            kappa_y = 0
-            kappa_xy = 0
+                for el in warping_section.elements:
+                    (kappa_x_el, kappa_y_el, kappa_xy_el) = el.shear_coefficients(
+                        self.section_props.ixx_c,
+                        self.section_props.iyy_c,
+                        self.section_props.ixy_c,
+                        psi_shear[el.node_ids],
+                        phi_shear[el.node_ids],
+                        self.section_props.nu_eff,
+                    )
 
-            for el in warping_section.elements:
-                (kappa_x_el, kappa_y_el, kappa_xy_el) = el.shear_coefficients(
-                    self.section_props.ixx_c,
-                    self.section_props.iyy_c,
-                    self.section_props.ixy_c,
-                    psi_shear[el.node_ids],
-                    phi_shear[el.node_ids],
-                    self.section_props.nu_eff,
+                    kappa_x += kappa_x_el
+                    kappa_y += kappa_y_el
+                    kappa_xy += kappa_xy_el
+
+                    if progress is not None:
+                        progress.update(task, advance=1)
+
+                return (kappa_x, kappa_y, kappa_xy)
+
+            if progress:
+                task = progress.add_task(
+                    description="[red]Assembling shear deformation coefficients",
+                    total=len(warping_section.elements),
                 )
-
-                kappa_x += kappa_x_el
-                kappa_y += kappa_y_el
-                kappa_xy += kappa_xy_el
-
-                if bar is not None:
-                    bar.next()
-
-            return (kappa_x, kappa_y, kappa_xy)
-
-        if self.time_info:
-            with solver.SPBar(
-                message="-Assembling shear deformation coefficients\t",
-                max=len(warping_section.elements),
-                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-            ) as progress_bar:
                 (kappa_x, kappa_y, kappa_xy) = assemble_shear_deformation(
-                    bar=progress_bar
-                )
-        else:
-            (kappa_x, kappa_y, kappa_xy) = assemble_shear_deformation()
-
-        # calculate shear areas wrt global axis
-        self.section_props.A_sx = Delta_s**2 / kappa_x
-        self.section_props.A_sy = Delta_s**2 / kappa_y
-        self.section_props.A_sxy = Delta_s**2 / kappa_xy
-
-        # calculate shear areas wrt principal bending axis:
-        alpha_xx = kappa_x * self.section_props.area / Delta_s**2
-        alpha_yy = kappa_y * self.section_props.area / Delta_s**2
-        alpha_xy = kappa_xy * self.section_props.area / Delta_s**2
-
-        # rotate the tensor by the principal axis angle
-        phi_rad = self.section_props.phi * np.pi / 180
-        R = np.array(
-            [[np.cos(phi_rad), np.sin(phi_rad)], [-np.sin(phi_rad), np.cos(phi_rad)]]
-        )
-
-        rotatedAlpha = R.dot(
-            np.array([[alpha_xx, alpha_xy], [alpha_xy, alpha_yy]])
-        ).dot(np.transpose(R))
-
-        # recalculate the shear area based on the rotated alpha value
-        self.section_props.A_s11 = self.section_props.area / rotatedAlpha[0, 0]
-        self.section_props.A_s22 = self.section_props.area / rotatedAlpha[1, 1]
-
-        # calculate the monosymmetry consants
-        def calculate_monosymmetry_integrals(bar=None):
-            int_x = 0
-            int_y = 0
-            int_11 = 0
-            int_22 = 0
-
-            for el in warping_section.elements:
-                (int_x_el, int_y_el, int_11_el, int_22_el) = el.monosymmetry_integrals(
-                    self.section_props.phi
+                    progress=progress, task=task
                 )
 
-                int_x += int_x_el
-                int_y += int_y_el
-                int_11 += int_11_el
-                int_22 += int_22_el
+                progress.update(
+                    task,
+                    description="[green]:white_check_mark: Shear deformation coefficients assembled",
+                )
+                progress.update(0, advance=1)
+            else:
+                (kappa_x, kappa_y, kappa_xy) = assemble_shear_deformation()
 
-                if bar is not None:
-                    bar.next()
+            # calculate shear areas wrt global axis
+            self.section_props.A_sx = Delta_s**2 / kappa_x
+            self.section_props.A_sy = Delta_s**2 / kappa_y
+            self.section_props.A_sxy = Delta_s**2 / kappa_xy
 
-            return (int_x, int_y, int_11, int_22)
+            # calculate shear areas wrt principal bending axis:
+            alpha_xx = kappa_x * self.section_props.area / Delta_s**2
+            alpha_yy = kappa_y * self.section_props.area / Delta_s**2
+            alpha_xy = kappa_xy * self.section_props.area / Delta_s**2
 
-        if self.time_info:
-            with solver.SPBar(
-                message="-Assembling monosymmetry integrals\t\t",
-                max=len(warping_section.elements),
-                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-            ) as progress_bar:
+            # rotate the tensor by the principal axis angle
+            phi_rad = self.section_props.phi * np.pi / 180
+            R = np.array(
+                [
+                    [np.cos(phi_rad), np.sin(phi_rad)],
+                    [-np.sin(phi_rad), np.cos(phi_rad)],
+                ]
+            )
+
+            rotatedAlpha = R.dot(
+                np.array([[alpha_xx, alpha_xy], [alpha_xy, alpha_yy]])
+            ).dot(np.transpose(R))
+
+            # recalculate the shear area based on the rotated alpha value
+            self.section_props.A_s11 = self.section_props.area / rotatedAlpha[0, 0]
+            self.section_props.A_s22 = self.section_props.area / rotatedAlpha[1, 1]
+
+            # calculate the monosymmetry consants
+            def calculate_monosymmetry_integrals(progress=None, task=None):
+                int_x = 0
+                int_y = 0
+                int_11 = 0
+                int_22 = 0
+
+                for el in warping_section.elements:
+                    (
+                        int_x_el,
+                        int_y_el,
+                        int_11_el,
+                        int_22_el,
+                    ) = el.monosymmetry_integrals(self.section_props.phi)
+
+                    int_x += int_x_el
+                    int_y += int_y_el
+                    int_11 += int_11_el
+                    int_22 += int_22_el
+
+                    if progress is not None:
+                        progress.update(task, advance=1)
+
+                return (int_x, int_y, int_11, int_22)
+
+            if progress:
+                task = progress.add_task(
+                    description="[red]Assembling monosymmetry integrals",
+                    total=len(self.elements),
+                )
                 (int_x, int_y, int_11, int_22) = calculate_monosymmetry_integrals(
-                    bar=progress_bar
+                    progress=progress, task=task
                 )
-        else:
-            (int_x, int_y, int_11, int_22) = calculate_monosymmetry_integrals()
 
-        # calculate the monosymmetry constants
-        self.section_props.beta_x_plus = (
-            -int_x / self.section_props.ixx_c + 2 * self.section_props.y_se
-        )
-        self.section_props.beta_x_minus = (
-            int_x / self.section_props.ixx_c - 2 * self.section_props.y_se
-        )
-        self.section_props.beta_y_plus = (
-            -int_y / self.section_props.iyy_c + 2 * self.section_props.x_se
-        )
-        self.section_props.beta_y_minus = (
-            int_y / self.section_props.iyy_c - 2 * self.section_props.x_se
-        )
-        self.section_props.beta_11_plus = (
-            -int_11 / self.section_props.i11_c + 2 * self.section_props.y22_se
-        )
-        self.section_props.beta_11_minus = (
-            int_11 / self.section_props.i11_c - 2 * self.section_props.y22_se
-        )
-        self.section_props.beta_22_plus = (
-            -int_22 / self.section_props.i22_c + 2 * self.section_props.x11_se
-        )
-        self.section_props.beta_22_minus = (
-            int_22 / self.section_props.i22_c - 2 * self.section_props.x11_se
-        )
+                progress.update(
+                    task,
+                    description="[green]:white_check_mark: Monosymmetry integrals assembled",
+                )
+                progress.update(0, advance=1)
+            else:
+                (int_x, int_y, int_11, int_22) = calculate_monosymmetry_integrals()
+
+            # calculate the monosymmetry constants
+            self.section_props.beta_x_plus = (
+                -int_x / self.section_props.ixx_c + 2 * self.section_props.y_se
+            )
+            self.section_props.beta_x_minus = (
+                int_x / self.section_props.ixx_c - 2 * self.section_props.y_se
+            )
+            self.section_props.beta_y_plus = (
+                -int_y / self.section_props.iyy_c + 2 * self.section_props.x_se
+            )
+            self.section_props.beta_y_minus = (
+                int_y / self.section_props.iyy_c - 2 * self.section_props.x_se
+            )
+            self.section_props.beta_11_plus = (
+                -int_11 / self.section_props.i11_c + 2 * self.section_props.y22_se
+            )
+            self.section_props.beta_11_minus = (
+                int_11 / self.section_props.i11_c - 2 * self.section_props.y22_se
+            )
+            self.section_props.beta_22_plus = (
+                -int_22 / self.section_props.i22_c + 2 * self.section_props.x11_se
+            )
+            self.section_props.beta_22_minus = (
+                int_22 / self.section_props.i22_c - 2 * self.section_props.x11_se
+            )
+
+        # conduct warping analysis
+        if self.time_info:
+            # create warping progress
+            progress = solver.create_progress()
+            total_task = progress.add_task(
+                description="[bold red]Conducting warping analysis...", total=7
+            )
+
+            progress_table = Table.grid()
+            panel = Panel.fit(
+                progress,
+                title="[bold]Warping Analysis",
+                border_style="red",
+                padding=(1, 1),
+            )
+            progress_table.add_row(panel)
+
+            with Live(progress_table, refresh_per_second=10):
+                warping_analysis(progress)
+
+                progress.update(
+                    total_task,
+                    description="[bold green]:white_check_mark: Warping analysis completed",
+                )
+
+                panel.border_style = "green"
+        else:
+            warping_analysis()
 
     def calculate_frame_properties(self, solver_type="direct"):
         """Calculates and returns the properties required for a frame analysis. The properties are
@@ -873,17 +983,25 @@ class Section:
                     "information."
                 )
 
-        def calc_plastic(bar=None):
+        def calc_plastic(progress=None):
             plastic_section = PlasticSection(self.geometry)
-            plastic_section.calculate_plastic_properties(self, verbose, bar)
+            plastic_section.calculate_plastic_properties(self, verbose, progress)
 
         if self.time_info:
-            with solver.SPBar(
-                message="-Calculating plastic properties\t\t\t",
-                max=5,
-                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-            ) as progress_bar:
-                calc_plastic(bar=progress_bar)
+            progress = solver.create_progress()
+
+            progress_table = Table.grid()
+            panel = Panel.fit(
+                progress,
+                title="[bold]Plastic Analysis",
+                border_style="red",
+                padding=(1, 1),
+            )
+            progress_table.add_row(panel)
+
+            with Live(progress_table, refresh_per_second=10):
+                calc_plastic(progress=progress)
+                panel.border_style = "green"
         else:
             calc_plastic()
 
@@ -929,7 +1047,12 @@ class Section:
             err = "Perform a geometric and warping analysis before carrying out a stress analysis."
             raise RuntimeError(err)
 
-        def calc_stress(bar=None):
+        def calc_stress(progress=None):
+            task = progress.add_task(
+                description="[red]Calculating cross-section stresses",
+                total=len(self.elements),
+            )
+
             # create stress post object
             stress_post = StressPost(self)
 
@@ -1021,8 +1144,8 @@ class Section:
                     # add nodal weights
                     nodal_weights[el.node_ids] += weights
 
-                    if bar is not None:
-                        bar.next()
+                    if progress is not None:
+                        progress.update(task, advance=1)
 
                 # nodal averaging
                 for (i, weight) in enumerate(nodal_weights):
@@ -1042,22 +1165,35 @@ class Section:
                 # calculate combined stresses
                 group.stress_result.calculate_combined_stresses()
 
+            progress.update(
+                task,
+                description="[bold green]:white_check_mark: Stress analysis complete",
+            )
+
             return stress_post
 
         if self.time_info:
-            with solver.SPBar(
-                message="-Calculating cross-section stresses\t\t",
-                max=len(self.elements),
-                suffix="%(percent)d%% [ %(elapsed_ms).3fs ]",
-            ) as progress_bar:
-                stress_post = calc_stress(bar=progress_bar)
+            progress = solver.create_progress()
+
+            progress_table = Table.grid()
+            panel = Panel.fit(
+                progress,
+                title="[bold]Stress Analysis",
+                border_style="red",
+                padding=(1, 1),
+            )
+            progress_table.add_row(panel)
+
+            with Live(progress_table, refresh_per_second=10):
+                stress_post = calc_stress(progress=progress)
+                panel.border_style = "green"
         else:
             stress_post = calc_stress()
 
         # return the stress_post object
         return stress_post
 
-    def assemble_torsion(self, lg=True, bar=None):
+    def assemble_torsion(self, lg=True, progress=None, task=None):
         """Assembles stiffness matrices to be used for the computation of warping properties and
         the torsion load vector (f_torsion). Both a regular (k) and Lagrangian multiplier (k_lg)
         stiffness matrix are returned. The stiffness matrices are assembled using the sparse COO
@@ -1103,8 +1239,8 @@ class Section:
             col = np.hstack((col, c))
             data = np.hstack((data, k))
 
-            if bar is not None:
-                bar.next()
+            if progress is not None:
+                progress.update(task, advance=1)
 
         k = coo_matrix((data, (row, col)), shape=(N, N))
 
@@ -2047,7 +2183,7 @@ class PlasticSection:
 
         return (qy / ea, qx, ea)
 
-    def calculate_plastic_properties(self, section, verbose, bar=None):
+    def calculate_plastic_properties(self, section, verbose, progress=None):
         """Calculates the location of the plastic centroid with respect to the centroidal and
         principal bending axes, the plastic section moduli and shape factors and stores the results
         to the supplied :class:`~sectionproperties.analysis.section.Section` object.
@@ -2059,8 +2195,11 @@ class PlasticSection:
             axis is printed to the terminal.
         """
 
-        if bar is not None:
-            bar.next()
+        if progress is not None:
+            task = progress.add_task(
+                description="[red]Calculating plastic properties",
+                total=4,
+            )
 
         # 1) Calculate plastic properties for centroidal axis
         # calculate distances to the extreme fibres
@@ -2080,8 +2219,8 @@ class PlasticSection:
         if verbose:
             self.print_verbose(y_pc, r, "x-axis")  # Location of axis for each iteration
 
-        if bar is not None:
-            bar.next()
+        if progress is not None:
+            progress.update(task, advance=1)
 
         # 1b) Calculate y-axis plastic centroid
         (x_pc, r, f, c_top, c_bot) = self.pc_algorithm(
@@ -2095,8 +2234,8 @@ class PlasticSection:
         if verbose:
             self.print_verbose(x_pc, r, "y-axis")  # Location of axis for each iteration
 
-        if bar is not None:
-            bar.next()
+        if progress is not None:
+            progress.update(task, advance=1)
 
         # 2) Calculate plastic properties for principal axis
         # convert principal axis angle to radians
@@ -2129,8 +2268,8 @@ class PlasticSection:
         if verbose:
             self.print_verbose(y22_pc, r, "11-axis")
 
-        if bar is not None:
-            bar.next()
+        if progress is not None:
+            progress.update(task, advance=1)
 
         # 2b) Calculate 22-axis plastic centroid
         (x11_pc, r, f, c_top, c_bot) = self.pc_algorithm(
@@ -2152,8 +2291,8 @@ class PlasticSection:
         if verbose:
             self.print_verbose(x11_pc, r, "22-axis")
 
-        if bar is not None:
-            bar.next()
+        if progress is not None:
+            progress.update(task, advance=1)
 
         # if there are no materials specified, calculate shape factors
         if list(set(section.materials)) == [pre.DEFAULT_MATERIAL]:
@@ -2182,6 +2321,11 @@ class PlasticSection:
             section.section_props.sf_22_minus = (
                 section.section_props.s22 / section.section_props.z22_minus
             )
+
+        progress.update(
+            task,
+            description="[bold green]:white_check_mark: Plastic analysis complete",
+        )
 
     def check_convergence(self, root_result, axis):
         """Checks that the function solver converged and if not, raises a helpful error.
