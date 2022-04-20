@@ -1,3 +1,5 @@
+.. _label-testing:
+
 Testing and Results Validation
 ==============================
 
@@ -69,7 +71,8 @@ Again, the automated test against this checks the hardcoded value with a
 tolerance of :math:`\pm 0.1%`. For accuracy, 55,427.3 is used instead of the 
 rounded value.
 
-For full details and the most updated code of this exampe, see the examples page 
+For full details and the most updated code of this exampe, see the
+:ref:`examples page<ref-ex-peery-beams>`
 in the documentation gallery. For the exact test code execution, check the 
 `source <https://github.com/robbievanleeuwen/section-properties/blob/master/sectionproperties/tests/test_peery.py>`.
 
@@ -144,7 +147,8 @@ the sectionproperties FEM.
     :align: center
 
 
-For full details and the most updated code of this exampe, see the examples page 
+For full details and the most updated code of this example, see the 
+:ref:`examples page<ref-ex-peery-beams>` 
 in the documentation gallery. For the exact test code execution, check the 
 `source <https://github.com/robbievanleeuwen/section-properties/blob/master/sectionproperties/tests/test_peery.py>`.
 
