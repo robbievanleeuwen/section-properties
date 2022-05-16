@@ -186,6 +186,10 @@ box_girder_section
 """""""""""""""""""
   ..  autofunction:: sectionproperties.pre.library.steel_sections.box_girder_section
 
+bulb_section
+""""""""""""
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.bulb_section
+
 
 *concrete_sections* Module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

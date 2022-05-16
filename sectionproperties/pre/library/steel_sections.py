@@ -1272,11 +1272,11 @@ def box_girder_section(
 
 def bulb_section(
     d: float,
-    d_b: float,
     b: float,
     t: float,
     r: float,
     n_r: int,
+    d_b: float = None,
     material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a bulb section with the bottom left corner at the point
@@ -1284,10 +1284,11 @@ def bulb_section(
     and radius *r*, using *n_r* points to construct the radius.
 
     :param float d: Depth of the section
-    :param float d_b: Depth of the bulb (automatically field for standard section by inputing it you will become out of standard and will have sharp edges)
     :param float b: Bulb width
     :param float t: Web thickness
     :param float r: Bulb radius
+    :param float d_b: Depth of the bulb (automatically calculated for standard sections,
+        if provided the section may have sharp edges)
     :param int n_r: Number of points discretising the radius
     :param Optional[sectionproperties.pre.pre.Material]: Material to associate with
         this geometry
@@ -1301,18 +1302,22 @@ def bulb_section(
         geometry = bulb_section(d=240, b=34, t=12, r=10, n_r=16)
         geometry.create_mesh(mesh_sizes=[5.0])
 
-    ..  figure:: ../images/sections/cruciform_geometry.png
+    ..  figure:: ../images/sections/bulb_geometry.png
         :align: center
         :scale: 75 %
-        Cruciform section geometry.
 
-    ..  figure:: ../images/sections/cruciform_mesh.png
+        Bulb section geometry.
+
+    ..  figure:: ../images/sections/bulb_mesh.png
         :align: center
         :scale: 75 %
+
+        Mesh generated from the above geometry.
     """
-    if d_b == float:
-        d_b = r * np.cos(np.pi / 3) / np.cos(np.pi / 6) + r + c * np.tan(np.pi / 6)    
-    
+
+    if d_b is None:
+        d_b = r * np.cos(np.pi / 3) / np.cos(np.pi / 6) + r + b * np.tan(np.pi / 6)
+
     points = []
 
     # add first two points
@@ -1327,6 +1332,7 @@ def bulb_section(
     # end of test of additional radius
     ptb = [b + t * 0.5 - r, d - r]
     dzero = ((b + t * 0.5 - r - t * 0.5) ** 2 + (d - r - d + d_b) ** 2) ** 0.5
+
     # build radius
     points += draw_radius(ptb, r, -np.pi * 1 / 3, n_r, True, np.pi / 3)
     points += draw_radius(ptb, r, 0, n_r, True)
