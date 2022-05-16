@@ -5,11 +5,11 @@ Symmetric and Unsymmetric Beams in Complex Bending
 --------------------------------------------------
 
 Calculate section properties of two different beams
-given in examples from 'Aircraft Structures,' by Peery. 
-These cases have known results, and the output from 
-SectionProperties can be compared for accuracy. These 
-examples represent a more rigourous 'proof' against a 
-'real' problem. Only results that have values in the 
+given in examples from 'Aircraft Structures,' by Peery.
+These cases have known results, and the output from
+*sectionproperties* can be compared for accuracy. These
+examples represent a more rigourous 'proof' against a
+'real' problem. Only results that have values in the
 reference material are tested here.
 
 BibTeX Entry for reference::
@@ -55,7 +55,7 @@ section.plot_centroids()
 
 # %%
 # Directly from the example, we know that the 2nd moment of inertia
-# resisting the bending is 43.3 in4.
+# resisting the bending is 43.3 in\ :sup:`4`.
 section.section_props.ixx_g
 
 # %%
@@ -111,10 +111,10 @@ print(f"    i11_c    | {787:<12.1f}| {props.i11_c:<.1f}")
 print(f"    i22_c    | {79.5:<12.1f}| {props.i22_c:<.1f}")
 
 # %%
-# Secrtion properties all look good, so we can move on to
+# Section properties all look good, so we can move on to
 # some stress analysis. Before we do, we will need a quick
 # function to pull stress at a certain point. This is a bit
-# of a hack! Future version of sectionproperties will have
+# of a hack! Future versions of *sectionproperties* will have
 # a much more robust system for getting stress at an
 # arbitrary location. This particular function will work for
 # the locations we need, since we *know* a node will be there.
