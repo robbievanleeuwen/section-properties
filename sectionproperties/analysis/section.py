@@ -2281,7 +2281,7 @@ class PlasticSection:
         """
         # initialise variables
         (f_top, f_bot) = (0, 0)
-        (ea_top, ea_bot) = (0, 0)
+        (a_top, a_bot) = (0, 0)
         (qx_top, qx_bot) = (0, 0)
         (qy_top, qy_bot) = (0, 0)
 
@@ -2292,7 +2292,7 @@ class PlasticSection:
                 e = top_geom.material.elastic_modulus
                 f_y = top_geom.material.yield_strength
                 area_top = top_geom.calculate_area()
-                ea_top += e * area_top
+                a_top += area_top
                 cx, cy = top_geom.calculate_centroid()
                 qx_top += cy * area_top
                 qy_top += cx * area_top
@@ -2303,21 +2303,21 @@ class PlasticSection:
                 e = bot_geom.material.elastic_modulus
                 f_y = bot_geom.material.yield_strength
                 area_bot = bot_geom.calculate_area()
-                ea_bot += e * area_bot
+                a_bot += area_bot
                 cx, cy = bot_geom.calculate_centroid()
                 qx_bot += cy * area_bot
                 qy_bot += cx * area_bot
                 f_bot += f_y * area_bot
 
         try:
-            self.c_top = [qy_top / ea_top, qx_top / ea_top]
+            self.c_top = [qy_top / a_top, qx_top / a_top]
             self.f_top = f_top
         except ZeroDivisionError:
             self.c_top = [0, 0]
             self.f_top = 0
 
         try:
-            self.c_bot = [qy_bot / ea_bot, qx_bot / ea_bot]
+            self.c_bot = [qy_bot / a_bot, qx_bot / a_bot]
         except ZeroDivisionError:
             self.c_bot = [0, 0]
 
