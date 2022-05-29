@@ -16,9 +16,9 @@ from shapely.geometry import (
     GeometryCollection,
     box,
 )
-import os.path
 from shapely import wkt
 import json
+import os.path
 
 big_sq = rectangular_section(d=300, b=250)
 small_sq = rectangular_section(d=100, b=75)
@@ -87,8 +87,10 @@ def test__sub__():
     compound = compound + top_left
     compound = compound - top_right
     compound = compound + top_right
+    compound = compound - small_hole
 
     assert len(compound.control_points) == 3
+    assert len(compound.holes) == 1
     # Incomplete test to validate that the iterative __sub__ produces
     # three distinct regions with proper material assignments
 
@@ -168,7 +170,7 @@ def test_compound_geometry_from_points():
     assert (new_geom.geom - wkt_test_geom) == Polygon()
 
 
-def test_multinested_compound_geometry_from_points():
+def test_multi_nested_compound_geometry_from_points():
     """
     Testing a multi-nested section. This section contains three nested materials in concentric
     square rings with a hole going through the center of the whole section. This test confirms
@@ -227,7 +229,7 @@ def test_multinested_compound_geometry_from_points():
         (-31.25, 0.0),
         (-18.75, 0.0),
     ]
-    assert nested_compound.holes == [(0, 0), (0, 0), (0, 0)]
+    assert nested_compound.holes == [(0, 0)]
 
     # Section contains overlapping geometries which will result in potentially incorrect
     # plastic properties calculation (depends on user intent and geometry).
