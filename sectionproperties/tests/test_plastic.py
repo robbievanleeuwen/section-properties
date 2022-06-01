@@ -4,6 +4,7 @@ from sectionproperties.analysis.section import Section
 import sectionproperties.pre.library.primitive_sections as sections
 from sectionproperties.pre.pre import Material
 
+
 def test_rectangle():
     fy = 500
     E = 200e3
@@ -19,7 +20,7 @@ def test_rectangle():
         color="grey",
     )
 
-    Sx = b*d**2/4
+    Sx = b * d * d / 4
     Mp = Sx * fy
 
     geom_mat = sections.rectangular_section(d=d, b=b, material=steel)
@@ -39,5 +40,4 @@ def test_rectangle():
 
     assert sec_nomat.get_s()[0] == pytest.approx(Sx)
     assert sec_mat.get_s()[0] == pytest.approx(Mp)
-    assert sec_mat.get_s()[0]/fy == sec_nomat.get_s()[0]
-
+    assert sec_mat.get_s()[0] / fy == sec_nomat.get_s()[0]
