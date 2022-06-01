@@ -7,6 +7,7 @@ Calculate section properties of rectangle.
 Mesh is refined until relative change of torsion and warping constants
 is not more than rtol
 """
+import math
 import argparse
 import sectionproperties.pre.library.primitive_sections as sections
 from sectionproperties.analysis.section import Section
@@ -34,18 +35,23 @@ a=geometry.calculate_area()
 j0=a
 iw0=a
 ms=min(args.width,args.height)
-nodes0=0 # sometimes requesting
+vertices0=0 # sometimes requesting smaller mesh size generates same mesh
 while True:
+    ms=0.5*ms
     geometry.create_mesh(mesh_sizes=[ms])
-    section = Section(geometry)
-    if nodes0==section.num_nodes:
+    vertices=geometry.mesh.get('vertices').size
+    if vertices0==vertices:
         ms=0.5*ms
         continue
+    vertices0=vertices
+    section = Section(geometry)
     if args.plot_mesh:
         section.plot_mesh()
     section.calculate_geometric_properties()
     section.calculate_warping_properties()
     j = section.get_j()
+    if math.isnan(j):
+        continue
     iw = section.get_gamma()
     jDiff=abs((j-j0)/j0)
     iwDiff=abs((iw-iw0)/iw0)
@@ -59,5 +65,3 @@ while True:
     else:
         j0=j
         iw0=iw
-        nodes0=section.num_nodes
-        ms=0.5*ms
