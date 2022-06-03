@@ -310,6 +310,18 @@ class Section:
             err = "Calculate geometric properties before performing a warping analysis."
             raise RuntimeError(err)
 
+        # check if any geometry are disjoint
+        if isinstance(self.geometry, section_geometry.CompoundGeometry):
+            polygons = [sec_geom.geom for sec_geom in self.geometry.geoms]
+            disjoint_regions = section_geometry.check_geometry_disjoint(polygons)
+            if disjoint_regions:
+                warnings.warn(
+                    "\nThe section geometry contains disjoint regions which is invalid for warping analysis.\n"
+                    "Please revise your geometry to ensure there is connectivity between all regions.\n"
+                    "Please see https://sectionproperties.readthedocs.io/en/latest/rst/analysis.html#warping-analysis for more "
+                    "information."
+                )
+
         # create a new Section with the origin shifted to the centroid for calculation of the
         # warping properties such that the Lagrangian multiplier approach can be utilised
         warping_section = Section(self.geometry)

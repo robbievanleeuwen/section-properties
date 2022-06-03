@@ -3,6 +3,7 @@ from ntpath import join
 from typing import List, Optional, Union, Tuple, Any
 
 import copy
+import math
 import pathlib
 import more_itertools
 import numpy as np
@@ -1940,4 +1941,15 @@ def check_geometry_overlaps(lop: List[Polygon]) -> bool:
     """
     union_area = unary_union(lop).area
     sum_polygons = sum([poly.area for poly in lop])
-    return union_area != sum_polygons
+    return not math.isclose(union_area, sum_polygons)
+
+
+def check_geometry_disjoint(lop: List[Polygon]) -> bool:
+    """
+    Returns True if all polygons in 'lop' are disjoint. Returns
+    False, otherwise.
+    """
+    geom_acc = Polygon()
+    for poly in lop:
+        geom_acc = geom_acc & poly
+    return geom_acc.is_empty
