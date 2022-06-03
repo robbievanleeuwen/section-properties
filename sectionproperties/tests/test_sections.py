@@ -441,11 +441,7 @@ def test_check_geometry_overlaps():
         == True
     )
 
-    assert (
-        check_geometry_overlaps(
-            [rect.geom, circ.geom]
-        ) == False
-    )
+    assert check_geometry_overlaps([rect.geom, circ.geom]) == False
 
 
 def test_check_geometry_disjoint():
