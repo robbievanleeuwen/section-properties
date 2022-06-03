@@ -446,3 +446,14 @@ def test_check_geometry_overlaps():
             [rect.geom, circ.geom]
         ) == False
     )
+
+
+def test_check_geometry_disjoint():
+    rect = rectangular_section(d=50, b=50)
+    circ = circular_section(d=50, n=32).shift_section(x_offset=125, y_offset=25)
+
+    small_sq = rectangular_section(d=100, b=75)
+    small_hole = rectangular_section(d=40, b=30).align_center(small_sq)
+
+    assert check_geometry_disjoint([rect.geom, circ.geom]) == True
+    assert check_geometry_overlaps([small_sq.geom, small_hole.geom]) == True
