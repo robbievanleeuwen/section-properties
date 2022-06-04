@@ -1,5 +1,5 @@
-import pathlib
 import pytest
+from pathlib import Path
 
 from sectionproperties.pre.geometry import *
 from sectionproperties.pre.library.primitive_sections import *
@@ -18,7 +18,6 @@ from shapely.geometry import (
 )
 from shapely import wkt
 import json
-import os.path
 
 big_sq = rectangular_section(d=300, b=250)
 small_sq = rectangular_section(d=100, b=75)
@@ -242,7 +241,8 @@ def test_multi_nested_compound_geometry_from_points():
 
 
 def test_geometry_from_dxf():
-    section_holes_dxf = os.path.dirname(__file__) + "/section_holes.dxf"
+    section_holes_dxf = Path(__file__).parent.absolute() / "section_holes.dxf"
+    print(section_holes_dxf)
     assert (
         Geometry.from_dxf(section_holes_dxf).geom.wkt
         == "POLYGON ((-0.338658834889 -0.395177702895, -0.338658834889 29.092318216393, 31.962257588776 29.092318216393, 31.962257588776 -0.395177702895, -0.338658834889 -0.395177702895), (16.684315862478 2.382629883704, 29.683030851053 2.382629883704, 29.683030851053 24.355800152063, 16.684315862478 24.355800152063, 16.684315862478 2.382629883704), (1.548825807288 3.344178663681, 14.547540795863 3.344178663681, 14.547540795863 27.382898163101, 1.548825807288 27.382898163101, 1.548825807288 3.344178663681))"
@@ -314,15 +314,15 @@ def test_plastic_centroid():
 
 
 def test_geometry_from_3dm_file_simple():
-    section = os.path.dirname(__file__) + "/3in x 2in.3dm"
+    section = Path(__file__).parent.absolute() / "3in x 2in.3dm"
     exp = Polygon([(0, 0), (0, 3), (2, 3), (2, 0), (0, 0)])
     test = Geometry.from_3dm(section)
     assert (test.geom - exp).is_empty
 
 
 def test_geometry_from_3dm_file_complex():
-    section_3dm = os.path.dirname(__file__) + "/complex_shape.3dm"
-    section_wkt = os.path.dirname(__file__) + "/complex_shape.txt"
+    section_3dm = Path(__file__).parent.absolute() / "complex_shape.3dm"
+    section_wkt = Path(__file__).parent.absolute() / "complex_shape.txt"
     with open(section_wkt) as file:
         wkt_str = file.readlines()
     exp = wkt.loads(wkt_str[0])
@@ -331,8 +331,8 @@ def test_geometry_from_3dm_file_complex():
 
 
 def test_geometry_from_3dm_file_compound():
-    section_3dm = os.path.dirname(__file__) + "/compound_shape.3dm"
-    section_wkt = os.path.dirname(__file__) + "/compound_shape.txt"
+    section_3dm = Path(__file__).parent.absolute() / "compound_shape.3dm"
+    section_wkt = Path(__file__).parent.absolute() / "compound_shape.txt"
     with open(section_wkt) as file:
         wkt_str = file.readlines()
     exp = [wkt.loads(wkt_str[0]), wkt.loads(wkt_str[1])]
@@ -341,7 +341,7 @@ def test_geometry_from_3dm_file_compound():
 
 
 def test_geometry_from_3dm_encode():
-    section_3dm = os.path.dirname(__file__) + "/rhino_data.json"
+    section_3dm = Path(__file__).parent.absolute() / "rhino_data.json"
     with open(section_3dm) as file:
         brep_encoded = json.load(file)
     exp = Polygon([(0, 0), (1, 0), (1, 1), (0, 1), (0, 0)])
