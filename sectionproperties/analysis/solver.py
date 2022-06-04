@@ -1,5 +1,8 @@
 import time
 import numpy as np
+from rich.progress import Progress, BarColumn, ProgressColumn, TextColumn, SpinnerColumn
+from rich.table import Column
+from rich.text import Text
 from scipy.sparse import linalg
 from scipy.sparse.linalg import spsolve
 
@@ -107,25 +110,32 @@ def solve_direct_lagrange(k_lg, f):
     return u[:-1]
 
 
-def function_timer(text, function, *args):
-    """Displays the message *text* and returns the time taken for a function, with arguments
-    *args*, to execute. The value returned by the timed function is also returned.
+class CustomTimeElapsedColumn(ProgressColumn):
+    """Renders time elapsed in milliseconds."""
 
-    :param string text: Message to display
-    :param function: Function to time and execute
-    :type function: function
-    :param args: Function arguments
-    :return: Value returned from the function
-    """
+    def render(self, task: "Task") -> Text:
+        """Show time remaining."""
 
-    start_time = time.time()
+        elapsed = task.finished_time if task.finished else task.elapsed
 
-    if text != "":
-        print(text)
+        if elapsed is None:
+            return Text("-:--:--", style="progress.elapsed")
 
-    result = function(*args)
+        elapsed_string = "[ {0:.4f} s ]".format(elapsed)
 
-    if text != "":
-        print("----completed in {0:.6f} seconds---\n".format(time.time() - start_time))
+        return Text(elapsed_string, style="progress.elapsed")
 
-    return result
+
+def create_progress():
+    """Returns a Rich Progress class."""
+
+    return Progress(
+        SpinnerColumn(),
+        TextColumn(
+            "[progress.description]{task.description}", table_column=Column(ratio=1)
+        ),
+        BarColumn(bar_width=None, table_column=Column(ratio=1)),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        CustomTimeElapsedColumn(),
+        expand=True,
+    )

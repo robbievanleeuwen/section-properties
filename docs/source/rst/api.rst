@@ -1,5 +1,5 @@
-Python API Documentation
-========================
+Python API Reference
+====================
 
 Pre-Processor Package
 ---------------------
@@ -450,10 +450,6 @@ solve_direct
 solve_direct_lagrange
 """""""""""""""""""""
 ..  autofunction:: sectionproperties.analysis.solver.solve_direct_lagrange
-
-function_timer
-""""""""""""""
-..  autofunction:: sectionproperties.analysis.solver.function_timer
 
 
 Post-Processor Package
