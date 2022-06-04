@@ -11,6 +11,8 @@ import matplotlib.patches as mpatches
 from matplotlib.colors import ListedColormap, CenteredNorm
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
+from rich.console import Console
+from rich.text import Text
 from rich.live import Live
 from rich.table import Table
 from rich.panel import Panel
@@ -231,10 +233,11 @@ class Section:
             # calculate perimeter
             self.section_props.perimeter = self.geometry.calculate_perimeter()
 
-            task = progress.add_task(
-                description="[red]Calculating geometric properties",
-                total=len(self.elements),
-            )
+            if progress is not None:
+                task = progress.add_task(
+                    description="[red]Calculating geometric properties",
+                    total=len(self.elements),
+                )
 
             # calculate global geometric properties
             for el in self.elements:
@@ -270,10 +273,11 @@ class Section:
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(self.mesh)
 
-            progress.update(
-                task,
-                description="[bold green]:white_check_mark: Geometric analysis complete",
-            )
+            if progress is not None:
+                progress.update(
+                    task,
+                    description="[bold green]:white_check_mark: Geometric analysis complete",
+                )
 
         # conduct geometric analysis
         if self.time_info:
@@ -291,6 +295,8 @@ class Section:
             with Live(progress_table, refresh_per_second=10):
                 calculate_geom(progress=progress)
                 panel.border_style = "green"
+
+            print()
         else:
             calculate_geom()
 
@@ -806,6 +812,8 @@ class Section:
                 )
 
                 panel.border_style = "green"
+
+            print()
         else:
             warping_analysis()
 
@@ -1002,6 +1010,8 @@ class Section:
             with Live(progress_table, refresh_per_second=10):
                 calc_plastic(progress=progress)
                 panel.border_style = "green"
+
+            print()
         else:
             calc_plastic()
 
@@ -1048,10 +1058,11 @@ class Section:
             raise RuntimeError(err)
 
         def calc_stress(progress=None):
-            task = progress.add_task(
-                description="[red]Calculating cross-section stresses",
-                total=len(self.elements),
-            )
+            if progress is not None:
+                task = progress.add_task(
+                    description="[red]Calculating cross-section stresses",
+                    total=len(self.elements),
+                )
 
             # create stress post object
             stress_post = StressPost(self)
@@ -1165,10 +1176,11 @@ class Section:
                 # calculate combined stresses
                 group.stress_result.calculate_combined_stresses()
 
-            progress.update(
-                task,
-                description="[bold green]:white_check_mark: Stress analysis complete",
-            )
+            if progress is not None:
+                progress.update(
+                    task,
+                    description="[bold green]:white_check_mark: Stress analysis complete",
+                )
 
             return stress_post
 
@@ -1187,6 +1199,8 @@ class Section:
             with Live(progress_table, refresh_per_second=10):
                 stress_post = calc_stress(progress=progress)
                 panel.border_style = "green"
+
+            print()
         else:
             stress_post = calc_stress()
 
@@ -1514,19 +1528,20 @@ class Section:
             >>>--2 regions
         """
 
-        print("Mesh Statistics:")
-        print("--{0} nodes".format(self.num_nodes))
-        print("--{0} elements".format(len(self.elements)))
+        console = Console()
+
+        console.print("Mesh Statistics:", style="bold underline magenta")
+        console.print(f"- {self.num_nodes} nodes")
+        console.print(f"- {len(self.elements)} elements")
 
         regions = max(self.mesh_attributes) + 1
-        text = "--{0} region".format(regions)
+        text = f"- {regions} region"
 
-        if regions == 1:
-            text += "\n"
-        else:
-            text += "s\n"
+        if regions > 1:
+            text += "s"
 
-        print(text)
+        console.print(text)
+        console.print()
 
     def display_results(self, fmt="8.6e"):
         """Prints the results that have been calculated to the terminal.
@@ -2322,10 +2337,11 @@ class PlasticSection:
                 section.section_props.s22 / section.section_props.z22_minus
             )
 
-        progress.update(
-            task,
-            description="[bold green]:white_check_mark: Plastic analysis complete",
-        )
+        if progress is not None:
+            progress.update(
+                task,
+                description="[bold green]:white_check_mark: Plastic analysis complete",
+            )
 
     def check_convergence(self, root_result, axis):
         """Checks that the function solver converged and if not, raises a helpful error.

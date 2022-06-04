@@ -1,6 +1,8 @@
 import contextlib
 import numpy as np
 import matplotlib.pyplot as plt
+from rich.console import Console
+from rich.table import Table
 from sectionproperties.pre.pre import DEFAULT_MATERIAL
 
 
@@ -158,133 +160,138 @@ def print_results(cross_section, fmt):
     :type cross_section: :class:`~sectionproperties.analysis.section.CrossSection`
     :param string fmt: Number format
     """
+
     if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
         prefix = "E."
     else:
         prefix = ""
 
+    table = Table(title="Section Properties")
+    table.add_column("Property", justify="left", style="cyan", no_wrap=True)
+    table.add_column("Value", justify="right", style="green")
+
     area = cross_section.get_area()
     if area is not None:
-        print("Section Properties:")
-        print("A\t = {:>{fmt}}".format(area, fmt=fmt))
+        table.add_row("A", "{:>{fmt}}".format(area, fmt=fmt))
 
     perimeter = cross_section.get_perimeter()
     if perimeter is not None:
-        print("Perim.\t = {:>{fmt}}".format(perimeter, fmt=fmt))
+        table.add_row("Perim.", "{:>{fmt}}".format(perimeter, fmt=fmt))
 
     if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
         mass = cross_section.get_mass()
         if mass is not None:
-            print("Mass\t = {:>{fmt}}".format(mass, fmt=fmt))
+            table.add_row("Mass", "{:>{fmt}}".format(mass, fmt=fmt))
 
     if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
         ea = cross_section.get_ea()
         if ea is not None:
-            print("E.A\t = {:>{fmt}}".format(ea, fmt=fmt))
+            table.add_row("E.A", "{:>{fmt}}".format(ea, fmt=fmt))
 
     (qx, qy) = cross_section.get_q()
     if qx is not None:
-        print(prefix + "Qx\t = {:>{fmt}}".format(qx, fmt=fmt))
-        print(prefix + "Qy\t = {:>{fmt}}".format(qy, fmt=fmt))
+        table.add_row(prefix + "Qx", "{:>{fmt}}".format(qx, fmt=fmt))
+        table.add_row(prefix + "Qy", "{:>{fmt}}".format(qy, fmt=fmt))
 
     (cx, cy) = cross_section.get_c()
     if cx is not None:
-        print("cx\t = {:>{fmt}}".format(cx, fmt=fmt))
-        print("cy\t = {:>{fmt}}".format(cy, fmt=fmt))
+        table.add_row("cx", "{:>{fmt}}".format(cx, fmt=fmt))
+        table.add_row("cy", "{:>{fmt}}".format(cy, fmt=fmt))
 
     (ixx_g, iyy_g, ixy_g) = cross_section.get_ig()
     if ixx_g is not None:
-        print(prefix + "Ixx_g\t = {:>{fmt}}".format(ixx_g, fmt=fmt))
-        print(prefix + "Iyy_g\t = {:>{fmt}}".format(iyy_g, fmt=fmt))
-        print(prefix + "Ixy_g\t = {:>{fmt}}".format(ixy_g, fmt=fmt))
+        table.add_row(prefix + "Ixx_g", "{:>{fmt}}".format(ixx_g, fmt=fmt))
+        table.add_row(prefix + "Iyy_g", "{:>{fmt}}".format(iyy_g, fmt=fmt))
+        table.add_row(prefix + "Ixy_g", "{:>{fmt}}".format(ixy_g, fmt=fmt))
 
     (ixx_c, iyy_c, ixy_c) = cross_section.get_ic()
     if ixx_c is not None:
-        print(prefix + "Ixx_c\t = {:>{fmt}}".format(ixx_c, fmt=fmt))
-        print(prefix + "Iyy_c\t = {:>{fmt}}".format(iyy_c, fmt=fmt))
-        print(prefix + "Ixy_c\t = {:>{fmt}}".format(ixy_c, fmt=fmt))
+        table.add_row(prefix + "Ixx_c", "{:>{fmt}}".format(ixx_c, fmt=fmt))
+        table.add_row(prefix + "Iyy_c", "{:>{fmt}}".format(iyy_c, fmt=fmt))
+        table.add_row(prefix + "Ixy_c", "{:>{fmt}}".format(ixy_c, fmt=fmt))
 
     (zxx_plus, zxx_minus, zyy_plus, zyy_minus) = cross_section.get_z()
     if zxx_plus is not None:
-        print(prefix + "Zxx+\t = {:>{fmt}}".format(zxx_plus, fmt=fmt))
-        print(prefix + "Zxx-\t = {:>{fmt}}".format(zxx_minus, fmt=fmt))
-        print(prefix + "Zyy+\t = {:>{fmt}}".format(zyy_plus, fmt=fmt))
-        print(prefix + "Zyy-\t = {:>{fmt}}".format(zyy_minus, fmt=fmt))
+        table.add_row(prefix + "Zxx+", "{:>{fmt}}".format(zxx_plus, fmt=fmt))
+        table.add_row(prefix + "Zxx-", "{:>{fmt}}".format(zxx_minus, fmt=fmt))
+        table.add_row(prefix + "Zyy+", "{:>{fmt}}".format(zyy_plus, fmt=fmt))
+        table.add_row(prefix + "Zyy-", "{:>{fmt}}".format(zyy_minus, fmt=fmt))
 
     (rx, ry) = cross_section.get_rc()
     if rx is not None:
-        print("rx\t = {:>{fmt}}".format(rx, fmt=fmt))
-        print("ry\t = {:>{fmt}}".format(ry, fmt=fmt))
+        table.add_row("rx", "{:>{fmt}}".format(rx, fmt=fmt))
+        table.add_row("ry", "{:>{fmt}}".format(ry, fmt=fmt))
 
     phi = cross_section.get_phi()
     (i11_c, i22_c) = cross_section.get_ip()
     if phi is not None:
-        print("phi\t = {:>{fmt}}".format(phi, fmt=fmt))
-        print(prefix + "I11_c\t = {:>{fmt}}".format(i11_c, fmt=fmt))
-        print(prefix + "I22_c\t = {:>{fmt}}".format(i22_c, fmt=fmt))
+        table.add_row("phi", "{:>{fmt}}".format(phi, fmt=fmt))
+        table.add_row(prefix + "I11_c", "{:>{fmt}}".format(i11_c, fmt=fmt))
+        table.add_row(prefix + "I22_c", "{:>{fmt}}".format(i22_c, fmt=fmt))
 
     (z11_plus, z11_minus, z22_plus, z22_minus) = cross_section.get_zp()
     if z11_plus is not None:
-        print(prefix + "Z11+\t = {:>{fmt}}".format(z11_plus, fmt=fmt))
-        print(prefix + "Z11-\t = {:>{fmt}}".format(z11_minus, fmt=fmt))
-        print(prefix + "Z22+\t = {:>{fmt}}".format(z22_plus, fmt=fmt))
-        print(prefix + "Z22-\t = {:>{fmt}}".format(z22_minus, fmt=fmt))
+        table.add_row(prefix + "Z11+", "{:>{fmt}}".format(z11_plus, fmt=fmt))
+        table.add_row(prefix + "Z11-", "{:>{fmt}}".format(z11_minus, fmt=fmt))
+        table.add_row(prefix + "Z22+", "{:>{fmt}}".format(z22_plus, fmt=fmt))
+        table.add_row(prefix + "Z22-", "{:>{fmt}}".format(z22_minus, fmt=fmt))
 
     (r11, r22) = cross_section.get_rp()
     if r11 is not None:
-        print("r11\t = {:>{fmt}}".format(r11, fmt=fmt))
-        print("r22\t = {:>{fmt}}".format(r22, fmt=fmt))
+        table.add_row("r11", "{:>{fmt}}".format(r11, fmt=fmt))
+        table.add_row("r22", "{:>{fmt}}".format(r22, fmt=fmt))
 
     if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
         e_eff = cross_section.get_e_eff()
         g_eff = cross_section.get_g_eff()
         if e_eff is not None:
-            print("E_eff\t = {:>{fmt}}".format(e_eff, fmt=fmt))
-            print("G_eff\t = {:>{fmt}}".format(g_eff, fmt=fmt))
+            table.add_row("E_eff", "{:>{fmt}}".format(e_eff, fmt=fmt))
+            table.add_row("G_eff", "{:>{fmt}}".format(g_eff, fmt=fmt))
 
         nu_eff = cross_section.get_nu_eff()
         if nu_eff is not None:
-            print("nu_eff\t = {:>{fmt}}".format(nu_eff, fmt=fmt))
+            table.add_row("nu_eff", "{:>{fmt}}".format(nu_eff, fmt=fmt))
 
     j = cross_section.get_j()
     if j is not None:
-        print(prefix + "J\t = {:>{fmt}}".format(j, fmt=fmt))
+        table.add_row("J", "{:>{fmt}}".format(j, fmt=fmt))
 
     gamma = cross_section.get_gamma()
     if gamma is not None:
-        print(prefix + "Iw\t = {:>{fmt}}".format(gamma, fmt=fmt))
+        table.add_row("Iw", "{:>{fmt}}".format(gamma, fmt=fmt))
 
     (x_se, y_se) = cross_section.get_sc()
     if x_se is not None:
-        print("x_se\t = {:>{fmt}}".format(x_se, fmt=fmt))
-        print("y_se\t = {:>{fmt}}".format(y_se, fmt=fmt))
+        table.add_row("x_se", "{:>{fmt}}".format(x_se, fmt=fmt))
+        table.add_row("y_se", "{:>{fmt}}".format(y_se, fmt=fmt))
 
     (x_st, y_st) = cross_section.get_sc_t()
     if x_se is not None:
-        print("x_st\t = {:>{fmt}}".format(x_st, fmt=fmt))
-        print("y_st\t = {:>{fmt}}".format(y_st, fmt=fmt))
+        table.add_row("x_st", "{:>{fmt}}".format(x_st, fmt=fmt))
+        table.add_row("y_st", "{:>{fmt}}".format(y_st, fmt=fmt))
 
     (x1_se, y2_se) = cross_section.get_sc_p()
     if x1_se is not None:
-        print("x1_se\t = {:>{fmt}}".format(x1_se, fmt=fmt))
-        print("y2_se\t = {:>{fmt}}".format(y2_se, fmt=fmt))
+        table.add_row("x1_se", "{:>{fmt}}".format(x1_se, fmt=fmt))
+        table.add_row("y2_se", "{:>{fmt}}".format(y2_se, fmt=fmt))
 
     (A_sx, A_sy) = cross_section.get_As()
     if A_sx is not None:
-        print(prefix + "A_sx\t = {:>{fmt}}".format(A_sx, fmt=fmt))
-        print(prefix + "A_sy\t = {:>{fmt}}".format(A_sy, fmt=fmt))
+        table.add_row(prefix + "A_sx", "{:>{fmt}}".format(A_sx, fmt=fmt))
+        table.add_row(prefix + "A_sy", "{:>{fmt}}".format(A_sy, fmt=fmt))
 
     (A_s11, A_s22) = cross_section.get_As_p()
     if A_s11 is not None:
-        print(prefix + "A_s11\t = {:>{fmt}}".format(A_s11, fmt=fmt))
-        print(prefix + "A_s22\t = {:>{fmt}}".format(A_s22, fmt=fmt))
+        table.add_row(prefix + "A_s11", "{:>{fmt}}".format(A_s11, fmt=fmt))
+        table.add_row(prefix + "A_s22", "{:>{fmt}}".format(A_s22, fmt=fmt))
+
 
     (beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus) = cross_section.get_beta()
     if beta_x_plus is not None:
-        print("betax+\t = {:>{fmt}}".format(beta_x_plus, fmt=fmt))
-        print("betax-\t = {:>{fmt}}".format(beta_x_minus, fmt=fmt))
-        print("betay+\t = {:>{fmt}}".format(beta_y_plus, fmt=fmt))
-        print("betay-\t = {:>{fmt}}".format(beta_y_minus, fmt=fmt))
+        table.add_row("betax+", "{:>{fmt}}".format(beta_x_plus, fmt=fmt))
+        table.add_row("betax-", "{:>{fmt}}".format(beta_x_minus, fmt=fmt))
+        table.add_row("betay+", "{:>{fmt}}".format(beta_y_plus, fmt=fmt))
+        table.add_row("betay-", "{:>{fmt}}".format(beta_y_minus, fmt=fmt))
 
     (
         beta_11_plus,
@@ -293,51 +300,53 @@ def print_results(cross_section, fmt):
         beta_22_minus,
     ) = cross_section.get_beta_p()
     if beta_x_plus is not None:
-        print("beta11+\t = {:>{fmt}}".format(beta_11_plus, fmt=fmt))
-        print("beta11-\t = {:>{fmt}}".format(beta_11_minus, fmt=fmt))
-        print("beta22+\t = {:>{fmt}}".format(beta_22_plus, fmt=fmt))
-        print("beta22-\t = {:>{fmt}}".format(beta_22_minus, fmt=fmt))
+        table.add_row("beta11+", "{:>{fmt}}".format(beta_11_plus, fmt=fmt))
+        table.add_row("beta11-", "{:>{fmt}}".format(beta_11_minus, fmt=fmt))
+        table.add_row("beta22+", "{:>{fmt}}".format(beta_22_plus, fmt=fmt))
+        table.add_row("beta22-", "{:>{fmt}}".format(beta_22_minus, fmt=fmt))
 
     (x_pc, y_pc) = cross_section.get_pc()
     if x_pc is not None:
-        print("x_pc\t = {:>{fmt}}".format(x_pc, fmt=fmt))
-        print("y_pc\t = {:>{fmt}}".format(y_pc, fmt=fmt))
+        table.add_row("x_pc", "{:>{fmt}}".format(x_pc, fmt=fmt))
+        table.add_row("y_pc", "{:>{fmt}}".format(y_pc, fmt=fmt))
 
     (sxx, syy) = cross_section.get_s()
     if sxx is not None:
         if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
-            print("M_p,xx\t = {:>{fmt}}".format(sxx, fmt=fmt))
-            print("M_p,yy\t = {:>{fmt}}".format(syy, fmt=fmt))
+            table.add_row("M_p,xx", "{:>{fmt}}".format(sxx, fmt=fmt))
+            table.add_row("M_p,yy", "{:>{fmt}}".format(syy, fmt=fmt))
         else:
-            print("Sxx\t = {:>{fmt}}".format(sxx, fmt=fmt))
-            print("Syy\t = {:>{fmt}}".format(syy, fmt=fmt))
+            table.add_row("Sxx", "{:>{fmt}}".format(sxx, fmt=fmt))
+            table.add_row("Syy", "{:>{fmt}}".format(syy, fmt=fmt))
 
     (sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus) = cross_section.get_sf()
     if sf_xx_plus is not None:
-        print("SF_xx+\t = {:>{fmt}}".format(sf_xx_plus, fmt=fmt))
-        print("SF_xx-\t = {:>{fmt}}".format(sf_xx_minus, fmt=fmt))
-        print("SF_yy+\t = {:>{fmt}}".format(sf_yy_plus, fmt=fmt))
-        print("SF_yy-\t = {:>{fmt}}".format(sf_yy_minus, fmt=fmt))
+        table.add_row("SF_xx+", "{:>{fmt}}".format(sf_xx_plus, fmt=fmt))
+        table.add_row("SF_xx-", "{:>{fmt}}".format(sf_xx_minus, fmt=fmt))
+        table.add_row("SF_yy+", "{:>{fmt}}".format(sf_yy_plus, fmt=fmt))
+        table.add_row("SF_yy-", "{:>{fmt}}".format(sf_yy_minus, fmt=fmt))
 
     (x11_pc, y22_pc) = cross_section.get_pc_p()
     if x_pc is not None:
-        print("x11_pc\t = {:>{fmt}}".format(x11_pc, fmt=fmt))
-        print("y22_pc\t = {:>{fmt}}".format(y22_pc, fmt=fmt))
+        table.add_row("x11_pc", "{:>{fmt}}".format(x11_pc, fmt=fmt))
+        table.add_row("y22_pc", "{:>{fmt}}".format(y22_pc, fmt=fmt))
 
     (s11, s22) = cross_section.get_sp()
     if s11 is not None:
         if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
-            print("M_p,11\t = {:>{fmt}}".format(s11, fmt=fmt))
-            print("M_p,22\t = {:>{fmt}}".format(s22, fmt=fmt))
+            table.add_row("M_p,11", "{:>{fmt}}".format(s11, fmt=fmt))
+            table.add_row("M_p,22", "{:>{fmt}}".format(s22, fmt=fmt))
         else:
-            print("S11\t = {:>{fmt}}".format(s11, fmt=fmt))
-            print("S22\t = {:>{fmt}}".format(s22, fmt=fmt))
+            table.add_row("S11", "{:>{fmt}}".format(s11, fmt=fmt))
+            table.add_row("S22", "{:>{fmt}}".format(s22, fmt=fmt))
 
     (sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus) = cross_section.get_sf_p()
     if sf_11_plus is not None:
-        print("SF_11+\t = {:>{fmt}}".format(sf_11_plus, fmt=fmt))
-        print("SF_11-\t = {:>{fmt}}".format(sf_11_minus, fmt=fmt))
-        print("SF_22+\t = {:>{fmt}}".format(sf_22_plus, fmt=fmt))
-        print("SF_22-\t = {:>{fmt}}".format(sf_22_minus, fmt=fmt))
+        table.add_row("SF_11+", "{:>{fmt}}".format(sf_11_plus, fmt=fmt))
+        table.add_row("SF_11-", "{:>{fmt}}".format(sf_11_minus, fmt=fmt))
+        table.add_row("SF_22+", "{:>{fmt}}".format(sf_22_plus, fmt=fmt))
+        table.add_row("SF_22-", "{:>{fmt}}".format(sf_22_minus, fmt=fmt))
 
+    console = Console()
+    console.print(table)
     print("")
