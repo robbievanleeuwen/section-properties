@@ -285,7 +285,6 @@ def print_results(cross_section, fmt):
         table.add_row(prefix + "A_s11", "{:>{fmt}}".format(A_s11, fmt=fmt))
         table.add_row(prefix + "A_s22", "{:>{fmt}}".format(A_s22, fmt=fmt))
 
-
     (beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus) = cross_section.get_beta()
     if beta_x_plus is not None:
         table.add_row("betax+", "{:>{fmt}}".format(beta_x_plus, fmt=fmt))
