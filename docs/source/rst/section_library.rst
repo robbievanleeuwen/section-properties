@@ -120,6 +120,11 @@ Box Girder Section
   ..  autofunction:: sectionproperties.pre.library.steel_sections.box_girder_section
       :noindex:
 
+Bulb Section
+------------
+  ..  autofunction:: sectionproperties.pre.library.steel_sections.bulb_section
+      :noindex:
+
 
 Concrete Sections Library
 =========================

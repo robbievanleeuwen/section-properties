@@ -1268,3 +1268,78 @@ def box_girder_section(
     inner_polygon = Polygon(inner_points)
 
     return geometry.Geometry(outer_polygon - inner_polygon, material)
+
+
+def bulb_section(
+    d: float,
+    b: float,
+    t: float,
+    r: float,
+    n_r: int,
+    d_b: float = None,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
+) -> geometry.Geometry:
+    """Constructs a bulb section with the bottom left corner at the point
+    *(-t / 2, 0)*, with depth *d*, bulb depth *d_b*, bulb width *b*, web thickness *t*
+    and radius *r*, using *n_r* points to construct the radius.
+
+    :param float d: Depth of the section
+    :param float b: Bulb width
+    :param float t: Web thickness
+    :param float r: Bulb radius
+    :param float d_b: Depth of the bulb (automatically calculated for standard sections,
+        if provided the section may have sharp edges)
+    :param int n_r: Number of points discretising the radius
+    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with
+        this geometry
+
+    The following example creates a bulb section with a depth of 240, a width of 34, a
+    web thickness of 12 and a bulb radius of 16, using 16 points to discretise the
+    radius. A mesh is generated with a maximum triangular area of 5.0::
+
+        from sectionproperties.pre.library.steel_sections import bulb_section
+
+        geometry = bulb_section(d=240, b=34, t=12, r=10, n_r=16)
+        geometry.create_mesh(mesh_sizes=[5.0])
+
+    ..  figure:: ../images/sections/bulb_geometry.png
+        :align: center
+        :scale: 75 %
+
+        Bulb section geometry.
+
+    ..  figure:: ../images/sections/bulb_mesh.png
+        :align: center
+        :scale: 75 %
+
+        Mesh generated from the above geometry.
+    """
+
+    if d_b is None:
+        d_b = r * np.cos(np.pi / 3) / np.cos(np.pi / 6) + r + b * np.tan(np.pi / 6)
+
+    points = []
+
+    # add first two points
+    points.append([-t * 0.5, 0])
+    points.append([t * 0.5, 0])
+
+    # test of additional radius
+    dc = r / np.sin(2 / 3 * np.pi / 2)
+    ptb0 = [t * 0.5 + dc * np.cos(np.pi / 6), d - d_b - dc * np.cos(np.pi / 3)]
+    points += draw_radius(ptb0, r, np.pi, n_r, False, np.pi / 3)
+
+    # end of test of additional radius
+    ptb = [b + t * 0.5 - r, d - r]
+    dzero = ((b + t * 0.5 - r - t * 0.5) ** 2 + (d - r - d + d_b) ** 2) ** 0.5
+
+    # build radius
+    points += draw_radius(ptb, r, -np.pi * 1 / 3, n_r, True, np.pi / 3)
+    points += draw_radius(ptb, r, 0, n_r, True)
+
+    # build the top part
+    points.append([b + t * 0.5 - r, d])
+    points.append([-t * 0.5, d])
+
+    polygon = Polygon(points)
+    return geometry.Geometry(polygon, material)

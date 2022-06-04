@@ -34,6 +34,7 @@ can be found in the README file on github.
    sphinx_gallery_examples/index
    rst/api
    rst/theory
+   rst/testing
 
 Here's a quick example that harnesses some of the power of *sectionproperties* and shows its simplicity::
 

@@ -283,6 +283,8 @@ def cruciform_section(
     ..  figure:: ../images/sections/cruciform_mesh.png
         :align: center
         :scale: 75 %
+
+        Mesh generated from the above geometry.
     """
     points = []
 
