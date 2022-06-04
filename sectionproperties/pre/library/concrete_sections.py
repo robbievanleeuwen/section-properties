@@ -32,7 +32,7 @@ def concrete_rectangular_section(
     :param int n_bot: Number of bottom steel reinforcing bars
     :param int n_circle: Number of points discretising the steel reinforcing bars
     :param float cover: Side and bottom cover to the steel reinforcing bars
-     :param float area_top: If provided, constructs top reinforcing bars based on their
+    :param float area_top: If provided, constructs top reinforcing bars based on their
         area rather than diameter (prevents the underestimation of steel area due to
         circle discretisation)
     :param float area_bot: If provided, constructs bottom reinforcing bars based on

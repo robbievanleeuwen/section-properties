@@ -1,5 +1,5 @@
-import pathlib
 import pytest
+from pathlib import Path
 
 from sectionproperties.pre.geometry import *
 from sectionproperties.pre.library.primitive_sections import *
@@ -86,8 +86,10 @@ def test__sub__():
     compound = compound + top_left
     compound = compound - top_right
     compound = compound + top_right
+    compound = compound - small_hole
 
     assert len(compound.control_points) == 3
+    assert len(compound.holes) == 1
     # Incomplete test to validate that the iterative __sub__ produces
     # three distinct regions with proper material assignments
 
@@ -167,7 +169,7 @@ def test_compound_geometry_from_points():
     assert (new_geom.geom - wkt_test_geom) == Polygon()
 
 
-def test_multinested_compound_geometry_from_points():
+def test_multi_nested_compound_geometry_from_points():
     """
     Testing a multi-nested section. This section contains three nested materials in concentric
     square rings with a hole going through the center of the whole section. This test confirms
@@ -226,7 +228,7 @@ def test_multinested_compound_geometry_from_points():
         (-31.25, 0.0),
         (-18.75, 0.0),
     ]
-    assert nested_compound.holes == [(0, 0), (0, 0), (0, 0)]
+    assert nested_compound.holes == [(0, 0)]
 
     # Section contains overlapping geometries which will result in potentially incorrect
     # plastic properties calculation (depends on user intent and geometry).
@@ -239,9 +241,8 @@ def test_multinested_compound_geometry_from_points():
 
 
 def test_geometry_from_dxf():
-    section_holes_dxf = (
-        pathlib.Path.cwd() / "sectionproperties" / "tests" / "section_holes.dxf"
-    )
+    section_holes_dxf = Path(__file__).parent.absolute() / "section_holes.dxf"
+    print(section_holes_dxf)
     assert (
         Geometry.from_dxf(section_holes_dxf).geom.wkt
         == "POLYGON ((-0.338658834889 -0.395177702895, -0.338658834889 29.092318216393, 31.962257588776 29.092318216393, 31.962257588776 -0.395177702895, -0.338658834889 -0.395177702895), (16.684315862478 2.382629883704, 29.683030851053 2.382629883704, 29.683030851053 24.355800152063, 16.684315862478 24.355800152063, 16.684315862478 2.382629883704), (1.548825807288 3.344178663681, 14.547540795863 3.344178663681, 14.547540795863 27.382898163101, 1.548825807288 27.382898163101, 1.548825807288 3.344178663681))"
@@ -313,19 +314,15 @@ def test_plastic_centroid():
 
 
 def test_geometry_from_3dm_file_simple():
-    section = pathlib.Path.cwd() / "sectionproperties" / "tests" / "3in x 2in.3dm"
+    section = Path(__file__).parent.absolute() / "3in x 2in.3dm"
     exp = Polygon([(0, 0), (0, 3), (2, 3), (2, 0), (0, 0)])
     test = Geometry.from_3dm(section)
     assert (test.geom - exp).is_empty
 
 
 def test_geometry_from_3dm_file_complex():
-    section_3dm = (
-        pathlib.Path.cwd() / "sectionproperties" / "tests" / "complex_shape.3dm"
-    )
-    section_wkt = (
-        pathlib.Path.cwd() / "sectionproperties" / "tests" / "complex_shape.txt"
-    )
+    section_3dm = Path(__file__).parent.absolute() / "complex_shape.3dm"
+    section_wkt = Path(__file__).parent.absolute() / "complex_shape.txt"
     with open(section_wkt) as file:
         wkt_str = file.readlines()
     exp = wkt.loads(wkt_str[0])
@@ -334,12 +331,8 @@ def test_geometry_from_3dm_file_complex():
 
 
 def test_geometry_from_3dm_file_compound():
-    section_3dm = (
-        pathlib.Path.cwd() / "sectionproperties" / "tests" / "compound_shape.3dm"
-    )
-    section_wkt = (
-        pathlib.Path.cwd() / "sectionproperties" / "tests" / "compound_shape.txt"
-    )
+    section_3dm = Path(__file__).parent.absolute() / "compound_shape.3dm"
+    section_wkt = Path(__file__).parent.absolute() / "compound_shape.txt"
     with open(section_wkt) as file:
         wkt_str = file.readlines()
     exp = [wkt.loads(wkt_str[0]), wkt.loads(wkt_str[1])]
@@ -348,7 +341,7 @@ def test_geometry_from_3dm_file_compound():
 
 
 def test_geometry_from_3dm_encode():
-    section_3dm = pathlib.Path.cwd() / "sectionproperties" / "tests" / "rhino_data.json"
+    section_3dm = Path(__file__).parent.absolute() / "rhino_data.json"
     with open(section_3dm) as file:
         brep_encoded = json.load(file)
     exp = Polygon([(0, 0), (1, 0), (1, 1), (0, 1), (0, 0)])
@@ -421,6 +414,9 @@ def test_check_geometry_overlaps():
     small_sq = rectangular_section(d=100, b=75)
     small_hole = rectangular_section(d=40, b=30).align_center(small_sq)
 
+    rect = rectangular_section(d=50, b=50)
+    circ = circular_section(d=50, n=32).shift_section(x_offset=125, y_offset=25)
+
     assert check_geometry_overlaps([small_sq.geom, small_hole.geom]) == True
     assert check_geometry_overlaps([small_sq.geom, small_sq.geom]) == True
     assert (
@@ -435,3 +431,27 @@ def test_check_geometry_overlaps():
         )
         == True
     )
+
+    assert check_geometry_overlaps([rect.geom, circ.geom]) == False
+
+
+def test_check_geometry_disjoint():
+    rect = rectangular_section(d=50, b=50)
+    circ = circular_section(d=50, n=32).shift_section(x_offset=125, y_offset=25)
+
+    small_sq = rectangular_section(d=100, b=75)
+    small_hole = rectangular_section(d=40, b=30).align_center(small_sq)
+
+    assert check_geometry_disjoint([rect.geom, circ.geom]) == True
+    assert check_geometry_overlaps([small_sq.geom, small_hole.geom]) == True
+
+
+def test_warping_disjoint_warning():
+    rect = rectangular_section(d=50, b=50)
+    circ = circular_section(d=50, n=32).shift_section(x_offset=125, y_offset=25)
+    geom = (rect + circ).create_mesh([10])
+
+    sec = Section(geom)
+    sec.calculate_geometric_properties()
+    with pytest.warns(UserWarning):
+        sec.calculate_warping_properties()
