@@ -451,8 +451,10 @@ def test_check_geometry_disjoint():
     small_sq = rectangular_section(d=100, b=75)
     small_hole = rectangular_section(d=40, b=30).align_center(small_sq)
 
+    rect2 = rectangular_section(d=50, b=50).shift_section(x_offset=50)
+    assert check_geometry_disjoint([rect.geom, rect2.geom]) == False
+
     assert check_geometry_disjoint([rect.geom, circ.geom]) == True
-    assert check_geometry_overlaps([small_sq.geom, small_hole.geom]) == True
 
 
 def test_warping_disjoint_warning():
