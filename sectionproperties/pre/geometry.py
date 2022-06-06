@@ -1951,6 +1951,6 @@ def check_geometry_disjoint(lop: List[Polygon]) -> bool:
     """
     bool_acc = []
     for idx, poly1 in enumerate(lop):
-        for poly2 in lop[idx + 1:]:
+        for poly2 in lop[idx + 1 :]:
             bool_acc.append(poly1.intersection(poly2))
     return not all(bool_acc)
