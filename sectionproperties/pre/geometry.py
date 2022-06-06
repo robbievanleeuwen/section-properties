@@ -1949,7 +1949,8 @@ def check_geometry_disjoint(lop: List[Polygon]) -> bool:
     Returns True if all polygons in 'lop' are disjoint. Returns
     False, otherwise.
     """
-    geom_acc = Polygon()
-    for poly in lop:
-        geom_acc = geom_acc & poly
-    return geom_acc.is_empty
+    bool_acc = []
+    for idx, poly1 in enumerate(lop):
+        for poly2 in lop[idx + 1 :]:
+            bool_acc.append(poly1.intersection(poly2))
+    return not all(bool_acc)
