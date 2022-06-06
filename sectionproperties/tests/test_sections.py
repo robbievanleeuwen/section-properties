@@ -445,6 +445,9 @@ def test_check_geometry_disjoint():
     rect2 = rectangular_section(d=50, b=50).shift_section(x_offset=50)
     assert check_geometry_disjoint([rect.geom, rect2.geom]) == False
 
+    rect3 = rectangular_section(d=25, b=25).shift_section(y_offset=50)
+    assert check_geometry_disjoint([rect.geom, rect2.geom, rect3.geom]) == False
+
     assert check_geometry_disjoint([rect.geom, circ.geom]) == True
 
     rect2 = rectangular_section(d=50, b=50).shift_section(x_offset=50)
