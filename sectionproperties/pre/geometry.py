@@ -1946,11 +1946,38 @@ def check_geometry_overlaps(lop: List[Polygon]) -> bool:
 
 def check_geometry_disjoint(lop: List[Polygon]) -> bool:
     """
-    Returns True if all polygons in 'lop' are disjoint. Returns
+    Returns True if any polygons in 'lop' are disjoint. Returns
     False, otherwise.
     """
-    bool_acc = []
-    for idx, poly1 in enumerate(lop):
-        for poly2 in lop[idx + 1 :]:
-            bool_acc.append(poly1.intersection(poly2))
-    return not all(bool_acc)
+    # Build polygon connectivity network
+    network = {}
+    for idx_i, poly1 in enumerate(lop):
+        for idx_j, poly2 in enumerate(lop):
+            if idx_i != idx_j:
+                connectivity = network.get(idx_i, set())
+                if poly1.intersection(poly2):
+                    connectivity.add(idx_j)
+                network[idx_i] = connectivity
+                
+
+    def walk_network(node: int, network: dict, nodes_visited: list[int]) -> list[int]:
+        """
+        Walks the network modifying 'nodes_visited' as it walks.
+        """
+        connections = network.get(node, set())
+        for connection in connections:
+            if connection in nodes_visited:
+                continue
+            else:
+                nodes_visited.append(connection)
+                walk_network(connection, network, nodes_visited)
+        return nodes_visited
+
+    # Traverse polygon connectivity network
+    nodes_visited = [0]
+    walk_network(0, network, nodes_visited)
+    print(nodes_visited)
+    print(network)
+    
+    return set(nodes_visited) != set(network.keys())
+    
