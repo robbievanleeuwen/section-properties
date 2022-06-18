@@ -1975,7 +1975,4 @@ def check_geometry_disjoint(lop: List[Polygon]) -> bool:
     # Traverse polygon connectivity network
     nodes_visited = [0]
     walk_network(0, network, nodes_visited)
-    print(nodes_visited)
-    print(network)
-
     return set(nodes_visited) != set(network.keys())
