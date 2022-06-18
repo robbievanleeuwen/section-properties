@@ -1958,7 +1958,6 @@ def check_geometry_disjoint(lop: List[Polygon]) -> bool:
                 if poly1.intersection(poly2):
                     connectivity.add(idx_j)
                 network[idx_i] = connectivity
-                
 
     def walk_network(node: int, network: dict, nodes_visited: list[int]) -> list[int]:
         """
@@ -1978,6 +1977,5 @@ def check_geometry_disjoint(lop: List[Polygon]) -> bool:
     walk_network(0, network, nodes_visited)
     print(nodes_visited)
     print(network)
-    
+
     return set(nodes_visited) != set(network.keys())
-    

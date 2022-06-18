@@ -454,7 +454,6 @@ def test_check_geometry_disjoint():
     assert check_geometry_disjoint([rect.geom, rect2.geom]) == False
 
 
-
 def test_warping_disjoint_warning():
     rect = rectangular_section(d=50, b=50)
     circ = circular_section(d=50, n=32).shift_section(x_offset=125, y_offset=25)
