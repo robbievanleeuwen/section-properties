@@ -1242,6 +1242,13 @@ class CompoundGeometry(Geometry):
             )
         if holes is None:
             holes = list()
+        if materials is not pre.DEFAULT_MATERIAL:
+            if len(materials) != len(control_points):
+                raise ValueError(
+                    f"If materials are provided, the number of materials in the list must "
+                    "match the number of control_points provided.\n"
+                    f"len(materials)=={len(materials)}, len(control_points)=={len(control_points)}."
+                    )
 
         # First, generate all invidual polygons from points and facets
         current_polygon_points = []
@@ -1297,17 +1304,26 @@ class CompoundGeometry(Geometry):
                 f"does not match the number of control_points given ({len(control_points)})."
             )
         if not interiors:
-            return CompoundGeometry(
-                [
-                    Geometry(exterior, control_points=control_points[idx])
-                    for idx, exterior in enumerate(exteriors)
-                ]
-            )
+            if materials is pre.DEFAULT_MATERIAL:
+                return CompoundGeometry(
+                    [
+                        Geometry(exterior, control_points=control_points[idx], material=materials)
+                        for idx, exterior in enumerate(exteriors)
+                    ]
+                )
+            else:
+                return CompoundGeometry(
+                    [
+                        Geometry(exterior, control_points=control_points[idx], material=materials[idx])
+                        for idx, exterior in enumerate(exteriors)
+                    ]
+                )
+
         else:
             # "Punch" all holes through each exterior geometry
             punched_exteriors = []
             punched_exterior_geometries = []
-            for exterior in exteriors:
+            for idx, exterior in enumerate(exteriors):
                 punched_exterior = exterior
                 for interior in interiors:
                     punched_exterior = punched_exterior - interior
@@ -1322,12 +1338,22 @@ class CompoundGeometry(Geometry):
                             f"Control points given are not contained within the geometry"
                             f" once holes are subtracted: {control_points}"
                         )
-                exterior_geometry = Geometry(
-                    punched_exterior, control_points=exterior_control_point
-                )
-                punched_exterior_geometries.append(exterior_geometry)
+                if materials is pre.DEFAULT_MATERIAL:
 
-        return CompoundGeometry(punched_exterior_geometries)
+                    exterior_geometry = Geometry(
+                        punched_exterior, control_points=exterior_control_point, material=materials
+                    )
+                    punched_exterior_geometries.append(exterior_geometry)
+
+                else:
+
+                    exterior_geometry = Geometry(
+                        punched_exterior, control_points=exterior_control_point, material=materials[idx]
+                    )
+                    punched_exterior_geometries.append(exterior_geometry)
+
+            return CompoundGeometry(punched_exterior_geometries)
+
 
     @classmethod
     def from_3dm(cls, filepath: Union[str, pathlib.Path], **kwargs) -> CompoundGeometry:
