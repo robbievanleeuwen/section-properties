@@ -1248,7 +1248,7 @@ class CompoundGeometry(Geometry):
                     f"If materials are provided, the number of materials in the list must "
                     "match the number of control_points provided.\n"
                     f"len(materials)=={len(materials)}, len(control_points)=={len(control_points)}."
-                    )
+                )
 
         # First, generate all invidual polygons from points and facets
         current_polygon_points = []
@@ -1307,14 +1307,22 @@ class CompoundGeometry(Geometry):
             if materials is pre.DEFAULT_MATERIAL:
                 return CompoundGeometry(
                     [
-                        Geometry(exterior, control_points=control_points[idx], material=materials)
+                        Geometry(
+                            exterior,
+                            control_points=control_points[idx],
+                            material=materials,
+                        )
                         for idx, exterior in enumerate(exteriors)
                     ]
                 )
             else:
                 return CompoundGeometry(
                     [
-                        Geometry(exterior, control_points=control_points[idx], material=materials[idx])
+                        Geometry(
+                            exterior,
+                            control_points=control_points[idx],
+                            material=materials[idx],
+                        )
                         for idx, exterior in enumerate(exteriors)
                     ]
                 )
@@ -1341,19 +1349,22 @@ class CompoundGeometry(Geometry):
                 if materials is pre.DEFAULT_MATERIAL:
 
                     exterior_geometry = Geometry(
-                        punched_exterior, control_points=exterior_control_point, material=materials
+                        punched_exterior,
+                        control_points=exterior_control_point,
+                        material=materials,
                     )
                     punched_exterior_geometries.append(exterior_geometry)
 
                 else:
 
                     exterior_geometry = Geometry(
-                        punched_exterior, control_points=exterior_control_point, material=materials[idx]
+                        punched_exterior,
+                        control_points=exterior_control_point,
+                        material=materials[idx],
                     )
                     punched_exterior_geometries.append(exterior_geometry)
 
             return CompoundGeometry(punched_exterior_geometries)
-
 
     @classmethod
     def from_3dm(cls, filepath: Union[str, pathlib.Path], **kwargs) -> CompoundGeometry:
