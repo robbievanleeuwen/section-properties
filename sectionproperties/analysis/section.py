@@ -1313,7 +1313,7 @@ class Section:
         :param mask: Mask array, of length ``num_nodes``, to mask out triangles
         :type mask: list[bool]
         :param string title: Plot title
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -1408,7 +1408,7 @@ class Section:
         axis, if they have been calculated, on top of the finite element mesh.
 
         :param string title: Plot title
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -2592,7 +2592,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axe object
         :rtype: :class:`matplotlib.axes`
@@ -2658,7 +2658,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -2872,7 +2872,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -2921,7 +2921,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -2970,7 +2970,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3019,7 +3019,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3068,7 +3068,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3117,7 +3117,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3167,7 +3167,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3216,7 +3216,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3265,7 +3265,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3314,7 +3314,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3365,7 +3365,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3414,7 +3414,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3463,7 +3463,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3513,7 +3513,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3564,7 +3564,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3613,7 +3613,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3662,7 +3662,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3711,7 +3711,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3763,7 +3763,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3814,7 +3814,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3865,7 +3865,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3916,7 +3916,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -3968,7 +3968,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -4018,7 +4018,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -4068,7 +4068,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -4118,7 +4118,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -4168,7 +4168,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -4220,7 +4220,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -4280,7 +4280,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -4340,7 +4340,7 @@ class StressPost:
         :param string cmap: Matplotlib color map.
         :param bool normalize: If set to true, the CenteredNorm is used to scale the colormap.
             If set to false, the default linear scaling is used.
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -4392,7 +4392,7 @@ class StressPost:
         :param float x: x-coordinate of the point to draw Mohr's Circle
         :param float y: y-coordinate of the point to draw Mohr's Circle
         :param string title: Plot title
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`

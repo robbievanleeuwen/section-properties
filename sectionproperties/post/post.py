@@ -25,7 +25,7 @@ def plotting_context(
         This may be a tuple if a 2D array of plots is returned.  The default value of None will
         select the top left plot.
     :type axis_index: Union[None, int, Tuple(int)]
-    :param \**kwargs: Passed to :func:`matplotlib.pyplot.subplots`
+    :param kwargs: Passed to :func:`matplotlib.pyplot.subplots`
     """
 
     if filename:

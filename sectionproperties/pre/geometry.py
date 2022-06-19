@@ -144,10 +144,10 @@ class Geometry:
             being holes or voids. The point can be located anywhere within the hole region.
             Only one point is required per hole region.
         :vartype holes: list[list[float, float]]
-        :cvar materials: Optional. A list of :class:`~sectionproperties.pre.pre.Material` objects that are to be
-            assigned, in order, to the regions defined by the given control_points. If not given, then
-            the :class:`~sectionproperties.pre.pre.DEFAULT_MATERIAL` will be used for each region.
-        :vartype materials: list[:class:`~sectionproperties.pre.pre.Material`]
+        :cvar material: Optional. A :class:`~sectionproperties.pre.pre.Material` object
+            that is to be assigned. If not given, then the
+            :class:`~sectionproperties.pre.pre.DEFAULT_MATERIAL` will be used.
+        :vartype materials: :class:`~sectionproperties.pre.pre.Material`
         """
         if len(control_points) != 1:
             raise ValueError(
@@ -225,7 +225,7 @@ class Geometry:
         :param filepath:
             File path to the rhino `.3dm` file.
         :type filepath: Union[str, pathlib.Path]
-        :param \**kwargs:
+        :param kwargs:
             See below.
         :raises RuntimeError:
             A RuntimeError is raised if two or more polygons are found.
@@ -290,7 +290,7 @@ class Geometry:
         :param r3dm_brep:
             A Rhino3dm.Brep encoded as a string.
         :type r3dm_brep: str
-        :param \**kwargs:
+        :param kwargs:
             See below.
         :return:
             A Geometry object found in the encoded string.
@@ -871,7 +871,7 @@ class Geometry:
             to indicate no labels. Default is ["control_points"]
         :type labels: list[str]
         :param string title: Plot title
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -1336,7 +1336,7 @@ class CompoundGeometry(Geometry):
         :param filepath:
             File path to the rhino `.3dm` file.
         :type filepath: Union[str, pathlib.Path]
-        :param \**kwargs:
+        :param kwargs:
             See below.
         :return:
             A `CompoundGeometry` object.
