@@ -4,7 +4,7 @@
 [![Run Tests](https://github.com/robbievanleeuwen/section-properties/actions/workflows/tests.yml/badge.svg)](https://github.com/robbievanleeuwen/section-properties/actions/workflows/tests.yml) [![Lint with Black](https://github.com/robbievanleeuwen/section-properties/actions/workflows/black.yml/badge.svg)](https://github.com/robbievanleeuwen/section-properties/actions/workflows/black.yml) [![Documentation Status](https://readthedocs.org/projects/sectionproperties/badge/?version=latest)](https://sectionproperties.readthedocs.io/en/latest/?badge=latest)
  [![codecov](https://codecov.io/gh/robbievanleeuwen/section-properties/branch/master/graph/badge.svg?token=QCH9J4SG6P)](https://codecov.io/gh/robbievanleeuwen/section-properties) [![PyPI version](https://badge.fury.io/py/sectionproperties.svg)](https://badge.fury.io/py/sectionproperties) [![Python versions](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue?style=flat&logo=python)](https://badge.fury.io/py/sectionproperties) [![GitHub license](https://img.shields.io/github/license/robbievanleeuwen/section-properties)](https://github.com/robbievanleeuwen/section-properties/blob/master/LICENSE.md)
 
-A python package for the analysis of arbitrary cross-sections using the finite element method written by Robbie van Leeuwen. *sectionproperties* can be used to determine section properties to be used in structural design and visualise cross-sectional stresses resulting from combinations of applied forces and bending moments.
+A python package for the analysis of arbitrary cross-sections using the finite element method. *sectionproperties* can be used to determine section properties to be used in structural design and visualise cross-sectional stresses resulting from combinations of applied forces and bending moments.
 
 [Subscribe](http://eepurl.com/dMMUeg) to the mailing list!
 
@@ -18,7 +18,7 @@ $ pip install sectionproperties
 
 ## Documentation:
 
-*sectionproperties* is fully documented including a user walkthrough, examples, background theory and an API guide. The documentation can find at [https://sectionproperties.readthedocs.io/](https://sectionproperties.readthedocs.io/).
+*sectionproperties* is fully documented including a user walkthrough, examples, background theory and an API guide. The documentation can found at [https://sectionproperties.readthedocs.io/](https://sectionproperties.readthedocs.io/).
 
 ## Current Capabilities:
 

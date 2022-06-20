@@ -1,6 +1,19 @@
 Changelog:
 ==========
 
+v2.1.0:
+-------
+
+- Add ``bulb_section()`` to steel sections library, thanks to `@zmpulse <https://github.com/zmpulse>`_
+- Add progress bar and pretty output using `rich <https://github.com/Textualize/rich`_
+- Fix logic of generating holes in CompoundGeometry using the subtraction method, thanks to `@connorferster <https://github.com/connorferster>`_
+- Expand testing suite and documentation, thanks to `@czarified <https://github.com/czarified>`_
+- Fix bug with plastic calculation when material properties are specified
+- Add warning message for disconnected geometries when trying to calculate warping properties, thanks to `@connorferster <https://github.com/connorferster>`_
+- Fix bug with material properties not being assigned when using the ``CompoundGeometry.from_points()`` method, thanks to `@connorferster <https://github.com/connorferster>`_
+
+**Full changelog:** `2.0.3...2.1.0 <https://github.com/robbievanleeuwen/section-properties/compare/2.0.3...2.1.0>`_
+
 v2.0.3:
 -------
 
@@ -22,10 +35,14 @@ v2.0.2:
 - Fix bug in super_t_girder_section() which caused type 5 to be returned in all cases
 - Require matplotlib >= 3.4 for CenteredNorm
 
+**Full changelog:** `2.0.1...2.0.2 <https://github.com/robbievanleeuwen/section-properties/compare/2.0.1...2.0.2>`_
+
 v2.0.1:
 -------
 
 - Fix issue with library module
+
+**Full changelog:** `2.0.0...2.0.1 <https://github.com/robbievanleeuwen/section-properties/compare/2.0.0...2.0.1>`_
 
 v2.0.0:
 -------
