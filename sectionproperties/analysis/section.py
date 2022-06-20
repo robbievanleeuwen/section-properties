@@ -457,7 +457,7 @@ class Section:
             self.section_props.j = (
                 self.section_props.ixx_c
                 + self.section_props.iyy_c
-                - omega.dot(k_lg[:-1,:-1].dot(np.transpose(omega)))
+                - omega.dot(k_lg[:-1, :-1].dot(np.transpose(omega)))
             )
 
             # assemble shear function load vectors
@@ -947,7 +947,7 @@ class Section:
         self.section_props.j = (
             self.section_props.ixx_c
             + self.section_props.iyy_c
-            - omega.dot(k_lg[:-1,:-1].dot(np.transpose(omega)))
+            - omega.dot(k_lg[:-1, :-1].dot(np.transpose(omega)))
         )
 
         return (
