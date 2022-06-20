@@ -24,7 +24,6 @@ and what might the expected error be?
 # Here we bring in the primative section shapes and also the more generic
 # Shapely `Polygon` object. We also use the nifty `tqdm` package to provide
 # a progress bar on computations.
-from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
@@ -47,7 +46,7 @@ def get_section_j(geom, ms, plot_geom=False):
     if plot_geom:
         section.plot_mesh()
     section.calculate_geometric_properties()
-    section.calculate_warping_properties(solver_type="cgs")
+    section.calculate_warping_properties()
     return section.get_j()
 
 
@@ -56,8 +55,8 @@ def get_section_j(geom, ms, plot_geom=False):
 # =======================
 # The number of elements per unit area is an important input to the calculations
 # even though we are only examining ratios of the results. A nominal value of 100
-# is reasonable; but sovler errors occur sometimes, so use 110.
-n = 110  # mesh density
+# is reasonable.
+n = 100  # mesh density
 
 #%%
 # Create and Analyze the Section
@@ -92,6 +91,14 @@ def do_section(b, S, d_mid=1, plot_geom=False):
 
 
 #%%
+# Example Section
+# ===============
+# The analysis for a particular section looks as follows:
+b, S = 4.0, 0.3
+jt, jr, d1, d2 = do_section(b, S, plot_geom=True)
+print(f"{b=}; {S=}; {jr=}; {jt=}; {jr/jt}")
+
+#%%
 # Create Loop Variables
 # =====================
 # # The slope `S` is 0 for a rectangle, and 1 for a triangle and is
@@ -109,8 +116,8 @@ j_trap = np.zeros((len(b_list), len(S_list)))
 # We also use `tqdm` to provide progress bars.
 #
 # An optional deugging line is left in for development but commented out.
-for i, b in enumerate(tqdm(b_list)):
-    for j, S in enumerate(tqdm(S_list, leave=False)):
+for i, b in enumerate(b_list):
+    for j, S in enumerate(S_list):
         jt, jr, d1, d2 = do_section(b, S)
         j_trap[i][j] = jt
         j_rect[i][j] = jr
