@@ -144,10 +144,10 @@ class Geometry:
             being holes or voids. The point can be located anywhere within the hole region.
             Only one point is required per hole region.
         :vartype holes: list[list[float, float]]
-        :cvar materials: Optional. A list of :class:`~sectionproperties.pre.pre.Material` objects that are to be
-            assigned, in order, to the regions defined by the given control_points. If not given, then
-            the :class:`~sectionproperties.pre.pre.DEFAULT_MATERIAL` will be used for each region.
-        :vartype materials: list[:class:`~sectionproperties.pre.pre.Material`]
+        :cvar material: Optional. A :class:`~sectionproperties.pre.pre.Material` object
+            that is to be assigned. If not given, then the
+            :class:`~sectionproperties.pre.pre.DEFAULT_MATERIAL` will be used.
+        :vartype materials: :class:`~sectionproperties.pre.pre.Material`
         """
         if len(control_points) != 1:
             raise ValueError(
@@ -225,7 +225,7 @@ class Geometry:
         :param filepath:
             File path to the rhino `.3dm` file.
         :type filepath: Union[str, pathlib.Path]
-        :param \**kwargs:
+        :param kwargs:
             See below.
         :raises RuntimeError:
             A RuntimeError is raised if two or more polygons are found.
@@ -290,7 +290,7 @@ class Geometry:
         :param r3dm_brep:
             A Rhino3dm.Brep encoded as a string.
         :type r3dm_brep: str
-        :param \**kwargs:
+        :param kwargs:
             See below.
         :return:
             A Geometry object found in the encoded string.
@@ -871,7 +871,7 @@ class Geometry:
             to indicate no labels. Default is ["control_points"]
         :type labels: list[str]
         :param string title: Plot title
-        :param \**kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+        :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
         :rtype: :class:`matplotlib.axes`
@@ -1242,6 +1242,13 @@ class CompoundGeometry(Geometry):
             )
         if holes is None:
             holes = list()
+        if materials is not pre.DEFAULT_MATERIAL:
+            if len(materials) != len(control_points):
+                raise ValueError(
+                    f"If materials are provided, the number of materials in the list must "
+                    "match the number of control_points provided.\n"
+                    f"len(materials)=={len(materials)}, len(control_points)=={len(control_points)}."
+                )
 
         # First, generate all invidual polygons from points and facets
         current_polygon_points = []
@@ -1297,17 +1304,34 @@ class CompoundGeometry(Geometry):
                 f"does not match the number of control_points given ({len(control_points)})."
             )
         if not interiors:
-            return CompoundGeometry(
-                [
-                    Geometry(exterior, control_points=control_points[idx])
-                    for idx, exterior in enumerate(exteriors)
-                ]
-            )
+            if materials is pre.DEFAULT_MATERIAL:
+                return CompoundGeometry(
+                    [
+                        Geometry(
+                            exterior,
+                            control_points=control_points[idx],
+                            material=materials,
+                        )
+                        for idx, exterior in enumerate(exteriors)
+                    ]
+                )
+            else:
+                return CompoundGeometry(
+                    [
+                        Geometry(
+                            exterior,
+                            control_points=control_points[idx],
+                            material=materials[idx],
+                        )
+                        for idx, exterior in enumerate(exteriors)
+                    ]
+                )
+
         else:
             # "Punch" all holes through each exterior geometry
             punched_exteriors = []
             punched_exterior_geometries = []
-            for exterior in exteriors:
+            for idx, exterior in enumerate(exteriors):
                 punched_exterior = exterior
                 for interior in interiors:
                     punched_exterior = punched_exterior - interior
@@ -1322,12 +1346,25 @@ class CompoundGeometry(Geometry):
                             f"Control points given are not contained within the geometry"
                             f" once holes are subtracted: {control_points}"
                         )
-                exterior_geometry = Geometry(
-                    punched_exterior, control_points=exterior_control_point
-                )
-                punched_exterior_geometries.append(exterior_geometry)
+                if materials is pre.DEFAULT_MATERIAL:
 
-        return CompoundGeometry(punched_exterior_geometries)
+                    exterior_geometry = Geometry(
+                        punched_exterior,
+                        control_points=exterior_control_point,
+                        material=materials,
+                    )
+                    punched_exterior_geometries.append(exterior_geometry)
+
+                else:
+
+                    exterior_geometry = Geometry(
+                        punched_exterior,
+                        control_points=exterior_control_point,
+                        material=materials[idx],
+                    )
+                    punched_exterior_geometries.append(exterior_geometry)
+
+            return CompoundGeometry(punched_exterior_geometries)
 
     @classmethod
     def from_3dm(cls, filepath: Union[str, pathlib.Path], **kwargs) -> CompoundGeometry:
@@ -1336,7 +1373,7 @@ class CompoundGeometry(Geometry):
         :param filepath:
             File path to the rhino `.3dm` file.
         :type filepath: Union[str, pathlib.Path]
-        :param \**kwargs:
+        :param kwargs:
             See below.
         :return:
             A `CompoundGeometry` object.

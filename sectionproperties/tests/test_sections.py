@@ -118,13 +118,26 @@ def test_geometry_from_points():
     ]
     control_points = [[0, 0]]
     holes = [[0, 6], [0, -6]]
+    material = Material(
+        name="mat1",
+        elastic_modulus=2,
+        poissons_ratio=0.3,
+        density=1e-6,
+        yield_strength=5,
+        color="grey",
+    )
     new_geom = Geometry.from_points(
-        points=points, facets=facets, control_points=control_points, holes=holes
+        points=points,
+        facets=facets,
+        control_points=control_points,
+        holes=holes,
+        material=material,
     )
     wkt_test_geom = shapely.wkt.loads(
         "POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))"
     )
     assert (new_geom.geom - wkt_test_geom) == Polygon()
+    assert (new_geom.material) == material
 
 
 def test_compound_geometry_from_points():
@@ -162,11 +175,34 @@ def test_compound_geometry_from_points():
         [9, 6],
     ]
     control_points = [[0, 0], [0, -2 * a - t / 2]]
-    new_geom = CompoundGeometry.from_points(points, facets, control_points)
+    mat1 = Material(
+        name="mat1",
+        elastic_modulus=2,
+        poissons_ratio=0.3,
+        density=1e-6,
+        yield_strength=5,
+        color="grey",
+    )
+    mat2 = Material(
+        name="mat2",
+        elastic_modulus=5,
+        poissons_ratio=0.2,
+        density=2e-6,
+        yield_strength=10,
+        color="blue",
+    )
+    materials = [mat1, mat2]
+    new_geom = CompoundGeometry.from_points(
+        points, facets, control_points, materials=materials
+    )
     wkt_test_geom = shapely.wkt.loads(
         "MULTIPOLYGON (((-0.05 -2, 0.05 -2, 0.05 -0.05, 1 -0.05, 1 0.05, -0.05 0.05, -0.05 -2)), ((-1 -2, 1 -2, 1 -2.1, -1 -2.1, -1 -2)))"
     )
     assert (new_geom.geom - wkt_test_geom) == Polygon()
+
+    # test materials
+    for idx, geom in enumerate(new_geom.geoms):
+        assert geom.material == materials[idx]
 
 
 def test_multi_nested_compound_geometry_from_points():
@@ -215,8 +251,37 @@ def test_multi_nested_compound_geometry_from_points():
     ]
     control_points = [[-43.75, 0.0], [-31.25, 0.0], [-18.75, 0.0]]
     holes = [[0, 0]]
+    mat1 = Material(
+        name="mat1",
+        elastic_modulus=2,
+        poissons_ratio=0.3,
+        density=1e-6,
+        yield_strength=5,
+        color="grey",
+    )
+    mat2 = Material(
+        name="mat2",
+        elastic_modulus=5,
+        poissons_ratio=0.2,
+        density=2e-6,
+        yield_strength=10,
+        color="blue",
+    )
+    mat3 = Material(
+        name="mat3",
+        elastic_modulus=1,
+        poissons_ratio=0.25,
+        density=1.5e-6,
+        yield_strength=3,
+        color="green",
+    )
+    materials = [mat1, mat2, mat3]
     nested_compound = CompoundGeometry.from_points(
-        points=points, facets=facets, control_points=control_points, holes=holes
+        points=points,
+        facets=facets,
+        control_points=control_points,
+        holes=holes,
+        materials=materials,
     )
     wkt_test_geom = shapely.wkt.loads(
         "MULTIPOLYGON (((50 50, 50 -50, -50 -50, -50 50, 50 50), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-37.5 -37.5, -37.5 37.5, 37.5 37.5, 37.5 -37.5, -37.5 -37.5), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-25 -25, -25 25, 25 25, 25 -25, -25 -25), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)))"
@@ -229,6 +294,10 @@ def test_multi_nested_compound_geometry_from_points():
         (-18.75, 0.0),
     ]
     assert nested_compound.holes == [(0, 0)]
+
+    # test materials
+    for idx, geom in enumerate(nested_compound.geoms):
+        assert geom.material == materials[idx]
 
     # Section contains overlapping geometries which will result in potentially incorrect
     # plastic properties calculation (depends on user intent and geometry).

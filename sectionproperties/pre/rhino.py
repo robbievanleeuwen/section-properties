@@ -10,7 +10,7 @@ def load_3dm(r3dm_filepath: Union[pathlib.Path, str], **kwargs) -> List[Polygon]
     :param r3dm_filepath:
         File path to the rhino `.3dm` file.
     :type r3dm_filepath: pathlib.Path or string
-    :param \**kwargs:
+    :param kwargs:
         See below.
     :raises RuntimeError:
         A RuntimeError is raised if no polygons are found in the file.
@@ -64,7 +64,7 @@ def load_brep_encoding(brep: str, **kwargs) -> Polygon:
     :param brep:
         Rhino3dm.Brep encoded as a string.
     :type brep: str
-    :param \**kwargs:
+    :param kwargs:
         See below.
     :raises RuntimeError:
         A RuntimeError is raised if no polygons are found in the encoding.
