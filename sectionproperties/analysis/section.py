@@ -939,9 +939,9 @@ class Section:
 
         # solve for warping function
         if solver_type == "cgs":
-            omega = solver.solve_cgs_lagrange(k_lg, f_torsion, m=k_lg_precond)
+            omega = solver.solve_cgs_lagrange(k_lg, f, m=k_lg_precond)
         elif solver_type == "direct":
-            omega = solver.solve_direct_lagrange(k_lg, f_torsion)
+            omega = solver.solve_direct_lagrange(k_lg, f)
 
         # calculate the torsion constant
         self.section_props.j = (
