@@ -8,7 +8,7 @@ Trapezoidal elements or components of a cross-section are
 quite common in bridge structures, either concrete or steel
 composite construction. However, it's common to determine 
 the torsion constant of the trapezoidal section by using a
-recatangular approximation. For example, this is done in
+rectangular approximation. For example, this is done in
 the Autodesk Structural Bridge Design software when there
 is a haunch in a `Steel Composite Beam
 <https://knowledge.autodesk.com/support/structural-bridge-design/learn-explore/caas/CloudHelp/cloudhelp/ENU/ASBD-InProdAU/files/structure/tech-info/ti-torsion/ASBD-InProdAU-structure-tech-info-ti-torsion-Torsion-property-for-SAM-composite-beams-html-html.html>`_
@@ -36,7 +36,7 @@ from sectionproperties.analysis.section import Section
 # =============================
 # It's better to collect the relevant section property calculation in a
 # single function. We are only interested in the torsion constant, so this
-# is straightforward enough. `geom` is the Section Property Gemoetry object;
+# is straightforward enough. `geom` is the Section Property Geometry object;
 # `ms` is the mesh size.
 def get_section_j(geom, ms, plot_geom=False):
     geom.create_mesh(mesh_sizes=[ms])
@@ -111,7 +111,6 @@ j_trap = np.zeros((len(b_list), len(S_list)))
 # The Main Loop
 # =============
 # Execute the double loop to get the ratios for combinations of `S` and `b`.
-# We also use `tqdm` to provide progress bars.
 #
 # An optional deugging line is left in for development but commented out.
 for i, b in enumerate(b_list):
@@ -133,7 +132,7 @@ j_ratio = j_rect / j_trap
 # of the approximation.
 #
 # As expected, when the section is rectangular, the error is small, but as it increases
-# towards a triangle the accuracy genearlly reduces. However, there is an interesting
+# towards a triangle the accuracy generally reduces. However, there is an interesting
 # line at an aspect ratio of about 2.7 where the rectangular approximation is always
 # equal to the trapezoid's torsion constant.
 levels = np.arange(start=0.5, stop=1.5, step=0.05)
