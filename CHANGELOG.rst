@@ -5,7 +5,7 @@ v2.1.0:
 -------
 
 - Add ``bulb_section()`` to steel sections library, thanks to `@zmpulse <https://github.com/zmpulse>`_
-- Add progress bar and pretty output using `rich <https://github.com/Textualize/rich`_
+- Add progress bar and pretty output using `rich <https://github.com/Textualize/rich>`_
 - Fix logic of generating holes in CompoundGeometry using the subtraction method, thanks to `@connorferster <https://github.com/connorferster>`_
 - Expand testing suite and documentation, thanks to `@czarified <https://github.com/czarified>`_
 - Fix bug with plastic calculation when material properties are specified
