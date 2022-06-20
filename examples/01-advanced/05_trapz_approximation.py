@@ -41,9 +41,11 @@ from sectionproperties.analysis.section import Section
 # is straightforward enough. `geom` is the Section Property Gemoetry object;
 # `ms` is the mesh size. The "cgs" solver helps avoid singular matrices due
 # to small angles.
-def get_section_j(geom, ms):
+def get_section_j(geom, ms, plot_geom=False):
     geom.create_mesh(mesh_sizes=[ms])
     section = Section(geom)
+    if plot_geom:
+        section.plot_mesh()
     section.calculate_geometric_properties()
     section.calculate_warping_properties(solver_type="cgs")
     return section.get_j()
@@ -54,7 +56,7 @@ def get_section_j(geom, ms):
 # =======================
 # The number of elements per unit area is an important input to the calculations
 # even though we are only examining ratios of the results. A nominal value of 100
-# is reasonable.
+# is reasonable; but sovler errors occur sometimes, so use 110.
 n = 110  # mesh density
 
 #%%
@@ -65,7 +67,7 @@ n = 110  # mesh density
 # immaterial. There are a few ways to parametrize the problem, but it has been
 # found that setting the middle height of trapezoid (i.e. the average height)
 # to a unit value works fine.
-def do_section(b, S, d_mid=1):
+def do_section(b, S, d_mid=1, plot_geom=False):
     delta = S * d_mid
     d1 = d_mid - delta
     d2 = d_mid + delta
@@ -82,10 +84,10 @@ def do_section(b, S, d_mid=1):
         trap_geom = geometry.Geometry(Polygon(points))
     else:
         trap_geom = sections.triangular_section(h=d2, b=b)
-    jt = get_section_j(trap_geom, ms)
+    jt = get_section_j(trap_geom, ms, plot_geom)
 
     rect_geom = sections.rectangular_section(d=(d1 + d2) / 2, b=b)
-    jr = get_section_j(rect_geom, ms)
+    jr = get_section_j(rect_geom, ms, plot_geom)
     return jt, jr, d1, d2
 
 
