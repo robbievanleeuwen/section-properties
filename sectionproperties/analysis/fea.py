@@ -43,18 +43,18 @@ class Tri6:
     def __post_init__(self):
         # Create a mapping from global elm to local elm (unit triangle)
         # The result is used in the global to local mapping: (eta, xi) = _M(x_global-_x0), zeta = 1-eta-xi
-        (p0,p1,self._x0) = self.coords[:,0:3].transpose()
+        (p0, p1, self._x0) = self.coords[:, 0:3].transpose()
         # Shift the triangle so the x_3 vertex (global) is on the origin ((eta, xi, zeta) = (0,0,1))
         # Aside: This is chosen to be consistent with the shape function definitions.
         # At (0,0,1), N3=1, N1=N2=N4=...=0 (see Theoretical Background documentation)
         # since (x, y) = (sum(N_i(eta,xi,zeta)*x_i),  sum(N_i(eta,xi,zeta)*y_i)
         # then at (0,0,1): (x,y) = (x_3,y_3). ie: (x_3, y_3) => (0,0,1)
-        r0 = p0-self._x0
-        r1 = p1-self._x0
+        r0 = p0 - self._x0
+        r1 = p1 - self._x0
         # Asseble the equations to solve for the transformation for the unit triangle
-        x = np.array([r0,r1]).transpose()
-        b = np.array([[1, 0],[0, 1]])
-        self._M = np.linalg.solve(x,b)
+        x = np.array([r0, r1]).transpose()
+        b = np.array([[1, 0], [0, 1]])
+        self._M = np.linalg.solve(x, b)
 
     def __repr__(self):
         rep = f"el_id: {self.el_id}\ncoords: {self.coords}\nnode_ids: {self.node_ids}\nmaterial: {self.material}"
@@ -582,7 +582,7 @@ class Tri6:
         phi_shear,
         Delta_s,
     ):
-        """Calculates the stress at a point `p` within the element resulting from a specified loading. 
+        """Calculates the stress at a point `p` within the element resulting from a specified loading.
 
         :param p: Point (x,y) in the global coordinate system that is within the element.
         :type p: :class:`numpy.ndarray`
@@ -666,9 +666,9 @@ class Tri6:
         p_local = self.local_coord(p)
         # get the value of the basis functions at p_local
         N = shape_function_only(p_local)
-        
+
         # interpolate the nodal values to p_local and add the results
-        ( 
+        (
             sig_zz_n_p,
             sig_zz_mxx_p,
             sig_zz_myy_p,
@@ -680,19 +680,24 @@ class Tri6:
             sig_zy_vx_p,
             sig_zx_vy_p,
             sig_zy_vy_p,
-        ) = np.dot( np.array([
-            sig_zz_n_el,
-            sig_zz_mxx_el,
-            sig_zz_myy_el,
-            sig_zz_m11_el,
-            sig_zz_m22_el,
-            sig_zx_mzz_el,
-            sig_zy_mzz_el,
-            sig_zx_vx_el,
-            sig_zy_vx_el,
-            sig_zx_vy_el,
-            sig_zy_vy_el,
-        ]), N)
+        ) = np.dot(
+            np.array(
+                [
+                    sig_zz_n_el,
+                    sig_zz_mxx_el,
+                    sig_zz_myy_el,
+                    sig_zz_m11_el,
+                    sig_zz_m22_el,
+                    sig_zx_mzz_el,
+                    sig_zy_mzz_el,
+                    sig_zx_vx_el,
+                    sig_zy_vx_el,
+                    sig_zx_vy_el,
+                    sig_zy_vy_el,
+                ]
+            ),
+            N,
+        )
         return (
             sig_zz_n_p,
             sig_zz_mxx_p,
@@ -743,7 +748,7 @@ class Tri6:
             return False
 
     def local_coord(self, p):
-        """Map a point `p` = (x, y) in the global coordinate system onto a 
+        """Map a point `p` = (x, y) in the global coordinate system onto a
         point (eta, xi, zeta) in the local coordinate system.
 
         :param p: Global coordinate (x,y)
@@ -751,9 +756,10 @@ class Tri6:
         :return: Point in local coordinate (eta, xi, zeta)
         :rtype: :class:`numpy.ndarray`
         """
-        (eta, xi) = np.dot(self._M, p-self._x0) 
+        (eta, xi) = np.dot(self._M, p - self._x0)
         zeta = 1 - eta - xi
         return np.array([eta, xi, zeta])
+
 
 def gauss_points(n):
     """Returns the Gaussian weights and locations for *n* point Gaussian integration of a quadratic
@@ -857,6 +863,7 @@ def shape_function(coords, gauss_point):
 
     return (N, B, j)
 
+
 def shape_function_only(p):
     """The values of the Tri6 shape function at a point `p`.
 
@@ -879,6 +886,7 @@ def shape_function_only(p):
             4 * eta * zeta,
         ]
     )
+
 
 def extrapolate_to_nodes(w):
     """Extrapolates results at six Gauss points to the six nodes of a quadratic triangular element.
