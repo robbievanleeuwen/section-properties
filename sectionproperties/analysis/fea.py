@@ -698,9 +698,7 @@ class Tri6:
             ),
             N,
         )
-        sig_zz_m_p = (
-            sig_zz_mxx_p + sig_zz_myy_p + sig_zz_m11_p + sig_zz_m22_p 
-        )
+        sig_zz_m_p = sig_zz_mxx_p + sig_zz_myy_p + sig_zz_m11_p + sig_zz_m22_p
         sig_zx_v_p = sig_zx_vx_p + sig_zx_vy_p
         sig_zy_v_p = sig_zy_vx_p + sig_zy_vy_p
         sig_zy_p = sig_zy_mzz_p + sig_zy_v_p
