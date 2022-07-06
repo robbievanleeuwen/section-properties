@@ -2177,6 +2177,10 @@ class Section:
         for (idx, tri) in enumerate(self.elements):
             if tri.point_within_element(pt):
                 tri_id = idx
+
+        if tri_id is None:
+            raise ValueError(f"The point {pt} is outside of the section boundary.")
+
         tri = self.elements[tri_id]
 
         # get the stess at the point
