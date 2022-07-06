@@ -1,4 +1,4 @@
-from typing import Union, Optional, Tuple
+from typing import List, Union, Optional, Tuple
 
 import copy
 from dataclasses import dataclass, asdict
@@ -2125,6 +2125,81 @@ class Section:
             self.section_props.sf_22_plus,
             self.section_props.sf_22_minus,
         )
+
+
+    def get_stress_at_point(
+        self,
+        pt: List[float],
+        N=0,
+        Mxx=0,
+        Myy=0,
+        M11=0,
+        M22=0,
+        Mzz=0,
+        Vx=0,
+        Vy=0
+        ) -> Tuple[float]:
+        """Calaculates the stress at a point wiithin an element for given design actions
+        and returns *(sigma_zz, tau_xz, tau_yz)*
+        
+        :param pt: The point. A list of the x and y coordinate
+        :type pt: list[float, float]
+        :param float N: Axial force
+        :param float Vx: Shear force acting in the x-direction
+        :param float Vy: Shear force acting in the y-direction
+        :param float Mxx: Bending moment about the centroidal xx-axis
+        :param float Myy: Bending moment about the centroidal yy-axis
+        :param float M11: Bending moment about the centroidal 11-axis
+        :param float M22: Bending moment about the centroidal 22-axis
+        :param float Mzz: Torsion moment about the centroidal zz-axis
+        :return: Resultant normal and shear stresses (sigma_zz, tau_xz, tau_yz)
+        :rtype: tuple(float, float, float)
+        """
+
+        action = { 
+            'N': N,
+            'Mxx': Mxx,
+            'Myy': Myy,
+            'M11': M11,
+            'M22': M22,
+            'Mzz': Mzz,
+            'Vx': Vx,
+            'Vy': Vy
+        }
+
+        sect_prop = {
+            'ea':  self.section_props.ea,
+            'cx':  self.section_props.cx,
+            'cy':  self.section_props.cy,
+            'ixx':  self.section_props.ixx_c,
+            'iyy':  self.section_props.iyy_c,
+            'ixy':  self.section_props.ixy_c,
+            'i11':  self.section_props.i11_c,
+            'i22':  self.section_props.i22_c,
+            'phi':  self.section_props.phi,
+            'j':  self.section_props.j,
+            'Delta_s':  self.section_props.Delta_s,
+            'nu':  self.section_props.nu_eff,
+        }
+        
+        # find the Tri6 element containing the point
+        tri_id = None
+        for (idx , tri) in enumerate(self.elements):
+            if tri.point_within_element(pt):
+                tri_id = idx
+        tri = self.elements[tri_id]
+
+        # get the stess at the point
+        sigs = tri.local_element_stress(
+            p=pt,
+            **action,
+            **sect_prop,
+            omega=self.section_props.omega[tri.node_ids],
+            psi_shear=self.section_props.psi_shear[tri.node_ids],
+            phi_shear=self.section_props.phi_shear[tri.node_ids]
+            )
+
+        return sigs
 
 
 class PlasticSection:
