@@ -698,18 +698,19 @@ class Tri6:
             ),
             N,
         )
+        sig_zz_m_p = (
+            sig_zz_mxx_p + sig_zz_myy_p + sig_zz_m11_p + sig_zz_m22_p 
+        )
+        sig_zx_v_p = sig_zx_vx_p + sig_zx_vy_p
+        sig_zy_v_p = sig_zy_vx_p + sig_zy_vy_p
+        sig_zy_p = sig_zy_mzz_p + sig_zy_v_p
+        sig_zz_p = sig_zz_n_p + sig_zz_m_p
+        sig_zx_p = sig_zx_mzz_p + sig_zx_v_p
+        sig_zy_p = sig_zy_mzz_p + sig_zy_v_p
         return (
-            sig_zz_n_p,
-            sig_zz_mxx_p,
-            sig_zz_myy_p,
-            sig_zz_m11_p,
-            sig_zz_m22_p,
-            sig_zx_mzz_p,
-            sig_zy_mzz_p,
-            sig_zx_vx_p,
-            sig_zy_vx_p,
-            sig_zx_vy_p,
-            sig_zy_vy_p,
+            sig_zz_p,
+            sig_zx_p,
+            sig_zy_p,
         )
 
     def point_within_element(self, pt):
