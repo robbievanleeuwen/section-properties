@@ -1,6 +1,14 @@
 Changelog:
 ==========
 
+v2.1.1:
+-------
+
+- Use Lagrangian multiplier for calculation of torsion properties
+- Add more plotting options to ``plot_geometry()``
+
+**Full changelog:** `2.1.0...2.1.1 <https://github.com/robbievanleeuwen/section-properties/compare/2.1.0...2.1.1>`_
+
 v2.1.0:
 -------
 
