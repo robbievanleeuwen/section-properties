@@ -128,6 +128,8 @@ If the geometry has multiple regions, then the
 See :ref:`ref_ex_custom` for an example of this implementation.
 
 
+.. _label-geometry-dxf:
+
 Geometry from .dxf Files
 ------------------------
 
@@ -144,6 +146,8 @@ file (i.e. the number of contiguous regions).
    :noindex:
 
 
+.. _label-geometry-3dm:
+
 Geometry from Rhino
 -------------------
 
@@ -151,7 +155,7 @@ Geometries can now be created from .3dm files and BREP encodings.
 Various limitations and assumptions need to be acknowledged:
 
 * sectional analysis is based in 2d and Rhino is a 3d environment.
-* the recognized Rhino geometries are limited to planer-single-surfaced BREPs.
+* the recognised Rhino geometries are limited to planer-single-surfaced BREPs.
 * Rhino uses NURBS for surface boundaries and *sectionproperties* uses piecewise linear boundaries.
 * a search plane is defined.
 
