@@ -862,7 +862,12 @@ class Geometry:
         return new_geom
 
     def plot_geometry(
-        self, labels=["control_points"], title="Cross-Section Geometry", **kwargs
+        self,
+        labels=["control_points"],
+        title="Cross-Section Geometry",
+        cp=True,
+        legend=True,
+        **kwargs,
     ):
         """Plots the geometry defined by the input section.
 
@@ -871,6 +876,8 @@ class Geometry:
             to indicate no labels. Default is ["control_points"]
         :type labels: list[str]
         :param string title: Plot title
+        :param bool cp: If set to True, plots the control points
+        :param bool legend: If set to True, plots the legend
         :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
@@ -918,14 +925,15 @@ class Geometry:
 
                 ax.plot(h[0], h[1], "rx", markersize=5, markeredgewidth=1, label=label)
 
-            # plot the control points
-            for (i, cp) in enumerate(self.control_points):
-                if i == 0:
-                    label = "Control Points"
-                else:
-                    label = None
+            if cp:
+                # plot the control points
+                for (i, cp) in enumerate(self.control_points):
+                    if i == 0:
+                        label = "Control Points"
+                    else:
+                        label = None
 
-                ax.plot(cp[0], cp[1], "bo", markersize=5, label=label)
+                    ax.plot(cp[0], cp[1], "bo", markersize=5, label=label)
 
             # display the labels
             for label in labels:
@@ -954,7 +962,8 @@ class Geometry:
                         ax.annotate(str(i), xy=pt, color="r")
 
             # display the legend
-            ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+            if legend:
+                ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 
         return ax
 
