@@ -106,7 +106,7 @@ different :class:`~sectionproperties.pre.pre.Material` to the ``.material`` attr
 
 .. _label-from-points:
 
-Geometry from points, facets, holes, and control_points
+Geometry from points, facets, holes, and control points
 -------------------------------------------------------
 
 In sectionproperties ``v1.x.x``, geometries were created by specifying lists of `points`, `facets`,
@@ -186,6 +186,8 @@ These can be accessed by :func:`~sectionproperties.pre.rhino.load_3dm()` and
 ..  autofunction:: sectionproperties.pre.rhino.load_brep_encoding
    :noindex:
 
+
+.. _label-geometry-set:
 
 Combining Geometries Using Set Operations
 -----------------------------------------
