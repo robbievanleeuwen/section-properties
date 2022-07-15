@@ -31,7 +31,7 @@ jobs:
       run: pip install wheel
 
     - name: Install package
-      run: python -m pip install -e .
+      run: python -m pip install -e .[test]
 
     - name: Run package tests
       run: python -m pytest

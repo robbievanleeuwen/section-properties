@@ -12,15 +12,27 @@ cross-section geometry and `triangle <https://github.com/drufat/triangle>`_ to e
 generate a conforming triangular mesh in order to perform a finite element analysis of the
 structural cross-section.
 
-*sectionproperties* and all of its dependencies can be installed through the python package index::
+*sectionproperties* and all of its dependencies can be installed through the python package index:
 
-  $ pip install sectionproperties
+.. code-block:: console
+
+  pip install sectionproperties
+
+Note that dependencies required for importing from rhino files are not included by default.
+To obtain these dependencies, install using the *rhino* option:
+
+.. code-block:: console
+
+  pip install sectionproperties[rhino]
+
 
 Testing the Installation
 ------------------------
 
 Python *pytest* modules are located in the *sectionproperties.tests* package.
 To see if your installation is working correctly, install `pytest` and run the
-following test::
+following test:
 
-  $ pytest --pyargs sectionproperties
+.. code-block:: console
+
+  pytest --pyargs sectionproperties

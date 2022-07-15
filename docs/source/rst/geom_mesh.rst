@@ -186,6 +186,15 @@ These can be accessed by :func:`~sectionproperties.pre.rhino.load_3dm()` and
 ..  autofunction:: sectionproperties.pre.rhino.load_brep_encoding
    :noindex:
 
+.. note::
+
+  Dependencies for importing files from rhino are not included by default. To obtain
+  the required dependencies install *sectionproperties* with the rhino option:
+
+  .. code-block:: console
+
+    pip install sectionproperties[rhino]
+
 
 .. _label-geometry-set:
 
