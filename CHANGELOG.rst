@@ -1,6 +1,13 @@
 Changelog:
 ==========
 
+v2.1.2:
+-------
+
+- Make rhino-shapley-interop an optional dependency
+
+**Full changelog:** `2.1.1...2.1.2 <https://github.com/robbievanleeuwen/section-properties/compare/2.1.1...2.1.2>`_
+
 v2.1.1:
 -------
 
