@@ -2129,7 +2129,7 @@ class Section:
         )
 
     def get_stress_at_point(
-        self, pt: List[float], N=0, Mxx=0, Myy=0, M11=0, M22=0, Mzz=0, Vx=0, Vy=0
+        self, pt: List[float], N=0, Mxx=0, Myy=0, M11=0, M22=0, Mzz=0, Vx=0, Vy=0, agg_func=np.average
     ) -> Tuple[float]:
         """Calaculates the stress at a point within an element for given design actions
         and returns *(sigma_zz, tau_xz, tau_yz)*
@@ -2144,63 +2144,21 @@ class Section:
         :param float M11: Bending moment about the centroidal 11-axis
         :param float M22: Bending moment about the centroidal 22-axis
         :param float Mzz: Torsion moment about the centroidal zz-axis
+        :param agg_function: A function that aggregates the stresses if the point is shared by several elements.
+            If the point, pt, is shared by several elements (e.g. if it is a node or on an edge), the stress
+            (sigma_zz, tau_xz, tau_yz) are retrieved from each element and combined according to this function.
+            By default, `numpy.average` is used.
+        :type agg_function: function, optional
         :return: Resultant normal and shear stresses (sigma_zz, tau_xz, tau_yz)
         :rtype: tuple(float, float, float)
         """
-
-        action = {
-            "N": N,
-            "Mxx": Mxx,
-            "Myy": Myy,
-            "M11": M11,
-            "M22": M22,
-            "Mzz": Mzz,
-            "Vx": Vx,
-            "Vy": Vy,
-        }
-
-        sect_prop = {
-            "ea": self.section_props.ea,
-            "cx": self.section_props.cx,
-            "cy": self.section_props.cy,
-            "ixx": self.section_props.ixx_c,
-            "iyy": self.section_props.iyy_c,
-            "ixy": self.section_props.ixy_c,
-            "i11": self.section_props.i11_c,
-            "i22": self.section_props.i22_c,
-            "phi": self.section_props.phi,
-            "j": self.section_props.j,
-            "Delta_s": self.section_props.Delta_s,
-            "nu": self.section_props.nu_eff,
-        }
-
-        # find the Tri6 element containing the point
-        tri_id = None
-        for (idx, tri) in enumerate(self.elements):
-            if tri.point_within_element(pt):
-                tri_id = idx
-
-        if tri_id is None:
-            raise ValueError(f"The point {pt} is outside of the section boundary.")
-
-        tri = self.elements[tri_id]
-
-        # get the stess at the point
-        sigs = tri.local_element_stress(
-            p=pt,
-            **action,
-            **sect_prop,
-            omega=self.section_props.omega[tri.node_ids],
-            psi_shear=self.section_props.psi_shear[tri.node_ids],
-            phi_shear=self.section_props.phi_shear[tri.node_ids],
-        )
-
-        return sigs
+        sigs = self.get_stress_at_points([pt], N, Mxx, Myy, M11, M22, Mzz, Vx, Vy, agg_func)
+        return next(sigs)
 
 
     def get_stress_at_points(
         self, pts: List[List[float]], N=0, Mxx=0, Myy=0, M11=0, M22=0, Mzz=0, Vx=0, Vy=0, agg_func=np.average
-    ) -> List[Tuple[float]]:
+    ) -> List[Tuple]:
         """Calaculates the stress at a set of points within an element for given design actions
         and returns *(sigma_zz, tau_xz, tau_yz)*
 
@@ -2214,6 +2172,11 @@ class Section:
         :param float M11: Bending moment about the centroidal 11-axis
         :param float M22: Bending moment about the centroidal 22-axis
         :param float Mzz: Torsion moment about the centroidal zz-axis
+        :param agg_function: A function that aggregates the stresses if the point is shared by several elements.
+            If the point, pt, is shared by several elements (e.g. if it is a node or on an edge), the stress
+            (sigma_zz, tau_xz, tau_yz) are retrieved from each element and combined according to this function.
+            By default, `numpy.average` is used.
+        :type agg_function: function, optional
         :return: Resultant normal and shear stresses list[(sigma_zz, tau_xz, tau_yz)]
         :rtype: list[tuple(float, float, float)]
         """
@@ -2252,7 +2215,9 @@ class Section:
         for pt in pts:
             query_geom = asPoint(pt)
             tri_ids = [index_by_id[id(poly)] for poly in s_tree.query(query_geom) if poly.intersects(query_geom)]
-            if len(tri_ids)==1:
+            if len(tri_ids) ==0:
+                sig = None
+            elif len(tri_ids)==1:
                 tri = self.elements[tri_ids[0]]
                 sig = tri.local_element_stress(
                     p=pt,
