@@ -187,6 +187,11 @@ class Section:
         self.mesh_elements = elements
         self.mesh_attributes = attributes
 
+        # create the search tree
+        p_mesh = [Polygon(self.geometry.mesh["vertices"][tri][0:3]) for tri in self.geometry.mesh["triangles"]]
+        self.poly_mesh_idx = dict((id(poly), i) for i, poly in enumerate(p_mesh))
+        self.mesh_search_tree = STRtree(p_mesh)
+
         # initialise class storing section properties
         self.section_props = SectionProperties()
 
@@ -2207,14 +2212,9 @@ class Section:
             "nu": self.section_props.nu_eff,
         }
 
-        #create the search tree
-        p_mesh = [Polygon(self.geometry.mesh["vertices"][tri][0:3]) for tri in self.geometry.mesh["triangles"]]
-        s_tree = STRtree(p_mesh)
-        index_by_id = dict((id(poly), i) for i, poly in enumerate(p_mesh))
-
         for pt in pts:
             query_geom = asPoint(pt)
-            tri_ids = [index_by_id[id(poly)] for poly in s_tree.query(query_geom) if poly.intersects(query_geom)]
+            tri_ids = [self.poly_mesh_idx[id(poly)] for poly in self.mesh_search_tree.query(query_geom) if poly.intersects(query_geom)]
             if len(tri_ids) ==0:
                 sig = None
             elif len(tri_ids)==1:
