@@ -30,6 +30,7 @@ import sectionproperties.post.post as post
 from shapely.geometry import asPoint, Polygon
 from shapely.strtree import STRtree
 
+
 class Section:
     """Class for structural cross-sections.
 
@@ -188,7 +189,10 @@ class Section:
         self.mesh_attributes = attributes
 
         # create the search tree
-        p_mesh = [Polygon(self.geometry.mesh["vertices"][tri][0:3]) for tri in self.geometry.mesh["triangles"]]
+        p_mesh = [
+            Polygon(self.geometry.mesh["vertices"][tri][0:3])
+            for tri in self.geometry.mesh["triangles"]
+        ]
         self.poly_mesh_idx = dict((id(poly), i) for i, poly in enumerate(p_mesh))
         self.mesh_search_tree = STRtree(p_mesh)
 
@@ -2134,7 +2138,17 @@ class Section:
         )
 
     def get_stress_at_point(
-        self, pt: List[float], N=0, Mxx=0, Myy=0, M11=0, M22=0, Mzz=0, Vx=0, Vy=0, agg_func=np.average
+        self,
+        pt: List[float],
+        N=0,
+        Mxx=0,
+        Myy=0,
+        M11=0,
+        M22=0,
+        Mzz=0,
+        Vx=0,
+        Vy=0,
+        agg_func=np.average,
     ) -> Tuple[float]:
         """Calaculates the stress at a point within an element for given design actions
         and returns *(sigma_zz, tau_xz, tau_yz)*
@@ -2157,12 +2171,23 @@ class Section:
         :return: Resultant normal and shear stresses (sigma_zz, tau_xz, tau_yz)
         :rtype: tuple(float, float, float)
         """
-        sigs = self.get_stress_at_points([pt], N, Mxx, Myy, M11, M22, Mzz, Vx, Vy, agg_func)
+        sigs = self.get_stress_at_points(
+            [pt], N, Mxx, Myy, M11, M22, Mzz, Vx, Vy, agg_func
+        )
         return next(sigs)
 
-
     def get_stress_at_points(
-        self, pts: List[List[float]], N=0, Mxx=0, Myy=0, M11=0, M22=0, Mzz=0, Vx=0, Vy=0, agg_func=np.average
+        self,
+        pts: List[List[float]],
+        N=0,
+        Mxx=0,
+        Myy=0,
+        M11=0,
+        M22=0,
+        Mzz=0,
+        Vx=0,
+        Vy=0,
+        agg_func=np.average,
     ) -> List[Tuple]:
         """Calaculates the stress at a set of points within an element for given design actions
         and returns *(sigma_zz, tau_xz, tau_yz)*
@@ -2214,10 +2239,14 @@ class Section:
 
         for pt in pts:
             query_geom = asPoint(pt)
-            tri_ids = [self.poly_mesh_idx[id(poly)] for poly in self.mesh_search_tree.query(query_geom) if poly.intersects(query_geom)]
-            if len(tri_ids) ==0:
+            tri_ids = [
+                self.poly_mesh_idx[id(poly)]
+                for poly in self.mesh_search_tree.query(query_geom)
+                if poly.intersects(query_geom)
+            ]
+            if len(tri_ids) == 0:
                 sig = None
-            elif len(tri_ids)==1:
+            elif len(tri_ids) == 1:
                 tri = self.elements[tri_ids[0]]
                 sig = tri.local_element_stress(
                     p=pt,
@@ -2231,7 +2260,8 @@ class Section:
                 sigs = []
                 for idx in tri_ids:
                     tri = self.elements[idx]
-                    sigs.append(tri.local_element_stress(
+                    sigs.append(
+                        tri.local_element_stress(
                             p=pt,
                             **action,
                             **sect_prop,
@@ -2246,6 +2276,7 @@ class Section:
                     agg_func([sig[2] for sig in sigs]),
                 )
             yield sig
+
 
 class PlasticSection:
     """Class for the plastic analysis of cross-sections.
