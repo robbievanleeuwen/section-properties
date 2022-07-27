@@ -2169,7 +2169,9 @@ class Section:
             By default, `numpy.average` is used.
         :type agg_function: function, optional
         :return: Resultant normal and shear stresses (sigma_zz, tau_xz, tau_yz)
-        :rtype: tuple(float, float, float)
+        :return: Resultant normal and shear stresses list[(sigma_zz, tau_xz, tau_yz)]. If a point it not in the
+            section then None is returned.
+        :rtype: Union[Tuple[float, float, float], None]
         """
         sigs = self.get_stress_at_points(
             [pt], N, Mxx, Myy, M11, M22, Mzz, Vx, Vy, agg_func
@@ -2207,8 +2209,9 @@ class Section:
             (sigma_zz, tau_xz, tau_yz) are retrieved from each element and combined according to this function.
             By default, `numpy.average` is used.
         :type agg_function: function, optional
-        :return: Resultant normal and shear stresses list[(sigma_zz, tau_xz, tau_yz)]
-        :rtype: list[tuple(float, float, float)]
+        :return: Resultant normal and shear stresses list[(sigma_zz, tau_xz, tau_yz)]. If a point it not in the
+            section then None is returned for that element in the list.
+        :rtype: List[Union[Tuple[float, float, float], None]]
         """
 
         action = {
