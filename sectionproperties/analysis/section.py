@@ -27,9 +27,9 @@ import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
 
-from shapely.geometry import asPoint, Polygon
+from shapely.geometry import Polygon
 from shapely.strtree import STRtree
-
+from shapely.geometry import Point
 
 class Section:
     """Class for structural cross-sections.
@@ -2150,7 +2150,7 @@ class Section:
         Vy=0,
         agg_func=np.average,
     ) -> Tuple[float]:
-        """Calaculates the stress at a point within an element for given design actions
+        """Calculates the stress at a point within an element for given design actions
         and returns *(sigma_zz, tau_xz, tau_yz)*
 
         :param pt: The point. A list of the x and y coordinate
@@ -2168,7 +2168,6 @@ class Section:
             (sigma_zz, tau_xz, tau_yz) are retrieved from each element and combined according to this function.
             By default, `numpy.average` is used.
         :type agg_function: function, optional
-        :return: Resultant normal and shear stresses (sigma_zz, tau_xz, tau_yz)
         :return: Resultant normal and shear stresses list[(sigma_zz, tau_xz, tau_yz)]. If a point it not in the
             section then None is returned.
         :rtype: Union[Tuple[float, float, float], None]
@@ -2191,7 +2190,7 @@ class Section:
         Vy=0,
         agg_func=np.average,
     ) -> List[Tuple]:
-        """Calaculates the stress at a set of points within an element for given design actions
+        """Calculates the stress at a set of points within an element for given design actions
         and returns *(sigma_zz, tau_xz, tau_yz)*
 
         :param pts: The points. A list of several x and y coordinates
@@ -2241,7 +2240,7 @@ class Section:
         }
 
         for pt in pts:
-            query_geom = asPoint(pt)
+            query_geom = Point(pt)
             tri_ids = [
                 self.poly_mesh_idx[id(poly)]
                 for poly in self.mesh_search_tree.query(query_geom)
