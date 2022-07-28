@@ -1,7 +1,7 @@
 from typing import List
 import numpy as np
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from sectionproperties.pre.pre import Material
 
 
@@ -36,6 +36,25 @@ class Tri6:
     coords: np.ndarray
     node_ids: List[int]
     material: Material
+    # _M and _x0 are used for global coord to local coord mapping
+    _M: np.ndarray = field(init=False)
+    _x0: np.ndarray = field(init=False)
+
+    def __post_init__(self):
+        # Create a mapping from global elm to local elm (unit triangle)
+        # The result is used in the global to local mapping: (eta, xi) = _M(x_global-_x0), zeta = 1-eta-xi
+        (p0, p1, self._x0) = self.coords[:, 0:3].transpose()
+        # Shift the triangle so the x_3 vertex (global) is on the origin ((eta, xi, zeta) = (0,0,1))
+        # Aside: This is chosen to be consistent with the shape function definitions.
+        # At (0,0,1), N3=1, N1=N2=N4=...=0 (see Theoretical Background documentation)
+        # since (x, y) = (sum(N_i(eta,xi,zeta)*x_i),  sum(N_i(eta,xi,zeta)*y_i)
+        # then at (0,0,1): (x,y) = (x_3,y_3). ie: (x_3, y_3) => (0,0,1)
+        r0 = p0 - self._x0
+        r1 = p1 - self._x0
+        # Asseble the equations to solve for the transformation for the unit triangle
+        x = np.array([r0, r1]).transpose()
+        b = np.array([[1, 0], [0, 1]])
+        self._M = np.linalg.solve(x, b)
 
     def __repr__(self):
         rep = f"el_id: {self.el_id}\ncoords: {self.coords}\nnode_ids: {self.node_ids}\nmaterial: {self.material}"
@@ -536,6 +555,162 @@ class Tri6:
             gps[:, 0],
         )
 
+    def local_element_stress(
+        self,
+        p,
+        N,
+        Mxx,
+        Myy,
+        M11,
+        M22,
+        Mzz,
+        Vx,
+        Vy,
+        ea,
+        cx,
+        cy,
+        ixx,
+        iyy,
+        ixy,
+        i11,
+        i22,
+        phi,
+        j,
+        nu,
+        omega,
+        psi_shear,
+        phi_shear,
+        Delta_s,
+    ):
+        """Calculates the stress at a point `p` within the element resulting from a specified loading.
+
+        :param p: Point (x,y) in the global coordinate system that is within the element.
+        :type p: :class:`numpy.ndarray`
+        :param float N: Axial force
+        :param float Mxx: Bending moment about the centroidal xx-axis
+        :param float Myy: Bending moment about the centroidal yy-axis
+        :param float M11: Bending moment about the centroidal 11-axis
+        :param float M22: Bending moment about the centroidal 22-axis
+        :param float Mzz: Torsion moment about the centroidal zz-axis
+        :param float Vx: Shear force acting in the x-direction
+        :param float Vy: Shear force acting in the y-direction
+        :param float ea: Modulus weighted area
+        :param float cx: x position of the elastic centroid
+        :param float cy: y position of the elastic centroid
+        :param float ixx: Second moment of area about the centroidal x-axis
+        :param float iyy: Second moment of area about the centroidal y-axis
+        :param float ixy: Second moment of area about the centroidal xy-axis
+        :param float i11: Second moment of area about the principal 11-axis
+        :param float i22: Second moment of area about the principal 22-axis
+        :param float phi: Principal bending axis angle
+        :param float j: St. Venant torsion constant
+        :param float nu: Effective Poisson's ratio for the cross-section
+        :param omega: Values of the warping function at the element nodes
+        :type omega: :class:`numpy.ndarray`
+        :param psi_shear: Values of the psi shear function at the element nodes
+        :type psi_shear: :class:`numpy.ndarray`
+        :param phi_shear: Values of the phi shear function at the element nodes
+        :type phi_shear: :class:`numpy.ndarray`
+        :param float Delta_s: Cross-section shear factor
+        :return: Tuple containing stress values at point `p`
+            (:math:`\sigma_{zz,n}`, :math:`\sigma_{zz,mxx}`,
+            :math:`\sigma_{zz,myy}`, :math:`\sigma_{zz,m11}`,
+            :math:`\sigma_{zz,m22}`, :math:`\sigma_{zx,mzz}`,
+            :math:`\sigma_{zy,mzz}`, :math:`\sigma_{zx,vx}`,
+            :math:`\sigma_{zy,vx}`, :math:`\sigma_{zx,vy}`,
+            :math:`\sigma_{zy,vy}`)
+        :rtype: tuple(float, float, ...)
+        """
+
+        # get the elements nodal stress
+        (
+            sig_zz_n_el,
+            sig_zz_mxx_el,
+            sig_zz_myy_el,
+            sig_zz_m11_el,
+            sig_zz_m22_el,
+            sig_zx_mzz_el,
+            sig_zy_mzz_el,
+            sig_zx_vx_el,
+            sig_zy_vx_el,
+            sig_zx_vy_el,
+            sig_zy_vy_el,
+            weights,
+        ) = self.element_stress(
+            N,
+            Mxx,
+            Myy,
+            M11,
+            M22,
+            Mzz,
+            Vx,
+            Vy,
+            ea,
+            cx,
+            cy,
+            ixx,
+            iyy,
+            ixy,
+            i11,
+            i22,
+            phi,
+            j,
+            nu,
+            omega,
+            psi_shear,
+            phi_shear,
+            Delta_s,
+        )
+
+        # get the local coordinates of the point within the reference element
+        p_local = self.local_coord(p)
+        # get the value of the basis functions at p_local
+        N = shape_function_only(p_local)
+
+        # interpolate the nodal values to p_local and add the results
+        (
+            sig_zz_n_p,
+            sig_zz_mxx_p,
+            sig_zz_myy_p,
+            sig_zz_m11_p,
+            sig_zz_m22_p,
+            sig_zx_mzz_p,
+            sig_zy_mzz_p,
+            sig_zx_vx_p,
+            sig_zy_vx_p,
+            sig_zx_vy_p,
+            sig_zy_vy_p,
+        ) = np.dot(
+            np.array(
+                [
+                    sig_zz_n_el,
+                    sig_zz_mxx_el,
+                    sig_zz_myy_el,
+                    sig_zz_m11_el,
+                    sig_zz_m22_el,
+                    sig_zx_mzz_el,
+                    sig_zy_mzz_el,
+                    sig_zx_vx_el,
+                    sig_zy_vx_el,
+                    sig_zx_vy_el,
+                    sig_zy_vy_el,
+                ]
+            ),
+            N,
+        )
+        sig_zz_m_p = sig_zz_mxx_p + sig_zz_myy_p + sig_zz_m11_p + sig_zz_m22_p
+        sig_zx_v_p = sig_zx_vx_p + sig_zx_vy_p
+        sig_zy_v_p = sig_zy_vx_p + sig_zy_vy_p
+        sig_zy_p = sig_zy_mzz_p + sig_zy_v_p
+        sig_zz_p = sig_zz_n_p + sig_zz_m_p
+        sig_zx_p = sig_zx_mzz_p + sig_zx_v_p
+        sig_zy_p = sig_zy_mzz_p + sig_zy_v_p
+        return (
+            sig_zz_p,
+            sig_zx_p,
+            sig_zy_p,
+        )
+
     def point_within_element(self, pt):
         """Determines whether a point lies within the current element.
 
@@ -570,6 +745,19 @@ class Tri6:
             return True
         else:
             return False
+
+    def local_coord(self, p):
+        """Map a point `p` = (x, y) in the global coordinate system onto a
+        point (eta, xi, zeta) in the local coordinate system.
+
+        :param p: Global coordinate (x,y)
+        :type p: :class:`numpy.ndarray`
+        :return: Point in local coordinate (eta, xi, zeta)
+        :rtype: :class:`numpy.ndarray`
+        """
+        (eta, xi) = np.dot(self._M, p - self._x0)
+        zeta = 1 - eta - xi
+        return np.array([eta, xi, zeta])
 
 
 def gauss_points(n):
@@ -673,6 +861,30 @@ def shape_function(coords, gauss_point):
         B = np.zeros((2, 6))  # empty B matrix
 
     return (N, B, j)
+
+
+def shape_function_only(p):
+    """The values of the Tri6 shape function at a point `p`.
+
+    :param p: Point (eta, xi, zeta) in the local coordinate system.
+    :type p: :class:`numpy.ndarray`
+    :return: The shape function values at `p` [1 x 6].
+    :rtype: :class:`numpy.ndarray`
+    """
+    eta = p[0]
+    xi = p[1]
+    zeta = p[2]
+
+    return np.array(
+        [
+            eta * (2 * eta - 1),
+            xi * (2 * xi - 1),
+            zeta * (2 * zeta - 1),
+            4 * eta * xi,
+            4 * xi * zeta,
+            4 * eta * zeta,
+        ]
+    )
 
 
 def extrapolate_to_nodes(w):

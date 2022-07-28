@@ -1,4 +1,4 @@
-from typing import Union, Optional, Tuple
+from typing import List, Union, Optional, Tuple
 
 import copy
 from dataclasses import dataclass, asdict
@@ -26,6 +26,10 @@ import sectionproperties.pre.geometry as section_geometry
 import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
+
+from shapely.geometry import Polygon
+from shapely.strtree import STRtree
+from shapely.geometry import Point
 
 
 class Section:
@@ -184,6 +188,14 @@ class Section:
         self.mesh_nodes = nodes
         self.mesh_elements = elements
         self.mesh_attributes = attributes
+
+        # create the search tree
+        p_mesh = [
+            Polygon(self.geometry.mesh["vertices"][tri][0:3])
+            for tri in self.geometry.mesh["triangles"]
+        ]
+        self.poly_mesh_idx = dict((id(poly), i) for i, poly in enumerate(p_mesh))
+        self.mesh_search_tree = STRtree(p_mesh)
 
         # initialise class storing section properties
         self.section_props = SectionProperties()
@@ -2125,6 +2137,148 @@ class Section:
             self.section_props.sf_22_plus,
             self.section_props.sf_22_minus,
         )
+
+    def get_stress_at_point(
+        self,
+        pt: List[float],
+        N=0,
+        Mxx=0,
+        Myy=0,
+        M11=0,
+        M22=0,
+        Mzz=0,
+        Vx=0,
+        Vy=0,
+        agg_func=np.average,
+    ) -> Tuple[float]:
+        """Calculates the stress at a point within an element for given design actions
+        and returns *(sigma_zz, tau_xz, tau_yz)*
+
+        :param pt: The point. A list of the x and y coordinate
+        :type pt: list[float, float]
+        :param float N: Axial force
+        :param float Vx: Shear force acting in the x-direction
+        :param float Vy: Shear force acting in the y-direction
+        :param float Mxx: Bending moment about the centroidal xx-axis
+        :param float Myy: Bending moment about the centroidal yy-axis
+        :param float M11: Bending moment about the centroidal 11-axis
+        :param float M22: Bending moment about the centroidal 22-axis
+        :param float Mzz: Torsion moment about the centroidal zz-axis
+        :param agg_function: A function that aggregates the stresses if the point is shared by several elements.
+            If the point, pt, is shared by several elements (e.g. if it is a node or on an edge), the stress
+            (sigma_zz, tau_xz, tau_yz) are retrieved from each element and combined according to this function.
+            By default, `numpy.average` is used.
+        :type agg_function: function, optional
+        :return: Resultant normal and shear stresses list[(sigma_zz, tau_xz, tau_yz)]. If a point it not in the
+            section then None is returned.
+        :rtype: Union[Tuple[float, float, float], None]
+        """
+        sigs = self.get_stress_at_points(
+            [pt], N, Mxx, Myy, M11, M22, Mzz, Vx, Vy, agg_func
+        )
+        return next(sigs)
+
+    def get_stress_at_points(
+        self,
+        pts: List[List[float]],
+        N=0,
+        Mxx=0,
+        Myy=0,
+        M11=0,
+        M22=0,
+        Mzz=0,
+        Vx=0,
+        Vy=0,
+        agg_func=np.average,
+    ) -> List[Tuple]:
+        """Calculates the stress at a set of points within an element for given design actions
+        and returns *(sigma_zz, tau_xz, tau_yz)*
+
+        :param pts: The points. A list of several x and y coordinates
+        :type pts: list[list[float, float]]
+        :param float N: Axial force
+        :param float Vx: Shear force acting in the x-direction
+        :param float Vy: Shear force acting in the y-direction
+        :param float Mxx: Bending moment about the centroidal xx-axis
+        :param float Myy: Bending moment about the centroidal yy-axis
+        :param float M11: Bending moment about the centroidal 11-axis
+        :param float M22: Bending moment about the centroidal 22-axis
+        :param float Mzz: Torsion moment about the centroidal zz-axis
+        :param agg_function: A function that aggregates the stresses if the point is shared by several elements.
+            If the point, pt, is shared by several elements (e.g. if it is a node or on an edge), the stress
+            (sigma_zz, tau_xz, tau_yz) are retrieved from each element and combined according to this function.
+            By default, `numpy.average` is used.
+        :type agg_function: function, optional
+        :return: Resultant normal and shear stresses list[(sigma_zz, tau_xz, tau_yz)]. If a point it not in the
+            section then None is returned for that element in the list.
+        :rtype: List[Union[Tuple[float, float, float], None]]
+        """
+
+        action = {
+            "N": N,
+            "Mxx": Mxx,
+            "Myy": Myy,
+            "M11": M11,
+            "M22": M22,
+            "Mzz": Mzz,
+            "Vx": Vx,
+            "Vy": Vy,
+        }
+
+        sect_prop = {
+            "ea": self.section_props.ea,
+            "cx": self.section_props.cx,
+            "cy": self.section_props.cy,
+            "ixx": self.section_props.ixx_c,
+            "iyy": self.section_props.iyy_c,
+            "ixy": self.section_props.ixy_c,
+            "i11": self.section_props.i11_c,
+            "i22": self.section_props.i22_c,
+            "phi": self.section_props.phi,
+            "j": self.section_props.j,
+            "Delta_s": self.section_props.Delta_s,
+            "nu": self.section_props.nu_eff,
+        }
+
+        for pt in pts:
+            query_geom = Point(pt)
+            tri_ids = [
+                self.poly_mesh_idx[id(poly)]
+                for poly in self.mesh_search_tree.query(query_geom)
+                if poly.intersects(query_geom)
+            ]
+            if len(tri_ids) == 0:
+                sig = None
+            elif len(tri_ids) == 1:
+                tri = self.elements[tri_ids[0]]
+                sig = tri.local_element_stress(
+                    p=pt,
+                    **action,
+                    **sect_prop,
+                    omega=self.section_props.omega[tri.node_ids],
+                    psi_shear=self.section_props.psi_shear[tri.node_ids],
+                    phi_shear=self.section_props.phi_shear[tri.node_ids],
+                )
+            else:
+                sigs = []
+                for idx in tri_ids:
+                    tri = self.elements[idx]
+                    sigs.append(
+                        tri.local_element_stress(
+                            p=pt,
+                            **action,
+                            **sect_prop,
+                            omega=self.section_props.omega[tri.node_ids],
+                            psi_shear=self.section_props.psi_shear[tri.node_ids],
+                            phi_shear=self.section_props.phi_shear[tri.node_ids],
+                        )
+                    )
+                sig = (
+                    agg_func([sig[0] for sig in sigs]),
+                    agg_func([sig[1] for sig in sigs]),
+                    agg_func([sig[2] for sig in sigs]),
+                )
+            yield sig
 
 
 class PlasticSection:
