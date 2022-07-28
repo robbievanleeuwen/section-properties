@@ -31,6 +31,7 @@ from shapely.geometry import Polygon
 from shapely.strtree import STRtree
 from shapely.geometry import Point
 
+
 class Section:
     """Class for structural cross-sections.
 
