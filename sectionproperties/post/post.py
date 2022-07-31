@@ -7,9 +7,7 @@ from sectionproperties.pre.pre import DEFAULT_MATERIAL
 
 
 @contextlib.contextmanager
-def plotting_context(
-    ax=None, pause=True, title="", filename="", render=True, axis_index=None, **kwargs
-):
+def plotting_context(ax=None, pause=True, title="", filename="", render=True, axis_index=None, **kwargs):
     """Executes code required to set up a matplotlib figure.
 
     :param ax: Axes object on which to plot
@@ -49,9 +47,7 @@ def plotting_context(
         except (AttributeError, TypeError):
             pass  # only 1 axis, not an array
         except IndexError as exc:
-            raise ValueError(
-                f"axis_index={axis_index} is not compatible with arguments to subplots: {kwargs}"
-            ) from exc
+            raise ValueError(f"axis_index={axis_index} is not compatible with arguments to subplots: {kwargs}") from exc
     else:
         fig = ax.get_figure()
         ax_supplied = True
@@ -60,15 +56,15 @@ def plotting_context(
 
     yield fig, ax
 
+    # if no axes was supplied, finish the plot and return the figure and axes
+    plt.tight_layout()
+
     ax.set_aspect("equal", anchor="C")
     ax.set_title(title)
 
     if ax_supplied:
         # if an axis was supplied, don't continue with displaying or configuring the plot
         return
-
-    # if no axes was supplied, finish the plot and return the figure and axes
-    plt.tight_layout()
 
     if filename:
         fig.savefig(filename, dpi=fig.dpi)
