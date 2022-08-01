@@ -60,15 +60,14 @@ def plotting_context(
 
     yield fig, ax
 
-    ax.set_aspect("equal", anchor="C")
     ax.set_title(title)
+    plt.tight_layout()
+    ax.set_aspect("equal", anchor="C")
 
+    # if no axes was supplied, finish the plot and return the figure and axes
     if ax_supplied:
         # if an axis was supplied, don't continue with displaying or configuring the plot
         return
-
-    # if no axes was supplied, finish the plot and return the figure and axes
-    plt.tight_layout()
 
     if filename:
         fig.savefig(filename, dpi=fig.dpi)
