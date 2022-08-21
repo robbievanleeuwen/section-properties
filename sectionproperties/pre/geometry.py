@@ -493,17 +493,30 @@ class Geometry:
         :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
         """
         cx, cy = list(self.geom.centroid.coords)[0]
-        # Suggested by Agent 6-6-6: Hard-rounding of cx and cy allows
+        # Suggested by @Agent6-6-6: Hard-rounding of cx and cy allows
         # for greater precision in placing geometry with its centroid
         # near [0, 0]. True [0, 0] placement will not be possible due
         # to floating point errors.
         if align_to is None:
             shift_x, shift_y = round(-cx, self.tol), round(-cy, self.tol)
 
-        else:
+        elif isinstance(align_to, Geometry):
             align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
             shift_x = round(align_cx - cx, self.tol)
             shift_y = round(align_cy - cy, self.tol)
+
+        else:
+            try:
+                point_x, point_y = align_to
+                shift_x = round(point_x - cx, self.tol)
+                shift_y = round(point_y - cy, self.tol)
+            except (
+                TypeError,
+                ValueError,
+            ):  # align_to not subscriptable, incorrect length, etc.
+                raise ValueError(
+                    f"align_to must be either a Geometry object or an x, y coordinate, not {align_to}."
+                )
         new_geom = self.shift_section(x_offset=shift_x, y_offset=shift_y)
         return new_geom
 
@@ -1555,7 +1568,9 @@ class CompoundGeometry(Geometry):
         new_geom = CompoundGeometry(geoms_acc)
         return new_geom
 
-    def align_center(self, align_to: Optional[Geometry] = None):
+    def align_center(
+        self, align_to: Optional[Union[Geometry, List[float, float]]] = None
+    ):
         """
         Returns a new CompoundGeometry object, translated in both x and y, so that the
         center-point of the new object's material-weighted centroid will be aligned with
@@ -1567,8 +1582,8 @@ class CompoundGeometry(Geometry):
         of the compound geometry is calculated by using the E modulus of each
         geometry's assigned material.
 
-        :param align_to: Another Geometry to align to or None (default is None)
-        :type align_to: Optional[:class:`~sectionproperties.pre.geometry.Geometry`]
+        :param align_to: Another Geometry to align to, an xy coordinate, or None (default is None)
+        :type align_to: Optional[:class:`~sectionproperties.pre.geometry.Geometry`, List[float, float]]
 
         :return: Geometry object translated to new alignment
         :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
@@ -1597,10 +1612,21 @@ class CompoundGeometry(Geometry):
                 round(-weighted_cy, self.tol),
             )
 
-        else:
+        elif isinstance(Geometry):
             align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
             shift_x = round(align_cx - weighted_cx, self.tol)
             shift_y = round(align_cy - weighted_cy, self.tol)
+
+        else:
+            try:
+                point_x, point_y = align_to
+                shift_x = round(point_x - weighted_cx, self.tol)
+                shift_y = round(point_y - weighted_cy, self.tol)
+            except (TypeError, ValueError):
+                raise ValueError(
+                    f"align_to must be either a Geometry object or an x, y coordinate, not {align_to}."
+                )
+
         new_geom = self.shift_section(x_offset=shift_x, y_offset=shift_y)
         return new_geom
 

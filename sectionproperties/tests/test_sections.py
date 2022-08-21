@@ -532,3 +532,24 @@ def test_warping_disjoint_warning():
     sec.calculate_geometric_properties()
     with pytest.warns(UserWarning):
         sec.calculate_warping_properties()
+
+
+def test_align_center():
+    rect = rectangular_section(d=200, b=70)
+    circ = circular_section(d=200, n=30)
+    rect = rect.rotate_section(-45, rot_point=[0, 0])
+    rect_point = rect.points[1]
+    circ = circ.align_center(rect_point)
+    circ_x, circ_y = circ.calculate_centroid()
+    assert pytest.approx(circ_x) == 49.497474683057995
+    assert pytest.approx(circ_y) == -49.49747468305799
+
+    circ = circ.align_center()
+    circ_x, circ_y = circ.calculate_centroid()
+    assert pytest.approx(circ_x) == 0
+    assert pytest.approx(circ_y) == 0
+
+    circ = circ.align_center(rect)
+    circ_x, circ_y = circ.calculate_centroid()
+    assert pytest.approx(circ_x) == 95.45941546018399
+    assert pytest.approx(circ_y) == 45.961940777125974
