@@ -1043,8 +1043,8 @@ class Section:
             calc_plastic()
 
     def calculate_stress(self, N=0, Vx=0, Vy=0, Mxx=0, Myy=0, M11=0, M22=0, Mzz=0):
-        """Calculates the cross-section stress resulting from design actions and returns a
-        :class:`~sectionproperties.analysis.section.StressPost` object allowing
+        """Calculates the cross-section stress resulting from design actions and returns
+        a :class:`~sectionproperties.analysis.section.StressPost` object allowing
         post-processing of the stress results.
 
         :param float N: Axial force
@@ -1055,33 +1055,36 @@ class Section:
         :param float M11: Bending moment about the centroidal 11-axis
         :param float M22: Bending moment about the centroidal 22-axis
         :param float Mzz: Torsion moment about the centroidal zz-axis
+
         :return: Object for post-processing cross-section stresses
         :rtype: :class:`~sectionproperties.analysis.section.StressPost`
 
-        Note that a geometric and warping analysis must be performed before a stress analysis is
-        carried out::
+        Note that a geometric analysis must be performed prior to performing a stress
+        analysis. Further, if the shear force or torsion is non-zero a warping analysis
+        must also be performed::
 
             section = Section(geometry)
             section.calculate_geometric_properties()
             section.calculate_warping_properties()
             stress_post = section.calculate_stress(N=1e3, Vy=3e3, Mxx=1e6)
 
-        :raises RuntimeError: If a geometric and warping analysis have not been performed prior to
-            calling this method
+        :raises RuntimeError: If a geometric and warping analysis (if required) have not
+            been performed prior to calling this method
         """
 
         # check that a geometric and warping analysis has been performed
-        if (
-            None
-            in [
-                self.section_props.area,
-                self.section_props.ixx_c,
-                self.section_props.cx,
-                self.section_props.j,
-            ]
-            and self.section_props.omega is None
-        ):
-            err = "Perform a geometric and warping analysis before carrying out a stress analysis."
+        if None in [
+            self.section_props.area,
+            self.section_props.ixx_c,
+            self.section_props.cx,
+            self.section_props.j,
+        ]:
+            err = "Perform a geometric analysis before carrying out a stress analysis."
+            raise RuntimeError(err)
+
+        if self.section_props.omega is None and (Vx == 0 or Vy == 0 or Mzz == 0):
+            err = "Perform a warping analysis before carrying out a stress analysis "
+            err += "with non-zero shear forces or torsion moment."
             raise RuntimeError(err)
 
         def calc_stress(progress=None):
