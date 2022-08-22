@@ -4,9 +4,10 @@ shapely
 matplotlib>=3.4
 more_itertools
 triangle
-Sphinx
-sphinx-rtd-theme
-sphinx-gallery
 rich
 rhino-shapley-interop>=0.0.4
 cad_to_shapely>=0.3.1
+Sphinx>=5.0
+pydata_sphinx_theme
+sphinx-gallery
+sphinx_autodoc_typehints

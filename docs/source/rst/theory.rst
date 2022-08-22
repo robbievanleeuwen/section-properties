@@ -1,5 +1,5 @@
-Theoretical Background
-======================
+Theory
+======
 
 Introduction
 ------------

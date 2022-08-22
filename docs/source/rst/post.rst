@@ -1,7 +1,7 @@
 .. _label-post:
 
-Viewing the Results
-===================
+Results
+=======
 
 .. _label-print-properties:
 

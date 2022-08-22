@@ -1,5 +1,5 @@
-Structure of an Analysis
-========================
+Overview
+========
 
 The process of performing a cross-section analysis with ``sectionproperties`` can
 be broken down into three stages:

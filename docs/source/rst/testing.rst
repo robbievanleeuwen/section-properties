@@ -1,7 +1,7 @@
 .. _label-testing:
 
-Testing and Results Validation
-==============================
+Validation
+==========
 
 *sectionproperties* has a (slowly) growing suite of tests. The testing suite
 serves to verify functionality and find exceptions from edge cases, but

@@ -1,40 +1,28 @@
-from typing import Union, List
 from dataclasses import dataclass
+from typing import List, Tuple, Union
+
 import numpy as np
 import triangle
-
-
-class GeometryError(Exception):
-    """Exception raised when invalid geometry is found."""
-
-    pass
 
 
 @dataclass(eq=True, frozen=True)
 class Material:
     """Class for structural materials.
 
-    Provides a way of storing material properties related to a specific material. The color can be
-    a multitude of different formats, refer to https://matplotlib.org/api/colors_api.html and
+    Provides a way of storing material properties related to a specific material. The 
+    color can be a multitude of different formats, refer to
+    https://matplotlib.org/api/colors_api.html and
     https://matplotlib.org/examples/color/named_colors.html for more information.
 
-    :param string name: Material name
-    :param float elastic_modulus: Material modulus of elasticity
-    :param float poissons_ratio: Material Poisson's ratio
-    :param float yield_strength: Material yield strength
-    :param float density: Material density (mass per unit volume)
+    :param name: Material name
+    :param elastic_modulus: Material modulus of elasticity
+    :param poissons_ratio: Material Poisson's ratio
+    :param yield_strength: Material yield strength
+    :param density: Material density (mass per unit volume)
     :param color: Material color for rendering
-    :type color: :class:`matplotlib.colors`
 
-    :cvar string name: Material name
-    :cvar float elastic_modulus: Material modulus of elasticity
-    :cvar float poissons_ratio: Material Poisson's ratio
-    :cvar float shear_modulus: Material shear modulus, derived from the elastic modulus and
-        Poisson's ratio assuming an isotropic material
-    :cvar float density: Material density (mass per unit volume)
-    :cvar float yield_strength: Material yield strength
-    :cvar color: Material color for rendering
-    :vartype color: :class:`matplotlib.colors`
+    :cvar float shear_modulus: Material shear modulus, derived from the elastic modulus
+        and Poisson's ratio assuming an isotropic material
 
     The following example creates materials for concrete, steel and timber::
 
@@ -70,33 +58,30 @@ DEFAULT_MATERIAL = Material("default", 1, 0, 1, 1, "w")
 
 
 def create_mesh(
-    points: List[List[float]],
-    facets: List[List[float]],
-    holes: List[List[float]],
-    control_points: List[List[float]],
+    points: List[Tuple[float, float]],
+    facets: List[Tuple[float, float]],
+    holes: List[Tuple[float, float]],
+    control_points: List[Tuple[float, float]],
     mesh_sizes: Union[List[float], float],
     coarse: bool,
 ):
-    """Creates a quadratic triangular mesh using the triangle module, which utilises the code
-    'Triangle', by Jonathan Shewchuk.
+    """Creates a quadratic triangular mesh using the triangle module, which utilises the
+    code 'Triangle', by Jonathan Shewchuk.
 
-    :param points: List of points *(x, y)* defining the vertices of the cross-section
-    :type points: list[list[float, float]]
-    :param facets: List of point index pairs *(p1, p2)* defining the edges of the cross-section
-    :type points: list[list[int, int]]
-    :param holes: List of points *(x, y)* defining the locations of holes within the cross-section.
-        If there are no holes, provide an empty list [].
-    :type holes: list[list[float, float]]
-    :param control_points: A list of points *(x, y)* that define different regions of the
-        cross-section. A control point is an arbitrary point within a region enclosed by facets.
-    :type control_points: list[list[float, float]]
-    :param mesh_sizes: List of maximum element areas for each region defined by a control point
-    :type mesh_sizes: list[float]
-    :param bool coarse: If set to True, will create a coarse mesh (no area or quality
+    :param points: List of points ``x, y`` defining the vertices of the cross-section
+    :param facets: List of point index pairs ``p1, p2`` defining the edges of the
+        cross-section
+    :param holes: List of points ``x, y`` defining the locations of holes within the
+        cross-section. If there are no holes, provide an empty list [].
+    :param control_points: A list of points ``x, y`` that define different regions of
+        the cross-section. A control point is an arbitrary point within a region
+        enclosed by facets.
+    :param mesh_sizes: List of maximum element areas for each region defined by a
+        control point
+    :param coarse: If set to True, will create a coarse mesh (no area or quality
         constraints)
 
     :return: Dictionary containing mesh data
-    :rtype: dict()
     """
 
     if not isinstance(mesh_sizes, list):

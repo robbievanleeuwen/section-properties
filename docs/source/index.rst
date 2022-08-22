@@ -25,13 +25,10 @@ can be found in the README file on github.
    :caption: Contents:
 
    rst/installation
-   rst/structure
-   rst/geom_mesh
-   rst/section_library
-   rst/advanced_geom
+   rst/overview
+   rst/pre
    rst/analysis
    rst/post
-   sphinx_gallery_examples/index
    rst/api
    rst/theory
    rst/testing

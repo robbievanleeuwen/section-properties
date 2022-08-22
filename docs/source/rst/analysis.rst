@@ -1,7 +1,7 @@
 .. _label-analysis:
 
-Running an Analysis
-===================
+Analysis
+========
 
 The first step in running a section analysis is the creation of a
 :class:`~sectionproperties.analysis.section.Section` object. This class

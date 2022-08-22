@@ -1,24 +1,24 @@
 import pathlib
 from typing import List, Union
-from shapely.geometry.polygon import Polygon
+
 from rhino_shapely_interop.importers import RhImporter
+from shapely.geometry.polygon import Polygon
 
 
-def load_3dm(r3dm_filepath: Union[pathlib.Path, str], **kwargs) -> List[Polygon]:
-    """Load a Rhino `.3dm` file and import the single surface planer breps.
+def load_3dm(
+    r3dm_filepath: Union[pathlib.Path, str],
+     **kwargs,
+) -> List[Polygon]:
+    """Load a Rhino ``.3dm`` file and import the single surface planer breps.
 
-    :param r3dm_filepath:
-        File path to the rhino `.3dm` file.
-    :type r3dm_filepath: pathlib.Path or string
-    :param kwargs:
-        See below.
-    :raises RuntimeError:
-        A RuntimeError is raised if no polygons are found in the file.
-        This is dependent on the keyword arguments.
-        Try adjusting the keyword arguments if this error is raised.
-    :return:
-        List of Polygons found in the file.
-    :rtype: List[shapely.geometry.Polygon]
+    :param r3dm_filepath: File path to the rhino ``.3dm`` file.
+    :param kwargs: See below.
+
+    :raises RuntimeError: A RuntimeError is raised if no polygons are found in the file.
+        This is dependent on the keyword arguments. Try adjusting the keyword arguments
+        if this error is raised.
+
+    :return: List of Polygons found in the file.
 
     :Keyword Arguments:
         * *refine_num* (``int, optional``) --
@@ -47,32 +47,34 @@ def load_3dm(r3dm_filepath: Union[pathlib.Path, str], **kwargs) -> List[Polygon]
             If true, all non parallel surfaces are filtered out.
             Default is False.
     """
+
     rhi = RhImporter.from_file(str(r3dm_filepath))
     list_polygons = list(rhi.get_planer_brep(**kwargs))
+
     if len(list_polygons) == 0:
         raise RuntimeError(
             f"No shapely.Polygon objects found. "
             f"Consider adjusting the keyword arguments. "
             f"File name: {r3dm_filepath}. "
         )
+    
     return list_polygons
 
 
-def load_brep_encoding(brep: str, **kwargs) -> Polygon:
+def load_brep_encoding(
+    brep: str, 
+    **kwargs,
+) -> List[Polygon]:
     """Load an encoded single surface planer brep.
 
-    :param brep:
-        Rhino3dm.Brep encoded as a string.
-    :type brep: str
-    :param kwargs:
-        See below.
-    :raises RuntimeError:
-        A RuntimeError is raised if no polygons are found in the encoding.
-        This is dependent on the keyword arguments.
-        Try adjusting the keyword arguments if this error is raised.
-    :return:
-        The Polygons found in the encoding string.
-    :rtype: shapely.geometry.Polygon
+    :param brep: Rhino3dm.Brep encoded as a string.
+    :param kwargs: See below.
+
+    :raises RuntimeError: A RuntimeError is raised if no polygons are found in the
+        encoding. This is dependent on the keyword arguments. Try adjusting the keyword
+        arguments if this error is raised.
+
+    :return: The Polygons found in the encoding string.
 
     :Keyword Arguments:
         * *refine_num* (``int, optional``) --
@@ -101,8 +103,11 @@ def load_brep_encoding(brep: str, **kwargs) -> Polygon:
             If true, all non parallel surfaces are filtered out.
             Default is False.
     """
+
     rhi = RhImporter.from_serialzed_brep(brep)
     geom = list(rhi.get_planer_brep(**kwargs))
+
     if len(geom) == 0:
         raise RuntimeError(f"No shapely.Polygon objects found for encoded object")
+    
     return geom
