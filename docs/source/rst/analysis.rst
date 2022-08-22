@@ -71,8 +71,9 @@ A stress analysis calculates the section stresses arising from a set of forces
 and moments. Executing this method returns a :class:`~sectionproperties.analysis.section.StressResult`
 object which stores the section stresses and provides stress plotting functions.
 
-..  note:: A geometric and warping analysis must be performed on the Section
-  object before a stress analysis is carried out.
+..  note:: A geometric analysis must be performed on the Section object before a stress
+  analysis is carried out. Further, if the shear force or twisting moment is non-zero
+  a warping analysis must also be performed.
 
 ..  warning:: The stress analysis in *sectionproperties* is linear-elastic and does not
   account for the yielding of materials or any non-linearities.
