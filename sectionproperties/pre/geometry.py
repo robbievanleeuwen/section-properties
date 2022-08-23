@@ -479,7 +479,9 @@ class Geometry:
 
         return new_geom
 
-    def align_center(self, align_to: Optional[Union[Geometry, Tuple[float, float]]] = None):
+    def align_center(
+        self, align_to: Optional[Union[Geometry, Tuple[float, float]]] = None
+    ):
         """
         Returns a new Geometry object, translated in both x and y, so that the
         the new object's centroid will be aligned with the centroid of the object
@@ -1575,7 +1577,7 @@ class CompoundGeometry(Geometry):
         """
         Returns a new CompoundGeometry object, translated in both x and y, so that the
         center-point of the new object's material-weighted centroid will be aligned with
-        centroid of the object in 'align_to'. If 'align_to' is an x, y coordinate, then 
+        centroid of the object in 'align_to'. If 'align_to' is an x, y coordinate, then
         the centroid will be aligned to the coordinate. If 'align_to' is None then the new
         object will be aligned with its centroid at the origin.
 
