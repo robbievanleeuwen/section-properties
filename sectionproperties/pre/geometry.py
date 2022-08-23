@@ -1,6 +1,6 @@
 from __future__ import annotations
 from ntpath import join
-from typing import List, Optional, Union, Tuple, Any
+from typing import List, Optional, Union, Tuple, List, Any
 
 import copy
 import math
@@ -479,15 +479,16 @@ class Geometry:
 
         return new_geom
 
-    def align_center(self, align_to: Optional[Geometry] = None):
+    def align_center(self, align_to: Optional[Union[Geometry, Tuple[float, float]]] = None):
         """
         Returns a new Geometry object, translated in both x and y, so that the
-        center-point of the new object's centroid will be aligned with
-        centroid of the object in 'align_to'. If 'align_to' is None then the new
-        object will be aligned with it's centroid at the origin.
+        the new object's centroid will be aligned with the centroid of the object
+        in 'align_to'. If 'align_to' is an x, y coordinate, then the centroid will
+        be aligned to the coordinate. If 'align_to' is None then the new
+        object will be aligned with its centroid at the origin.
 
         :param align_to: Another Geometry to align to or None (default is None)
-        :type align_to: Optional[:class:`~sectionproperties.pre.geometry.Geometry`]
+        :type align_to: Optional[Union[:class:`~sectionproperties.pre.geometry.Geometry`, Tuple[float, float]]]
 
         :return: Geometry object translated to new alignment
         :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
@@ -1569,13 +1570,14 @@ class CompoundGeometry(Geometry):
         return new_geom
 
     def align_center(
-        self, align_to: Optional[Union[Geometry, List[float, float]]] = None
+        self, align_to: Optional[Union[Geometry, Tuple[float, float]]] = None
     ):
         """
         Returns a new CompoundGeometry object, translated in both x and y, so that the
         center-point of the new object's material-weighted centroid will be aligned with
-        centroid of the object in 'align_to'. If 'align_to' is None then the new
-        object will be aligned with it's centroid at the origin.
+        centroid of the object in 'align_to'. If 'align_to' is an x, y coordinate, then 
+        the centroid will be aligned to the coordinate. If 'align_to' is None then the new
+        object will be aligned with its centroid at the origin.
 
         Note: The material-weighted centroid refers to when individual geometries within
         the CompoundGeometry object have been assigned differing materials. The centroid
@@ -1583,7 +1585,7 @@ class CompoundGeometry(Geometry):
         geometry's assigned material.
 
         :param align_to: Another Geometry to align to, an xy coordinate, or None (default is None)
-        :type align_to: Optional[:class:`~sectionproperties.pre.geometry.Geometry`, List[float, float]]
+        :type align_to: Optional[Union[:class:`~sectionproperties.pre.geometry.Geometry`, Tuple[float, float]]]
 
         :return: Geometry object translated to new alignment
         :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
