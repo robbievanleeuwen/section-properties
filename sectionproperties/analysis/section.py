@@ -1077,12 +1077,11 @@ class Section:
             self.section_props.area,
             self.section_props.ixx_c,
             self.section_props.cx,
-            self.section_props.j,
         ]:
             err = "Perform a geometric analysis before carrying out a stress analysis."
             raise RuntimeError(err)
 
-        if self.section_props.omega is None and (Vx == 0 or Vy == 0 or Mzz == 0):
+        if self.section_props.omega is None and (Vx != 0 or Vy != 0 or Mzz != 0):
             err = "Perform a warping analysis before carrying out a stress analysis "
             err += "with non-zero shear forces or torsion moment."
             raise RuntimeError(err)
@@ -1118,6 +1117,16 @@ class Section:
 
                 # loop through all elements in the material group
                 for el in group.elements:
+                     # get element omega and psi
+                    if self.section_props.omega is None:
+                        omega_el = None
+                        psi_shear_el = None
+                        phi_shear_el = None
+                    else:
+                        omega_el = self.section_props.omega[el.node_ids]
+                        psi_shear_el = self.section_props.psi_shear[el.node_ids]
+                        phi_shear_el = self.section_props.phi_shear[el.node_ids]
+
                     (
                         sig_zz_n_el,
                         sig_zz_mxx_el,
@@ -1151,9 +1160,9 @@ class Section:
                         phi,
                         j,
                         nu,
-                        self.section_props.omega[el.node_ids],
-                        self.section_props.psi_shear[el.node_ids],
-                        self.section_props.phi_shear[el.node_ids],
+                        omega_el,
+                        psi_shear_el,
+                        phi_shear_el,
                         Delta_s,
                     )
 
@@ -2217,6 +2226,12 @@ class Section:
         :rtype: List[Union[Tuple[float, float, float], None]]
         """
 
+        # ensure warping analysis completed for shear and torsion
+        if self.section_props.omega is None and (Vx != 0 or Vy != 0 or Mzz != 0):
+            err = "Perform a warping analysis before carrying out a stress analysis "
+            err += "with non-zero shear forces or torsion moment."
+            raise RuntimeError(err)
+
         action = {
             "N": N,
             "Mxx": Mxx,
@@ -2254,26 +2269,46 @@ class Section:
                 sig = None
             elif len(tri_ids) == 1:
                 tri = self.elements[tri_ids[0]]
+
+                if self.section_props.omega is None:
+                    omega_el = None
+                    psi_shear_el = None
+                    phi_shear_el = None
+                else:
+                    omega_el = self.section_props.omega[tri.node_ids]
+                    psi_shear_el = self.section_props.psi_shear[tri.node_ids]
+                    phi_shear_el = self.section_props.phi_shear[tri.node_ids]
+                
                 sig = tri.local_element_stress(
                     p=pt,
                     **action,
                     **sect_prop,
-                    omega=self.section_props.omega[tri.node_ids],
-                    psi_shear=self.section_props.psi_shear[tri.node_ids],
-                    phi_shear=self.section_props.phi_shear[tri.node_ids],
+                    omega=omega_el,
+                    psi_shear=psi_shear_el,
+                    phi_shear=phi_shear_el,
                 )
             else:
                 sigs = []
                 for idx in tri_ids:
                     tri = self.elements[idx]
+
+                    if self.section_props.omega is None:
+                        omega_el = None
+                        psi_shear_el = None
+                        phi_shear_el = None
+                    else:
+                        omega_el = self.section_props.omega[tri.node_ids]
+                        psi_shear_el = self.section_props.psi_shear[tri.node_ids]
+                        phi_shear_el = self.section_props.phi_shear[tri.node_ids]
+
                     sigs.append(
                         tri.local_element_stress(
                             p=pt,
                             **action,
                             **sect_prop,
-                            omega=self.section_props.omega[tri.node_ids],
-                            psi_shear=self.section_props.psi_shear[tri.node_ids],
-                            phi_shear=self.section_props.phi_shear[tri.node_ids],
+                            omega=omega_el,
+                            psi_shear=psi_shear_el,
+                            phi_shear=phi_shear_el,
                         )
                     )
                 sig = (
