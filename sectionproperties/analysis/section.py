@@ -1117,7 +1117,7 @@ class Section:
 
                 # loop through all elements in the material group
                 for el in group.elements:
-                     # get element omega and psi
+                    # get element omega and psi
                     if self.section_props.omega is None:
                         omega_el = None
                         psi_shear_el = None
@@ -2278,7 +2278,7 @@ class Section:
                     omega_el = self.section_props.omega[tri.node_ids]
                     psi_shear_el = self.section_props.psi_shear[tri.node_ids]
                     phi_shear_el = self.section_props.phi_shear[tri.node_ids]
-                
+
                 sig = tri.local_element_stress(
                     p=pt,
                     **action,
