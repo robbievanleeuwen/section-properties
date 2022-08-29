@@ -19,12 +19,15 @@ def test_stress_runtime_errors():
     # check runtime errors with shear/torsion applied, no warping analysis
     with pytest.raises(RuntimeError):
         sec.calculate_stress(Vx=1)
+        sec.get_stress_at_points(pts=[[10, 10]], Vx=1)
 
     with pytest.raises(RuntimeError):
         sec.calculate_stress(Vy=1)
+        sec.get_stress_at_points(pts=[[10, 10]], Vy=1)
 
     with pytest.raises(RuntimeError):
         sec.calculate_stress(Mzz=1)
+        sec.get_stress_at_points(pts=[[10, 10]], Mzz=1)
 
     # check no runtime errors with no shear/torsion applied
     sec.calculate_stress(N=1)
@@ -44,3 +47,4 @@ def test_stress_runtime_errors():
     sec.calculate_stress(Vx=1)
     sec.calculate_stress(Vy=1)
     sec.calculate_stress(Mzz=1)
+    sec.get_stress_at_points(pts=[[10, 10]], Mzz=1)
