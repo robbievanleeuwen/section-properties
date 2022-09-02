@@ -1,6 +1,19 @@
 Changelog:
 ==========
 
+v2.1.3:
+-------
+
+- Retrieve cross-section stresses at any point using ``get_stress_at_point()`` or
+  ``get_stress_at_points()``, many thanks to `@normanrichardson <https://github.com/normanrichardson>`_
+- Fix plot legend formatting, thanks to `@Agent6-6-6 <https://github.com/Agent6-6-6>`_
+- Added ability for ``Geometry.align_center()`` and ``CompoundGeometry.align_center()``
+  to accept an ``x``, ``y`` coordinate as a valid input, thanks to `@connorferster <https://github.com/connorferster>`_
+- Only require a warping analysis to be performed for a stress analysis if the shear
+  force or twisting moment is non-zero.
+
+**Full changelog:** `2.1.2...2.1.3 <https://github.com/robbievanleeuwen/section-properties/compare/2.1.2...2.1.3>`_
+
 v2.1.2:
 -------
 
