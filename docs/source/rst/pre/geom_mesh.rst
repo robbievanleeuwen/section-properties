@@ -317,6 +317,22 @@ created, a finite element mesh can then be created for the geometry by using the
 ..  automethod:: sectionproperties.pre.geometry.Geometry.create_mesh
     :noindex:
 
+The following example creates a circular cross-section with a diameter of 50 with 64
+points, and generates a mesh with a maximum triangular area of 2.5:
+
+.. plot::
+   :include-source: True
+   :caption: Mesh generated from the above geometry.
+
+   import sectionproperties.pre.library.primitive_sections as primitive_sections
+   from sectionproperties.analysis.section import Section
+
+   geom = primitive_sections.circular_section(d=50, n=64)
+   geom.create_mesh(mesh_sizes=2.5)
+   
+   sec = Section(geometry=geom)
+   sec.plot_mesh(materials=False)
+
 ..  warning:: The length of ``mesh_sizes`` must match the number of regions
   in the geometry object.
 

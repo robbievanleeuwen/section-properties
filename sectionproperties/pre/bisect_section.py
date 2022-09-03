@@ -31,7 +31,7 @@ def create_line_segment(
         y_1 = scale_factor_1 * vector[1] + p_y
 
         return geom.LineString([(b_1, y_1), (b_2, y_2)])
-        
+
     else:  # Vertical line
         scale_factor_2 = (b_2 - p_y) / vector[1]
         x_2 = scale_factor_2 * vector[0] + p_x
@@ -158,7 +158,7 @@ def line_intersection(
         x = (b_2 - b_1) / (m_1 - m_2)
     except ZeroDivisionError:
         x = None
-    
+
     return x
 
 
@@ -177,5 +177,5 @@ def sum_poly_areas(
 
     for poly in lop:
         sum_acc += poly.area
-    
+
     return sum_acc

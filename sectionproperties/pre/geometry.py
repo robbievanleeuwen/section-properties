@@ -1,77 +1,76 @@
 from __future__ import annotations
-from ntpath import join
-from typing import List, Optional, Union, Tuple, List, Any
 
 import copy
 import math
 import pathlib
+from ntpath import join
+from typing import Any, List, Optional, Tuple, Union
+
 import more_itertools
 import numpy as np
+import sectionproperties.post.post as post
+import sectionproperties.pre.bisect_section as bisect
+import sectionproperties.pre.pre as pre
+import shapely
 from shapely.geometry import (
-    Polygon,
-    MultiPolygon,
-    LineString,
-    LinearRing,
-    Point,
-    box,
     GeometryCollection,
+    LinearRing,
+    LineString,
+    MultiPolygon,
+    Point,
+    Polygon,
+    box,
 )
 from shapely.ops import split, unary_union
-import shapely
-import matplotlib
-import matplotlib.pyplot as plt
-import sectionproperties.pre.pre as pre
-import sectionproperties.pre.bisect_section as bisect
-import sectionproperties.post.post as post
 
 
 class Geometry:
     """Class for defining the geometry of a contiguous section of a single material.
 
-    Provides an interface for the user to specify the geometry defining a section. A method
-    is provided for generating a triangular mesh, transforming the section (e.g. translation,
-    rotation, perimeter offset, mirroring), aligning the geometry to another geometry, and
-    designating stress recovery points.
-
-    :cvar geom: a Polygon object that defines the geometry
-    :vartype geom: :class:`shapely.geometry.Polygon`
-
-    :cvar material: Optional, a Material to associate with this geometry
-    :vartype material: Optional[:class:`~sectionproperties.pre.Material`]
-
-    :cvar control_point: Optional, an *(x, y)* coordinate within the geometry that
-        represents a pre-assigned control point (aka, a region identification point)
-        to be used instead of the automatically assigned control point generated
-        with :func:`shapely.geometry.Polygon.representative_point`.
-
-    :cvar tol: Optional, default is 12. Number of decimal places to round the geometry vertices
-        to. A lower value may reduce accuracy of geometry but increases precision when aligning
-        geometries to each other.
+    Provides an interface for the user to specify the geometry defining a section.
+    Methods are provided for generating a triangular mesh, transforming the section
+    (e.g. translation, rotation, perimeter offset, mirroring), aligning the geometry to
+    another geometry, and designating stress recovery points.
     """
 
     def __init__(
         self,
-        geom: shapely.geometry.Polygon,
+        geom: Polygon,
         material: pre.Material = pre.DEFAULT_MATERIAL,
-        control_points: Optional[List[float, float]] = None,
-        tol=12,
+        control_point: Optional[Tuple[float, float]] = None,
+        tol: int = 12,
     ):
-        """Inits the Geometry class."""
+        """Inits the Geometry class.
+
+        :param geom: A Polygon object that defines the geometry
+        :param material: The material to associate with this geometry, default is the
+            ``DEFAULT`` material with unit material properties
+        :param control_point: An (``x``, ``y``) coordinate within the geometry that
+            represents a pre-assigned control point (aka, a region identification point)
+            to be used instead of the automatically assigned control point generated
+            with :func:`shapely.geometry.Polygon.representative_point`.
+        :param tol: Number of decimal places to round the geometry vertices to. A lower
+            value may reduce accuracy of geometry but increases precision when aligning
+            geometries to each other.
+        """
+
         if isinstance(geom, MultiPolygon):
-            raise ValueError(f"Use CompoundGeometry(...) for a MultiPolygon object.")
+            raise ValueError("Use CompoundGeometry for a MultiPolygon object.")
+
         if not isinstance(geom, Polygon):
             raise ValueError(
                 f"Argument is not a valid shapely.geometry.Polygon object: {repr(geom)}"
             )
+
         self.assigned_control_point = None
-        if control_points is not None and len(control_points) == 2:
-            self.assigned_control_point = Point(control_points)
-        self.tol = (
-            tol  # Represents num of decimal places of precision for point locations
-        )
-        self.geom = round_polygon_vertices(geom, self.tol)
+
+        if control_point is not None and len(control_point) == 2:
+            self.assigned_control_point = Point(control_point)
+
+        self.tol = tol  # num of decimal places of precision for point locations
+        self.geom = round_polygon_vertices(poly=geom, tol=self.tol)
         self.material = pre.DEFAULT_MATERIAL if material is None else material
-        self.control_points = []
+        self.control_points: List[Tuple[float, float]] = []
         self.shift = []
         self.points = []
         self.facets = []
@@ -81,83 +80,101 @@ class Geometry:
 
         self.compile_geometry()
 
-    def _repr_svg_(self):
+    def _repr_svg_(
+        self,
+    ):
+        """Returns a representative svg of the shapely geometry."""
+
         print("sectionproperties.pre.geometry.Geometry")
         print(f"object at: {hex(id(self))}")
         print(f"Material: {self.material.name}")
+
         return self.geom._repr_svg_()
 
-    def assign_control_point(self, control_point: List[float, float]):
+    def assign_control_point(
+        self,
+        control_point: Tuple[float, float],
+    ) -> Geometry:
         """
-        Returns a new Geometry object with 'control_point' assigned as the control point for the
-        new Geometry. The assignment of a control point is intended to replace the control point
-        automatically generated by shapely.geometry.Polygon.representative_point().
+        Returns a new Geometry object with ``control_point`` assigned as the control
+        point for the new Geometry. The assignment of a control point is intended to
+        replace the control point automatically generated by
+        :meth:`shapely.geometry.Polygon.representative_point()`.
 
-        An assigned control point is carried through and transformed with the Geometry whenever
-        it is shifted, aligned, mirrored, unioned, and/or rotated. If a perimeter_offset operation is applied,
-        a check is performed to see if the assigned control point is still valid (within the new region)
-        and, if so, it is kept. If not, a new control point is auto-generated.
+        An assigned control point is carried through and transformed with the Geometry
+        whenever it is shifted, aligned, mirrored, unioned, and/or rotated. If a
+        ``perimeter_offset()`` operation is applied, a check is performed to see if the
+        assigned control point is still valid (within the new region) and, if so, it is
+        kept. If not, a new control point is auto-generated.
 
-        The same check is performed when the geometry undergoes a difference operation (with the '-'
-        operator) or a shift_points operation. If the assigned control point is valid, it is kept. If not,
-        a new one is auto-generated.
+        The same check is performed when the geometry undergoes a difference operation
+        (with the ``-`` operator) or a ``shift_points()`` operation. If the assigned
+        control point is valid, it is kept. If not, a new one is auto-generated.
 
-        For all other operations (e.g. symmetric difference, intersection, split, ), the assigned control point
-        is discarded and a new one auto-generated.
+        For all other operations (e.g. symmetric difference, intersection, split), the
+        assigned control point is discarded and a new one auto-generated.
 
-        :cvar control_points: An *(x, y)* coordinate that describes the distinct, contiguous,
-            region of a single material within the geometry.
-            Exactly one point is required for each geometry with a distinct material.
-        :vartype control_point: list[float, float]
+        :param control_points: An (``x``, ``y``) coordinate that describes the distinct,
+            contiguous, region of a single material within the geometry. Exactly one
+            point is required for each geometry with a distinct material.
 
+        :return: New geometry object
         """
-        return Geometry(self.geom, self.material, control_point)
+
+        return Geometry(
+            geom=self.geom,
+            material=self.material,
+            control_point=control_point,
+            tol=self.tol,
+        )
 
     @staticmethod
     def from_points(
-        points: List[List[float]],
-        facets: List[List[int]],
-        control_points: List[List[float]],
-        holes: Optional[List[List[float]]] = None,
-        material: Optional[pre.Material] = pre.DEFAULT_MATERIAL,
-    ):
-        """
-        An interface for the creation of Geometry objects through the definition of points,
-        facets, and holes.
+        points: List[Tuple[float, float]],
+        facets: List[Tuple[int, int]],
+        control_point: List[Tuple[float, float]],
+        holes: Optional[List[Tuple[float, float]]] = None,
+        material: pre.Material = pre.DEFAULT_MATERIAL,
+    ) -> Geometry:
+        """An interface for the creation of Geometry objects through the definition of
+        points, facets, and holes.
 
-        :cvar points: List of points *(x, y)* defining the vertices of the section geometry.
-            If facets are not provided, it is a assumed the that the list of points are ordered
-            around the perimeter, either clockwise or anti-clockwise.
-        :vartype points: list[list[float, float]]
-        :cvar facets: A list of *(start, end)* indexes of vertices defining the edges
-            of the section geoemtry. Can be used to define both external and internal perimeters of holes.
-            Facets are assumed to be described in the order of exterior perimeter, interior perimeter 1,
-            interior perimeter 2, etc.
-        :vartype facets: list[list[int, int]]
-        :cvar control_points: An *(x, y)* coordinate that describes the distinct, contiguous,
-            region of a single material within the geometry. Must be entered as a list of coordinates,
-            e.g. [[0.5, 3.2]]
-            Exactly one point is required for each geometry with a distinct material.
-            If there are multiple distinct regions, then use CompoundGeometry.from_points()
-        :vartype control_point: list[float, float]
-        :cvar holes: Optional. A list of points *(x, y)* that define interior regions as
-            being holes or voids. The point can be located anywhere within the hole region.
-            Only one point is required per hole region.
-        :vartype holes: list[list[float, float]]
-        :cvar material: Optional. A :class:`~sectionproperties.pre.pre.Material` object
-            that is to be assigned. If not given, then the
+        :param points: List of points (``x``, ``y``) defining the vertices of the
+            section geometry. If any empty list of facets is provided, it is a assumed
+            that the list of points are ordered around the perimeter, either clockwise
+            or anti-clockwise.
+        :param facets: A list of (``start``, ``end``) indices of vertices defining the
+            edges of the section geoemtry. Can be used to define both external and
+            internal perimeters of holes. Facets are assumed to be described in the
+            order of exterior perimeter, interior perimeter 1, interior perimeter 2,
+            etc.
+        :param control_point: An (``x``, ``y``) coordinate that describes the distinct,
+            contiguous, region of a single material within the geometry. Must be entered
+            as a list of coordinates, e.g. [(0.5, 3.2)]. Exactly one point is required
+            for each geometry with a distinct material. If there are multiple distinct
+            regions, then use
+            :meth:`sectionproperties.pre.geometry.CompoundGeometry.from_points()`
+        :param holes: A list of points (``x``, ``y``) that define interior regions as
+            being holes or voids. The point can be located anywhere within the hole
+            region. Only one point is required per hole region.
+        :param material: A :class:`~sectionproperties.pre.pre.Material` object that is
+            to be assigned. If not given, then the
             :class:`~sectionproperties.pre.pre.DEFAULT_MATERIAL` will be used.
-        :vartype materials: :class:`~sectionproperties.pre.pre.Material`
+
+        :return: Geometry object
         """
-        if len(control_points) != 1:
-            raise ValueError(
-                "Control points for Geometry instances must have exactly "
-                "one x, y coordinate and entered as a list of list of float, e.g. [[0.1, 3.4]]."
-                "CompoundGeometry.from_points() can accept multiple control points\n"
-                f"Control points received: {control_points}"
-            )
+
+        if len(control_point) != 1:
+            msg = "Control points for Geometry instances must have exactly "
+            msg += "one x, y coordinate and entered as a list of list of float, "
+            msg += "e.g. [(0.1, 3.4)]. CompoundGeometry.from_points() can accept "
+            msg += "multiple control points\n"
+            msg += f"Control points received: {control_point}"
+            raise ValueError(msg)
+
         if holes is None:
             holes = []
+
         prev_facet = []
 
         # Initialize the total number of accumulators needed
@@ -169,6 +186,7 @@ class Geometry:
 
         for facet in facets:  # Loop through facets for graph connectivity
             i_idx, _ = facet
+
             if not prev_facet:  # Add the first facet vertex to exterior and move on
                 active_list.append(points[i_idx])
                 prev_facet = facet
@@ -177,32 +195,30 @@ class Geometry:
             # Look at the last j_idx to test for a break in the chain of edges
             prev_j_idx = prev_facet[1]
 
-            if (
-                i_idx != prev_j_idx and holes
-            ):  # If there is a break in the chain of edges...
-                if (
-                    active_list == exterior
-                ):  # ...and we are still accumulating on the exterior...
-                    active_list = interiors[
-                        interior_counter
-                    ]  # ... then move to the interior accumulator
-                else:  # ...or if we are already in the interior accumulator...
-                    interior_counter += (
-                        1  # ...then start the next interior accumulator for a new hole.
-                    )
+            # If there is a break in the chain of edges...
+            if i_idx != prev_j_idx and holes:
+                # ...and we are still accumulating on the exterior...
+                if active_list == exterior:
+                    # ... then move to the interior accumulator
+                    active_list = interiors[interior_counter]
+                # ...or if we are already in the interior accumulator...
+                else:
+                    # ...then start the next interior accumulator for a new hole.
+                    interior_counter += 1
                     active_list = interiors[interior_counter]
                 active_list.append(points[i_idx])
             else:
-                active_list.append(
-                    points[i_idx]
-                )  # Only need i_idx b/c shapely auto-closes polygons
+                # Only need i_idx b/c shapely auto-closes polygons
+                active_list.append(points[i_idx])
             prev_facet = facet
 
         exterior_geometry = Polygon(exterior)
         interior_polys = [Polygon(interior) for interior in interiors]
         interior_geometry = MultiPolygon(interior_polys)
         geometry = Geometry(
-            exterior_geometry - interior_geometry, material, control_points
+            geom=exterior_geometry - interior_geometry,  # type: ignore
+            material=material,
+            control_point=control_point[0],
         )
         return geometry
 
@@ -210,181 +226,179 @@ class Geometry:
     def from_dxf(
         dxf_filepath: Union[str, pathlib.Path],
     ) -> Union[Geometry, CompoundGeometry]:
-        """
-        An interface for the creation of Geometry objects from CAD .dxf files.
+        """An interface for the creation of Geometry objects from CAD .dxf files.
 
-        :cvar dxf_filepath: A path-like object for the dxf file
-        :vartype dxf_filepath: Union[str, pathlib.Path]
+        :param dxf_filepath: A path-like object for the dxf file
+
+        :return: Geometry or CompoundGeometry object
         """
+
         return load_dxf(dxf_filepath)
 
     @classmethod
-    def from_3dm(cls, filepath: Union[str, pathlib.Path], **kwargs) -> Geometry:
-        """Class method to create a `Geometry` from the objects in a Rhino `.3dm` file.
+    def from_3dm(
+        cls,
+        filepath: Union[str, pathlib.Path],
+        **kwargs,
+    ) -> Geometry:
+        """Class method to create a Geometry from the objects in a Rhino ``.3dm`` file.
 
-        :param filepath:
-            File path to the rhino `.3dm` file.
-        :type filepath: Union[str, pathlib.Path]
-        :param kwargs:
-            See below.
-        :raises RuntimeError:
-            A RuntimeError is raised if two or more polygons are found.
-            This is dependent on the keyword arguments.
-            Try adjusting the keyword arguments if this error is raised.
-        :return:
-            A Geometry object.
-        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
+        :param filepath: File path to the rhino `.3dm` file.
+        :param kwargs: Keyword arguments, see below
+        :param refine_num:  Bézier curve interpolation number. In Rhino a surface's
+            edges are nurb based curves. Shapely does not support nurbs, so the
+            individual Bézier curves are interpolated using straight lines. This
+            parameter sets the number of straight lines used in the interpolation.
+            Default is 1.
+        :type refine_num: Optional[int]
+        :param vec1: A 3d vector in the Shapely plane. Rhino is a 3D geometry
+            environment. Shapely is a 2D geometric library. Thus a 2D plane needs to be
+            defined in Rhino that represents the Shapely coordinate system. ``vec1``
+            represents the 1st vector of this plane. It will be used as Shapely's x
+            direction. Default is [1,0,0].
+        :type vec1: Optional[:class:`np.ndarray`]
+        :param vec2: Continuing from ``vec1``, ``vec2`` is another vector to define the
+            Shapely plane. It must not be [0,0,0] and it's only requirement is that it
+            is any vector in the Shapely plane (but not equal to ``vec1``). Default is
+            [0,1,0].
+        :type vec2: Optional[:class:`np.ndarray`]
+        :param plane_distance: The distance to the Shapely plane. Default is 0.
+        :type plane_distance: Optional[float]
+        :param project: Controls if the breps are projected onto the plane in the
+            direction of the Shapley plane's normal. Default is True.
+        :type project: Optional[bool]
+        :param parallel: Controls if only the rhino surfaces that have the same normal
+            as the Shapely plane are yielded. If true, all non parallel surfaces are
+            filtered out. Default is False.
+        :type project: Optional[bool]
 
-        :Keyword Arguments:
-            * *refine_num* (``int, optional``) --
-                Bézier curve interpolation number. In Rhino a surface's edges are nurb based curves.
-                Shapely does not support nurbs, so the individual Bézier curves are interpolated using straight lines.
-                This parameter sets the number of straight lines used in the interpolation.
-                Default is 1.
-            * *vec1* (``numpy.ndarray, optional``) --
-                A 3d vector in the Shapely plane. Rhino is a 3D geometry environment.
-                Shapely is a 2D geometric library.
-                Thus a 2D plane needs to be defined in Rhino that represents the Shapely coordinate system.
-                `vec1` represents the 1st vector of this plane. It will be used as Shapely's x direction.
-                Default is [1,0,0].
-            * *vec2* (``numpy.ndarray, optional``) --
-                Continuing from `vec1`, `vec2` is another vector to define the Shapely plane.
-                It must not be [0,0,0] and it's only requirement is that it is any vector in the Shapely plane (but not equal to `vec1`).
-                Default is [0,1,0].
-            * *plane_distance* (``float, optional``) --
-                The distance to the Shapely plane.
-                Default is 0.
-            * *project* (``boolean, optional``) --
-                Controls if the breps are projected onto the plane in the direction of the Shapley plane's normal.
-                Default is True.
-            * *parallel* (``boolean, optional``) --
-                Controls if only the rhino surfaces that have the same normal as the Shapely plane are yielded.
-                If true, all non parallel surfaces are filtered out.
-                Default is False.
+        :raises RuntimeError: A RuntimeError is raised if two or more polygons are
+            found. This is dependent on the keyword arguments. Try adjusting the keyword
+            arguments if this error is raised.
+
+        :return: Geometry object.
         """
+
         try:
-            import sectionproperties.pre.rhino as rhino_importer  # type: ignore
+            import sectionproperties.pre.rhino as rhino_importer
         except ImportError as e:
             print(e)
-            print(
-                "There is something wrong with your rhino library installation. "
-                "Please report this error at https://github.com/robbievanleeuwen/section-properties/issues"
-            )
-            return
+            msg = "There is something wrong with your rhino library installation. "
+            msg += "Please report this error at "
+            msg += "https://github.com/robbievanleeuwen/section-properties/issues"
+            raise ImportError(msg)
 
         geom = None
         list_poly = rhino_importer.load_3dm(filepath, **kwargs)
+
         if len(list_poly) == 1:
             geom = cls(geom=list_poly[0])
         else:
-            raise RuntimeError(
-                f"Multiple surfaces extracted from the file. "
-                f"Either use CompoundGeometry or extract individual surfaces manually via pre.rhino."
-            )
+            msg = "Multiple surfaces extracted from the file. Either use "
+            msg += "CompoundGeometry or extract individual surfaces manually via "
+            msg += "pre.rhino."
+            raise RuntimeError(msg)
         return geom
 
     @classmethod
-    def from_rhino_encoding(cls, r3dm_brep: str, **kwargs) -> Geometry:
+    def from_rhino_encoding(
+        cls,
+        r3dm_brep: str,
+        **kwargs,
+    ) -> Geometry:
         """Load an encoded single surface planer brep.
 
-        :param r3dm_brep:
-            A Rhino3dm.Brep encoded as a string.
-        :type r3dm_brep: str
-        :param kwargs:
-            See below.
-        :return:
-            A Geometry object found in the encoded string.
-        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
+        :param r3dm_brep: A Rhino3dm.Brep encoded as a string.
+        :param kwargs: Keyword arguments, see below
+        :param refine_num:  Bézier curve interpolation number. In Rhino a surface's
+            edges are nurb based curves. Shapely does not support nurbs, so the
+            individual Bézier curves are interpolated using straight lines. This
+            parameter sets the number of straight lines used in the interpolation.
+            Default is 1.
+        :type refine_num: Optional[int]
+        :param vec1: A 3d vector in the Shapely plane. Rhino is a 3D geometry
+            environment. Shapely is a 2D geometric library. Thus a 2D plane needs to be
+            defined in Rhino that represents the Shapely coordinate system. ``vec1``
+            represents the 1st vector of this plane. It will be used as Shapely's x
+            direction. Default is [1,0,0].
+        :type vec1: Optional[:class:`np.ndarray`]
+        :param vec2: Continuing from ``vec1``, ``vec2`` is another vector to define the
+            Shapely plane. It must not be [0,0,0] and it's only requirement is that it
+            is any vector in the Shapely plane (but not equal to ``vec1``). Default is
+            [0,1,0].
+        :type vec2: Optional[:class:`np.ndarray`]
+        :param plane_distance: The distance to the Shapely plane. Default is 0.
+        :type plane_distance: Optional[float]
+        :param project: Controls if the breps are projected onto the plane in the
+            direction of the Shapley plane's normal. Default is True.
+        :type project: Optional[bool]
+        :param parallel: Controls if only the rhino surfaces that have the same normal
+            as the Shapely plane are yielded. If true, all non parallel surfaces are
+            filtered out. Default is False.
+        :type project: Optional[bool]
 
-        :Keyword Arguments:
-            * *refine_num* (``int, optional``) --
-                Bézier curve interpolation number. In Rhino a surface's edges are nurb based curves.
-                Shapely does not support nurbs, so the individual Bézier curves are interpolated using straight lines.
-                This parameter sets the number of straight lines used in the interpolation.
-                Default is 1.
-            * *vec1* (``numpy.ndarray, optional``) --
-                A 3d vector in the Shapely plane. Rhino is a 3D geometry environment.
-                Shapely is a 2D geometric library.
-                Thus a 2D plane needs to be defined in Rhino that represents the Shapely coordinate system.
-                `vec1` represents the 1st vector of this plane. It will be used as Shapely's x direction.
-                Default is [1,0,0].
-            * *vec2* (``numpy.ndarray, optional``) --
-                Continuing from `vec1`, `vec2` is another vector to define the Shapely plane.
-                It must not be [0,0,0] and it's only requirement is that it is any vector in the Shapely plane (but not equal to `vec1`).
-                Default is [0,1,0].
-            * *plane_distance* (``float, optional``) --
-                The distance to the Shapely plane.
-                Default is 0.
-            * *project* (``boolean, optional``) --
-                Controls if the breps are projected onto the plane in the direction of the Shapley plane's normal.
-                Default is True.
-            * *parallel* (``boolean, optional``) --
-                Controls if only the rhino surfaces that have the same normal as the Shapely plane are yielded.
-                If true, all non parallel surfaces are filtered out.
-                Default is False.
+        :return: A Geometry object found in the encoded string.
         """
         try:
             import sectionproperties.pre.rhino as rhino_importer  # type: ignore
         except ImportError as e:
             print(e)
-            print(
-                "There is something wrong with your rhino library installation. "
-                "Please report this error at https://github.com/robbievanleeuwen/section-properties/issues"
-            )
-            return
+            msg = "There is something wrong with your rhino library installation. "
+            msg += "Please report this error at "
+            msg += "https://github.com/robbievanleeuwen/section-properties/issues"
+            raise ImportError(msg)
+
         return cls(geom=rhino_importer.load_brep_encoding(r3dm_brep, **kwargs)[0])
 
-    def create_facets_and_control_points(self):
+    def create_facets_and_control_points(
+        self,
+    ):
+        """Generates the points, facets, control points, holes and perimeter from the
+        shapely geometry.
+        """
+
         self.perimeter = None
-        self.perimeter = list(range(len(self.geom.exterior.coords)))
+        self.perimeter = list(range(len(self.geom.exterior.coords)))  # type: ignore
         self.holes = []
         self.points = []
         self.facets = []
+
         self.points, self.facets = create_points_and_facets(self.geom, self.tol)
+
         if not self.assigned_control_point:
-            self.control_points = tuple(self.geom.representative_point().coords)
+            self.control_points = list(self.geom.representative_point().coords)
         else:
-            self.control_points = tuple(self.assigned_control_point.coords)
+            self.control_points = list(self.assigned_control_point.coords)
 
         for hole in self.geom.interiors:
             hole_polygon = Polygon(hole)
             self.holes += tuple(hole_polygon.representative_point().coords)
-        return
 
-    def compile_geometry(self):  # Alias
-        """
-        Alters attributes .points, .facets, .holes, .control_points to represent
+    def compile_geometry(
+        self,
+    ):  # Alias
+        """Alters attributes .points, .facets, .holes, .control_points to represent
         the data in the shapely geometry.
         """
+
         self.create_facets_and_control_points()
 
-    def create_mesh(self, mesh_sizes: Union[float, List[float]], coarse: bool = False):
+    def create_mesh(
+        self,
+        mesh_sizes: Union[float, List[float]],
+        coarse: bool = False,
+    ) -> Geometry:
         """Creates a quadratic triangular mesh from the Geometry object.
 
         :param mesh_sizes: A float describing the maximum mesh element area to be used
             within the Geometry-object finite-element mesh.
-        :type mesh_sizes: Union[float, List[float]]
         :param bool coarse: If set to True, will create a coarse mesh (no area or
             quality constraints)
 
         :return: Geometry-object with mesh data stored in .mesh attribute. Returned
             Geometry-object is self, not a new instance.
-        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
-
-        The following example creates a circular cross-section with a diameter of 50 with 64
-        points, and generates a mesh with a maximum triangular area of 2.5::
-
-            import sectionproperties.pre.library.primitive_sections as primitive_sections
-
-            geometry = primitive_sections.circular_section(d=50, n=64)
-            geometry = geometry.create_mesh(mesh_sizes=2.5)
-
-        ..  figure:: ../images/sections/circle_mesh.png
-            :align: center
-            :scale: 75 %
-
-            Mesh generated from the above geometry.
         """
+
         if isinstance(mesh_sizes, (list, tuple)) and len(mesh_sizes) == 1:
             mesh_size = mesh_sizes[0]
         elif isinstance(mesh_sizes, (float, int)):
@@ -394,8 +408,14 @@ class Geometry:
                 "Argument 'mesh_sizes' for a Geometry must be either "
                 f"a float, or a list of float with length of 1, not {mesh_sizes}."
             )
+
         self.mesh = pre.create_mesh(
-            self.points, self.facets, self.holes, self.control_points, mesh_size, coarse
+            points=self.points,
+            facets=self.facets,
+            holes=self.holes,
+            control_points=self.control_points,
+            mesh_sizes=mesh_size,
+            coarse=coarse,
         )
         return self
 
@@ -1835,7 +1855,9 @@ class CompoundGeometry(Geometry):
 ### Helper functions for Geometry
 
 
-def load_dxf(dxf_filepath: pathlib.Path):
+def load_dxf(
+    dxf_filepath: Union[str, pathlib.Path],
+) -> Union[Geometry, CompoundGeometry]:
     """
     Import any-old-shape in dxf format for analysis.
     Code by aegis1980 and connorferster
@@ -1865,7 +1887,7 @@ def load_dxf(dxf_filepath: pathlib.Path):
     elif isinstance(new_polygons, Polygon):
         return Geometry(new_polygons)
     else:
-        print(f"No shapely.Polygon objects found in file: {dxf_filepath}")
+        raise RuntimeError(f"No shapely.Polygon objects found in file: {dxf_filepath}")
 
 
 def create_facets(

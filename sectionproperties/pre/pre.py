@@ -9,7 +9,7 @@ import triangle
 class Material:
     """Class for structural materials.
 
-    Provides a way of storing material properties related to a specific material. The 
+    Provides a way of storing material properties related to a specific material. The
     color can be a multitude of different formats, refer to
     https://matplotlib.org/api/colors_api.html and
     https://matplotlib.org/examples/color/named_colors.html for more information.
@@ -29,16 +29,28 @@ class Material:
         from sectionproperties.pre.pre import Material
 
         concrete = Material(
-            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, density=2.4e-6,
-                yield_strength=32, color='lightgrey'
+            name='Concrete',
+            elastic_modulus=30.1e3,
+            poissons_ratio=0.2,
+            density=2.4e-6,
+            yield_strength=32,
+            color='lightgrey',
         )
         steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
-                yield_strength=500, color='grey'
+            name='Steel',
+            elastic_modulus=200e3,
+            poissons_ratio=0.3,
+            density=7.85e-6,
+            yield_strength=500,
+            color='grey',
         )
         timber = Material(
-            name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, density=6.5e-7,
-                yield_strength=20, color='burlywood'
+            name='Timber',
+            elastic_modulus=8e3,
+            poissons_ratio=0.35,
+            density=6.5e-7,
+            yield_strength=20,
+            color='burlywood',
         )
     """
 
@@ -68,13 +80,14 @@ def create_mesh(
     """Creates a quadratic triangular mesh using the triangle module, which utilises the
     code 'Triangle', by Jonathan Shewchuk.
 
-    :param points: List of points ``x, y`` defining the vertices of the cross-section
-    :param facets: List of point index pairs ``p1, p2`` defining the edges of the
+    :param points: List of points (``x``, ``y``) defining the vertices of the
         cross-section
-    :param holes: List of points ``x, y`` defining the locations of holes within the
-        cross-section. If there are no holes, provide an empty list [].
-    :param control_points: A list of points ``x, y`` that define different regions of
-        the cross-section. A control point is an arbitrary point within a region
+    :param facets: List of point index pairs (``p1``, ``p2``) defining the edges of the
+        cross-section
+    :param holes: List of points (``x``, ``y``) defining the locations of holes within
+        the cross-section. If there are no holes, provide an empty list [].
+    :param control_points: A list of points (``x``, ``y``) that define different regions
+        of the cross-section. A control point is an arbitrary point within a region
         enclosed by facets.
     :param mesh_sizes: List of maximum element areas for each region defined by a
         control point
