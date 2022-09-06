@@ -129,6 +129,115 @@ def concrete_rectangular_section(
     return geom
 
 
+def concrete_column_section(
+    b: float, 
+    d: float, 
+    bar_diam: float,
+    bar_area: float,
+    cover: float,
+    n_bars_b: int,
+    n_bars_d: int,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    filled: bool = False,
+    n_circle: int = 4,
+) -> geometry.CompoundGeometry:
+    """Constructs a concrete rectangular section of width *b* and depth *d*, with
+    steel bar reinforcing organized as an *n_bars_b* by *n_bars_d* array, discretised 
+    with *n_circle* points with equal side and top/bottom
+    *cover* to the steel.
+
+    :param float b: Concrete section width
+    :param float d: Concrete section depth
+    :param float dia_top: Diameter of the top steel reinforcing bars
+    :param int n_top: Number of top steel reinforcing bars
+    :param float dia_bot: Diameter of the bottom steel reinforcing bars
+    :param int n_bot: Number of bottom steel reinforcing bars
+    :param int n_circle: Number of points discretising the steel reinforcing bars
+    :param float cover: Side and bottom cover to the steel reinforcing bars
+    :param float area_top: If provided, constructs top reinforcing bars based on their
+        area rather than diameter (prevents the underestimation of steel area due to
+        circle discretisation)
+    :param float area_bot: If provided, constructs bottom reinforcing bars based on
+        their area rather than diameter (prevents the underestimation of steel area due
+        to circle discretisation)
+    :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to
+        associate with the concrete
+    :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to
+        associate with the steel
+
+    :raises ValueErorr: If the number of bars is not greater than or equal to 2 in an
+        active layer
+
+    The following example creates a 600D x 300W concrete beam with 3N20 bottom steel
+    reinforcing bars and 30 mm cover::
+
+        from sectionproperties.pre.library.concrete_sections import concrete_rectangular_section
+        from sectionproperties.pre.pre import Material
+
+        concrete = Material(
+            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
+            density=2.4e-6, color='lightgrey'
+        )
+        steel = Material(
+            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
+            density=7.85e-6, color='grey'
+        )
+
+        geometry = concrete_rectangular_section(
+            b=300, d=600, dia_top=20, n_top=0, dia_bot=20, n_bot=3, n_circle=24, cover=30,
+            conc_mat=concrete, steel_mat=steel
+        )
+        geometry.create_mesh(mesh_sizes=[500])
+
+    ..  figure:: ../images/sections/concrete_rectangular_section_geometry.png
+        :align: center
+        :scale: 50 %
+
+        Concrete rectangular section geometry.
+
+    ..  figure:: ../images/sections/concrete_rectangular_section_mesh.png
+        :align: center
+        :scale: 50 %
+
+        Mesh generated from the above geometry.
+    """
+    concrete_geometry = primitive_sections.rectangular_section(b, d, material=conc_mat)
+    bar_extents = concrete_geometry.offset_perimeter(-cover - bar_diam/2).calculate_extents()
+    bar_x_min, bar_x_max, bar_y_min, bar_y_max = bar_extents
+    
+    b_edge_bars_x = np.linspace(bar_x_min, bar_x_max, n_bars_b)
+    d_edge_bars_y = np.linspace(bar_y_min, bar_y_max, n_bars_d)
+    
+    if not filled:
+        b_edge_bars_y1 = [bar_y_min] * n_bars_b
+        b_edge_bars_y2 = [bar_y_max] * n_bars_b
+
+
+        d_edge_bars_x1 = [bar_x_min] * n_bars_d
+        d_edge_bars_x2 = [bar_x_max] * n_bars_d
+
+        b_edge_bars_top = list(zip(b_edge_bars_x, b_edge_bars_y2))
+        b_edge_bars_bottom = list(zip(b_edge_bars_x, b_edge_bars_y1))
+        d_edge_bars_right = list(zip(d_edge_bars_x2, d_edge_bars_y))
+        d_edge_bars_left = list(zip(d_edge_bars_x1, d_edge_bars_y))
+
+        all_bar_coords = list(set(b_edge_bars_top + b_edge_bars_bottom + d_edge_bars_right + d_edge_bars_left))
+    if filled:
+        xy = np.meshgrid(b_edge_bars_x, d_edge_bars_y)
+        all_bar_coords = np.append(xy[0].reshape(-1,1),xy[1].reshape(-1,1),axis=1)
+        
+    for bar_coord in all_bar_coords:
+        concrete_geometry = add_bar(
+            concrete_geometry, 
+            area=bar_area, 
+            material=steel_mat, 
+            x=bar_coord[0], 
+            y=bar_coord[1], 
+            n=n_circle
+        )
+
+
 def concrete_tee_section(
     b: float,
     d: float,
