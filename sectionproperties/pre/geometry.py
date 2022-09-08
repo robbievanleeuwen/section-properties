@@ -6,21 +6,15 @@ import pathlib
 from ntpath import join
 from typing import Any, List, Optional, Tuple, Union
 
+import matplotlib
 import more_itertools
 import numpy as np
 import sectionproperties.post.post as post
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.pre.pre as pre
 import shapely
-from shapely.geometry import (
-    GeometryCollection,
-    LinearRing,
-    LineString,
-    MultiPolygon,
-    Point,
-    Polygon,
-    box,
-)
+from shapely.geometry import (GeometryCollection, LinearRing, LineString, MultiPolygon,
+                              Point, Polygon, box)
 from shapely.ops import split, unary_union
 
 
@@ -426,28 +420,24 @@ class Geometry:
         inner: bool = False,
     ) -> Geometry:
         """
-        Returns a new Geometry object, representing 'self' translated so that is aligned
-        'on' one of the outer bounding box edges of 'other'.
+        Returns a new Geometry object, representing ``self`` translated so that is
+        aligned ``on`` one of the outer bounding box edges of ``other``.
 
-        If 'other' is a tuple representing an *(x,y)* coordinate, then the new
-        Geometry object will represent 'self' translated so that it is aligned
-        'on' that side of the point.
+        If ``other`` is a tuple representing an (``x``,``y``) coordinate, then the new
+        ``Geometry`` object will represent ``self`` translated so that it is aligned
+        ``on`` that side of the point.
 
-        :param other: Either another Geometry or a tuple representing an
-            *(x,y)* coordinate point that 'self' should align to.
-        :type other: Union[:class:`~sectionproperties.pre.geometry.Geometry`, Tuple[float, float]]
-
-        :param on: A str of either "left", "right", "bottom", or "top" indicating which
-            side of 'other' that self should be aligned to.
-
-        :param inner: Default False. If True, align 'self' to 'other' in such a way that
-            'self' is aligned to the "inside" of 'other'. In other words, align 'self' to
-            'other' on the specified edge so they overlap.
-        :type inner: bool
+        :param other: Either another Geometry or a tuple representing an (``x``,``y``)
+            coordinate point that ``self`` should align to.
+        :param on: A string of either ``"left"``, ``"right"``, ``"bottom"``, or
+            ``"top"`` indicating which side of ``other`` that self should be aligned to.
+        :param inner: If True, align ``self`` to ``other`` in such a way that ``self``
+            is aligned to the ``"inside"`` of ``other``. In other words, align ``self``
+            to ``other`` on the specified edge so they overlap.
 
         :return: Geometry object translated to alignment location
-        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
         """
+
         # Mappings are for indexes in the list of bbox extents of both
         # 'self' and 'align_to'. i.e. a mapping of which "word" corresponds
         # to which bounding box coordinate
@@ -474,6 +464,7 @@ class Geometry:
 
         self_align_idx = align_self_map[on]
         align_to_geometry = isinstance(other, (Geometry, CompoundGeometry))
+
         if align_to_geometry:
             align_to_idx = other_as_geom_map[on]
         else:
@@ -481,41 +472,45 @@ class Geometry:
 
         self_extents = self.calculate_extents()  # min x, max x, min y, max y
         self_align_coord = self_extents[self_align_idx]
+
         if inner:
             self_align_coord = self_extents[align_to_idx]
         if align_to_geometry:
             other_extents = other.calculate_extents()
         else:
             other_extents = other
+
         align_to_coord = other_extents[align_to_idx]
 
         offset = align_to_coord - self_align_coord
-        # offset = align_to_coord - self_align_coord
+
         arg = "x_offset"
+
         if on in ["top", "bottom"]:
             arg = "y_offset"
+
         kwargs = {arg: offset}
         new_geom = self.shift_section(**kwargs)
 
         return new_geom
 
     def align_center(
-        self, align_to: Optional[Union[Geometry, Tuple[float, float]]] = None
-    ):
-        """
-        Returns a new Geometry object, translated in both x and y, so that the
-        the new object's centroid will be aligned with the centroid of the object
-        in 'align_to'. If 'align_to' is an x, y coordinate, then the centroid will
-        be aligned to the coordinate. If 'align_to' is None then the new
+        self,
+        align_to: Optional[Union[Geometry, Tuple[float, float]]] = None,
+    ) -> Geometry:
+        """Returns a new Geometry object, translated in both ``x`` and ``y``, so that
+        the new object's centroid will be aligned with the centroid of the object in
+        ``align_to``. If ``align_to`` is an ``x``, ``y`` coordinate, then the centroid
+        will be aligned to the coordinate. If ``align_to`` is ``None` then the new
         object will be aligned with its centroid at the origin.
 
-        :param align_to: Another Geometry to align to or None (default is None)
-        :type align_to: Optional[Union[:class:`~sectionproperties.pre.geometry.Geometry`, Tuple[float, float]]]
+        :param align_to: Another Geometry to align to or ``None``
 
         :return: Geometry object translated to new alignment
-        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
         """
+
         cx, cy = list(self.geom.centroid.coords)[0]
+
         # Suggested by @Agent6-6-6: Hard-rounding of cx and cy allows
         # for greater precision in placing geometry with its centroid
         # near [0, 0]. True [0, 0] placement will not be possible due
@@ -541,35 +536,36 @@ class Geometry:
                     f"align_to must be either a Geometry object or an x, y coordinate, not {align_to}."
                 )
         new_geom = self.shift_section(x_offset=shift_x, y_offset=shift_y)
+
         return new_geom
 
     def shift_section(
         self,
-        x_offset=0.0,
-        y_offset=0.0,
-    ):
-        """
-        Returns a new Geometry object translated by 'x_offset' and 'y_offset'.
+        x_offset: float = 0.0,
+        y_offset: float = 0.0,
+    ) -> Geometry:
+        """Returns a new Geometry object translated by ``x_offset`` and ``y_offset``.
 
         :param x_offset: Distance in x-direction by which to shift the geometry.
-        :type x_offset: float
         :param y_offset: Distance in y-direction by which to shift the geometry.
-        :type y_offset: float
 
-        :return: New Geometry-object shifted by 'x_offset' and 'y_offset'
-        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
+        :return: New Geometry-object shifted by ``x_offset`` and ``y_offset``
         """
+
         # Move assigned control point
         new_ctrl_point = None
+
         if self.assigned_control_point:
-            new_ctrl_point = shapely.affinity.translate(
+            new_ctrl_point = shapely.affinity.translate(  # type: ignore
                 self.assigned_control_point, x_offset, y_offset
             ).coords[0]
+
         new_geom = Geometry(
-            shapely.affinity.translate(self.geom, x_offset, y_offset),
+            shapely.affinity.translate(self.geom, x_offset, y_offset),  # type: ignore
             self.material,
             new_ctrl_point,
         )
+
         return new_geom
 
     def rotate_section(
@@ -577,129 +573,118 @@ class Geometry:
         angle: float,
         rot_point: Union[List[float], str] = "center",
         use_radians: bool = False,
-    ):
-        """Rotates the geometry and specified angle about a point. If the rotation point is not
-        provided, rotates the section about the center of the geometry's bounding box.
+    ) -> Geometry:
+        """Rotates the geometry and specified angle about a point. If the rotation point
+        is not provided, rotates the section about the center of the geometry's bounding
+        box.
 
-        :param float angle: Angle (degrees by default) by which to rotate the section. A positive angle leads
-            to a counter-clockwise rotation.
-        :param rot_point: Optional. Point *(x, y)* about which to rotate the section. If not provided, will rotate
-            about the center of the geometry's bounding box. Default = 'center'.
-        :type rot_point: list[float, float]
-        :param use_radians: Boolean to indicate whether 'angle' is in degrees or radians. If True, 'angle' is interpreted as radians.
+        :param angle: Angle (degrees by default) by which to rotate the section. A
+            positive angle leads to a counter-clockwise rotation.
+        :param rot_point: Point (``x``, ``y``) about which to rotate the section. If not
+            provided, will rotate about the center of the geometry's bounding box.
+        :param use_radians: Boolean to indicate whether ``angle`` is in degrees or
+            radians. If True, ``angle`` is interpreted as radians.
 
         :return: New Geometry-object rotated by 'angle' about 'rot_point'
-        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
-
-        The following example rotates a 200UB25 section clockwise by 30 degrees::
-
-            import sectionproperties.pre.library.steel_sections as steel_sections
-
-            geometry = steel_sections.i_section(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
-            new_geometry = geometry.rotate_section(angle=-30)
         """
+
         new_ctrl_point = None
+
         if self.assigned_control_point:
             rotate_point = rot_point
             if rot_point == "center":
                 rotate_point = box(*self.geom.bounds).centroid
-            new_ctrl_point = shapely.affinity.rotate(
+            new_ctrl_point = shapely.affinity.rotate(  # type: ignore
                 self.assigned_control_point, angle, rotate_point, use_radians
             ).coords[0]
+
         new_geom = Geometry(
-            shapely.affinity.rotate(self.geom, angle, rot_point, use_radians),
+            shapely.affinity.rotate(self.geom, angle, rot_point, use_radians),  # type: ignore
             self.material,
             new_ctrl_point,
         )
+
         return new_geom
 
     def mirror_section(
-        self, axis: str = "x", mirror_point: Union[List[float], str] = "center"
+        self,
+        axis: str = "x",
+        mirror_point: Union[Tuple[float, float], str] = "center",
     ):
-        """Mirrors the geometry about a point on either the x or y-axis.
+        """Mirrors the geometry about a point on either the x-axis or y-axis.
 
-        :param string axis: Axis about which to mirror the geometry, *'x'* or *'y'*
-        :param mirror_point: Point about which to mirror the geometry *(x, y)*.
-            If no point is provided, mirrors the geometry about the centroid of the shape's bounding box.
-            Default = 'center'.
-        :type mirror_point: Union[list[float, float], str]
+        :param axis: Axis about which to mirror the geometry, ``"x"`` or ``"y"``
+        :param mirror_point: Point about which to mirror the geometry (``x, ``y``). If
+            no point is provided, mirrors the geometry about the centroid of the shape's
+            bounding box.
 
-        :return: New Geometry-object mirrored on 'axis' about 'mirror_point'
-        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
-
-        The following example mirrors a 200PFC section about the y-axis and the point (0, 0)::
-
-            import sectionproperties.pre.library.steel_sections as steel_sections
-
-            geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-            new_geometry = geometry.mirror_section(axis='y', mirror_point=[0, 0])
+        :return: New Geometry-object mirrored on ``axis`` about ``mirror_point``
         """
+
         x_mirror = 1
         y_mirror = 1
+
         if mirror_point != "center":
             x, y = mirror_point
-            mirror_point = (x, y, 0)
+            m_pt = (x, y, 0)
+        else:
+            m_pt = mirror_point
+
         if axis == "x":
             x_mirror = -x_mirror
         elif axis == "y":
             y_mirror = -y_mirror
-        mirrored_geom = shapely.affinity.scale(
-            self.geom, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=mirror_point
+
+        mirrored_geom = shapely.affinity.scale(  # type: ignore
+            self.geom, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=m_pt
         )
 
         new_ctrl_point = None
+
         if self.assigned_control_point:
-            new_ctrl_point = shapely.affinity.scale(
+            new_ctrl_point = shapely.affinity.scale(  # type: ignore
                 self.assigned_control_point,
                 xfact=y_mirror,
                 yfact=x_mirror,
                 zfact=1.0,
                 origin=mirror_point,
             ).coords[0]
+
         new_geom = Geometry(mirrored_geom, self.material, new_ctrl_point)
+
         return new_geom
 
     def split_section(
         self,
         point_i: Tuple[float, float],
         point_j: Optional[Tuple[float, float]] = None,
-        vector: Union[Optional[Tuple[float, float]], np.ndarray] = None,
+        vector: Optional[Union[Tuple[float, float], np.ndarray]] = None,
     ) -> Tuple[List[Geometry], List[Geometry]]:
         """Splits, or bisects, the geometry about a line, as defined by two points
-        on the line or by one point on the line and a vector. Either ``point_j`` or ``vector``
-        must be given. If ``point_j`` is given, ``vector`` is ignored.
+        on the line or by one point on the line and a vector. Either ``point_j`` or
+        ``vector`` must be given. If ``point_j`` is given, ``vector`` is ignored.
 
-        Returns a tuple of two lists each containing new Geometry instances representing the
-        "top" and "bottom" portions, respectively, of the bisected geometry.
+        Returns a tuple of two lists each containing new Geometry instances representing
+        the ``"top"`` and ``"bottom"`` portions, respectively, of the bisected geometry.
 
-        If the line is a vertical line then the "right" and "left" portions, respectively, are
-        returned.
+        If the line is a vertical line then the ``"right"`` and ``"left"`` portions,
+        respectively, are returned.
 
-        :param point_i: A tuple of *(x, y)* coordinates to define a first point on the line
-        :type point_i: Tuple[float, float]
+        :param point_i: A tuple of (``x``, ``y``) coordinates to define a first point on
+            the line
+        :param point_j: A tuple of (``x``, ``y``) coordinates to define a second point
+            on the line
+        :param vector: A tuple or numpy ndarray of (``x``, ``y``) components to define
+            the line direction.
 
-        :param point_j: Optional. A tuple of *(x, y)* coordinates to define a second point on the line
-        :type point_j: Tuple[float, float]
-
-        :param vector: Optional. A tuple or numpy ndarray of *(x, y)* components to define the line direction.
-        :type vector: Union[Tuple[float, float], numpy.ndarray]
-
-        :return: A tuple of lists containing Geometry objects that are bisected about the
-            line defined by the two given points. The first item in the tuple represents
-            the geometries on the "top" of the line (or to the "right" of the line, if vertical) and
-            the second item represents the geometries to the "bottom" of the line (or
-            to the "left" of the line, if vertical).
-
-        :rtype: Tuple[List[Geometry], List[Geometry]]
-
-        The following example splits a 200PFC section about the y-axis::
-
-            import sectionproperties.pre.library.steel_sections as steel_sections
-            from shapely.geometry import LineString
-
-            geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-            right_geom, left_geom = geometry.split_section((0, 0), (0, 1))
+        :return: A tuple of lists containing Geometry objects that are bisected about
+            the line defined by the two given points. The first item in the tuple
+            represents the geometries on the ``"top"`` of the line (or to the
+            ``"right"`` of the line, if vertical) and the second item represents the
+            geometries to the ``"bottom"`` of the line (or to the ``"left"`` of the
+            line, if vertical).
         """
+
         if point_j:
             vector = np.array(
                 [
@@ -713,8 +698,9 @@ class Geometry:
             raise ValueError(
                 "Either a second point or a vector must be given to define the line."
             )
+
         bounds = self.calculate_extents()
-        line_segment = bisect.create_line_segment(point_i, vector, bounds)
+        line_segment = bisect.create_line_segment(point_i, vector, bounds)  # type: ignore
         top_right_polys, bottom_left_polys = bisect.group_top_and_bottom_polys(
             split(self.geom, line_segment), line_segment
         )
@@ -728,37 +714,31 @@ class Geometry:
         return (top_right_geoms, bottom_left_geoms)
 
     def offset_perimeter(
-        self, amount: float = 0, where: str = "exterior", resolution: float = 12
-    ):
+        self,
+        amount: float = 0,
+        where: str = "exterior",
+        resolution: int = 12,
+    ) -> Union[Geometry, CompoundGeometry]:
         """Dilates or erodes the section perimeter by a discrete amount.
 
-        :param amount: Distance to offset the section by. A -ve value "erodes" the section.
-            A +ve value "dilates" the section.
-        :type amount: float
-        :param where: One of either "exterior", "interior", or "all" to specify which edges of the
-            geometry to offset. If geometry has no interiors, then this parameter has no effect.
-            Default is "exterior".
-        :type where: str
-        :param resolution: Number of segments used to approximate a quarter circle around a point
-        :type resolution: float
+        :param amount: Distance to offset the section by. A negative value "erodes" the
+            section. A positive value "dilates" the section.
+        :param where: One of either ``"exterior"``, ``"interior"``, or ``"all"`` to
+            specify which edges of the geometry to offset. If geometry has no interiors,
+            then this parameter has no effect.
+        :param resolution: Number of segments used to approximate a quarter circle
+            around a point
 
         :return: Geometry object translated to new alignment
-        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
-
-        The following example erodes a 200PFC section by 2 mm::
-
-            import sectionproperties.pre.library.steel_sections as steel_sections
-
-            geometry = sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
-            new_geometry = geometry.offset_perimeter(amount=-2)
         """
+
         if self.geom.interiors and where == "interior":
-            exterior_polygon = Polygon(self.geom.exterior)
+            exterior_polygon: Polygon = Polygon(self.geom.exterior)
             for interior in self.geom.interiors:
                 buffered_interior = buffer_polygon(
                     Polygon(interior), amount, resolution
                 )
-                exterior_polygon = exterior_polygon - buffered_interior
+                exterior_polygon = exterior_polygon - buffered_interior  # type: ignore
             if isinstance(exterior_polygon, MultiPolygon):
                 return CompoundGeometry(
                     [Geometry(poly, self.material) for poly in exterior_polygon]
@@ -778,10 +758,13 @@ class Geometry:
 
         elif where == "exterior":
             exterior_polygon = Polygon(self.geom.exterior)
-            buffered_exterior = buffer_polygon(exterior_polygon, amount, resolution)
+            buffered_exterior: Polygon = buffer_polygon(
+                exterior_polygon, amount, resolution
+            )  # type: ignore
+
             for interior in self.geom.interiors:
                 interior_poly = Polygon(interior)
-                buffered_exterior = buffered_exterior - interior_poly
+                buffered_exterior = buffered_exterior - interior_poly  # type: ignore
             if isinstance(buffered_exterior, MultiPolygon):
                 return CompoundGeometry(
                     [Geometry(poly, self.material) for poly in buffered_exterior.geoms]
@@ -794,10 +777,12 @@ class Geometry:
                 return Geometry(
                     buffered_exterior, self.material, self.control_points[0]
                 )
+
             return Geometry(buffered_exterior, self.material)
 
         elif where == "all":
             buffered_geom = buffer_polygon(self.geom, amount, resolution)
+
             if isinstance(buffered_geom, MultiPolygon):
                 compound_geom = CompoundGeometry(
                     [Geometry(poly, self.material) for poly in buffered_geom]
@@ -812,7 +797,11 @@ class Geometry:
                     buffered_geom, self.material, self.control_points[0]
                 )
                 return single_geom
+
             return Geometry(buffered_geom, self.material)
+        
+        else:
+            raise ValueError("where must be 'exterior', 'interior' or 'all'.")
 
     def shift_points(
         self,
@@ -822,47 +811,29 @@ class Geometry:
         abs_x: Optional[float] = None,
         abs_y: Optional[float] = None,
     ) -> Geometry:
-        """
-        Translates one (or many points) in the geometry by either a relative amount or
-        to a new absolute location. Returns a new Geometry representing the original
+        """Translates one (or many points) in the geometry by either a relative amount
+        or to a new absolute location. Returns a new Geometry representing the original
         with the selected point(s) shifted to the new location.
 
         Points are identified by their index, their relative location within the points
-        list found in ``self.points``. You can call ``self.plot_geometry(labels="points")`` to
-        see a plot with the points labeled to find the appropriate point indexes.
+        list found in ``self.points``. You can call
+        ``self.plot_geometry(labels="points")`` to see a plot with the points labeled to
+        find the appropriate point indexes.
 
-        :param point_idxs: An integer representing an index location or a list of integer
-            index locations.
-        :type point_idxs: Union[int, List[int]]
+        :param point_idxs: An integer representing an index location or a list of
+            integer index locations.
         :param dx: The number of units in the x-direction to shift the point(s) by
-        :type dx: float
         :param dy: The number of units in the y-direction to shift the point(s) by
-        :type dy: float
-        :param abs_x: Absolute x-coordinate in coordinate system to shift the
-            point(s) to. If abs_x is provided, dx is ignored. If providing a list
-            to point_idxs, all points will be moved to this absolute location.
-        :type abs_x: Optional[float]
-        :param abs_y: Absolute y-coordinate in coordinate system to shift the
-            point(s) to. If abs_y is provided, dy is ignored. If providing a list
-            to point_idxs, all points will be moved to this absolute location.
-        :type abs_y: Optional[float]
+        :param abs_x: Absolute x-coordinate in coordinate system to shift the point(s)
+            to. If ``abs_x`` is provided, ``dx`` is ignored. If providing a list to
+            ``point_idxs``, all points will be moved to this absolute location.
+        :param abs_y: Absolute y-coordinate in coordinate system to shift the point(s)
+            to. If ``abs_``y is provided, ``dy`` is ignored. If providing a list to
+            ``point_idxs``, all points will be moved to this absolute location.
 
         :return: Geometry object with selected points translated to the new location.
-        :rtype: :class:`~sectionproperties.pre.geometry.Geometry`
-
-        The following example expands the sides of a rectangle, one point at a time,
-        to make it a square::
-
-            import sectionproperties.pre.library.primitive_sections as primitive_sections
-
-            geometry = primitive_sections.rectangular_section(d=200, b=150)
-
-            # Using relative shifting
-            one_pt_shifted_geom = geometry.shift_points(point_idxs=1, dx=50)
-
-            # Using absolute relocation
-            both_pts_shift_geom = one_pt_shift_geom.shift_points(point_idxs=2, abs_x=200)
         """
+
         current_points = copy.copy(self.points)
         current_facets = copy.copy(self.facets)
         current_holes = copy.copy(self.holes)
@@ -871,7 +842,9 @@ class Geometry:
 
         if isinstance(point_idxs, int):
             point_idxs = [point_idxs]
+
         new_x, new_y = None, None
+
         for point_idx in point_idxs:
             current_x, current_y = current_points[point_idx]
             new_x = abs_x if abs_x else current_x + dx
@@ -891,7 +864,7 @@ class Geometry:
             new_geom = Geometry.from_points(
                 current_points,
                 current_facets,
-                current_control_points[0],
+                current_control_points,
                 current_holes,
                 current_material,
             )
@@ -899,39 +872,23 @@ class Geometry:
 
     def plot_geometry(
         self,
-        labels=["control_points"],
-        title="Cross-Section Geometry",
-        cp=True,
-        legend=True,
+        labels: List[str] = ["control_points"],
+        title: str = "Cross-Section Geometry",
+        cp: bool = True,
+        legend: bool = True,
         **kwargs,
-    ):
+    ) -> matplotlib.axes.Axes:  # type: ignore
         """Plots the geometry defined by the input section.
 
         :param labels: A list of str which indicate which labels to plot. Can be one
-            or a combination of "points", "facets", "control_points", or an empty list
-            to indicate no labels. Default is ["control_points"]
-        :type labels: list[str]
-        :param string title: Plot title
-        :param bool cp: If set to True, plots the control points
-        :param bool legend: If set to True, plots the legend
+            or a combination of ``"points"``, ``"facets"``, ``"control_points"``, or an
+            empty list to indicate no labels.
+        :param title: Plot title
+        :param cp: If set to True, plots the control points
+        :param legend: If set to True, plots the legend
         :param kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         :return: Matplotlib axes object
-        :rtype: :class:`matplotlib.axes`
-
-        The following example creates a CHS discretised with 64 points, with a diameter of 48 and
-        thickness of 3.2, and plots the geometry::
-
-            import sectionproperties.pre.library.steel_sections as steel_sections
-
-            geometry = steel_sections.circular_hollow_section(d=48, t=3.2, n=64)
-            geometry.plot_geometry()
-
-        ..  figure:: ../images/sections/chs_geometry.png
-            :align: center
-            :scale: 75 %
-
-            Geometry generated by the above example.
         """
 
         # create plot and setup the plot
@@ -943,7 +900,7 @@ class Geometry:
                 else:
                     label = None
 
-                ax.plot(
+                ax.plot(  # type: ignore
                     [self.points[f[0]][0], self.points[f[1]][0]],
                     [self.points[f[0]][1], self.points[f[1]][1]],
                     "ko-",
@@ -959,29 +916,29 @@ class Geometry:
                 else:
                     label = None
 
-                ax.plot(h[0], h[1], "rx", markersize=5, markeredgewidth=1, label=label)
+                ax.plot(h[0], h[1], "rx", markersize=5, markeredgewidth=1, label=label)  # type: ignore
 
             if cp:
                 # plot the control points
-                for (i, cp) in enumerate(self.control_points):
+                for i, cpoint in enumerate(self.control_points):
                     if i == 0:
                         label = "Control Points"
                     else:
                         label = None
 
-                    ax.plot(cp[0], cp[1], "bo", markersize=5, label=label)
+                    ax.plot(cpoint[0], cpoint[1], "bo", markersize=5, label=label)  # type: ignore
 
             # display the labels
             for label in labels:
                 # plot control_point labels
                 if label == "control_points":
                     for (i, pt) in enumerate(self.control_points):
-                        ax.annotate(str(i), xy=pt, color="b")
+                        ax.annotate(str(i), xy=pt, color="b")  # type: ignore
 
                 # plot point labels
                 if label == "points":
                     for (i, pt) in enumerate(self.points):
-                        ax.annotate(str(i), xy=pt, color="r")
+                        ax.annotate(str(i), xy=pt, color="r")  # type: ignore
 
                 # plot facet labels
                 if label == "facets":
@@ -990,85 +947,105 @@ class Geometry:
                         pt2 = self.points[fct[1]]
                         xy = [(pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2]
 
-                        ax.annotate(str(i), xy=xy, color="b")
+                        ax.annotate(str(i), xy=xy, color="b")  # type: ignore
 
                 # plot hole labels
                 if label == "holes":
                     for (i, pt) in enumerate(self.holes):
-                        ax.annotate(str(i), xy=pt, color="r")
+                        ax.annotate(str(i), xy=pt, color="r")  # type: ignore
 
             # display the legend
             if legend:
-                ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+                ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))  # type: ignore
 
         return ax
 
-    def calculate_extents(self):
+    def calculate_extents(
+        self,
+    ) -> Tuple[float, float, float, float]:
         """Calculates the minimum and maximum x and y-values amongst the list of points;
         the points that describe the bounding box of the Geometry instance.
 
-        :return: Minimum and maximum x and y-values *(x_min, x_max, y_min, y_max)*
-        :rtype: tuple(float, float, float, float)
+        :return: Minimum and maximum x and y-values (``x_min``, ``x_max``, ``y_min``,
+            ``y_max``)
         """
-        min_x, min_y, max_x, max_y = self.geom.bounds
-        return (min_x, max_x, min_y, max_y)
+        
+        min_x, min_y, max_x, max_y = self.geom.bounds  # type: ignore
+        return min_x, max_x, min_y, max_y
 
-    def calculate_perimeter(self):
+    def calculate_perimeter(
+        self,
+    ) -> float:
         """Calculates the exterior perimeter of the geometry.
 
         :return: Geometry perimeter.
-        :rtype: float
         """
-        perimeter = self.geom.exterior.length
+
+        perimeter = self.geom.exterior.length  # type: ignore
         return perimeter
 
-    def calculate_area(self):
+    def calculate_area(
+        self,
+    ) -> float:
         """Calculates the area of the geometry.
 
         :return: Geometry area.
-        :rtype: float
         """
+
         area = self.geom.area
         return area
 
-    def calculate_centroid(self):
-        """Calculates the centroid of the geometry as a tuple
-        of *(x,y)* coordinates.
+    def calculate_centroid(
+        self,
+    ) -> Tuple[float, float]:
+        """Calculates the centroid of the geometry as a tuple of (``x``, ``y``)
+        coordinates.
 
         :return: Geometry centroid.
-        :rtype: Tuple[float, float]
         """
+
         cx, cy = self.geom.centroid.coords[0]  # Nested list
-        return (cx, cy)
+        return cx, cy
 
     @property
-    def recovery_points(self):
+    def recovery_points(
+        self,
+    ) -> List[Tuple[float, float]]:
+        """Returns four stress recovery points for the section geometry. If the Geometry
+        instance was created by a NASTRAN geometry function,
+        e.g. :func:`~sectionproperties.pre.nastran_sections.nastran_bar()`, then the
+        recovery points will be pre-set on the Geometry instance.
+
+        :return: Stress recovery points
         """
-        Returns four stress recovery points for the section geometry. If the Geometry instance was
-        created by a NASTRAN geometry function, e.g. :func:`~sectionproperties.pre.nastran_sections.nastran_bar()`,
-        then the recovery points will be pre-set on the Geometry instance.
-        """
-        return self._recovery_points
+
+        return self._recovery_points  # type: ignore
 
     @recovery_points.setter
     def recovery_points(
-        self, new_points: Union[List[list], List[tuple], List[Point]]
-    ) -> list:
+        self, new_points: Union[List[Tuple[float, float]], List[Point]],
+    ):
         self._recovery_points = new_points
 
     @recovery_points.getter
     def recovery_points(
-        self, new_points: Union[List[list], List[tuple], List[Point]]
-    ) -> list:
+        self,
+    ) -> Union[List[Tuple[float, float]], List[Point]]:
         return self._recovery_points
 
-    def __or__(self, other):
+    def __or__(
+        self, 
+        other: Union[Geometry, CompoundGeometry],
+    ) -> Union[Geometry, CompoundGeometry]:
+        """Perform union on Geometry objects with the ``|`` operator
+
+        :return: New geometry object
         """
-        Perform union on Geometry objects with the | operator
-        """
+
         material = self.material or other.material
+
         try:
-            new_polygon = filter_non_polygons(self.geom | other.geom)
+            new_polygon = filter_non_polygons(self.geom | other.geom)  # type: ignore
             if isinstance(new_polygon, MultiPolygon):
 
                 return CompoundGeometry(
@@ -1081,13 +1058,19 @@ class Geometry:
                 f"Cannot perform 'union' on these two objects: {self} | {other}"
             )
 
-    def __xor__(self, other):
+    def __xor__(
+        self,
+        other: Union[Geometry, CompoundGeometry],
+    ) -> Union[Geometry, CompoundGeometry, None]:
+        """Perform symmetric difference on Geometry objects with the ``^`` operator
+
+        :return: New geometry object
         """
-        Perform symmetric difference on Geometry objects with the ^ operator
-        """
+
         material = self.material or other.material
+
         try:
-            new_polygon = filter_non_polygons(self.geom ^ other.geom)
+            new_polygon = filter_non_polygons(self.geom ^ other.geom)  # type: ignore
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
@@ -1100,10 +1083,15 @@ class Geometry:
                 f"Cannot perform 'symmetric difference' on these two objects: {self} ^ {other}"
             )
 
-    def __sub__(self, other):
+    def __sub__(
+        self, 
+        other: Union[Geometry, CompoundGeometry],
+    ) -> Union[Geometry, CompoundGeometry, None]:
+        """Perform difference on Geometry objects with the ``-`` operator
+
+        :return: New geometry object
         """
-        Perform difference on Geometry objects with the - operator
-        """
+
         if isinstance(self, CompoundGeometry):
             subs_geom_acc = []
             for geom in self.geoms:
@@ -1113,7 +1101,7 @@ class Geometry:
         else:
             material = self.material or pre.DEFAULT_MATERIAL
             try:
-                new_polygon = filter_non_polygons(self.geom - other.geom)
+                new_polygon = filter_non_polygons(self.geom - other.geom)  # type: ignore
                 if isinstance(new_polygon, GeometryCollection):  # Non-polygon results
                     return None
                 elif isinstance(new_polygon, MultiPolygon):
@@ -1124,8 +1112,10 @@ class Geometry:
                     if self.assigned_control_point and new_polygon.contains(
                         self.assigned_control_point
                     ):
+                        x = self.assigned_control_point.x
+                        y = self.assigned_control_point.y
                         return Geometry(
-                            new_polygon, material, self.assigned_control_point
+                            new_polygon, material, (x, y)
                         )
                     else:
                         return Geometry(new_polygon, material)
@@ -1154,10 +1144,15 @@ class Geometry:
         #         f"Cannot perform 'difference' on these two objects: {self} - {other}"
         #     )
 
-    def __add__(self, other):
+    def __add__(
+        self,
+        other: Union[Geometry, CompoundGeometry],
+    ) -> CompoundGeometry:
+        """Combine Geometry objects into a CompoundGeometry using the ``+`` operator
+
+        :return: New geometry object
         """
-        Combine Geometry objects into a CompoundGeometry using the + operator
-        """
+
         try:
             return CompoundGeometry([self, other])
         except:
@@ -1165,18 +1160,24 @@ class Geometry:
                 f"Cannot create new CompoundGeometry with these objects: {self} + {other}"
             )
 
-    def __and__(self, other):
+    def __and__(
+        self,
+        other: Union[Geometry, CompoundGeometry],
+    ) -> Union[Geometry, CompoundGeometry]:
+        """Perform intersection on Geometry objects with the ``&`` operator
+
+        :return: New geometry object
         """
-        Perform intersection on Geometry objects with the & operator
-        """
+
         material = self.material or other.material
+        
         try:
-            new_polygon = filter_non_polygons(self.geom & other.geom)
+            new_polygon = filter_non_polygons(self.geom & other.geom)  # type: ignore
             if isinstance(new_polygon, MultiPolygon) and len(new_polygon.geoms) > 1:
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
-            return Geometry(new_polygon, material)
+            return Geometry(new_polygon, material)  # type: ignore
         except:
             raise ValueError(
                 f"Cannot perform 'intersection' on these two Geometry instances: {self} & {other}"
@@ -1990,7 +1991,7 @@ def buffer_polygon(polygon: Polygon, amount: float, resolution: int):
 
 
 def filter_non_polygons(
-    input_geom: Union[GeometryCollection, LineString, Point, Polygon, MultiPolygon]
+    input_geom: Union[GeometryCollection, LineString, Point, Polygon, MultiPolygon],
 ) -> Union[Polygon, MultiPolygon]:
     """
     Returns a Polygon or a MultiPolygon representing any such Polygon on MultiPolygon that
