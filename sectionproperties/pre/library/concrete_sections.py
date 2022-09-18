@@ -14,15 +14,18 @@ def concrete_rectangular_section(
     n_bot: int,
     n_circle: int,
     cover: float,
+    dia_side: float = None,
+    n_side: int = 0,
     area_top: float = None,
     area_bot: float = None,
+    area_side: float = None,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
     """Constructs a concrete rectangular section of width *b* and depth *d*, with
     *n_top* top steel bars of diameter *dia_top*, *n_bot* bottom steel bars of diameter
-    *dia_bot*, discretised with *n_circle* points with equal side and top/bottom
-    *cover* to the steel.
+    *dia_bot*, *n_side* left & right side steel bars of diameter *dia_side* discretised
+    with *n_circle* points with equal side and top/bottom *cover* to the steel.
 
     :param float b: Concrete section width
     :param float d: Concrete section depth
@@ -32,10 +35,15 @@ def concrete_rectangular_section(
     :param int n_bot: Number of bottom steel reinforcing bars
     :param int n_circle: Number of points discretising the steel reinforcing bars
     :param float cover: Side and bottom cover to the steel reinforcing bars
+    :param float dia_side: If provided, diameter of the side steel reinforcing bars
+    :param int n_side: If provided, number of side bars either side of the section
     :param float area_top: If provided, constructs top reinforcing bars based on their
         area rather than diameter (prevents the underestimation of steel area due to
         circle discretisation)
     :param float area_bot: If provided, constructs bottom reinforcing bars based on
+        their area rather than diameter (prevents the underestimation of steel area due
+        to circle discretisation)
+    :param float area_side: If provided, constructs side reinforcing bars based on
         their area rather than diameter (prevents the underestimation of steel area due
         to circle discretisation)
     :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to
@@ -43,7 +51,7 @@ def concrete_rectangular_section(
     :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to
         associate with the steel
 
-    :raises ValueErorr: If the number of bars is not greater than or equal to 2 in an
+    :raises ValueError: If the number of bars is not greater than or equal to 2 in an
         active layer
 
     The following example creates a 600D x 300W concrete beam with 3N20 bottom steel
@@ -86,11 +94,17 @@ def concrete_rectangular_section(
     # create rectangular concrete geometry
     geom = primitive_sections.rectangular_section(b=b, d=d, material=conc_mat)
 
-    # calculate reinforcing bar dimensions
+    # calculate reinforcing bar dimensions for top and bottom layers
     x_i_top = cover + dia_top / 2
     x_i_bot = cover + dia_bot / 2
     spacing_top = (b - 2 * cover - dia_top) / (n_top - 1)
     spacing_bot = (b - 2 * cover - dia_bot) / (n_bot - 1)
+
+    # calculate reinforcing bar dimensions for side layers if specified
+    if n_side != 0:
+        x_i_side_left = cover + dia_side / 2
+        x_i_side_right = b - x_i_side_left
+        spacing_side = (d - 2 * cover - dia_top / 2 - dia_bot / 2) / (n_side + 1)
 
     # add top bars
     for i in range(n_top):
@@ -125,6 +139,31 @@ def concrete_rectangular_section(
         )
 
         geom = (geom - bar) + bar
+
+    # add side bars if specified
+    if n_side != 0:
+        for i in range(n_side):
+            if area_side:
+                bar_left = primitive_sections.circular_section_by_area(
+                    area=area_side, n=n_circle, material=steel_mat
+                )
+                bar_right = bar_left
+            else:
+                bar_left = primitive_sections.circular_section(
+                    d=dia_side, n=n_circle, material=steel_mat
+                )
+                bar_right = bar_left
+
+            bar_left = bar_left.shift_section(
+                x_offset=x_i_side_left,
+                y_offset=cover + dia_bot / 2 + spacing_side * (i + 1),
+            )
+            bar_right = bar_right.shift_section(
+                x_offset=x_i_side_right,
+                y_offset=cover + dia_bot / 2 + spacing_side * (i + 1),
+            )
+
+            geom = (geom - bar_left - bar_right) + bar_left + bar_right
 
     return geom
 
