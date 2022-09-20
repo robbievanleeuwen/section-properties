@@ -71,7 +71,7 @@ DEFAULT_MATERIAL = Material("default", 1, 0, 1, 1, "w")
 
 def create_mesh(
     points: List[Tuple[float, float]],
-    facets: List[Tuple[float, float]],
+    facets: List[Tuple[int, int]],
     holes: List[Tuple[float, float]],
     control_points: List[Tuple[float, float]],
     mesh_sizes: Union[List[float], float],
