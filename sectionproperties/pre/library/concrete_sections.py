@@ -1,3 +1,4 @@
+from typing import Union
 import numpy as np
 from shapely.geometry import Polygon
 import sectionproperties.pre.pre as pre
@@ -132,7 +133,7 @@ def concrete_rectangular_section(
 def concrete_column_section(
     b: float, 
     d: float, 
-    bar_diam: float,
+    dia_bar: float,
     bar_area: float,
     cover: float,
     n_bars_b: int,
@@ -147,27 +148,27 @@ def concrete_column_section(
     with *n_circle* points with equal side and top/bottom
     *cover* to the steel.
 
-    :param float b: Concrete section width
-    :param float d: Concrete section depth
-    :param float dia_top: Diameter of the top steel reinforcing bars
-    :param int n_top: Number of top steel reinforcing bars
-    :param float dia_bot: Diameter of the bottom steel reinforcing bars
-    :param int n_bot: Number of bottom steel reinforcing bars
-    :param int n_circle: Number of points discretising the steel reinforcing bars
-    :param float cover: Side and bottom cover to the steel reinforcing bars
-    :param float area_top: If provided, constructs top reinforcing bars based on their
-        area rather than diameter (prevents the underestimation of steel area due to
-        circle discretisation)
-    :param float area_bot: If provided, constructs bottom reinforcing bars based on
-        their area rather than diameter (prevents the underestimation of steel area due
-        to circle discretisation)
+    :param float b: Concrete section width, parallel to the x-axis
+    :param float d: Concrete section depth, parallel to the y-axis
+    :param float dia_bar: Diameter of reinforcing bars. Used only for calculating bar location.
+    :param float bar_area: Area of reinforcing bars. Used for section capacity calculations.
+    :param float cover: Clear cover, calculated as distance from edge of reinforcing bar to edge of section.
+    :param int n_bars_b: Number of bars placed across the width of the section, minimum 2.
+    :param int n_bars_d: Number of bars placed across the depth of the section, minimum 2.
     :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to
         associate with the concrete
     :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to
-        associate with the steel
+        associate with the reinforcing steel
+    :param bool filled: When True, will populate the concrete section with an equally
+        spaced 2D array of reinforcing bars numbering 'n_bars_b' by 'n_bars_d'. 
+        When False, only the bars around the perimeter of the array will be present.
+    :param int n_circle: The number of points used to discretize the circle of the reinforcing
+        bars. The bars themselves will have an exact area of 'bar_area' regardless of the
+        number of points used in the circle. Useful for making the reinforcing bars look
+        more circular when plotting the concrete section.
 
-    :raises ValueErorr: If the number of bars is not greater than or equal to 2 in an
-        active layer
+    :raises ValueErorr: If the number of bars in either 'n_bars_b' or 'n_bars_d' is not greater 
+        than or equal to 2.
 
     The following example creates a 600D x 300W concrete beam with 3N20 bottom steel
     reinforcing bars and 30 mm cover::
@@ -184,8 +185,8 @@ def concrete_column_section(
             density=7.85e-6, color='grey'
         )
 
-        geometry = concrete_rectangular_section(
-            b=300, d=600, dia_top=20, n_top=0, dia_bot=20, n_bot=3, n_circle=24, cover=30,
+        geometry = concrete_column_section(
+            b=300, d=600, bar_diam=dia_top=20, n_top=0, dia_bot=20, n_bot=3, n_circle=24, cover=30,
             conc_mat=concrete, steel_mat=steel
         )
         geometry.create_mesh(mesh_sizes=[500])
@@ -203,7 +204,7 @@ def concrete_column_section(
         Mesh generated from the above geometry.
     """
     concrete_geometry = primitive_sections.rectangular_section(b, d, material=conc_mat)
-    bar_extents = concrete_geometry.offset_perimeter(-cover - bar_diam/2).calculate_extents()
+    bar_extents = concrete_geometry.offset_perimeter(-cover - dia_bar/2).calculate_extents()
     bar_x_min, bar_x_max, bar_y_min, bar_y_max = bar_extents
     
     b_edge_bars_x = np.linspace(bar_x_min, bar_x_max, n_bars_b)
@@ -467,3 +468,29 @@ def concrete_circular_section(
         geom = (geom - bar) + bar
 
     return geom
+
+
+def add_bar(
+    geometry: Union[geometry.Geometry, geometry.CompoundGeometry],
+    area: float,
+    material: pre.DEFAULT_MATERIAL,
+    x: float,
+    y: float,
+    n: int = 4,
+) -> geometry.CompoundGeometry:
+    """Adds a reinforcing bar to a *sectionproperties* geometry.
+    Bars are discretised by four points by default.
+    :param geometry: Reinforced concrete geometry to which the new bar will be added
+    :param area: Bar cross-sectional area
+    :param material: Material object for the bar
+    :param x: x-position of the bar
+    :param y: y-position of the bar
+    :param n: Number of points to discretise the bar circle
+    :return: Reinforced concrete geometry with added bar
+    """
+
+    bar = primitive_sections.circular_section_by_area(
+        area=area, n=n, material=material  # type: ignore
+    ).shift_section(x_offset=x, y_offset=y)
+
+    return (geometry - bar) + bar
