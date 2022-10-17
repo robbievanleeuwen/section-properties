@@ -53,7 +53,7 @@ class Geometry:
         self,
         geom: shapely.geometry.Polygon,
         material: pre.Material = pre.DEFAULT_MATERIAL,
-        control_points: Optional[List[float, float]] = None,
+        control_points: Optional[Union[Point ,List[float, float]]] = None,
         tol=12,
     ):
         """Inits the Geometry class."""
@@ -64,7 +64,7 @@ class Geometry:
                 f"Argument is not a valid shapely.geometry.Polygon object: {repr(geom)}"
             )
         self.assigned_control_point = None
-        if control_points is not None and len(control_points) == 2:
+        if control_points is not None and (isinstance(control_points, Point) or len(control_points) == 2):
             self.assigned_control_point = Point(control_points)
         self.tol = (
             tol  # Represents num of decimal places of precision for point locations
