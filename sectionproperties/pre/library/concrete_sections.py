@@ -131,8 +131,8 @@ def concrete_rectangular_section(
 
 
 def concrete_column_section(
-    b: float, 
-    d: float, 
+    b: float,
+    d: float,
     dia_bar: float,
     bar_area: float,
     cover: float,
@@ -144,7 +144,7 @@ def concrete_column_section(
     n_circle: int = 4,
 ) -> geometry.CompoundGeometry:
     """Constructs a concrete rectangular section of width *b* and depth *d*, with
-    steel bar reinforcing organized as an *n_bars_b* by *n_bars_d* array, discretised 
+    steel bar reinforcing organized as an *n_bars_b* by *n_bars_d* array, discretised
     with *n_circle* points with equal side and top/bottom
     *cover* to the steel.
 
@@ -160,14 +160,14 @@ def concrete_column_section(
     :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to
         associate with the reinforcing steel
     :param bool filled: When True, will populate the concrete section with an equally
-        spaced 2D array of reinforcing bars numbering 'n_bars_b' by 'n_bars_d'. 
+        spaced 2D array of reinforcing bars numbering 'n_bars_b' by 'n_bars_d'.
         When False, only the bars around the perimeter of the array will be present.
     :param int n_circle: The number of points used to discretize the circle of the reinforcing
         bars. The bars themselves will have an exact area of 'bar_area' regardless of the
         number of points used in the circle. Useful for making the reinforcing bars look
         more circular when plotting the concrete section.
 
-    :raises ValueErorr: If the number of bars in either 'n_bars_b' or 'n_bars_d' is not greater 
+    :raises ValueErorr: If the number of bars in either 'n_bars_b' or 'n_bars_d' is not greater
         than or equal to 2.
 
     The following example creates a 600D x 300W concrete beam with 3N20 bottom steel
@@ -204,16 +204,17 @@ def concrete_column_section(
         Mesh generated from the above geometry.
     """
     concrete_geometry = primitive_sections.rectangular_section(b, d, material=conc_mat)
-    bar_extents = concrete_geometry.offset_perimeter(-cover - dia_bar/2).calculate_extents()
+    bar_extents = concrete_geometry.offset_perimeter(
+        -cover - dia_bar / 2
+    ).calculate_extents()
     bar_x_min, bar_x_max, bar_y_min, bar_y_max = bar_extents
-    
+
     b_edge_bars_x = np.linspace(bar_x_min, bar_x_max, n_bars_b)
     d_edge_bars_y = np.linspace(bar_y_min, bar_y_max, n_bars_d)
-    
+
     if not filled:
         b_edge_bars_y1 = [bar_y_min] * n_bars_b
         b_edge_bars_y2 = [bar_y_max] * n_bars_b
-
 
         d_edge_bars_x1 = [bar_x_min] * n_bars_d
         d_edge_bars_x2 = [bar_x_max] * n_bars_d
@@ -223,19 +224,26 @@ def concrete_column_section(
         d_edge_bars_right = list(zip(d_edge_bars_x2, d_edge_bars_y))
         d_edge_bars_left = list(zip(d_edge_bars_x1, d_edge_bars_y))
 
-        all_bar_coords = list(set(b_edge_bars_top + b_edge_bars_bottom + d_edge_bars_right + d_edge_bars_left))
+        all_bar_coords = list(
+            set(
+                b_edge_bars_top
+                + b_edge_bars_bottom
+                + d_edge_bars_right
+                + d_edge_bars_left
+            )
+        )
     if filled:
         xy = np.meshgrid(b_edge_bars_x, d_edge_bars_y)
-        all_bar_coords = np.append(xy[0].reshape(-1,1),xy[1].reshape(-1,1),axis=1)
-        
+        all_bar_coords = np.append(xy[0].reshape(-1, 1), xy[1].reshape(-1, 1), axis=1)
+
     for bar_coord in all_bar_coords:
         concrete_geometry = add_bar(
-            concrete_geometry, 
-            area=bar_area, 
-            material=steel_mat, 
-            x=bar_coord[0], 
-            y=bar_coord[1], 
-            n=n_circle
+            concrete_geometry,
+            area=bar_area,
+            material=steel_mat,
+            x=bar_coord[0],
+            y=bar_coord[1],
+            n=n_circle,
         )
 
 
