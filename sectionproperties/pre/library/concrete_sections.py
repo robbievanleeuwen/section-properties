@@ -145,8 +145,8 @@ def concrete_column_section(
 ) -> geometry.CompoundGeometry:
     """Constructs a concrete rectangular section of width *b* and depth *d*, with
     steel bar reinforcing organized as an *n_bars_b* by *n_bars_d* array, discretised 
-    with *n_circle* points with equal side and top/bottom
-    *cover* to the steel.
+    with *n_circle* points with equal sides and top/bottom *cover* to the steel which
+    is taken as the clear cover (edge of bar to edge of concrete).
 
     :param float b: Concrete section width, parallel to the x-axis
     :param float d: Concrete section depth, parallel to the y-axis
@@ -170,10 +170,11 @@ def concrete_column_section(
     :raises ValueErorr: If the number of bars in either 'n_bars_b' or 'n_bars_d' is not greater 
         than or equal to 2.
 
-    The following example creates a 600D x 300W concrete beam with 3N20 bottom steel
-    reinforcing bars and 30 mm cover::
+    The following example creates a 600D x 300W concrete column with 25 mm diameter
+    reinforcing bars each with 500 mm**2 area and 35 mm cover in a 3x6 array without
+    the interior bars being filled::
 
-        from sectionproperties.pre.library.concrete_sections import concrete_rectangular_section
+        from sectionproperties.pre.library.concrete_sections import concrete_column_section
         from sectionproperties.pre.pre import Material
 
         concrete = Material(
@@ -186,8 +187,8 @@ def concrete_column_section(
         )
 
         geometry = concrete_column_section(
-            b=300, d=600, bar_diam=dia_top=20, n_top=0, dia_bot=20, n_bot=3, n_circle=24, cover=30,
-            conc_mat=concrete, steel_mat=steel
+            b=300, d=600, dia_bar=25, bar_area=500, cover=35, n_bars_b=3, n_bars_d=6, 
+            conc_mat=concrete, steel_mat=steel, filled=False, n_circle=4
         )
         geometry.create_mesh(mesh_sizes=[500])
 
@@ -226,7 +227,11 @@ def concrete_column_section(
         all_bar_coords = list(set(b_edge_bars_top + b_edge_bars_bottom + d_edge_bars_right + d_edge_bars_left))
     if filled:
         xy = np.meshgrid(b_edge_bars_x, d_edge_bars_y)
-        all_bar_coords = np.append(xy[0].reshape(-1,1),xy[1].reshape(-1,1),axis=1)
+        all_bar_coords = np.append(
+            xy[0].reshape(-1,1), 
+            xy[1].reshape(-1,1),
+            axis=1
+        )
         
     for bar_coord in all_bar_coords:
         concrete_geometry = add_bar(
@@ -237,6 +242,7 @@ def concrete_column_section(
             y=bar_coord[1], 
             n=n_circle
         )
+    return concrete_geometry
 
 
 def concrete_tee_section(
