@@ -167,7 +167,7 @@ def concrete_column_section(
         number of points used in the circle. Useful for making the reinforcing bars look
         more circular when plotting the concrete section.
 
-    :raises ValueErorr: If the number of bars in either 'n_bars_b' or 'n_bars_d' is not greater
+    :raises ValueError: If the number of bars in either 'n_bars_b' or 'n_bars_d' is not greater
         than or equal to 2.
 
     The following example creates a 600D x 300W concrete column with 25 mm diameter
