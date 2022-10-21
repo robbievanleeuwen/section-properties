@@ -25,8 +25,8 @@ def concrete_rectangular_section(
 ) -> geometry.CompoundGeometry:
     """Constructs a concrete rectangular section of width *b* and depth *d*, with
     *n_top* top steel bars of diameter *dia_top*, *n_bot* bottom steel bars of diameter
-    *dia_bot*, discretised with *n_circle* points with equal side and top/bottom
-    *cover* to the steel.
+    *dia_bot*, *n_side* left & right side steel bars of diameter *dia_side* discretised
+    with *n_circle* points with equal side and top/bottom *cover* to the steel.
 
     :param float b: Concrete section width
     :param float d: Concrete section depth
@@ -52,7 +52,7 @@ def concrete_rectangular_section(
     :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to
         associate with the steel
 
-    :raises ValueErorr: If the number of bars is not greater than or equal to 2 in an
+    :raises ValueError: If the number of bars is not greater than or equal to 2 in an
         active layer
 
     The following example creates a 600D x 300W concrete beam with 3N20 bottom steel
@@ -95,7 +95,7 @@ def concrete_rectangular_section(
     # create rectangular concrete geometry
     geom = primitive_sections.rectangular_section(b=b, d=d, material=conc_mat)
 
-    # calculate reinforcing bar dimensions
+    # calculate reinforcing bar dimensions for top and bottom layers
     x_i_top = cover + dia_top / 2
     x_i_bot = cover + dia_bot / 2
     spacing_top = (b - 2 * cover - dia_top) / (n_top - 1)
