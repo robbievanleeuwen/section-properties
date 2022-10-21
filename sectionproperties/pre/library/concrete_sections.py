@@ -92,11 +92,11 @@ def concrete_rectangular_section(
     x_i_bot = cover + dia_bot / 2
     spacing_top = (b - 2 * cover - dia_top) / (n_top - 1)
     spacing_bot = (b - 2 * cover - dia_bot) / (n_bot - 1)
-    
+
     if area_top is None:
         area_top = np.pi * dia_top**2 / 4
-    if area_bottom is None:
-        area_bottom = np.pi * dia_bot**2 / 4
+    if area_bot is None:
+        area_bot = np.pi * dia_bot**2 / 4
 
     # add top bars
     for i in range(n_top):
@@ -347,23 +347,19 @@ def concrete_tee_section(
         bar = primitive_sections.circular_section_by_area(
             area=area_top, n=n_circle, material=steel_mat
         )
-
         bar = bar.shift_section(
             x_offset=x_i_top + spacing_top * i, y_offset=d - cover - dia_top / 2
         )
-
         geom = (geom - bar) + bar
 
     # add bot bars
     for i in range(n_bot):
-        bar = primitive_sections.circular_section(
-            d=dia_bot, n=n_circle, material=steel_mat
+        bar = primitive_sections.circular_section_by_area(
+            area=area_bot, n=n_circle, material=steel_mat
         )
-
         bar = bar.shift_section(
             x_offset=x_i_bot + spacing_bot * i, y_offset=cover + dia_bot / 2
         )
-
         geom = (geom - bar) + bar
 
     return geom
