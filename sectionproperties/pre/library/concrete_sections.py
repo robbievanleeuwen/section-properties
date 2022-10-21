@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 import numpy as np
 from shapely.geometry import Polygon
 import sectionproperties.pre.pre as pre
@@ -133,11 +133,11 @@ def concrete_rectangular_section(
 def concrete_column_section(
     b: float,
     d: float,
-    dia_bar: float,
-    bar_area: float,
     cover: float,
     n_bars_b: int,
     n_bars_d: int,
+    dia_bar: float,
+    bar_area: Optional[float] = None,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
     filled: bool = False,
@@ -150,11 +150,13 @@ def concrete_column_section(
 
     :param float b: Concrete section width, parallel to the x-axis
     :param float d: Concrete section depth, parallel to the y-axis
-    :param float dia_bar: Diameter of reinforcing bars. Used only for calculating bar location.
-    :param float bar_area: Area of reinforcing bars. Used for section capacity calculations.
     :param float cover: Clear cover, calculated as distance from edge of reinforcing bar to edge of section.
     :param int n_bars_b: Number of bars placed across the width of the section, minimum 2.
     :param int n_bars_d: Number of bars placed across the depth of the section, minimum 2.
+    :param float dia_bar: Diameter of reinforcing bars. Used for calculating bar placement and,
+        optionally, for calculating the bar area for section capacity calculations.
+    :param Optional[float] bar_area: Area of reinforcing bars. Used for section capacity calculations.
+        If not provided, then dia_bar will be used to calculate the bar area.
     :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to
         associate with the concrete
     :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to
@@ -237,6 +239,8 @@ def concrete_column_section(
         xy = np.meshgrid(b_edge_bars_x, d_edge_bars_y)
         all_bar_coords = np.append(xy[0].reshape(-1, 1), xy[1].reshape(-1, 1), axis=1)
 
+    if bar_area is None:
+        bar_area = np.pi * dia_bar**2 / 4
     for bar_coord in all_bar_coords:
         concrete_geometry = add_bar(
             concrete_geometry,
