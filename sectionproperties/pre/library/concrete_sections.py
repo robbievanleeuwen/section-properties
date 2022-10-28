@@ -1,6 +1,5 @@
 from typing import Union, Optional
 import numpy as np
-from shapely.geometry import Polygon
 import sectionproperties.pre.pre as pre
 import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.library.primitive_sections as primitive_sections
@@ -15,11 +14,11 @@ def concrete_rectangular_section(
     n_bot: int,
     n_circle: int,
     cover: float,
-    dia_side: float = None,
+    dia_side: Optional[float] = None,
     n_side: int = 0,
-    area_top: float = None,
-    area_bot: float = None,
-    area_side: float = None,
+    area_top: Optional[float] = None,
+    area_bot: Optional[float] = None,
+    area_side: Optional[float] = None,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
@@ -47,10 +46,8 @@ def concrete_rectangular_section(
     :param float area_side: If provided, constructs side reinforcing bars based on
         their area rather than diameter (prevents the underestimation of steel area due
         to circle discretisation)
-    :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to
-        associate with the concrete
-    :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to
-        associate with the steel
+    :param conc_mat: Material to associate with the concrete
+    :param steel_mat: Material to associate with the steel
 
     :raises ValueError: If the number of bars is not greater than or equal to 2 in an
         active layer
@@ -181,11 +178,11 @@ def concrete_column_section(
     :param int n_bars_d: Number of bars placed across the depth of the section, minimum 2.
     :param float dia_bar: Diameter of reinforcing bars. Used for calculating bar placement and,
         optionally, for calculating the bar area for section capacity calculations.
-    :param Optional[float] bar_area: Area of reinforcing bars. Used for section capacity calculations.
+    :param float bar_area: Area of reinforcing bars. Used for section capacity calculations.
         If not provided, then dia_bar will be used to calculate the bar area.
-    :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to
+    :param sectionproperties.pre.pre.Material conc_mat: Material to
         associate with the concrete
-    :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to
+    :param sectionproperties.pre.pre.Material steel_mat: Material to
         associate with the reinforcing steel
     :param bool filled: When True, will populate the concrete section with an equally
         spaced 2D array of reinforcing bars numbering 'n_bars_b' by 'n_bars_d'.
@@ -290,8 +287,8 @@ def concrete_tee_section(
     n_bot: int,
     n_circle: int,
     cover: float,
-    area_top: float = None,
-    area_bot: float = None,
+    area_top: Optional[float] = None,
+    area_bot: Optional[float] = None,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
@@ -316,10 +313,8 @@ def concrete_tee_section(
     :param float area_bot: If provided, constructs bottom reinforcing bars based on
         their area rather than diameter (prevents the underestimation of steel area due
         to circle discretisation)
-    :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to associate
-        with the concrete
-    :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to
-        associate with the steel
+    :param conc_mat: Material to associatewith the concrete
+    :param steel_mat: Material toassociate with the steel
 
     :raises ValueErorr: If the number of bars is not greater than or equal to 2 in an
         active layer
@@ -407,8 +402,8 @@ def concrete_circular_section(
     n_bar: int,
     n_circle: int,
     cover: float,
-    area_conc: float = None,
-    area_bar: float = None,
+    area_conc: Optional[float] = None,
+    area_bar: Optional[float] = None,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
@@ -427,10 +422,8 @@ def concrete_circular_section(
         circle discretisation)
     :param float area_bar: If provided, constructs reinforcing bars based on their area
         rather than diameter (prevents the underestimation of steel area due to
-    :param Optional[sectionproperties.pre.pre.Material] conc_mat: Material to associate
-        with the concrete
-    :param Optional[sectionproperties.pre.pre.Material] steel_mat: Material to
-        associate with the steel
+    :param conc_mat: Material to associate with the concrete
+    :param steel_mat: Material to associate with the steel
 
     :raises ValueErorr: If the number of bars is not greater than or equal to 2
 
