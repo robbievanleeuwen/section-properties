@@ -198,6 +198,10 @@ concrete_rectangular_section
 """"""""""""""""""""""""""""
 ..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_rectangular_section
 
+concrete_column_section
+"""""""""""""""""""""""
+..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_column_section
+
 concrete_tee_section
 """"""""""""""""""""
 ..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_tee_section
@@ -205,6 +209,10 @@ concrete_tee_section
 concrete_circular_section
 """""""""""""""""""""""""
 ..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_circular_section
+
+add_bar
+"""""""
+..  autofunction:: sectionproperties.pre.library.concrete_sections.add_bar
 
 
 *bridge_sections* Module

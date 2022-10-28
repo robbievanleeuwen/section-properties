@@ -216,19 +216,8 @@ def concrete_column_section(
             conc_mat=concrete, steel_mat=steel, filled=False, n_circle=4
         )
         geometry.create_mesh(mesh_sizes=[500])
-
-    ..  figure:: ../images/sections/concrete_rectangular_section_geometry.png
-        :align: center
-        :scale: 50 %
-
-        Concrete rectangular section geometry.
-
-    ..  figure:: ../images/sections/concrete_rectangular_section_mesh.png
-        :align: center
-        :scale: 50 %
-
-        Mesh generated from the above geometry.
     """
+
     concrete_geometry = primitive_sections.rectangular_section(b, d, material=conc_mat)
     bar_extents = concrete_geometry.offset_perimeter(
         -cover - dia_bar / 2
@@ -498,13 +487,16 @@ def add_bar(
     n: int = 4,
 ) -> geometry.CompoundGeometry:
     """Adds a reinforcing bar to a *sectionproperties* geometry.
+
     Bars are discretised by four points by default.
+
     :param geometry: Reinforced concrete geometry to which the new bar will be added
     :param area: Bar cross-sectional area
     :param material: Material object for the bar
     :param x: x-position of the bar
     :param y: y-position of the bar
     :param n: Number of points to discretise the bar circle
+
     :return: Reinforced concrete geometry with added bar
     """
 

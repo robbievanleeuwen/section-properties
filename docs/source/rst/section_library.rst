@@ -139,6 +139,11 @@ Concrete Rectangular Section
 ..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_rectangular_section
     :noindex:
 
+Concrete Column Section
+-----------------------
+..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_column_section
+    :noindex:
+
 Concrete Tee Section
 --------------------
 ..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_tee_section
@@ -147,6 +152,11 @@ Concrete Tee Section
 Concrete Circular Section
 -------------------------
 ..  autofunction:: sectionproperties.pre.library.concrete_sections.concrete_circular_section
+    :noindex:
+
+Add Bar
+-------
+..  autofunction:: sectionproperties.pre.library.concrete_sections.add_bar
     :noindex:
 
 
