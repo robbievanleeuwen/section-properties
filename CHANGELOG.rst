@@ -1,6 +1,15 @@
 Changelog:
 ==========
 
+v2.1.4:
+-------
+
+- Add side bar option to ``concrete_rectangular_section()``, thanks to `@Agent6-6-6 <https://github.com/Agent6-6-6>`_
+- Fix difference operation raising an error, thanks to `@connorferster <https://github.com/connorferster>`_
+- Added ``concrete_column_section()`` and ``add_bar()`` methods, thanks to `@connorferster <https://github.com/connorferster>`_
+
+**Full changelog:** `2.1.3...2.1.4 <https://github.com/robbievanleeuwen/section-properties/compare/2.1.3...2.1.4>`_
+
 v2.1.3:
 -------
 
