@@ -27,9 +27,8 @@ import sectionproperties.analysis.fea as fea
 import sectionproperties.analysis.solver as solver
 import sectionproperties.post.post as post
 
-from shapely.geometry import Polygon
+from shapely import Polygon, Point
 from shapely.strtree import STRtree
-from shapely.geometry import Point
 
 
 class Section:
@@ -2262,7 +2261,7 @@ class Section:
             query_geom = Point(pt)
             tri_ids = [
                 self.poly_mesh_idx[id(poly)]
-                for poly in self.mesh_search_tree.query(query_geom)
+                for poly in self.mesh_search_tree.query(query_geom)  # TODO
                 if poly.intersects(query_geom)
             ]
             if len(tri_ids) == 0:

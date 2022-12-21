@@ -1,6 +1,6 @@
 import pathlib
 from typing import List, Union
-from shapely.geometry.polygon import Polygon
+from shapely import Polygon
 from rhino_shapely_interop.importers import RhImporter
 
 

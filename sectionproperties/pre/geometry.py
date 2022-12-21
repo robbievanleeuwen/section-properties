@@ -7,17 +7,17 @@ import math
 import pathlib
 import more_itertools
 import numpy as np
-from shapely.geometry import (
+from shapely import (
     Polygon,
     MultiPolygon,
     LineString,
     LinearRing,
     Point,
-    box,
     GeometryCollection,
+    box,
+    affinity,
 )
 from shapely.ops import split, unary_union
-import shapely
 import matplotlib
 import matplotlib.pyplot as plt
 import sectionproperties.pre.pre as pre
@@ -51,7 +51,7 @@ class Geometry:
 
     def __init__(
         self,
-        geom: shapely.geometry.Polygon,
+        geom: Polygon,
         material: pre.Material = pre.DEFAULT_MATERIAL,
         control_points: Optional[Union[Point, List[float, float]]] = None,
         tol=12,
@@ -544,11 +544,11 @@ class Geometry:
         # Move assigned control point
         new_ctrl_point = None
         if self.assigned_control_point:
-            new_ctrl_point = shapely.affinity.translate(
+            new_ctrl_point = affinity.translate(
                 self.assigned_control_point, x_offset, y_offset
             ).coords[0]
         new_geom = Geometry(
-            shapely.affinity.translate(self.geom, x_offset, y_offset),
+            affinity.translate(self.geom, x_offset, y_offset),
             self.material,
             new_ctrl_point,
         )
@@ -585,11 +585,11 @@ class Geometry:
             rotate_point = rot_point
             if rot_point == "center":
                 rotate_point = box(*self.geom.bounds).centroid
-            new_ctrl_point = shapely.affinity.rotate(
+            new_ctrl_point = affinity.rotate(
                 self.assigned_control_point, angle, rotate_point, use_radians
             ).coords[0]
         new_geom = Geometry(
-            shapely.affinity.rotate(self.geom, angle, rot_point, use_radians),
+            affinity.rotate(self.geom, angle, rot_point, use_radians),
             self.material,
             new_ctrl_point,
         )
@@ -625,13 +625,13 @@ class Geometry:
             x_mirror = -x_mirror
         elif axis == "y":
             y_mirror = -y_mirror
-        mirrored_geom = shapely.affinity.scale(
+        mirrored_geom = affinity.scale(
             self.geom, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=mirror_point
         )
 
         new_ctrl_point = None
         if self.assigned_control_point:
-            new_ctrl_point = shapely.affinity.scale(
+            new_ctrl_point = affinity.scale(
                 self.assigned_control_point,
                 xfact=y_mirror,
                 yfact=x_mirror,
@@ -677,7 +677,7 @@ class Geometry:
         The following example splits a 200PFC section about the y-axis::
 
             import sectionproperties.pre.library.steel_sections as steel_sections
-            from shapely.geometry import LineString
+            from shapely import LineString
 
             geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             right_geom, left_geom = geometry.split_section((0, 0), (0, 1))
@@ -1672,7 +1672,7 @@ class CompoundGeometry(Geometry):
         The following example splits a 200PFC section about the y-axis::
 
             import sectionproperties.pre.library.steel_sections as steel_sections
-            from shapely.geometry import LineString
+            from shapely import LineString
 
             geometry = steel_sections.channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
             right_geom, left_geom = geometry.split_section((0, 0), (0, 1))

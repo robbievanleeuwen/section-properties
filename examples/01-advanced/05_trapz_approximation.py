@@ -25,7 +25,7 @@ and what might the expected error be?
 # Shapely `Polygon` object.
 import numpy as np
 import matplotlib.pyplot as plt
-from shapely.geometry import Polygon
+from shapely import Polygon
 import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.pre as pre
 import sectionproperties.pre.library.primitive_sections as sections

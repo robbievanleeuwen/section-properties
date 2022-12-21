@@ -1,5 +1,5 @@
 import numpy as np
-from shapely.geometry import Polygon
+from shapely import Polygon
 import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.pre as pre
 

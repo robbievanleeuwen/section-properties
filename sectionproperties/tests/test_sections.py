@@ -8,15 +8,15 @@ from sectionproperties.pre.library.nastran_sections import *
 from sectionproperties.analysis.section import Section
 from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
 from sectionproperties.pre.rhino import load_3dm, load_brep_encoding
-from shapely.geometry import (
+from shapely import (
     Polygon,
     MultiPolygon,
     LineString,
     Point,
     GeometryCollection,
     box,
+    wkt,
 )
-from shapely import wkt
 import json
 
 big_sq = rectangular_section(d=300, b=250)
@@ -133,7 +133,7 @@ def test_geometry_from_points():
         holes=holes,
         material=material,
     )
-    wkt_test_geom = shapely.wkt.loads(
+    wkt_test_geom = wkt.loads(
         "POLYGON ((6 10, 6 -10, -6 -10, -6 10, 6 10), (-4 4, 4 4, 4 8, -4 8, -4 4), (4 -8, 4 -4, -4 -4, -4 -8, 4 -8))"
     )
     assert (new_geom.geom - wkt_test_geom) == Polygon()
@@ -195,7 +195,7 @@ def test_compound_geometry_from_points():
     new_geom = CompoundGeometry.from_points(
         points, facets, control_points, materials=materials
     )
-    wkt_test_geom = shapely.wkt.loads(
+    wkt_test_geom = wkt.loads(
         "MULTIPOLYGON (((-0.05 -2, 0.05 -2, 0.05 -0.05, 1 -0.05, 1 0.05, -0.05 0.05, -0.05 -2)), ((-1 -2, 1 -2, 1 -2.1, -1 -2.1, -1 -2)))"
     )
     assert (new_geom.geom - wkt_test_geom) == Polygon()
@@ -283,7 +283,7 @@ def test_multi_nested_compound_geometry_from_points():
         holes=holes,
         materials=materials,
     )
-    wkt_test_geom = shapely.wkt.loads(
+    wkt_test_geom = wkt.loads(
         "MULTIPOLYGON (((50 50, 50 -50, -50 -50, -50 50, 50 50), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-37.5 -37.5, -37.5 37.5, 37.5 37.5, 37.5 -37.5, -37.5 -37.5), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)), ((-25 -25, -25 25, 25 25, 25 -25, -25 -25), (12.5 12.5, -12.5 12.5, -12.5 -12.5, 12.5 -12.5, 12.5 12.5)))"
     )
     assert (nested_compound.geom - wkt_test_geom) == Polygon()
@@ -447,17 +447,17 @@ def test_mirror_section():
 
 
 def test_filter_non_polygons():
-    point1 = Point([0, 0])
-    point2 = Point([1, 1])
-    point3 = Point([1, 0])
+    point1 = (0, 0)
+    point2 = (1, 1)
+    point3 = (1, 0)
     line = LineString([point1, point2])
     poly = Polygon([point1, point2, point3])
     multi_poly = MultiPolygon([poly, poly])
-    collection = GeometryCollection([poly, point1, line])
+    collection = GeometryCollection([poly, Point(point1), line])
     out = filter_non_polygons(collection)
     assert filter_non_polygons(poly) == poly
     assert filter_non_polygons(multi_poly) == multi_poly
-    assert filter_non_polygons(point1) == Polygon()
+    assert filter_non_polygons(Point(point1)) == Polygon()
     assert filter_non_polygons(line) == Polygon()
     assert filter_non_polygons(collection) == poly
 
