@@ -2258,7 +2258,7 @@ class Section:
 
         for pt in pts:
             query_geom = Point(pt)
-            tri_ids = self.mesh_search_tree.query(query_geom, predicate="intersects" )
+            tri_ids = self.mesh_search_tree.query(query_geom, predicate="intersects")
             if len(tri_ids) == 0:
                 sig = None
             elif len(tri_ids) == 1:
