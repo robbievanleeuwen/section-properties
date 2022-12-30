@@ -1,7 +1,7 @@
 from typing import Tuple, Union, List, Optional
 
 import numpy as np
-import shapely
+from shapely import LineString, GeometryCollection, Polygon
 
 
 def create_line_segment(
@@ -23,19 +23,19 @@ def create_line_segment(
 
         scale_factor_1 = (b_1 - p_x) / vector[0]
         y_1 = scale_factor_1 * vector[1] + p_y
-        return shapely.geometry.LineString([(b_1, y_1), (b_2, y_2)])
+        return LineString([(b_1, y_1), (b_2, y_2)])
     else:  # Vertical line
         scale_factor_2 = (b_2 - p_y) / vector[1]
         x_2 = scale_factor_2 * vector[0] + p_x
 
         scale_factor_1 = (b_1 - p_y) / vector[1]
         x_1 = scale_factor_1 * vector[0] + p_x
-        return shapely.geometry.LineString([(x_1, b_1), (x_2, b_2)])
+        return LineString([(x_1, b_1), (x_2, b_2)])
 
 
 def group_top_and_bottom_polys(
-    polys: shapely.geometry.GeometryCollection,
-    line: shapely.geometry.LineString,
+    polys: GeometryCollection,
+    line: LineString,
 ) -> Tuple[list, list]:
     """
     Returns tuple of two lists representing the list of Polygons in 'polys' on the "top" side of 'line' and the
@@ -67,7 +67,7 @@ def group_top_and_bottom_polys(
 
 
 def line_mx_plus_b(
-    line: shapely.geometry.LineString,
+    line: LineString,
 ) -> Tuple[float, float]:
     """
     Returns a tuple representing the values of "m" and "b" from the definition of 'line' as "y = mx + b".
@@ -120,7 +120,7 @@ def line_intersection(
 
 
 def sum_poly_areas(
-    lop: List[shapely.geometry.Polygon],
+    lop: List[Polygon],
 ) -> float:
     """
     Returns a float representing the total area of all polygons
