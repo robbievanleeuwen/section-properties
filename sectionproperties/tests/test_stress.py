@@ -67,6 +67,11 @@ def test_rotated_rectangle():
     b = 50
     d = 100
     angle = math.atan(100 / 50)
+    cx = b / 2 * math.cos(angle) - d / 2 * math.sin(angle)
+    cy = b / 2 * math.sin(angle) + d / 2 * math.cos(angle)
+    Sy = b * d / 6.0 * cy
+    Mxx = 7
+    sig_max = Mxx / Sy
     rot_rect = (
         primitive_sections.rectangular_section(b=b, d=d)
         .shift_section(-b / 2, -d / 2)
@@ -76,10 +81,5 @@ def test_rotated_rectangle():
     rot_sec = Section(rot_rect)
     rot_sec.calculate_geometric_properties()
     rot_sec.calculate_warping_properties()
-    Mxx = 7
-    cx = b / 2 * math.cos(angle) - d / 2 * math.sin(angle)
-    cy = b / 2 * math.sin(angle) + d / 2 * math.cos(angle)
-    Sy = b * d / 6.0 * cy
-    sig_max = Mxx / Sy
     (sig_0, sig_1) = rot_sec.get_stress_at_points(pts=[[cx, 0], [cx, cy]], Mxx=Mxx)
     assert sig_1 == pytest.approx((sig_max, 0, 0))
