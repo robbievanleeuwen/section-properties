@@ -5,9 +5,10 @@
 /dist/
 /build/
 
-# Commont virtual environments
+# Common virtual environments
 .venv/
 .env/
+.python-version
 
 # doc generated
 /docs/build
