@@ -1,6 +1,14 @@
 Changelog:
 ==========
 
+v2.1.5:
+-------
+
+- Fix shapely 2.0 imports and STRtree implementation, with thanks to `@normanrichardson <https://github.com/normanrichardson>`_
+- Add support for python 3.10, drop support for python 3.7
+
+**Full changelog:** `2.1.4...2.1.5 <https://github.com/robbievanleeuwen/section-properties/compare/2.1.4...2.1.5>`_
+
 v2.1.4:
 -------
 

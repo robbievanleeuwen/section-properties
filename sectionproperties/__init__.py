@@ -6,4 +6,4 @@ sectionproperties can be used to determine section properties to be used
 in structural design and visualise cross-sectional stresses resulting
 from combinations of applied forces and bending moments.
 """
-__version__ = "2.1.4"
+__version__ = "2.1.5"
