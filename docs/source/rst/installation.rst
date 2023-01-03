@@ -2,7 +2,8 @@ Installation
 ============
 
 These instructions will get you a copy of *sectionproperties* up and running on
-your local machine. You will need a working copy of python 3.7, 3.8 or 3.9 on your machine.
+your local machine. You will need a working copy of python 3.8, 3.9 or 3.10 on your
+machine.
 
 Installing *sectionproperties*
 ------------------------------
