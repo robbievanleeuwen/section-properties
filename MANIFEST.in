@@ -1,5 +1,0 @@
-global-include *.3dm
-global-include *.dxf
-global-include *.json
-include sectionproperties/tests/complex_shape.txt
-include sectionproperties/tests/compound_shape.txt

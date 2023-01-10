@@ -1,5 +1,116 @@
+[tool.poetry]
+name = "sectionproperties"
+version = "2.1.5"
+description = "A python package for the analysis of arbitrary cross-sections using the finite element method."
+license = "MIT"
+authors = [
+    "Robbie van Leeuwen <robbie.vanleeuwen@gmail.com>",
+]
+maintainers = [
+    "Robbie van Leeuwen <robbie.vanleeuwen@gmail.com>",
+    "Connor Ferster <connorferster@gmail.com>",
+]
+readme = "README.md"
+homepage = "https://github.com/robbievanleeuwen/section-properties"
+repository = "https://github.com/robbievanleeuwen/section-properties"
+documentation = "https://sectionproperties.readthedocs.io"
+keywords = [
+    "cross-section",
+    "structural-engineering",
+    "finite-element-analysis",
+    "computational-mechanics",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Scientific/Engineering",
+    "Environment :: Console",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+packages = [
+    { include = "sectionproperties", from = "src" },
+]
+include = [
+    "*.3dm",
+    "*.dxf",
+    "*.json",
+    "tests/complex_shape.txt",
+    "tests/compound_shape.txt",
+]
+
+[tool.poetry.urls]
+Changelog = "https://github.com/robbievanleeuwen/section-properties/releases"
+"Bug Tracker" = "https://github.com/robbievanleeuwen/section-properties/issues"
+
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.11"
+click = ">=8.0.1"
+numpy = ">=1.24.1"
+scipy = ">=1.10.0"
+matplotlib = ">=3.6.2"
+shapely = ">=2.0.0"
+triangle = ">=20220202"
+rich = ">=13.0.1"
+more-itertools = ">=9.0.0"
+cad-to-shapely = ">=0.3.1"
+rhino-shapley-interop = ">=0.0.4"
+
+[tool.poetry.dev-dependencies]
+Pygments = ">=2.10.0"
+black = ">=21.10b0"
+coverage = {extras = ["toml"], version = ">=6.2"}
+darglint = ">=1.8.1"
+flake8 = ">=4.0.1"
+flake8-bugbear = ">=21.9.2"
+flake8-docstrings = ">=1.6.0"
+flake8-rst-docstrings = ">=0.2.5"
+furo = ">=2021.11.12"
+isort = ">=5.10.1"
+mypy = ">=0.930"
+pep8-naming = ">=0.12.1"
+pre-commit = ">=2.16.0"
+pre-commit-hooks = ">=4.1.0"
+pytest = ">=6.2.5"
+pytest-check = ">=2.0.0"
+pyupgrade = ">=2.29.1"
+sphinx = ">=4.3.2"
+sphinx-autobuild = ">=2021.3.14"
+sphinx-click = ">=3.0.2"
+typeguard = ">=2.13.3"
+xdoctest = {extras = ["colors"], version = ">=0.15.10"}
+myst-parser = {version = ">=0.16.1"}
+
+[tool.poetry.scripts]
+section-properties = "sectionproperties.__main__:main"
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+tests = ["tests", "*/tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["sectionproperties", "tests"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.isort]
+profile = "black"
+force_single_line = true
+lines_after_imports = 2
+
+[tool.mypy]
+strict = true
+warn_unreachable = true
+pretty = true
+show_column_numbers = true
+show_error_codes = true
+show_error_context = true
+
 [build-system]
-# These are the assumed default build requirements from pip:
-# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
-requires = ["setuptools>=43.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
