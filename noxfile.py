@@ -198,14 +198,14 @@ def xdoctest(session: Session) -> None:
 @session(name="docs-build", python=python_versions[0])
 def docs_build(session: Session) -> None:
     """Build the documentation."""
-    args = session.posargs or ["docs", "docs/_build"]
+    args = session.posargs or ["docs", "docs/build"]
     if not session.posargs and "FORCE_COLOR" in os.environ:
         args.insert(0, "--color")
 
     session.install(".")
     session.install("sphinx", "sphinx-click", "furo", "myst-parser")
 
-    build_dir = Path("docs", "_build")
+    build_dir = Path("docs", "build")
     if build_dir.exists():
         shutil.rmtree(build_dir)
 
@@ -215,11 +215,11 @@ def docs_build(session: Session) -> None:
 @session(python=python_versions[0])
 def docs(session: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
-    args = session.posargs or ["--open-browser", "docs", "docs/_build"]
+    args = session.posargs or ["--open-browser", "docs", "docs/build"]
     session.install(".")
     session.install("sphinx", "sphinx-autobuild", "sphinx-click", "furo", "myst-parser")
 
-    build_dir = Path("docs", "_build")
+    build_dir = Path("docs", "build")
     if build_dir.exists():
         shutil.rmtree(build_dir)
 
