@@ -1,12 +1,7 @@
 import pytest_check as check
 
-# import unittest
 import sectionproperties.pre.library.primitive_sections as primitive_sections
-import sectionproperties.pre.pre as pre
 from sectionproperties.analysis.section import Section
-from sectionproperties.tests.helper_functions import validate_properties
-
-import sectionproperties.analysis.section as file
 
 # Rectangle section setup
 rectangle_geometry = primitive_sections.rectangular_section(b=50, d=100)

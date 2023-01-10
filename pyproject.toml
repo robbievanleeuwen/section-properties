@@ -53,7 +53,11 @@ numpy = ">=1.24.1"
 scipy = ">=1.10.0"
 matplotlib = ">=3.6.2"
 shapely = ">=2.0.0"
-triangle = ">=20220202"
+triangle = [
+    {version = ">=20220202", python = "3.8"},
+    {version = ">=20220202", python = "3.10"},
+    {version = "==20200424", python = "3.9"},
+]
 rich = ">=13.0.1"
 more-itertools = ">=9.0.0"
 cad-to-shapely = ">=0.3.1"

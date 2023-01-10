@@ -2092,6 +2092,59 @@ files = [
 
 [[package]]
 name = "triangle"
+version = "20200424"
+description = "Python binding to the triangle library"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "triangle-20200424-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:943cd934c83784c1981da82b6c26b98bb712107021f8ce569746c0e73b0515df"},
+    {file = "triangle-20200424-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:85aac2a008473170b8154ef5665476844ee6a09a11a96ae2d6a2a3b00962cf7d"},
+    {file = "triangle-20200424-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:67f599ff216decde4415d002d7a23a6429769297d3ec84821524cf9b49b90f4e"},
+    {file = "triangle-20200424-cp27-cp27m-manylinux2010_i686.whl", hash = "sha256:6a7c422af76fe53fb03d111226667cd2468dd6e088a7eadfbe1def370ccce5c6"},
+    {file = "triangle-20200424-cp27-cp27m-manylinux2010_x86_64.whl", hash = "sha256:b2d92ffe6fde7a38cbca79eed3faeb0bad903b1bc089b4261532d7333fa1abb8"},
+    {file = "triangle-20200424-cp27-cp27m-win32.whl", hash = "sha256:4b3db8dbcbaa1bf19107990c98d29e02380a41ef083bd4144a71e6e453ee266e"},
+    {file = "triangle-20200424-cp27-cp27m-win_amd64.whl", hash = "sha256:0a06cd54b7a520bf31f952305d5f0d3094e03f9db65ba2963a2d7031eb49c0c1"},
+    {file = "triangle-20200424-cp27-cp27mu-manylinux1_i686.whl", hash = "sha256:07901a2f3ddaf23b7ebe9e6ab9c86a8efde1beab2d6a315d2983310867fcfa66"},
+    {file = "triangle-20200424-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:a713692b9cb0276547897c21468d3a2be319292fe8a0718ef912c7f678f4d56f"},
+    {file = "triangle-20200424-cp27-cp27mu-manylinux2010_i686.whl", hash = "sha256:81c4c638fdf9555e0e13ff27499fffc3b3cc2eda2734952ea5019cdcbc9288c6"},
+    {file = "triangle-20200424-cp27-cp27mu-manylinux2010_x86_64.whl", hash = "sha256:56e37004f833ce78b0595d19c3f83dd7cd053c7ed74b08b657d80729ac3b0ec9"},
+    {file = "triangle-20200424-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:be635a017dd0ce646835ec65c6f4d12744dae4b822317d61ff7b3114f6255496"},
+    {file = "triangle-20200424-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:322b80cea394a55dab7f00c34608965563921b9a954854dfd12595f58ba82bd7"},
+    {file = "triangle-20200424-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:35710a949dbffc4c7dc8bb485af0c2ab856ee901269fef355f9fccf745bb8ee0"},
+    {file = "triangle-20200424-cp35-cp35m-manylinux2010_i686.whl", hash = "sha256:9c8cfd000665e5c88f3b31ac608f238b179de4d540c69b392034cab2501a48fe"},
+    {file = "triangle-20200424-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:27a3733e5dbd6ed5950e9d95d3b1ecdc02d1f51f12564044dfa618a157c84081"},
+    {file = "triangle-20200424-cp35-cp35m-win32.whl", hash = "sha256:c8beeb0ef16eaa05440ca6a8670834b4c78e0a127ae3b04c7bab478ec4ce41f0"},
+    {file = "triangle-20200424-cp35-cp35m-win_amd64.whl", hash = "sha256:c5d138e45dc4130c800d0368b3ed2e913d4053ae6e13a6ff2a1544174f3cc9a9"},
+    {file = "triangle-20200424-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:d7e5a7613d0a55d6154f76afa695f1354df1556ff5f761e117e39e6d5ed3863f"},
+    {file = "triangle-20200424-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:c8763e7fced3538527829d9282d449432893afc923a33a3683ee1f61af2183c1"},
+    {file = "triangle-20200424-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:78af65635d3130b5a87891519c3ef402301f7f995ae30932f2646237b31a06ba"},
+    {file = "triangle-20200424-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:a803fc36ea2f07c4505b91ed7b343f7f7f78f9a063bfc5a7c9022e6914f6ac6e"},
+    {file = "triangle-20200424-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:c20b4e2c13b58b0f1b5594e23fd40095c2b4972166b2e48b3546da1b308d5dfb"},
+    {file = "triangle-20200424-cp36-cp36m-win32.whl", hash = "sha256:22f251f4b4ed0a6d22dc58979e755d31b1611962e8ccccff0a35d45c509f54ed"},
+    {file = "triangle-20200424-cp36-cp36m-win_amd64.whl", hash = "sha256:baa8631d6306fc6da0968b7ad58bcd51d77322f23661f22a619449873e58d38a"},
+    {file = "triangle-20200424-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:e227b3e125899a5dac393aa9d05dbb0ad2827dc20efae24ecd30a52be4d39863"},
+    {file = "triangle-20200424-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:fe985014a98245a73d0b1df7836ff7f1e4d740e88959ac8083d6673eacd7d399"},
+    {file = "triangle-20200424-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:cba976dd9e7fa4464909968640729b73c74b5bb33918e7005650d32eb8ce8501"},
+    {file = "triangle-20200424-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:b26356e19a531275acb9e61893b6a619cf6f9ba8fddd7509fdac4ff5c5b76389"},
+    {file = "triangle-20200424-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:ea423c64546956233ab60e057099337ef38ce5d6f5b41ee982340dfe98874d3f"},
+    {file = "triangle-20200424-cp37-cp37m-win32.whl", hash = "sha256:90d60f1c6844ece8918c08243aa74ce9dbe79600cd51088d43e3817718b5b2e7"},
+    {file = "triangle-20200424-cp37-cp37m-win_amd64.whl", hash = "sha256:22b3f19b128624ca84a39b4ab0b0bd6523393a37cec59fe214ed5d811b28649a"},
+    {file = "triangle-20200424-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:5b04ca1502d12f9248b5f8e634dfda690510985e9b3d183abd9c66681e1c8483"},
+    {file = "triangle-20200424-cp38-cp38-manylinux1_i686.whl", hash = "sha256:f0c4bbc14300e9a28394005932d1f5003b5aa892cb21307b39b9254ad69cbff0"},
+    {file = "triangle-20200424-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:1ed8c0829e41e6443ff94343036c209db16273b3c878fc6adf941d6235b78298"},
+    {file = "triangle-20200424-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:c47cfcc4a57689151e665a38d34903c35084ca37264c184de86d24170a6ae0be"},
+    {file = "triangle-20200424-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:0839001546a99d601fddeae04611518b3e46881127117d846e5f077f2c2dde4a"},
+    {file = "triangle-20200424-cp38-cp38-win32.whl", hash = "sha256:78abf30b7190f1ec6263cc727bdf77d2da180d90fe35bf4e648ec9a9aacfbd69"},
+    {file = "triangle-20200424-cp38-cp38-win_amd64.whl", hash = "sha256:db32eb68657fb81d1278f1c96888cb42c0e2a4d34ce3204f780a2d439a4105a8"},
+    {file = "triangle-20200424.tar.gz", hash = "sha256:fc207641f8f39986f7d2bee1b91688a588cd235d2e67777422f94e61fece27e9"},
+]
+
+[package.dependencies]
+numpy = "*"
+
+[[package]]
+name = "triangle"
 version = "20220202"
 description = "Python binding to the triangle library"
 category = "main"
@@ -2250,4 +2303,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.11"
-content-hash = "29ddc3289588e57d9222be16adcba4e17964048beb423d952fe3a6da0ed17efb"
+content-hash = "d479fabd6c5bd4d5659f434e71ad654559c17d082f58050daa005cf417fa7fa5"

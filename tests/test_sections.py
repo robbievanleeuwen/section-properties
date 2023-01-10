@@ -6,8 +6,7 @@ from sectionproperties.pre.library.primitive_sections import *
 from sectionproperties.pre.library.steel_sections import *
 from sectionproperties.pre.library.nastran_sections import *
 from sectionproperties.analysis.section import Section
-from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
-from sectionproperties.pre.rhino import load_3dm, load_brep_encoding
+from sectionproperties.pre.pre import Material
 from shapely import (
     Polygon,
     MultiPolygon,

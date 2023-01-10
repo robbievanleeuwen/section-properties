@@ -1,10 +1,8 @@
 import pytest_check as check
 from shapely import Polygon
 from sectionproperties.pre.geometry import Geometry
-import sectionproperties.pre.library.primitive_sections as sections
 import sectionproperties.pre.library.steel_sections as steel_sections
 from sectionproperties.analysis.section import Section
-from sectionproperties.tests.helper_functions import validate_properties
 
 
 # Setup for angle section
