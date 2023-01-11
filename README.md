@@ -1,7 +1,7 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/source/images/logo_dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="docs/source/images/logo.png">
-  <img alt="sectionproperties logo" src="docs/source/images/logo.png">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/_static/logo-dark-mode.png">
+  <source media="(prefers-color-scheme: light)" srcset="docs/_static/logo-light-mode.png">
+  <img alt="sectionproperties logo" src="docs/_static/logo-light-mode.png">
 </picture>
 
 [![PyPI](https://img.shields.io/pypi/v/sectionproperties.svg)][pypi_]

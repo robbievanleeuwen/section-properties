@@ -9,7 +9,7 @@ build:
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
-  configuration: docs/source/conf.py
+  configuration: docs/conf.py
 
 # Default is HTML
 formats: all
@@ -17,5 +17,5 @@ formats: all
 # Optionally declare the Python requirements required to build your docs
 python:
   install:
-    - requirements: docs/source/requirements.txt
+    - requirements: docs/requirements.txt
     - path: .
