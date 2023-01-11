@@ -43,3 +43,6 @@ src/*.egg-info/
 # cache
 __pycache__/
 .pytest_cache
+
+# temp folder
+.temp/
