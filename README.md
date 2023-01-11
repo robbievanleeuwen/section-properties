@@ -23,13 +23,16 @@
 [pre-commit]: https://github.com/pre-commit/pre-commit
 [black]: https://github.com/psf/black
 
-A python package for the analysis of arbitrary cross-sections using the finite element method. _sectionproperties_ can be used to determine section properties to be used in structural design and visualise cross-sectional stresses resulting from combinations of applied forces and bending moments.
+``sectionproperties`` is a python package for the analysis of arbitrary cross-sections
+using the finite element method. ``sectionproperties`` can be used to determine
+section properties to be used in structural design and visualise cross-sectional
+stresses resulting from combinations of applied forces and bending moments.
 
 [Subscribe](http://eepurl.com/dMMUeg) to the mailing list!
 
 ## Installation
 
-You can install _sectionproperties_ via [pip] from [PyPI]:
+You can install ``sectionproperties`` via [pip] from [PyPI]:
 
 ```console
 > pip install sectionproperties
@@ -37,7 +40,9 @@ You can install _sectionproperties_ via [pip] from [PyPI]:
 
 ## Documentation
 
-_sectionproperties_ is fully documented including a user walkthrough, examples, background theory and an API guide. The documentation can found at [https://sectionproperties.readthedocs.io/](https://sectionproperties.readthedocs.io/).
+``sectionproperties`` is fully documented including a user walkthrough, examples,
+background theory and an API guide. The documentation can found at
+[https://sectionproperties.readthedocs.io/](https://sectionproperties.readthedocs.io/).
 
 ## Features
 
@@ -113,7 +118,7 @@ To learn more, see the [Contributor Guide].
 ## License
 
 Distributed under the terms of the [MIT license][license],
-_sectionproperties_ is free and open source software.
+``sectionproperties`` is free and open source software.
 
 ## Issues
 
@@ -122,7 +127,11 @@ please [file an issue] along with a detailed description.
 
 ## Disclaimer
 
-_sectionproperties_ is an open source engineering tool that continues to benefit from the collaboration of many contributors. Although efforts have been made to ensure the that relevant engineering theories have been correctly implemented, it remains the user's responsibility to confirm and accept the output. Refer to the [license](LICENSE.md) for clarification of the conditions of use.
+``sectionproperties`` is an open source engineering tool that continues to benefit from
+the collaboration of many contributors. Although efforts have been made to ensure the
+that relevant engineering theories have been correctly implemented, it remains the
+user's responsibility to confirm and accept the output. Refer to the
+[license](LICENSE.md) for clarification of the conditions of use.
 
 ## Credits
 
