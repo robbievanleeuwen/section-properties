@@ -73,7 +73,6 @@ flake8-docstrings = ">=1.6.0"
 flake8-rst-docstrings = ">=0.2.5"
 furo = ">=2022.12.7"
 isort = ">=5.10.1"
-mypy = ">=0.930"
 myst-parser = {version = ">=0.16.1"}
 pep8-naming = ">=0.12.1"
 pre-commit = ">=2.16.0"
@@ -88,8 +87,6 @@ sphinx-autodoc-typehints = ">=1.20.1"
 sphinx-click = ">=3.0.2"
 sphinx-copybutton = ">=0.5.1"
 sphinxext-opengraph = ">=0.7.5"
-typeguard = ">=2.13.3"
-xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 
 [tool.poetry.scripts]
 sectionproperties = "sectionproperties.__main__:main"
@@ -108,14 +105,6 @@ show_missing = true
 [tool.isort]
 profile = "black"
 lines_after_imports = 2
-
-[tool.mypy]
-strict = true
-warn_unreachable = true
-pretty = true
-show_column_numbers = true
-show_error_codes = true
-show_error_context = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

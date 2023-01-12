@@ -28,18 +28,12 @@ src/*.egg-info/
 # mac
 .DS_Store
 
-# mypy
-.mypy_cache/
-
 # coverage reports
 .coverage
 .coverage.*
 
 # nox
 .nox/
-
-# pytype
-.pytype/
 
 # cache
 __pycache__/
