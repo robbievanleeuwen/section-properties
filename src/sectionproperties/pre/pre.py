@@ -1,57 +1,61 @@
-from typing import Union, List
+"""Classes and methods for generic pre-procesing in sectionproperties."""
+
 from dataclasses import dataclass
-import numpy as np
+from typing import Any, Dict, List, Tuple, Union
+
 import triangle
-
-
-class GeometryError(Exception):
-    """Exception raised when invalid geometry is found."""
-
-    pass
 
 
 @dataclass(eq=True, frozen=True)
 class Material:
     """Class for structural materials.
 
-    Provides a way of storing material properties related to a specific material. The color can be
-    a multitude of different formats, refer to https://matplotlib.org/api/colors_api.html and
+    Provides a way of storing material properties related to a specific material. The
+    color can be a multitude of different formats, refer to
+    https://matplotlib.org/api/colors_api.html and
     https://matplotlib.org/examples/color/named_colors.html for more information.
 
-    :param string name: Material name
-    :param float elastic_modulus: Material modulus of elasticity
-    :param float poissons_ratio: Material Poisson's ratio
-    :param float yield_strength: Material yield strength
-    :param float density: Material density (mass per unit volume)
-    :param color: Material color for rendering
-    :type color: :class:`matplotlib.colors`
+    Args:
+        name: Material name
+        elastic_modulus: Material modulus of elasticity
+        poissons_ratio: Material Poisson's ratio
+        yield_strength: Material yield strength
+        density: Material density (mass per unit volume)
+        color: Material color for rendering
 
-    :cvar string name: Material name
-    :cvar float elastic_modulus: Material modulus of elasticity
-    :cvar float poissons_ratio: Material Poisson's ratio
-    :cvar float shear_modulus: Material shear modulus, derived from the elastic modulus and
-        Poisson's ratio assuming an isotropic material
-    :cvar float density: Material density (mass per unit volume)
-    :cvar float yield_strength: Material yield strength
-    :cvar color: Material color for rendering
-    :vartype color: :class:`matplotlib.colors`
+    Attributes:
+        shear_modulus: Material shear modulus, derived from the elastic modulus and
+          Poisson's ratio assuming an isotropic material
 
-    The following example creates materials for concrete, steel and timber::
+    Example:
+        The following example creates materials for concrete, steel and timber::
 
-        from sectionproperties.pre.pre import Material
+            from sectionproperties.pre.pre import Material
 
-        concrete = Material(
-            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, density=2.4e-6,
-                yield_strength=32, color='lightgrey'
-        )
-        steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, density=7.85e-6,
-                yield_strength=500, color='grey'
-        )
-        timber = Material(
-            name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, density=6.5e-7,
-                yield_strength=20, color='burlywood'
-        )
+            concrete = Material(
+                name='Concrete',
+                elastic_modulus=30.1e3,
+                poissons_ratio=0.2,
+                density=2.4e-6,
+                yield_strength=32,
+                color='lightgrey',
+            )
+            steel = Material(
+                name='Steel',
+                elastic_modulus=200e3,
+                poissons_ratio=0.3,
+                density=7.85e-6,
+                yield_strength=500,
+                color='grey',
+            )
+            timber = Material(
+                name='Timber',
+                elastic_modulus=8e3,
+                poissons_ratio=0.35,
+                density=6.5e-7,
+                yield_strength=20,
+                color='burlywood',
+            )
     """
 
     name: str
@@ -62,7 +66,8 @@ class Material:
     color: str
 
     @property
-    def shear_modulus(self):
+    def shear_modulus(self) -> float:
+        """Returns the shear modulus of the material."""
         return self.elastic_modulus / (2 * (1 + self.poissons_ratio))
 
 
@@ -70,35 +75,35 @@ DEFAULT_MATERIAL = Material("default", 1, 0, 1, 1, "w")
 
 
 def create_mesh(
-    points: List[List[float]],
-    facets: List[List[float]],
-    holes: List[List[float]],
-    control_points: List[List[float]],
+    points: List[Tuple[float, float]],
+    facets: List[Tuple[int, int]],
+    holes: List[Tuple[float, float]],
+    control_points: List[Tuple[float, float]],
     mesh_sizes: Union[List[float], float],
     coarse: bool,
-):
-    """Creates a quadratic triangular mesh using the triangle module, which utilises the code
-    'Triangle', by Jonathan Shewchuk.
+) -> Dict[str, Any]:
+    """Generates a triangular mesh.
 
-    :param points: List of points *(x, y)* defining the vertices of the cross-section
-    :type points: list[list[float, float]]
-    :param facets: List of point index pairs *(p1, p2)* defining the edges of the cross-section
-    :type points: list[list[int, int]]
-    :param holes: List of points *(x, y)* defining the locations of holes within the cross-section.
-        If there are no holes, provide an empty list [].
-    :type holes: list[list[float, float]]
-    :param control_points: A list of points *(x, y)* that define different regions of the
-        cross-section. A control point is an arbitrary point within a region enclosed by facets.
-    :type control_points: list[list[float, float]]
-    :param mesh_sizes: List of maximum element areas for each region defined by a control point
-    :type mesh_sizes: list[float]
-    :param bool coarse: If set to True, will create a coarse mesh (no area or quality
-        constraints)
+    Creates a quadratic triangular mesh using the triangle module, which utilises the
+    code ``Triangle``, by Jonathan Shewchuk.
 
-    :return: Dictionary containing mesh data
-    :rtype: dict()
+    Args:
+        points: List of points (``x``, ``y``) defining the vertices of the cross-section
+        facets: List of point index pairs (``p1``, ``p2``) defining the edges of the
+            cross-section
+        holes: List of points (``x``, ``y``) defining the locations of holes within the
+            cross-section. If there are no holes, provide an empty list [].
+        control_points: A list of points (``x``, ``y``) that define different regions of
+            the cross-section. A control point is an arbitrary point within a region
+            enclosed by facets.
+        mesh_sizes: List of maximum element areas for each region defined by a control
+            point
+        coarse: If set to True, will create a coarse mesh (no area or quality
+            constraints)
+
+    Return:
+        Dictionary containing mesh data
     """
-
     if not isinstance(mesh_sizes, list):
         mesh_sizes = [mesh_sizes]
 
@@ -112,7 +117,7 @@ def create_mesh(
     # prepare regions
     regions = []
 
-    for (i, cp) in enumerate(control_points):
+    for i, cp in enumerate(control_points):
         regions.append([cp[0], cp[1], i, mesh_sizes[i]])
 
     tri["regions"] = regions  # set regions
