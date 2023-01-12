@@ -13,7 +13,7 @@ templates_path = ["_templates"]
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    # "sphinx.ext.intersphinx",
+    "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
@@ -41,12 +41,13 @@ add_module_names = False  # Remove namespaces from class/method signatures
 # typehints_defaults = "comma"  # adds a default annotation after the type
 
 # intersphinx mapping
-# intersphinx_mapping = {
-#     "numpy": ("https://numpy.org/doc/stable/", None),
-#     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
-#     "matplotlib": ("https://matplotlib.org/stable/", None),
-#     "shapely": ("https://shapely.readthedocs.io/en/stable/", None),
-# }
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "shapely": ("https://shapely.readthedocs.io/en/stable/", None),
+}
 
 # html theme
 html_theme = "furo"

@@ -2,12 +2,12 @@
 
 # Validation
 
-``sectionproperties`` has a (slowly) growing suite of tests. The testing suite serves to
+`sectionproperties` has a (slowly) growing suite of tests. The testing suite serves to
 verify functionality and find exceptions from edge cases, but also validate the results
 against known cases. Since this library performs engineering calculations, it should
 have some manner of proving its accuracy. Each analyst who uses it is responsible for
 their own projects and calculations, but having a high level of confidence that the
-software can produce *correct* results, *given the correct inputs*, is a boon to all
+software can produce _correct_ results, _given the correct inputs_, is a boon to all
 users. Some test results and explanations from the latter category will be outlined on
 this page, since the former really serves no use to the end user.
 
@@ -32,7 +32,7 @@ is Example 1 in Section 6.2.
 
 #### Check #1
 
-In ``sectionproperties``, there are multiple ways to set this problem up. We could
+In `sectionproperties`, there are multiple ways to set this problem up. We could
 different shapely geometries and merge together, or a set of custom points, or a
 built-in constructor. For the sake of simplicity, this simpler I-section is identical to
 the Nastran I-section definition, so it makes sense to utilize the built-in constructor
@@ -63,7 +63,7 @@ place. From the equatio listed in the text, the theoretical value is actually 55
 Again, the automated test against this checks the hardcoded value with a tolerance of
 {math}`\pm 0.1`%. For accuracy, 55,427.3 is used instead of the rounded value.
 
-For full details and the most updated code of this exampe, see the [examples page](#)
+For full details and the most updated code of this exampe, see the [examples page](https://www.google.com)
 (#TODO) in the documentation gallery. For the exact test code execution, check the
 [source](https://github.com/robbievanleeuwen/section-properties/blob/master/sectionproperties/tests/test_peery.py).
 
@@ -71,7 +71,7 @@ For full details and the most updated code of this exampe, see the [examples pag
 
 For a more complex example, we can turn to Example 1 in Section 7.2 of Peery. Here, we
 have a still-simplified Z-section, but bending about two axes. Note axes definitions in
-the problem statement. Beam axial direction in ``sectionproperties`` is always
+the problem statement. Beam axial direction in `sectionproperties` is always
 referenced as the z-axis, and loads must be applied in this coordinate system.
 
 ```{figure} ../_static/validation/peery_7-2-1_1.png
@@ -112,9 +112,9 @@ For stress results, the theoretical values follow the biaxial bending equation. 
 values are checked against automatically in the testing suite. Note that again Peery
 rounds the values quoted directly, for simplicity. The testing suite also verifies that
 the theoretical value as per the equation matches the theoretical value quoted in the
-text, which also matches the computed value from the ``sectionproperties`` FEM.
+text, which also matches the computed value from the `sectionproperties` FEM.
 
-```{math}}}
+```{math}
     f_b = \frac{M_x I_{xy} - M_y I_x}{I_x I_y - I_{xy}^2}x +
           \frac{M_y I_{xy} - M_x I_y}{I_x I_y - I_{xy}^2}y
 ```
@@ -137,7 +137,7 @@ text, which also matches the computed value from the ``sectionproperties`` FEM.
 :align: center
 ```
 
-For full details and the most updated code of this exampe, see the [examples page](#)
+For full details and the most updated code of this exampe, see the [examples page](https://www.google.com)
 (#TODO) in the documentation gallery. For the exact test code execution, check the
 [source](https://github.com/robbievanleeuwen/section-properties/blob/master/sectionproperties/tests/test_peery.py).
 
