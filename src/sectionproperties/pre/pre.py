@@ -25,7 +25,7 @@ class Material:
 
     Attributes:
         shear_modulus: Material shear modulus, derived from the elastic modulus and
-          Poisson's ratio assuming an isotropic material
+            Poisson's ratio assuming an isotropic material
 
     Example:
         The following example creates materials for concrete, steel and timber::
