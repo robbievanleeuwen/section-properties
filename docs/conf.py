@@ -6,7 +6,6 @@ author = "Robbie van Leeuwen"
 copyright = "2023, Robbie van Leeuwen"
 
 # sphinx config
-add_module_names = False  # remove namespaces from class/method signatures
 templates_path = ["_templates"]
 
 # extensions
@@ -18,10 +17,9 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     # "IPython.sphinxext.ipython_console_highlighting",
-    # "matplotlib.sphinxext.plot_directive",
+    "matplotlib.sphinxext.plot_directive",
     "myst_parser",
     # "nbsphinx",
-    # "sphinx_autodoc_typehints",
     "sphinx_click",
     "sphinx_copybutton",
     "sphinxext.opengraph",
@@ -30,15 +28,13 @@ extensions = [
 # extension config
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
+autodoc_class_signature = "separated"
 autoclass_content = "both"  # add __init__ doc (ie. params) to class summaries
 autodoc_inherit_docstrings = True  # If no docstring, inherit from base class
-add_module_names = False  # Remove namespaces from class/method signatures
 # nbsphinx_execute_arguments = [
 #     "--InlineBackend.figure_formats={'svg', 'pdf'}",
 #     "--InlineBackend.rc=figure.dpi=96",
 # ]
-# typehints_use_rtype = False  # document return type as part of the :return: directive
-# typehints_defaults = "comma"  # adds a default annotation after the type
 
 # intersphinx mapping
 intersphinx_mapping = {

@@ -12,8 +12,8 @@ class Material:
 
     Provides a way of storing material properties related to a specific material. The
     color can be a multitude of different formats, refer to
-    https://matplotlib.org/api/colors_api.html and
-    https://matplotlib.org/examples/color/named_colors.html for more information.
+    https://matplotlib.org/stable/api/colors_api.html and
+    https://matplotlib.org/stable/gallery/color/named_colors.html for more information.
 
     Args:
         name: Material name
@@ -30,31 +30,31 @@ class Material:
     Example:
         The following example creates materials for concrete, steel and timber::
 
-            from sectionproperties.pre.pre import Material
+            from sectionproperties.pre import Material
 
             concrete = Material(
-                name='Concrete',
+                name="Concrete",
                 elastic_modulus=30.1e3,
                 poissons_ratio=0.2,
                 density=2.4e-6,
                 yield_strength=32,
-                color='lightgrey',
+                color="lightgrey",
             )
             steel = Material(
-                name='Steel',
+                name="Steel",
                 elastic_modulus=200e3,
                 poissons_ratio=0.3,
                 density=7.85e-6,
                 yield_strength=500,
-                color='grey',
+                color="grey",
             )
             timber = Material(
-                name='Timber',
+                name="Timber",
                 elastic_modulus=8e3,
                 poissons_ratio=0.35,
                 density=6.5e-7,
                 yield_strength=20,
-                color='burlywood',
+                color="burlywood",
             )
     """
 

@@ -4,6 +4,6 @@ ignore = E203,E501,RST201,RST203,RST301,W503
 max-line-length = 80
 max-complexity = 10
 docstring-convention = google
-per-file-ignores = tests/*:S101
+per-file-ignores = tests/*:S101,__init__.py:F401
 rst-roles = class,const,func,meth,mod,ref
 rst-directives = deprecated
