@@ -1,32 +1,36 @@
+"""Utilities used in the sections library."""
+
+from __future__ import annotations
+
 import numpy as np
-from typing import List
 
 
 def draw_radius(
-    pt: List[float],
+    pt: tuple[float, float],
     r: float,
     theta: float,
     n: int,
     ccw: bool = True,
     phi: float = np.pi * 0.5,
-) -> List[List[float]]:
-    """Adds a quarter radius of points to the points list - centered at point *pt*,
-    with radius *r*, starting at angle *theta*, with *n* points. If r = 0, adds pt
-    only. Phi describes the angle of rotation e.g. pi / 2 is a quarter circle.
+) -> list[tuple[float, float]]:
+    """Generates a list of points describing an arc.
 
-    :param pt: Centre of radius *(x,y)*
-    :type pt: List[float]
-    :param float r: Radius
-    :param float theta: Initial angle
-    :param int n: Number of points
-    :param bool ccw: Counter-clockwise rotation?
-    :param float phi: Angle describing radius extent (default 90 degrees)
+    Generates an arc centered at point ``pt``, with radius ``r``, starting at angle
+    ``theta``, with *n* points. If ``r=0``, adds ``pt`` only. ``phi`` describes the
+    angle of rotation e.g. ``pi / 2`` is a quarter circle.
 
-    :return: List of points
-    :rtype: List[List[float]]
+    Args:
+        pt: Centre of radius (``x``, ``y``)
+        r: Radius
+        theta: Initial angle in radians
+        n: Number of points
+        ccw: If True, counter-clockwise rotation
+        phi: Angle describing radius extent in radians
+
+    Return:
+        List of points
     """
-
-    points = []
+    points: list[tuple[float, float]] = []
 
     if r == 0:
         points.append(pt)
@@ -45,21 +49,24 @@ def draw_radius(
         x = pt[0] + r * np.cos(t)
         y = pt[1] + r * np.sin(t)
 
-        points.append([x, y])
+        points.append((x, y))
 
     return points
 
 
-def rotate(point, angle: float):
-    """
-    Rotate a point counterclockwise by a given angle around origin [0, 0]
+def rotate(
+    point: tuple[float, float],
+    angle: float,
+) -> tuple[float, float]:
+    """Rotates a point counterclockwise by a given angle around origin ``(0, 0)``.
 
-    :param list point: Point coordinates to be rotated
-    :param float angle: Angle to rotate point coordinates
-    :return: Coordinates of rotated point
-    :rtype: list[float, float]
-    """
+    Args:
+        point: Point coordinates to be rotated
+        angle: Angle to rotate point coordinates in radians
 
+    Return:
+        Coordinates of rotated point
+    """
     pt_x, pt_y = point
 
     c = np.cos(angle)
@@ -68,4 +75,4 @@ def rotate(point, angle: float):
     new_x = c * pt_x - s * pt_y
     new_y = s * pt_x + c * pt_y
 
-    return [new_x, new_y]
+    return new_x, new_y
