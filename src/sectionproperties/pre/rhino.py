@@ -1,16 +1,17 @@
 """Methods to load rhino files, interfacing with rhino-shapely-interop."""
 
+from __future__ import annotations
+
 import pathlib
-from typing import List, Union
 
 from rhino_shapely_interop.importers import RhImporter
 from shapely import Polygon
 
 
 def load_3dm(
-    r3dm_filepath: Union[pathlib.Path, str],
+    r3dm_filepath: pathlib.Path | str,
     **kwargs,
-) -> List[Polygon]:
+) -> list[Polygon]:
     """Load a Rhino ``.3dm`` file and import the single surface planer breps.
 
     Args:
@@ -63,7 +64,7 @@ def load_3dm(
 def load_brep_encoding(
     brep: str,
     **kwargs,
-) -> List[Polygon]:
+) -> list[Polygon]:
     """Load an encoded single surface planer brep.
 
     Args:

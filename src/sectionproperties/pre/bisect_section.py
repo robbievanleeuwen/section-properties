@@ -1,15 +1,15 @@
 """A number of functions required to bisect shapely geometries."""
 
-from typing import List, Tuple, Union
+from __future__ import annotations
 
 import numpy as np
 from shapely import GeometryCollection, LineString, Polygon
 
 
 def create_line_segment(
-    point_on_line: Union[Tuple[float, float], np.ndarray],
+    point_on_line: tuple[float, float] | np.ndarray,
     vector: np.ndarray,
-    bounds: Tuple[float, float, float, float],
+    bounds: tuple[float, float, float, float],
 ) -> LineString:
     """Create a line segment given a point, vector and bounds.
 
@@ -47,7 +47,7 @@ def create_line_segment(
 def group_top_and_bottom_polys(
     polys: GeometryCollection,
     line: LineString,
-) -> Tuple[List[Polygon], List[Polygon]]:
+) -> tuple[list[Polygon], list[Polygon]]:
     """Sort polygons into groups above and below a line.
 
     Returns a tuple of two lists representing the list of polygons in ``polys`` on
@@ -94,7 +94,7 @@ def group_top_and_bottom_polys(
 
 def line_mx_plus_b(
     line: LineString,
-) -> Tuple[float, Union[float, None]]:
+) -> tuple[float, float | None]:
     """Get the slope and y-intercept of a line.
 
     Returns a tuple representing the values of "m" and "b" from the definition of

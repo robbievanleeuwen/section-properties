@@ -1,7 +1,9 @@
 """Classes and methods for generic pre-procesing in sectionproperties."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 import triangle
 
@@ -75,13 +77,13 @@ DEFAULT_MATERIAL = Material("default", 1, 0, 1, 1, "w")
 
 
 def create_mesh(
-    points: List[Tuple[float, float]],
-    facets: List[Tuple[int, int]],
-    holes: List[Tuple[float, float]],
-    control_points: List[Tuple[float, float]],
-    mesh_sizes: Union[List[float], float],
+    points: list[tuple[float, float]],
+    facets: list[tuple[int, int]],
+    holes: list[tuple[float, float]],
+    control_points: list[tuple[float, float]],
+    mesh_sizes: list[float] | float,
     coarse: bool,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Generates a triangular mesh.
 
     Creates a quadratic triangular mesh using the triangle module, which utilises the
