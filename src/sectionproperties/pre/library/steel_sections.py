@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 from shapely import Polygon
 
-import sectionproperties.pre.geometry as geom
+import sectionproperties.pre.geometry as geometry
 from sectionproperties.pre.library.utils import draw_radius, rotate
 from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
 
@@ -15,7 +15,7 @@ def circular_hollow_section(
     t: float,
     n: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a circular hollow section (CHS).
 
     Constructs a circular hollow section (CHS) centered at the origin ``(0, 0)``, with
@@ -64,7 +64,7 @@ def circular_hollow_section(
     inner_circle = Polygon(points_inner)
     outer_circle = Polygon(points_outer)
 
-    return geom.Geometry(geom=outer_circle - inner_circle, material=material)
+    return geometry.Geometry(geom=outer_circle - inner_circle, material=material)
 
 
 def elliptical_hollow_section(
@@ -73,7 +73,7 @@ def elliptical_hollow_section(
     t: float,
     n: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs an elliptical hollow section (EHS).
 
     Constructs an elliptical hollow section (EHS) centered at the origin ``(0, 0)``,
@@ -124,7 +124,7 @@ def elliptical_hollow_section(
     outer = Polygon(points_outer)
     inner = Polygon(points_inner)
 
-    return geom.Geometry(geom=outer - inner, material=material)
+    return geometry.Geometry(geom=outer - inner, material=material)
 
 
 def rectangular_hollow_section(
@@ -134,7 +134,7 @@ def rectangular_hollow_section(
     r_out: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a rectangular hollow section (RHS).
 
     Constructs a rectangular hollow section (RHS) centered at ``(b/2, d/2)``, with depth
@@ -186,7 +186,7 @@ def rectangular_hollow_section(
     outer = Polygon(points_outer)
     inner = Polygon(points_inner)
 
-    return geom.Geometry(geom=outer - inner, material=material)
+    return geometry.Geometry(geom=outer - inner, material=material)
 
 
 def polygon_hollow_section(
@@ -197,7 +197,7 @@ def polygon_hollow_section(
     n_r: int = 1,
     rot: float = 0,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a regular hollow polygon section.
 
     Constructs a regular hollow polygon section centered at ``(0, 0)``, with a pitch
@@ -313,7 +313,7 @@ def polygon_hollow_section(
     outer_polygon = Polygon(outer_points)
     inner_polygon = Polygon(inner_points)
 
-    return geom.Geometry(geom=outer_polygon - inner_polygon, material=material)
+    return geometry.Geometry(geom=outer_polygon - inner_polygon, material=material)
 
 
 def i_section(
@@ -324,7 +324,7 @@ def i_section(
     r: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs an I section.
 
     Constructs an I section centered at ``(b/2, d/2)``, with depth ``d``, width ``b``,
@@ -390,7 +390,7 @@ def i_section(
 
     i_section = Polygon(points)
 
-    return geom.Geometry(geom=i_section, material=material)
+    return geometry.Geometry(geom=i_section, material=material)
 
 
 def mono_i_section(
@@ -403,7 +403,7 @@ def mono_i_section(
     r: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a monosymmetric I section.
 
     Constructs a monosymmetric I section centered at ``(max(b_t, b_b)/2, d/2)``, with
@@ -478,7 +478,7 @@ def mono_i_section(
 
     polygon = Polygon(points)
 
-    return geom.Geometry(geom=polygon, material=material)
+    return geometry.Geometry(geom=polygon, material=material)
 
 
 def tapered_flange_i_section(
@@ -491,7 +491,7 @@ def tapered_flange_i_section(
     alpha: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a tapered flange I section.
 
     Constructs a tapered flange I section centered at ``(b/2, d/2)``, with depth ``d*``,
@@ -680,7 +680,7 @@ def tapered_flange_i_section(
 
     polygon = Polygon(points)
 
-    return geom.Geometry(geom=polygon, material=material)
+    return geometry.Geometry(geom=polygon, material=material)
 
 
 def channel_section(
@@ -691,7 +691,7 @@ def channel_section(
     r: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a parallel flange channel (PFC).
 
     Constructs a parallel flange channel (PFC) section with the bottom left corner at
@@ -746,7 +746,7 @@ def channel_section(
 
     polygon = Polygon(points)
 
-    return geom.Geometry(geom=polygon, material=material)
+    return geometry.Geometry(geom=polygon, material=material)
 
 
 def tapered_flange_channel(
@@ -759,7 +759,7 @@ def tapered_flange_channel(
     alpha: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a tapered flange channel section.
 
     Constructs a tapered flange channel section with the bottom left corner at the
@@ -884,7 +884,7 @@ def tapered_flange_channel(
 
     polygon = Polygon(points)
 
-    return geom.Geometry(geom=polygon, material=material)
+    return geometry.Geometry(geom=polygon, material=material)
 
 
 def tee_section(
@@ -895,7 +895,7 @@ def tee_section(
     r: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a tee section.
 
     Constructs a tee section with the top left corner at ``(0, d)``, with depth ``d``,
@@ -949,7 +949,7 @@ def tee_section(
 
     polygon = Polygon(points)
 
-    return geom.Geometry(geom=polygon, material=material)
+    return geometry.Geometry(geom=polygon, material=material)
 
 
 def angle_section(
@@ -960,7 +960,7 @@ def angle_section(
     r_t: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs an angle section.
 
     Constructs an angle section with the bottom left corner at the origin ``(0, 0)``,
@@ -1023,7 +1023,7 @@ def angle_section(
 
     polygon = Polygon(points)
 
-    return geom.Geometry(geom=polygon, material=material)
+    return geometry.Geometry(geom=polygon, material=material)
 
 
 def cee_section(
@@ -1034,7 +1034,7 @@ def cee_section(
     r_out: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a cee section.
 
     Constructs a cee section (typical of cold-formed steel) with the bottom left corner
@@ -1124,7 +1124,7 @@ def cee_section(
 
     polygon = Polygon(points)
 
-    return geom.Geometry(geom=polygon, material=material)
+    return geometry.Geometry(geom=polygon, material=material)
 
 
 def zed_section(
@@ -1136,7 +1136,7 @@ def zed_section(
     r_out: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a zed section.
 
     Constructs a zed section with the bottom left corner at the origin ``(0, 0)``, with
@@ -1232,7 +1232,7 @@ def zed_section(
 
     polygon = Polygon(points)
 
-    return geom.Geometry(geom=polygon, material=material)
+    return geometry.Geometry(geom=polygon, material=material)
 
 
 def box_girder_section(
@@ -1264,8 +1264,8 @@ def box_girder_section(
 
     Example:
         The following example creates a box girder section with a depth of 1200 mm, a
-        top width of 1200 mm, a bottom width of 400 mm, a top flange thickness of 16 mm,
-        a bottom flange thickness of 12 mm and a web thickness of 8 mm:
+        top width of 1200 mm, a bottom width of 400 mm, a top flange thickness of 100
+        mm, a bottom flange thickness of 80 mm and a web thickness of 50 mm:
 
         .. plot::
             :include-source: True
@@ -1274,7 +1274,7 @@ def box_girder_section(
             from sectionproperties.pre.library import box_girder_section
 
             box_girder_section(
-                d=1200, b_t=1200, b_b=400, t_ft=100, t_fb=80, t_w=5
+                d=1200, b_t=1200, b_b=400, t_ft=100, t_fb=80, t_w=50
             ).plot_geometry()
     """
     outer_points: list[tuple[float, float]] = []
@@ -1311,7 +1311,7 @@ def box_girder_section(
     outer_polygon = Polygon(outer_points)
     inner_polygon = Polygon(inner_points)
 
-    return geom.Geometry(geom=outer_polygon - inner_polygon, material=material)
+    return geometry.Geometry(geom=outer_polygon - inner_polygon, material=material)
 
 
 def bulb_section(
@@ -1322,7 +1322,7 @@ def bulb_section(
     n_r: int,
     d_b: float | None = None,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a bulb section.
 
     Constructs a bulb section with the bottom left corner at the point ``(-t / 2, 0)``,
@@ -1387,4 +1387,4 @@ def bulb_section(
 
     polygon = Polygon(points)
 
-    return geom.Geometry(geom=polygon, material=material)
+    return geometry.Geometry(geom=polygon, material=material)

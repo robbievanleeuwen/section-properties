@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 from shapely import Polygon
 
-import sectionproperties.pre.geometry as geom
+import sectionproperties.pre.geometry as geometry
 from sectionproperties.pre.library.utils import draw_radius
 from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
 
@@ -14,8 +14,8 @@ def rectangular_section(
     d: float,
     b: float,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
-    r"""Constructs a rectangular section.
+) -> geometry.Geometry:
+    """Constructs a rectangular section.
 
     Constructs a rectangular section with the bottom left corner at the origin
     ``(0, 0)``, with depth ``d`` and width ``b``.
@@ -43,14 +43,14 @@ def rectangular_section(
     points = [(0, 0), (b, 0), (b, d), (0, d)]
     rectangle = Polygon(points)
 
-    return geom.Geometry(geom=rectangle, material=material)
+    return geometry.Geometry(geom=rectangle, material=material)
 
 
 def circular_section(
     d: float,
     n: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a circular section.
 
     Constructs a solid circle centered at the origin ``(0, 0)`` with diameter ``d``,
@@ -93,15 +93,15 @@ def circular_section(
 
     circle = Polygon(points)
 
-    return geom.Geometry(geom=circle, material=material)
+    return geometry.Geometry(geom=circle, material=material)
 
 
 def circular_section_by_area(
     area: float,
     n: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
-    r"""Constructs a circular section defined by its area.
+) -> geometry.Geometry:
+    """Constructs a circular section defined by its area.
 
     Constructs a solid circle centered at the origin ``(0, 0`` defined by its ``area``,
     using ``n`` points to construct the circle.
@@ -115,8 +115,8 @@ def circular_section_by_area(
         Circular section geometry
 
     Example:
-        The following example creates a circular geometry with an area of 310
-        mm\ :sup`2` with 32 points:
+        The following example creates a circular geometry with an area of 310 square mm
+        with 32 points:
 
         .. plot::
             :include-source: True
@@ -138,11 +138,11 @@ def elliptical_section(
     d_y: float,
     n: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs an elliptical section.
 
     Constructs a solid ellipse centered at the origin ``(0, 0)`` with horizontal
-    diameter ``d_x`` and vertical diameter *d_y*, using ``n`` points to construct the
+    diameter ``d_x`` and vertical diameter ``d_y``, using ``n`` points to construct the
     ellipse.
 
     Args:
@@ -182,14 +182,14 @@ def elliptical_section(
 
     ellipse = Polygon(points)
 
-    return geom.Geometry(geom=ellipse, material=material)
+    return geometry.Geometry(geom=ellipse, material=material)
 
 
 def triangular_section(
     b: float,
     h: float,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a triangular section.
 
     Constructs a right angled triangle with points ``(0, 0)``, ``(b, 0)``, ``(0, h)``.
@@ -216,14 +216,14 @@ def triangular_section(
     """
     points = [(0, 0), (b, 0), (0, h)]
     triangle = Polygon(points)
-    return geom.Geometry(triangle, material)
+    return geometry.Geometry(triangle, material)
 
 
 def triangular_radius_section(
     b: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a triangular section with a radius.
 
     Constructs a right angled isosceles triangle with points``(0, 0)``, ``(b, 0)``,
@@ -253,7 +253,7 @@ def triangular_radius_section(
     points += draw_radius(pt=(b, b), r=b, theta=3 * np.pi / 2, n=n_r, ccw=False)
     triangle = Polygon(points)
 
-    return geom.Geometry(geom=triangle, material=material)
+    return geometry.Geometry(geom=triangle, material=material)
 
 
 def cruciform_section(
@@ -263,7 +263,7 @@ def cruciform_section(
     r: float,
     n_r: int,
     material: Material = DEFAULT_MATERIAL,
-) -> geom.Geometry:
+) -> geometry.Geometry:
     """Constructs a cruciform section.
 
     Constructs a cruciform section centered at the origin ``(0, 0)``, with depth ``d``,
@@ -330,4 +330,4 @@ def cruciform_section(
 
     polygon = Polygon(points)
 
-    return geom.Geometry(geom=polygon, material=material)
+    return geometry.Geometry(geom=polygon, material=material)
