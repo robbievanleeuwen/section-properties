@@ -1,95 +1,63 @@
+"""Bridge sections library."""
+
+from __future__ import annotations
+
 import numpy as np
 from shapely import Polygon
+
 import sectionproperties.pre.geometry as geometry
-import sectionproperties.pre.pre as pre
+from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
 
 
 def super_t_girder_section(
     girder_type: int,
     girder_subtype: int = 2,
     w: float = 2100,
-    t_w: float = None,
+    t_w: float | None = None,
     t_f: float = 75,
-    material: pre.Material = pre.DEFAULT_MATERIAL,
+    material: Material = DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
-    """Constructs a Super T Girder section to AS5100.5.
+    """Constructs a super T girder section to AS5100.5.
 
-    :param int girder_type: Type of Super T (1 to 5)
-    :param int girder_subtype: Era Super T (1: pre-2001, 2:contemporary)
-    :param float w: Overall width of top flange
-    :param float t_w: Web thickness of the Super-T section (defaults to those of AS5100.5 Tb D3(B))
-    :param float t_f: Thickness of top flange (VIC (default) = 75 mm; NSW = 90 mm)
-    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
+    Args:
+        girder_type: Type of super T (1 to 5)
+        girder_subtype: Era super T (1: pre-2001, 2: contemporary)
+        w: Overall width of top flange
+        t_w: Web thickness of the Super-T section, if ``None`` defaults to those of
+            AS5100.5 Tb D3(B)
+        t_f: Thickness of top flange (VIC = 75 mm; NSW = 90 mm)
+        material: Material to associate with this geometry
 
-    The following example creates a T5 Super-T section with a 180 mm overlay slab and assigns the
-    different material properties::
+    Return:
+        Super T girder section geometry
 
-        import sectionproperties.pre.library.bridge_sections as bridge_sections
-        import sectionproperties.pre.library.primitive_sections as primitive_sections
-        from sectionproperties.pre.pre import Material
-        from sectionproperties.analysis.section import Section
+    Example:
+        The following example creates a T5 super T section with a 180 mm overlay slab:
 
-        Dslab, w, t_f = 180, 2100, 75
+        .. plot::
+            :include-source: True
+            :caption: Rectangular section geometry
 
-        precast = Material(
-            name="65 MPa",
-            elastic_modulus=37.4e3,
-            poissons_ratio=0.2,
-            yield_strength=65,
-            density=2.4e-6,
-            color="grey",
-        )
-        insitu = Material(
-            name="40 MPa",
-            elastic_modulus=32.8e3,
-            poissons_ratio=0.2,
-            yield_strength=40,
-            density=2.4e-6,
-            color="lightgrey",
-        )
+            from sectionproperties.pre.library import super_t_girder_section
+            from sectionproperties.pre.library import rectangular_section
 
-        super_t = bridge_sections.super_t_girder_section(girder_type=5, w=w, material=precast)
-        slab = primitive_sections.rectangular_section(
-            d=Dslab, b=w, material=insitu
-        ).shift_section(-w / 2, t_f)
-
-        geom = super_t + slab
-        geom.plot_geometry()
-        geom.create_mesh(mesh_sizes=[500])
-
-        sec = Section(geom)
-        sec.plot_mesh()
-
-        sec.calculate_geometric_properties()
-        sec.calculate_warping_properties()
-        sec.display_results(fmt=".3f")
-
-
-    Note that the properties are reported as ``modulus weighted`` properties (e.g. E.A) and can
-    be normalized to the reference material by dividing by that elastic modulus::
-
-        A_65 = section.get_ea() / precast.elastic_modulus
-
-    The reported section centroids are already weighted.
-
-    ..  figure:: ../images/sections/super_tee.png
-        :align: center
-        :scale: 40 %
-
-        Super Tee Girder.
+            super_t = super_t_girder_section(girder_type=5, w=2100)
+            slab = rectangular_section(d=180, b=2100).shift_section(
+                x_offset=-1050, y_offset=75
+            )
+            (super_t + slab).plot_geometry()
     """
-
     if girder_type < 1 or girder_type > 5:
         msg = "Super-T Girder Type must be between 1 and 5"
-        raise Exception(msg)
+        raise ValueError(msg)
 
-    if girder_subtype not in [1, 2]:
+    if girder_subtype not in (1, 2):
         msg = "Only 2 subtypes: pre- and post-2001"
-        raise Exception(msg)
+        raise ValueError(msg)
 
     if girder_type == 5 and girder_subtype == 1:
         msg = "Only girders T1 to T4 before 2001"
-        raise Exception(msg)
+        raise ValueError(msg)
 
     # Some super-t constants, refer to AS5100.5, Figure D1(B)
     d_fillet, b_fillet = 75, 100
@@ -98,12 +66,13 @@ def super_t_girder_section(
     web_slope = 10.556
     flg_slope = 5.347
     w_nom = 1027
+
     if girder_subtype == 1:
         flg_slope = 5.0
         w_nom = 920
 
     # Dims for the specific girder type
-    d, t_b, t_w_nom = get_super_t_girder_dims(girder_type)
+    d, t_b, t_w_nom = get_super_t_girder_dims(girder_type=girder_type)
 
     # Overriding default web thickness?
     if t_w is None:
@@ -116,40 +85,40 @@ def super_t_girder_section(
     x_fillet = w_nom / 2 - d_fillet * 1 / web_hyp
 
     # initialise points variable
-    points = []
+    points: list[tuple[float, float]] = []
 
     # Right recess
     pt_b = w_nom / 2 - web_horiz + (t_f - d_recess) / web_slope
     pt_a = pt_b + b_recess
-    points.append([pt_b, t_f - d_recess])
-    points.append([pt_a, t_f - d_recess])
-    points.append([pt_a, t_f])
+    points.append((pt_b, t_f - d_recess))
+    points.append((pt_a, t_f - d_recess))
+    points.append((pt_a, t_f))
 
     # Right flange
-    points.append([w / 2, t_f])
-    points.append([w / 2, d_chamfer])
-    points.append([w / 2 - b_chamfer, 0])
-    points.append([w_nom / 2 + b_fillet, 0])
-    points.append([x_fillet, -d_fillet])
+    points.append((w / 2, t_f))
+    points.append((w / 2, d_chamfer))
+    points.append((w / 2 - b_chamfer, 0))
+    points.append((w_nom / 2 + b_fillet, 0))
+    points.append((x_fillet, -d_fillet))
 
     # Bottom outer
     btm_corner = x_fillet - d / web_slope
-    points.append([btm_corner + d_chamfer / web_slope, -(d - d_chamfer)])
-    points.append([btm_corner - b_chamfer, -d])
-    points.append([-btm_corner + b_chamfer, -d])
-    points.append([-btm_corner - d_chamfer / web_slope, -(d - d_chamfer)])
+    points.append((btm_corner + d_chamfer / web_slope, -(d - d_chamfer)))
+    points.append((btm_corner - b_chamfer, -d))
+    points.append((-btm_corner + b_chamfer, -d))
+    points.append((-btm_corner - d_chamfer / web_slope, -(d - d_chamfer)))
 
     # Left flange
-    points.append([-x_fillet, -d_fillet])
-    points.append([-w_nom / 2 - b_fillet, 0])
-    points.append([-w / 2 + b_chamfer, 0])
-    points.append([-w / 2, d_chamfer])
-    points.append([-w / 2, t_f])
+    points.append((-x_fillet, -d_fillet))
+    points.append((-w_nom / 2 - b_fillet, 0))
+    points.append((-w / 2 + b_chamfer, 0))
+    points.append((-w / 2, d_chamfer))
+    points.append((-w / 2, t_f))
 
     # Left Recess
-    points.append([-pt_a, t_f])
-    points.append([-pt_a, t_f - d_recess])
-    points.append([-pt_b, t_f - d_recess])
+    points.append((-pt_a, t_f))
+    points.append((-pt_a, t_f - d_recess))
+    points.append((-pt_b, t_f - d_recess))
 
     # Bottom inner - find intersection point
     y10 = t_f - d_recess
@@ -158,63 +127,41 @@ def super_t_girder_section(
         y10 / web_slope - y20 * flg_slope - pt_b
     )
     x_inner = flg_slope * (y20 - y_inner)
-    points.append([x_inner, y_inner])
-    points.append([0, y20])
-    points.append([-x_inner, y_inner])
+    points.append((x_inner, y_inner))
+    points.append((0, y20))
+    points.append((-x_inner, y_inner))
 
-    return geometry.Geometry(Polygon(points), material)
+    return geometry.Geometry(geom=Polygon(points), material=material)
 
 
 def i_girder_section(
-    girder_type: int, material: pre.Material = pre.DEFAULT_MATERIAL
+    girder_type: int,
+    material: Material = DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a precast I girder section to AS5100.5.
 
-    :param int girder_type: Type of I Girder (1 to 4)
-    :param Optional[sectionproperties.pre.pre.Material]: Material to associate with this geometry
+    Args:
+        girder_type: Type of I Girder (1 to 4)
+        material: Material to associate with this geometry
 
-    As an example, replicate the table shown in AS5100.5 Fig. D1(A)::
+    Return:
+        I girder section geometry
 
-        import pandas as pd
-        import sectionproperties.pre.library.bridge_sections as bridge_sections
-        from sectionproperties.analysis.section import Section
+    Example:
+        The following example creates a type 1 precast I girder section with a 180 mm
+        overlay slab:
 
-        df = pd.DataFrame(columns=["Ag", "Zt", "Zb", "I", "dy", "th"])
+        .. plot::
+            :include-source: True
+            :caption: Rectangular section geometry
 
-        for i in range(4):
-            geom = bridge_sections.i_girder_section(girder_type=i + 1)
-            dims = bridge_sections.get_i_girder_dims(girder_type=i + 1)
-            d = sum(dims[-5:])
-            geom.create_mesh(mesh_sizes=[200])
-            geom.plot_geometry()
-            sec = Section(geom)
-            sec.plot_mesh()
-            sec.calculate_geometric_properties()
-            sec.calculate_warping_properties()
+            from sectionproperties.pre.library import i_girder_section
+            from sectionproperties.pre.library import rectangular_section
 
-            A = sec.get_area()
-            th = A / (sec.get_perimeter() / 2)
-
-            df.loc[i] = [
-                A,
-                *(sec.get_z()[:2]),
-                sec.get_ic()[0],
-                d + sec.get_c()[1],
-                th,
-            ]
-
-        print(df)
-
-    Note that the section depth is obtained by summing the heights from the section dictionary in
-    ``get_i_girder_dims()``.
-
-    ..  figure:: ../images/sections/i_girder.png
-        :align: center
-        :scale: 40 %
-
-        I Girder.
+            i_girder = i_girder_section(girder_type=1)
+            slab = rectangular_section(d=180, b=2100).shift_section(x_offset=-1050)
+            (i_girder + slab).plot_geometry()
     """
-
     if girder_type < 1 or girder_type > 4:
         msg = "I Girder Type must be between 1 and 4"
         raise Exception(msg)
@@ -224,34 +171,38 @@ def i_girder_section(
     # Some section constants
     d = sum([h_tf, h_ts, h_w, h_bs, h_bf])
     inset_tf = (b_tf - b_w) / 2
-    inset_bf = (b_bf - b_w) / 2
 
     # initialise points variable
-    points = []
+    points: list[tuple[float, float]] = []
 
     # Origin at centre top; clockwise from top right corner
-    points.append([b_tf / 2, 0])
-    points.append([b_tf / 2, -h_tf])
-    points.append([b_tf / 2 - inset_tf, -h_tf - h_ts])
-    points.append([b_tf / 2 - inset_tf, -h_tf - h_ts - h_w])
-    points.append([b_bf / 2, -d + h_bf])
-    points.append([b_bf / 2, -d])
-    points.append([-b_bf / 2, -d])
-    points.append([-b_bf / 2, -d + h_bf])
-    points.append([-b_tf / 2 + inset_tf, -h_tf - h_ts - h_w])
-    points.append([-b_tf / 2 + inset_tf, -h_tf - h_ts])
-    points.append([-b_tf / 2, -h_tf])
-    points.append([-b_tf / 2, 0])
+    points.append((b_tf / 2, 0))
+    points.append((b_tf / 2, -h_tf))
+    points.append((b_tf / 2 - inset_tf, -h_tf - h_ts))
+    points.append((b_tf / 2 - inset_tf, -h_tf - h_ts - h_w))
+    points.append((b_bf / 2, -d + h_bf))
+    points.append((b_bf / 2, -d))
+    points.append((-b_bf / 2, -d))
+    points.append((-b_bf / 2, -d + h_bf))
+    points.append((-b_tf / 2 + inset_tf, -h_tf - h_ts - h_w))
+    points.append((-b_tf / 2 + inset_tf, -h_tf - h_ts))
+    points.append((-b_tf / 2, -h_tf))
+    points.append((-b_tf / 2, 0))
 
-    return geometry.Geometry(Polygon(points), material)
+    return geometry.Geometry(geom=Polygon(points), material=material)
 
 
-def get_super_t_girder_dims(girder_type):
-    """Returns a dictionary of Super-T dimensions, refer to AS5100.5, Appendix D
+def get_super_t_girder_dims(
+    girder_type: int,
+) -> tuple[int, int, int]:
+    """Returns critical dimensions of super t girders, refer to AS5100.5, Appendix D.
 
-    :param int girder_type: Type of Super T (1 to 5)
+    Args:
+        girder_type: Type of Super T (1 to 5)
+
+    Return:
+        Girder depth, base thickness and web thickness
     """
-
     girder_dims = {
         "T1": {"d": 675, "t_b": 240, "t_w": 100},
         "T2": {"d": 925, "t_b": 240, "t_w": 100},
@@ -269,12 +220,17 @@ def get_super_t_girder_dims(girder_type):
     return d, t_b, t_w
 
 
-def get_i_girder_dims(girder_type):
-    """Returns a dictionary of I girder dimensions, refer to AS5100.5, Appendix D
+def get_i_girder_dims(
+    girder_type: int,
+) -> tuple[int, int, int, int, int, int, int, int]:
+    """Returns critical I girder dimensions, refer to AS5100.5, Appendix D.
 
-    :param int girder_type: Type of I Girder (1 to 4)
+    Args:
+        girder_type: Type of I Girder (1 to 4)
+
+    Return:
+        Critical I girder dimensions
     """
-
     girder_dims = {
         "T1": {
             "b_tf": 200,
