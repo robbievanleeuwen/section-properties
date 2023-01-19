@@ -10,5 +10,6 @@
     :recursive:
 
     sectionproperties.pre
+    sectionproperties.analysis
     sectionproperties.post
 ```

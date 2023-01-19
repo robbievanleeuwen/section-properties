@@ -1,6 +1,7 @@
 """FEA classes and miscellaneous functions.
 
 Finite element classes:
+
 * Tri6 (six-noded quadratic triangular element)
 """
 
@@ -20,12 +21,12 @@ class Tri6:
     Provides methods for the calculation of section properties based on the finite
     element method.
 
-    Args:
+    Attributes:
         el_id: Unique element id
         coords: A ``2 x 6`` array of the coordinates of the Tri6 nodes. The first three
             columns relate to the vertices of the triangle and the last three columns
             correspond to the mid-nodes.
-        param node_ids: A list of the global node ids for the current element
+        node_ids: A list of the global node ids for the current element
         material: Material object for the current finite element
     """
 
@@ -71,8 +72,8 @@ class Tri6:
         """Calculates the geometric properties for the current finite element.
 
         Return:
-        Tuple containing the geometric properties, and the elastic and shear moduli of
-            the element: (``area``, ``qx``, ``qy``, ``ixx``, ``iyy``, ``ixy``, ``e``,
+            Tuple containing the geometric properties, and the elastic and shear moduli
+            of the element: (``area``, ``qx``, ``qy``, ``ixx``, ``iyy``, ``ixy``, ``e``,
             ``g``, ``rho``)
         """
         # initialise geometric properties
@@ -617,7 +618,7 @@ class Tri6:
         r"""Calculates the stress at a point resulting from a specified loading.
 
         Args:
-            p: Point (``x`` ,``y``) in the global coordinate system that is within the
+            p: Point (``x``, ``y``) in the global coordinate system that is within the
                 element
             n: Axial force
             mxx: Bending moment about the centroidal xx-axis
@@ -855,9 +856,9 @@ def shape_function(
 
     Return:
         The value of the shape functions ``N(i)`` at the given Gauss point
-            (``[1 x 6]``), the derivative of the shape functions in the *j-th* global
-            direction ``b(i,j)`` (``[2 x 6]``) and the determinant of the Jacobian
-            matrix ``j``
+        (``[1 x 6]``), the derivative of the shape functions in the *j-th* global
+        direction ``B(i,j)`` (``[2 x 6]``) and the determinant of the Jacobian
+        matrix ``j``
     """
     # location of isoparametric co-ordinates for each Gauss point
     eta = gauss_point[1]
@@ -1049,11 +1050,12 @@ def point_above_line(
 ) -> bool:
     """Determines whether a point is a above or below a line.
 
-    u: Unit vector parallel to the line, of size ``[1 x 2]``
-    px: x-coordinate of a point on the line
-    py: y-coordinate of a point on the line
-    x: x-coordinate of the point to be tested
-    y: y-coordinate of the point to be tested
+    Args:
+        u: Unit vector parallel to the line, of size ``[1 x 2]``
+        px: x-coordinate of a point on the line
+        py: y-coordinate of a point on the line
+        x: x-coordinate of the point to be tested
+        y: y-coordinate of the point to be tested
 
     Return:
         Returns True if the point is above the line or False*if the point is below the

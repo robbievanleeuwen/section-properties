@@ -28,9 +28,9 @@ def solve_cgs(
     Args:
         k: ``N x N`` matrix of the linear system
         f: ``N x 1`` right hand side of the linear system
+        m: Preconditioner for the linear matrix approximating the inverse of ``k``
         tol: Tolerance for the solver to achieve. The algorithm terminates when either
             the relative or the absolute residual is below ``tol``
-        m: Preconditioner for the linear matrix approximating the inverse of ``k``
 
     Return:
         The solution vector to the linear system of equations
@@ -56,10 +56,10 @@ def solve_cgs_lagrange(
 
     Args:
         k_lg: ``(N+1) x (N+1)`` Lagrangian multiplier matrix of the linear system
-        f:`` N x 1`` right hand side of the linear system
+        f: ``N x 1`` right hand side of the linear system
+        m: Preconditioner for the linear matrix approximating the inverse of ``k``
         tol: Tolerance for the solver to achieve. The algorithm terminates when either
             the relative or the absolute residual is below ``tol``
-        m: Preconditioner for the linear matrix approximating the inverse of ``k``
 
     Return:
         The solution vector to the linear system of equations
@@ -105,7 +105,7 @@ def solve_direct_lagrange(
     """Solves a linear system using the direct solver method (Lagrangian multiplier).
 
     Args:
-        k: ``(N+1) x (N+1)`` Lagrangian multiplier matrix of the linear system
+        k_lg: ``(N+1) x (N+1)`` Lagrangian multiplier matrix of the linear system
         f: ``N x 1`` right hand side of the linear system
 
     Return:
@@ -149,8 +149,13 @@ class CustomTimeElapsedColumn(ProgressColumn):
         return Text(elapsed_string, style="progress.elapsed")
 
 
-def create_progress():
-    """Returns a Rich Progress class."""
+def create_progress() -> Progress:
+    """Returns a Rich Progress class.
+
+    Return:
+        Rich Progress class containing a spinner, progress description, percentage and
+        time
+    """
     return Progress(
         SpinnerColumn(),
         TextColumn(

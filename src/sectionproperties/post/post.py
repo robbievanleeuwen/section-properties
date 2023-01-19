@@ -44,6 +44,9 @@ def plotting_context(
             plot on. This may be a tuple if a 2D array of plots is returned.  The
             default value of None will select the top left plot.
         kwargs: Passed to :func:`matplotlib.pyplot.subplots`
+
+    Yields:
+        Matplotlib figure and axes
     """
     if filename:
         render = False

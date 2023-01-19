@@ -17,15 +17,13 @@ class Material:
     https://matplotlib.org/stable/api/colors_api.html and
     https://matplotlib.org/stable/gallery/color/named_colors.html for more information.
 
-    Args:
+    Attributes:
         name: Material name
         elastic_modulus: Material modulus of elasticity
         poissons_ratio: Material Poisson's ratio
         yield_strength: Material yield strength
         density: Material density (mass per unit volume)
         color: Material color for rendering
-
-    Attributes:
         shear_modulus: Material shear modulus, derived from the elastic modulus and
             Poisson's ratio assuming an isotropic material
 
