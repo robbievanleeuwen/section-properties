@@ -243,7 +243,7 @@ def concrete_column_section(
 
     Raises:
         ValueError: If the number of bars in either 'n_x' or 'n_y' is not greater than
-        or equal to 2
+            or equal to 2
 
     Example:
         The following example creates a 600 mm deep x 300 mm wide concrete column. The
@@ -573,18 +573,6 @@ def concrete_circular_section(
 
             geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
             Section(geometry=geom).plot_mesh()
-
-    ..  figure:: ../images/sections/concrete_circular_section_geometry.png
-        :align: center
-        :scale: 50 %
-
-        Concrete circular section geometry.
-
-    ..  figure:: ../images/sections/concrete_circular_section_mesh.png
-        :align: center
-        :scale: 50 %
-
-        Mesh generated from the above geometry.
     """
     if n_bar < 2:
         raise ValueError("Please provide 2 or more steel reinforcing bars.")

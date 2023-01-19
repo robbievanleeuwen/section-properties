@@ -159,7 +159,7 @@ def i_girder_section(
             from sectionproperties.pre.library import rectangular_section
 
             i_girder = i_girder_section(girder_type=1)
-            slab = rectangular_section(d=180, b=2100).shift_section(x_offset=-1050)
+            slab = rectangular_section(d=180, b=1200).shift_section(x_offset=-1050)
             (i_girder + slab).plot_geometry()
     """
     if girder_type < 1 or girder_type > 4:
