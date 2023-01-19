@@ -1,72 +1,90 @@
+"""Post-processor methods."""
+
+from __future__ import annotations
+
 import contextlib
-import numpy as np
+from typing import TYPE_CHECKING
+
+import matplotlib.axes
 import matplotlib.pyplot as plt
+import numpy as np
 from rich.console import Console
 from rich.table import Table
+
 from sectionproperties.pre.pre import DEFAULT_MATERIAL
+
+
+if TYPE_CHECKING:
+    from sectionproperties.analysis.section import Section
 
 
 @contextlib.contextmanager
 def plotting_context(
-    ax=None, pause=True, title="", filename="", render=True, axis_index=None, **kwargs
+    ax: matplotlib.axes.Axes | None = None,
+    pause: bool = True,
+    title: str = "",
+    filename: str = "",
+    render: bool = True,
+    axis_index: int | tuple[int, int] | None = None,
+    **kwargs,
 ):
     """Executes code required to set up a matplotlib figure.
 
-    :param ax: Axes object on which to plot
-    :type ax: :class:`matplotlib.axes.Axes`
-    :param bool pause: If set to true, the figure pauses the script until the window is closed. If
-        set to false, the script continues immediately after the window is rendered.
-    :param string title: Plot title
-    :param string filename: Pass a non-empty string or path to save the image as. If this option is
-        used, the figure is closed after the file is saved.
-    :param bool render: If set to False, the image is not displayed. This may be useful if the
-        figure or axes will be embedded or further edited before being displayed.
-    :param axis_index: If more than 1 axes is created by subplot, then this is the axis to plot on.
-        This may be a tuple if a 2D array of plots is returned.  The default value of None will
-        select the top left plot.
-    :type axis_index: Union[None, int, Tuple(int)]
-    :param kwargs: Passed to :func:`matplotlib.pyplot.subplots`
+    Args:
+        ax: Axes object on which to plot
+        pause: If set to True, the figure pauses the script until the window is closed.
+            If set to False, the script continues immediately after the window is
+            rendered.
+        title: Plot title
+        filename: Pass a non-empty string or path to save the image as. If this option
+            is used, the figure is closed after the file is saved.
+        render: If set to False, the image is not displayed. This may be useful if the
+            figure or axes will be embedded or further edited before being displayed.
+        axis_index: If more than 1 axis is created by subplot, then this is the axis to
+            plot on. This may be a tuple if a 2D array of plots is returned.  The
+            default value of None will select the top left plot.
+        kwargs: Passed to :func:`matplotlib.pyplot.subplots`
     """
-
     if filename:
         render = False
 
     if ax is None:
-        if not render:
-            plt.ioff()
-        elif pause:
+        if not render or pause:
             plt.ioff()
         else:
             plt.ion()
 
         ax_supplied = False
-        (fig, ax) = plt.subplots(**kwargs)
+        fig, ax = plt.subplots(**kwargs)
 
         try:
             if axis_index is None:
                 axis_index = (0,) * ax.ndim
+
             ax = ax[axis_index]
         except (AttributeError, TypeError):
             pass  # only 1 axis, not an array
         except IndexError as exc:
-            raise ValueError(
-                f"axis_index={axis_index} is not compatible with arguments to subplots: {kwargs}"
-            ) from exc
+            msg = f"axis_index={axis_index} is not compatible "
+            msg += f"with arguments to subplots: {kwargs}"
+            raise ValueError(msg) from exc
     else:
         fig = ax.get_figure()
         ax_supplied = True
+
         if not render:
             plt.ioff()
 
     yield fig, ax
 
-    ax.set_title(title)
-    plt.tight_layout()
-    ax.set_aspect("equal", anchor="C")
+    if ax is not None:
+        ax.set_title(title)
+        plt.tight_layout()
+        ax.set_aspect("equal", anchor="C")
 
     # if no axes was supplied, finish the plot and return the figure and axes
     if ax_supplied:
-        # if an axis was supplied, don't continue with displaying or configuring the plot
+        # if an axis was supplied, don't continue displaying or configuring the plot
         return
 
     if filename:
@@ -82,56 +100,103 @@ def plotting_context(
             plt.pause(0.001)
 
 
-def draw_principal_axis(ax, phi, cx, cy):
-    """
-    Draws the principal axis on a plot.
+def draw_principal_axis(
+    ax: matplotlib.axes.Axes,
+    phi: float,
+    cx: float,
+    cy: float,
+) -> None:
+    """Draws the principal axis on a plot.
 
-    :param ax: Axes object on which to plot
-    :type ax: :class:`matplotlib.axes.Axes`
-    :param float phi: Principal axis angle in radians
-    :param float cx: x-location of the centroid
-    :param float cy: y-location of the centroid
+    Args:
+        ax: Axes object on which to plot
+        phi: Principal axis angle in radians
+        cx: x-location of the centroid
+        cy: y-location of the centroid
     """
     # get current axis limits
-    (xmin, xmax) = ax.get_xlim()
-    (ymin, ymax) = ax.get_ylim()
-    lims = [xmin, xmax, ymin, ymax]
+    xmin, xmax = ax.get_xlim()
+    ymin, ymax = ax.get_ylim()
+    lims = (xmin, xmax, ymin, ymax)
 
     # form rotation matrix
-    R = np.array([[np.cos(phi), -np.sin(phi)], [np.sin(phi), np.cos(phi)]])
+    r = np.array([[np.cos(phi), -np.sin(phi)], [np.sin(phi), np.cos(phi)]])
 
     # get basis vectors in the directions of the principal axes
-    x11_basis = R.dot(np.array([1, 0]))
-    y22_basis = R.dot(np.array([0, 1]))
+    x11_basis = r.dot(np.array([1, 0]))
+    y22_basis = r.dot(np.array([0, 1]))
 
-    def add_point(vec, basis, centroid, num, denom):
-        """Adds a point to the list *vec* if there is an intersection."""
+    def add_point(
+        vec: list[list[float]],
+        basis: np.ndarray,
+        centroid: tuple[float, float],
+        num: float,
+        denom: float,
+    ) -> None:
+        """Adds a point to the list ``vec`` if there is an intersection.
 
+        Args:
+            vec: List of points to add to
+            basis: Basis vector of principal axis
+            centroid: Geometry centroid
+            num: Numberator
+            denom: Denominator
+        """
         if denom != 0:
             point = basis * num / denom + centroid
             vec.append([point[0], point[1]])
 
-    def get_principal_points(basis, lims, centroid):
-        """Determines the intersections of the principal axis with the four lines defining a
-        bounding box around the limits of the cross-section. The middle two intersection points are
-        returned for plotting.
+    def get_principal_points(
+        basis: np.ndarray,
+        lims: tuple[float, float, float, float],
+        centroid: tuple[float, float],
+    ) -> np.ndarray:
+        """Returns intersection points of prinicipal axis with bounding box.
 
-        :param basis: Basis (unit) vector in the direction of the principal axis
-        :type basis: :class:`numpy.ndarray`
-        :param lims: Tuple containing the axis limits *(xmin, xmax, ymin, ymax)*
-        :type lims: tuple(float, float, float, float)
-        :param centroid: Centroid *(cx, cy)* of the cross-section, through which the principal axis
-            passes
-        :type centroid: list[float, float]
+        Determines the intersections of the principal axis with the four lines
+        defining a bounding box around the limits of the cross-section. The middle two
+        intersection points are returned for plotting.
+
+        Args:
+            basis: Basis (unit) vector in the direction of the principal axis
+            lims: Tuple containing the axis limits ``(xmin, xmax, ymin, ymax)``
+            centroid: Centroid ``(cx, cy)`` of the cross-section, through which the
+                principal axis passes
+
+        Return:
+            List of intersection points
         """
-
         pts = []  # initialise list containing the intersection points
 
         # add intersection points to the list
-        add_point(pts, basis, centroid, lims[0] - centroid[0], basis[0])
-        add_point(pts, basis, centroid, lims[1] - centroid[0], basis[0])
-        add_point(pts, basis, centroid, lims[2] - centroid[1], basis[1])
-        add_point(pts, basis, centroid, lims[3] - centroid[1], basis[1])
+        add_point(
+            vec=pts,
+            basis=basis,
+            centroid=centroid,
+            num=lims[0] - centroid[0],
+            denom=basis[0],
+        )
+        add_point(
+            vec=pts,
+            basis=basis,
+            centroid=centroid,
+            num=lims[1] - centroid[0],
+            denom=basis[0],
+        )
+        add_point(
+            vec=pts,
+            basis=basis,
+            centroid=centroid,
+            num=lims[2] - centroid[1],
+            denom=basis[1],
+        )
+        add_point(
+            vec=pts,
+            basis=basis,
+            centroid=centroid,
+            num=lims[3] - centroid[1],
+            denom=basis[1],
+        )
 
         # sort point vector
         pts = np.array(pts)
@@ -144,22 +209,32 @@ def draw_principal_axis(ax, phi, cx, cy):
         return pts
 
     # get intersection points for the 11 and 22 axes
-    x11 = get_principal_points(x11_basis, lims, [cx, cy])
-    y22 = get_principal_points(y22_basis, lims, [cx, cy])
+    x11 = get_principal_points(
+        basis=x11_basis,
+        lims=lims,
+        centroid=(cx, cy),
+    )
+    y22 = get_principal_points(
+        basis=y22_basis,
+        lims=lims,
+        centroid=(cx, cy),
+    )
 
     # plot the principal axis
     ax.plot(x11[:, 0], x11[:, 1], "k--", alpha=0.5, label="11-axis")
     ax.plot(y22[:, 0], y22[:, 1], "k-.", alpha=0.5, label="22-axis")
 
 
-def print_results(cross_section, fmt):
+def print_results(
+    cross_section: Section,
+    fmt: str,
+) -> None:
     """Prints the results that have been calculated to the terminal.
 
-    :param cross_section: structural cross-section object
-    :type cross_section: :class:`~sectionproperties.analysis.section.CrossSection`
-    :param string fmt: Number format
+    Args:
+        cross_section: Section object
+        fmt: Number formatting string
     """
-
     if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
         prefix = "E."
     else:
@@ -274,15 +349,15 @@ def print_results(cross_section, fmt):
         table.add_row("x1_se", "{:>{fmt}}".format(x1_se, fmt=fmt))
         table.add_row("y2_se", "{:>{fmt}}".format(y2_se, fmt=fmt))
 
-    (A_sx, A_sy) = cross_section.get_As()
-    if A_sx is not None:
-        table.add_row(prefix + "A_sx", "{:>{fmt}}".format(A_sx, fmt=fmt))
-        table.add_row(prefix + "A_sy", "{:>{fmt}}".format(A_sy, fmt=fmt))
+    (a_sx, a_sy) = cross_section.get_As()
+    if a_sx is not None:
+        table.add_row(prefix + "A_sx", "{:>{fmt}}".format(a_sx, fmt=fmt))
+        table.add_row(prefix + "A_sy", "{:>{fmt}}".format(a_sy, fmt=fmt))
 
-    (A_s11, A_s22) = cross_section.get_As_p()
-    if A_s11 is not None:
-        table.add_row(prefix + "A_s11", "{:>{fmt}}".format(A_s11, fmt=fmt))
-        table.add_row(prefix + "A_s22", "{:>{fmt}}".format(A_s22, fmt=fmt))
+    (a_s11, a_s22) = cross_section.get_As_p()
+    if a_s11 is not None:
+        table.add_row(prefix + "A_s11", "{:>{fmt}}".format(a_s11, fmt=fmt))
+        table.add_row(prefix + "A_s22", "{:>{fmt}}".format(a_s22, fmt=fmt))
 
     (beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus) = cross_section.get_beta()
     if beta_x_plus is not None:
