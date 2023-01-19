@@ -193,9 +193,9 @@ def polygon_hollow_section(
     d: float,
     t: float,
     n_sides: int,
-    r_in: float = 0,
+    r_in: float = 0.0,
     n_r: int = 1,
-    rot: float = 0,
+    rot: float = 0.0,
     material: Material = DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a regular hollow polygon section.

@@ -9,4 +9,5 @@
     :template: custom-module-template.rst
     :recursive:
 
+    sectionproperties.pre
 ```

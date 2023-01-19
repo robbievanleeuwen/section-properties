@@ -1,238 +1,315 @@
-from typing import Union, Optional
+"""Concrete sections library."""
+
+from __future__ import annotations
+
 import numpy as np
-import sectionproperties.pre.pre as pre
+
 import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.library.primitive_sections as primitive_sections
+from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
 
 
 def concrete_rectangular_section(
-    b: float,
     d: float,
+    b: float,
     dia_top: float,
+    area_top: float,
     n_top: int,
+    c_top: float,
     dia_bot: float,
+    area_bot: float,
     n_bot: int,
-    n_circle: int,
-    cover: float,
-    dia_side: Optional[float] = None,
+    c_bot: float,
+    dia_side: float | None = None,
+    area_side: float | None = None,
     n_side: int = 0,
-    area_top: Optional[float] = None,
-    area_bot: Optional[float] = None,
-    area_side: Optional[float] = None,
-    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
-    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    c_side: float = 0.0,
+    n_circle: int = 4,
+    conc_mat: Material = DEFAULT_MATERIAL,
+    steel_mat: Material = DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
-    """Constructs a concrete rectangular section of width *b* and depth *d*, with
-    *n_top* top steel bars of diameter *dia_top*, *n_bot* bottom steel bars of diameter
-    *dia_bot*, *n_side* left & right side steel bars of diameter *dia_side* discretised
-    with *n_circle* points with equal side and top/bottom *cover* to the steel.
+    """Constructs a reinforced concrete rectangular section.
 
-    :param float b: Concrete section width
-    :param float d: Concrete section depth
-    :param float dia_top: Diameter of the top steel reinforcing bars
-    :param int n_top: Number of top steel reinforcing bars
-    :param float dia_bot: Diameter of the bottom steel reinforcing bars
-    :param int n_bot: Number of bottom steel reinforcing bars
-    :param int n_circle: Number of points discretising the steel reinforcing bars
-    :param float cover: Side and bottom cover to the steel reinforcing bars
-    :param float dia_side: If provided, diameter of the side steel reinforcing bars
-    :param int n_side: If provided, number of side bars either side of the section
-    :param float area_top: If provided, constructs top reinforcing bars based on their
-        area rather than diameter (prevents the underestimation of steel area due to
-        circle discretisation)
-    :param float area_bot: If provided, constructs bottom reinforcing bars based on
-        their area rather than diameter (prevents the underestimation of steel area due
-        to circle discretisation)
-    :param float area_side: If provided, constructs side reinforcing bars based on
-        their area rather than diameter (prevents the underestimation of steel area due
-        to circle discretisation)
-    :param conc_mat: Material to associate with the concrete
-    :param steel_mat: Material to associate with the steel
+    Constructs a reinforced concrete rectangular section of depth ``d`` and width ``b``.
 
-    :raises ValueError: If the number of bars is not greater than or equal to 2 in an
-        active layer
+    .. note::
+        As the reinforcing bars are described by discretised circles, the area of each
+        bar is required to ensure that the correct reinforcing area is provided.
 
-    The following example creates a 600D x 300W concrete beam with 3N20 bottom steel
-    reinforcing bars and 30 mm cover::
+    Args:
+        d: Concrete section depth
+        b: Concrete section width
+        dia_top: Diameter of the top reinforcing bars, used for calculating bar
+            placement
+        area_top: Area of the top reinforcing bars
+        n_top: Number of top, equally spaced reinforcing bars
+        c_top: Clear cover to the top reinforcing bars
+        dia_bot: Diameter of the bottom reinforcing bars, used for calculating bar
+            placement
+        area_bot: Area of the bottom reinforcing bars
+        n_bot: Number of bottom, equally spaced reinforcing bars
+        c_bot: Clear cover to the bottom reinforcing bars
+        dia_side: Diameter of the side reinforcing bars, used for calculating bar
+            placement
+        area_side: Area of the side reinforcing bars
+        n_side: Number of side, equally spaced reinforcing bars
+        c_side: Clear cover to the side reinforcing bars
+        n_circle: Number of points used to discretise the circular reinforcing bars
+        conc_mat: Material object to assign to the concrete area
+        steel_mat: Material object to assign to the steel area
 
-        from sectionproperties.pre.library.concrete_sections import concrete_rectangular_section
-        from sectionproperties.pre.pre import Material
+    Return:
+        Reinforced concrete rectangular section geometry
 
-        concrete = Material(
-            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
-            density=2.4e-6, color='lightgrey'
-        )
-        steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
-            density=7.85e-6, color='grey'
-        )
+    Example:
+        The following example creates a 600 mm deep x 300 mm wide concrete beam. The
+        beam is reinforced with 3 x 16 mm top bars (20 mm cover), 3 x 20 mm bottom bars
+        (30 mm cover), and 2 x 12 mm side bars (30 mm cover). A coarse finite element
+        mesh is generated to show the different material regions:
 
-        geometry = concrete_rectangular_section(
-            b=300, d=600, dia_top=20, n_top=0, dia_bot=20, n_bot=3, n_circle=24, cover=30,
-            conc_mat=concrete, steel_mat=steel
-        )
-        geometry.create_mesh(mesh_sizes=[500])
+        .. plot::
+            :include-source: True
+            :caption: Reinforced concrete rectangular section geometry
 
-    ..  figure:: ../images/sections/concrete_rectangular_section_geometry.png
-        :align: center
-        :scale: 50 %
+            from sectionproperties.pre import Material
+            from sectionproperties.pre.library import concrete_rectangular_section
+            from sectionproperties.analysis import Section
 
-        Concrete rectangular section geometry.
+            concrete = Material(
+                name="Concrete",
+                elastic_modulus=30.1e3,
+                poissons_ratio=0.2,
+                yield_strength=32,
+                density=2.4e-6,
+                color="lightgrey",
+            )
+            steel = Material(
+                name="Steel",
+                elastic_modulus=200e3,
+                poissons_ratio=0.3,
+                yield_strength=500,
+                density=7.85e-6,
+                color="grey",
+            )
 
-    ..  figure:: ../images/sections/concrete_rectangular_section_mesh.png
-        :align: center
-        :scale: 50 %
+            geom = concrete_rectangular_section(
+                d=600,
+                b=300,
+                dia_top=16,
+                area_top=200,
+                n_top=3,
+                c_top=20,
+                dia_bot=20,
+                area_bot=310,
+                n_bot=3,
+                c_bot=30,
+                dia_side=12,
+                area_side=110,
+                n_side=2,
+                c_side=30,
+                n_circle=16,
+                conc_mat=concrete,
+                steel_mat=steel,
+            )
 
-        Mesh generated from the above geometry.
+            geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
+            Section(geometry=geom).plot_mesh()
     """
-
-    if n_top == 1 or n_bot == 1:
-        raise ValueError("If adding a reinforcing layer, provide 2 or more bars.")
-
     # create rectangular concrete geometry
     geom = primitive_sections.rectangular_section(b=b, d=d, material=conc_mat)
 
     # calculate reinforcing bar dimensions for top and bottom layers
-    x_i_top = cover + dia_top / 2
-    x_i_bot = cover + dia_bot / 2
-    spacing_top = (b - 2 * cover - dia_top) / (n_top - 1)
-    spacing_bot = (b - 2 * cover - dia_bot) / (n_bot - 1)
+    if n_top == 1:
+        x_i_top = b / 2
+        spacing_top = 0
+    else:
+        if c_side:
+            x_i_top = c_side + dia_top / 2
+            spacing_top = (b - 2 * c_side - dia_top) / (n_top - 1)
+        else:
+            x_i_top = c_top + dia_top / 2
+            spacing_top = (b - 2 * c_top - dia_top) / (n_top - 1)
+
+    if n_bot == 1:
+        x_i_bot = b / 2
+        spacing_bot = 0
+    else:
+        if c_side:
+            x_i_bot = c_side + dia_bot / 2
+            spacing_bot = (b - 2 * c_side - dia_bot) / (n_bot - 1)
+        else:
+            x_i_bot = c_bot + dia_bot / 2
+            spacing_bot = (b - 2 * c_bot - dia_bot) / (n_bot - 1)
 
     # calculate reinforcing bar dimensions for side layers if specified
-    if n_side != 0:
-        x_i_side_left = cover + dia_side / 2
+    if dia_side and n_side != 0:
+        x_i_side_left = c_side + dia_side / 2
         x_i_side_right = b - x_i_side_left
-        spacing_side = (d - 2 * cover - dia_top / 2 - dia_bot / 2) / (n_side + 1)
 
-    if area_top is None:
-        area_top = np.pi * dia_top**2 / 4
-    if area_bot is None:
-        area_bot = np.pi * dia_bot**2 / 4
-    if area_side is None and dia_side is not None:
-        area_side = np.pi * dia_side**2 / 4
+        if n_side == 1:
+            spacing_side = 0
+        else:
+            spacing_side = (d - c_top - c_bot - dia_top / 2 - dia_bot / 2) / (
+                n_side + 1
+            )
+    else:
+        x_i_side_left = 0
+        x_i_side_right = 0
+        spacing_side = 0
 
     # add top bars
-    for i in range(n_top):
+    for idx in range(n_top):
         bar = primitive_sections.circular_section_by_area(
-            area=area_top, n=n_circle, material=steel_mat
-        )
-        bar = bar.shift_section(
-            x_offset=x_i_top + spacing_top * i, y_offset=d - cover - dia_top / 2
+            area=area_top,
+            n=n_circle,
+            material=steel_mat,
+        ).shift_section(
+            x_offset=x_i_top + spacing_top * idx,
+            y_offset=d - c_top - dia_top / 2,
         )
         geom = (geom - bar) + bar
 
     # add bot bars
     for i in range(n_bot):
         bar = primitive_sections.circular_section_by_area(
-            area=area_bot, n=n_circle, material=steel_mat
-        )
-        bar = bar.shift_section(
-            x_offset=x_i_bot + spacing_bot * i, y_offset=cover + dia_bot / 2
+            area=area_bot,
+            n=n_circle,
+            material=steel_mat,
+        ).shift_section(
+            x_offset=x_i_bot + spacing_bot * i,
+            y_offset=c_bot + dia_bot / 2,
         )
         geom = (geom - bar) + bar
 
-    # add side bars if specified
-    if n_side != 0:
+    # add side bars
+    if area_side:
         for i in range(n_side):
             bar_left = primitive_sections.circular_section_by_area(
-                area=area_side, n=n_circle, material=steel_mat
-            )
-            bar_right = bar_left
-
-            bar_left = bar_left.shift_section(
+                area=area_side,
+                n=n_circle,
+                material=steel_mat,
+            ).shift_section(
                 x_offset=x_i_side_left,
-                y_offset=cover + dia_bot / 2 + spacing_side * (i + 1),
+                y_offset=c_bot + dia_bot / 2 + spacing_side * (i + 1),
             )
-            bar_right = bar_right.shift_section(
-                x_offset=x_i_side_right,
-                y_offset=cover + dia_bot / 2 + spacing_side * (i + 1),
-            )
+            bar_right = bar_left.shift_section(x_offset=x_i_side_right - x_i_side_left)
 
             geom = (geom - bar_left - bar_right) + bar_left + bar_right
 
-    return geom
+    if isinstance(geom, geometry.CompoundGeometry):
+        return geom
+    else:
+        raise ValueError("Concrete section generation failed.")
 
 
 def concrete_column_section(
-    b: float,
     d: float,
-    cover: float,
-    n_bars_b: int,
-    n_bars_d: int,
+    b: float,
     dia_bar: float,
-    bar_area: Optional[float] = None,
-    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
-    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-    filled: bool = False,
+    area_bar: float,
+    n_x: int,
+    n_y: int,
+    cover: float,
     n_circle: int = 4,
+    filled: bool = False,
+    conc_mat: Material = DEFAULT_MATERIAL,
+    steel_mat: Material = DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
-    """Constructs a concrete rectangular section of width *b* and depth *d*, with
-    steel bar reinforcing organized as an *n_bars_b* by *n_bars_d* array, discretised
-    with *n_circle* points with equal sides and top/bottom *cover* to the steel which
-    is taken as the clear cover (edge of bar to edge of concrete).
+    """Constructs a reinforced concrete column section.
 
-    :param float b: Concrete section width, parallel to the x-axis
-    :param float d: Concrete section depth, parallel to the y-axis
-    :param float cover: Clear cover, calculated as distance from edge of reinforcing bar to edge of section.
-    :param int n_bars_b: Number of bars placed across the width of the section, minimum 2.
-    :param int n_bars_d: Number of bars placed across the depth of the section, minimum 2.
-    :param float dia_bar: Diameter of reinforcing bars. Used for calculating bar placement and,
-        optionally, for calculating the bar area for section capacity calculations.
-    :param float bar_area: Area of reinforcing bars. Used for section capacity calculations.
-        If not provided, then dia_bar will be used to calculate the bar area.
-    :param sectionproperties.pre.pre.Material conc_mat: Material to
-        associate with the concrete
-    :param sectionproperties.pre.pre.Material steel_mat: Material to
-        associate with the reinforcing steel
-    :param bool filled: When True, will populate the concrete section with an equally
-        spaced 2D array of reinforcing bars numbering 'n_bars_b' by 'n_bars_d'.
-        When False, only the bars around the perimeter of the array will be present.
-    :param int n_circle: The number of points used to discretize the circle of the reinforcing
-        bars. The bars themselves will have an exact area of 'bar_area' regardless of the
-        number of points used in the circle. Useful for making the reinforcing bars look
-        more circular when plotting the concrete section.
+    Constructs a reinforced concrete column section of depth ``d`` and width ``b``.
 
-    :raises ValueError: If the number of bars in either 'n_bars_b' or 'n_bars_d' is not greater
-        than or equal to 2.
+    .. note::
+        As the reinforcing bars are described by discretised circles, the area of each
+        bar is required to ensure that the correct reinforcing area is provided.
 
-    The following example creates a 600D x 300W concrete column with 25 mm diameter
-    reinforcing bars each with 500 mm**2 area and 35 mm cover in a 3x6 array without
-    the interior bars being filled::
+    Args:
+        d: Concrete section depth, parallel to the y-axis
+        b: Concrete section width, parallel to the x-axis
+        dia_bar: Diameter of the reinforcing bars, used for calculating bar placement
+        area_bar: Area of the reinforcing bars
+        n_x: Number of bars placed across the width of the section, minimum 2
+        n_y: Number of bars placed across the depth of the section, minimum 2
+        cover: Clear cover to the reinforcing bars
+        n_circle: Number of points used to discretise the circular reinforcing bars
+        filled:  When True, will populate the concrete section with an equally spaced
+            2D array of reinforcing bars numbering 'n_x' by 'n_y'. When False, only the
+            bars around the perimeter of the array will be present.
+        conc_mat: Material object to assign to the concrete area
+        steel_mat: Material object to assign to the steel area
 
-        from sectionproperties.pre.library.concrete_sections import concrete_column_section
-        from sectionproperties.pre.pre import Material
+    Return:
+        Reinforced concrete column section geometry
 
-        concrete = Material(
-            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
-            density=2.4e-6, color='lightgrey'
-        )
-        steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
-            density=7.85e-6, color='grey'
-        )
+    Raises:
+        ValueError: If the number of bars in either 'n_x' or 'n_y' is not greater than
+        or equal to 2
 
-        geometry = concrete_column_section(
-            b=300, d=600, dia_bar=25, bar_area=500, cover=35, n_bars_b=3, n_bars_d=6,
-            conc_mat=concrete, steel_mat=steel, filled=False, n_circle=4
-        )
-        geometry.create_mesh(mesh_sizes=[500])
+    Example:
+        The following example creates a 600 mm deep x 300 mm wide concrete column. The
+        beam is reinforced with 25 mm diameter reinforcing bars with 35 mm cover. There
+        are 3 bars in the x-direction and 6 bars in the y-direction. A coarse finite
+        element mesh is generated to show the different material regions:
+
+        .. plot::
+            :include-source: True
+            :caption: Reinforced concrete column section geometry
+
+            from sectionproperties.pre import Material
+            from sectionproperties.pre.library import concrete_column_section
+            from sectionproperties.analysis import Section
+
+            concrete = Material(
+                name="Concrete",
+                elastic_modulus=30.1e3,
+                poissons_ratio=0.2,
+                yield_strength=32,
+                density=2.4e-6,
+                color="lightgrey",
+            )
+            steel = Material(
+                name="Steel",
+                elastic_modulus=200e3,
+                poissons_ratio=0.3,
+                yield_strength=500,
+                density=7.85e-6,
+                color="grey",
+            )
+
+            geom = concrete_column_section(
+                d=600,
+                b=300,
+                dia_bar=25,
+                area_bar=500,
+                n_x=3,
+                n_y=6,
+                cover=35,
+                n_circle=4,
+                filled=False,
+                conc_mat=concrete,
+                steel_mat=steel,
+            )
+
+            geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
+            Section(geometry=geom).plot_mesh()
     """
-
-    concrete_geometry = primitive_sections.rectangular_section(b, d, material=conc_mat)
+    concrete_geometry = primitive_sections.rectangular_section(
+        d=d, b=b, material=conc_mat
+    )
     bar_extents = concrete_geometry.offset_perimeter(
         -cover - dia_bar / 2
     ).calculate_extents()
     bar_x_min, bar_x_max, bar_y_min, bar_y_max = bar_extents
 
-    b_edge_bars_x = np.linspace(bar_x_min, bar_x_max, n_bars_b)
-    d_edge_bars_y = np.linspace(bar_y_min, bar_y_max, n_bars_d)
+    b_edge_bars_x = np.linspace(bar_x_min, bar_x_max, n_x)
+    d_edge_bars_y = np.linspace(bar_y_min, bar_y_max, n_y)
 
     if not filled:
-        b_edge_bars_y1 = [bar_y_min] * n_bars_b
-        b_edge_bars_y2 = [bar_y_max] * n_bars_b
+        b_edge_bars_y1 = [bar_y_min] * n_x
+        b_edge_bars_y2 = [bar_y_max] * n_x
 
-        d_edge_bars_x1 = [bar_x_min] * n_bars_d
-        d_edge_bars_x2 = [bar_x_max] * n_bars_d
+        d_edge_bars_x1 = [bar_x_min] * n_y
+        d_edge_bars_x2 = [bar_x_max] * n_y
 
         b_edge_bars_top = list(zip(b_edge_bars_x, b_edge_bars_y2))
         b_edge_bars_bottom = list(zip(b_edge_bars_x, b_edge_bars_y1))
@@ -247,194 +324,255 @@ def concrete_column_section(
                 + d_edge_bars_left
             )
         )
-    if filled:
+    else:
         xy = np.meshgrid(b_edge_bars_x, d_edge_bars_y)
         all_bar_coords = np.append(xy[0].reshape(-1, 1), xy[1].reshape(-1, 1), axis=1)
 
-    if bar_area is None:
-        bar_area = np.pi * dia_bar**2 / 4
     for bar_coord in all_bar_coords:
         concrete_geometry = add_bar(
-            concrete_geometry,
-            area=bar_area,
+            geometry=concrete_geometry,
+            area=area_bar,
             material=steel_mat,
             x=bar_coord[0],
             y=bar_coord[1],
             n=n_circle,
         )
-    return concrete_geometry
+
+    if isinstance(concrete_geometry, geometry.CompoundGeometry):
+        return concrete_geometry
+    else:
+        raise ValueError("Concrete section generation failed.")
 
 
 def concrete_tee_section(
-    b: float,
     d: float,
-    b_f: float,
+    b: float,
     d_f: float,
+    b_f: float,
     dia_top: float,
+    area_top: float,
     n_top: int,
+    c_top: float,
     dia_bot: float,
+    area_bot: float,
     n_bot: int,
-    n_circle: int,
-    cover: float,
-    area_top: Optional[float] = None,
-    area_bot: Optional[float] = None,
-    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
-    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    c_bot: float,
+    dia_side: float | None = None,
+    area_side: float | None = None,
+    n_side: int = 0,
+    c_side: float = 0.0,
+    n_circle: int = 4,
+    conc_mat: Material = DEFAULT_MATERIAL,
+    steel_mat: Material = DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
-    """Constructs a concrete tee section of width *b*, depth *d*, flange width *b_f*
-    and flange depth *d_f*, with *n_top* top steel bars of diameter *dia_top*, *n_bot*
-    bottom steel bars of diameter *dia_bot*, discretised with *n_circle* points with
-    equal side and top/bottom *cover* to the steel.
+    """Constructs a reinforced concrete tee section.
 
-    :param float b: Concrete section width
-    :param float d: Concrete section depth
-    :param float b_f: Concrete section flange width
-    :param float d_f: Concrete section flange depth
-    :param float dia_top: Diameter of the top steel reinforcing bars
-    :param int n_top: Number of top steel reinforcing bars
-    :param float dia_bot: Diameter of the bottom steel reinforcing bars
-    :param int n_bot: Number of bottom steel reinforcing bars
-    :param int n_circle: Number of points discretising the steel reinforcing bars
-    :param float cover: Side and bottom cover to the steel reinforcing bars
-    :param float area_top: If provided, constructs top reinforcing bars based on their
-        area rather than diameter (prevents the underestimation of steel area due to
-        circle discretisation)
-    :param float area_bot: If provided, constructs bottom reinforcing bars based on
-        their area rather than diameter (prevents the underestimation of steel area due
-        to circle discretisation)
-    :param conc_mat: Material to associatewith the concrete
-    :param steel_mat: Material toassociate with the steel
+    Constructs a concrete tee section of depth ``d``, width ``b``, flange depth ``d_f``
+    and flange width ``b_f``.
 
-    :raises ValueErorr: If the number of bars is not greater than or equal to 2 in an
-        active layer
+    Args:
+        d: Concrete section depth
+        b: Concrete section width
+        d_f: Concrete section flange depth
+        b_f: Concrete section flange width
+        dia_top: Diameter of the top reinforcing bars, used for calculating bar
+            placement
+        area_top: Area of the top reinforcing bars
+        n_top: Number of top, equally spaced reinforcing bars
+        c_top: Clear cover to the top reinforcing bars
+        dia_bot: Diameter of the bottom reinforcing bars, used for calculating bar
+            placement
+        area_bot: Area of the bottom reinforcing bars
+        n_bot: Number of bottom, equally spaced reinforcing bars
+        c_bot: Clear cover to the bottom reinforcing bars
+        dia_side: Diameter of the side reinforcing bars, used for calculating bar
+            placement
+        area_side: Area of the side reinforcing bars
+        n_side: Number of side, equally spaced reinforcing bars
+        c_side: Clear cover to the side reinforcing bars
+        n_circle: Number of points used to discretise the circular reinforcing bars
+        conc_mat: Material object to assign to the concrete area
+        steel_mat: Material object to assign to the steel area
 
-    The following example creates a 900D x 450W concrete beam with a 1200W x 250D
-    flange, with 5N24 steel reinforcing bars and 30 mm cover::
+    Return:
+        Reinforced concrete tee section geometry
 
-        from sectionproperties.pre.library.concrete_sections import concrete_tee_section
-        from sectionproperties.pre.pre import Material
+    Example:
+        The following example creates a 900 mm deep x 450 mm wide concrete tee beam with
+        a 150 mm deep x 1800 mm wide flange. The tee beam is reinforced with 5 x 24 mm
+        top bars, 5 x 28 mm bottom bars and 4 x 16 mm side bars, with 42 mm cover all
+        around (30 mm cover + 12 mm tie). A coarse finite element mesh is generated to
+        show the different material regions:
 
-        concrete = Material(
-            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
-            density=2.4e-6, color='lightgrey'
-        )
-        steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
-            density=7.85e-6, color='grey'
-        )
+        .. plot::
+            :include-source: True
+            :caption: Reinforced concrete tee section geometry
 
-        geometry = concrete_tee_section(
-            b=450, d=900, b_f=1200, d_f=250, dia_top=24, n_top=0, dia_bot=24, n_bot=5,
-            n_circle=24, cover=30, conc_mat=concrete, steel_mat=steel
-        )
-        geometry.create_mesh(mesh_sizes=[500])
+            from sectionproperties.pre import Material
+            from sectionproperties.pre.library import concrete_tee_section
+            from sectionproperties.analysis import Section
 
-    ..  figure:: ../images/sections/concrete_tee_section_geometry.png
-        :align: center
-        :scale: 50 %
+            concrete = Material(
+                name="Concrete",
+                elastic_modulus=30.1e3,
+                poissons_ratio=0.2,
+                yield_strength=32,
+                density=2.4e-6,
+                color="lightgrey",
+            )
+            steel = Material(
+                name="Steel",
+                elastic_modulus=200e3,
+                poissons_ratio=0.3,
+                yield_strength=500,
+                density=7.85e-6,
+                color="grey",
+            )
 
-        Concrete tee section geometry.
+            geom = concrete_tee_section(
+                d=900,
+                b=450,
+                d_f=150,
+                b_f=1800,
+                dia_top=24,
+                area_top=450,
+                n_top=5,
+                c_top=42,
+                dia_bot=28,
+                area_bot=620,
+                n_bot=5,
+                c_bot=42,
+                dia_side=16,
+                area_side=200,
+                n_side=4,
+                c_side=42,
+                n_circle=16,
+                conc_mat=concrete,
+                steel_mat=steel,
+            )
 
-    ..  figure:: ../images/sections/concrete_tee_section_mesh.png
-        :align: center
-        :scale: 50 %
-
-        Mesh generated from the above geometry.
+            geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
+            Section(geometry=geom).plot_mesh()
     """
+    # generate rectangular section of the beam
+    geom = concrete_rectangular_section(
+        d=d,
+        b=b,
+        dia_top=dia_top,
+        area_top=area_top,
+        n_top=n_top,
+        c_top=c_top,
+        dia_bot=dia_bot,
+        area_bot=area_bot,
+        n_bot=n_bot,
+        c_bot=c_bot,
+        dia_side=dia_side,
+        area_side=area_side,
+        n_side=n_side,
+        c_side=c_side,
+        n_circle=n_circle,
+        conc_mat=conc_mat,
+        steel_mat=steel_mat,
+    )
 
-    if n_top == 1 or n_bot == 1:
-        raise ValueError("If adding a reinforcing layer, provide 2 or more bars.")
-
-    # generate tee-section
-    geom = primitive_sections.rectangular_section(b=b, d=d - d_f, material=conc_mat)
-    flange = primitive_sections.rectangular_section(b=b_f, d=d_f, material=conc_mat)
-    geom += flange.align_center(align_to=geom).align_to(other=geom, on="top")
-
-    # calculate reinforcing bar dimensions
-    x_i_top = cover + dia_top / 2 + 0.5 * (b - b_f)
-    x_i_bot = cover + dia_bot / 2
-    spacing_top = (b_f - 2 * cover - dia_top) / (n_top - 1)
-    spacing_bot = (b - 2 * cover - dia_bot) / (n_bot - 1)
-
-    if area_top is None:
-        area_top = np.pi * dia_top**2 / 4
-    if area_bot is None:
-        area_bot = np.pi * dia_bot**2 / 4
-
-    # add top bars
-    for i in range(n_top):
-        bar = primitive_sections.circular_section_by_area(
-            area=area_top, n=n_circle, material=steel_mat
+    # add flange
+    left_flange = (
+        primitive_sections.rectangular_section(
+            d=d_f, b=(b_f - b) / 2, material=conc_mat
         )
-        bar = bar.shift_section(
-            x_offset=x_i_top + spacing_top * i, y_offset=d - cover - dia_top / 2
-        )
-        geom = (geom - bar) + bar
+        .align_to(other=geom, on="left")
+        .align_to(other=geom, on="top", inner=True)
+    )
+    right_flange = left_flange.mirror_section(axis="y", mirror_point=(b / 2, 0))
 
-    # add bot bars
-    for i in range(n_bot):
-        bar = primitive_sections.circular_section_by_area(
-            area=area_bot, n=n_circle, material=steel_mat
-        )
-        bar = bar.shift_section(
-            x_offset=x_i_bot + spacing_bot * i, y_offset=cover + dia_bot / 2
-        )
-        geom = (geom - bar) + bar
-
-    return geom
+    return geom + left_flange + right_flange
 
 
 def concrete_circular_section(
     d: float,
-    n: int,
-    dia: float,
+    area_conc: float,
+    n_conc: int,
+    dia_bar: float,
+    area_bar: float,
     n_bar: int,
-    n_circle: int,
     cover: float,
-    area_conc: Optional[float] = None,
-    area_bar: Optional[float] = None,
-    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
-    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    n_circle: int = 4,
+    conc_mat: Material = DEFAULT_MATERIAL,
+    steel_mat: Material = DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
-    """Constructs a concrete circular section of diameter *d* discretised with *n*
-    points, with *n_bar* steel bars of diameter *dia*, discretised with *n_circle*
-    points with equal side and bottom *cover* to the steel.
+    """Constructs a reinforced concrete circular section.
 
-    :param float d: Concrete diameter
-    :param float n: Number of points discretising the concrete section
-    :param float dia: Diameter of the steel reinforcing bars
-    :param int n_bar: Number of steel reinforcing bars
-    :param int n_circle: Number of points discretising the steel reinforcing bars
-    :param float cover: Side and bottom cover to the steel reinforcing bars
-    :param float area_conc: If provided, constructs the concrete based on its area
-        rather than diameter (prevents the underestimation of concrete area due to
-        circle discretisation)
-    :param float area_bar: If provided, constructs reinforcing bars based on their area
-        rather than diameter (prevents the underestimation of steel area due to
-    :param conc_mat: Material to associate with the concrete
-    :param steel_mat: Material to associate with the steel
+    Constructs a reinforced concrete circular section of diameter ``d``.
 
-    :raises ValueErorr: If the number of bars is not greater than or equal to 2
+    .. note::
+        As the concrete area and reinforcing bars are described by discretised circles,
+        the area of the circle and each bar is required to ensure that the correct
+        concrete and reinforcing area is provided.
 
-    The following example creates a 450DIA concrete column with with 6N20 steel
-    reinforcing bars and 45 mm cover::
+    Args:
+        d: Concrete diameter
+        area_conc: Area of the circular concrete section
+        n_conc: Number of points discretising the circular concrete section
+        dia_bar: Diameter of the steel reinforcing bars
+        area_bar: Area of the reinforcing bars
+        n_bar: Number of steel reinforcing bars
+        cover: Clear cover to the reinforcing bars
+        n_circle: Number of points discretising the steel reinforcing bars
+        conc_mat: Material object to assign to the concrete area
+        steel_mat: Material object to assign to the steel area
 
-        from sectionproperties.pre.library.concrete_sections import concrete_circular_section
-        from sectionproperties.pre.pre import Material
+    Return:
+        Reinforced concrete circular section geometry
 
-        concrete = Material(
-            name='Concrete', elastic_modulus=30.1e3, poissons_ratio=0.2, yield_strength=32,
-            density=2.4e-6, color='lightgrey'
-        )
-        steel = Material(
-            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
-            density=7.85e-6, color='grey'
-        )
+    Raises:
+        ValueError: If the number of bars is not greater than or equal to 2
 
-        geometry = concrete_circular_section(
-            d=450, n=64, dia=20, n_bar=6, n_circle=24, cover=45, conc_mat=concrete, steel_mat=steel
-        )
-        geometry.create_mesh(mesh_sizes=[500])
+    Example:
+        The following example creates a 450 mm diameter concrete column with 6 x 20 mm
+        steel reinforcing bars with 45 mm cover. A coarse finite element mesh is
+        generated to show the different material regions:
+
+        .. plot::
+            :include-source: True
+            :caption: Reinforced concrete circular section geometry
+
+            import numpy as np
+            from sectionproperties.pre import Material
+            from sectionproperties.pre.library import concrete_circular_section
+            from sectionproperties.analysis import Section
+
+            concrete = Material(
+                name="Concrete",
+                elastic_modulus=30.1e3,
+                poissons_ratio=0.2,
+                yield_strength=32,
+                density=2.4e-6,
+                color="lightgrey",
+            )
+            steel = Material(
+                name="Steel",
+                elastic_modulus=200e3,
+                poissons_ratio=0.3,
+                yield_strength=500,
+                density=7.85e-6,
+                color="grey",
+            )
+
+            geom = concrete_circular_section(
+                d=450,
+                area_conc=np.pi * 450 * 450 / 4,
+                n_conc=64,
+                dia_bar=20,
+                area_bar=310,
+                n_bar=6,
+                cover=45,
+                n_circle=24,
+                conc_mat=concrete,
+                steel_mat=steel,
+            )
+
+            geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
+            Section(geometry=geom).plot_mesh()
 
     ..  figure:: ../images/sections/concrete_circular_section_geometry.png
         :align: center
@@ -448,60 +586,63 @@ def concrete_circular_section(
 
         Mesh generated from the above geometry.
     """
-
     if n_bar < 2:
         raise ValueError("Please provide 2 or more steel reinforcing bars.")
 
     # create circular geometry
-    if area_conc:
-        geom = primitive_sections.circular_section_by_area(
-            area=area_conc, n=n, material=conc_mat
-        )
-    else:
-        geom = primitive_sections.circular_section(d=d, n=n, material=conc_mat)
+    geom = primitive_sections.circular_section_by_area(
+        area=area_conc, n=n_conc, material=conc_mat
+    )
 
     # calculate bar geometry
-    r = d / 2 - cover - dia / 2
+    r = d / 2 - cover - dia_bar / 2
     d_theta = 2 * np.pi / n_bar
 
-    if area_bar is None:
-        area_bar = np.pi * dia**2 / 4
     for i in range(n_bar):
         bar = primitive_sections.circular_section_by_area(
-            area=area_bar, n=n_circle, material=steel_mat
-        )
-        bar = bar.shift_section(
-            x_offset=r * np.cos(i * d_theta), y_offset=r * np.sin(i * d_theta)
+            area=area_bar,
+            n=n_circle,
+            material=steel_mat,
+        ).shift_section(
+            x_offset=r * np.cos(i * d_theta),
+            y_offset=r * np.sin(i * d_theta),
         )
         geom = (geom - bar) + bar
 
-    return geom
+    if isinstance(geom, geometry.CompoundGeometry):
+        return geom
+    else:
+        raise ValueError("Concrete section generation failed.")
 
 
 def add_bar(
-    geometry: Union[geometry.Geometry, geometry.CompoundGeometry],
+    geometry: geometry.Geometry | geometry.CompoundGeometry,
     area: float,
-    material: pre.DEFAULT_MATERIAL,
+    material: Material,
     x: float,
     y: float,
-    n: int = 4,
+    n: int,
 ) -> geometry.CompoundGeometry:
-    """Adds a reinforcing bar to a *sectionproperties* geometry.
+    """Adds a reinforcing bar to a ``sectionproperties`` geometry.
 
-    Bars are discretised by four points by default.
+    First removes the geometry through a subtraction operation, then adds the geometry
+    on top of the newly created hole. This method avoids the doubling up of geometry.
 
-    :param geometry: Reinforced concrete geometry to which the new bar will be added
-    :param area: Bar cross-sectional area
-    :param material: Material object for the bar
-    :param x: x-position of the bar
-    :param y: y-position of the bar
-    :param n: Number of points to discretise the bar circle
+    Args:
+        geometry: Reinforced concrete geometry to which the new bar will be added
+        area: Bar cross-sectional area
+        material: Material object for the bar
+        x: x-position of the bar
+        y: y-position of the bar
+        n: Number of points to discretise the bar circle
 
-    :return: Reinforced concrete geometry with added bar
+    Return:
+        Geometry object with added bar
     """
-
     bar = primitive_sections.circular_section_by_area(
-        area=area, n=n, material=material  # type: ignore
+        area=area,
+        n=n,
+        material=material,
     ).shift_section(x_offset=x, y_offset=y)
 
     return (geometry - bar) + bar

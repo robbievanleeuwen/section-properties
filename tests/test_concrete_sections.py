@@ -1,8 +1,12 @@
-import pytest_check as check
+"""Tests for the concrete sections library."""
+
 import numpy as np
-import sectionproperties.pre.pre as pre
+import pytest_check as check
+
 import sectionproperties.pre.library.concrete_sections as cs
 import sectionproperties.pre.library.primitive_sections as ps
+import sectionproperties.pre.pre as pre
+
 
 r_tol = 1e-6
 conc_mat = pre.Material(
@@ -25,17 +29,19 @@ steel_mat = pre.Material(
 
 
 def test_concrete_rectangular_section():
+    """Tests the concrete_rectangular_section() method."""
     rect = cs.concrete_rectangular_section(
-        b=300,
         d=600,
+        b=300,
         dia_top=16,
-        n_top=3,
-        dia_bot=20,
-        n_bot=3,
-        n_circle=16,
-        cover=30,
         area_top=200,
+        n_top=3,
+        c_top=30,
+        dia_bot=20,
         area_bot=310,
+        n_bot=3,
+        c_bot=30,
+        n_circle=16,
         conc_mat=conc_mat,
         steel_mat=steel_mat,
     )
@@ -49,10 +55,6 @@ def test_concrete_rectangular_section():
             conc_area += geom.calculate_area()
         elif geom.material == steel_mat:
             steel_area += geom.calculate_area()
-        else:
-            raise ValueError(
-                "Material {0} is not correctly assigned".format(geom.material)
-            )
 
     net_area = 600 * 300
     actual_steel_area = 3 * (200 + 310)
@@ -63,19 +65,21 @@ def test_concrete_rectangular_section():
 
 
 def test_concrete_tee_section():
+    """Tests the concrete_tee_section() method."""
     rect = cs.concrete_tee_section(
-        b=300,
         d=900,
-        b_f=1200,
+        b=300,
         d_f=200,
+        b_f=1200,
         dia_top=20,
-        n_top=6,
-        dia_bot=24,
-        n_bot=3,
-        n_circle=16,
-        cover=30,
         area_top=310,
+        n_top=6,
+        c_top=30,
+        dia_bot=24,
         area_bot=450,
+        n_bot=3,
+        c_bot=30,
+        n_circle=16,
         conc_mat=conc_mat,
         steel_mat=steel_mat,
     )
@@ -89,10 +93,6 @@ def test_concrete_tee_section():
             conc_area += geom.calculate_area()
         elif geom.material == steel_mat:
             steel_area += geom.calculate_area()
-        else:
-            raise ValueError(
-                "Material {0} is not correctly assigned".format(geom.material)
-            )
 
     net_area = 700 * 300 + 1200 * 200
     actual_steel_area = 6 * 310 + 3 * 450
@@ -103,15 +103,16 @@ def test_concrete_tee_section():
 
 
 def test_concrete_circular_section():
+    """Tests the concrete_circular_section() method."""
     rect = cs.concrete_circular_section(
         d=600,
-        n=64,
-        dia=20,
-        n_bar=8,
-        n_circle=16,
-        cover=45,
         area_conc=np.pi * 600 * 600 / 4,
+        n_conc=64,
+        dia_bar=20,
         area_bar=310,
+        n_bar=8,
+        cover=45,
+        n_circle=16,
         conc_mat=conc_mat,
         steel_mat=steel_mat,
     )
@@ -125,10 +126,6 @@ def test_concrete_circular_section():
             conc_area += geom.calculate_area()
         elif geom.material == steel_mat:
             steel_area += geom.calculate_area()
-        else:
-            raise ValueError(
-                "Material {0} is not correctly assigned".format(geom.material)
-            )
 
     net_area = np.pi * 600 * 600 / 4
     actual_steel_area = 8 * 310
@@ -139,7 +136,7 @@ def test_concrete_circular_section():
 
 
 def test_concrete_column_section():
-
+    """Tests the concrete_column_section() method."""
     concrete = pre.Material(
         name="Concrete",
         elastic_modulus=30.1e3,
@@ -158,17 +155,17 @@ def test_concrete_column_section():
     )
 
     geometry = cs.concrete_column_section(
-        b=300,
         d=600,
+        b=300,
         dia_bar=40,
-        bar_area=500,
+        area_bar=500,
+        n_x=3,
+        n_y=6,
         cover=40,
-        n_bars_b=3,
-        n_bars_d=6,
-        conc_mat=concrete,
-        steel_mat=steel,
-        filled=False,
         n_circle=4,
+        steel_mat=steel,
+        conc_mat=concrete,
+        filled=False,
     )  # NOTE: Bar diam and Bar area do not match. This is intentional.
     geometry.create_mesh(mesh_sizes=[500])
 
@@ -181,10 +178,6 @@ def test_concrete_column_section():
             conc_area += geom.calculate_area()
         elif geom.material == steel:
             steel_area += geom.calculate_area()
-        else:
-            raise ValueError(
-                "Material {0} is not correctly assigned".format(geom.material)
-            )
 
     net_area = 300 * 600
     actual_steel_area = 14 * 500.0
@@ -214,6 +207,7 @@ def test_concrete_column_section():
 
 
 def test_add_bar():
+    """Tests the add_bar() method."""
     rect = ps.rectangular_section(b=400, d=600)
     steel = pre.Material(
         name="Steel",
@@ -223,8 +217,8 @@ def test_add_bar():
         density=7.85e-6,
         color="grey",
     )
-    rect = cs.add_bar(rect, area=500, x=100, y=100, material=steel)
-    rect = cs.add_bar(rect, area=500, x=200, y=200, material=steel)
+    rect = cs.add_bar(geometry=rect, area=500, x=100, y=100, n=4, material=steel)
+    rect = cs.add_bar(geometry=rect, area=500, x=200, y=200, n=4, material=steel)
     rect_area = rect.geoms[0].geom.area
     steel_area = 2 * 500.0
     check.almost_equal(rect_area, 400 * 600 - steel_area)
