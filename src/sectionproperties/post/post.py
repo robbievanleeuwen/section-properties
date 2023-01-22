@@ -1,8 +1,9 @@
-"""Post-processor methods."""
+"""Post-processor methods and classes."""
 
 from __future__ import annotations
 
 import contextlib
+from dataclasses import asdict, dataclass
 from typing import TYPE_CHECKING
 
 import matplotlib.axes
@@ -11,11 +12,290 @@ import numpy as np
 from rich.console import Console
 from rich.table import Table
 
+from sectionproperties.analysis.fea import principal_coordinate
 from sectionproperties.pre.pre import DEFAULT_MATERIAL
 
 
 if TYPE_CHECKING:
     from sectionproperties.analysis.section import Section
+
+
+@dataclass
+class SectionProperties:
+    """Class for storing section properties.
+
+    Stores calculated section properties. Also provides methods to calculate section
+    properties entirely derived from other section properties.
+
+    Attributes:
+        area: Cross-sectional area
+        perimeter: Cross-sectional perimeter
+        mass: Cross-sectional mass
+        ea: Modulus weighted area (axial rigidity)
+        ga: Modulus weighted product of shear modulus and area
+        nu_eff: Effective Poisson's ratio
+        e_eff: Effective elastic modulus
+        g_eff: Effective shear modulus
+        qx: First moment of area about the x-axis
+        qy: First moment of area about the y-axis
+        ixx_g: Second moment of area about the global x-axis
+        iyy_g: Second moment of area about the global y-axis
+        ixy_g: Second moment of area about the global xy-axis
+        cx: X coordinate of the elastic centroid
+        cy: Y coordinate of the elastic centroid
+        ixx_c: Second moment of area about the centroidal x-axis
+        iyy_c: Second moment of area about the centroidal y-axis
+        ixy_c: Second moment of area about the centroidal xy-axis
+        zxx_plus: Section modulus about the centroidal x-axis for stresses at the
+            positive extreme value of y
+        zxx_minus: Section modulus about the centroidal x-axis for stresses at the
+            negative extreme value of y
+        zyy_plus: Section modulus about the centroidal y-axis for stresses at the
+            positive extreme value of x
+        zyy_minus: Section modulus about the centroidal y-axis for stresses at the
+            negative extreme value of x
+        rx_c: Radius of gyration about the centroidal x-axis.
+        ry_c: Radius of gyration about the centroidal y-axis.
+        i11_c: Second moment of area about the centroidal 11-axis
+        i22_c: Second moment of area about the centroidal 22-axis
+        phi: Principal axis angle
+        z11_plus: Section modulus about the principal 11-axis for stresses at the
+            positive extreme value of the 22-axis
+        z11_minus: Section modulus about the principal 11-axis for stresses at the
+            negative extreme value of the 22-axis
+        z22_plus: Section modulus about the principal 22-axis for stresses at the
+            positive extreme value of the 11-axis
+        z22_minus: Section modulus about the principal 22-axis for stresses at the
+            negative extreme value of the 11-axis
+        r11_c: Radius of gyration about the principal 11-axis.
+        r22_c: Radius of gyration about the principal 22-axis.
+        j: Torsion constant
+        omega: Warping function
+        psi_shear: Psi shear function
+        phi_shear: Phi shear function
+        Delta_s: Shear factor
+        x_se: x-coordinate of the shear centre (elasticity approach)
+        y_se: y-coordinate of the shear centre (elasticity approach)
+        x11_se: 11-coordinate of the shear centre (elasticity approach)
+        y22_se: 22-coordinate of the shear centre (elasticity approach)
+        x_st: x-coordinate of the shear centre (Trefftz's approach)
+        y_st: y-coordinate of the shear centre (Trefftz's approach)
+        gamma: Warping constant
+        A_sx: Shear area about the x-axis
+        A_sy: Shear area about the y-axis
+        A_sxy: Shear area about the xy-axis
+        A_s11: Shear area about the 11-bending axis
+        A_s22: Shear area about the 22-bending axis
+        beta_x_plus: Monosymmetry constant for bending about the x-axis with the top
+            flange in compression
+        beta_x_minus: Monosymmetry constant for bending about the x-axis with the bottom
+            flange in compression
+        beta_y_plus: Monosymmetry constant for bending about the y-axis with the top
+            flange in compression
+        beta_y_minus: Monosymmetry constant for bending about the y-axis with the bottom
+            flange in compression
+        beta_11_plus: Monosymmetry constant for bending about the 11-axis with the top
+            flange in compression
+        beta_11_minus: Monosymmetry constant for bending about the 11-axis with the
+            bottom flange in compression
+        beta_22_plus: Monosymmetry constant for bending about the 22-axis with the top
+            flange in compression
+        beta_22_minus: Monosymmetry constant for bending about the 22-axis with the
+            bottom flange in compression
+        x_pc: x-coordinate of the global plastic centroid
+        y_pc: y-coordinate of the global plastic centroid
+        x11_pc: 11-coordinate of the principal plastic centroid
+        y22_pc: 22-coordinate of the principal plastic centroid
+        sxx: Plastic section modulus about the centroidal x-axis
+        syy: Plastic section modulus about the centroidal y-axis
+        sf_xx_plus: Shape factor for bending about the x-axis with respect to the top
+            fibre
+        sf_xx_minus: Shape factor for bending about the x-axis with respect to the
+            bottom fibre
+        sf_yy_plus: Shape factor for bending about the y-axis with respect to the top
+            fibre
+        sf_yy_minus: Shape factor for bending about the y-axis with respect to the
+            bottom fibre
+        s11: Plastic section modulus about the 11-axis
+        s22: Plastic section modulus about the 22-axis
+        sf_11_plus: Shape factor for bending about the 11-axis with respect to the top
+            fibre
+        sf_11_minus: Shape factor for bending about the 11-axis with respect to the
+            bottom fibre
+        sf_22_plus: Shape factor for bending about the 22-axis with respect to the top
+            fibre
+        sf_22_minus: Shape factor for bending about the 22-axis with respect to the
+            bottom fibre
+    """
+
+    area: float | None = None
+    perimeter: float | None = None
+    mass: float | None = None
+    ea: float | None = None
+    ga: float | None = None
+    nu_eff: float | None = None
+    e_eff: float | None = None
+    g_eff: float | None = None
+    qx: float | None = None
+    qy: float | None = None
+    ixx_g: float | None = None
+    iyy_g: float | None = None
+    ixy_g: float | None = None
+    cx: float | None = None
+    cy: float | None = None
+    ixx_c: float | None = None
+    iyy_c: float | None = None
+    ixy_c: float | None = None
+    zxx_plus: float | None = None
+    zxx_minus: float | None = None
+    zyy_plus: float | None = None
+    zyy_minus: float | None = None
+    rx_c: float | None = None
+    ry_c: float | None = None
+    i11_c: float | None = None
+    i22_c: float | None = None
+    phi: float | None = None
+    z11_plus: float | None = None
+    z11_minus: float | None = None
+    z22_plus: float | None = None
+    z22_minus: float | None = None
+    r11_c: float | None = None
+    r22_c: float | None = None
+    j: float | None = None
+    omega: np.ndarray | None = None
+    psi_shear: np.ndarray | None = None
+    phi_shear: np.ndarray | None = None
+    Delta_s: float | None = None
+    x_se: float | None = None
+    y_se: float | None = None
+    x11_se: float | None = None
+    y22_se: float | None = None
+    x_st: float | None = None
+    y_st: float | None = None
+    gamma: float | None = None
+    A_sx: float | None = None
+    A_sy: float | None = None
+    A_sxy: float | None = None
+    A_s11: float | None = None
+    A_s22: float | None = None
+    beta_x_plus: float | None = None
+    beta_x_minus: float | None = None
+    beta_y_plus: float | None = None
+    beta_y_minus: float | None = None
+    beta_11_plus: float | None = None
+    beta_11_minus: float | None = None
+    beta_22_plus: float | None = None
+    beta_22_minus: float | None = None
+    x_pc: float | None = None
+    y_pc: float | None = None
+    x11_pc: float | None = None
+    y22_pc: float | None = None
+    sxx: float | None = None
+    syy: float | None = None
+    sf_xx_plus: float | None = None
+    sf_xx_minus: float | None = None
+    sf_yy_plus: float | None = None
+    sf_yy_minus: float | None = None
+    s11: float | None = None
+    s22: float | None = None
+    sf_11_plus: float | None = None
+    sf_11_minus: float | None = None
+    sf_22_plus: float | None = None
+    sf_22_minus: float | None = None
+
+    def asdict(self) -> dict:
+        """Returns the SectionProperties dataclass object as a dictionary.
+
+        Return:
+            Dictionary of the SectionProperties class
+        """
+        return asdict(self)
+
+    def calculate_elastic_centroid(self) -> None:
+        """Calculates and stores the elastic centroid."""
+        if self.qx and self.qy and self.ea:
+            self.cx = self.qy / self.ea
+            self.cy = self.qx / self.ea
+        else:
+            raise RuntimeError("Calculate geometric properties first.")
+
+    def calculate_centroidal_properties(
+        self,
+        node_list: list[list[float]],
+    ) -> None:
+        """Calculates and stores derived geometric properties.
+
+        Args:
+            node_list: List of mesh node coordinates
+        """
+        # calculate second moments of area about the centroidal xy axis
+        if self.qx and self.qy and self.ea and self.ixx_g and self.iyy_g and self.ixy_g:
+            self.ixx_c = self.ixx_g - self.qx**2 / self.ea
+            self.iyy_c = self.iyy_g - self.qy**2 / self.ea
+            self.ixy_c = self.ixy_g - self.qx * self.qy / self.ea
+
+            # calculate section moduli about the centroidal xy axis
+            nodes = np.array(node_list, dtype=float)
+            xmax = nodes[:, 0].max()
+            xmin = nodes[:, 0].min()
+            ymax = nodes[:, 1].max()
+            ymin = nodes[:, 1].min()
+            self.zxx_plus = self.ixx_c / abs(ymax - self.cy)
+            self.zxx_minus = self.ixx_c / abs(ymin - self.cy)
+            self.zyy_plus = self.iyy_c / abs(xmax - self.cx)
+            self.zyy_minus = self.iyy_c / abs(xmin - self.cx)
+
+            # calculate radii of gyration about centroidal xy axis
+            self.rx_c = (self.ixx_c / self.ea) ** 0.5
+            self.ry_c = (self.iyy_c / self.ea) ** 0.5
+
+            # calculate principal 2nd moments of area about the centroidal xy axis
+            delta = (((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c**2) ** 0.5
+            self.i11_c = (self.ixx_c + self.iyy_c) / 2 + delta
+            self.i22_c = (self.ixx_c + self.iyy_c) / 2 - delta
+
+            # calculate initial principal axis angle
+            if abs(self.ixx_c - self.i11_c) < 1e-12 * self.i11_c:
+                self.phi = 0
+            else:
+                self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
+
+            # initialise min, max variables
+            x1, y2 = principal_coordinate(
+                phi=self.phi,
+                x=nodes[0][0] - self.cx,
+                y=nodes[0][1] - self.cy,
+            )
+            x1max = x1
+            x1min = x1
+            y2max = y2
+            y2min = y2
+
+            # calculate section moduli about the principal axis
+            for pt in nodes[1:]:
+                x = pt[0] - self.cx
+                y = pt[1] - self.cy
+
+                # determine the coordinate of the point wrt the principal axis
+                x1, y2 = principal_coordinate(phi=self.phi, x=x, y=y)
+
+                # update the mins and maxes where necessary
+                x1max = max(x1max, x1)
+                x1min = min(x1min, x1)
+                y2max = max(y2max, y2)
+                y2min = min(y2min, y2)
+
+            # evaluate principal section moduli
+            self.z11_plus = self.i11_c / abs(y2max)
+            self.z11_minus = self.i11_c / abs(y2min)
+            self.z22_plus = self.i22_c / abs(x1max)
+            self.z22_minus = self.i22_c / abs(x1min)
+
+            # calculate radii of gyration about centroidal principal axis
+            self.r11_c = (self.i11_c / self.ea) ** 0.5
+            self.r22_c = (self.i22_c / self.ea) ** 0.5
+        else:
+            raise RuntimeError("Calculate geometric properties first.")
 
 
 @contextlib.contextmanager
