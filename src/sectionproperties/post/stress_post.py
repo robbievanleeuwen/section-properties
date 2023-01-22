@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 import matplotlib.axes
@@ -282,9 +283,9 @@ class StressPost:
 
             # create triangulation
             triang = tri.Triangulation(
-                self.section.mesh_nodes[:, 0],
-                self.section.mesh_nodes[:, 1],
-                self.section.mesh_elements[:, 0:3],
+                self.section._mesh_nodes[:, 0],
+                self.section._mesh_nodes[:, 1],
+                self.section._mesh_elements[:, 0:3],
             )
 
             # determine minimum and maximum stress values for the contour list
@@ -445,8 +446,8 @@ class StressPost:
 
                 if ax:
                     quiv = ax.quiver(
-                        self.section.mesh_nodes[:, 0],
-                        self.section.mesh_nodes[:, 1],
+                        self.section._mesh_nodes[:, 0],
+                        self.section._mesh_nodes[:, 1],
                         sigx,
                         sigy,
                         c,
@@ -684,8 +685,8 @@ class StressPost:
         """
         # get mesh data
         pt = x, y
-        nodes = self.section.mesh_nodes
-        ele = self.section.mesh_elements
+        nodes = self.section._mesh_nodes
+        ele = self.section._mesh_elements
         triang = tri.Triangulation(nodes[:, 0], nodes[:, 1], ele[:, 0:3])
 
         # find in which material group the point lies
@@ -815,3 +816,138 @@ class StressPost:
             return ax
         else:
             raise RuntimeError("Plot failed.")
+
+
+@dataclass
+class StressResult:
+    r"""Class for storing a stress result.
+
+    Provides variables to store the results from a cross-section stress analysis. Also
+    provides a method to calculate combined stresses.
+
+    Attributes:
+        num_nodes: Number of nodes in the finite element mesh
+        sig_zz_n: Normal stress (:math:`\sigma_{zz,N}`) resulting from an axial force
+        sig_zz_mxx: Normal stress (:math:`\sigma_{zz,Mxx}`) resulting from a bending
+            moment about the xx-axis
+        sig_zz_myy: Normal stress (:math:`\sigma_{zz,Myy}`) resulting from a bending
+            moment about the yy-axis
+        sig_zz_m11: Normal stress (:math:`\sigma_{zz,M11}`) resulting from a bending
+            moment about the 11-axis
+        sig_zz_m22: Normal stress (:math:`\sigma_{zz,M22}`) resulting from a bending
+            moment about the 22-axis
+        sig_zx_mzz: Shear stress (:math:`\sigma_{zx,Mzz}`) resulting from a torsio
+             moment about the zz-axis
+        sig_zy_mzz: Shear stress (:math:`\sigma_{zy,Mzz}`) resulting from a torsio
+             moment about the zz-axis
+        sig_zx_vx: Shear stress (:math:`\sigma_{zx,Vx}`) resulting from a shear force in
+            the x-direction
+        sig_zy_vx: Shear stress (:math:`\sigma_{zy,Vx}`) resulting from a shear force in
+            the x-direction
+        sig_zx_vy: Shear stress (:math:`\sigma_{zx,Vy}`) resulting from a shear force in
+            the y-direction
+        sig_zy_vy: Shear stress (:math:`\sigma_{zy,Vy}`) resulting from a shear force in
+            the y-direction
+        sig_zz_m: Normal stress (:math:`\sigma_{zz,\Sigma M}`) resulting from all
+            bending moments
+        sig_zxy_mzz: Resultant shear stress (:math:`\sigma_{zxy,Mzz}`) resulting from a
+            torsion moment in the zz-direction
+        sig_zxy_vx: Resultant shear stress (:math:`\sigma_{zxy,Vx}`) resulting from a a
+            shear force in the x-direction
+        sig_zxy_vy: Resultant shear stress (:math:`\sigma_{zxy,Vy}`) resulting from a a
+            shear force in the y-direction
+        sig_zx_v: Shear stress (:math:`\sigma_{zx,\Sigma V}`) resulting from all shear
+            forces
+        sig_zy_v: Shear stress (:math:`\sigma_{zy,\Sigma V}`) resulting from all shear
+            forces
+        sig_zxy_v: Resultant shear stress (:math:`\sigma_{zxy,\Sigma V}`) resulting from
+            all shear forces
+        sig_zz: Combined normal force (:math:`\sigma_{zz}`) resulting from all actions
+        sig_zx: Combined shear stress (:math:`\sigma_{zx}`) resulting from all actions
+        sig_zy: Combined shear stress (:math:`\sigma_{zy}`) resulting from all actions
+        sig_zxy: Combined resultant shear stress (:math:`\sigma_{zxy}`) resulting from
+            all actions
+        sig_11: Major principal stress (:math:`\sigma_{11}`) resulting from all actions
+        sig_33: Minor principal stress (:math:`\sigma_{33}`) resulting from all actions
+        sig_vm: von Mises stress (:math:`\sigma_{VM}`) resulting from all actions
+    """
+    num_nodes: int
+    sig_zz_n: np.ndarray = field(init=False)
+    sig_zz_mxx: np.ndarray = field(init=False)
+    sig_zz_myy: np.ndarray = field(init=False)
+    sig_zz_m11: np.ndarray = field(init=False)
+    sig_zz_m22: np.ndarray = field(init=False)
+    sig_zx_mzz: np.ndarray = field(init=False)
+    sig_zy_mzz: np.ndarray = field(init=False)
+    sig_zx_vx: np.ndarray = field(init=False)
+    sig_zy_vx: np.ndarray = field(init=False)
+    sig_zx_vy: np.ndarray = field(init=False)
+    sig_zy_vy: np.ndarray = field(init=False)
+    sig_zz_m: np.ndarray = field(init=False)
+    sig_zxy_mzz: np.ndarray = field(init=False)
+    sig_zxy_vx: np.ndarray = field(init=False)
+    sig_zxy_vy: np.ndarray = field(init=False)
+    sig_zx_v: np.ndarray = field(init=False)
+    sig_zy_v: np.ndarray = field(init=False)
+    sig_zxy_v: np.ndarray = field(init=False)
+    sig_zz: np.ndarray = field(init=False)
+    sig_zx: np.ndarray = field(init=False)
+    sig_zy: np.ndarray = field(init=False)
+    sig_zxy: np.ndarray = field(init=False)
+    sig_11: np.ndarray = field(init=False)
+    sig_33: np.ndarray = field(init=False)
+    sig_vm: np.ndarray = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Preallocates the numpy arrays in StressResult."""
+        # allocate stresses arising directly from actions
+        self.sig_zz_n = np.zeros(self.num_nodes)
+        self.sig_zz_mxx = np.zeros(self.num_nodes)
+        self.sig_zz_myy = np.zeros(self.num_nodes)
+        self.sig_zz_m11 = np.zeros(self.num_nodes)
+        self.sig_zz_m22 = np.zeros(self.num_nodes)
+        self.sig_zx_mzz = np.zeros(self.num_nodes)
+        self.sig_zy_mzz = np.zeros(self.num_nodes)
+        self.sig_zx_vx = np.zeros(self.num_nodes)
+        self.sig_zy_vx = np.zeros(self.num_nodes)
+        self.sig_zx_vy = np.zeros(self.num_nodes)
+        self.sig_zy_vy = np.zeros(self.num_nodes)
+
+        # allocate combined stresses
+        self.sig_zz_m = np.zeros(self.num_nodes)
+        self.sig_zxy_mzz = np.zeros(self.num_nodes)
+        self.sig_zxy_vx = np.zeros(self.num_nodes)
+        self.sig_zxy_vy = np.zeros(self.num_nodes)
+        self.sig_zx_v = np.zeros(self.num_nodes)
+        self.sig_zy_v = np.zeros(self.num_nodes)
+        self.sig_zxy_v = np.zeros(self.num_nodes)
+        self.sig_zz = np.zeros(self.num_nodes)
+        self.sig_zx = np.zeros(self.num_nodes)
+        self.sig_zy = np.zeros(self.num_nodes)
+        self.sig_zxy = np.zeros(self.num_nodes)
+        self.sig_11 = np.zeros(self.num_nodes)
+        self.sig_33 = np.zeros(self.num_nodes)
+        self.sig_vm = np.zeros(self.num_nodes)
+
+    def calculate_combined_stresses(self) -> None:
+        """Calculates and stores the combined cross-section stresses."""
+        self.sig_zz_m = (
+            self.sig_zz_mxx + self.sig_zz_myy + self.sig_zz_m11 + self.sig_zz_m22
+        )
+        self.sig_zxy_mzz = (self.sig_zx_mzz**2 + self.sig_zy_mzz**2) ** 0.5
+        self.sig_zxy_vx = (self.sig_zx_vx**2 + self.sig_zy_vx**2) ** 0.5
+        self.sig_zxy_vy = (self.sig_zx_vy**2 + self.sig_zy_vy**2) ** 0.5
+        self.sig_zx_v = self.sig_zx_vx + self.sig_zx_vy
+        self.sig_zy_v = self.sig_zy_vx + self.sig_zy_vy
+        self.sig_zxy_v = (self.sig_zx_v**2 + self.sig_zy_v**2) ** 0.5
+        self.sig_zz = self.sig_zz_n + self.sig_zz_m
+        self.sig_zx = self.sig_zx_mzz + self.sig_zx_v
+        self.sig_zy = self.sig_zy_mzz + self.sig_zy_v
+        self.sig_zxy = (self.sig_zx**2 + self.sig_zy**2) ** 0.5
+        self.sig_1 = self.sig_zz / 2 + np.sqrt(
+            (self.sig_zz / 2) ** 2 + self.sig_zxy**2
+        )
+        self.sig_33 = self.sig_zz / 2 - np.sqrt(
+            (self.sig_zz / 2) ** 2 + self.sig_zxy**2
+        )
+        self.sig_vm = (self.sig_zz**2 + 3 * self.sig_zxy**2) ** 0.5
