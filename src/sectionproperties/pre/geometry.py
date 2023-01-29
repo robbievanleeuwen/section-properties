@@ -21,10 +21,9 @@ from shapely import (
 )
 from shapely.ops import split, unary_union
 
-import sectionproperties.post.post as post
 import sectionproperties.pre.bisect_section as bisect
-import sectionproperties.pre.pre as pre
-from sectionproperties.pre.pre import Material
+from sectionproperties.post.post import plotting_context
+from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material, create_mesh
 
 
 class Geometry:
@@ -39,7 +38,7 @@ class Geometry:
     def __init__(
         self,
         geom: Polygon,
-        material: Material = pre.DEFAULT_MATERIAL,
+        material: Material = DEFAULT_MATERIAL,
         control_points: Point | tuple[float, float] | None = None,
         tol: int = 12,
     ) -> None:
@@ -73,7 +72,7 @@ class Geometry:
 
         self.tol = tol  # num of decimal places of precision for point locations
         self.geom = round_polygon_vertices(geom, self.tol)
-        self.material = pre.DEFAULT_MATERIAL if material is None else material
+        self.material = DEFAULT_MATERIAL if material is None else material
         self.control_points: list[tuple[float, float]] = []
         self.shift = []
         self.points = []
@@ -139,7 +138,7 @@ class Geometry:
         facets: list[tuple[int, int]],
         control_points: list[tuple[float, float]],
         holes: list[tuple[float, float]] | None = None,
-        material: Material = pre.DEFAULT_MATERIAL,
+        material: Material = DEFAULT_MATERIAL,
     ) -> Geometry:
         """Creates a Geometry object from points, facets and holes.
 
@@ -164,7 +163,7 @@ class Geometry:
                 region. Only one point is required per hole region.
             material: A :class:`~sectionproperties.pre.pre.Material` object that is to
                 be assigned. If not given, then the
-                :class:`~sectionproperties.pre.pre.DEFAULT_MATERIAL` will be used.
+                :class:`~sectionproperties.pre.DEFAULT_MATERIAL` will be used.
 
         Return:
             Geometry object
@@ -445,7 +444,7 @@ class Geometry:
                 f"a float, or a list of float with length of 1, not {mesh_sizes}."
             )
 
-        self.mesh = pre.create_mesh(
+        self.mesh = create_mesh(
             points=self.points,
             facets=self.facets,
             holes=self.holes,
@@ -1094,7 +1093,7 @@ class Geometry:
             Matplotlib axes object
         """
         # create plot and setup the plot
-        with post.plotting_context(title=title, **kwargs) as (fig, ax):
+        with plotting_context(title=title, **kwargs) as (fig, ax):
             # plot the points and facets
             for i, f in enumerate(self.facets):
                 if i == 0:
@@ -1364,7 +1363,7 @@ class Geometry:
 
             return CompoundGeometry(geoms=subs_geom_acc)
         else:
-            material = self.material or pre.DEFAULT_MATERIAL
+            material = self.material or DEFAULT_MATERIAL
 
             try:
                 new_polygon = filter_non_polygons(input_geom=self.geom - other.geom)
@@ -1514,7 +1513,7 @@ class CompoundGeometry(Geometry):
         """
         if isinstance(geoms, MultiPolygon):
             self.geoms = [
-                Geometry(poly, material=pre.DEFAULT_MATERIAL) for poly in geoms.geoms
+                Geometry(poly, material=DEFAULT_MATERIAL) for poly in geoms.geoms
             ]
             self.geom = geoms
         elif isinstance(geoms, list):
@@ -1562,7 +1561,7 @@ class CompoundGeometry(Geometry):
         facets: list[tuple[int, int]],
         control_points: list[tuple[float, float]],
         holes: list[tuple[float, float]] | None = None,
-        materials: Material | list[Material] = pre.DEFAULT_MATERIAL,
+        materials: Material | list[Material] = DEFAULT_MATERIAL,
     ) -> CompoundGeometry:
         """Creates a Geometry object from points, facets and holes.
 
@@ -1595,7 +1594,7 @@ class CompoundGeometry(Geometry):
             materials: A list of :class:`~sectionproperties.pre.pre.Material` objects
                 that are to be assigned, in order, to the regions defined by the given
                 ``control_points``. If not given, then the
-                :class:`~sectionproperties.pre.pre.DEFAULT_MATERIAL` will be used for
+                :class:`~sectionproperties.pre.DEFAULT_MATERIAL` will be used for
                 each region.
 
         Return:
@@ -1654,7 +1653,7 @@ class CompoundGeometry(Geometry):
         if holes is None:
             holes = list()
 
-        if materials is not [pre.DEFAULT_MATERIAL]:
+        if materials is not [DEFAULT_MATERIAL]:
             if len(materials) != len(control_points):
                 msg = "If materials are provided, the number of materials in the list "
                 msg += "must match the number of control_points provided."
@@ -1726,7 +1725,7 @@ class CompoundGeometry(Geometry):
             raise ValueError(msg)
 
         if not interiors:
-            if materials is [pre.DEFAULT_MATERIAL]:
+            if materials is [DEFAULT_MATERIAL]:
                 return CompoundGeometry(
                     geoms=[
                         Geometry(
@@ -1769,7 +1768,7 @@ class CompoundGeometry(Geometry):
                         msg += f"geometry once holes are subtracted: {control_points}"
                         raise ValueError(msg) from e
 
-                if materials is [pre.DEFAULT_MATERIAL]:
+                if materials is [DEFAULT_MATERIAL]:
                     exterior_geometry = Geometry(
                         geom=punched_exterior,
                         control_points=exterior_control_point,
@@ -1878,7 +1877,7 @@ class CompoundGeometry(Geometry):
         if len(mesh_sizes) == 1:
             mesh_sizes = mesh_sizes * len(self.control_points)
 
-        self.mesh = pre.create_mesh(
+        self.mesh = create_mesh(
             points=self.points,
             facets=self.facets,
             holes=self.holes,

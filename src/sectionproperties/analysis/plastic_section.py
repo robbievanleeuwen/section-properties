@@ -5,16 +5,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from rich.progress import Progress
-from scipy.optimize import RootResults, brentq
+from scipy.optimize import brentq
 
 from sectionproperties.analysis.fea import principal_coordinate
-from sectionproperties.pre.geometry import CompoundGeometry, Geometry
 from sectionproperties.pre.pre import DEFAULT_MATERIAL
 
 
 if TYPE_CHECKING:
+    from rich.progress import Progress
+    from scipy.optimize import RootResults
+
     from sectionproperties.analysis.section import Section
+    from sectionproperties.pre.geometry import CompoundGeometry, Geometry
 
 
 class PlasticSection:

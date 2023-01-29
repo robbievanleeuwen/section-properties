@@ -8,10 +8,13 @@ Finite element classes:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from sectionproperties.pre.pre import Material
+
+if TYPE_CHECKING:
+    from sectionproperties.pre.pre import Material
 
 
 @dataclass
