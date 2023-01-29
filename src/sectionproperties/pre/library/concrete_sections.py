@@ -6,7 +6,7 @@ import numpy as np
 
 import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.library.primitive_sections as primitive_sections
-from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
+import sectionproperties.pre.pre as pre
 
 
 def concrete_rectangular_section(
@@ -25,8 +25,8 @@ def concrete_rectangular_section(
     n_side: int = 0,
     c_side: float = 0.0,
     n_circle: int = 4,
-    conc_mat: Material = DEFAULT_MATERIAL,
-    steel_mat: Material = DEFAULT_MATERIAL,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
     """Constructs a reinforced concrete rectangular section.
 
@@ -212,8 +212,8 @@ def concrete_column_section(
     cover: float,
     n_circle: int = 4,
     filled: bool = False,
-    conc_mat: Material = DEFAULT_MATERIAL,
-    steel_mat: Material = DEFAULT_MATERIAL,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
     """Constructs a reinforced concrete column section.
 
@@ -362,8 +362,8 @@ def concrete_tee_section(
     n_side: int = 0,
     c_side: float = 0.0,
     n_circle: int = 4,
-    conc_mat: Material = DEFAULT_MATERIAL,
-    steel_mat: Material = DEFAULT_MATERIAL,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
     """Constructs a reinforced concrete tee section.
 
@@ -497,8 +497,8 @@ def concrete_circular_section(
     n_bar: int,
     cover: float,
     n_circle: int = 4,
-    conc_mat: Material = DEFAULT_MATERIAL,
-    steel_mat: Material = DEFAULT_MATERIAL,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.CompoundGeometry:
     """Constructs a reinforced concrete circular section.
 
@@ -606,7 +606,7 @@ def concrete_circular_section(
 def add_bar(
     geometry: geometry.Geometry | geometry.CompoundGeometry,
     area: float,
-    material: Material,
+    material: pre.Material,
     x: float,
     y: float,
     n: int,

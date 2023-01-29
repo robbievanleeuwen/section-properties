@@ -6,7 +6,7 @@ import numpy as np
 from shapely import Polygon
 
 import sectionproperties.pre.geometry as geometry
-from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
+import sectionproperties.pre.pre as pre
 
 
 def super_t_girder_section(
@@ -15,7 +15,7 @@ def super_t_girder_section(
     w: float = 2100,
     t_w: float | None = None,
     t_f: float = 75,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a super T girder section to AS5100.5.
 
@@ -136,7 +136,7 @@ def super_t_girder_section(
 
 def i_girder_section(
     girder_type: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a precast I girder section to AS5100.5.
 

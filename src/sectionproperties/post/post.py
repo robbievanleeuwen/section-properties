@@ -12,8 +12,8 @@ import numpy as np
 from rich.console import Console
 from rich.table import Table
 
-from sectionproperties.analysis.fea import principal_coordinate
-from sectionproperties.pre.pre import DEFAULT_MATERIAL
+import sectionproperties.analysis.fea as fea
+import sectionproperties.pre.pre as pre
 
 
 if TYPE_CHECKING:
@@ -261,7 +261,7 @@ class SectionProperties:
                 self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
 
             # initialise min, max variables
-            x1, y2 = principal_coordinate(
+            x1, y2 = fea.principal_coordinate(
                 phi=self.phi,
                 x=nodes[0][0] - self.cx,
                 y=nodes[0][1] - self.cy,
@@ -277,7 +277,7 @@ class SectionProperties:
                 y = pt[1] - self.cy
 
                 # determine the coordinate of the point wrt the principal axis
-                x1, y2 = principal_coordinate(phi=self.phi, x=x, y=y)
+                x1, y2 = fea.principal_coordinate(phi=self.phi, x=x, y=y)
 
                 # update the mins and maxes where necessary
                 x1max = max(x1max, x1)
@@ -518,7 +518,7 @@ def print_results(
         section: Section object
         fmt: Number formatting string
     """
-    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
+    if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
         prefix = "E."
     else:
         prefix = ""
@@ -539,14 +539,14 @@ def print_results(
     except AssertionError:
         pass
 
-    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
+    if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
         try:
             mass = section.get_mass()
             table.add_row("mass", f"{mass:>{fmt}}")
         except AssertionError:
             pass
 
-    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
+    if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
         try:
             ea = section.get_ea()
             table.add_row("e.a", f"{ea:>{fmt}}")
@@ -624,7 +624,7 @@ def print_results(
     except AssertionError:
         pass
 
-    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
+    if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
         try:
             e_eff = section.get_e_eff()
             g_eff = section.get_g_eff()
@@ -709,7 +709,7 @@ def print_results(
 
     try:
         sxx, syy = section.get_s()
-        if list(set(section.materials)) != [DEFAULT_MATERIAL]:
+        if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
             table.add_row("M_p,xx", f"{sxx:>{fmt}}")
             table.add_row("M_p,yy", f"{syy:>{fmt}}")
         else:
@@ -736,7 +736,7 @@ def print_results(
 
     try:
         s11, s22 = section.get_sp()
-        if list(set(section.materials)) != [DEFAULT_MATERIAL]:
+        if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
             table.add_row("M_p,11", f"{s11:>{fmt}}")
             table.add_row("M_p,22", f"{s22:>{fmt}}")
         else:

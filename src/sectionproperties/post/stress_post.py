@@ -13,7 +13,7 @@ import numpy as np
 from matplotlib.colors import CenteredNorm
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
-from sectionproperties.post.post import plotting_context
+import sectionproperties.post.post as post
 
 
 if TYPE_CHECKING:
@@ -277,7 +277,7 @@ class StressPost:
             title = stress_dict[stress]["title"]
 
         # create plot and setup the plot
-        with plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # set up the colormap
             colormap = cm.get_cmap(name=cmap)
 
@@ -419,7 +419,7 @@ class StressPost:
             title = stress_dict[stress]["title"]
 
         # create plot and setup the plot
-        with plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # set up the colormap
             colormap = cm.get_cmap(name=cmap)
 
@@ -757,7 +757,7 @@ class StressPost:
             title = f"Mohr's Circles for 3D Stress State at {(*pt,)}"
 
         # create plot and setup the plot
-        with plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (fig, ax):
             plot_circle(
                 ax,
                 (0.5 * (sigma_2 + sigma_3), 0),

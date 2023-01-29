@@ -6,15 +6,15 @@ import numpy as np
 from shapely import Polygon
 
 import sectionproperties.pre.geometry as geometry
-from sectionproperties.pre.library.utils import draw_radius, rotate
-from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
+import sectionproperties.pre.library.utils as sp_utils
+import sectionproperties.pre.pre as pre
 
 
 def circular_hollow_section(
     d: float,
     t: float,
     n: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a circular hollow section (CHS).
 
@@ -72,7 +72,7 @@ def elliptical_hollow_section(
     d_y: float,
     t: float,
     n: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs an elliptical hollow section (EHS).
 
@@ -133,7 +133,7 @@ def rectangular_hollow_section(
     t: float,
     r_out: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a rectangular hollow section (RHS).
 
@@ -173,15 +173,19 @@ def rectangular_hollow_section(
     r_in = max(r_out - t, 0)
 
     # construct the outer radius points
-    points_outer += draw_radius((r_out, r_out), r_out, np.pi, n_r)
-    points_outer += draw_radius((b - r_out, r_out), r_out, 1.5 * np.pi, n_r)
-    points_outer += draw_radius((b - r_out, d - r_out), r_out, 0, n_r)
-    points_outer += draw_radius((r_out, d - r_out), r_out, 0.5 * np.pi, n_r)
+    points_outer += sp_utils.draw_radius((r_out, r_out), r_out, np.pi, n_r)
+    points_outer += sp_utils.draw_radius((b - r_out, r_out), r_out, 1.5 * np.pi, n_r)
+    points_outer += sp_utils.draw_radius((b - r_out, d - r_out), r_out, 0, n_r)
+    points_outer += sp_utils.draw_radius((r_out, d - r_out), r_out, 0.5 * np.pi, n_r)
 
-    points_inner += draw_radius((t + r_in, t + r_in), r_in, np.pi, n_r)
-    points_inner += draw_radius((b - t - r_in, t + r_in), r_in, 1.5 * np.pi, n_r)
-    points_inner += draw_radius((b - t - r_in, d - t - r_in), r_in, 0, n_r)
-    points_inner += draw_radius((t + r_in, d - t - r_in), r_in, 0.5 * np.pi, n_r)
+    points_inner += sp_utils.draw_radius((t + r_in, t + r_in), r_in, np.pi, n_r)
+    points_inner += sp_utils.draw_radius(
+        (b - t - r_in, t + r_in), r_in, 1.5 * np.pi, n_r
+    )
+    points_inner += sp_utils.draw_radius((b - t - r_in, d - t - r_in), r_in, 0, n_r)
+    points_inner += sp_utils.draw_radius(
+        (t + r_in, d - t - r_in), r_in, 0.5 * np.pi, n_r
+    )
 
     outer = Polygon(points_outer)
     inner = Polygon(points_inner)
@@ -196,7 +200,7 @@ def polygon_hollow_section(
     r_in: float = 0.0,
     n_r: int = 1,
     rot: float = 0.0,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a regular hollow polygon section.
 
@@ -303,11 +307,11 @@ def polygon_hollow_section(
 
     for i in range(n_sides):
         for point in outer_base_points:
-            point_new = rotate(point, alpha * i + rot)
+            point_new = sp_utils.rotate(point, alpha * i + rot)
             outer_points.append(point_new)
 
         for point in inner_base_points:
-            point_new = rotate(point, alpha * i + rot)
+            point_new = sp_utils.rotate(point, alpha * i + rot)
             inner_points.append(point_new)
 
     outer_polygon = Polygon(outer_points)
@@ -323,7 +327,7 @@ def i_section(
     t_w: float,
     r: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs an I section.
 
@@ -365,11 +369,11 @@ def i_section(
 
     # construct the bottom right radius
     pt = b * 0.5 + t_w * 0.5 + r, t_f + r
-    points += draw_radius(pt=pt, r=r, theta=1.5 * np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=1.5 * np.pi, n=n_r, ccw=False)
 
     # construct the top right radius
     pt = b * 0.5 + t_w * 0.5 + r, d - t_f - r
-    points += draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
 
     # add the next four points
     points.append((b, d - t_f))
@@ -379,11 +383,11 @@ def i_section(
 
     # construct the top left radius
     pt = b * 0.5 - t_w * 0.5 - r, d - t_f - r
-    points += draw_radius(pt=pt, r=r, theta=0.5 * np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=0.5 * np.pi, n=n_r, ccw=False)
 
     # construct the bottom left radius
     pt = b * 0.5 - t_w * 0.5 - r, t_f + r
-    points += draw_radius(pt=pt, r=r, theta=0, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=0, n=n_r, ccw=False)
 
     # # add the last point
     points.append((0, t_f))
@@ -402,7 +406,7 @@ def mono_i_section(
     t_w: float,
     r: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a monosymmetric I section.
 
@@ -453,11 +457,11 @@ def mono_i_section(
 
     # construct the bottom right radius
     pt = x_central + t_w * 0.5 + r, t_fb + r
-    points += draw_radius(pt=pt, r=r, theta=1.5 * np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=1.5 * np.pi, n=n_r, ccw=False)
 
     # construct the top right radius
     pt = x_central + t_w * 0.5 + r, d - t_ft - r
-    points += draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
 
     # add the next four points
     points.append((x_central + b_t * 0.5, d - t_ft))
@@ -467,11 +471,11 @@ def mono_i_section(
 
     # construct the top left radius
     pt = x_central - t_w * 0.5 - r, d - t_ft - r
-    points += draw_radius(pt=pt, r=r, theta=0.5 * np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=0.5 * np.pi, n=n_r, ccw=False)
 
     # construct the bottom left radius
     pt = x_central - t_w * 0.5 - r, t_fb + r
-    points += draw_radius(pt=pt, r=r, theta=0, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=0, n=n_r, ccw=False)
 
     # add the last point
     points.append((x_central - b_b * 0.5, t_fb))
@@ -490,7 +494,7 @@ def tapered_flange_i_section(
     r_f: float,
     alpha: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a tapered flange I section.
 
@@ -690,7 +694,7 @@ def channel_section(
     t_w: float,
     r: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a parallel flange channel (PFC).
 
@@ -733,11 +737,11 @@ def channel_section(
 
     # construct the bottom right radius
     pt = t_w + r, t_f + r
-    points += draw_radius(pt=pt, r=r, theta=1.5 * np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=1.5 * np.pi, n=n_r, ccw=False)
 
     # construct the top right radius
     pt = t_w + r, d - t_f - r
-    points += draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
 
     # add last three points
     points.append((b, d - t_f))
@@ -758,7 +762,7 @@ def tapered_flange_channel(
     r_f: float,
     alpha: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a tapered flange channel section.
 
@@ -894,7 +898,7 @@ def tee_section(
     t_w: float,
     r: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a tee section.
 
@@ -935,7 +939,7 @@ def tee_section(
 
     # construct the top right radius
     pt = b * 0.5 + t_w * 0.5 + r, d - t_f - r
-    points += draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
 
     # add next four points
     points.append((b, d - t_f))
@@ -945,7 +949,7 @@ def tee_section(
 
     # construct the top left radius
     pt = b * 0.5 - t_w * 0.5 - r, d - t_f - r
-    points += draw_radius(pt=pt, r=r, theta=0.5 * np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=0.5 * np.pi, n=n_r, ccw=False)
 
     polygon = Polygon(points)
 
@@ -959,7 +963,7 @@ def angle_section(
     r_r: float,
     r_t: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs an angle section.
 
@@ -1008,15 +1012,15 @@ def angle_section(
 
     # construct the bottom toe radius
     pt = b - r_t, t - r_t
-    points += draw_radius(pt=pt, r=r_t, theta=0, n=n_r)
+    points += sp_utils.draw_radius(pt=pt, r=r_t, theta=0, n=n_r)
 
     # construct the root radius
     pt = t + r_r, t + r_r
-    points += draw_radius(pt=pt, r=r_r, theta=1.5 * np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r_r, theta=1.5 * np.pi, n=n_r, ccw=False)
 
     # construct the top toe radius
     pt = t - r_t, d - r_t
-    points += draw_radius(pt=pt, r=r_t, theta=0, n=n_r)
+    points += sp_utils.draw_radius(pt=pt, r=r_t, theta=0, n=n_r)
 
     # add the next point
     points.append((0, d))
@@ -1033,7 +1037,7 @@ def cee_section(
     t: float,
     r_out: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a cee section.
 
@@ -1081,10 +1085,12 @@ def cee_section(
     r_in = max(r_out - t, 0)
 
     # construct the outer bottom left radius
-    points += draw_radius(pt=(r_out, r_out), r=r_out, theta=np.pi, n=n_r)
+    points += sp_utils.draw_radius(pt=(r_out, r_out), r=r_out, theta=np.pi, n=n_r)
 
     # construct the outer bottom right radius
-    points += draw_radius(pt=(b - r_out, r_out), r=r_out, theta=1.5 * np.pi, n=n_r)
+    points += sp_utils.draw_radius(
+        pt=(b - r_out, r_out), r=r_out, theta=1.5 * np.pi, n=n_r
+    )
 
     if r_out != l:
         # add next two points
@@ -1092,22 +1098,22 @@ def cee_section(
         points.append((b - t, l))
 
     # construct the inner bottom right radius
-    points += draw_radius(
+    points += sp_utils.draw_radius(
         pt=(b - t - r_in, t + r_in), r=r_in, theta=0, n=n_r, ccw=False
     )
 
     # construct the inner bottom left radius
-    points += draw_radius(
+    points += sp_utils.draw_radius(
         pt=(t + r_in, t + r_in), r=r_in, theta=1.5 * np.pi, n=n_r, ccw=False
     )
 
     # construct the inner top left radius
-    points += draw_radius(
+    points += sp_utils.draw_radius(
         pt=(t + r_in, d - t - r_in), r=r_in, theta=np.pi, n=n_r, ccw=False
     )
 
     # construct the inner top right radius
-    points += draw_radius(
+    points += sp_utils.draw_radius(
         pt=(b - t - r_in, d - t - r_in), r=r_in, theta=0.5 * np.pi, n=n_r, ccw=False
     )
 
@@ -1117,10 +1123,12 @@ def cee_section(
         points.append((b, d - l))
 
     # construct the outer top right radius
-    points += draw_radius(pt=(b - r_out, d - r_out), r=r_out, theta=0, n=n_r)
+    points += sp_utils.draw_radius(pt=(b - r_out, d - r_out), r=r_out, theta=0, n=n_r)
 
     # construct the outer top left radius
-    points += draw_radius(pt=(r_out, d - r_out), r=r_out, theta=0.5 * np.pi, n=n_r)
+    points += sp_utils.draw_radius(
+        pt=(r_out, d - r_out), r=r_out, theta=0.5 * np.pi, n=n_r
+    )
 
     polygon = Polygon(points)
 
@@ -1135,7 +1143,7 @@ def zed_section(
     t: float,
     r_out: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a zed section.
 
@@ -1187,10 +1195,12 @@ def zed_section(
     r_in = max(r_out - t, 0)
 
     # construct the outer bottom left radius
-    points += draw_radius(pt=(r_out, r_out), r=r_out, theta=np.pi, n=n_r)
+    points += sp_utils.draw_radius(pt=(r_out, r_out), r=r_out, theta=np.pi, n=n_r)
 
     # construct the outer bottom right radius
-    points += draw_radius(pt=(b_r - r_out, r_out), r=r_out, theta=1.5 * np.pi, n=n_r)
+    points += sp_utils.draw_radius(
+        pt=(b_r - r_out, r_out), r=r_out, theta=1.5 * np.pi, n=n_r
+    )
 
     if r_out != l:
         # add next two points
@@ -1198,20 +1208,20 @@ def zed_section(
         points.append((b_r - t, l))
 
     # construct the inner bottom right radius
-    points += draw_radius(
+    points += sp_utils.draw_radius(
         pt=(b_r - t - r_in, t + r_in), r=r_in, theta=0, n=n_r, ccw=False
     )
 
     # construct the inner bottom left radius
-    points += draw_radius(
+    points += sp_utils.draw_radius(
         pt=(t + r_in, t + r_in), r=r_in, theta=1.5 * np.pi, n=n_r, ccw=False
     )
 
     # construct the outer top right radius
-    points += draw_radius(pt=(t - r_out, d - r_out), r=r_out, theta=0, n=n_r)
+    points += sp_utils.draw_radius(pt=(t - r_out, d - r_out), r=r_out, theta=0, n=n_r)
 
     # construct the outer top left radius
-    points += draw_radius(
+    points += sp_utils.draw_radius(
         pt=(t - b_l + r_out, d - r_out), r=r_out, theta=0.5 * np.pi, n=n_r
     )
 
@@ -1221,12 +1231,12 @@ def zed_section(
         points.append((t - b_l + t, d - l))
 
     # construct the inner top left radius
-    points += draw_radius(
+    points += sp_utils.draw_radius(
         pt=(2 * t - b_l + r_in, d - t - r_in), r=r_in, theta=np.pi, n=n_r, ccw=False
     )
 
     # construct the inner top right radius
-    points += draw_radius(
+    points += sp_utils.draw_radius(
         pt=(-r_in, d - t - r_in), r=r_in, theta=0.5 * np.pi, n=n_r, ccw=False
     )
 
@@ -1242,7 +1252,7 @@ def box_girder_section(
     t_ft: float,
     t_fb: float,
     t_w: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ):
     """Constructs a box girder section.
 
@@ -1321,7 +1331,7 @@ def bulb_section(
     r: float,
     n_r: int,
     d_b: float | None = None,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a bulb section.
 
@@ -1368,7 +1378,7 @@ def bulb_section(
     if d_b is not None:
         dc = r / np.sin(2 / 3 * np.pi / 2)
         ptb0 = (t * 0.5 + dc * np.cos(np.pi / 6), d - d_b - dc * np.cos(np.pi / 3))
-        points += draw_radius(
+        points += sp_utils.draw_radius(
             pt=ptb0, r=r, theta=np.pi, n=n_r, ccw=False, phi=np.pi / 3
         )
 
@@ -1376,10 +1386,10 @@ def bulb_section(
     ptb = b + t * 0.5 - r, d - r
 
     # build radius
-    points += draw_radius(
+    points += sp_utils.draw_radius(
         pt=ptb, r=r, theta=-np.pi * 1 / 3, n=n_r, ccw=True, phi=np.pi / 3
     )
-    points += draw_radius(pt=ptb, r=r, theta=0, n=n_r, ccw=True)
+    points += sp_utils.draw_radius(pt=ptb, r=r, theta=0, n=n_r, ccw=True)
 
     # build the top part
     points.append((b + t * 0.5 - r, d))

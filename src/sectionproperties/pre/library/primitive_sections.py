@@ -6,14 +6,14 @@ import numpy as np
 from shapely import Polygon
 
 import sectionproperties.pre.geometry as geometry
-from sectionproperties.pre.library.utils import draw_radius
-from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
+import sectionproperties.pre.library.utils as sp_utils
+import sectionproperties.pre.pre as pre
 
 
 def rectangular_section(
     d: float,
     b: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a rectangular section.
 
@@ -49,7 +49,7 @@ def rectangular_section(
 def circular_section(
     d: float,
     n: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a circular section.
 
@@ -99,7 +99,7 @@ def circular_section(
 def circular_section_by_area(
     area: float,
     n: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a circular section defined by its area.
 
@@ -137,7 +137,7 @@ def elliptical_section(
     d_x: float,
     d_y: float,
     n: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs an elliptical section.
 
@@ -188,7 +188,7 @@ def elliptical_section(
 def triangular_section(
     b: float,
     h: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a triangular section.
 
@@ -222,7 +222,7 @@ def triangular_section(
 def triangular_radius_section(
     b: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a triangular section with a radius.
 
@@ -250,7 +250,9 @@ def triangular_radius_section(
             triangular_radius_section(b=6, n_r=16).plot_geometry()
     """
     points = [(0.0, 0.0)]
-    points += draw_radius(pt=(b, b), r=b, theta=3 * np.pi / 2, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(
+        pt=(b, b), r=b, theta=3 * np.pi / 2, n=n_r, ccw=False
+    )
     triangle = Polygon(points)
 
     return geometry.Geometry(geom=triangle, material=material)
@@ -262,7 +264,7 @@ def cruciform_section(
     t: float,
     r: float,
     n_r: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a cruciform section.
 
@@ -302,7 +304,7 @@ def cruciform_section(
 
     # construct the bottom right radius
     pt = 0.5 * t + r, -0.5 * t - r
-    points += draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
 
     # add the next two points
     points.append((0.5 * b, -t * 0.5))
@@ -310,7 +312,7 @@ def cruciform_section(
 
     # construct the top right radius
     pt = 0.5 * t + r, 0.5 * t + r
-    points += draw_radius(pt=pt, r=r, theta=1.5 * np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=1.5 * np.pi, n=n_r, ccw=False)
 
     # add the next two points
     points.append((t * 0.5, 0.5 * d))
@@ -318,7 +320,7 @@ def cruciform_section(
 
     # construct the top left radius
     pt = -0.5 * t - r, 0.5 * t + r
-    points += draw_radius(pt=pt, r=r, theta=0, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=0, n=n_r, ccw=False)
 
     # add the next two points
     points.append((-0.5 * b, t * 0.5))
@@ -326,7 +328,7 @@ def cruciform_section(
 
     # construct the bottom left radius
     pt = -0.5 * t - r, -0.5 * t - r
-    points += draw_radius(pt=pt, r=r, theta=0.5 * np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=0.5 * np.pi, n=n_r, ccw=False)
 
     polygon = Polygon(points)
 

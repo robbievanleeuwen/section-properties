@@ -23,27 +23,13 @@ from scipy.sparse import coo_matrix, csc_matrix, linalg
 from shapely import Point, Polygon
 from shapely.strtree import STRtree
 
-from sectionproperties.analysis.fea import Tri6, global_coordinate, principal_coordinate
-from sectionproperties.analysis.plastic_section import PlasticSection
-from sectionproperties.analysis.solver import (
-    create_progress,
-    solve_cgs_lagrange,
-    solve_direct_lagrange,
-)
-from sectionproperties.post.post import (
-    SectionProperties,
-    draw_principal_axis,
-    plotting_context,
-    print_results,
-)
-from sectionproperties.post.stress_post import StressPost, StressResult
-from sectionproperties.pre.geometry import (
-    CompoundGeometry,
-    Geometry,
-    check_geometry_disjoint,
-    check_geometry_overlaps,
-)
-from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
+import sectionproperties.analysis.fea as fea
+import sectionproperties.analysis.plastic_section as sp_plastic
+import sectionproperties.analysis.solver as solver
+import sectionproperties.post.post as post
+import sectionproperties.post.stress_post as sp_stress_post
+import sectionproperties.pre.geometry as sp_geom
+import sectionproperties.pre.pre as pre
 
 
 class Section:
@@ -67,7 +53,7 @@ class Section:
 
     def __init__(
         self,
-        geometry: Geometry | CompoundGeometry,
+        geometry: sp_geom.Geometry | sp_geom.CompoundGeometry,
         time_info: bool = False,
     ) -> None:
         """Inits the Section class.
@@ -95,9 +81,9 @@ class Section:
         self.geometry = geometry
         self.time_info = time_info
         self.mesh = geometry.mesh
-        self.materials: list[Material] = []
+        self.materials: list[pre.Material] = []
 
-        if isinstance(self.geometry, CompoundGeometry):
+        if isinstance(self.geometry, sp_geom.CompoundGeometry):
             self.materials = [geom.material for geom in self.geometry.geoms]
         else:
             self.materials = [self.geometry.material]
@@ -138,7 +124,8 @@ class Section:
                         MaterialGroup(num_nodes=self.num_nodes, material=material)
                     )
 
-        self.elements: list[Tri6] = []  # initialise list holding all element objects
+        # initialise list holding all element objects
+        self.elements: list[fea.Tri6] = []
 
         # build the mesh one element at a time
         for i, node_ids in enumerate(self._mesh_elements):
@@ -167,10 +154,10 @@ class Section:
                 material = self.materials[att_el]
             # if there are no materials specified, use a default material
             else:  # Should not happen but included as failsafe
-                material = DEFAULT_MATERIAL
+                material = pre.DEFAULT_MATERIAL
 
             # add tri6 elements to the mesh
-            new_element = Tri6(i, coords, node_ids, material)
+            new_element = fea.Tri6(i, coords, node_ids, material)
             self.elements.append(new_element)
 
             # add element to relevant MaterialGroup
@@ -187,7 +174,7 @@ class Section:
         self.mesh_search_tree = STRtree(p_mesh)
 
         # initialise class storing section properties
-        self.section_props = SectionProperties()
+        self.section_props = post.SectionProperties()
 
     def calculate_geometric_properties(self) -> None:
         """Calculates geometric (area) properties.
@@ -286,7 +273,7 @@ class Section:
 
         # conduct geometric analysis
         if self.time_info:
-            progress = create_progress()  # create progress bar
+            progress = solver.create_progress()  # create progress bar
 
             progress_table = Table.grid()  # create table to print progress in
             panel = Panel.fit(
@@ -353,9 +340,9 @@ class Section:
             raise RuntimeError(err)
 
         # check if any geometry are disjoint
-        if isinstance(self.geometry, CompoundGeometry):
+        if isinstance(self.geometry, sp_geom.CompoundGeometry):
             polygons = [sec_geom.geom for sec_geom in self.geometry.geoms]
-            disjoint_regions = check_geometry_disjoint(lop=polygons)
+            disjoint_regions = sp_geom.check_geometry_disjoint(lop=polygons)
             if disjoint_regions:
                 # TODO: fix link
                 msg = "\nThe section geometry contains disjoint regions which is "
@@ -431,9 +418,11 @@ class Section:
             # solve for warping function
             def solve_warping() -> np.ndarray:
                 if solver_type == "cgs":
-                    omega = solve_cgs_lagrange(k_lg=k_lg, f=f_torsion, m=k_lg_precond)
+                    omega = solver.solve_cgs_lagrange(
+                        k_lg=k_lg, f=f_torsion, m=k_lg_precond
+                    )
                 elif solver_type == "direct":
-                    omega = solve_direct_lagrange(k_lg=k_lg, f=f_torsion)
+                    omega = solver.solve_direct_lagrange(k_lg=k_lg, f=f_torsion)
                 else:
                     raise ValueError("solver_type must be 'cgs' or 'direct'.")
 
@@ -507,22 +496,26 @@ class Section:
                 task: TaskID | None = None,
             ) -> tuple[np.ndarray, np.ndarray]:
                 if solver_type == "cgs":
-                    psi_shear = solve_cgs_lagrange(k_lg=k_lg, f=f_psi, m=k_lg_precond)
+                    psi_shear = solver.solve_cgs_lagrange(
+                        k_lg=k_lg, f=f_psi, m=k_lg_precond
+                    )
 
                     if progress and task:
                         progress.update(task_id=task, advance=1)
 
-                    phi_shear = solve_cgs_lagrange(k_lg=k_lg, f=f_phi, m=k_lg_precond)
+                    phi_shear = solver.solve_cgs_lagrange(
+                        k_lg=k_lg, f=f_phi, m=k_lg_precond
+                    )
 
                     if progress and task:
                         progress.update(task_id=task, advance=1)
                 else:
-                    psi_shear = solve_direct_lagrange(k_lg=k_lg, f=f_psi)
+                    psi_shear = solver.solve_direct_lagrange(k_lg=k_lg, f=f_psi)
 
                     if progress and task:
                         progress.update(task_id=task, advance=1)
 
-                    phi_shear = solve_direct_lagrange(k_lg=k_lg, f=f_phi)
+                    phi_shear = solver.solve_direct_lagrange(k_lg=k_lg, f=f_phi)
 
                     if progress and task:
                         progress.update(task_id=task, advance=1)
@@ -620,7 +613,7 @@ class Section:
             delta_s = 2 * (1 + nu_eff) * (ixx_c * iyy_c - ixy_c**2)
             x_se = (1 / delta_s) * ((nu_eff / 2 * sc_xint) - f_torsion.dot(phi_shear))
             y_se = (1 / delta_s) * ((nu_eff / 2 * sc_yint) + f_torsion.dot(psi_shear))
-            x11_se, y22_se = principal_coordinate(phi=phi, x=x_se, y=y_se)
+            x11_se, y22_se = fea.principal_coordinate(phi=phi, x=x_se, y=y_se)
 
             # calculate shear centres (Trefftz's approach)
             x_st = (ixy_c * i_xomega - iyy_c * i_yomega) / (ixx_c * iyy_c - ixy_c**2)
@@ -770,7 +763,7 @@ class Section:
         # conduct warping analysis
         if self.time_info:
             # create warping progress
-            progress = create_progress()
+            progress = solver.create_progress()
             total_task = progress.add_task(
                 description="[bold red]Conducting warping analysis...", total=7
             )
@@ -901,7 +894,7 @@ class Section:
 
         # conduct geometric analysis
         if self.time_info:
-            progress = create_progress()  # create progress bar
+            progress = solver.create_progress()  # create progress bar
 
             progress_table = Table.grid()  # create table to print progress in
             panel = Panel.fit(
@@ -985,9 +978,11 @@ class Section:
             # solve for warping function
             def solve_warping() -> np.ndarray:
                 if solver_type == "cgs":
-                    omega = solve_cgs_lagrange(k_lg=k_lg, f=f_torsion, m=k_lg_precond)
+                    omega = solver.solve_cgs_lagrange(
+                        k_lg=k_lg, f=f_torsion, m=k_lg_precond
+                    )
                 elif solver_type == "direct":
-                    omega = solve_direct_lagrange(k_lg=k_lg, f=f_torsion)
+                    omega = solver.solve_direct_lagrange(k_lg=k_lg, f=f_torsion)
                 else:
                     raise ValueError("solver_type must be 'cgs' or 'direct'.")
 
@@ -1020,7 +1015,7 @@ class Section:
         # conduct warping analysis
         if self.time_info:
             # create warping progress
-            progress = create_progress()
+            progress = solver.create_progress()
             total_task = progress.add_task(
                 description="[bold red]Conducting warping analysis...", total=2
             )
@@ -1106,9 +1101,9 @@ class Section:
             raise RuntimeError(err)
 
         # check if any geometry are overlapped
-        if isinstance(self.geometry, CompoundGeometry):
+        if isinstance(self.geometry, sp_geom.CompoundGeometry):
             polygons = [sec_geom.geom for sec_geom in self.geometry.geoms]
-            overlapped_regions = check_geometry_overlaps(lop=polygons)
+            overlapped_regions = sp_geom.check_geometry_overlaps(lop=polygons)
 
             if overlapped_regions:
                 # TODO: fix link
@@ -1123,13 +1118,13 @@ class Section:
                 warnings.warn(msg)
 
         def calc_plastic(progress=None):
-            plastic_section = PlasticSection(geometry=self.geometry)
+            plastic_section = sp_plastic.PlasticSection(geometry=self.geometry)
             plastic_section.calculate_plastic_properties(
                 section=self, verbose=verbose, progress=progress
             )
 
         if self.time_info:
-            progress = create_progress()
+            progress = solver.create_progress()
 
             progress_table = Table.grid()
             panel = Panel.fit(
@@ -1159,7 +1154,7 @@ class Section:
         m11: float = 0.0,
         m22: float = 0.0,
         mzz: float = 0.0,
-    ) -> StressPost:
+    ) -> sp_stress_post.StressPost:
         """Calculates cross-section stresses.
 
         Calculates the cross-section stress resulting from design actions and returns
@@ -1208,7 +1203,7 @@ class Section:
         else:
             warping = False
 
-        def calc_stress(progress: Progress | None = None) -> StressPost:
+        def calc_stress(progress: Progress | None = None) -> sp_stress_post.StressPost:
             if progress:
                 task = progress.add_task(
                     description="[red]Calculating cross-section stresses",
@@ -1218,7 +1213,7 @@ class Section:
                 task = None
 
             # create stress post object
-            stress_post = StressPost(section=self)
+            stress_post = sp_stress_post.StressPost(section=self)
 
             # get relevant section properties
             ea = self.get_ea()
@@ -1343,7 +1338,7 @@ class Section:
             return stress_post
 
         if self.time_info:
-            progress = create_progress()
+            progress = solver.create_progress()
 
             progress_table = Table.grid()
             panel = Panel.fit(
@@ -1501,7 +1496,7 @@ class Section:
             Section(geometry=geom).plot_mesh()
         """
         # create plot and setup the plot
-        with plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (fig, ax):
             assert ax
 
             # if the material colors are to be displayed
@@ -1595,7 +1590,7 @@ class Section:
                 section.plot_centroids()
         """
         # create plot and setup the plot
-        with plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (fig, ax):
             assert ax
 
             # plot the finite element mesh
@@ -1654,7 +1649,7 @@ class Section:
                 assert self.section_props.cx
                 assert self.section_props.cy
 
-                draw_principal_axis(
+                post.draw_principal_axis(
                     ax=ax,
                     phi=self.section_props.phi * np.pi / 180,
                     cx=self.section_props.cx,
@@ -1693,7 +1688,7 @@ class Section:
             fmt: Number formatting string, see
                 https://docs.python.org/3/library/string.html
         """
-        print_results(section=self, fmt=fmt)
+        post.print_results(section=self, fmt=fmt)
 
     def get_area(self) -> float:
         """Returns the cross-section area.
@@ -2275,7 +2270,7 @@ class Section:
             raise AssertionError("Conduct a plastic analysis.") from e
 
         # determine the position of the plastic centroid in the global axis
-        x_pc, y_pc = global_coordinate(
+        x_pc, y_pc = fea.global_coordinate(
             phi=self.section_props.phi,
             x11=self.section_props.x11_pc,
             y22=self.section_props.y22_pc,
@@ -2566,18 +2561,18 @@ class MaterialGroup:
     """
 
     num_nodes: int
-    material: Material
-    stress_result: StressResult = field(init=False)
-    elements: list[Tri6] = field(init=False, default_factory=list)
+    material: pre.Material
+    stress_result: sp_stress_post.StressResult = field(init=False)
+    elements: list[fea.Tri6] = field(init=False, default_factory=list)
     el_ids: list[int] = field(init=False, default_factory=list)
 
     def __post_init__(self) -> None:
         """Allocates the stress_result parameter."""
-        self.stress_result = StressResult(self.num_nodes)
+        self.stress_result = sp_stress_post.StressResult(self.num_nodes)
 
     def add_element(
         self,
-        element: Tri6,
+        element: fea.Tri6,
     ) -> None:
         """Adds an element and its element ID to the MaterialGroup.
 

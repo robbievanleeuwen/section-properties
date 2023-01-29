@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy.optimize import brentq
 
-from sectionproperties.analysis.fea import principal_coordinate
-from sectionproperties.pre.pre import DEFAULT_MATERIAL
+import sectionproperties.analysis.fea as fea
+import sectionproperties.pre.pre as pre
 
 
 if TYPE_CHECKING:
@@ -135,10 +135,10 @@ class PlasticSection:
         )
 
         # calculate the centroids in the principal coordinate system
-        c_top_p = principal_coordinate(
+        c_top_p = fea.principal_coordinate(
             phi=section.section_props.phi, x=self._c_top[0], y=self._c_top[1]
         )
-        c_bot_p = principal_coordinate(
+        c_bot_p = fea.principal_coordinate(
             phi=section.section_props.phi, x=self._c_bot[0], y=self._c_bot[1]
         )
 
@@ -161,10 +161,10 @@ class PlasticSection:
         )
 
         # calculate the centroids in the principal coordinate system
-        c_top_p = principal_coordinate(
+        c_top_p = fea.principal_coordinate(
             phi=section.section_props.phi, x=self._c_top[0], y=self._c_top[1]
         )
-        c_bot_p = principal_coordinate(
+        c_bot_p = fea.principal_coordinate(
             phi=section.section_props.phi, x=self._c_bot[0], y=self._c_bot[1]
         )
 
@@ -179,7 +179,7 @@ class PlasticSection:
             progress.update(task_id=task, advance=1)
 
         # if there are no materials specified, calculate shape factors
-        if list(set(section.materials)) == [DEFAULT_MATERIAL]:
+        if list(set(section.materials)) == [pre.DEFAULT_MATERIAL]:
             if (
                 section.section_props.zxx_plus
                 and section.section_props.zxx_minus
@@ -276,7 +276,7 @@ class PlasticSection:
         """
         # initialise mins and maxs
         pt = self.geometry.points[0]
-        u, v = principal_coordinate(phi=angle, x=pt[0], y=pt[1])
+        u, v = fea.principal_coordinate(phi=angle, x=pt[0], y=pt[1])
         u_min = u
         u_max = u
         v_min = v
@@ -285,7 +285,7 @@ class PlasticSection:
         # loop through all nodes in the mesh
         for pt in self.geometry.points[1:]:
             # determine the coordinate of the point wrt the axis
-            u, v = principal_coordinate(phi=angle, x=pt[0], y=pt[1])
+            u, v = fea.principal_coordinate(phi=angle, x=pt[0], y=pt[1])
 
             # update the mins and maxes where necessary
             u_min = min(u_min, u)

@@ -6,14 +6,14 @@ import numpy as np
 from shapely import Polygon
 
 import sectionproperties.pre.geometry as geometry
-from sectionproperties.pre.library.utils import draw_radius
-from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
+import sectionproperties.pre.library.utils as sp_utils
+import sectionproperties.pre.pre as pre
 
 
 def nastran_bar(
     dim_1: float,
     dim_2: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a BAR section.
 
@@ -63,7 +63,7 @@ def nastran_box(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a BOX section.
 
@@ -130,7 +130,7 @@ def nastran_box1(
     dim_4: float,
     dim_5: float,
     dim_6: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a BOX1 section.
 
@@ -198,7 +198,7 @@ def nastran_chan(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a CHAN section.
 
@@ -260,7 +260,7 @@ def nastran_chan1(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a CHAN1 section.
 
@@ -321,7 +321,7 @@ def nastran_chan2(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a CHAN2 section.
 
@@ -382,7 +382,7 @@ def nastran_cross(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs Nastran's cruciform section.
 
@@ -451,7 +451,7 @@ def nastran_fcross(
     dim_6: float,
     dim_7: float,
     dim_8: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a flanged cruciform section.
 
@@ -553,7 +553,7 @@ def nastran_dbox(
     dim_8: float,
     dim_9: float,
     dim_10: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a DBOX section.
 
@@ -638,7 +638,7 @@ def nastran_gbox(
     dim_4: float,
     dim_5: float,
     dim_6: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a GBOX section.
 
@@ -715,7 +715,7 @@ def nastran_h(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a H section.
 
@@ -784,7 +784,7 @@ def nastran_hat(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a HAT section.
 
@@ -849,7 +849,7 @@ def nastran_hat1(
     dim_3: float,
     dim_4: float,
     dim_5: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a HAT1 section.
 
@@ -917,7 +917,7 @@ def nastran_hexa(
     dim_1: float,
     dim_2: float,
     dim_3: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a HEXA section.
 
@@ -976,7 +976,7 @@ def nastran_i(
     dim_4: float,
     dim_5: float,
     dim_6: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs Nastran's I section.
 
@@ -1046,7 +1046,7 @@ def nastran_i1(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs an I1 section.
 
@@ -1111,7 +1111,7 @@ def nastran_l(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs an L section.
 
@@ -1168,7 +1168,7 @@ def nastran_l(
 def nastran_rod(
     dim_1: float,
     n: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a circular rod section.
 
@@ -1226,7 +1226,7 @@ def nastran_tee(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a T section.
 
@@ -1274,7 +1274,7 @@ def nastran_tee(
 
     # construct the top right radius
     pt = b * 0.5 + t_w * 0.5 + r, d - t_f - r
-    points += draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=np.pi, n=n_r, ccw=False)
 
     # add next four points
     points.append((b, d - t_f))
@@ -1284,7 +1284,7 @@ def nastran_tee(
 
     # construct the top left radius
     pt = b * 0.5 - t_w * 0.5 - r, d - t_f - r
-    points += draw_radius(pt=pt, r=r, theta=0.5 * np.pi, n=n_r, ccw=False)
+    points += sp_utils.draw_radius(pt=pt, r=r, theta=0.5 * np.pi, n=n_r, ccw=False)
 
     geom = geometry.Geometry(geom=Polygon(points), material=material)
 
@@ -1302,7 +1302,7 @@ def nastran_tee1(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a T1 section.
 
@@ -1363,7 +1363,7 @@ def nastran_tee2(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a T2 section.
 
@@ -1424,7 +1424,7 @@ def nastran_tube(
     dim_1: float,
     dim_2: float,
     n: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a circular tube section.
 
@@ -1492,7 +1492,7 @@ def nastran_tube2(
     dim_1: float,
     dim_2: float,
     n: int,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a circular TUBE2 sectio.
 
@@ -1562,7 +1562,7 @@ def nastran_zed(
     dim_2: float,
     dim_3: float,
     dim_4: float,
-    material: Material = DEFAULT_MATERIAL,
+    material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a Z section.
 
