@@ -318,7 +318,7 @@ class StressPost:
                         triangulation=triang, z=sig, levels=v, cmap=colormap, norm=norm
                     )
 
-            # display the colourbar
+            # display the colorbar
             divider = make_axes_locatable(axes=ax)
             cax = divider.append_axes(position="right", size="5%", pad=0.1)
 
@@ -441,7 +441,7 @@ class StressPost:
             for idx, sigx in enumerate(sigxs):
                 sigy = sigys[idx]
 
-                # scale the colour with respect to the magnitude of the vector
+                # scale the color with respect to the magnitude of the vector
                 c = np.hypot(sigx, sigy)
 
                 if ax:
@@ -468,7 +468,7 @@ class StressPost:
             for quiv_plot in quiv_list:
                 quiv_plot.scale = max_scale
 
-            # apply the colourbar
+            # apply the colorbar
             v1 = np.linspace(start=c_min, stop=c_max, num=15, endpoint=True)
             divider = make_axes_locatable(axes=ax)
             cax = divider.append_axes(position="right", size="5%", pad=0.1)

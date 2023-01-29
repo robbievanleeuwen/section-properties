@@ -614,7 +614,7 @@ class Tri6:
         psi_shear: np.ndarray,
         phi_shear: np.ndarray,
         delta_s: float,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[float, float, float]:
         r"""Calculates the stress at a point resulting from a specified loading.
 
         Args:
@@ -728,7 +728,6 @@ class Tri6:
         sig_zz_m_p = sig_zz_mxx_p + sig_zz_myy_p + sig_zz_m11_p + sig_zz_m22_p
         sig_zx_v_p = sig_zx_vx_p + sig_zx_vy_p
         sig_zy_v_p = sig_zy_vx_p + sig_zy_vy_p
-        sig_zy_p = sig_zy_mzz_p + sig_zy_v_p
         sig_zz_p = sig_zz_n_p + sig_zz_m_p
         sig_zx_p = sig_zx_mzz_p + sig_zx_v_p
         sig_zy_p = sig_zy_mzz_p + sig_zy_v_p

@@ -73,7 +73,7 @@ class SectionProperties:
         omega: Warping function
         psi_shear: Psi shear function
         phi_shear: Phi shear function
-        Delta_s: Shear factor
+        delta_s: Shear factor
         x_se: x-coordinate of the shear centre (elasticity approach)
         y_se: y-coordinate of the shear centre (elasticity approach)
         x11_se: 11-coordinate of the shear centre (elasticity approach)
@@ -81,11 +81,11 @@ class SectionProperties:
         x_st: x-coordinate of the shear centre (Trefftz's approach)
         y_st: y-coordinate of the shear centre (Trefftz's approach)
         gamma: Warping constant
-        A_sx: Shear area about the x-axis
-        A_sy: Shear area about the y-axis
-        A_sxy: Shear area about the xy-axis
-        A_s11: Shear area about the 11-bending axis
-        A_s22: Shear area about the 22-bending axis
+        a_sx: Shear area about the x-axis
+        a_sy: Shear area about the y-axis
+        a_sxy: Shear area about the xy-axis
+        a_s11: Shear area about the 11-bending axis
+        a_s22: Shear area about the 22-bending axis
         beta_x_plus: Monosymmetry constant for bending about the x-axis with the top
             flange in compression
         beta_x_minus: Monosymmetry constant for bending about the x-axis with the bottom
@@ -165,7 +165,7 @@ class SectionProperties:
     omega: np.ndarray | None = None
     psi_shear: np.ndarray | None = None
     phi_shear: np.ndarray | None = None
-    Delta_s: float | None = None
+    delta_s: float | None = None
     x_se: float | None = None
     y_se: float | None = None
     x11_se: float | None = None
@@ -173,11 +173,11 @@ class SectionProperties:
     x_st: float | None = None
     y_st: float | None = None
     gamma: float | None = None
-    A_sx: float | None = None
-    A_sy: float | None = None
-    A_sxy: float | None = None
-    A_s11: float | None = None
-    A_s22: float | None = None
+    a_sx: float | None = None
+    a_sy: float | None = None
+    a_sxy: float | None = None
+    a_s11: float | None = None
+    a_s22: float | None = None
     beta_x_plus: float | None = None
     beta_x_minus: float | None = None
     beta_y_plus: float | None = None
@@ -509,16 +509,16 @@ def draw_principal_axis(
 
 
 def print_results(
-    cross_section: Section,
+    section: Section,
     fmt: str,
 ) -> None:
     """Prints the results that have been calculated to the terminal.
 
     Args:
-        cross_section: Section object
+        section: Section object
         fmt: Number formatting string
     """
-    if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
+    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
         prefix = "E."
     else:
         prefix = ""
@@ -527,122 +527,122 @@ def print_results(
     table.add_column("Property", justify="left", style="cyan", no_wrap=True)
     table.add_column("Value", justify="right", style="green")
 
-    area = cross_section.get_area()
+    area = section.get_area()
     if area is not None:
         table.add_row("A", "{:>{fmt}}".format(area, fmt=fmt))
 
-    perimeter = cross_section.get_perimeter()
+    perimeter = section.get_perimeter()
     if perimeter is not None:
         table.add_row("Perim.", "{:>{fmt}}".format(perimeter, fmt=fmt))
 
-    if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
-        mass = cross_section.get_mass()
+    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
+        mass = section.get_mass()
         if mass is not None:
             table.add_row("Mass", "{:>{fmt}}".format(mass, fmt=fmt))
 
-    if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
-        ea = cross_section.get_ea()
+    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
+        ea = section.get_ea()
         if ea is not None:
             table.add_row("E.A", "{:>{fmt}}".format(ea, fmt=fmt))
 
-    (qx, qy) = cross_section.get_q()
+    (qx, qy) = section.get_q()
     if qx is not None:
         table.add_row(prefix + "Qx", "{:>{fmt}}".format(qx, fmt=fmt))
         table.add_row(prefix + "Qy", "{:>{fmt}}".format(qy, fmt=fmt))
 
-    (cx, cy) = cross_section.get_c()
+    (cx, cy) = section.get_c()
     if cx is not None:
         table.add_row("cx", "{:>{fmt}}".format(cx, fmt=fmt))
         table.add_row("cy", "{:>{fmt}}".format(cy, fmt=fmt))
 
-    (ixx_g, iyy_g, ixy_g) = cross_section.get_ig()
+    (ixx_g, iyy_g, ixy_g) = section.get_ig()
     if ixx_g is not None:
         table.add_row(prefix + "Ixx_g", "{:>{fmt}}".format(ixx_g, fmt=fmt))
         table.add_row(prefix + "Iyy_g", "{:>{fmt}}".format(iyy_g, fmt=fmt))
         table.add_row(prefix + "Ixy_g", "{:>{fmt}}".format(ixy_g, fmt=fmt))
 
-    (ixx_c, iyy_c, ixy_c) = cross_section.get_ic()
+    (ixx_c, iyy_c, ixy_c) = section.get_ic()
     if ixx_c is not None:
         table.add_row(prefix + "Ixx_c", "{:>{fmt}}".format(ixx_c, fmt=fmt))
         table.add_row(prefix + "Iyy_c", "{:>{fmt}}".format(iyy_c, fmt=fmt))
         table.add_row(prefix + "Ixy_c", "{:>{fmt}}".format(ixy_c, fmt=fmt))
 
-    (zxx_plus, zxx_minus, zyy_plus, zyy_minus) = cross_section.get_z()
+    (zxx_plus, zxx_minus, zyy_plus, zyy_minus) = section.get_z()
     if zxx_plus is not None:
         table.add_row(prefix + "Zxx+", "{:>{fmt}}".format(zxx_plus, fmt=fmt))
         table.add_row(prefix + "Zxx-", "{:>{fmt}}".format(zxx_minus, fmt=fmt))
         table.add_row(prefix + "Zyy+", "{:>{fmt}}".format(zyy_plus, fmt=fmt))
         table.add_row(prefix + "Zyy-", "{:>{fmt}}".format(zyy_minus, fmt=fmt))
 
-    (rx, ry) = cross_section.get_rc()
+    (rx, ry) = section.get_rc()
     if rx is not None:
         table.add_row("rx", "{:>{fmt}}".format(rx, fmt=fmt))
         table.add_row("ry", "{:>{fmt}}".format(ry, fmt=fmt))
 
-    phi = cross_section.get_phi()
-    (i11_c, i22_c) = cross_section.get_ip()
+    phi = section.get_phi()
+    (i11_c, i22_c) = section.get_ip()
     if phi is not None:
         table.add_row("phi", "{:>{fmt}}".format(phi, fmt=fmt))
         table.add_row(prefix + "I11_c", "{:>{fmt}}".format(i11_c, fmt=fmt))
         table.add_row(prefix + "I22_c", "{:>{fmt}}".format(i22_c, fmt=fmt))
 
-    (z11_plus, z11_minus, z22_plus, z22_minus) = cross_section.get_zp()
+    (z11_plus, z11_minus, z22_plus, z22_minus) = section.get_zp()
     if z11_plus is not None:
         table.add_row(prefix + "Z11+", "{:>{fmt}}".format(z11_plus, fmt=fmt))
         table.add_row(prefix + "Z11-", "{:>{fmt}}".format(z11_minus, fmt=fmt))
         table.add_row(prefix + "Z22+", "{:>{fmt}}".format(z22_plus, fmt=fmt))
         table.add_row(prefix + "Z22-", "{:>{fmt}}".format(z22_minus, fmt=fmt))
 
-    (r11, r22) = cross_section.get_rp()
+    (r11, r22) = section.get_rp()
     if r11 is not None:
         table.add_row("r11", "{:>{fmt}}".format(r11, fmt=fmt))
         table.add_row("r22", "{:>{fmt}}".format(r22, fmt=fmt))
 
-    if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
-        e_eff = cross_section.get_e_eff()
-        g_eff = cross_section.get_g_eff()
+    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
+        e_eff = section.get_e_eff()
+        g_eff = section.get_g_eff()
         if e_eff is not None:
             table.add_row("E_eff", "{:>{fmt}}".format(e_eff, fmt=fmt))
             table.add_row("G_eff", "{:>{fmt}}".format(g_eff, fmt=fmt))
 
-        nu_eff = cross_section.get_nu_eff()
+        nu_eff = section.get_nu_eff()
         if nu_eff is not None:
             table.add_row("nu_eff", "{:>{fmt}}".format(nu_eff, fmt=fmt))
 
-    j = cross_section.get_j()
+    j = section.get_j()
     if j is not None:
         table.add_row("J", "{:>{fmt}}".format(j, fmt=fmt))
 
-    gamma = cross_section.get_gamma()
+    gamma = section.get_gamma()
     if gamma is not None:
         table.add_row("Iw", "{:>{fmt}}".format(gamma, fmt=fmt))
 
-    (x_se, y_se) = cross_section.get_sc()
+    (x_se, y_se) = section.get_sc()
     if x_se is not None:
         table.add_row("x_se", "{:>{fmt}}".format(x_se, fmt=fmt))
         table.add_row("y_se", "{:>{fmt}}".format(y_se, fmt=fmt))
 
-    (x_st, y_st) = cross_section.get_sc_t()
+    (x_st, y_st) = section.get_sc_t()
     if x_se is not None:
         table.add_row("x_st", "{:>{fmt}}".format(x_st, fmt=fmt))
         table.add_row("y_st", "{:>{fmt}}".format(y_st, fmt=fmt))
 
-    (x1_se, y2_se) = cross_section.get_sc_p()
+    (x1_se, y2_se) = section.get_sc_p()
     if x1_se is not None:
         table.add_row("x1_se", "{:>{fmt}}".format(x1_se, fmt=fmt))
         table.add_row("y2_se", "{:>{fmt}}".format(y2_se, fmt=fmt))
 
-    (a_sx, a_sy) = cross_section.get_As()
+    (a_sx, a_sy) = section.get_as()
     if a_sx is not None:
-        table.add_row(prefix + "A_sx", "{:>{fmt}}".format(a_sx, fmt=fmt))
-        table.add_row(prefix + "A_sy", "{:>{fmt}}".format(a_sy, fmt=fmt))
+        table.add_row(prefix + "a_sx", "{:>{fmt}}".format(a_sx, fmt=fmt))
+        table.add_row(prefix + "a_sy", "{:>{fmt}}".format(a_sy, fmt=fmt))
 
-    (a_s11, a_s22) = cross_section.get_As_p()
+    (a_s11, a_s22) = section.get_as_p()
     if a_s11 is not None:
-        table.add_row(prefix + "A_s11", "{:>{fmt}}".format(a_s11, fmt=fmt))
-        table.add_row(prefix + "A_s22", "{:>{fmt}}".format(a_s22, fmt=fmt))
+        table.add_row(prefix + "a_s11", "{:>{fmt}}".format(a_s11, fmt=fmt))
+        table.add_row(prefix + "a_s22", "{:>{fmt}}".format(a_s22, fmt=fmt))
 
-    (beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus) = cross_section.get_beta()
+    (beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus) = section.get_beta()
     if beta_x_plus is not None:
         table.add_row("betax+", "{:>{fmt}}".format(beta_x_plus, fmt=fmt))
         table.add_row("betax-", "{:>{fmt}}".format(beta_x_minus, fmt=fmt))
@@ -654,49 +654,49 @@ def print_results(
         beta_11_minus,
         beta_22_plus,
         beta_22_minus,
-    ) = cross_section.get_beta_p()
+    ) = section.get_beta_p()
     if beta_x_plus is not None:
         table.add_row("beta11+", "{:>{fmt}}".format(beta_11_plus, fmt=fmt))
         table.add_row("beta11-", "{:>{fmt}}".format(beta_11_minus, fmt=fmt))
         table.add_row("beta22+", "{:>{fmt}}".format(beta_22_plus, fmt=fmt))
         table.add_row("beta22-", "{:>{fmt}}".format(beta_22_minus, fmt=fmt))
 
-    (x_pc, y_pc) = cross_section.get_pc()
+    (x_pc, y_pc) = section.get_pc()
     if x_pc is not None:
         table.add_row("x_pc", "{:>{fmt}}".format(x_pc, fmt=fmt))
         table.add_row("y_pc", "{:>{fmt}}".format(y_pc, fmt=fmt))
 
-    (sxx, syy) = cross_section.get_s()
+    (sxx, syy) = section.get_s()
     if sxx is not None:
-        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
+        if list(set(section.materials)) != [DEFAULT_MATERIAL]:
             table.add_row("M_p,xx", "{:>{fmt}}".format(sxx, fmt=fmt))
             table.add_row("M_p,yy", "{:>{fmt}}".format(syy, fmt=fmt))
         else:
             table.add_row("Sxx", "{:>{fmt}}".format(sxx, fmt=fmt))
             table.add_row("Syy", "{:>{fmt}}".format(syy, fmt=fmt))
 
-    (sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus) = cross_section.get_sf()
+    (sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus) = section.get_sf()
     if sf_xx_plus is not None:
         table.add_row("SF_xx+", "{:>{fmt}}".format(sf_xx_plus, fmt=fmt))
         table.add_row("SF_xx-", "{:>{fmt}}".format(sf_xx_minus, fmt=fmt))
         table.add_row("SF_yy+", "{:>{fmt}}".format(sf_yy_plus, fmt=fmt))
         table.add_row("SF_yy-", "{:>{fmt}}".format(sf_yy_minus, fmt=fmt))
 
-    (x11_pc, y22_pc) = cross_section.get_pc_p()
+    (x11_pc, y22_pc) = section.get_pc_p()
     if x_pc is not None:
         table.add_row("x11_pc", "{:>{fmt}}".format(x11_pc, fmt=fmt))
         table.add_row("y22_pc", "{:>{fmt}}".format(y22_pc, fmt=fmt))
 
-    (s11, s22) = cross_section.get_sp()
+    (s11, s22) = section.get_sp()
     if s11 is not None:
-        if list(set(cross_section.materials)) != [DEFAULT_MATERIAL]:
+        if list(set(section.materials)) != [DEFAULT_MATERIAL]:
             table.add_row("M_p,11", "{:>{fmt}}".format(s11, fmt=fmt))
             table.add_row("M_p,22", "{:>{fmt}}".format(s22, fmt=fmt))
         else:
             table.add_row("S11", "{:>{fmt}}".format(s11, fmt=fmt))
             table.add_row("S22", "{:>{fmt}}".format(s22, fmt=fmt))
 
-    (sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus) = cross_section.get_sf_p()
+    (sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus) = section.get_sf_p()
     if sf_11_plus is not None:
         table.add_row("SF_11+", "{:>{fmt}}".format(sf_11_plus, fmt=fmt))
         table.add_row("SF_11-", "{:>{fmt}}".format(sf_11_minus, fmt=fmt))

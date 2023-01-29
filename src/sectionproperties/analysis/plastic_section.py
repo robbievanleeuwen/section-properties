@@ -53,8 +53,8 @@ class PlasticSection:
         and principal bending axes, the plastic section moduli and shape factors.
 
         Stores the results in the
-        :class:`~sectionproperties.analysis.section.SectionProperties` object belonging
-        to the supplied :class:`~sectionproperties.analysis.section.Section` object.
+        :class:`~sectionproperties.post.post.SectionProperties` object belonging to the
+        supplied :class:`~sectionproperties.analysis.section.Section` object.
 
         Args:
             section: Cross-section object containing the same geometry as this
