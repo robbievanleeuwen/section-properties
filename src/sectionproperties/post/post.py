@@ -527,181 +527,232 @@ def print_results(
     table.add_column("Property", justify="left", style="cyan", no_wrap=True)
     table.add_column("Value", justify="right", style="green")
 
-    area = section.get_area()
-    if area is not None:
-        table.add_row("A", "{:>{fmt}}".format(area, fmt=fmt))
+    try:
+        area = section.get_area()
+        table.add_row("area", f"{area:>{fmt}}")
+    except AssertionError:
+        pass
 
-    perimeter = section.get_perimeter()
-    if perimeter is not None:
-        table.add_row("Perim.", "{:>{fmt}}".format(perimeter, fmt=fmt))
-
-    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
-        mass = section.get_mass()
-        if mass is not None:
-            table.add_row("Mass", "{:>{fmt}}".format(mass, fmt=fmt))
-
-    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
-        ea = section.get_ea()
-        if ea is not None:
-            table.add_row("E.A", "{:>{fmt}}".format(ea, fmt=fmt))
-
-    (qx, qy) = section.get_q()
-    if qx is not None:
-        table.add_row(prefix + "Qx", "{:>{fmt}}".format(qx, fmt=fmt))
-        table.add_row(prefix + "Qy", "{:>{fmt}}".format(qy, fmt=fmt))
-
-    (cx, cy) = section.get_c()
-    if cx is not None:
-        table.add_row("cx", "{:>{fmt}}".format(cx, fmt=fmt))
-        table.add_row("cy", "{:>{fmt}}".format(cy, fmt=fmt))
-
-    (ixx_g, iyy_g, ixy_g) = section.get_ig()
-    if ixx_g is not None:
-        table.add_row(prefix + "Ixx_g", "{:>{fmt}}".format(ixx_g, fmt=fmt))
-        table.add_row(prefix + "Iyy_g", "{:>{fmt}}".format(iyy_g, fmt=fmt))
-        table.add_row(prefix + "Ixy_g", "{:>{fmt}}".format(ixy_g, fmt=fmt))
-
-    (ixx_c, iyy_c, ixy_c) = section.get_ic()
-    if ixx_c is not None:
-        table.add_row(prefix + "Ixx_c", "{:>{fmt}}".format(ixx_c, fmt=fmt))
-        table.add_row(prefix + "Iyy_c", "{:>{fmt}}".format(iyy_c, fmt=fmt))
-        table.add_row(prefix + "Ixy_c", "{:>{fmt}}".format(ixy_c, fmt=fmt))
-
-    (zxx_plus, zxx_minus, zyy_plus, zyy_minus) = section.get_z()
-    if zxx_plus is not None:
-        table.add_row(prefix + "Zxx+", "{:>{fmt}}".format(zxx_plus, fmt=fmt))
-        table.add_row(prefix + "Zxx-", "{:>{fmt}}".format(zxx_minus, fmt=fmt))
-        table.add_row(prefix + "Zyy+", "{:>{fmt}}".format(zyy_plus, fmt=fmt))
-        table.add_row(prefix + "Zyy-", "{:>{fmt}}".format(zyy_minus, fmt=fmt))
-
-    (rx, ry) = section.get_rc()
-    if rx is not None:
-        table.add_row("rx", "{:>{fmt}}".format(rx, fmt=fmt))
-        table.add_row("ry", "{:>{fmt}}".format(ry, fmt=fmt))
-
-    phi = section.get_phi()
-    (i11_c, i22_c) = section.get_ip()
-    if phi is not None:
-        table.add_row("phi", "{:>{fmt}}".format(phi, fmt=fmt))
-        table.add_row(prefix + "I11_c", "{:>{fmt}}".format(i11_c, fmt=fmt))
-        table.add_row(prefix + "I22_c", "{:>{fmt}}".format(i22_c, fmt=fmt))
-
-    (z11_plus, z11_minus, z22_plus, z22_minus) = section.get_zp()
-    if z11_plus is not None:
-        table.add_row(prefix + "Z11+", "{:>{fmt}}".format(z11_plus, fmt=fmt))
-        table.add_row(prefix + "Z11-", "{:>{fmt}}".format(z11_minus, fmt=fmt))
-        table.add_row(prefix + "Z22+", "{:>{fmt}}".format(z22_plus, fmt=fmt))
-        table.add_row(prefix + "Z22-", "{:>{fmt}}".format(z22_minus, fmt=fmt))
-
-    (r11, r22) = section.get_rp()
-    if r11 is not None:
-        table.add_row("r11", "{:>{fmt}}".format(r11, fmt=fmt))
-        table.add_row("r22", "{:>{fmt}}".format(r22, fmt=fmt))
+    try:
+        perimeter = section.get_perimeter()
+        table.add_row("perimeter", f"{perimeter:>{fmt}}")
+    except AssertionError:
+        pass
 
     if list(set(section.materials)) != [DEFAULT_MATERIAL]:
-        e_eff = section.get_e_eff()
-        g_eff = section.get_g_eff()
-        if e_eff is not None:
-            table.add_row("E_eff", "{:>{fmt}}".format(e_eff, fmt=fmt))
-            table.add_row("G_eff", "{:>{fmt}}".format(g_eff, fmt=fmt))
+        try:
+            mass = section.get_mass()
+            table.add_row("mass", f"{mass:>{fmt}}")
+        except AssertionError:
+            pass
 
-        nu_eff = section.get_nu_eff()
-        if nu_eff is not None:
-            table.add_row("nu_eff", "{:>{fmt}}".format(nu_eff, fmt=fmt))
+    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
+        try:
+            ea = section.get_ea()
+            table.add_row("e.a", f"{ea:>{fmt}}")
+        except AssertionError:
+            pass
 
-    j = section.get_j()
-    if j is not None:
-        table.add_row("J", "{:>{fmt}}".format(j, fmt=fmt))
+    try:
+        qx, qy = section.get_q()
+        table.add_row(prefix + "qx", f"{qx:>{fmt}}")
+        table.add_row(prefix + "qy", f"{qy:>{fmt}}")
+    except AssertionError:
+        pass
 
-    gamma = section.get_gamma()
-    if gamma is not None:
-        table.add_row("Iw", "{:>{fmt}}".format(gamma, fmt=fmt))
+    try:
+        cx, cy = section.get_c()
+        table.add_row("cx", f"{cx:>{fmt}}")
+        table.add_row("cy", f"{cy:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (x_se, y_se) = section.get_sc()
-    if x_se is not None:
-        table.add_row("x_se", "{:>{fmt}}".format(x_se, fmt=fmt))
-        table.add_row("y_se", "{:>{fmt}}".format(y_se, fmt=fmt))
+    try:
+        ixx_g, iyy_g, ixy_g = section.get_ig()
+        table.add_row(prefix + "ixx_g", f"{ixx_g:>{fmt}}")
+        table.add_row(prefix + "iyy_g", f"{iyy_g:>{fmt}}")
+        table.add_row(prefix + "ixy_g", f"{ixy_g:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (x_st, y_st) = section.get_sc_t()
-    if x_se is not None:
-        table.add_row("x_st", "{:>{fmt}}".format(x_st, fmt=fmt))
-        table.add_row("y_st", "{:>{fmt}}".format(y_st, fmt=fmt))
+    try:
+        ixx_c, iyy_c, ixy_c = section.get_ic()
+        table.add_row(prefix + "ixx_c", f"{ixx_c:>{fmt}}")
+        table.add_row(prefix + "iyy_c", f"{iyy_c:>{fmt}}")
+        table.add_row(prefix + "ixy_c", f"{ixy_c:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (x1_se, y2_se) = section.get_sc_p()
-    if x1_se is not None:
-        table.add_row("x1_se", "{:>{fmt}}".format(x1_se, fmt=fmt))
-        table.add_row("y2_se", "{:>{fmt}}".format(y2_se, fmt=fmt))
+    try:
+        zxx_plus, zxx_minus, zyy_plus, zyy_minus = section.get_z()
+        table.add_row(prefix + "zxx+", f"{zxx_plus:>{fmt}}")
+        table.add_row(prefix + "zxx-", f"{zxx_minus:>{fmt}}")
+        table.add_row(prefix + "zyy+", f"{zyy_plus:>{fmt}}")
+        table.add_row(prefix + "zyy-", f"{zyy_minus:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (a_sx, a_sy) = section.get_as()
-    if a_sx is not None:
-        table.add_row(prefix + "a_sx", "{:>{fmt}}".format(a_sx, fmt=fmt))
-        table.add_row(prefix + "a_sy", "{:>{fmt}}".format(a_sy, fmt=fmt))
+    try:
+        rx, ry = section.get_rc()
+        table.add_row("rx", f"{rx:>{fmt}}")
+        table.add_row("ry", f"{ry:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (a_s11, a_s22) = section.get_as_p()
-    if a_s11 is not None:
-        table.add_row(prefix + "a_s11", "{:>{fmt}}".format(a_s11, fmt=fmt))
-        table.add_row(prefix + "a_s22", "{:>{fmt}}".format(a_s22, fmt=fmt))
+    try:
+        phi = section.get_phi()
+        i11_c, i22_c = section.get_ip()
+        table.add_row("phi", f"{phi:>{fmt}}")
+        table.add_row(prefix + "i11_c", f"{i11_c:>{fmt}}")
+        table.add_row(prefix + "i22_c", f"{i22_c:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus) = section.get_beta()
-    if beta_x_plus is not None:
-        table.add_row("betax+", "{:>{fmt}}".format(beta_x_plus, fmt=fmt))
-        table.add_row("betax-", "{:>{fmt}}".format(beta_x_minus, fmt=fmt))
-        table.add_row("betay+", "{:>{fmt}}".format(beta_y_plus, fmt=fmt))
-        table.add_row("betay-", "{:>{fmt}}".format(beta_y_minus, fmt=fmt))
+    try:
+        z11_plus, z11_minus, z22_plus, z22_minus = section.get_zp()
+        table.add_row(prefix + "z11+", f"{z11_plus:>{fmt}}")
+        table.add_row(prefix + "z11-", f"{z11_minus:>{fmt}}")
+        table.add_row(prefix + "z22+", f"{z22_plus:>{fmt}}")
+        table.add_row(prefix + "z22-", f"{z22_minus:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (
-        beta_11_plus,
-        beta_11_minus,
-        beta_22_plus,
-        beta_22_minus,
-    ) = section.get_beta_p()
-    if beta_x_plus is not None:
-        table.add_row("beta11+", "{:>{fmt}}".format(beta_11_plus, fmt=fmt))
-        table.add_row("beta11-", "{:>{fmt}}".format(beta_11_minus, fmt=fmt))
-        table.add_row("beta22+", "{:>{fmt}}".format(beta_22_plus, fmt=fmt))
-        table.add_row("beta22-", "{:>{fmt}}".format(beta_22_minus, fmt=fmt))
+    try:
+        r11, r22 = section.get_rp()
+        table.add_row("r11", f"{r11:>{fmt}}")
+        table.add_row("r22", f"{r22:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (x_pc, y_pc) = section.get_pc()
-    if x_pc is not None:
-        table.add_row("x_pc", "{:>{fmt}}".format(x_pc, fmt=fmt))
-        table.add_row("y_pc", "{:>{fmt}}".format(y_pc, fmt=fmt))
+    if list(set(section.materials)) != [DEFAULT_MATERIAL]:
+        try:
+            e_eff = section.get_e_eff()
+            g_eff = section.get_g_eff()
+            nu_eff = section.get_nu_eff()
+            table.add_row("e_eff", f"{e_eff:>{fmt}}")
+            table.add_row("g_eff", f"{g_eff:>{fmt}}")
+            table.add_row("nu_eff", f"{nu_eff:>{fmt}}")
+        except AssertionError:
+            pass
 
-    (sxx, syy) = section.get_s()
-    if sxx is not None:
+    try:
+        j = section.get_j()
+        table.add_row(prefix + "j", f"{j:>{fmt}}")
+    except AssertionError:
+        pass
+
+    try:
+        gamma = section.get_gamma()
+        table.add_row(prefix + "iw", f"{gamma:>{fmt}}")
+    except AssertionError:
+        pass
+
+    try:
+        x_se, y_se = section.get_sc()
+        table.add_row("x_se", f"{x_se:>{fmt}}")
+        table.add_row("y_se", f"{y_se:>{fmt}}")
+    except AssertionError:
+        pass
+
+    try:
+        x_st, y_st = section.get_sc_t()
+        table.add_row("x_st", f"{x_st:>{fmt}}")
+        table.add_row("y_st", f"{y_st:>{fmt}}")
+    except AssertionError:
+        pass
+
+    try:
+        x1_se, y2_se = section.get_sc_p()
+        table.add_row("x1_se", f"{x1_se:>{fmt}}")
+        table.add_row("y2_se", f"{y2_se:>{fmt}}")
+    except AssertionError:
+        pass
+
+    try:
+        a_sx, a_sy = section.get_as()
+        table.add_row(prefix + "a_sx", f"{a_sx:>{fmt}}")
+        table.add_row(prefix + "a_sy", f"{a_sy:>{fmt}}")
+    except AssertionError:
+        pass
+
+    try:
+        a_s11, a_s22 = section.get_as_p()
+        table.add_row(prefix + "a_s11", f"{a_s11:>{fmt}}")
+        table.add_row(prefix + "a_s22", f"{a_s22:>{fmt}}")
+    except AssertionError:
+        pass
+
+    try:
+        beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus = section.get_beta()
+        table.add_row("betax+", f"{beta_x_plus:>{fmt}}")
+        table.add_row("betax-", f"{beta_x_minus:>{fmt}}")
+        table.add_row("betay+", f"{beta_y_plus:>{fmt}}")
+        table.add_row("betay-", f"{beta_y_minus:>{fmt}}")
+    except AssertionError:
+        pass
+
+    try:
+        beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus = section.get_beta_p()
+        table.add_row("beta11+", f"{beta_11_plus:>{fmt}}")
+        table.add_row("beta11-", f"{beta_11_minus:>{fmt}}")
+        table.add_row("beta22+", f"{beta_22_plus:>{fmt}}")
+        table.add_row("beta22-", f"{beta_22_minus:>{fmt}}")
+    except AssertionError:
+        pass
+
+    try:
+        x_pc, y_pc = section.get_pc()
+        table.add_row("x_pc", f"{x_pc:>{fmt}}")
+        table.add_row("y_pc", f"{y_pc:>{fmt}}")
+    except AssertionError:
+        pass
+
+    try:
+        sxx, syy = section.get_s()
         if list(set(section.materials)) != [DEFAULT_MATERIAL]:
-            table.add_row("M_p,xx", "{:>{fmt}}".format(sxx, fmt=fmt))
-            table.add_row("M_p,yy", "{:>{fmt}}".format(syy, fmt=fmt))
+            table.add_row("M_p,xx", f"{sxx:>{fmt}}")
+            table.add_row("M_p,yy", f"{syy:>{fmt}}")
         else:
-            table.add_row("Sxx", "{:>{fmt}}".format(sxx, fmt=fmt))
-            table.add_row("Syy", "{:>{fmt}}".format(syy, fmt=fmt))
+            table.add_row("Sxx", f"{sxx:>{fmt}}")
+            table.add_row("Syy", f"{syy:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus) = section.get_sf()
-    if sf_xx_plus is not None:
-        table.add_row("SF_xx+", "{:>{fmt}}".format(sf_xx_plus, fmt=fmt))
-        table.add_row("SF_xx-", "{:>{fmt}}".format(sf_xx_minus, fmt=fmt))
-        table.add_row("SF_yy+", "{:>{fmt}}".format(sf_yy_plus, fmt=fmt))
-        table.add_row("SF_yy-", "{:>{fmt}}".format(sf_yy_minus, fmt=fmt))
+    try:
+        sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus = section.get_sf()
+        table.add_row("SF_xx+", f"{sf_xx_plus:>{fmt}}")
+        table.add_row("SF_xx-", f"{sf_xx_minus:>{fmt}}")
+        table.add_row("SF_yy+", f"{sf_yy_plus:>{fmt}}")
+        table.add_row("SF_yy-", f"{sf_yy_minus:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (x11_pc, y22_pc) = section.get_pc_p()
-    if x_pc is not None:
-        table.add_row("x11_pc", "{:>{fmt}}".format(x11_pc, fmt=fmt))
-        table.add_row("y22_pc", "{:>{fmt}}".format(y22_pc, fmt=fmt))
+    try:
+        x11_pc, y22_pc = section.get_pc_p()
+        table.add_row("x11_pc", f"{x11_pc:>{fmt}}")
+        table.add_row("y22_pc", f"{y22_pc:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (s11, s22) = section.get_sp()
-    if s11 is not None:
+    try:
+        s11, s22 = section.get_sp()
         if list(set(section.materials)) != [DEFAULT_MATERIAL]:
-            table.add_row("M_p,11", "{:>{fmt}}".format(s11, fmt=fmt))
-            table.add_row("M_p,22", "{:>{fmt}}".format(s22, fmt=fmt))
+            table.add_row("M_p,11", f"{s11:>{fmt}}")
+            table.add_row("M_p,22", f"{s22:>{fmt}}")
         else:
-            table.add_row("S11", "{:>{fmt}}".format(s11, fmt=fmt))
-            table.add_row("S22", "{:>{fmt}}".format(s22, fmt=fmt))
+            table.add_row("S11", f"{s11:>{fmt}}")
+            table.add_row("S22", f"{s22:>{fmt}}")
+    except AssertionError:
+        pass
 
-    (sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus) = section.get_sf_p()
-    if sf_11_plus is not None:
-        table.add_row("SF_11+", "{:>{fmt}}".format(sf_11_plus, fmt=fmt))
-        table.add_row("SF_11-", "{:>{fmt}}".format(sf_11_minus, fmt=fmt))
-        table.add_row("SF_22+", "{:>{fmt}}".format(sf_22_plus, fmt=fmt))
-        table.add_row("SF_22-", "{:>{fmt}}".format(sf_22_minus, fmt=fmt))
+    try:
+        sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus = section.get_sf_p()
+        table.add_row("SF_11+", f"{sf_11_plus:>{fmt}}")
+        table.add_row("SF_11-", f"{sf_11_minus:>{fmt}}")
+        table.add_row("SF_22+", f"{sf_22_plus:>{fmt}}")
+        table.add_row("SF_22-", f"{sf_22_minus:>{fmt}}")
+    except AssertionError:
+        pass
 
     console = Console()
     console.print(table)
