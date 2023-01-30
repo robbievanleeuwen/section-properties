@@ -126,8 +126,8 @@ class Tri6:
             Element stiffness matrix ``k_el`` and element torsion load vector ``f_el``
         """
         # initialise stiffness matrix and load vector
-        k_el = np.empty(shape=(6, 6), dtype=float)
-        f_el = np.empty(shape=(1, 6), dtype=float)
+        k_el = np.zeros(shape=(6, 6), dtype=float)
+        f_el = np.zeros(shape=6, dtype=float)
 
         # Gauss points for 6 point Gaussian integration
         gps = gauss_points(n=6)
@@ -172,8 +172,8 @@ class Tri6:
             Element shear load vector psi ``f_psi`` and phi ``f_phi``
         """
         # initialise force vectors
-        f_psi = np.empty(shape=(1, 6), dtype=float)
-        f_phi = np.empty(shape=(1, 6), dtype=float)
+        f_psi = np.zeros(shape=6, dtype=float)
+        f_phi = np.zeros(shape=6, dtype=float)
 
         # Gauss points for 6 point Gaussian integration
         gps = gauss_points(6)
@@ -200,7 +200,7 @@ class Tri6:
                     nu
                     / 2
                     * np.transpose(np.transpose(b).dot(np.array([[d1], [d2]])))[0]
-                    + 2 * (1 + nu) * np.transpose(b) * (ixx * nx - ixy * ny)
+                    + 2 * (1 + nu) * np.transpose(n) * (ixx * nx - ixy * ny)
                 )
                 * j
                 * self.material.elastic_modulus
