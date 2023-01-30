@@ -114,7 +114,7 @@ class PlasticSection:
 
         # 2) Calculate plastic properties for principal axis
         # convert principal axis angle to radians
-        if section.section_props.phi:
+        if section.section_props.phi is not None:
             angle = section.section_props.phi * np.pi / 180
         else:
             raise RuntimeError("Run a geometric analysis prior to a plastic analysis.")

@@ -1597,16 +1597,19 @@ class Section:
             self.plot_mesh(**dict(kwargs, ax=ax))
 
             # if the elastic centroid has been calculated
-            if self.section_props.cx and self.section_props.cy:
+            try:
+                cx, cy = self.get_c()
                 ax.scatter(
-                    x=self.section_props.cx,
-                    y=self.section_props.cy,
+                    x=cx,
+                    y=cy,
                     edgecolors="r",
                     facecolors="none",
                     marker="o",
                     s=100,
                     label="Elastic centroid",
                 )
+            except AssertionError:
+                pass
 
             # if the shear centre has been calculated
             try:
