@@ -1,20 +1,26 @@
+"""Further validation of cross-section properties for various sections."""
+
+from __future__ import annotations
+
 import pytest_check as check
 from shapely import Polygon
-from sectionproperties.pre.geometry import Geometry
+
 import sectionproperties.pre.library.steel_sections as steel_sections
 from sectionproperties.analysis.section import Section
+from sectionproperties.pre.geometry import Geometry
 
 
 # Setup for angle section
 angle = steel_sections.angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
 angle.create_mesh(mesh_sizes=2.5)
-angle_section = Section(angle)
+angle_section = Section(geometry=angle)
 angle_section.calculate_geometric_properties()
 angle_section.calculate_plastic_properties()
 angle_section.calculate_warping_properties()
 
 
 def test_angle_all_properties():
+    """Test 150x90x12UA - results from Strand7."""
     check.almost_equal(angle_section.section_props.area, 2747.059)
     check.almost_equal(angle_section.section_props.perimeter, 471.3501)
     check.almost_equal(angle_section.section_props.cx, 2.122282e1)
@@ -41,29 +47,21 @@ def test_angle_all_properties():
     check.almost_equal(angle_section.section_props.r11_c, 5.035048e1)
     check.almost_equal(angle_section.section_props.r22_c, 1.946350e1)
     check.almost_equal(angle_section.section_props.sxx, 1.135392e5)
-    check.almost_equal(
-        angle_section.section_props.syy, 4.572267e4
-    )  # Altered from 4.572269e4
+    check.almost_equal(angle_section.section_props.syy, 4.572267e4)
     check.almost_equal(angle_section.section_props.sf_xx_plus, 1.788366)
     check.almost_equal(angle_section.section_props.sf_xx_minus, 9.207672e-1)
-    check.almost_equal(
-        angle_section.section_props.sf_yy_plus, 1.829943
-    )  # Altered from 1.829944
-    check.almost_equal(
-        angle_section.section_props.sf_yy_minus, 5.646721e-1
-    )  # Altered from 5.646723e-1
+    check.almost_equal(angle_section.section_props.sf_yy_plus, 1.829943)
+    check.almost_equal(angle_section.section_props.sf_yy_minus, 5.646721e-1)
     check.almost_equal(angle_section.section_props.s11, 1.210275e5)
     check.almost_equal(angle_section.section_props.s22, 4.376054e4)
     check.almost_equal(angle_section.section_props.sf_11_plus, 1.238049)
     check.almost_equal(angle_section.section_props.sf_11_minus, 1.744103)
     check.almost_equal(angle_section.section_props.sf_22_plus, 1.564994)
     check.almost_equal(angle_section.section_props.sf_22_minus, 2.107303)
-    check.almost_equal(
-        angle_section.section_props.j, 1.354663e5
-    )  # Altered from 1.354663e5
+    check.almost_equal(angle_section.section_props.j, 1.354663e5)
     check.almost_equal(angle_section.section_props.gamma, 162220735.49)
-    check.almost_equal(angle_section.section_props.A_s11, 8.855951e2)
-    check.almost_equal(angle_section.section_props.A_s22, 1.460240e3)
+    check.almost_equal(angle_section.section_props.a_s11, 8.855951e2)
+    check.almost_equal(angle_section.section_props.a_s22, 1.460240e3)
     check.almost_equal(angle_section.section_props.x11_se, 2.870404e1)
     check.almost_equal(angle_section.section_props.y22_se, 3.522141e1)
 
@@ -87,13 +85,14 @@ custom_geom_points = [
 ]
 custom_geom = Geometry(Polygon(custom_geom_points))
 custom_geom.create_mesh(mesh_sizes=5)
-custom_section = Section(custom_geom)
+custom_section = Section(geometry=custom_geom)
 custom_section.calculate_geometric_properties()
 custom_section.calculate_plastic_properties()
 custom_section.calculate_warping_properties()
 
 
 def test_custom_section_all_properties():
+    """Test custom box section - results from Strand7."""
     check.almost_equal(custom_section.section_props.area, 4250)
     check.almost_equal(custom_section.section_props.cx, 4.933333e1)
     check.almost_equal(custom_section.section_props.cy, 6.501961e1)
@@ -131,7 +130,7 @@ def test_custom_section_all_properties():
     check.almost_equal(custom_section.section_props.sf_22_minus, 1.619711)
     check.almost_equal(custom_section.section_props.j, 3.477399e5)
     check.almost_equal(custom_section.section_props.gamma, 7.532929e9)
-    check.almost_equal(custom_section.section_props.A_s11, 2.945692e3)
-    check.almost_equal(custom_section.section_props.A_s22, 9.564143e2)
+    check.almost_equal(custom_section.section_props.a_s11, 2.945692e3)
+    check.almost_equal(custom_section.section_props.a_s22, 9.564143e2)
     check.almost_equal(custom_section.section_props.x11_se, 1.916270)
     check.almost_equal(custom_section.section_props.y22_se, 3.017570)

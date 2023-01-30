@@ -1016,6 +1016,7 @@ def principal_coordinate(
     Return:
         Principal axis coordinates (``x11``, ``y22``)
     """
+    phi = phi * np.pi / 180
     cos_phi = np.cos(phi)
     sin_phi = np.sin(phi)
 
@@ -1037,6 +1038,7 @@ def global_coordinate(
     Return:
         Global axis coordinates (``x``, ``y``)
     """
+    phi = phi * np.pi / 180
     cos_phi = np.cos(phi)
     sin_phi = np.sin(phi)
 
