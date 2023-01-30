@@ -1094,6 +1094,8 @@ class Geometry:
         """
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
+            assert ax
+
             # plot the points and facets
             for i, f in enumerate(self.facets):
                 if i == 0:

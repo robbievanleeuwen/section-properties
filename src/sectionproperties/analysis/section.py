@@ -167,11 +167,12 @@ class Section:
                     break
 
         # create the search tree
-        p_mesh = [
-            Polygon(self.geometry.mesh["vertices"][tri][0:3])
-            for tri in self.geometry.mesh["triangles"]
-        ]
-        self.mesh_search_tree = STRtree(p_mesh)
+        if self.geometry.mesh is not None:
+            p_mesh = [
+                Polygon(self.geometry.mesh["vertices"][tri][0:3])
+                for tri in self.geometry.mesh["triangles"]
+            ]
+            self.mesh_search_tree = STRtree(p_mesh)
 
         # initialise class storing section properties
         self.section_props = post.SectionProperties()
