@@ -213,7 +213,7 @@ class SectionProperties:
 
     def calculate_elastic_centroid(self) -> None:
         """Calculates and stores the elastic centroid."""
-        if self.qx and self.qy and self.ea:
+        if self.qx is not None and self.qy is not None and self.ea is not None:
             self.cx = self.qy / self.ea
             self.cy = self.qx / self.ea
         else:
@@ -229,7 +229,14 @@ class SectionProperties:
             node_list: List of mesh node coordinates
         """
         # calculate second moments of area about the centroidal xy axis
-        if self.qx and self.qy and self.ea and self.ixx_g and self.iyy_g and self.ixy_g:
+        if (
+            self.qx is not None
+            and self.qy is not None
+            and self.ea is not None
+            and self.ixx_g is not None
+            and self.iyy_g is not None
+            and self.ixy_g is not None
+        ):
             self.ixx_c = self.ixx_g - self.qx**2 / self.ea
             self.iyy_c = self.iyy_g - self.qy**2 / self.ea
             self.ixy_c = self.ixy_g - self.qx * self.qy / self.ea
