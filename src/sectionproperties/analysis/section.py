@@ -1043,12 +1043,12 @@ class Section:
             warping_analysis()
 
         # check all properties were calculated
-        assert self.section_props.area
-        assert self.section_props.ixx_c
-        assert self.section_props.iyy_c
-        assert self.section_props.ixy_c
-        assert self.section_props.j
-        assert self.section_props.phi
+        assert self.section_props.area is not None
+        assert self.section_props.ixx_c is not None
+        assert self.section_props.iyy_c is not None
+        assert self.section_props.ixy_c is not None
+        assert self.section_props.j is not None
+        assert self.section_props.phi is not None
 
         return (
             self.section_props.area,
@@ -1230,10 +1230,10 @@ class Section:
                 psi_shear = self.section_props.psi_shear
                 phi_shear = self.section_props.phi_shear
 
-                assert delta_s
-                assert omega
-                assert psi_shear
-                assert phi_shear
+                assert delta_s is not None
+                assert omega is not None
+                assert psi_shear is not None
+                assert phi_shear is not None
             else:
                 j = 0.0
                 nu = 0.0
@@ -1645,16 +1645,13 @@ class Section:
                 pass
 
             # if the principal axis has been calculated
-            if self.section_props.phi:
-                assert self.section_props.cx
-                assert self.section_props.cy
+            try:
+                phi = self.get_phi()
+                cx, cy = self.get_c()
 
-                post.draw_principal_axis(
-                    ax=ax,
-                    phi=self.section_props.phi * np.pi / 180,
-                    cx=self.section_props.cx,
-                    cy=self.section_props.cy,
-                )
+                post.draw_principal_axis(ax=ax, phi=phi * np.pi / 180, cx=cx, cy=cy)
+            except AssertionError:
+                pass
 
             # display the legend
             ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
@@ -1700,7 +1697,7 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.area
+            assert self.section_props.area is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1716,7 +1713,7 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.perimeter
+            assert self.section_props.perimeter is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1732,7 +1729,7 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.mass
+            assert self.section_props.mass is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1748,7 +1745,7 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.ea
+            assert self.section_props.ea is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1768,8 +1765,8 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.qx
-            assert self.section_props.qy
+            assert self.section_props.qx is not None
+            assert self.section_props.qy is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1790,9 +1787,9 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.ixx_g
-            assert self.section_props.ixy_g
-            assert self.section_props.iyy_g
+            assert self.section_props.ixx_g is not None
+            assert self.section_props.ixy_g is not None
+            assert self.section_props.iyy_g is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1812,8 +1809,8 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.cx
-            assert self.section_props.cy
+            assert self.section_props.cx is not None
+            assert self.section_props.cy is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1834,9 +1831,9 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.ixx_c
-            assert self.section_props.ixy_c
-            assert self.section_props.iyy_c
+            assert self.section_props.ixx_c is not None
+            assert self.section_props.ixy_c is not None
+            assert self.section_props.iyy_c is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1861,10 +1858,10 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.zxx_plus
-            assert self.section_props.zxx_minus
-            assert self.section_props.zyy_plus
-            assert self.section_props.zyy_minus
+            assert self.section_props.zxx_plus is not None
+            assert self.section_props.zxx_minus is not None
+            assert self.section_props.zyy_plus is not None
+            assert self.section_props.zyy_minus is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1885,8 +1882,8 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.rx_c
-            assert self.section_props.ry_c
+            assert self.section_props.rx_c is not None
+            assert self.section_props.ry_c is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1906,8 +1903,8 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.i11_c
-            assert self.section_props.i22_c
+            assert self.section_props.i11_c is not None
+            assert self.section_props.i22_c is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1923,7 +1920,7 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.phi
+            assert self.section_props.phi is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1944,10 +1941,10 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.z11_plus
-            assert self.section_props.z11_minus
-            assert self.section_props.z22_plus
-            assert self.section_props.z22_minus
+            assert self.section_props.z11_plus is not None
+            assert self.section_props.z11_minus is not None
+            assert self.section_props.z22_plus is not None
+            assert self.section_props.z22_minus is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1968,8 +1965,8 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.r11_c
-            assert self.section_props.r22_c
+            assert self.section_props.r11_c is not None
+            assert self.section_props.r22_c is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -1985,7 +1982,7 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.nu_eff
+            assert self.section_props.nu_eff is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -2001,7 +1998,7 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.e_eff
+            assert self.section_props.e_eff is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -2017,7 +2014,7 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         try:
-            assert self.section_props.g_eff
+            assert self.section_props.g_eff is not None
         except AssertionError as e:
             raise AssertionError("Conduct a geometric analysis.") from e
 
@@ -2037,7 +2034,7 @@ class Section:
             AssertionError: If a warping analysis has not been performed
         """
         try:
-            assert self.section_props.j
+            assert self.section_props.j is not None
         except AssertionError as e:
             raise AssertionError("Conduct a warping analysis.") from e
 
@@ -2053,10 +2050,10 @@ class Section:
             AssertionError: If a warping analysis has not been performed
         """
         try:
-            assert self.section_props.x_se
-            assert self.section_props.y_se
-            assert self.section_props.cx
-            assert self.section_props.cy
+            assert self.section_props.x_se is not None
+            assert self.section_props.y_se is not None
+            assert self.section_props.cx is not None
+            assert self.section_props.cy is not None
         except AssertionError as e:
             raise AssertionError("Conduct a warping analysis.") from e
 
@@ -2076,8 +2073,8 @@ class Section:
             AssertionError: If a warping analysis has not been performed
         """
         try:
-            assert self.section_props.x11_se
-            assert self.section_props.y22_se
+            assert self.section_props.x11_se is not None
+            assert self.section_props.y22_se is not None
 
         except AssertionError as e:
             raise AssertionError("Conduct a warping analysis.") from e
@@ -2094,10 +2091,10 @@ class Section:
             AssertionError: If a warping analysis has not been performed
         """
         try:
-            assert self.section_props.x_st
-            assert self.section_props.y_st
-            assert self.section_props.cx
-            assert self.section_props.cy
+            assert self.section_props.x_st is not None
+            assert self.section_props.y_st is not None
+            assert self.section_props.cx is not None
+            assert self.section_props.cy is not None
         except AssertionError as e:
             raise AssertionError("Conduct a warping analysis.") from e
 
@@ -2121,7 +2118,7 @@ class Section:
             AssertionError: If a warping analysis has not been performed
         """
         try:
-            assert self.section_props.gamma
+            assert self.section_props.gamma is not None
         except AssertionError as e:
             raise AssertionError("Conduct a warping analysis.") from e
 
@@ -2141,8 +2138,8 @@ class Section:
             AssertionError: If a warping analysis has not been performed
         """
         try:
-            assert self.section_props.a_sx
-            assert self.section_props.a_sy
+            assert self.section_props.a_sx is not None
+            assert self.section_props.a_sy is not None
         except AssertionError as e:
             raise AssertionError("Conduct a warping analysis.") from e
 
@@ -2163,8 +2160,8 @@ class Section:
             AssertionError: If a warping analysis has not been performed
         """
         try:
-            assert self.section_props.a_s11
-            assert self.section_props.a_s22
+            assert self.section_props.a_s11 is not None
+            assert self.section_props.a_s22 is not None
         except AssertionError as e:
             raise AssertionError("Conduct a warping analysis.") from e
 
@@ -2185,10 +2182,10 @@ class Section:
             AssertionError: If a warping analysis has not been performed
         """
         try:
-            assert self.section_props.beta_x_plus
-            assert self.section_props.beta_x_minus
-            assert self.section_props.beta_y_plus
-            assert self.section_props.beta_y_minus
+            assert self.section_props.beta_x_plus is not None
+            assert self.section_props.beta_x_minus is not None
+            assert self.section_props.beta_y_plus is not None
+            assert self.section_props.beta_y_minus is not None
         except AssertionError as e:
             raise AssertionError("Conduct a warping analysis.") from e
 
@@ -2214,10 +2211,10 @@ class Section:
             AssertionError: If a warping analysis has not been performed
         """
         try:
-            assert self.section_props.beta_11_plus
-            assert self.section_props.beta_11_minus
-            assert self.section_props.beta_22_plus
-            assert self.section_props.beta_22_minus
+            assert self.section_props.beta_11_plus is not None
+            assert self.section_props.beta_11_minus is not None
+            assert self.section_props.beta_22_plus is not None
+            assert self.section_props.beta_22_minus is not None
         except AssertionError as e:
             raise AssertionError("Conduct a warping analysis.") from e
 
@@ -2238,10 +2235,10 @@ class Section:
             AssertionError: If a plastic analysis has not been performed
         """
         try:
-            assert self.section_props.x_pc
-            assert self.section_props.y_pc
-            assert self.section_props.cx
-            assert self.section_props.cy
+            assert self.section_props.x_pc is not None
+            assert self.section_props.y_pc is not None
+            assert self.section_props.cx is not None
+            assert self.section_props.cy is not None
         except AssertionError as e:
             raise AssertionError("Conduct a plastic analysis.") from e
 
@@ -2261,11 +2258,11 @@ class Section:
             AssertionError: If a plastic analysis has not been performed
         """
         try:
-            assert self.section_props.phi
-            assert self.section_props.x11_pc
-            assert self.section_props.y22_pc
-            assert self.section_props.cx
-            assert self.section_props.cy
+            assert self.section_props.phi is not None
+            assert self.section_props.x11_pc is not None
+            assert self.section_props.y22_pc is not None
+            assert self.section_props.cx is not None
+            assert self.section_props.cy is not None
         except AssertionError as e:
             raise AssertionError("Conduct a plastic analysis.") from e
 
@@ -2293,8 +2290,8 @@ class Section:
             AssertionError: If a plastic analysis has not been performed
         """
         try:
-            assert self.section_props.sxx
-            assert self.section_props.syy
+            assert self.section_props.sxx is not None
+            assert self.section_props.syy is not None
         except AssertionError as e:
             raise AssertionError("Conduct a plastic analysis.") from e
 
@@ -2314,8 +2311,8 @@ class Section:
             AssertionError: If a plastic analysis has not been performed
         """
         try:
-            assert self.section_props.s11
-            assert self.section_props.s22
+            assert self.section_props.s11 is not None
+            assert self.section_props.s22 is not None
         except AssertionError as e:
             raise AssertionError("Conduct a plastic analysis.") from e
 
@@ -2334,15 +2331,15 @@ class Section:
                 not a valid section property)
         """
         try:
-            assert self.section_props.sxx
+            assert self.section_props.sxx is not None
         except AssertionError as e:
             raise AssertionError("Conduct a plastic analysis.") from e
 
         try:
-            assert self.section_props.sf_xx_plus
-            assert self.section_props.sf_xx_minus
-            assert self.section_props.sf_yy_plus
-            assert self.section_props.sf_yy_minus
+            assert self.section_props.sf_xx_plus is not None
+            assert self.section_props.sf_xx_minus is not None
+            assert self.section_props.sf_yy_plus is not None
+            assert self.section_props.sf_yy_minus is not None
         except AssertionError as e:
             msg = "Shape factors are not valid for a composite analysis."
             raise ValueError(msg) from e
@@ -2367,15 +2364,15 @@ class Section:
                 not a valid section property)
         """
         try:
-            assert self.section_props.sxx
+            assert self.section_props.sxx is not None
         except AssertionError as e:
             raise AssertionError("Conduct a plastic analysis.") from e
 
         try:
-            assert self.section_props.sf_11_plus
-            assert self.section_props.sf_11_minus
-            assert self.section_props.sf_22_plus
-            assert self.section_props.sf_22_minus
+            assert self.section_props.sf_11_plus is not None
+            assert self.section_props.sf_11_minus is not None
+            assert self.section_props.sf_22_plus is not None
+            assert self.section_props.sf_22_minus is not None
         except AssertionError as e:
             msg = "Shape factors are not valid for a composite analysis."
             raise ValueError(msg) from e
@@ -2460,10 +2457,10 @@ class Section:
             psi_shear = self.section_props.psi_shear
             phi_shear = self.section_props.phi_shear
 
-            assert delta_s
-            assert omega
-            assert psi_shear
-            assert phi_shear
+            assert delta_s is not None
+            assert omega is not None
+            assert psi_shear is not None
+            assert phi_shear is not None
         else:
             j = 0.0
             nu = 0.0
