@@ -1,12 +1,17 @@
+"""Validation of cross-section properties for a rectangular section."""
+
+from __future__ import annotations
+
 import pytest_check as check
 
 import sectionproperties.pre.library.primitive_sections as primitive_sections
 from sectionproperties.analysis.section import Section
 
+
 # Rectangle section setup
 rectangle_geometry = primitive_sections.rectangular_section(b=50, d=100)
 rectangle_geometry.create_mesh(mesh_sizes=100)
-rectangle_section = Section(rectangle_geometry)
+rectangle_section = Section(geometry=rectangle_geometry)
 rectangle_section.calculate_geometric_properties()
 rectangle_section.calculate_warping_properties()
 rectangle_section.calculate_plastic_properties()
@@ -16,6 +21,7 @@ warp_tol = 1e-4
 
 
 def test_rectangular_section_geometric():
+    """Test rectangular section geometric properties."""
     check.almost_equal(rectangle_section.section_props.area, 100 * 50, rel=tol)
     check.almost_equal(
         rectangle_section.section_props.perimeter, 2 * 100 + 2 * 50, rel=tol
@@ -96,6 +102,7 @@ def test_rectangular_section_geometric():
 
 
 def test_rectangular_section_plastic():
+    """Test rectangular section plastic properties."""
     check.almost_equal(rectangle_section.get_pc(), (50 / 2, 100 / 2))
     check.almost_equal(rectangle_section.get_pc_p(), (50 / 2, 100 / 2))
     check.almost_equal(
@@ -109,22 +116,15 @@ def test_rectangular_section_plastic():
 
 
 def test_rectangular_section_warping():
-    check.almost_equal(
-        rectangle_section.section_props.j, 2861002, rel=2 * warp_tol
-    )  # roark's
-    # check.almost_equal(rectangle_section.section_props.j, 2.85852e6, rel=2e-5) #st7
-    check.almost_equal(
-        rectangle_section.section_props.j, 2.861326e06, rel=tol
-    )  # main branch
-    check.almost_equal(
-        rectangle_section.section_props.gamma, 3.177234e08, rel=tol
-    )  # main branch
+    """Test rectangular section warping properties."""
+    check.almost_equal(rectangle_section.section_props.j, 2861002, rel=2 * warp_tol)
+    check.almost_equal(rectangle_section.section_props.gamma, 3.177234e08, rel=tol)
     check.almost_equal(rectangle_section.get_sc(), (50 / 2, 100 / 2), rel=warp_tol)
     check.almost_equal(
         rectangle_section.get_sc_p(), (-4.103589e-04, 1.164891e-03), rel=tol
     )
     check.almost_equal(rectangle_section.get_sc_t(), (50 / 2, 100 / 2), rel=warp_tol)
-    check.almost_equal(rectangle_section.get_As(), (4.168418e03, 4.166821e03), rel=tol)
+    check.almost_equal(rectangle_section.get_as(), (4.168418e03, 4.166821e03), rel=tol)
     check.almost_equal(
-        rectangle_section.get_As_p(), (4.168418e03, 4.166821e03), rel=tol
+        rectangle_section.get_as_p(), (4.168418e03, 4.166821e03), rel=tol
     )
