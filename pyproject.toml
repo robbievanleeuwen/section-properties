@@ -62,6 +62,7 @@ click = ">=8.0.1"
 more-itertools = ">=9.0.0"
 cad-to-shapely = ">=0.3.1"
 rhino-shapley-interop = ">=0.0.4"
+rhino3dm = "==7.14.1"
 
 [tool.poetry.dev-dependencies]
 black = ">=21.10b0"

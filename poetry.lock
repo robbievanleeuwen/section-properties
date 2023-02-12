@@ -834,7 +834,7 @@ dev = ["Shapely (==1.8.0)", "black", "flake8", "isort", "matplotlib", "numpy (==
 
 [[package]]
 name = "rhino3dm"
-version = "7.15.0"
+version = "7.14.1"
 description = "Python library based on OpenNURBS with a RhinoCommon style"
 category = "main"
 optional = false
@@ -1237,7 +1237,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "d0660a36e0271d3bc80bd2630ec0bda98a34e9e04a7720f0787238b9bbd21ea4"
+content-hash = "cae9b6816b7cf5556a1e6bf49634ac572a210242afcae614840eb1139d9cb85c"
 
 [metadata.files]
 alabaster = [
@@ -2057,18 +2057,20 @@ rhino-shapley-interop = [
     {file = "rhino_shapley_interop-0.0.4.tar.gz", hash = "sha256:798bd04fff8100d0d352f5d8460a19a2db3e0e31be76d0dfc9aa52b0ec6483e3"},
 ]
 rhino3dm = [
-    {file = "rhino3dm-7.15.0-cp27-cp27m-macosx_11_0_x86_64.whl", hash = "sha256:6db2551df487e9c37ce50a540c2de4b1f36b0e231170e8dd33bab651f3e135bc"},
-    {file = "rhino3dm-7.15.0-cp27-cp27m-win_amd64.whl", hash = "sha256:54c59c7fc01867a0be1e79968fa219fda509f33c92aed466e5341ff57eb6843f"},
-    {file = "rhino3dm-7.15.0-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:1d00e7f901b95a5653cbf64065eb4254e2c24f829023c50674b7ade740aa7847"},
-    {file = "rhino3dm-7.15.0-cp310-cp310-win_amd64.whl", hash = "sha256:5726044a472224ec58b906e40c7f0d4d57e92e811305711b76cf6e3cd54ad382"},
-    {file = "rhino3dm-7.15.0-cp37-cp37m-macosx_11_0_x86_64.whl", hash = "sha256:7ef5c0ad46fcdbbe771d5303a33c7e9e08e834fa4bead6b755426e04628494e0"},
-    {file = "rhino3dm-7.15.0-cp37-cp37m-win_amd64.whl", hash = "sha256:e2e45816c62270e63f65f753fb5216cdc7afda0bcd5b90bbd83f8b0f67e6aaf4"},
-    {file = "rhino3dm-7.15.0-cp38-cp38-macosx_11_0_x86_64.whl", hash = "sha256:7dba40b4417526e25c1e4bbf9a080f096b25193f476092a00a750c8e5674ade8"},
-    {file = "rhino3dm-7.15.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:aee4f2853ff62ecad6bb5eff0222c767b90739ffa26618b4582486bb5b95107b"},
-    {file = "rhino3dm-7.15.0-cp38-cp38-win_amd64.whl", hash = "sha256:a11191b961b53b05ffa1cbd943bf59bd77a4c8c8e707a2dab39c072160823a5c"},
-    {file = "rhino3dm-7.15.0-cp39-cp39-macosx_11_0_x86_64.whl", hash = "sha256:44017eb7588e86d9f6e4799a589b7357a7382ac198839c2f7ef663f0da46ff1d"},
-    {file = "rhino3dm-7.15.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:aee1c79157ff34eb26099f5aac053e9343c76bb68b5909b54bc6750a0f6727cf"},
-    {file = "rhino3dm-7.15.0-cp39-cp39-win_amd64.whl", hash = "sha256:d7c0938a353146ef3047ac3290b0d66ba72cbdcefce1d8634b29fe0411c47fcb"},
+    {file = "rhino3dm-7.14.1-cp27-cp27m-macosx_11_0_x86_64.whl", hash = "sha256:77737d3b2e8211f61177ffdb8dbd4a8f90eb5b154714f06385c57a462c681da7"},
+    {file = "rhino3dm-7.14.1-cp27-cp27m-win_amd64.whl", hash = "sha256:2ccc6d0972fbadd3843d34927091201162f910b544b3e8ad5b37f8e70d5fe42c"},
+    {file = "rhino3dm-7.14.1-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:19d02f36c10f8f5ced92923cb534a87cac2f2fd53975b399bad2392ad552a25c"},
+    {file = "rhino3dm-7.14.1-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:8516cbc4bd160e32479dbbc8cf361ace674c90705d01dc0e25f7104fdda41246"},
+    {file = "rhino3dm-7.14.1-cp310-cp310-win_amd64.whl", hash = "sha256:60201e0e46a07125c56b6cfb79baf65d30cbb0fd0057a873b85871d0458b8f3d"},
+    {file = "rhino3dm-7.14.1-cp37-cp37m-macosx_11_0_x86_64.whl", hash = "sha256:e4f9fd0b7115e370f1dbc4937ac86c61b25fb00eb17aed6fbd9dd836160ff229"},
+    {file = "rhino3dm-7.14.1-cp37-cp37m-win_amd64.whl", hash = "sha256:d3877d4287ec7e06c9eb1d74ae7279ad5ff9f56c93ca78db6fbf18fe0dcc7dfe"},
+    {file = "rhino3dm-7.14.1-cp38-cp38-macosx_11_0_x86_64.whl", hash = "sha256:773df28a8574422473e8044aa22114051afb118e25206134c4044636f48ef47c"},
+    {file = "rhino3dm-7.14.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:755ac97012b2b4789421a15a317ee5d6a701b7bcf9083ab47930b235e6918027"},
+    {file = "rhino3dm-7.14.1-cp38-cp38-win_amd64.whl", hash = "sha256:93c674e37eea8369a84ed99ef98e6363b4ec9c86c49ea418711f78a0d5786ae5"},
+    {file = "rhino3dm-7.14.1-cp39-cp39-macosx_11_0_x86_64.whl", hash = "sha256:758402b8fa15f55e1832b834c35d0369183b4dfd08dc866f044f32a41d25b1be"},
+    {file = "rhino3dm-7.14.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f546ec097c11b0ac4b85908478b174c07aac64370d6f21f125fae13b99bc1a83"},
+    {file = "rhino3dm-7.14.1-cp39-cp39-win_amd64.whl", hash = "sha256:c12e8b862376206b3454e2e54690b95e2b133d5edbe8e59355ba3169c411f454"},
+    {file = "rhino3dm-7.14.1.tar.gz", hash = "sha256:8fb28574eb21318ca68bb4b0c0151a2649f9fdcbf422d3f4a75b08d441925ef1"},
 ]
 rich = [
     {file = "rich-13.3.1-py3-none-any.whl", hash = "sha256:8aa57747f3fc3e977684f0176a88e789be314a99f99b43b75d1e9cb5dc6db9e9"},
