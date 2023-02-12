@@ -3629,7 +3629,7 @@ class StressPost:
 
     def plot_stress_vx_zxy(
         self,
-        title=r"Stress Contour Plot - $\sigma_{zz,Myy}$",
+        title=r"Stress Contour Plot - $\sigma_{zxy,Vx}$",
         cmap="coolwarm",
         normalize=True,
         **kwargs,
@@ -3669,7 +3669,6 @@ class StressPost:
             Contour plot of the shear stress.
         """
 
-        title = r"Stress Contour Plot - $\sigma_{zxy,Vx}$"
         sigs = []
 
         for group in self.material_groups:
