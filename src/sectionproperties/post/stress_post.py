@@ -11,6 +11,7 @@ import matplotlib.cm as cm
 import matplotlib.tri as tri
 import numpy as np
 from matplotlib.colors import CenteredNorm
+from matplotlib.patches import Circle
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
 import sectionproperties.post.post as post
@@ -661,27 +662,27 @@ class StressPost:
 
             - :math:`V_{y} = 5` kN
 
-            # .. plot::
-            #     :include-source: True
-            #     :caption: Mohr's circles for a 150x90x12 UA
+            .. plot::
+                :include-source: True
+                :caption: Mohr's circles for a 150x90x12 UA
 
-            #     from sectionproperties.pre.library import angle_section
-            #     from sectionproperties.analysis import Section
+                from sectionproperties.pre.library import angle_section
+                from sectionproperties.analysis import Section
 
-            #     # create geometry and section
-            #     geom = angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
-            #     geom.create_mesh(mesh_sizes=[0])
-            #     sec = Section(geometry=geom)
+                # create geometry and section
+                geom = angle_section(d=150, b=90, t=12, r_r=10, r_t=5, n_r=8)
+                geom.create_mesh(mesh_sizes=[0])
+                sec = Section(geometry=geom)
 
-            #     # perform analysis
-            #     sec.calculate_geometric_properties()
-            #     sec.calculate_warping_properties()
-            #     post = sec.calculate_stress(
-            #         N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3
-            #     )
+                # perform analysis
+                sec.calculate_geometric_properties()
+                sec.calculate_warping_properties()
+                post = sec.calculate_stress(
+                    N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3
+                )
 
-            #     # plot mohr's circle
-            #     post.plot_mohrs_circles(x=10, y=88.9)
+                # plot mohr's circle
+                post.plot_mohrs_circles(x=10, y=88.9)
         """
         # get mesh data
         pt = x, y
@@ -747,8 +748,15 @@ class StressPost:
             ts = np.sqrt(np.linalg.norm(np.diag(s) @ n_inv[:, col]) ** 2 - ss**2)
             tractions.append((ss, ts))
 
-        def plot_circle(ax, c, r, col, label=None, fill=None):
-            circ = ax.Circle(c, r, fill=fill, ec=col, label=label)
+        def plot_circle(
+            ax: matplotlib.axes.Axes,
+            c: tuple[float, float],
+            r: float,
+            col: str,
+            label: str | None = None,
+            fill: bool | None = None,
+        ) -> None:
+            circ = Circle(c, r, fill=fill, ec=col, label=label)
             ax.add_patch(circ)
             ax.set_aspect(1)
             ax.autoscale_view()

@@ -24,13 +24,13 @@ class Tri6:
     Provides methods for the calculation of section properties based on the finite
     element method.
 
-    Attributes:
-        el_id: Unique element id
-        coords: A ``2 x 6`` array of the coordinates of the Tri6 nodes. The first three
-            columns relate to the vertices of the triangle and the last three columns
-            correspond to the mid-nodes.
-        node_ids: A list of the global node ids for the current element
-        material: Material object for the current finite element
+    Args:
+        el_id (int): Unique element id
+        coords (numpy.ndarray): A ``2 x 6`` array of the coordinates of the Tri6 nodes.
+            The first three columns relate to the vertices of the triangle and the last
+            three columns correspond to the mid-nodes.
+        node_ids (list[int]): A list of the global node ids for the current element
+        material (Material): Material object for the current finite element
     """
 
     el_id: int
@@ -1062,8 +1062,7 @@ def point_above_line(
         y: y-coordinate of the point to be tested
 
     Return:
-        Returns True if the point is above the line or False*if the point is below the
-            line
+        True if the point is above the line or False if the point is below the line
     """
     # vector from point to point on line
     pq = np.array([px - x, py - y])

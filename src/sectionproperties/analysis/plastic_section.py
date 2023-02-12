@@ -231,7 +231,7 @@ class PlasticSection:
         """Checks that the function solver converged and if not, raises a helpful error.
 
         Args:
-            Result object from the root finder
+            root_results: Result object from the root finder
             axis: Axis being considered by the function solver
 
         Raises:

@@ -24,8 +24,6 @@ class Material:
         yield_strength: Material yield strength
         density: Material density (mass per unit volume)
         color: Material color for rendering
-        shear_modulus: Material shear modulus, derived from the elastic modulus and
-            Poisson's ratio assuming an isotropic material
 
     Example:
         The following example creates materials for concrete, steel and timber::
@@ -67,7 +65,11 @@ class Material:
 
     @property
     def shear_modulus(self) -> float:
-        """Returns the shear modulus of the material."""
+        """Returns the shear modulus of the material.
+
+        Material shear modulus, derived from the elastic modulus and Poisson's ratio
+        assuming an isotropic material.
+        """
         return self.elastic_modulus / (2 * (1 + self.poissons_ratio))
 
 
