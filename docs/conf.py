@@ -18,7 +18,6 @@ extensions = [
     "sphinx.ext.viewcode",
     # "IPython.sphinxext.ipython_console_highlighting",
     "matplotlib.sphinxext.plot_directive",
-    "myst_parser",
     # "nbsphinx",
     "sphinx_click",
     "sphinx_copybutton",

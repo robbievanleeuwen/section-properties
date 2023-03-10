@@ -74,7 +74,6 @@ flake8-docstrings = ">=1.6.0"
 flake8-rst-docstrings = ">=0.2.5"
 furo = ">=2022.12.7"
 isort = ">=5.10.1"
-myst-parser = {version = ">=0.18.1"}
 pep8-naming = ">=0.12.1"
 pre-commit = ">=2.16.0"
 pre-commit-hooks = ">=4.1.0"

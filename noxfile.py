@@ -168,7 +168,6 @@ def docs_build(session: Session) -> None:
     session.install(
         "sphinx",
         "furo",
-        "myst-parser",
         "sphinx-click",
         "sphinx-copybutton",
         "sphinxext-opengraph",
@@ -190,7 +189,6 @@ def docs(session: Session) -> None:
         "sphinx",
         "sphinx-autobuild",
         "furo",
-        "myst-parser",
         "sphinx-click",
         "sphinx-copybutton",
         "sphinxext-opengraph",

@@ -1,8 +1,9 @@
-# API
+API
+===
 
-## Package Modules
+Package Modules
+---------------
 
-```{eval-rst}
 .. autosummary::
     :toctree: gen
     :caption: API Reference
@@ -12,4 +13,3 @@
     sectionproperties.pre
     sectionproperties.analysis
     sectionproperties.post
-```
