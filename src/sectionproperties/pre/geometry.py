@@ -405,7 +405,7 @@ class Geometry:
         mesh_sizes: float | list[float],
         coarse: bool = False,
     ) -> Geometry:
-        """Creates a quadratic triangular mesh from the Geometry object.
+        r"""Creates a quadratic triangular mesh from the Geometry object.
 
         Args:
             mesh_sizes: A float describing the maximum mesh element area to be used
@@ -420,12 +420,11 @@ class Geometry:
         Example:
             The following example creates a circular cross-section with a diameter of
             50 mm with 64 points, and generates a mesh with a maximum triangular area of
-            2.5 square mm.
+            2.5 mm\ :sup:`2`.
 
             .. plot::
                 :include-source: True
-                :caption: Mesh for a 50 mm diameter circle with a maximum size of 2.5
-                    square mm.
+                :caption: Mesh for a 50 mm diameter circle
 
                 from sectionproperties.pre.library import circular_section
                 from sectionproperties.analysis import Section

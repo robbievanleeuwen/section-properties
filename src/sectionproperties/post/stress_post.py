@@ -315,9 +315,7 @@ class StressPost:
 
                 # plot the filled contour
                 if ax:
-                    trictr = ax.tricontourf(
-                        triangulation=triang, z=sig, levels=v, cmap=colormap, norm=norm
-                    )
+                    trictr = ax.tricontourf(triang, sig, v, cmap=colormap, norm=norm)
 
             # display the colorbar
             divider = make_axes_locatable(axes=ax)
@@ -678,7 +676,7 @@ class StressPost:
                 sec.calculate_geometric_properties()
                 sec.calculate_warping_properties()
                 post = sec.calculate_stress(
-                    N=50e3, Mxx=-5e6, M22=2.5e6, Mzz=0.5e6, Vx=10e3, Vy=5e3
+                    n=50e3, mxx=-5e6, m22=2.5e6, mzz=0.5e6, vx=10e3, vy=5e3
                 )
 
                 # plot mohr's circle

@@ -101,7 +101,7 @@ def circular_section_by_area(
     n: int,
     material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
-    """Constructs a circular section defined by its area.
+    r"""Constructs a circular section defined by its area.
 
     Constructs a solid circle centered at the origin ``(0, 0`` defined by its ``area``,
     using ``n`` points to construct the circle.
@@ -115,8 +115,8 @@ def circular_section_by_area(
         Circular section geometry
 
     Example:
-        The following example creates a circular geometry with an area of 310 square mm
-        with 32 points:
+        The following example creates a circular geometry with an area of 310
+        mm\ :sup:`2` with 32 points:
 
         .. plot::
             :include-source: True
