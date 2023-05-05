@@ -211,14 +211,24 @@ class Geometry:
     @staticmethod
     def from_dxf(
         dxf_filepath: Union[str, pathlib.Path],
+        spline_delta=0.1,
+        degrees_per_segment: float = 1,
     ) -> Union[Geometry, CompoundGeometry]:
         """
         An interface for the creation of Geometry objects from CAD .dxf files.
 
         :cvar dxf_filepath: A path-like object for the dxf file
         :vartype dxf_filepath: Union[str, pathlib.Path]
+        :param spline_delta:
+            Splines are not supported in shapely, so they are approximated as
+            polylines. Defaults to 0.1
+        :type spline_delta: float
+        :param degrees_per_segment:
+            The number of degrees discretized as a single line segment. The
+            default is 1 segment per degree.
+        :type degrees_per_segment: float
         """
-        return load_dxf(dxf_filepath)
+        return load_dxf(dxf_filepath, spline_delta, degrees_per_segment)
 
     @classmethod
     def from_3dm(cls, filepath: Union[str, pathlib.Path], **kwargs) -> Geometry:
@@ -919,7 +929,7 @@ class Geometry:
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # plot the points and facets
-            for (i, f) in enumerate(self.facets):
+            for i, f in enumerate(self.facets):
                 if i == 0:
                     label = "Points & Facets"
                 else:
@@ -935,7 +945,7 @@ class Geometry:
                 )
 
             # plot the holes
-            for (i, h) in enumerate(self.holes):
+            for i, h in enumerate(self.holes):
                 if i == 0:
                     label = "Holes"
                 else:
@@ -945,7 +955,7 @@ class Geometry:
 
             if cp:
                 # plot the control points
-                for (i, cp) in enumerate(self.control_points):
+                for i, cp in enumerate(self.control_points):
                     if i == 0:
                         label = "Control Points"
                     else:
@@ -957,17 +967,17 @@ class Geometry:
             for label in labels:
                 # plot control_point labels
                 if label == "control_points":
-                    for (i, pt) in enumerate(self.control_points):
+                    for i, pt in enumerate(self.control_points):
                         ax.annotate(str(i), xy=pt, color="b")
 
                 # plot point labels
                 if label == "points":
-                    for (i, pt) in enumerate(self.points):
+                    for i, pt in enumerate(self.points):
                         ax.annotate(str(i), xy=pt, color="r")
 
                 # plot facet labels
                 if label == "facets":
-                    for (i, fct) in enumerate(self.facets):
+                    for i, fct in enumerate(self.facets):
                         pt1 = self.points[fct[0]]
                         pt2 = self.points[fct[1]]
                         xy = [(pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2]
@@ -976,7 +986,7 @@ class Geometry:
 
                 # plot hole labels
                 if label == "holes":
-                    for (i, pt) in enumerate(self.holes):
+                    for i, pt in enumerate(self.holes):
                         ax.annotate(str(i), xy=pt, color="r")
 
             # display the legend
@@ -1052,7 +1062,6 @@ class Geometry:
         try:
             new_polygon = filter_non_polygons(self.geom | other.geom)
             if isinstance(new_polygon, MultiPolygon):
-
                 return CompoundGeometry(
                     [Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
@@ -1374,7 +1383,6 @@ class CompoundGeometry(Geometry):
                             f" once holes are subtracted: {control_points}"
                         )
                 if materials is pre.DEFAULT_MATERIAL:
-
                     exterior_geometry = Geometry(
                         punched_exterior,
                         control_points=exterior_control_point,
@@ -1383,7 +1391,6 @@ class CompoundGeometry(Geometry):
                     punched_exterior_geometries.append(exterior_geometry)
 
                 else:
-
                     exterior_geometry = Geometry(
                         punched_exterior,
                         control_points=exterior_control_point,
@@ -1837,7 +1844,9 @@ class CompoundGeometry(Geometry):
 ### Helper functions for Geometry
 
 
-def load_dxf(dxf_filepath: pathlib.Path):
+def load_dxf(
+    dxf_filepath: pathlib.Path, spline_delta=0.1, degrees_per_segment: float = 1
+):
     """
     Import any-old-shape in dxf format for analysis.
     Code by aegis1980 and connorferster
@@ -1857,7 +1866,7 @@ def load_dxf(dxf_filepath: pathlib.Path):
         raise ValueError(f"The filepath does not exist: {dxf_filepath}")
 
     my_dxf = c2s.dxf.DxfImporter(dxf_filepath)
-    my_dxf.process()
+    my_dxf.process(spline_delta, degrees_per_segment)
     my_dxf.cleanup()
 
     polygons = my_dxf.polygons

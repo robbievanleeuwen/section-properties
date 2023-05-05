@@ -97,9 +97,9 @@ analysis:
    (e.g. `|`, `+`, `-`, `&`, `^`)
 #. From *sectionproperties*'s section library
 
-For the first two approaches, an optional ``.material`` parameter can be passed containing a
+For the first approach, an optional ``.material`` parameter can be passed containing a
 :class:`~sectionproperties.pre.pre.Material` (or list of `Material` objects) to associate with the
-newly created geometry(ies). The material attribute can be altered afterward in a
+newly created geometry(ies). In other approaches, the material attribute can be altered afterward in a
 :class:`~sectionproperties.pre.geometry.Geometry` object at any time by simply assigning a
 different :class:`~sectionproperties.pre.pre.Material` to the ``.material`` attribute.
 
