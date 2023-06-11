@@ -32,6 +32,7 @@ classifiers = [
 ]
 packages = [
     { include = "sectionproperties", from = "src" },
+    { include = "src/sectionproperties/py.typed"},
 ]
 include = [
     "*.3dm",
