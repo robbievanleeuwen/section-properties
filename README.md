@@ -23,8 +23,8 @@
 [pre-commit]: https://github.com/pre-commit/pre-commit
 [black]: https://github.com/psf/black
 
-``sectionproperties`` is a python package for the analysis of arbitrary cross-sections
-using the finite element method. ``sectionproperties`` can be used to determine
+`sectionproperties` is a python package for the analysis of arbitrary cross-sections
+using the finite element method. `sectionproperties` can be used to determine
 section properties to be used in structural design and visualise cross-sectional
 stresses resulting from combinations of applied forces and bending moments.
 
@@ -32,7 +32,7 @@ stresses resulting from combinations of applied forces and bending moments.
 
 ## Installation
 
-You can install ``sectionproperties`` via [pip] from [PyPI]:
+You can install `sectionproperties` via [pip] from [PyPI]:
 
 ```console
 > pip install sectionproperties
@@ -40,7 +40,7 @@ You can install ``sectionproperties`` via [pip] from [PyPI]:
 
 ## Documentation
 
-``sectionproperties`` is fully documented including a user walkthrough, examples,
+`sectionproperties` is fully documented including a user walkthrough, examples,
 background theory and an API guide. The documentation can found at
 [https://sectionproperties.readthedocs.io/](https://sectionproperties.readthedocs.io/).
 
@@ -118,7 +118,7 @@ To learn more, see the [Contributor Guide].
 ## License
 
 Distributed under the terms of the [MIT license][license],
-``sectionproperties`` is free and open source software.
+`sectionproperties` is free and open source software.
 
 ## Issues
 
@@ -127,7 +127,7 @@ please [file an issue] along with a detailed description.
 
 ## Disclaimer
 
-``sectionproperties`` is an open source engineering tool that continues to benefit from
+`sectionproperties` is an open source engineering tool that continues to benefit from
 the collaboration of many contributors. Although efforts have been made to ensure the
 that relevant engineering theories have been correctly implemented, it remains the
 user's responsibility to confirm and accept the output. Refer to the

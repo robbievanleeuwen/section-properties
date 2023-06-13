@@ -33,7 +33,7 @@ and/or steps to reproduce the issue.
 
 ## How to request a feature
 
-Features that improve ``sectionproperties`` can be suggested on the [Issue Tracker].
+Features that improve `sectionproperties` can be suggested on the [Issue Tracker].
 It's a good idea to first submit the proposal as a feature request prior to submitting
 a pull request as this allows for the best coordination of efforts by preventing the
 duplication of work, and allows for feedback on your ideas.
@@ -85,7 +85,7 @@ For example, invoke the unit test suite like this:
 > nox --session=tests
 ```
 
-Unit tests are located in the *tests* directory,
+Unit tests are located in the _tests_ directory,
 and are written using the [pytest] testing framework.
 
 [pytest]: https://pytest.readthedocs.io/

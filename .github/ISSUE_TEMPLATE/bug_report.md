@@ -22,11 +22,11 @@ labels: bug
 <!-- All the below steps should be completed before submitting your issue. Checked checkbox should look like this: [x] -->
 
 - [ ] I am on the [latest](https://github.com/robbievanleeuwen/section-properties/releases/latest)
-stable sectionproperties version, installed using a recommended method.
+      stable sectionproperties version, installed using a recommended method.
 - [ ] I have searched the [issues](https://github.com/robbievanleeuwen/section-properties/issues)
-of this repo and believe that this is not a duplicate.
+      of this repo and believe that this is not a duplicate.
 - [ ] I have consulted the [documentation](https://sectionproperties.readthedocs.io/)
-for any relevant information.
+      for any relevant information.
 
 ## Issue
 
