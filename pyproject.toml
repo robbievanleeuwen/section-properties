@@ -91,7 +91,7 @@ optional = true
 python = ">=3.8,<3.10"
 cad-to-shapely = "^0.3.1"
 rhino-shapley-interop = "^0.0.4"
-rhino3dm = "^7.15.0"
+rhino3dm = "^7.14.1"
 
 [tool.poetry.scripts]
 sectionproperties = "sectionproperties.__main__:main"

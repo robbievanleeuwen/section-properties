@@ -140,7 +140,7 @@ def tests(session: Session) -> None:
     if session.python in ["3.8", "3.9"]:
         session.run_always("poetry", "install", "--with", "cad", external=True)
     else:
-        session.install(".")
+        session.run_always("poetry", "install", external=True)
 
     # install relevant tooling
     session.install("coverage[toml]", "pytest", "pygments", "pytest-check")
