@@ -22,7 +22,7 @@ except ImportError:
 
 
 package = "sectionproperties"
-python_versions = ["3.9", "3.10", "3.8"]
+python_versions = ["3.10", "3.9", "3.8"]
 nox.needs_version = ">= 2021.6.6"
 nox.options.sessions = (
     "pre-commit",
@@ -135,8 +135,16 @@ def precommit(session: Session) -> None:
 @session(python=python_versions)
 def tests(session: Session) -> None:
     """Run the test suite."""
-    session.install(".")
+    # install sectionproperties
+    # provide cad dependencies if python version is < 3.10
+    if session.python in ["3.8", "3.9"]:
+        session.run_always("poetry", "install", "--with", "cad", external=True)
+    else:
+        session.install(".")
+
+    # install relevant tooling
     session.install("coverage[toml]", "pytest", "pygments", "pytest-check")
+
     try:
         session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
     finally:
@@ -157,14 +165,14 @@ def coverage(session: Session) -> None:
     session.run("coverage", *args)
 
 
-@session(name="docs-build", python=python_versions[0])
+@session(name="docs-build", python="3.9")
 def docs_build(session: Session) -> None:
     """Build the documentation."""
     args = session.posargs or ["docs", "docs/_build"]
     if not session.posargs and "FORCE_COLOR" in os.environ:
         args.insert(0, "--color")
 
-    session.install(".")
+    session.run_always("poetry", "install", "--with", "cad", external=True)
     session.install(
         "sphinx",
         "furo",
@@ -180,11 +188,11 @@ def docs_build(session: Session) -> None:
     session.run("sphinx-build", *args)
 
 
-@session(python=python_versions[0])
+@session(python="3.9")
 def docs(session: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = session.posargs or ["--open-browser", "docs", "docs/_build"]
-    session.install(".")
+    session.run_always("poetry", "install", "--with", "cad", external=True)
     session.install(
         "sphinx",
         "sphinx-autobuild",

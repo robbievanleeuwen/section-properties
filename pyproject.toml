@@ -46,7 +46,6 @@ include = [
 Changelog = "https://github.com/robbievanleeuwen/section-properties/releases"
 "Bug Tracker" = "https://github.com/robbievanleeuwen/section-properties/issues"
 
-
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
 numpy = "^1.24.1"
@@ -61,9 +60,6 @@ triangle = [
 rich = "^13.0.1"
 click = "^8.0.1"
 more-itertools = "^9.0.0"
-cad-to-shapely = "^0.3.1"
-rhino-shapley-interop = "^0.0.4"
-rhino3dm = "==7.14.1"
 
 [tool.poetry.dev-dependencies]
 black = "^23.3.0"
@@ -87,6 +83,15 @@ sphinx-autobuild = "^2021.3.14"
 sphinx-click = "^4.4.0"
 sphinx-copybutton = "^0.5.1"
 sphinxext-opengraph = "^0.7.5"
+
+[tool.poetry.group.cad]
+optional = true
+
+[tool.poetry.group.cad.dependencies]
+python = ">=3.8,<3.10"
+cad-to-shapely = "^0.3.1"
+rhino-shapley-interop = "^0.0.4"
+rhino3dm = "^7.15.0"
 
 [tool.poetry.scripts]
 sectionproperties = "sectionproperties.__main__:main"
