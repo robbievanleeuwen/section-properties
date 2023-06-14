@@ -60,7 +60,7 @@ class ZSection:
         """
         # Setup the analysis, and calculate properties
         base_geom = nastran_sections.nastran_zed(
-            dim1=dim1, dim2=dim2, dim3=dim3, dim4=dim4
+            dim_1=dim1, dim_2=dim2, dim_3=dim3, dim_4=dim4
         )
         self.geom = base_geom.shift_section(*shift)
         self.geom = self.geom.create_mesh(mesh_sizes=[m])
@@ -126,7 +126,9 @@ def peery_ex_6_2_1() -> tuple[Geometry, Section]:
     Returns:
         Geometry and Section object
     """
-    geom = nastran_sections.nastran_i(6, 3, 3, 1, 1, 1)
+    geom = nastran_sections.nastran_i(
+        dim_1=6, dim_2=3, dim_3=3, dim_4=1, dim_5=1, dim_6=1
+    )
     geom = geom.shift_section(0, -3)
     geom = geom.create_mesh([0.25])
     xsect = Section(geom)
