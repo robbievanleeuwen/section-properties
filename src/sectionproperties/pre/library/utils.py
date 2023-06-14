@@ -27,7 +27,7 @@ def draw_radius(
         ccw: If True, counter-clockwise rotation
         phi: Angle describing radius extent in radians
 
-    Return:
+    Returns:
         List of points
     """
     points: list[tuple[float, float]] = []
@@ -64,7 +64,7 @@ def rotate(
         point: Point coordinates to be rotated
         angle: Angle to rotate point coordinates in radians
 
-    Return:
+    Returns:
         Coordinates of rotated point
     """
     pt_x, pt_y = point

@@ -54,6 +54,10 @@ class Geometry:
             tol: Number of decimal places to round the geometry vertices to. A lower
                 value may reduce accuracy of geometry but increases precision when
                 aligning geometries to each other.
+
+        Raises:
+            ValueError: If ``geom`` is not valid, i.e. not a shapely object, or a
+                MultiPolygon object
         """
         if isinstance(geom, MultiPolygon):
             raise ValueError("Use CompoundGeometry(...) for a MultiPolygon object.")
@@ -86,7 +90,7 @@ class Geometry:
     def _repr_svg_(self) -> str:
         """Generates an svg of the geometry.
 
-        Return:
+        Returns:
             Representative svg
         """
         print("sectionproperties.pre.geometry.Geometry")
@@ -122,7 +126,7 @@ class Geometry:
             control_point: An (``x``, ``y``) coordinate that describes the distinct,
                 contiguous, region of a single material within the geometry.
 
-        Return:
+        Returns:
             New Geometry object with ``control_point`` assigned as the control point
         """
         return Geometry(
@@ -165,7 +169,10 @@ class Geometry:
                 be assigned. If not given, then the
                 :class:`~sectionproperties.pre.DEFAULT_MATERIAL` will be used.
 
-        Return:
+        Raises:
+            ValueError: If there is not exactly one control point specified
+
+        Returns:
             Geometry object
 
         Example:
@@ -256,7 +263,7 @@ class Geometry:
         Args:
             dxf_filepath: A path-like object for the dxf file
 
-        Return:
+        Returns:
             Geometry or CompoundGeometry object
         """
         return load_dxf(dxf_filepath)
@@ -271,6 +278,7 @@ class Geometry:
 
         Args:
             filepath: File path to the rhino ``.3dm`` file.
+            kwargs: See below.
 
         Keyword Args:
             refine_num (Optional[int]):  Bézier curve interpolation number. In Rhino a
@@ -299,8 +307,10 @@ class Geometry:
             RuntimeError: A RuntimeError is raised if two or more polygons are found.
                 This is dependent on the keyword arguments. Try adjusting the keyword
                 arguments if this error is raised.
+            ImportError: If ``rhino3dm`` is not installed. To enable CAD features use
+                ``pip install sectionproperties[cad]``.
 
-        Return:
+        Returns:
             A Geometry object.
         """
         try:
@@ -331,6 +341,7 @@ class Geometry:
 
         Args:
             r3dm_brep: A Rhino3dm.Brep encoded as a string.
+            kwargs: See below.
 
         Keyword Args:
             refine_num (Optional[int]):  Bézier curve interpolation number. In Rhino a
@@ -355,7 +366,11 @@ class Geometry:
                 same normal as the Shapely plane are yielded. If true, all non parallel
                 surfaces are filtered out. Default is False.
 
-        Return:
+        Raises:
+            ImportError: If ``rhino3dm`` is not installed. To enable CAD features use
+                ``pip install sectionproperties[cad]``.
+
+        Returns:
             A Geometry object found in the encoded string.
         """
         try:
@@ -409,11 +424,15 @@ class Geometry:
 
         Args:
             mesh_sizes: A float describing the maximum mesh element area to be used
-                within the Geometry-object finite-element mesh.
+                within the Geometry-object finite-element mesh (may also be a list of
+                length 1).
             coarse: If set to True, will create a coarse mesh (no area or quality
                 constraints)
 
-        Return:
+        Raises:
+            ValueError: ``mesh_sizes`` is not valid
+
+        Returns:
             Geometry-object with mesh data stored in .mesh attribute. Returned
             Geometry-object is self, not a new instance.
 
@@ -478,7 +497,7 @@ class Geometry:
                 aligned to the "inside" of ``other``. In other words, align ``self`` to
                 ``other`` on the specified edge so they overlap.
 
-        Return:
+        Returns:
              Geometry object translated to alignment location
 
         Example:
@@ -565,7 +584,10 @@ class Geometry:
             align_to: Another Geometry to align to, an (``x``, ``y``) coordinate or
                 ``None``
 
-        Return:
+        Raises:
+            ValueError: ``align_to`` is not valid
+
+        Returns:
             Geometry object translated to new alignment
 
         Example:
@@ -622,7 +644,7 @@ class Geometry:
             x_offset: Distance in x-direction by which to shift the geometry.
             y_offset: Distance in y-direction by which to shift the geometry.
 
-        Return:
+        Returns:
             New Geometry object shifted by ``x_offset`` and ``y_offset``
 
         Example:
@@ -673,7 +695,7 @@ class Geometry:
             use_radians: Boolean to indicate whether ``angle`` is in degrees or radians.
                 If True, ``angle`` is interpreted as radians.
 
-        Return:
+        Returns:
             New Geometry object rotated by ``angle`` about ``rot_point``
 
         Example:
@@ -720,7 +742,7 @@ class Geometry:
                 point is provided, mirrors the geometry about the centroid of the
                 shape's bounding box.
 
-        Return:
+        Returns:
             New Geometry object mirrored on ``axis`` about ``mirror_point``
 
         Example:
@@ -800,7 +822,10 @@ class Geometry:
             vector: A tuple or numpy array of (``x``, ``y``) components to define the
                 line direction
 
-        Return:
+        Raises:
+            ValueError: Line definition is invalid
+
+        Returns:
             A tuple of lists containing Geometry objects that are bisected about the
             line defined by the two given points. The first item in the tuple represents
             the geometries on the ``"top"`` of the line (or to the ``"right"`` of the
@@ -873,7 +898,11 @@ class Geometry:
             resolution: Number of segments used to approximate a quarter circle around a
                 point
 
-        Return:
+        Raises:
+            ValueError: ``where`` is invalid
+            ValueError: Attempted to offset internally where there are no holes
+
+        Returns:
             Geometry object translated to new alignment
 
         Example:
@@ -1012,7 +1041,7 @@ class Geometry:
                 If ``abs_y`` is provided, ``dy`` is ignored. If providing a list to
                 ``point_idxs``, all points will be moved to this absolute location.
 
-        Return:
+        Returns:
             Geometry object with selected points translated to the new location
 
         Example:
@@ -1088,7 +1117,7 @@ class Geometry:
             legend: If set to True, plots the legend
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context()`
 
-        Return:
+        Returns:
             Matplotlib axes object
         """
         # create plot and setup the plot
@@ -1168,7 +1197,7 @@ class Geometry:
         Calculates the minimum and maximum x and y-values amongst the list of points;
         the points that describe the bounding box of the Geometry instance.
 
-        Return:
+        Returns:
             Minimum and maximum x and y-values (``x_min``, ``x_max``, ``y_min``,
             ``y_max``)
         """
@@ -1178,7 +1207,7 @@ class Geometry:
     def calculate_perimeter(self) -> float:
         """Calculates the exterior perimeter of the geometry.
 
-        Return:
+        Returns:
             Geometry perimeter
         """
         return self.geom.exterior.length
@@ -1186,7 +1215,7 @@ class Geometry:
     def calculate_area(self) -> float:
         """Calculates the area of the geometry.
 
-        Return:
+        Returns:
             Geometry area
         """
         return self.geom.area
@@ -1194,7 +1223,7 @@ class Geometry:
     def calculate_centroid(self) -> tuple[float, float]:
         """Calculates the centroid of the geometry.
 
-        Return:
+        Returns:
             Geometry centroid
         """
         return self.geom.centroid.coords[0]
@@ -1207,6 +1236,9 @@ class Geometry:
         instance was created by a NASTRAN geometry function,
         e.g. :func:`~sectionproperties.pre.nastran_sections.nastran_bar()`, then the
         recovery points will be pre-set on the Geometry instance.
+
+        Returns:
+            Stress recovery poiints.
         """
         return self._recovery_points
 
@@ -1226,7 +1258,7 @@ class Geometry:
     def recovery_points(self) -> list[tuple[float, float]] | list[Point]:
         """Returns the recovery points.
 
-        Return:
+        Returns:
             Recovery points
         """
         return self._recovery_points
@@ -1240,7 +1272,10 @@ class Geometry:
         Args:
             other: Geometry object to perform the union with
 
-        Return:
+        Raises:
+            ValueError: Unable to perform union
+
+        Returns:
             New Geometry object
 
         Example:
@@ -1288,7 +1323,10 @@ class Geometry:
         Args:
             other: Geometry object to perform the symmetric difference with
 
-        Return:
+        Raises:
+            ValueError: Unable to perform symmetric difference
+
+        Returns:
             New Geometry object
 
         Example:
@@ -1339,7 +1377,10 @@ class Geometry:
         Args:
             other: Geometry object to perform the difference operation with
 
-        Return:
+        Raises:
+            ValueError: Unable to perform difference
+
+        Returns:
             New Geometry object
 
         Example:
@@ -1413,7 +1454,10 @@ class Geometry:
         Args:
             other: Geometry object to perform the combination with
 
-        Return:
+        Raises:
+            ValueError: Unable to perform combination operation
+
+        Returns:
             New Geometry object
 
         Example:
@@ -1449,7 +1493,10 @@ class Geometry:
         Args:
             other: Geometry object to perform the intersection with
 
-        Return:
+        Raises:
+            ValueError: Unable to perform intersection
+
+        Returns:
             New Geometry object
 
         Example:
@@ -1546,7 +1593,7 @@ class CompoundGeometry(Geometry):
         Wraps :func:`shapely.MultiPolygon._repr_svg_()` by returning
         ``self.geom._repr_svg_()``
 
-        Return:
+        Returns:
             Representative svg
         """
         materials_list = [geom.material.name for geom in self.geoms]
@@ -1598,7 +1645,15 @@ class CompoundGeometry(Geometry):
                 :class:`~sectionproperties.pre.DEFAULT_MATERIAL` will be used for
                 each region.
 
-        Return:
+        Raises:
+            ValueError: If there are materials provided without control points
+            ValueError: If the number of materials does not equal the number of control
+                points
+            ValueError: If the number of exterior regions doesn't match the number of
+                control points
+            ValueError: If control points are not contained within geometries with holes
+
+        Returns:
             CompoundGeometry object from points
 
         Example:
@@ -1792,6 +1847,7 @@ class CompoundGeometry(Geometry):
 
         Args:
             filepath: File path to the rhino ``.3dm`` file.
+            kwargs: See below.
 
         Keyword Args:
             refine_num (Optional[int]):  Bézier curve interpolation number. In Rhino a
@@ -1816,7 +1872,11 @@ class CompoundGeometry(Geometry):
                 same normal as the Shapely plane are yielded. If true, all non parallel
                 surfaces are filtered out. Default is False.
 
-        Return:
+        Raises:
+            ImportError: If ``rhino3dm`` is not installed. To enable CAD features use
+                ``pip install sectionproperties[cad]``.
+
+        Returns:
             CompoundGeometry object
         """
         try:
@@ -1846,7 +1906,7 @@ class CompoundGeometry(Geometry):
             coarse: If set to True, will create a coarse mesh (no area or quality
                 constraints)
 
-        Return:
+        Returns:
             CompoundGeometry object with mesh data stored in .mesh attribute. Returned
             Geometry object is self, not a new instance.
 
@@ -1900,7 +1960,7 @@ class CompoundGeometry(Geometry):
             x_offset: Distance in x-direction by which to shift the geometry.
             y_offset: Distance in y-direction by which to shift the geometry.
 
-        Return:
+        Returns:
             New Geometry object shifted by ``x_offset`` and ``y_offset``
         """
         geoms_acc = []
@@ -1931,7 +1991,7 @@ class CompoundGeometry(Geometry):
             use_radians: Boolean to indicate whether ``angle`` is in degrees or radians.
                 If True, ``angle`` is interpreted as radians.
 
-        Return:
+        Returns:
             CompoundGeometry object rotated by ``angle`` about ``rot_point``
 
         Example:
@@ -1978,7 +2038,7 @@ class CompoundGeometry(Geometry):
                 point is provided, mirrors the geometry about the centroid of the
                 shape's bounding box.
 
-        Return:
+        Returns:
             CompoundGeometry object mirrored on ``axis`` about ``mirror_point``
 
         Example:
@@ -2027,7 +2087,11 @@ class CompoundGeometry(Geometry):
         Args:
             align_to: Another Geometry to align to, an (``x``, ``y``) coordinate, or
                 ``None``
-        Return:
+
+        Raises:
+            ValueError: ``align_to`` is not valid
+
+        Returns:
             CompoundGeometry object translated to new alignment
         """
         ea_sum = sum(
@@ -2100,7 +2164,7 @@ class CompoundGeometry(Geometry):
             vector: A tuple or numpy array of (``x``, ``y``) components to define the
                 line direction.
 
-        Return:
+        Returns:
             A tuple of lists containing Geometry objects that are bisected about
             the infinite line defined by the two given points. The first item in the
             tuple represents the geometries on the ``"top"`` of the line (or to the
@@ -2137,7 +2201,7 @@ class CompoundGeometry(Geometry):
             resolution: Number of segments used to approximate a quarter circle around
                 a point
 
-        Return:
+        Returns:
             CompoundGeometry object translated to new alignment
 
         Example:
@@ -2286,7 +2350,7 @@ class CompoundGeometry(Geometry):
         If the CompoundGeometry includes disjoint geometries then the perimeter cannot
         be calculated and the method returns -1.0.
 
-        Return:
+        Returns:
             CompoundGeometry perimeter
         """
         unionized_poly = unary_union([geom.geom for geom in self.geoms])
@@ -2305,7 +2369,13 @@ def load_dxf(
     Args:
         dxf_filepath: Path to ``.dxf`` file to load
 
-    Return:
+    Raises:
+        ImportError: If ``cad_to_shapely`` is not installed. To enable CAD features use
+            ``pip install sectionproperties[cad]``.
+        RuntimeError: No polygon objects are found in the file
+        ValueError: The filepath does not exist
+
+    Returns:
         Geometry or CompoundGeometry loaded from ``.dxf`` file
     """
     c2s = None
@@ -2357,7 +2427,7 @@ def create_facets(
         offset: An integer representing the value that the facets should begin
             incrementing from.
 
-    Return:
+    Returns:
         List of facets
     """
     idx_peeker = more_itertools.peekable(
@@ -2382,7 +2452,7 @@ def create_exterior_points(
     Args:
         shape: Shape to return exterior points
 
-    Return:
+    Returns:
         List of exterior points
     """
     return [tuple(coord) for coord in shape.exterior.coords]
@@ -2399,7 +2469,7 @@ def create_interior_points(
     Args:
         lr: LinearRing to return exterior points
 
-    Return:
+    Returns:
         List of interior points
     """
     return [tuple(coord) for coord in lr.coords]
@@ -2415,7 +2485,7 @@ def create_points_and_facets(
         shape: Polygon to create points and facets from
         tol: Number of decimal places to round the geometry vertices to
 
-    Return:
+    Returns:
         List of points (``x``, ``y``) and list of facets (``f1``, ``f2``)
     """
     master_count = 0
@@ -2466,7 +2536,7 @@ def buffer_polygon(
         resolution: Number of segments used to approximate a quarter circle around a
             point
 
-    Return:
+    Returns:
         Buffered polygon
     """
     buffered_polygon = polygon.buffer(distance=amount, resolution=resolution)
@@ -2503,7 +2573,7 @@ def filter_non_polygons(
     Args:
         input_geom: Shapely geometry to filter
 
-    Return:
+    Returns:
         Filtered polygon
     """
     if isinstance(input_geom, (Polygon, MultiPolygon)):
@@ -2539,7 +2609,7 @@ def round_polygon_vertices(
         poly: Polygon to round
         tol: Number of decimals to round vertices to
 
-    Return:
+    Returns:
         Polygon with rounded vertices
     """
     rounded_exterior = np.round(poly.exterior.coords, tol)
@@ -2566,7 +2636,7 @@ def check_geometry_overlaps(
     Args:
         lop: List of polygons
 
-    Return:
+    Returns:
         Whether or not there is overlapping geometry
     """
     union_area = unary_union(lop).area
@@ -2582,7 +2652,7 @@ def check_geometry_disjoint(
     Args:
         lop: List of polygons
 
-    Return:
+    Returns:
         Whether or not there is disjoint geometry
     """
     # Build polygon connectivity network
@@ -2597,7 +2667,16 @@ def check_geometry_disjoint(
                 network[idx_i] = connectivity
 
     def walk_network(node: int, network: dict, nodes_visited: list[int]) -> list[int]:
-        """Walks the network modifying 'nodes_visited' as it walks."""
+        """Walks the network modifying 'nodes_visited' as it walks.
+
+        Args:
+            node: Initial node index
+            network: Dictionary describing the node network
+            nodes_visited: Initial list of nodes visited
+
+        Returns:
+            Updated node indices of the nodes that have been visisted
+        """
         connections = network.get(node, set())
 
         for connection in connections:

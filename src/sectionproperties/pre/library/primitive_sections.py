@@ -25,7 +25,7 @@ def rectangular_section(
         b: Width (``x``) of the rectangle
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Rectangular section geometry
 
     Example:
@@ -61,7 +61,7 @@ def circular_section(
         n: Number of points discretising the circle
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Circular section geometry
 
     Example:
@@ -111,7 +111,7 @@ def circular_section_by_area(
         n: Number of points discretising the circle
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Circular section geometry
 
     Example:
@@ -151,7 +151,7 @@ def elliptical_section(
         n: Number of points discretising the ellipse
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Elliptical section geometry
 
     Example:
@@ -199,7 +199,7 @@ def triangular_section(
         h: Height of triangle
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Triangular section geometry
 
     Example:
@@ -234,7 +234,7 @@ def triangular_radius_section(
         n_r: Number of points discretising the radius
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Triangular section geometry
 
     Example:
@@ -280,7 +280,7 @@ def cruciform_section(
         n_r: Number of points discretising the root radius
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Cruciform section geometry
 
     Example:

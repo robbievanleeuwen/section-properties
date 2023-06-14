@@ -28,7 +28,10 @@ def super_t_girder_section(
         t_f: Thickness of top flange (VIC = 75 mm; NSW = 90 mm)
         material: Material to associate with this geometry
 
-    Return:
+    Raises:
+        ValueError: ``girder_type`` or ``girder_subtype`` are invalid
+
+    Returns:
         Super T girder section geometry
 
     Example:
@@ -144,7 +147,10 @@ def i_girder_section(
         girder_type: Type of I Girder (1 to 4)
         material: Material to associate with this geometry
 
-    Return:
+    Raises:
+        ValueError: ``girder_type`` is invalid
+
+    Returns:
         I girder section geometry
 
     Example:
@@ -164,7 +170,7 @@ def i_girder_section(
     """
     if girder_type < 1 or girder_type > 4:
         msg = "I Girder Type must be between 1 and 4"
-        raise Exception(msg)
+        raise ValueError(msg)
 
     b_tf, b_bf, b_w, h_tf, h_ts, h_w, h_bs, h_bf = get_i_girder_dims(girder_type)
 
@@ -200,7 +206,7 @@ def get_super_t_girder_dims(
     Args:
         girder_type: Type of Super T (1 to 5)
 
-    Return:
+    Returns:
         Girder depth, base thickness and web thickness
     """
     girder_dims = {
@@ -228,7 +234,7 @@ def get_i_girder_dims(
     Args:
         girder_type: Type of I Girder (1 to 4)
 
-    Return:
+    Returns:
         Critical I girder dimensions
     """
     girder_dims = {

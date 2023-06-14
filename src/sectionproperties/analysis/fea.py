@@ -64,7 +64,11 @@ class Tri6:
         self._m = np.linalg.solve(x, b)
 
     def __repr__(self) -> str:
-        """Object string representation."""
+        """Object string representation.
+
+        Returns:
+            String representation of the Tri6 object
+        """
         rep = f"el_id: {self.el_id}\ncoords: {self.coords}\n"
         rep += f"node_ids: {self.node_ids}\nmaterial: {self.material}"
         return rep
@@ -74,7 +78,7 @@ class Tri6:
     ) -> tuple[float, float, float, float, float, float, float, float, float]:
         """Calculates the geometric properties for the current finite element.
 
-        Return:
+        Returns:
             Tuple containing the geometric properties, and the elastic and shear moduli
             of the element: (``area``, ``qx``, ``qy``, ``ixx``, ``iyy``, ``ixy``, ``e``,
             ``g``, ``rho``)
@@ -122,7 +126,7 @@ class Tri6:
     def torsion_properties(self) -> tuple[np.ndarray, np.ndarray]:
         """Calculates the element warping stiffness matrix and the torsion load vector.
 
-        Return:
+        Returns:
             Element stiffness matrix ``k_el`` and element torsion load vector ``f_el``
         """
         # initialise stiffness matrix and load vector
@@ -168,7 +172,7 @@ class Tri6:
             ixy: Second moment of area about the centroidal xy-axis
             nu: Effective Poisson's ratio for the cross-section
 
-        Return:
+        Returns:
             Element shear load vector psi ``f_psi`` and phi ``f_phi``
         """
         # initialise force vectors
@@ -234,7 +238,7 @@ class Tri6:
             ixy: Second moment of area about the centroidal xy-axis
             omega: Values of the warping function at the element nodes
 
-        Return:
+        Returns:
             Shear centre integrals about the ``x`` and ``y`` axes and warping integrals
             (``sc_xint``, ``sc_yint``, ``q_omega``, ``i_omega``, ``i_xomega``,
             ``i_yomega``)
@@ -299,7 +303,7 @@ class Tri6:
             phi_shear: Values of the phi shear function at the element nodes
             nu: Effective Poisson's ratio for the cross-section
 
-        Return:
+        Returns:
             Shear deformation variables (``kappa_x``, ``kappa_y``, ``kappa_xy``)
         """
         # initialise properties
@@ -362,7 +366,7 @@ class Tri6:
         Args:
             phi: Principal bending axis angle, in degrees
 
-        Return:
+        Returns:
             Integrals used to evaluate the monosymmetry constants (``int_x``, ``int_y``,
             ``int_11``, ``int_22``)
         """
@@ -480,7 +484,7 @@ class Tri6:
             phi_shear: Values of the phi shear function at the element nodes
             delta_s: Cross-section shear factor
 
-        Return:
+        Returns:
             Tuple containing element stresses and integration weights
             (:math:`\sigma_{zz,n}`, :math:`\sigma_{zz,mxx}`,
             :math:`\sigma_{zz,myy}`, :math:`\sigma_{zz,m11}`,
@@ -647,7 +651,7 @@ class Tri6:
             phi_shear: Values of the phi shear function at the element nodes
             delta_s: Cross-section shear factor
 
-        Return:
+        Returns:
             Tuple containing stress values at point ``p`` (:math:`\sigma_{zz}`,
             :math:`\sigma_{zx}`, :math:`\sigma_{zy}`)
         """
@@ -750,7 +754,7 @@ class Tri6:
         Args:
             pt: Point to check (``x``, ``y``)
 
-        Return:
+        Returns:
             Whether the point lies within an element
         """
         px = pt[0]
@@ -788,7 +792,7 @@ class Tri6:
         Args:
             p: Global coordinate (``x``, ``y``)
 
-        Return:
+        Returns:
             Point in local coordinates (``eta``, ``xi``, ``zeta``)
         """
         eta, xi = np.dot(self._m, p - self._x0)
@@ -802,7 +806,10 @@ def gauss_points(n: int) -> np.ndarray:
     Args:
         n: Number of Gauss points (1, 3 or 6)
 
-    Return:
+    Raises:
+        ValueError: ``n`` is invalid
+
+    Returns:
         An ``n x 4`` matrix consisting of the integration weight and the ``eta``, ``xi``
         and ``zeta`` locations for ``n`` Gauss points
     """
@@ -856,7 +863,7 @@ def shape_function(
             ``[2 x 6]``
         gauss_point: Gaussian weight and isoparametric location of the Gauss point
 
-    Return:
+    Returns:
         The value of the shape functions ``N(i)`` at the given Gauss point
         (``[1 x 6]``), the derivative of the shape functions in the *j-th* global
         direction ``B(i,j)`` (``[2 x 6]``) and the determinant of the Jacobian
@@ -917,7 +924,7 @@ def shape_function_only(p: tuple[float, float, float]) -> np.ndarray:
     Args:
         p: Point (``eta``, ``xi``, ``zeta``) in the local coordinate system.
 
-    Return:
+    Returns:
         The shape function values at ``p``, of size ``[1 x 6]``
     """
     eta = p[0]
@@ -942,7 +949,7 @@ def extrapolate_to_nodes(w: np.ndarray) -> np.ndarray:
     Args:
         w: Results at the six Gauss points, of size ``[1 x 6]``
 
-    Return:
+    Returns:
         Extrapolated nodal values at the six nodes, of size ``[1 x 6]``
     """
     h_inv = np.array(
@@ -1013,7 +1020,7 @@ def principal_coordinate(
         x: x-coordinate in the global coordinate system
         y: y-coordinate in the global coordinate system
 
-    Return:
+    Returns:
         Principal axis coordinates (``x11``, ``y22``)
     """
     phi = phi * np.pi / 180
@@ -1035,7 +1042,7 @@ def global_coordinate(
         x11: 11-coordinate in the principal coorindate system
         y22: 22-coordinate in the principal coorindate system
 
-    Return:
+    Returns:
         Global axis coordinates (``x``, ``y``)
     """
     phi = phi * np.pi / 180
@@ -1061,7 +1068,7 @@ def point_above_line(
         x: x-coordinate of the point to be tested
         y: y-coordinate of the point to be tested
 
-    Return:
+    Returns:
         True if the point is above the line or False if the point is below the line
     """
     # vector from point to point on line

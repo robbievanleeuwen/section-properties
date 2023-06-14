@@ -28,7 +28,7 @@ def circular_hollow_section(
         n: Number of points discretising the inner and outer circles
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Circular hollow section geometry
 
     Example:
@@ -87,7 +87,7 @@ def elliptical_hollow_section(
         n: Number of points discretising the inner and outer ellipses
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Elliptical hollow section geometry
 
     Example:
@@ -150,7 +150,7 @@ def rectangular_hollow_section(
         n_r: Number of points discretising the inner and outer radii
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Rectangular hollow section geometry
 
     Example:
@@ -213,6 +213,7 @@ def polygon_hollow_section(
         d: Pitch circle diameter of the outer bounding polygon (i.e. diameter of circle
             that passes through all vertices of the outer polygon)
         t: Thickness of the polygon section wall
+        n_sides: Number of sides of the polygon
         r_in: Inner radius of the polygon corners. By default, if not specified, a
             polygon with no corner radii is generated.
         n_r: Number of points discretising the inner and outer radii, ignored if no
@@ -224,7 +225,7 @@ def polygon_hollow_section(
     Raises:
         ValueError: Number of sides in polygon must be greater than or equal to 3
 
-    Return:
+    Returns:
         Regular hollow polygon section geometry
 
     Example:
@@ -344,7 +345,7 @@ def i_section(
         n_r: Number of points discretising the root radius
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         I section geometry
 
     Example:
@@ -426,7 +427,7 @@ def mono_i_section(
         n_r: Number of points discretising the root radius
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Monosymmetric I section geometry
 
     Example:
@@ -515,7 +516,7 @@ def tapered_flange_i_section(
         n_r: Number of points discretising the radii
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Tapered flange I section geometry
 
     Example:
@@ -712,7 +713,7 @@ def channel_section(
         n_r: Number of points discretising the root radius
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Parallel flange channel section geometry
 
     Example:
@@ -783,7 +784,7 @@ def tapered_flange_channel(
         n_r: Number of points discretising the radii
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Tapered flange channel section geometry
 
     Example:
@@ -915,7 +916,7 @@ def tee_section(
         n_r: Number of points discretising the root radius
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Tee section geometry
 
     Example:
@@ -980,7 +981,7 @@ def angle_section(
         n_r: Number of points discretising the radii
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Angle section geometry
 
     Raises:
@@ -1056,7 +1057,7 @@ def cee_section(
         n_r: Number of points discretising the outer radius
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Cee section geometry
 
     Raises:
@@ -1163,7 +1164,7 @@ def zed_section(
         n_r: Number of points discretising the outer radius
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Zed section geometry
 
     Raises:
@@ -1269,7 +1270,7 @@ def box_girder_section(
         t_w: Web thickness of the box girder section
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Box girder section geometry
 
     Example:
@@ -1349,7 +1350,7 @@ def bulb_section(
         n_r: Number of points discretising the radius
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Bulb section geometry
 
     Example:

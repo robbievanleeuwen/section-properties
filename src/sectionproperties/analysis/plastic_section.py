@@ -63,6 +63,9 @@ class PlasticSection:
                 :class:`~sectionproperties.analysis.section.PlasticSection` object
             verbose: If set to True, prints convergence information to the terminal
             progress: Rich progress object
+
+        Raises:
+            RuntimeError: A geometric analysis has not yet been performed
         """
         if progress:
             task = progress.add_task(
@@ -231,7 +234,7 @@ class PlasticSection:
         """Checks that the function solver converged and if not, raises a helpful error.
 
         Args:
-            root_results: Result object from the root finder
+            root_result: Result object from the root finder
             axis: Axis being considered by the function solver
 
         Raises:
@@ -270,7 +273,7 @@ class PlasticSection:
             angle: Angle (in degrees) along which to calculate the extreme fibre
                 locations
 
-        Return:
+        Returns:
             The location of the extreme fibres parallel (``u``) and perpendicular
             (``v``) to the axis, (``u_min``, ``u_max``, ``v_min``, ``v_max``)
         """
@@ -316,7 +319,7 @@ class PlasticSection:
                 or ``22``)
             verbose: If set to True, prints convergence information to the terminal
 
-        Return:
+        Returns:
             The perpendicular distance from the origin to the plastic centroid axis
             ``d``, and the ``scipy`` results object ``r`` - (``d``, ``r``)
         """
@@ -356,7 +359,7 @@ class PlasticSection:
             u_p: Unit vector perpendicular to the direction of the axis
             verbose: If set to True, prints convergence information to the terminal
 
-        Return:
+        Returns:
             The force equilibrium norm
         """
         # p = finding a point on the axis by scaling the perpendicular
@@ -389,7 +392,7 @@ class PlasticSection:
             u: Unit vector defining the direction of the axis line
             p: Point on the axis line
 
-        Return:
+        Returns:
             Force in the above and below the axis line (``f_top``, ``f_bot``)
         """
         # initialise variables

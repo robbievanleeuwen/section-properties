@@ -58,7 +58,10 @@ def concrete_rectangular_section(
         conc_mat: Material object to assign to the concrete area
         steel_mat: Material object to assign to the steel area
 
-    Return:
+    Raises:
+        ValueError: Geometry generation failed
+
+    Returns:
         Reinforced concrete rectangular section geometry
 
     Example:
@@ -238,7 +241,7 @@ def concrete_column_section(
         conc_mat: Material object to assign to the concrete area
         steel_mat: Material object to assign to the steel area
 
-    Return:
+    Returns:
         Reinforced concrete column section geometry
 
     Raises:
@@ -394,7 +397,7 @@ def concrete_tee_section(
         conc_mat: Material object to assign to the concrete area
         steel_mat: Material object to assign to the steel area
 
-    Return:
+    Returns:
         Reinforced concrete tee section geometry
 
     Example:
@@ -521,7 +524,7 @@ def concrete_circular_section(
         conc_mat: Material object to assign to the concrete area
         steel_mat: Material object to assign to the steel area
 
-    Return:
+    Returns:
         Reinforced concrete circular section geometry
 
     Raises:
@@ -624,7 +627,7 @@ def add_bar(
         y: y-position of the bar
         n: Number of points to discretise the bar circle
 
-    Return:
+    Returns:
         Geometry object with added bar
     """
     bar = primitive_sections.circular_section_by_area(

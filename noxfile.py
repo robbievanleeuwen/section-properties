@@ -107,7 +107,11 @@ def activate_virtualenv_in_precommit_hooks(session: Session) -> None:
 
 @session(name="pre-commit", python=python_versions[0])
 def precommit(session: Session) -> None:
-    """Lint using pre-commit."""
+    """Lint using pre-commit.
+
+    Args:
+        session: Nox session
+    """
     args = session.posargs or [
         "run",
         "--all-files",
@@ -134,7 +138,11 @@ def precommit(session: Session) -> None:
 
 @session(python=python_versions)
 def tests(session: Session) -> None:
-    """Run the test suite."""
+    """Run the test suite.
+
+    Args:
+        session: Nox session
+    """
     # install sectionproperties
     # provide cad dependencies if python version is < 3.10
     if session.python in ["3.8", "3.9"]:
@@ -154,7 +162,11 @@ def tests(session: Session) -> None:
 
 @session(python=python_versions[0])
 def coverage(session: Session) -> None:
-    """Produce the coverage report."""
+    """Produce the coverage report.
+
+    Args:
+        session: Nox session
+    """
     args = session.posargs or ["report"]
 
     session.install("coverage[toml]")
@@ -167,7 +179,11 @@ def coverage(session: Session) -> None:
 
 @session(name="docs-build", python="3.9")
 def docs_build(session: Session) -> None:
-    """Build the documentation."""
+    """Build the documentation.
+
+    Args:
+        session: Nox session
+    """
     args = session.posargs or ["docs", "docs/_build"]
     if not session.posargs and "FORCE_COLOR" in os.environ:
         args.insert(0, "--color")
@@ -190,7 +206,11 @@ def docs_build(session: Session) -> None:
 
 @session(python="3.9")
 def docs(session: Session) -> None:
-    """Build and serve the documentation with live reloading on file changes."""
+    """Build and serve the documentation with live reloading on file changes.
+
+    Args:
+        session: Nox session
+    """
     args = session.posargs or ["--open-browser", "docs", "docs/_build"]
     session.run_always("poetry", "install", "--with", "cad", external=True)
     session.install(

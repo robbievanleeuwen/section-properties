@@ -811,7 +811,7 @@ class Section:
             solver_type: Solver used for solving systems of linear equations, either
                 using the ``"direct"`` method or ``"cgs"`` iterative method
 
-        Return:
+        Returns:
             Cross-section properties to be used for a frame analysis (``area``, ``ixx``,
             ``iyy``, ``ixy``, ``j``, ``phi``)
 
@@ -1174,7 +1174,7 @@ class Section:
             m22: Bending moment about the centroidal 22-axis
             mzz: Torsion moment about the centroidal zz-axis
 
-        Return:
+        Returns:
             Object for post-processing cross-section stresses
 
         Raises:
@@ -1380,7 +1380,7 @@ class Section:
             progress: Rich progress object
             task: Rich task object
 
-        Return:
+        Returns:
             Lagrangian multiplier stiffness matrix and torsion load vector (``k_lg``,
             ``f_torsion``)
         """
@@ -1459,7 +1459,7 @@ class Section:
             title: Plot title
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
-        Return:
+        Returns:
             Matplotlib axes object
 
         Example:
@@ -1572,7 +1572,7 @@ class Section:
             title: Plot title
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
-        Return:
+        Returns:
             Matplotlib axes object
 
         Example:
@@ -1700,7 +1700,7 @@ class Section:
     def get_area(self) -> float:
         """Returns the cross-section area.
 
-        Return:
+        Returns:
             Cross-section area
 
         Raises:
@@ -1716,7 +1716,7 @@ class Section:
     def get_perimeter(self) -> float:
         """Returns the cross-section perimeter.
 
-        Return:
+        Returns:
             Cross-section perimeter
 
         Raises:
@@ -1732,7 +1732,7 @@ class Section:
     def get_mass(self) -> float:
         """Returns the cross-section mass.
 
-        Return:
+        Returns:
             Cross-section mass
 
         Raises:
@@ -1748,7 +1748,7 @@ class Section:
     def get_ea(self) -> float:
         """Returns the cross-section axial rigidity.
 
-        Return:
+        Returns:
             Modulus weighted area (axial rigidity)
 
         Raises:
@@ -1764,7 +1764,7 @@ class Section:
     def get_q(self) -> tuple[float, float]:
         """Returns the cross-section first moments of area.
 
-        Return:
+        Returns:
             First moments of area about the global axis (``qx``, ``qy``)
 
         Note:
@@ -1785,7 +1785,7 @@ class Section:
     def get_ig(self):
         """Returns the cross-section global second moments of area.
 
-        Return:
+        Returns:
             Second moments of area about the global axis (``ixx_g``, ``iyy_g``,
             ``ixy_g``)
 
@@ -1812,7 +1812,7 @@ class Section:
     def get_c(self) -> tuple[float, float]:
         """Returns the cross-section elastic centroid.
 
-        Return:
+        Returns:
             Elastic centroid (``cx``, ``cy``)
 
         Raises:
@@ -1829,7 +1829,7 @@ class Section:
     def get_ic(self) -> tuple[float, float, float]:
         """Returns the cross-section centroidal second moments of area.
 
-        Return:
+        Returns:
             Second moments of area about the centroidal axis (``ixx_c``, ``iyy_c``,
             ``ixy_c``)
 
@@ -1856,7 +1856,7 @@ class Section:
     def get_z(self) -> tuple[float, float, float, float]:
         """Returns the cross-section centroidal elastic section moduli.
 
-        Return:
+        Returns:
             Elastic section moduli about the centroidal axis with respect to the top and
             bottom fibres (``zxx_plus``, ``zxx_minus``, ``zyy_plus``, ``zyy_minus``)
 
@@ -1885,7 +1885,7 @@ class Section:
     def get_rc(self) -> tuple[float, float]:
         """Returns the cross-section centroidal radii of gyration.
 
-        Return:
+        Returns:
             Radii of gyration about the centroidal axis (``rx``, ``ry``)
 
         Raises:
@@ -1902,7 +1902,7 @@ class Section:
     def get_ip(self) -> tuple[float, float]:
         """Returns the cross-section principal second moments of area.
 
-        Return:
+        Returns:
             Second moments of area about the principal axis (``i11_c``, ``i22_c``)
 
         Note:
@@ -1923,7 +1923,7 @@ class Section:
     def get_phi(self) -> float:
         """Returns the cross-section principal bending angle.
 
-        Return:
+        Returns:
             Principal bending axis angle
 
         Raises:
@@ -1939,7 +1939,7 @@ class Section:
     def get_zp(self) -> tuple[float, float, float, float]:
         """Returns the cross-section principal elastic section moduli.
 
-        Return:
+        Returns:
             Elastic section moduli about the principal axis with respect to the top and
             bottom fibres (``z11_plus``, ``z11_minus``, ``z22_plus``, ``z22_minus``)
 
@@ -1968,7 +1968,7 @@ class Section:
     def get_rp(self) -> tuple[float, float]:
         """Returns the cross-section principal radii of gyration.
 
-        Return:
+        Returns:
             Radii of gyration about the principal axis (``r11``, ``r22``)
 
         Raises:
@@ -1985,7 +1985,7 @@ class Section:
     def get_nu_eff(self) -> float:
         """Returns the cross-section effective Poisson's ratio.
 
-        Return:
+        Returns:
             Effective Poisson's ratio
 
         Raises:
@@ -2001,7 +2001,7 @@ class Section:
     def get_e_eff(self) -> float:
         """Returns the cross-section effective elastic modulus.
 
-        Return:
+        Returns:
             Effective elastic modulus based on area
 
         Raises:
@@ -2017,7 +2017,7 @@ class Section:
     def get_g_eff(self) -> float:
         """Returns the cross-section effective shear modulus.
 
-        Return:
+        Returns:
             Effective shear modulus based on area
 
         Raises:
@@ -2033,7 +2033,7 @@ class Section:
     def get_j(self) -> float:
         """Returns the cross-section St. Venant torsion constant.
 
-        Return:
+        Returns:
             St. Venant torsion constant
 
         Note:
@@ -2053,7 +2053,7 @@ class Section:
     def get_sc(self) -> tuple[float, float]:
         """Returns the cross-section centroidal shear centre (elasticity).
 
-        Return:
+        Returns:
             Centroidal axis shear centre (elasticity approach) (``x_se``, ``y_se``)
 
         Raises:
@@ -2076,7 +2076,7 @@ class Section:
     def get_sc_p(self) -> tuple[float, float]:
         """Returns the cross-section principal shear centre (elasticity).
 
-        Return:
+        Returns:
             Principal axis shear centre (elasticity approach) (``x11_se``, ``y22_se``)
 
         Raises:
@@ -2094,7 +2094,7 @@ class Section:
     def get_sc_t(self) -> tuple[float, float]:
         """Returns the cross-section centroidal shear centre (Trefftz's).
 
-        Return:
+        Returns:
             Centroidal axis shear centre (Trefftz's approach) (``x_st``, ``y_st``)
 
         Raises:
@@ -2117,7 +2117,7 @@ class Section:
     def get_gamma(self) -> float:
         r"""Returns the cross-section warping constant.
 
-        Return:
+        Returns:
             Warping constant
 
         Note:
@@ -2137,7 +2137,7 @@ class Section:
     def get_as(self) -> tuple[float, float]:
         """Returns the cross-section centroidal axis shear area.
 
-        Return:
+        Returns:
             Shear area for loading about the centroidal axis (``a_sx``, ``a_sy``)
 
         Note:
@@ -2158,7 +2158,7 @@ class Section:
     def get_as_p(self) -> tuple[float, float]:
         """Returns the cross-section princicpal axis shear area.
 
-        Return:
+        Returns:
             Shear area for loading about the princicpal bending axis (``a_s11``,
             ``a_s22``)
 
@@ -2180,7 +2180,7 @@ class Section:
     def get_beta(self) -> tuple[float, float, float, float]:
         """Returns the cross-section global monosymmetry constants.
 
-        Return:
+        Returns:
             Monosymmetry constants for bending about both global axes (``beta_x_plus``,
             ``beta_x_minus``, ``beta_y_plus``, ``beta_y_minus``).
 
@@ -2209,7 +2209,7 @@ class Section:
     def get_beta_p(self):
         """Returns the cross-section global monosymmetry constants.
 
-        Return:
+        Returns:
             Monosymmetry constant for bending about both principal axes
             (``beta_11_plus``, ``beta_11_minus``, ``beta_22_plus``, ``beta_22_minus``)
 
@@ -2238,7 +2238,7 @@ class Section:
     def get_pc(self) -> tuple[float, float]:
         """Returns the cross-section centroidal axis plastic centroid.
 
-        Return:
+        Returns:
             Centroidal axis plastic centroid (``x_pc``, ``y_pc``)
 
         Raises:
@@ -2261,7 +2261,7 @@ class Section:
     def get_pc_p(self) -> tuple[float, float]:
         """Returns the cross-section principal axis plastic centroid.
 
-        Return:
+        Returns:
             Principal bending axis plastic centroid (``x11_pc``, ``y22_pc``)
 
         Raises:
@@ -2289,7 +2289,7 @@ class Section:
     def get_s(self) -> tuple[float, float]:
         """Returns the cross-section centroidal plastic section moduli.
 
-        Return:
+        Returns:
             Plastic section moduli about the centroidal axis (``sxx``, ``syy``)
 
         Note:
@@ -2310,7 +2310,7 @@ class Section:
     def get_sp(self) -> tuple[float, float]:
         """Returns the cross-section principal axis plastic section moduli.
 
-        Return:
+        Returns:
             Plastic section moduli about the principal bending axis (``s11``, ``s22``)
 
         Note:
@@ -2331,7 +2331,7 @@ class Section:
     def get_sf(self) -> tuple[float, float, float, float]:
         """Returns the cross-section centroidal axis shape factors.
 
-        Return:
+        Returns:
             Centroidal axis shape factors with respect to the top and bottom fibres
             (``sf_xx_plus``, ``sf_xx_minus``, ``sf_yy_plus``, ``sf_yy_minus``)
 
@@ -2364,7 +2364,7 @@ class Section:
     def get_sf_p(self) -> tuple[float, float, float, float]:
         """Returns the cross-section principal axis shape factors.
 
-        Return:
+        Returns:
             Principal bending axis shape factors with respect to the top and bottom
             fibres (``sf_11_plus``, ``sf_11_minus``, ``sf_22_plus``, ``sf_22_minus``)
 
@@ -2427,7 +2427,11 @@ class Section:
                 (e.g. if it is a node or on an edge), the stresses are retrieved from
                 each element and combined according to this function.
 
-        Return:
+        Raises:
+            RuntimeError: If a warping analysis has not been carried out and a shear
+                force or a torsion moment is supplied
+
+        Returns:
             Resultant normal and shear stresses (``sigma_zz``, ``tau_xz``, ``tau_yz``)
             for each point ``pt``. If a point is not in the section then ``None`` is
             returned for that element in the list.

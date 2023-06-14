@@ -206,13 +206,17 @@ class SectionProperties:
     def asdict(self) -> dict:
         """Returns the SectionProperties dataclass object as a dictionary.
 
-        Return:
+        Returns:
             Dictionary of the SectionProperties class
         """
         return asdict(self)
 
     def calculate_elastic_centroid(self) -> None:
-        """Calculates and stores the elastic centroid."""
+        """Calculates and stores the elastic centroid.
+
+        Raises:
+            RuntimeError: If geometric properties have not already been calculated
+        """
         if self.qx is not None and self.qy is not None and self.ea is not None:
             self.cx = self.qy / self.ea
             self.cy = self.qx / self.ea
@@ -227,6 +231,9 @@ class SectionProperties:
 
         Args:
             node_list: List of mesh node coordinates
+
+        Raises:
+            RuntimeError: If geometric properties have not already been calculated
         """
         # calculate second moments of area about the centroidal xy axis
         if (
@@ -331,6 +338,9 @@ def plotting_context(
             plot on. This may be a tuple if a 2D array of plots is returned.  The
             default value of None will select the top left plot.
         kwargs: Passed to :func:`matplotlib.pyplot.subplots`
+
+    Raises:
+        ValueError: ``axis_index`` is invalid
 
     Yields:
         Matplotlib figure and axes
@@ -453,7 +463,7 @@ def draw_principal_axis(
             centroid: Centroid ``(cx, cy)`` of the cross-section, through which the
                 principal axis passes
 
-        Return:
+        Returns:
             List of intersection points
         """
         pts = []  # initialise list containing the intersection points

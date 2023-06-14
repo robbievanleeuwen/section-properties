@@ -32,7 +32,7 @@ def solve_cgs(
         tol: Tolerance for the solver to achieve. The algorithm terminates when either
             the relative or the absolute residual is below ``tol``
 
-    Return:
+    Returns:
         The solution vector to the linear system of equations
 
     Raises:
@@ -61,7 +61,7 @@ def solve_cgs_lagrange(
         tol: Tolerance for the solver to achieve. The algorithm terminates when either
             the relative or the absolute residual is below ``tol``
 
-    Return:
+    Returns:
         The solution vector to the linear system of equations
 
     Raises:
@@ -92,7 +92,7 @@ def solve_direct(
         k: ``N x N`` matrix of the linear system
         f: ``N x 1`` right hand side of the linear system
 
-    Return:
+    Returns:
         The solution vector to the linear system of equations
     """
     return spsolve(A=k, b=f)
@@ -108,7 +108,7 @@ def solve_direct_lagrange(
         k_lg: ``(N+1) x (N+1)`` Lagrangian multiplier matrix of the linear system
         f: ``N x 1`` right hand side of the linear system
 
-    Return:
+    Returns:
         The solution vector to the linear system of equations
 
     Raises:
@@ -138,6 +138,9 @@ class CustomTimeElapsedColumn(ProgressColumn):
 
         Args:
             task: Rich progress task
+
+        Returns:
+            Rich text object
         """
         elapsed = task.finished_time if task.finished else task.elapsed
 
@@ -152,7 +155,7 @@ class CustomTimeElapsedColumn(ProgressColumn):
 def create_progress() -> Progress:
     """Returns a Rich Progress class.
 
-    Return:
+    Returns:
         Rich Progress class containing a spinner, progress description, percentage and
         time
     """

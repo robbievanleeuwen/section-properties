@@ -72,7 +72,10 @@ class StressPost:
                 if set to False, the default linear scaling is used
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
-        Return:
+        Raises:
+            RuntimeError: If the plot failed to be generated
+
+        Returns:
             Matplotlib axes object
 
         .. admonition:: Stress contour plotting options
@@ -354,7 +357,10 @@ class StressPost:
                 if set to False, the default linear scaling is used
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
-        Return:
+        Raises:
+            RuntimeError: If the plot failed to be generated
+
+        Returns:
             Matplotlib axes object
 
         .. admonition:: Stress vector plotting options
@@ -487,7 +493,7 @@ class StressPost:
     def get_stress(self) -> list[dict]:
         r"""Returns the stresses within each material.
 
-        Return:
+        Returns:
             A list of dictionaries containing the cross-section stresses at each node
             for each material
 
@@ -640,7 +646,11 @@ class StressPost:
                 Stress State at {pt}"
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
-        Return:
+        Raises:
+            ValueError: If the point (``x``, ``y``) is not within the mesh
+            RuntimeError: If the plot failed to be generated
+
+        Returns:
             Matplotlib axes object
 
         Example:
@@ -703,7 +713,7 @@ class StressPost:
             triang.set_mask(None)
 
         if pt_group is None:
-            raise Exception(f"Point {(*pt,)} is not within mesh")
+            raise ValueError(f"Point {(*pt,)} is not within mesh")
 
         # assesmble the stress results from the relevant material group
         sigma_zz_v = pt_group.stress_result.sig_zz

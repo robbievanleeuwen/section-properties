@@ -191,8 +191,16 @@ def test_compound_stiffened_isection():
     Section(geometry=new_geom)
 
 
-def draw_radius(r, n):
-    """Draws a radius."""
+def draw_radius(r: float, n: int) -> Geometry:
+    """Draws a radius.
+
+    Args:
+        r: Radius
+        n: Number of points
+
+    Returns:
+        Geometry object describing the radius
+    """
     points = []
 
     # calculate radius of points

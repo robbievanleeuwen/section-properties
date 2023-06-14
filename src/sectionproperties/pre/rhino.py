@@ -16,6 +16,7 @@ def load_3dm(
 
     Args:
         r3dm_filepath: File path to the rhino ``.3dm`` file.
+        kwargs: See below.
 
     Keyword Args:
         refine_num (Optional[int]):  Bézier curve interpolation number. In Rhino a
@@ -45,7 +46,7 @@ def load_3dm(
             This is dependent on the keyword arguments. Try adjusting the keyword
             arguments if this error is raised.
 
-    Return:
+    Returns:
         List of Polygons found in the file.
     """
     rhi = RhImporter.from_file(str(r3dm_filepath))
@@ -69,6 +70,7 @@ def load_brep_encoding(
 
     Args:
         brep: Rhino3dm.Brep encoded as a string.
+        kwargs: See below.
 
     Keyword Args:
         refine_num (Optional[int]):  Bézier curve interpolation number. In Rhino a
@@ -98,7 +100,7 @@ def load_brep_encoding(
             This is dependent on the keyword arguments. Try adjusting the keyword
             arguments if this error is raised.
 
-    Return:
+    Returns:
         The Polygons found in the encoding string.
     """
     rhi = RhImporter.from_serialzed_brep(brep)

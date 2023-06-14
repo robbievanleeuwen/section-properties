@@ -1,12 +1,9 @@
 """Validation tests from Peery.
 
-This file tests a couple of distinct examples  from
-'Aircraft Structures,' by Peery. These cases have
-known results, and the output from SectionProperties
-is compared for accuracy. These examples represent a
-more rigourous 'proof' against a 'real' problem.
-Only results that have values in the reference material
-are tested here.
+This file tests a couple of distinct examples  from 'Aircraft Structures,' by Peery.
+These cases have known results, and the output from SectionProperties is compared for
+accuracy. These examples represent a more rigourous 'proof' against a 'real' problem.
+Only results that have values in the reference material are tested here.
 
 BibTeX Entry for reference:
 @Book{Peery,
@@ -21,10 +18,13 @@ BibTeX Entry for reference:
 """
 from __future__ import annotations
 
+from typing import Callable
+
 import pytest
 import pytest_check as check
 
 from sectionproperties.analysis.section import Section
+from sectionproperties.pre import Geometry
 from sectionproperties.pre.library import nastran_sections
 
 
@@ -32,19 +32,36 @@ from sectionproperties.pre.library import nastran_sections
 class ZSection:
     """Class for a Z shaped section.
 
-    This is basically just a fixture for testing purposes.
-    It's called by the actual pytest fixtures to generate
-    the Z-sections for analysis.
+    This is basically just a fixture for testing purposes. It's called by the actual
+    pytest fixtures to generate the Z-sections for analysis.
 
-    We have this class for fixtures, just to have
-    a method for the load application, and simpler fixtures,
-    along with the same base for multiple ZSections.
+    We have this class for fixtures, just to havea method for the load application,
+    and simpler fixtures, along with the same base for multiple ZSections.
     """
 
-    def __init__(self, dim1, dim2, dim3, dim4, shift, m):
-        """Inits the ZSection class."""
+    def __init__(
+        self,
+        dim1: float,
+        dim2: float,
+        dim3: float,
+        dim4: float,
+        shift: tuple[float, float],
+        m: float,
+    ) -> None:
+        """Inits the ZSection class.
+
+        Args:
+            dim1: Zed section dimension 1
+            dim2: Zed section dimension 2
+            dim3: Zed section dimension 3
+            dim4: Zed section dimension 4
+            shift: Coordinates to shift section
+            m: Mesh size
+        """
         # Setup the analysis, and calculate properties
-        base_geom = nastran_sections.nastran_zed(dim1, dim2, dim3, dim4)
+        base_geom = nastran_sections.nastran_zed(
+            dim1=dim1, dim2=dim2, dim3=dim3, dim4=dim4
+        )
         self.geom = base_geom.shift_section(*shift)
         self.geom = self.geom.create_mesh(mesh_sizes=[m])
         self.xsect = Section(self.geom)
@@ -55,24 +72,38 @@ class ZSection:
         # fig = ax.get_figure()
         # fig.savefig(f'geom.png')
 
-    def apply_load(self, v):
+    def apply_load(self, v: float) -> None:
         """Applies a load to the section.
 
-        This method applies the suplied load to the section.
-        v is a list-like with the first entry being Mxx, and
-        second entry Myy.
+        This method applies the suplied load to the section. ``v`` is a tuple with the
+        first entry being ``mxx``, and second entry ``myy``.
+
+        Args:
+            v: Load to apply
         """
         self.xsect.calculate_warping_properties()
         self.stress = self.xsect.calculate_stress(mxx=v[0], myy=v[1])
 
 
 # Utility
-def get_node(nodes, coord) -> tuple[int, tuple]:
+def get_node(
+    nodes: list[tuple[float, float]],
+    coord: tuple[float, float],
+) -> tuple[int, tuple[float, float]]:
     """Finds a node given coordinates.
 
-    This function will loop over the node list provided,
-    finding the index of the coordinates you want.
-    Returns the index in the nodes list, and the coords.
+    This function will loop over the node list provided, finding the index of the
+    coordinates you want. Returns the index in the nodes list, and the coords.
+
+    Args:
+        nodes: List of nodes
+        coord: Coordinate to find
+
+    Raises:
+        RuntimeError: Node cannot be found
+
+    Returns:
+        Node index and coorindate
     """
     for index, var in enumerate(nodes):
         if all(var == coord):
@@ -80,18 +111,20 @@ def get_node(nodes, coord) -> tuple[int, tuple]:
         else:
             continue
 
-    raise ValueError(f"No node found with coordinates: {coord}")
+    raise RuntimeError(f"No node found with coordinates: {coord}")
 
 
 # Fixtures
 @pytest.fixture
-def peery_ex_6_2_1():
+def peery_ex_6_2_1() -> tuple[Geometry, Section]:
     """Ex 6.2.1.
 
-    Example 1 in Sec. 6.2 (Symmetric Bending)
-    This is a symmetric I-section with no lateral supports,
-    undergoing pure unidirectional cantilever bending.
-    Note that units here are **inches**, to match the text.
+    Example 1 in Sec. 6.2 (Symmetric Bending) This is a symmetric I-section with no
+    lateral supports, undergoing pure unidirectional cantilever bending. Note that units
+    here are **inches**, to match the text.
+
+    Returns:
+        Geometry and Section object
     """
     geom = nastran_sections.nastran_i(6, 3, 3, 1, 1, 1)
     geom = geom.shift_section(0, -3)
@@ -108,19 +141,25 @@ def peery_ex_6_2_1():
 
 
 @pytest.fixture
-def peery_ex_7_2_1():
+def peery_ex_7_2_1() -> Geometry:
     """Example 7.2.1.
 
-    Example 1 in Sec. 7.2. (Unsymmetric Bending)
-    This is an unsymmetric Z-section with no lateral supports.
-    Note that units here are **inches**, to match the text.
+    Example 1 in Sec. 7.2. (Unsymmetric Bending) This is an unsymmetric Z-section with
+    no lateral supports. Note that units here are **inches**, to match the text.
+
+    Returns:
+        Geometry object
     """
     return ZSection(dim1=4, dim2=2, dim3=8, dim4=12, shift=[-5, -6], m=0.25)
 
 
 # Tests
-def test_symmetric_ixx(peery_ex_6_2_1):
-    """Tests Example 6.2.1 ixx."""
+def test_symmetric_ixx(peery_ex_6_2_1: Callable) -> None:
+    """Tests Example 6.2.1 ixx.
+
+    Args:
+        peery_ex_6_2_1: peery_ex_6_2_1 test fixture
+    """
     # Directly from the example, we know that
     # the 2nd moment of inertia resisting bending is.
     _, xsect = peery_ex_6_2_1
@@ -128,8 +167,12 @@ def test_symmetric_ixx(peery_ex_6_2_1):
     check.almost_equal(xsect.section_props.ixx_g, 43.3, rel=1e-3)
 
 
-def test_symmetric_fb(peery_ex_6_2_1):
-    """Max bending stress on the section."""
+def test_symmetric_fb(peery_ex_6_2_1: Callable) -> None:
+    """Max bending stress on the section.
+
+    Args:
+        peery_ex_6_2_1: peery_ex_6_2_1 test fixture
+    """
     _, xsect = peery_ex_6_2_1
 
     # Defined in the text
@@ -152,48 +195,72 @@ def test_symmetric_fb(peery_ex_6_2_1):
     check.almost_equal(numerical_result, perfect_result, rel=1e-3)
 
 
-def test_unsymmetric_ixx(peery_ex_7_2_1):
-    """Tests Example 7.2.1 ixx."""
+def test_unsymmetric_ixx(peery_ex_7_2_1: Callable) -> None:
+    """Tests Example 7.2.1 ixx.
+
+    Args:
+        peery_ex_7_2_1: peery_ex_7_2_1 test fixture
+    """
     # Directly from the example, we know what
     # the section properties should be.
     xsect = peery_ex_7_2_1.xsect
     check.almost_equal(xsect.section_props.ixx_g, 693.3, rel=1e-3)
 
 
-def test_unsymmetric_iyy(peery_ex_7_2_1):
-    """Tests Example 7.2.1 iyy."""
+def test_unsymmetric_iyy(peery_ex_7_2_1: Callable) -> None:
+    """Tests Example 7.2.1 iyy.
+
+    Args:
+        peery_ex_7_2_1: peery_ex_7_2_1 test fixture
+    """
     # Directly from the example, we know what
     # the section properties should be.
     xsect = peery_ex_7_2_1.xsect
     check.almost_equal(xsect.section_props.iyy_g, 173.3, rel=1e-3)
 
 
-def test_unsymmetric_ixy(peery_ex_7_2_1):
-    """Tests Example 7.2.1 ixy."""
+def test_unsymmetric_ixy(peery_ex_7_2_1: Callable) -> None:
+    """Tests Example 7.2.1 ixy.
+
+    Args:
+        peery_ex_7_2_1: peery_ex_7_2_1 test fixture
+    """
     # Directly from the example, we know what
     # the section properties should be.
     xsect = peery_ex_7_2_1.xsect
     check.almost_equal(xsect.section_props.ixy_g, -240, rel=1e-3)
 
 
-def test_unsymmetric_i11(peery_ex_7_2_1):
-    """Tests Example 7.2.1 i11."""
+def test_unsymmetric_i11(peery_ex_7_2_1: Callable) -> None:
+    """Tests Example 7.2.1 i11.
+
+    Args:
+        peery_ex_7_2_1: peery_ex_7_2_1 test fixture
+    """
     # Directly from the example, we know what
     # the section properties should be.
     xsect = peery_ex_7_2_1.xsect
     check.almost_equal(xsect.section_props.i11_c, 787, rel=1e-3)
 
 
-def test_unsymmetric_i22(peery_ex_7_2_1):
-    """Tests Example 7.2.1 i22."""
+def test_unsymmetric_i22(peery_ex_7_2_1: Callable) -> None:
+    """Tests Example 7.2.1 i22.
+
+    Args:
+        peery_ex_7_2_1: peery_ex_7_2_1 test fixture
+    """
     # Directly from the example, we know what
     # the section properties should be.
     xsect = peery_ex_7_2_1.xsect
     check.almost_equal(xsect.section_props.i22_c, 79.5, rel=1e-3)
 
 
-def test_fb_c(peery_ex_7_2_1):
-    """Check the stress at point C."""
+def test_fb_c(peery_ex_7_2_1: Callable) -> None:
+    """Check the stress at point C.
+
+    Args:
+        peery_ex_7_2_1: peery_ex_7_2_1 test fixture
+    """
     # Load from the text
     v = [-1e5, 1e4]
     # Coordinates of point C
@@ -215,8 +282,12 @@ def test_fb_c(peery_ex_7_2_1):
     check.almost_equal(computed_result, perfect_result, rel=1e-3)
 
 
-def test_fb_b(peery_ex_7_2_1):
-    """Check the stress at point B."""
+def test_fb_b(peery_ex_7_2_1: Callable) -> None:
+    """Check the stress at point B.
+
+    Args:
+        peery_ex_7_2_1: peery_ex_7_2_1 test fixture
+    """
     # Load from the text
     v = [-1e5, 1e4]
     # Coordinates of point B
@@ -234,8 +305,12 @@ def test_fb_b(peery_ex_7_2_1):
     check.almost_equal(computed_result, perfect_result, rel=1e-3)
 
 
-def test_fb_a(peery_ex_7_2_1):
-    """Check the stress at point A."""
+def test_fb_a(peery_ex_7_2_1: Callable) -> None:
+    """Check the stress at point A.
+
+    Args:
+        peery_ex_7_2_1: peery_ex_7_2_1 test fixture
+    """
     # Load from the text
     v = [-1e5, 1e4]
     # Coordinates of point A

@@ -69,6 +69,9 @@ class Material:
 
         Material shear modulus, derived from the elastic modulus and Poisson's ratio
         assuming an isotropic material.
+
+        Returns:
+            Shear modulus of the material
         """
         return self.elastic_modulus / (2 * (1 + self.poissons_ratio))
 
@@ -103,7 +106,7 @@ def create_mesh(
         coarse: If set to True, will create a coarse mesh (no area or quality
             constraints)
 
-    Return:
+    Returns:
         Dictionary containing mesh data
     """
     if not isinstance(mesh_sizes, list):

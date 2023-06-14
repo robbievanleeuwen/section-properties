@@ -25,7 +25,7 @@ def nastran_bar(
         dim_2: Depth (y) of bar
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         BAR section geometry
 
     Example:
@@ -77,7 +77,7 @@ def nastran_box(
         dim_4: Thickness of box in x direction
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         BOX section geometry
 
     Example:
@@ -146,7 +146,7 @@ def nastran_box1(
         dim_6: Thickness of right wall
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         BOX1 section geometry
 
     Example:
@@ -212,7 +212,7 @@ def nastran_chan(
         dim_4: Thickness of flanges (top/bottom portion)
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         CHAN section geometry
 
     Example:
@@ -274,7 +274,7 @@ def nastran_chan1(
         dim_4: Depth (y) of CHAN1-section
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         CHAN1 section geometry
 
     Example:
@@ -335,7 +335,7 @@ def nastran_chan2(
         dim_4: Width (x) of CHAN2-section
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         CHAN2 section geometry
 
     Example:
@@ -397,7 +397,7 @@ def nastran_cross(
         dim_4: Thickness of the horizontal members
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Cruciform section geometry
 
     Example:
@@ -469,7 +469,7 @@ def nastran_fcross(
         dim_8: Thickness of flange attached to horizontal web
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Flanged cruciform section geometry
 
     Example:
@@ -573,7 +573,7 @@ def nastran_dbox(
         dim_10: Thickness of bottom right wall
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         DBOX section geometry
 
     Example:
@@ -654,7 +654,7 @@ def nastran_gbox(
         dim_6: Spacing between webs
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         GBOX section geometry
 
     Example:
@@ -729,7 +729,7 @@ def nastran_h(
         dim_4: Thickness of the middle web
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         H section geometry
 
     Example:
@@ -798,7 +798,7 @@ def nastran_hat(
         dim_4: Width (x) of bottom sections
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         HAT section geometry
 
     Example:
@@ -864,7 +864,7 @@ def nastran_hat1(
         dim_5: Thicknesss of bottom plate
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         HAT1 section geometry
 
     Example:
@@ -930,7 +930,7 @@ def nastran_hexa(
         dim_3: Depth (y) of hexagon
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         HEXA section geometry
 
     Example:
@@ -992,7 +992,7 @@ def nastran_i(
         dim_6: Thickness of top web
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         I section geometry
 
     Example:
@@ -1060,7 +1060,7 @@ def nastran_i1(
         dim_4: Depth (y) of the I1-section
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         I1 section geometry
 
     Example:
@@ -1125,7 +1125,7 @@ def nastran_l(
         dim_4: Thickness of web (vertical portion)
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         L section geometry
 
     Example:
@@ -1180,7 +1180,7 @@ def nastran_rod(
         n: Number of points discretising the circle
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Circular rod section geometry
 
     Example:
@@ -1240,7 +1240,7 @@ def nastran_tee(
         dim_4: Thickness of web
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         T section geometry
 
     Example:
@@ -1316,7 +1316,7 @@ def nastran_tee1(
         dim_4: Thickness of web
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         T1 section geometry
 
     Example:
@@ -1377,7 +1377,7 @@ def nastran_tee2(
         dim_4: Thickness of web
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         T2 section geometry
 
     Example:
@@ -1437,7 +1437,7 @@ def nastran_tube(
         n: Number of points discretising the circle
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Circular tube section geometry
 
     Example:
@@ -1505,7 +1505,7 @@ def nastran_tube2(
         n: Number of points discretising the circle
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         TUBE2 section geometry
 
     Example:
@@ -1576,7 +1576,7 @@ def nastran_zed(
         dim_4: Depth (y) of Z-section
         material: Material to associate with this geometry
 
-    Return:
+    Returns:
         Z section geometry
 
     Example:
