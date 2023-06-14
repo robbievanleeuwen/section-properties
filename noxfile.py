@@ -160,14 +160,14 @@ def tests(session: Session) -> None:
             session.notify("coverage", posargs=[])
 
 
-@session(python=python_versions[0])
+@session(python="3.9")
 def coverage(session: Session) -> None:
     """Produce the coverage report.
 
     Args:
         session: Nox session
     """
-    args = session.posargs or ["report"]
+    args = session.posargs or ["report", "-i"]
 
     session.install("coverage[toml]")
 
