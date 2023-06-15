@@ -24,12 +24,18 @@ extensions = [
     "sphinxext.opengraph",
 ]
 
-# extension config
+# autodoc config
 autodoc_member_order = "bysource"
-autodoc_typehints = "description"
-autodoc_class_signature = "separated"
-autoclass_content = "both"  # add __init__ doc (ie. params) to class summaries
-autodoc_inherit_docstrings = True  # If no docstring, inherit from base class
+autodoc_typehints = "both"
+autodoc_typehints_description_target = "documented_params"
+
+# napoleon config
+napoleon_numpy_docstring = False
+napoleon_include_init_with_doc = True
+napoleon_use_admonition_for_examples = True
+napoleon_use_ivar = True
+
+# nbsphinx config
 # nbsphinx_execute_arguments = [
 #     "--InlineBackend.figure_formats={'svg', 'pdf'}",
 #     "--InlineBackend.rc=figure.dpi=96",
