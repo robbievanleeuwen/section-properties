@@ -21,6 +21,7 @@ file on GitHub.
 .. toctree::
     :hidden:
 
+    installation
     user_guide
     examples
     api
@@ -43,6 +44,8 @@ from `PyPI <https://pypi.org/>`__:
 .. code:: console
 
    pip install sectionproperties
+
+See :ref:`label-installation` for more information.
 
 Support
 -------
