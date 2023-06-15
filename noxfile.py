@@ -146,7 +146,7 @@ def tests(session: Session) -> None:
     # install sectionproperties
     # provide cad dependencies if python version is < 3.10
     if session.python in ["3.8", "3.9"]:
-        session.run_always("poetry", "install", "--with", "cad", external=True)
+        session.run_always("poetry", "install", "--extras", "cad", external=True)
     else:
         session.run_always("poetry", "install", external=True)
 
@@ -188,7 +188,7 @@ def docs_build(session: Session) -> None:
     if not session.posargs and "FORCE_COLOR" in os.environ:
         args.insert(0, "--color")
 
-    session.run_always("poetry", "install", "--with", "cad", external=True)
+    session.run_always("poetry", "install", "--extras", "cad", external=True)
     session.install(
         "sphinx",
         "furo",
@@ -212,7 +212,7 @@ def docs(session: Session) -> None:
         session: Nox session
     """
     args = session.posargs or ["--open-browser", "docs", "docs/_build"]
-    session.run_always("poetry", "install", "--with", "cad", external=True)
+    session.run_always("poetry", "install", "--extras", "cad", external=True)
     session.install(
         "sphinx",
         "sphinx-autobuild",
