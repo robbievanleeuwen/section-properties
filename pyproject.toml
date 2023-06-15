@@ -47,48 +47,48 @@ Changelog = "https://github.com/robbievanleeuwen/section-properties/releases"
 "Bug Tracker" = "https://github.com/robbievanleeuwen/section-properties/issues"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
-numpy = "^1.24.1"
-scipy = "^1.10.0"
-matplotlib = "^3.6.2"
-shapely = "^2.0.0"
+python = ">=3.8.1,<3.11"
+numpy = "^1.24.3"
+scipy = "^1.10.1"
+matplotlib = "^3.7.1"
+shapely = "^2.0.1"
 triangle = [
     {version = "^20220202", python = "3.8"},
     {version = "^20220202", python = "3.10"},
     {version = "==20200424", python = "3.9"},
 ]
-rich = "^13.0.1"
-click = "^8.0.1"
-more-itertools = "^9.0.0"
+rich = "^13.4.2"
+click = "^8.1.3"
+more-itertools = "^9.1.0"
 
 [tool.poetry.dev-dependencies]
 black = "^23.3.0"
-coverage = {extras = ["toml"], version = "^6.2"}
+coverage = {extras = ["toml"], version = "^7.2.7"}
 darglint = "^1.8.1"
-flake8 = "^4.0.1"
-flake8-bugbear = "^21.9.2"
-flake8-docstrings = "^1.6.0"
-flake8-rst-docstrings = "^0.2.5"
-furo = "^2022.12.7"
-isort = "^5.10.1"
-pep8-naming = "^0.12.1"
-pre-commit = "^2.16.0"
-pre-commit-hooks = "^4.1.0"
-Pygments = "^2.10.0"
-pytest = "^6.2.5"
-pytest-check = "^2.0.0"
-pyupgrade = "^2.29.1"
-sphinx = "^5.3.0"
+flake8 = "^6.0.0"
+flake8-bugbear = "^23.6.5"
+flake8-docstrings = "^1.7.0"
+flake8-rst-docstrings = "^0.3.0"
+furo = "^2023.5.20 "
+isort = "^5.12.0"
+pep8-naming = "^0.13.3"
+pre-commit = "^3.3.3"
+pre-commit-hooks = "^4.4.0"
+Pygments = "^2.15.1"
+pytest = "^7.3.2"
+pytest-check = "^2.1.5"
+pyupgrade = "^3.6.0"
+sphinx = "^7.0.1"
 sphinx-autobuild = "^2021.3.14"
 sphinx-click = "^4.4.0"
-sphinx-copybutton = "^0.5.1"
-sphinxext-opengraph = "^0.7.5"
+sphinx-copybutton = "^0.5.2"
+sphinxext-opengraph = "^0.8.2"
 
 [tool.poetry.group.cad]
 optional = true
 
 [tool.poetry.group.cad.dependencies]
-python = ">=3.8,<3.10"
+python = ">=3.8.1,<3.10"
 cad-to-shapely = "^0.3.1"
 rhino-shapley-interop = "^0.0.4"
 rhino3dm = "==7.15.0"

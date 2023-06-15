@@ -26,16 +26,16 @@ def test_stress_runtime_errors():
     sec.calculate_geometric_properties()
 
     # check runtime errors with shear/torsion applied, no warping analysis
+    sec.calculate_stress(vx=1)
     with pytest.raises(RuntimeError):
-        sec.calculate_stress(vx=1)
         sec.get_stress_at_points(pts=[(10, 10)], vx=1)
 
+    sec.calculate_stress(vy=1)
     with pytest.raises(RuntimeError):
-        sec.calculate_stress(vy=1)
         sec.get_stress_at_points(pts=[(10, 10)], vy=1)
 
+    sec.calculate_stress(mzz=1)
     with pytest.raises(RuntimeError):
-        sec.calculate_stress(mzz=1)
         sec.get_stress_at_points(pts=[(10, 10)], mzz=1)
 
     # check no runtime errors with no shear/torsion applied
