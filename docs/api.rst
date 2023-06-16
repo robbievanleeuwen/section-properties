@@ -1,8 +1,8 @@
 API
 ===
 
-Package Modules
----------------
+``sectionproperties`` Modules
+-----------------------------
 
 .. autosummary::
     :toctree: gen

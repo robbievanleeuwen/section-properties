@@ -20,6 +20,7 @@
 
    .. autosummary::
       :toctree:
+      :template: custom-function-template.rst
       :nosignatures:
    {% for item in functions %}
       {{ item }}
