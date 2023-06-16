@@ -1611,7 +1611,7 @@ class CompoundGeometry(Geometry):
         holes: list[tuple[float, float]] | None = None,
         materials: pre.Material | list[pre.Material] = pre.DEFAULT_MATERIAL,
     ) -> CompoundGeometry:
-        """Creates a Geometry object from points, facets and holes.
+        """Creates a CompoundGeometry object from points, facets and holes.
 
         An interface for the creation of CompoundGeometry objects through the definition
         of points, facets, holes, and control points. Geometries created through this
