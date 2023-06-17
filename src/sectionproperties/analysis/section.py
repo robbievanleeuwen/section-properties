@@ -1539,11 +1539,11 @@ class Section:
                 )
 
                 # display the legend
-                # ax.legend(
-                #     loc="center left",
-                #     bbox_to_anchor=(1, 0.5),
-                #     handles=legend_labels,
-                # )
+                ax.legend(
+                    loc="center left",
+                    bbox_to_anchor=(1, 0.5),
+                    handles=legend_labels,
+                )
 
             # plot the mesh
             ax.triplot(
