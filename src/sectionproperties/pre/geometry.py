@@ -1320,6 +1320,8 @@ class Geometry:
     ) -> Geometry | CompoundGeometry:
         """Performs a symmetric difference on Geometry objects with the ``^`` operator.
 
+        Returns the regions of geometry that are not overlapping.
+
         Args:
             other: Geometry object to perform the symmetric difference with
 
@@ -1331,17 +1333,21 @@ class Geometry:
 
         Example:
             The following example performs a symmetric difference on two circles with
-            the ``|`` operator:
+            the ``|`` operator. A mesh is generated to highlight the regions that
+            remain:
 
             .. plot::
                 :include-source: True
                 :caption: Symmetric difference of two circles
 
                 from sectionproperties.pre.library import circular_section
+                from sectionproperties.analysis import Section
 
                 circ1 = circular_section(d=100, n=64)
                 circ2 = circular_section(d=100, n=64).shift_section(x_offset=35)
-                (circ1 ^ circ2).plot_geometry()
+                geom = circ1 ^ circ2
+                geom.create_mesh(mesh_sizes=5)
+                Section(geometry=geom).plot_mesh()
         """
         material = self.material or other.material
 
@@ -1373,6 +1379,8 @@ class Geometry:
         other: Geometry | CompoundGeometry,
     ) -> Geometry | CompoundGeometry:
         """Performs a difference operation on Geometry objects with the ``-`` operator.
+
+        Subtracts the second geometry from the first geometry.
 
         Args:
             other: Geometry object to perform the difference operation with
@@ -1489,6 +1497,8 @@ class Geometry:
         other: Geometry | CompoundGeometry,
     ) -> Geometry | CompoundGeometry:
         """Performs an intersection on Geometry objects with the ``&`` operator.
+
+        Returns the regions of geometry common to both geometries.
 
         Args:
             other: Geometry object to perform the intersection with
@@ -2079,10 +2089,12 @@ class CompoundGeometry(Geometry):
         If ``align_to`` is None then the new object will be aligned with its centroid at
         the origin.
 
-        Note: The material-weighted centroid refers to when individual geometries within
-        the CompoundGeometry object have been assigned differing materials. The centroid
-        of the compound geometry is calculated by using the E modulus of each geometry's
-        assigned material.
+        .. note::
+
+            The material-weighted centroid refers to when individual geometries within
+            the ``CompoundGeometry`` object have been assigned differing materials. The
+            centroid of the compound geometry is calculated by using the elastic modulus
+            of each geometry's assigned material.
 
         Args:
             align_to: Another Geometry to align to, an (``x``, ``y``) coordinate, or
@@ -2093,6 +2105,43 @@ class CompoundGeometry(Geometry):
 
         Returns:
             CompoundGeometry object translated to new alignment
+
+        Example:
+            The following example creates a rectanglular steel-concrete composite
+            section and uses the ``align_center()`` method to place the composite
+            centroid at the origin.
+
+            .. plot::
+                :include-source: True
+                :caption: Reinforced 200PFC mirrored.
+
+                from sectionproperties.pre import Material
+                from sectionproperties.pre.library import rectangular_section
+                from sectionproperties.analysis import Section
+
+                steel = Material(
+                    name="Steel",
+                    elastic_modulus=200e3,
+                    poissons_ratio=0.3,
+                    density=7.85e-6,
+                    yield_strength=250,
+                    color="grey",
+                )
+                concrete = Material(
+                    name="Concrete",
+                    elastic_modulus=30.1e3,
+                    poissons_ratio=0.2,
+                    density=2.4e-6,
+                    yield_strength=32,
+                    color="lightgrey",
+                )
+
+                geom_steel = rectangular_section(d=50, b=50, material=steel)
+                geom_timber = rectangular_section(d=50, b=50, material=concrete)
+                geom = geom_timber.align_to(geom_steel, on="right") + geom_steel
+                geom = geom.align_center()
+                geom.create_mesh(mesh_sizes=[10, 5])
+                Section(geometry=geom).plot_mesh()
         """
         ea_sum = sum(
             [
@@ -2222,7 +2271,7 @@ class CompoundGeometry(Geometry):
                 compound.offset_perimeter(amount=-2).plot_geometry()
 
         .. note::
-            If performing a positive offset on a CompoundGeometry with multiple
+            If performing a positive offset on a ``CompoundGeometry`` with multiple
             materials, ensure that the materials propagate as desired by performing a
             ``.plot_mesh()`` prior to performing any analysis.
         """

@@ -44,7 +44,7 @@ from a shapely :class:`~shapely.Polygon`.
 
     .. plot::
         :include-source: True
-        :caption: Geometry created from points, facets and holes.
+        :caption: Geometry object from a shapely polygon
 
         from shapely import Polygon
         from sectionproperties.pre import Geometry
@@ -67,7 +67,7 @@ from a shapely :class:`~shapely.Polygon`.
 
     .. plot::
         :include-source: True
-        :caption: Geometry created from points, facets and holes.
+        :caption: CompoundGeometry object from two shapely polygons
 
         from shapely import Polygon
         from sectionproperties.pre import Geometry, CompoundGeometry
@@ -132,7 +132,21 @@ geometry in the file, i.e. the number of contiguous regions.
 
 .. admonition:: Example
 
-    TODO
+    The following example loads a ``.dxf`` file and creates a
+    :class:`~sectionproperties.pre.geometry.Geometry` object from its contents.
+
+    .. plot::
+        :include-source: True
+        :caption: Geometry object from a ``.dxf`` file
+
+        from sectionproperties.pre import Geometry
+
+        # the following path is a .dxf file that describes a box section with two holes
+        dxf_path = "../_static/cad_files/box_section.dxf"
+
+        # load dxf file into a Geometry object
+        geom = Geometry.from_dxf(dxf_filepath=dxf_path)
+        geom.plot_geometry()
 
 Rhino
 """""
@@ -158,14 +172,42 @@ returns the respective objects.
 
 .. admonition:: Example
 
-    TODO
+    The following example loads a ``.3dm`` file and creates a
+    :class:`~sectionproperties.pre.geometry.Geometry` object from its contents.
+
+    .. plot::
+        :include-source: True
+        :caption: Geometry object from a ``.3dm`` file
+
+        from sectionproperties.pre import Geometry
+
+        # the following path is a .3dm file that describes a glazing section
+        rhino_path = "../_static/cad_files/rhino.3dm"
+
+        # load 3dm file into a Geometry object
+        geom = Geometry.from_3dm(filepath=rhino_path)
+        geom.plot_geometry()
 
 ..  automethod:: sectionproperties.pre.geometry.CompoundGeometry.from_3dm
    :noindex:
 
 .. admonition:: Example
 
-    TODO
+    The following example loads a ``.3dm`` file and creates a
+    :class:`~sectionproperties.pre.geometry.CompoundGeometry` object from its contents.
+
+    .. plot::
+        :include-source: True
+        :caption: CompoundGeometry object from a ``.3dm`` file
+
+        from sectionproperties.pre import CompoundGeometry
+
+        # the following path is a .3dm file that describes two distinct 2D surfaces
+        rhino_path = "../_static/cad_files/rhino_compound.3dm"
+
+        # load 3dm file into a CompoundGeometry object
+        geom = CompoundGeometry.from_3dm(filepath=rhino_path)
+        geom.plot_geometry()
 
 :class:`~sectionproperties.pre.geometry.Geometry` objects can also be created from
 encodings of Rhino BREP.
@@ -175,7 +217,25 @@ encodings of Rhino BREP.
 
 .. admonition:: Example
 
-    TODO
+    The following example loads a ``.json`` file describing a Rhino BREP and creates a
+    :class:`~sectionproperties.pre.geometry.Geometry` object from its contents.
+
+    .. plot::
+        :include-source: True
+        :caption: Geometry object from a Rhino BREP file
+
+        import json
+        from sectionproperties.pre import Geometry
+
+        # the following path is a .json file that is a BREP describing a 1 x 1 square
+        rhino_path = "../_static/cad_files/rhino_brep.json"
+
+        with open(rhino_path) as rhino_file:
+            brep_encoded = json.load(rhino_file)
+
+        # load BREP file into a Geometry object
+        geom = Geometry.from_rhino_encoding(r3dm_brep=brep_encoded)
+        geom.plot_geometry()
 
 More advanced filtering can be achieved by working with the Shapely geometries directly.
 These can be accessed by :func:`~sectionproperties.pre.rhino.load_3dm` and
@@ -186,8 +246,9 @@ Section Library
 
 In order to make your life easier, there are a number of built-in functions that
 generate typical structural cross-sections, resulting in
-:class:`~sectionproperties.pre.geometry.Geometry` objects. These typical cross-sections
-reside in the ``sectionproperties.pre.library`` module.
+:class:`~sectionproperties.pre.geometry.Geometry` or
+:class:`~sectionproperties.pre.geometry.CompoundGeometry` objects. These typical
+cross-sections reside in the ``sectionproperties.pre.library`` module.
 
 Primitive Sections
 """"""""""""""""""
@@ -245,52 +306,141 @@ Bridge Sections
     ~sectionproperties.pre.library.bridge_sections.super_t_girder_section
     ~sectionproperties.pre.library.bridge_sections.i_girder_section
 
-
 Manipulating Geometry Objects
 -----------------------------
 
-kf;ldfs
+Geometries in ``sectionproperties`` are able to be manipulated in 2D space for the
+purpose of creating novel, custom section geometries that the user may require.
 
-Set Operations
-^^^^^^^^^^^^^^
+.. note::
 
-asdlkjsald
+   Operations on geometries are **non-destructive**. For each operation, a new geometry
+   object is returned.
+
+   This gives ``sectionproperties`` geometries a *fluent API*, meaning that
+   transformation methods can be chained together, see :ref:`label-advanced-geom` for
+   further examples.
 
 Align
 ^^^^^
 
-asdjasd
+There are two available align methods:
+
+#. ``align_to()`` - aligns one geometry to another on a specified side.
+#. ``align_center()`` - aligns the center of one geometry to either the center of
+   another, or a specific point.
+
+..  automethod:: sectionproperties.pre.geometry.Geometry.align_to
+    :noindex:
+
+..  automethod:: sectionproperties.pre.geometry.Geometry.align_center
+    :noindex:
+
+..  automethod:: sectionproperties.pre.geometry.CompoundGeometry.align_center
+    :noindex:
 
 Mirror
 ^^^^^^
 
-asdlkjasld
+Geometry can be mirrored about a specified point on either the ``x`` or ``y`` axis.
+
+..  automethod:: sectionproperties.pre.geometry.Geometry.mirror_section
+    :noindex:
 
 Rotate
 ^^^^^^
 
-adsjalsd
+Geometry can be rotated by any angle about a point.
+
+..  automethod:: sectionproperties.pre.geometry.Geometry.rotate_section
+    :noindex:
 
 Shift
 ^^^^^
 
-asdasd
+There are two available shift methods:
+
+#. ``shift_section()`` - shifts the entire geometry by a vector.
+#. ``shift_points()`` - shifts specific points within the geometry by either a vector,
+   or to an absolute location.
+
+..  automethod:: sectionproperties.pre.geometry.Geometry.shift_section
+    :noindex:
+
+..  automethod:: sectionproperties.pre.geometry.Geometry.shift_points
+    :noindex:
 
 Split
 ^^^^^
 
-akjldskf
+Geometry can be split either side of a straight line.
+
+..  automethod:: sectionproperties.pre.geometry.Geometry.split_section
+    :noindex:
 
 Offset
 ^^^^^^
 
-sdflkjdsf
+The external and/or internal perimeter of a geometry can be dilated or eroded by a set
+value.
+
+..  automethod:: sectionproperties.pre.geometry.Geometry.offset_perimeter
+    :noindex:
+
+..  automethod:: sectionproperties.pre.geometry.CompoundGeometry.offset_perimeter
+    :noindex:
+
+Set Operations
+^^^^^^^^^^^^^^
+
+Both :class:`~sectionproperties.pre.geometry.Geometry` and
+:class:`~sectionproperties.pre.geometry.CompoundGeometry` objects can be manipulated
+using Python's set operators. See :ref:`label-advanced-geom` for further examples using
+set operations.
+
+
+``|`` (Union)
+"""""""""""""
+
+.. automethod:: sectionproperties.pre.geometry.Geometry.__or__
+    :noindex:
+
+``-`` (Subtraction)
+"""""""""""""""""""
+
+.. automethod:: sectionproperties.pre.geometry.Geometry.__sub__
+    :noindex:
+
+``&`` (Intersection)
+""""""""""""""""""""
+
+.. automethod:: sectionproperties.pre.geometry.Geometry.__and__
+    :noindex:
+
+``^`` (Symmetric Difference)
+""""""""""""""""""""""""""""
+
+.. automethod:: sectionproperties.pre.geometry.Geometry.__xor__
+    :noindex:
+
+``+`` (Addition)
+""""""""""""""""
+
+.. automethod:: sectionproperties.pre.geometry.Geometry.__add__
+    :noindex:
 
 
 Assigning Material Properties
 -----------------------------
 
 jaskdlsad
+
+.. _label-advanced-geom:
+
+Advanced Geometry Creation
+--------------------------
+
+sdfsdf
 
 Visualising Geometry
 --------------------
