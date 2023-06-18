@@ -65,7 +65,7 @@ jobs:
 
       - name: Install pandoc
         if: matrix.session == 'docs-build'
-        uses: pandoc/actions/setup
+        uses: pandoc/actions/setup@v1
 
       - name: Compute pre-commit cache key
         if: matrix.session == 'pre-commit'
