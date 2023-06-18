@@ -1494,7 +1494,7 @@ def nastran_tube2(
     n: int,
     material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
-    """Constructs a circular TUBE2 sectio.
+    """Constructs a circular TUBE2 section.
 
     Constructs a circular TUBE2 section with the center at the origin ``(0, 0)``, with
     two parameters defining dimensions.

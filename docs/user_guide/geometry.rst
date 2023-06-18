@@ -306,6 +306,37 @@ Bridge Sections
     ~sectionproperties.pre.library.bridge_sections.super_t_girder_section
     ~sectionproperties.pre.library.bridge_sections.i_girder_section
 
+NASTRAN Sections
+""""""""""""""""
+
+.. autosummary::
+    :nosignatures:
+
+    ~sectionproperties.pre.library.nastran_sections.nastran_bar
+    ~sectionproperties.pre.library.nastran_sections.nastran_box
+    ~sectionproperties.pre.library.nastran_sections.nastran_box1
+    ~sectionproperties.pre.library.nastran_sections.nastran_chan
+    ~sectionproperties.pre.library.nastran_sections.nastran_chan1
+    ~sectionproperties.pre.library.nastran_sections.nastran_chan2
+    ~sectionproperties.pre.library.nastran_sections.nastran_cross
+    ~sectionproperties.pre.library.nastran_sections.nastran_fcross
+    ~sectionproperties.pre.library.nastran_sections.nastran_dbox
+    ~sectionproperties.pre.library.nastran_sections.nastran_gbox
+    ~sectionproperties.pre.library.nastran_sections.nastran_h
+    ~sectionproperties.pre.library.nastran_sections.nastran_hat
+    ~sectionproperties.pre.library.nastran_sections.nastran_hat1
+    ~sectionproperties.pre.library.nastran_sections.nastran_hexa
+    ~sectionproperties.pre.library.nastran_sections.nastran_i
+    ~sectionproperties.pre.library.nastran_sections.nastran_i1
+    ~sectionproperties.pre.library.nastran_sections.nastran_l
+    ~sectionproperties.pre.library.nastran_sections.nastran_rod
+    ~sectionproperties.pre.library.nastran_sections.nastran_tee
+    ~sectionproperties.pre.library.nastran_sections.nastran_tee1
+    ~sectionproperties.pre.library.nastran_sections.nastran_tee2
+    ~sectionproperties.pre.library.nastran_sections.nastran_tube
+    ~sectionproperties.pre.library.nastran_sections.nastran_tube2
+    ~sectionproperties.pre.library.nastran_sections.nastran_zed
+
 Manipulating Geometry Objects
 -----------------------------
 
@@ -435,14 +466,25 @@ Assigning Material Properties
 
 jaskdlsad
 
-.. _label-advanced-geom:
-
-Advanced Geometry Creation
---------------------------
-
-sdfsdf
-
 Visualising Geometry
 --------------------
 
-asldkjasd
+Visualisation of geometry objects is best performed in the Jupyter computing
+environment, however, most visualisation can also be done in any environment which
+supports the display of matplotlib plots.
+
+There are generally two ways to visualise geometry objects:
+
+#. In the Jupyter computing environment, geometry objects utilise their underlying
+   :class:`shapely.geometry.Polygon` object's ``_repr_svg_`` method to show the geometry
+   as it's own representation.
+#. By using the :meth:`~sectionproperties.pre.geometry.Geometry.plot_geometry` method.
+
+..  automethod:: sectionproperties.pre.geometry.Geometry.plot_geometry
+    :noindex:
+
+.. note::
+
+   You can also use
+   :meth:`~sectionproperties.pre.geometry.CompoundGeometry.plot_geometry` with
+   :class:`~sectionproperties.pre.geometry.CompoundGeometry` objects

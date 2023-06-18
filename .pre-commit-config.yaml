@@ -1,11 +1,11 @@
 repos:
   - repo: local
     hooks:
-      - id: black
-        name: black
+      - id: black-jupyter
+        name: black-jupyter
         entry: black
-        language: system
-        types: [python]
+        language: python
+        types: [python, jupyter]
         require_serial: true
       - id: check-added-large-files
         name: Check for added large files
@@ -64,3 +64,7 @@ repos:
     rev: v2.7.1
     hooks:
       - id: prettier
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.6.1
+    hooks:
+      - id: nbstripout
