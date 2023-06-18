@@ -64,9 +64,8 @@ jobs:
           nox --version
 
       - name: Install pandoc
-        run: |
-          apt-get install -y pandoc
-          pandoc --version
+        if: matrix.session == 'docs-build'
+        uses: pandoc/actions/setup
 
       - name: Compute pre-commit cache key
         if: matrix.session == 'pre-commit'
