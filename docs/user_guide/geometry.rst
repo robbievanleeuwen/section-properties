@@ -350,8 +350,9 @@ purpose of creating novel, custom section geometries that the user may require.
    object is returned.
 
    This gives ``sectionproperties`` geometries a *fluent API*, meaning that
-   transformation methods can be chained together, see :ref:`label-advanced-geom` for
-   further examples.
+   transformation methods can be chained together, see
+   `Advanced Geometry Creation <../examples/advanced_geometry.ipynb>`_ for further
+   examples.
 
 Align
 ^^^^^
@@ -427,8 +428,9 @@ Set Operations
 
 Both :class:`~sectionproperties.pre.geometry.Geometry` and
 :class:`~sectionproperties.pre.geometry.CompoundGeometry` objects can be manipulated
-using Python's set operators. See :ref:`label-advanced-geom` for further examples using
-set operations.
+using Python's set operators. See
+`Advanced Geometry Creation <../examples/advanced_geometry.ipynb>`_ for further examples
+using set operations.
 
 
 ``|`` (Union)

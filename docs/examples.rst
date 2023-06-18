@@ -10,3 +10,4 @@ Examples
     :numbered:
 
     examples/simple_circle
+    examples/advanced_geometry
