@@ -339,7 +339,6 @@ def test_multi_nested_compound_geometry_from_points():
         nested_compound_sec.calculate_plastic_properties()
 
 
-@pytest.mark.skipif(sys.version_info > (3, 9), reason="requires python3.9 or lower")
 def test_geometry_from_dxf():
     """Tests loading geometry from a .dxf file."""
     section_holes_dxf = Path(__file__).parent.absolute() / "section_holes.dxf"

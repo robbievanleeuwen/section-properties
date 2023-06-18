@@ -36,11 +36,13 @@ included by default in the base installation.
 `rhino-shapely-interop <https://github.com/normanrichardson/rhino_shapely_interop>`_ is
 used to import ``.3dm`` files.
 
-To install ``sectionproperties`` with the above functionality, use the ``cad`` option:
+To install ``sectionproperties`` with the above functionality, use the ``dxf`` and/or
+``rhino`` options:
 
 .. code-block:: shell
 
-    pip install sectionproperties[cad]
+    pip install sectionproperties[dxf]
+    pip install sectionproperties[rhino]
 
-Note that this option only supports python ``3.8`` and ``3.9`` due to incomplete wheel
-coverage of ``rhino3dm``.
+Note that the ``rhino`` option only supports python ``3.8`` and ``3.9`` due to
+incomplete wheel coverage of ``rhino3dm``.

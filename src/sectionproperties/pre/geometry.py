@@ -307,8 +307,8 @@ class Geometry:
             RuntimeError: A RuntimeError is raised if two or more polygons are found.
                 This is dependent on the keyword arguments. Try adjusting the keyword
                 arguments if this error is raised.
-            ImportError: If ``rhino3dm`` is not installed. To enable CAD features use
-                ``pip install sectionproperties[cad]``.
+            ImportError: If ``rhino3dm`` is not installed. To enable rhino features use
+                ``pip install sectionproperties[rhino]``.
 
         Returns:
             A Geometry object.
@@ -367,8 +367,8 @@ class Geometry:
                 surfaces are filtered out. Default is False.
 
         Raises:
-            ImportError: If ``rhino3dm`` is not installed. To enable CAD features use
-                ``pip install sectionproperties[cad]``.
+            ImportError: If ``rhino3dm`` is not installed. To enable rhino features use
+                ``pip install sectionproperties[rhino]``.
 
         Returns:
             A Geometry object found in the encoded string.
@@ -1883,8 +1883,8 @@ class CompoundGeometry(Geometry):
                 surfaces are filtered out. Default is False.
 
         Raises:
-            ImportError: If ``rhino3dm`` is not installed. To enable CAD features use
-                ``pip install sectionproperties[cad]``.
+            ImportError: If ``rhino3dm`` is not installed. To enable rhino features use
+                ``pip install sectionproperties[rhino]``.
 
         Returns:
             CompoundGeometry object
@@ -2419,8 +2419,8 @@ def load_dxf(
         dxf_filepath: Path to ``.dxf`` file to load
 
     Raises:
-        ImportError: If ``cad_to_shapely`` is not installed. To enable CAD features use
-            ``pip install sectionproperties[cad]``.
+        ImportError: If ``cad_to_shapely`` is not installed. To enable dxf features use
+            ``pip install sectionproperties[dxf]``.
         RuntimeError: No polygon objects are found in the file
         ValueError: The filepath does not exist
 

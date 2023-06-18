@@ -144,11 +144,11 @@ def tests(session: Session) -> None:
         session: Nox session
     """
     # install sectionproperties
-    # provide cad dependencies if python version is < 3.10
+    # provide only dxf dependencies if python version is > 3.10
     if session.python in ["3.8", "3.9"]:
-        session.run_always("poetry", "install", "--extras", "cad", external=True)
+        session.run_always("poetry", "install", "--all-extras", external=True)
     else:
-        session.run_always("poetry", "install", external=True)
+        session.run_always("poetry", "install", "--extras", "dxf", external=True)
 
     # install relevant tooling
     session.install("coverage[toml]", "pytest", "pygments", "pytest-check")
@@ -160,7 +160,7 @@ def tests(session: Session) -> None:
             session.notify("coverage", posargs=[])
 
 
-@session(python="3.9")
+@session(python=python_versions[0])
 def coverage(session: Session) -> None:
     """Produce the coverage report.
 
@@ -188,7 +188,7 @@ def docs_build(session: Session) -> None:
     if not session.posargs and "FORCE_COLOR" in os.environ:
         args.insert(0, "--color")
 
-    session.run_always("poetry", "install", "--extras", "cad", external=True)
+    session.run_always("poetry", "install", "--all-extras", external=True)
     session.install(
         "sphinx",
         "furo",
@@ -212,7 +212,7 @@ def docs(session: Session) -> None:
         session: Nox session
     """
     args = session.posargs or ["--open-browser", "docs", "docs/_build"]
-    session.run_always("poetry", "install", "--extras", "cad", external=True)
+    session.run_always("poetry", "install", "--all-extras", external=True)
     session.install(
         "sphinx",
         "sphinx-autobuild",

@@ -60,7 +60,7 @@ triangle = [
 rich = "^13.4.2"
 click = "^8.1.3"
 more-itertools = "^9.1.0"
-cad-to-shapely = { version = "^0.3.1", python = ">=3.8.1,<3.10", optional = true }
+cad-to-shapely = { version = "^0.3.1", python = ">=3.8.1", optional = true }
 rhino-shapley-interop = { version = "^0.0.4", python = ">=3.8.1,<3.10", optional = true }
 rhino3dm = { version = "==7.15.0", python = ">=3.8.1,<3.10", optional = true }
 
@@ -93,7 +93,8 @@ sphinx-copybutton = "^0.5.2"
 sphinxext-opengraph = "^0.8.2"
 
 [tool.poetry.extras]
-cad = ["cad-to-shapely", "rhino-shapley-interop", "rhino3dm"]
+dxf = ["cad-to-shapely"]
+rhino = ["rhino-shapley-interop", "rhino3dm"]
 
 [tool.poetry.scripts]
 sectionproperties = "sectionproperties.__main__:main"

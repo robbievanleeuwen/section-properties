@@ -106,12 +106,13 @@ Various CAD files can be imported to creating ``sectionproperties`` geometries.
 
 .. note::
     The dependencies used to import CAD files are not included by default in the base
-    installation. To install ``sectionproperties`` with CAD import functionality, use
-    the ``cad`` option:
+    installation. To install ``sectionproperties`` with CAD import functionality,  use
+    the ``dxf`` and/or ``rhino`` options:
 
-    .. code-block:: shell
+.. code-block:: shell
 
-        pip install sectionproperties[cad]
+    pip install sectionproperties[dxf]
+    pip install sectionproperties[rhino]
 
 ``.dxf``
 """"""""
