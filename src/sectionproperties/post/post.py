@@ -701,19 +701,19 @@ def print_results(
 
     try:
         beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus = section.get_beta()
-        table.add_row("betax+", f"{beta_x_plus:>{fmt}}")
-        table.add_row("betax-", f"{beta_x_minus:>{fmt}}")
-        table.add_row("betay+", f"{beta_y_plus:>{fmt}}")
-        table.add_row("betay-", f"{beta_y_minus:>{fmt}}")
+        table.add_row("beta_x+", f"{beta_x_plus:>{fmt}}")
+        table.add_row("beta_x-", f"{beta_x_minus:>{fmt}}")
+        table.add_row("beta_y+", f"{beta_y_plus:>{fmt}}")
+        table.add_row("beta_y-", f"{beta_y_minus:>{fmt}}")
     except AssertionError:
         pass
 
     try:
         beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus = section.get_beta_p()
-        table.add_row("beta11+", f"{beta_11_plus:>{fmt}}")
-        table.add_row("beta11-", f"{beta_11_minus:>{fmt}}")
-        table.add_row("beta22+", f"{beta_22_plus:>{fmt}}")
-        table.add_row("beta22-", f"{beta_22_minus:>{fmt}}")
+        table.add_row("beta_11+", f"{beta_11_plus:>{fmt}}")
+        table.add_row("beta_11-", f"{beta_11_minus:>{fmt}}")
+        table.add_row("beta_22+", f"{beta_22_plus:>{fmt}}")
+        table.add_row("beta_22-", f"{beta_22_minus:>{fmt}}")
     except AssertionError:
         pass
 
@@ -727,20 +727,20 @@ def print_results(
     try:
         sxx, syy = section.get_s()
         if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
-            table.add_row("M_p,xx", f"{sxx:>{fmt}}")
-            table.add_row("M_p,yy", f"{syy:>{fmt}}")
+            table.add_row("mp_xx", f"{sxx:>{fmt}}")
+            table.add_row("mp_yy", f"{syy:>{fmt}}")
         else:
-            table.add_row("Sxx", f"{sxx:>{fmt}}")
-            table.add_row("Syy", f"{syy:>{fmt}}")
+            table.add_row("sxx", f"{sxx:>{fmt}}")
+            table.add_row("syy", f"{syy:>{fmt}}")
     except AssertionError:
         pass
 
     try:
         sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus = section.get_sf()
-        table.add_row("SF_xx+", f"{sf_xx_plus:>{fmt}}")
-        table.add_row("SF_xx-", f"{sf_xx_minus:>{fmt}}")
-        table.add_row("SF_yy+", f"{sf_yy_plus:>{fmt}}")
-        table.add_row("SF_yy-", f"{sf_yy_minus:>{fmt}}")
+        table.add_row("sf_xx+", f"{sf_xx_plus:>{fmt}}")
+        table.add_row("sf_xx-", f"{sf_xx_minus:>{fmt}}")
+        table.add_row("sf_yy+", f"{sf_yy_plus:>{fmt}}")
+        table.add_row("sf_yy-", f"{sf_yy_minus:>{fmt}}")
     except AssertionError:
         pass
 
@@ -754,20 +754,20 @@ def print_results(
     try:
         s11, s22 = section.get_sp()
         if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
-            table.add_row("M_p,11", f"{s11:>{fmt}}")
-            table.add_row("M_p,22", f"{s22:>{fmt}}")
+            table.add_row("mp_11", f"{s11:>{fmt}}")
+            table.add_row("mp_22", f"{s22:>{fmt}}")
         else:
-            table.add_row("S11", f"{s11:>{fmt}}")
-            table.add_row("S22", f"{s22:>{fmt}}")
+            table.add_row("s11", f"{s11:>{fmt}}")
+            table.add_row("s22", f"{s22:>{fmt}}")
     except AssertionError:
         pass
 
     try:
         sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus = section.get_sf_p()
-        table.add_row("SF_11+", f"{sf_11_plus:>{fmt}}")
-        table.add_row("SF_11-", f"{sf_11_minus:>{fmt}}")
-        table.add_row("SF_22+", f"{sf_22_plus:>{fmt}}")
-        table.add_row("SF_22-", f"{sf_22_minus:>{fmt}}")
+        table.add_row("sf_11+", f"{sf_11_plus:>{fmt}}")
+        table.add_row("sf_11-", f"{sf_11_minus:>{fmt}}")
+        table.add_row("sf_22+", f"{sf_22_plus:>{fmt}}")
+        table.add_row("sf_22-", f"{sf_22_minus:>{fmt}}")
     except AssertionError:
         pass
 
