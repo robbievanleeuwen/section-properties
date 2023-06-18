@@ -119,7 +119,7 @@ def precommit(session: Session) -> None:
         "--show-diff-on-failure",
     ]
     session.install(
-        "black",
+        "black[jupyter]",
         "darglint",
         "flake8",
         "flake8-bugbear",

@@ -40,6 +40,8 @@ duplication of work, and allows for feedback on your ideas.
 
 ## How to set up your development environment
 
+TODO: pandoc installation
+
 You need Python 3.8+ and the following tools:
 
 - [Poetry]

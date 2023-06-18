@@ -63,6 +63,11 @@ jobs:
           pipx inject --pip-args=--constraint=.github/workflows/constraints.txt nox nox-poetry
           nox --version
 
+      - name: Install pandoc
+        run: |
+          apt-get install -y pandoc
+          pandoc --version
+
       - name: Compute pre-commit cache key
         if: matrix.session == 'pre-commit'
         id: pre-commit-cache

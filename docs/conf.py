@@ -7,8 +7,8 @@ copyright = "2023, Robbie van Leeuwen"
 
 # sphinx config
 templates_path = ["_templates"]
+exclude_patterns = ["_build"]
 
-# extensions
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
@@ -16,9 +16,8 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
-    # "IPython.sphinxext.ipython_console_highlighting",
     "matplotlib.sphinxext.plot_directive",
-    # "nbsphinx",
+    "nbsphinx",
     "sphinx_click",
     "sphinx_copybutton",
     "sphinxext.opengraph",
@@ -36,10 +35,10 @@ napoleon_use_admonition_for_examples = True
 napoleon_use_ivar = True
 
 # nbsphinx config
-# nbsphinx_execute_arguments = [
-#     "--InlineBackend.figure_formats={'svg', 'pdf'}",
-#     "--InlineBackend.rc=figure.dpi=96",
-# ]
+nbsphinx_execute_arguments = [
+    "--InlineBackend.figure_formats={'svg', 'pdf'}",
+    "--InlineBackend.rc=figure.dpi=96",
+]
 
 # intersphinx mapping
 intersphinx_mapping = {
