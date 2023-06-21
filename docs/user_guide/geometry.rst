@@ -541,8 +541,8 @@ also useful when creating geometry from CAD files:
 
 .. admonition:: Example
 
-    The following example assigns material properties to a number of different
-    geometries:
+    The following example demonstrates assigning material properties through changing
+    the ``.material`` attribute.
 
     .. code-block:: python
 
@@ -575,8 +575,8 @@ that make up the :class:`~sectionproperties.pre.geometry.CompoundGeometry`.
 
 .. admonition:: Example
 
-    The following example assigns material properties to a number of different
-    geometries:
+    The following example demonstrates assigning material properties to
+    :class:`~sectionproperties.pre.geometry.CompoundGeometry` objects.
 
     .. plot::
         :include-source: True
