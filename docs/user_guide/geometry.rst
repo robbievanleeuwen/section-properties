@@ -464,10 +464,158 @@ using set operations.
     :noindex:
 
 
+.. _label-geom-material:
+
 Assigning Material Properties
 -----------------------------
 
-jaskdlsad
+Each :class:`~sectionproperties.pre.geometry.Geometry` contains its own material
+definition, which is stored in the ``.material`` attribute. The simplest way to assign
+a material to a :class:`~sectionproperties.pre.geometry.Geometry` is to pass the
+material as an argument to the constructor.
+
+.. note::
+
+    If a :class:`~sectionproperties.pre.pre.Material` is not given, then the *default
+    material* is assigned to the ``Geometry.material`` attribute. The default material
+    has an elastic modulus of 1, a Poisson's ratio of 0, a density of 1 and a yield
+    strength of 1.
+
+    This is equivalent to performing a purely geometric analysis of the cross-section
+    and is desirable if a composite section is not being analysed.
+
+.. warning::
+
+    See more about how asssigning material properties affects the results reported by
+    ``sectionproperties`` here (TODO: create link).
+
+Below are a few examples showcasing the different ways to generate geometry discussed
+above:
+
+.. admonition:: Example
+
+    The following example assigns material properties to a number of different
+    geometries:
+
+    .. code-block:: python
+
+        from shapely import Polygon
+
+        from sectionproperties.pre import Material
+        from sectionproperties.pre import Geometry
+        from sectionproperties.pre.library import rectangular_section
+
+        # create a steel material
+        steel = Material(
+            name="Steel",
+            elastic_modulus=200e3,
+            poissons_ratio=0.3,
+            density=7.85e-6,
+            yield_strength=500,
+            color="grey",
+        )
+
+        # assign steel to a shapely generated geometry
+        poly = Polygon([(0, 0), (5, 2), (3, 7), (1, 6)])
+        geom = Geometry(geom=poly, material=steel)
+
+        # assign steel to a geometry from points
+        points = [(0, 0), (10, 5), (15, 15), (5, 10), (6, 6), (9, 7), (7, 9)]
+        facets = [(0, 1), (1, 2), (2, 3), (3, 0), (4, 5), (5, 6), (6, 4)]
+        control_points = [(4, 4)]
+        holes = [(7, 7)]
+        geom = Geometry.from_points(
+            points=points,
+            facets=facets,
+            control_points=control_points,
+            holes=holes,
+            material=steel,
+        )
+
+        # assign steel to a rectangular section
+        geom = rectangular_section(d=100, b=50, material=steel)
+
+A geometry's material may be altered at any time by simply assigning a new
+:class:`~sectionproperties.pre.pre.Material` to the ``.material`` attribute. This is
+also useful when creating geometry from CAD files:
+
+.. admonition:: Example
+
+    The following example assigns material properties to a number of different
+    geometries:
+
+    .. code-block:: python
+
+        from sectionproperties.pre import Material
+        from sectionproperties.pre import Geometry
+
+        # create a steel material
+        steel = Material(
+            name="Steel",
+            elastic_modulus=200e3,
+            poissons_ratio=0.3,
+            density=7.85e-6,
+            yield_strength=500,
+            color="grey",
+        )
+
+        # load 3dm file into a Geometry object
+        geom = Geometry.from_3dm(filepath="example.3dm")
+
+        # assign steel to the geometry
+        geom.material = steel
+
+A :class:`~sectionproperties.pre.geometry.CompoundGeometry` does not have a
+``.material`` attribute and therefore, a :class:`~sectionproperties.pre.pre.Material`
+cannot be directly assigned. Since a
+:class:`~sectionproperties.pre.geometry.CompoundGeometry` is simply a combination of
+:class:`~sectionproperties.pre.geometry.Geometry` objects, the material should be
+assigned to each individual :class:`~sectionproperties.pre.geometry.Geometry` object
+that make up the :class:`~sectionproperties.pre.geometry.CompoundGeometry`.
+
+.. admonition:: Example
+
+    The following example assigns material properties to a number of different
+    geometries:
+
+    .. plot::
+        :include-source: True
+        :caption: Assign materials to a ``CompoundGeometry`` object
+
+        from shapely import Polygon
+
+        from sectionproperties.pre import Material
+        from sectionproperties.pre.library import rectangular_section
+        from sectionproperties.analysis import Section
+
+        # create steel and timber materials
+        steel = Material(
+            name="Steel",
+            elastic_modulus=200e3,
+            poissons_ratio=0.3,
+            density=7.85e-6,
+            yield_strength=500,
+            color="grey",
+        )
+        timber = Material(
+            name="Timber",
+            elastic_modulus=8e3,
+            poissons_ratio=0.35,
+            density=6.5e-7,
+            yield_strength=20,
+            color="burlywood",
+        )
+
+        # create the individual geometries with material properties applied
+        beam = rectangular_section(d=170, b=35, material=timber)
+        plate = rectangular_section(d=16, b=35, material=steel)
+
+        # combine geometries, maintaining assigned materials
+        geom = beam + plate.shift_section(y_offset=-16)
+
+        # mesh and plot
+        geom.create_mesh(mesh_sizes=[20, 10])
+        Section(geometry=geom).plot_mesh()
 
 Visualising Geometry
 --------------------

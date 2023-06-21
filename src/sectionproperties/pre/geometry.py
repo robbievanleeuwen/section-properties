@@ -191,7 +191,7 @@ class Geometry:
                     points=points,
                     facets=facets,
                     control_points=control_points,
-                    holes=holes
+                    holes=holes,
                 ).plot_geometry()
         """
         if len(control_points) != 1:
