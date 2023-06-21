@@ -166,8 +166,7 @@ class Geometry:
                 being holes or voids. The point can be located anywhere within the hole
                 region. Only one point is required per hole region.
             material: A :class:`~sectionproperties.pre.pre.Material` object that is to
-                be assigned. If not given, then the
-                :class:`~sectionproperties.pre.DEFAULT_MATERIAL` will be used.
+                be assigned.
 
         Raises:
             ValueError: If there is not exactly one control point specified
@@ -1619,7 +1618,7 @@ class CompoundGeometry(Geometry):
         facets: list[tuple[int, int]],
         control_points: list[tuple[float, float]],
         holes: list[tuple[float, float]] | None = None,
-        materials: pre.Material | list[pre.Material] = pre.DEFAULT_MATERIAL,
+        materials: list[pre.Material] | None = None,
     ) -> CompoundGeometry:
         """Creates a CompoundGeometry object from points, facets and holes.
 
@@ -1643,9 +1642,7 @@ class CompoundGeometry(Geometry):
                 regions as being distinct, contiguous, and having one material. The
                 point can be located anywhere within region. Only one point is permitted
                 per region. The order of ``control_points`` must be given in the same
-                order as the order that polygons are created by ``facets``. If not
-                given, then points will be assigned automatically using
-                :meth:`shapely.Polygon.representative_point()`
+                order as the order that polygons are created by ``facets``.
             holes: A list of points (``x``, ``y``) that define interior regions as
                 being holes or voids. The point can be located anywhere within the hole
                 region. Only one point is required per hole region.
@@ -1708,24 +1705,25 @@ class CompoundGeometry(Geometry):
                 geom.create_mesh(mesh_sizes=[0])
                 Section(geometry=geom).plot_mesh()
         """
-        if isinstance(materials, pre.Material):
-            materials = [materials]  # convert to list if not already
+        if materials is None:
+            # assign default material to each region
+            materials = [pre.DEFAULT_MATERIAL] * len(control_points)
 
         if materials and not control_points:
             raise ValueError(
                 "Materials cannot be assigned without control_points. "
                 "Please provide corresponding control_points for each material."
             )
+
         if holes is None:
             holes = list()
 
-        if materials is not [pre.DEFAULT_MATERIAL]:
-            if len(materials) != len(control_points):
-                msg = "If materials are provided, the number of materials in the list "
-                msg += "must match the number of control_points provided."
-                msg += f"len(materials)=={len(materials)}, "
-                msg += f"len(control_points)=={len(control_points)}."
-                raise ValueError(msg)
+        if len(materials) != len(control_points):
+            msg = "If materials are provided, the number of materials in the list "
+            msg += "must match the number of control_points provided."
+            msg += f"len(materials)=={len(materials)}, "
+            msg += f"len(control_points)=={len(control_points)}."
+            raise ValueError(msg)
 
         # First, generate all invidual polygons from points and facets
         current_polygon_points = []
@@ -1791,28 +1789,16 @@ class CompoundGeometry(Geometry):
             raise ValueError(msg)
 
         if not interiors:
-            if materials is [pre.DEFAULT_MATERIAL]:
-                return CompoundGeometry(
-                    geoms=[
-                        Geometry(
-                            geom=exterior,
-                            control_points=control_points[idx],
-                            material=materials[0],
-                        )
-                        for idx, exterior in enumerate(exteriors)
-                    ]
-                )
-            else:
-                return CompoundGeometry(
-                    geoms=[
-                        Geometry(
-                            geom=exterior,
-                            control_points=control_points[idx],
-                            material=materials[idx],
-                        )
-                        for idx, exterior in enumerate(exteriors)
-                    ]
-                )
+            return CompoundGeometry(
+                geoms=[
+                    Geometry(
+                        geom=exterior,
+                        control_points=control_points[idx],
+                        material=materials[idx],
+                    )
+                    for idx, exterior in enumerate(exteriors)
+                ]
+            )
         else:
             # "Punch" all holes through each exterior geometry
             punched_exterior_geometries = []
@@ -1834,20 +1820,12 @@ class CompoundGeometry(Geometry):
                         msg += f"geometry once holes are subtracted: {control_points}"
                         raise ValueError(msg) from e
 
-                if materials is [pre.DEFAULT_MATERIAL]:
-                    exterior_geometry = Geometry(
-                        geom=punched_exterior,
-                        control_points=exterior_control_point,
-                        material=materials[0],
-                    )
-                    punched_exterior_geometries.append(exterior_geometry)
-                else:
-                    exterior_geometry = Geometry(
-                        geom=punched_exterior,
-                        control_points=exterior_control_point,
-                        material=materials[idx],
-                    )
-                    punched_exterior_geometries.append(exterior_geometry)
+                exterior_geometry = Geometry(
+                    geom=punched_exterior,
+                    control_points=exterior_control_point,
+                    material=materials[idx],
+                )
+                punched_exterior_geometries.append(exterior_geometry)
 
             return CompoundGeometry(punched_exterior_geometries)
 
