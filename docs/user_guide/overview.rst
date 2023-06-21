@@ -88,16 +88,16 @@ The solver operates on a :class:`~sectionproperties.analysis.section.Section` ob
 can perform five different analysis types:
 
 - **Geometric Analysis**: calculates area properties,
-  :meth:`~sectionproperties.analysis.section.Section.calculate_geometric_properties()`.
+  :meth:`~sectionproperties.analysis.section.Section.calculate_geometric_properties`.
 - **Warping Analysis**: calculates torsion and shear properties,
-  :meth:`~sectionproperties.analysis.section.Section.calculate_warping_properties()`.
+  :meth:`~sectionproperties.analysis.section.Section.calculate_warping_properties`.
 - **Frame Analysis**: calculates section properties used for frame analysis (more
   efficient than running a geometric and warping analysis),
-  :meth:`~sectionproperties.analysis.section.Section.calculate_frame_properties()`.
+  :meth:`~sectionproperties.analysis.section.Section.calculate_frame_properties`.
 - **Plastic Analysis**: calculates plastic properties,
-  :meth:`~sectionproperties.analysis.section.Section.calculate_plastic_properties()`.
+  :meth:`~sectionproperties.analysis.section.Section.calculate_plastic_properties`.
 - **Stress Analysis**: calculates cross-section stresses,
-  :meth:`~sectionproperties.analysis.section.Section.calculate_stress()`.
+  :meth:`~sectionproperties.analysis.section.Section.calculate_stress`.
 
 Post-Processor
 --------------
@@ -105,12 +105,12 @@ Post-Processor
 There are a number of built-in methods to enable the post-processing of analysis
 results. For example, a full list of calculated section properties can be printed to the
 terminal by using the
-:meth:`~sectionproperties.analysis.section.Section.display_results()` method.
+:meth:`~sectionproperties.analysis.section.Section.display_results` method.
 Alternatively, specific properties can be retrieved by calling the appropriate ``get``
-method, e.g. :meth:`~sectionproperties.analysis.section.Section.get_ic()`.
+method, e.g. :meth:`~sectionproperties.analysis.section.Section.get_ic`.
 
 The calculated cross-section centroids can be plotted by calling the
-:meth:`~sectionproperties.analysis.section.Section.plot_centroids()` method. The
+:meth:`~sectionproperties.analysis.section.Section.plot_centroids` method. The
 following example plots the centroids of a 200 PFC section:
 
 .. plot::
@@ -131,11 +131,11 @@ following example plots the centroids of a 200 PFC section:
     sec.plot_centroids()
 
 Finally, cross-section stresses may be retrieved by at specific points by calling the
-:meth:`~sectionproperties.analysis.section.Section.get_stress_at_points()` method, or
+:meth:`~sectionproperties.analysis.section.Section.get_stress_at_points` method, or
 plotted by calling the
-:meth:`~sectionproperties.post.stress_post.StressPost.plot_stress()` method from a
+:meth:`~sectionproperties.post.stress_post.StressPost.plot_stress` method from a
 :class:`~sectionproperties.post.stress_post.StressPost` object, obtained after running
-the :meth:`~sectionproperties.analysis.section.Section.calculate_stress()` method. The
+the :meth:`~sectionproperties.analysis.section.Section.calculate_stress` method. The
 following example plots the von Mises stress in a 100 x 6 SHS subject to bending, shear
 and torsion:
 

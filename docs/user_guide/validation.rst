@@ -39,11 +39,11 @@ In ``sectionproperties``, there are multiple ways to set this problem up. We cou
 different shapely geometries and merge together, or a set of custom points, or a
 built-in constructor. For the sake of simplicity, this simpler I-section is identical to
 the Nastran I-section definition, so it makes sense to utilise the built-in constructor
-from :func:`~sectionproperties.pre.library.nastran_sections.nastran_i()`.
+from :func:`~sectionproperties.pre.library.nastran_sections.nastran_i`.
 
 Using an arbitrarily coarse mesh, the properties can then be directly calculated from
 the class method
-:meth:`~sectionproperties.analysis.section.Section.calculate_geometric_properties()`.
+:meth:`~sectionproperties.analysis.section.Section.calculate_geometric_properties`.
 
 Peery lists the second moment of area about the primary bending axis as a value of 43.3
 in\ :sup:`4`. For the automated tests in this library, we check against this hardcoded
@@ -85,13 +85,13 @@ referenced as the z-axis, and loads must be applied in this coordinate system.
   :align: center
 
 The construction of this geometry takes a similar approach to Ex 6.2.1, and utilises a
-built-in factory, :func:`~sectionproperties.pre.library.nastran_sections.nastran_zed()`.
+built-in factory, :func:`~sectionproperties.pre.library.nastran_sections.nastran_zed`.
 The only difference you may notice in the test code is usage of a custom class for ease
 of initialisation. This is not necessary.
 
 Using an arbitrarily coarse mesh, the properties can then be directly calculated from
 the class method
-:meth:`~sectionproperties.analysis.section.Section.calculate_geometric_properties()`.
+:meth:`~sectionproperties.analysis.section.Section.calculate_geometric_properties`.
 Each property listed directly by Peery is taken as a hardcoded value and checked
 against, within the testing suite.
 
