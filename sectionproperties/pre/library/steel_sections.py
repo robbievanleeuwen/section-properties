@@ -1030,7 +1030,7 @@ def cee_section(
 
     :param float d: Depth of the Cee section
     :param float b: Width of the Cee section
-    :param float l: Lip of the Cee section
+    :param float l: Lip of the Cee section (which can be zero)
     :param float t: Thickness of the Cee section
     :param float r_out: Outer radius of the Cee section
     :param int n_r: Number of points discretising the outer radius
@@ -1056,10 +1056,6 @@ def cee_section(
         :align: center
         :scale: 75 %
     """
-    # ensure the lip length is greater than the outer radius
-    if l < r_out:
-        raise Exception("Lip length must be greater than the outer radius")
-
     points = []
 
     # calculate internal radius
@@ -1068,16 +1064,31 @@ def cee_section(
     # construct the outer bottom left radius
     points += draw_radius([r_out, r_out], r_out, np.pi, n_r)
 
-    # construct the outer bottom right radius
-    points += draw_radius([b - r_out, r_out], r_out, 1.5 * np.pi, n_r)
+    # if the lip is longer than the outer radius (curve + straight section
+    if l > r_out:
+        # construct the outer bottom right radius
+        points += draw_radius([b - r_out, r_out], r_out, 1.5 * np.pi, n_r)
 
-    if r_out != l:
         # add next two points
         points.append([b, l])
         points.append([b - t, l])
 
-    # construct the inner bottom right radius
-    points += draw_radius([b - t - r_in, t + r_in], r_in, 0, n_r, False)
+        # construct the inner bottom right radius
+        points += draw_radius([b - t - r_in, t + r_in], r_in, 0, n_r, False)
+    
+    # if the lip is shorter than the outer radius (curve only)
+    elif t < l and l <= r_out:
+        # construct a smaller corner for bottom right if t < l < r_out
+        r_out_l = l
+        r_in_l = max(l - t, 0)
+        points += draw_radius([b - r_out_l, r_out_l], r_out_l, 1.5 * np.pi, n_r)
+        points += draw_radius([b - t - r_in_l, t + r_in_l], r_in_l, 0, n_r, False)
+
+    # if the lip length is less than the section thickness (no lip)
+    elif l <= t:
+        # construct end as two points only
+        points.append([b, 0])
+        points.append([b, t])
 
     # construct the inner bottom left radius
     points += draw_radius([t + r_in, t + r_in], r_in, 1.5 * np.pi, n_r, False)
@@ -1085,16 +1096,33 @@ def cee_section(
     # construct the inner top left radius
     points += draw_radius([t + r_in, d - t - r_in], r_in, np.pi, n_r, False)
 
-    # construct the inner top right radius
-    points += draw_radius([b - t - r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
+    # if the lip is longer than the outer radius (curve + straight section)
+    if l > r_out:
+        # construct the inner top right radius
+        points += draw_radius(
+            [b - t - r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False
+        )
 
-    if r_out != l:
         # add next two points
         points.append([b - t, d - l])
         points.append([b, d - l])
 
-    # construct the outer top right radius
-    points += draw_radius([b - r_out, d - r_out], r_out, 0, n_r)
+        # construct the outer top right radius
+        points += draw_radius([b - r_out, d - r_out], r_out, 0, n_r)
+
+    # if the lip is shorter than the outer radius (curve only)
+    elif l > t and l <= r_out:
+        # construct a smaller corner for top right if t < l < r_out
+        points += draw_radius(
+            [b - t - r_in_l, d - t - r_in_l], r_in_l, 0.5 * np.pi, n_r, False
+        )
+        points += draw_radius([b - r_out_l, d - r_out_l], r_out_l, 0, n_r)
+
+    # if the lip length is less than the section thickness (no lip)
+    elif l <= t:
+        # construct end as two points only
+        points.append([b, d - t])
+        points.append([b, d])
 
     # construct the outer top left radius
     points += draw_radius([r_out, d - r_out], r_out, 0.5 * np.pi, n_r)
@@ -1121,7 +1149,7 @@ def zed_section(
     :param float d: Depth of the zed section
     :param float b_l: Left flange width of the Zed section
     :param float b_r: Right flange width of the Zed section
-    :param float l: Lip of the Zed section
+    :param float l: Lip of the Zed section (which can be zero)
     :param float t: Thickness of the Zed section
     :param float r_out: Outer radius of the Zed section
     :param int n_r: Number of points discretising the outer radius
@@ -1146,10 +1174,6 @@ def zed_section(
         :align: center
         :scale: 75 %
     """
-    # ensure the lip length is greater than the outer radius
-    if l < r_out:
-        raise Exception("Lip length must be greater than the outer radius")
-
     points = []
 
     # calculate internal radius
@@ -1158,16 +1182,31 @@ def zed_section(
     # construct the outer bottom left radius
     points += draw_radius([r_out, r_out], r_out, np.pi, n_r)
 
-    # construct the outer bottom right radius
-    points += draw_radius([b_r - r_out, r_out], r_out, 1.5 * np.pi, n_r)
+    # if the lip is longer than the outer radius (curve + straight section
+    if l > r_out:
+        # construct the outer bottom right radius
+        points += draw_radius([b_r - r_out, r_out], r_out, 1.5 * np.pi, n_r)
 
-    if r_out != l:
         # add next two points
         points.append([b_r, l])
         points.append([b_r - t, l])
 
-    # construct the inner bottom right radius
-    points += draw_radius([b_r - t - r_in, t + r_in], r_in, 0, n_r, False)
+        # construct the inner bottom right radius
+        points += draw_radius([b_r - t - r_in, t + r_in], r_in, 0, n_r, False)
+    
+    # if the lip is shorter than the outer radius (curve only)
+    elif l > t and l <= r_out:
+        # construct a smaller corner for bottom right if t < l < r_out
+        r_out_l = l
+        r_in_l = max(l - t, 0)
+        points += draw_radius([b_r - r_out_l, r_out_l], r_out_l, 1.5 * np.pi, n_r)
+        points += draw_radius([b_r - t - r_in_l, t + r_in_l], r_in_l, 0, n_r, False)
+    
+    # if the lip length is less than the section thickness (no lip)
+    elif l <= t:
+        # construct end as two points only
+        points.append([b_r, 0])
+        points.append([b_r, t])
 
     # construct the inner bottom left radius
     points += draw_radius([t + r_in, t + r_in], r_in, 1.5 * np.pi, n_r, False)
@@ -1175,16 +1214,35 @@ def zed_section(
     # construct the outer top right radius
     points += draw_radius([t - r_out, d - r_out], r_out, 0, n_r)
 
-    # construct the outer top left radius
-    points += draw_radius([t - b_l + r_out, d - r_out], r_out, 0.5 * np.pi, n_r)
+    # if the lip is longer than the outer radius (curve + straight section
+    if l > r_out:
+        # construct the outer top left radius
+        points += draw_radius([t - b_l + r_out, d - r_out], r_out, 0.5 * np.pi, n_r)
 
-    if r_out != l:
         # add the next two points
         points.append([t - b_l, d - l])
         points.append([t - b_l + t, d - l])
 
-    # construct the inner top left radius
-    points += draw_radius([2 * t - b_l + r_in, d - t - r_in], r_in, np.pi, n_r, False)
+        # construct the inner top left radius
+        points += draw_radius(
+            [2 * t - b_l + r_in, d - t - r_in], r_in, np.pi, n_r, False
+        )
+
+    # if the lip is shorter than the outer radius (curve only)
+    elif t < l and l <= r_out:
+        # construct a smaller corner for top left if t < l < r_out
+        points += draw_radius(
+            [t - b_l + r_out_l, d - r_out_l], r_out_l, 0.5 * np.pi, n_r
+        )
+        points += draw_radius(
+            [2 * t - b_l + r_in_l, d - t - r_in_l], r_in_l, np.pi, n_r, False
+        )
+
+    # if the lip length is less than the section thickness (no lip)
+    elif l <= t:
+        # construct end as two points only
+        points.append([t - b_l, d])
+        points.append([t - b_l, d - t])
 
     # construct the inner top right radius
     points += draw_radius([-r_in, d - t - r_in], r_in, 0.5 * np.pi, n_r, False)
