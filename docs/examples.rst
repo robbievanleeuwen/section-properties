@@ -59,7 +59,6 @@ Advanced
     :maxdepth: 1
 
     examples/advanced/advanced_plot
-    examples/advanced/mesh_refinement
     examples/advanced/rectangle_torsion
     examples/advanced/peery
     examples/advanced/trapezoidal_torsion
