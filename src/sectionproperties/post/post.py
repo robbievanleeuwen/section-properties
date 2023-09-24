@@ -13,7 +13,6 @@ from rich.console import Console
 from rich.table import Table
 
 import sectionproperties.analysis.fea as fea
-import sectionproperties.pre.pre as pre
 
 
 if TYPE_CHECKING:
@@ -535,48 +534,77 @@ def print_results(
         section: Section object
         fmt: Number formatting string
     """
-    if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
-        prefix = "E."
-    else:
-        prefix = ""
+    is_composite = section.is_composite()
 
     table = Table(title="Section Properties")
     table.add_column("Property", justify="left", style="cyan", no_wrap=True)
     table.add_column("Value", justify="right", style="green")
 
+    # print cross-section area
     try:
         area = section.get_area()
         table.add_row("area", f"{area:>{fmt}}")
     except AssertionError:
         pass
 
+    # print cross-section perimeter
     try:
         perimeter = section.get_perimeter()
         table.add_row("perimeter", f"{perimeter:>{fmt}}")
     except AssertionError:
         pass
 
-    if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
+    # print cross-section mass (only if composite)
+    if is_composite:
         try:
             mass = section.get_mass()
             table.add_row("mass", f"{mass:>{fmt}}")
         except AssertionError:
             pass
 
-    if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
+    # print cross-section ea (only if composite)
+    if is_composite:
         try:
             ea = section.get_ea()
             table.add_row("e.a", f"{ea:>{fmt}}")
         except AssertionError:
             pass
 
-    try:
-        qx, qy = section.get_q()
-        table.add_row(prefix + "qx", f"{qx:>{fmt}}")
-        table.add_row(prefix + "qy", f"{qy:>{fmt}}")
-    except AssertionError:
-        pass
+    # print cross-section q
+    if not is_composite:
+        try:
+            qx, qy = section.get_q()
+            table.add_row("qx", f"{qx:>{fmt}}")
+            table.add_row("qy", f"{qy:>{fmt}}")
+        except AssertionError:
+            pass
+    else:
+        try:
+            eqx, eqy = section.get_eq()
+            table.add_row("e.qx", f"{eqx:>{fmt}}")
+            table.add_row("e.qy", f"{eqy:>{fmt}}")
+        except AssertionError:
+            pass
 
+    # print cross-section ig
+    if not is_composite:
+        try:
+            ixx_g, iyy_g, ixy_g = section.get_ig()
+            table.add_row("ixx_g", f"{ixx_g:>{fmt}}")
+            table.add_row("iyy_g", f"{iyy_g:>{fmt}}")
+            table.add_row("ixy_g", f"{ixy_g:>{fmt}}")
+        except AssertionError:
+            pass
+    else:
+        try:
+            eixx_g, eiyy_g, eixy_g = section.get_eig()
+            table.add_row("e.ixx_g", f"{eixx_g:>{fmt}}")
+            table.add_row("e.iyy_g", f"{eiyy_g:>{fmt}}")
+            table.add_row("e.ixy_g", f"{eixy_g:>{fmt}}")
+        except AssertionError:
+            pass
+
+    # print cross-section centroid
     try:
         cx, cy = section.get_c()
         table.add_row("cx", f"{cx:>{fmt}}")
@@ -584,31 +612,45 @@ def print_results(
     except AssertionError:
         pass
 
-    try:
-        ixx_g, iyy_g, ixy_g = section.get_ig()
-        table.add_row(prefix + "ixx_g", f"{ixx_g:>{fmt}}")
-        table.add_row(prefix + "iyy_g", f"{iyy_g:>{fmt}}")
-        table.add_row(prefix + "ixy_g", f"{ixy_g:>{fmt}}")
-    except AssertionError:
-        pass
+    # print cross-section ic
+    if not is_composite:
+        try:
+            ixx_c, iyy_c, ixy_c = section.get_ic()
+            table.add_row("ixx_c", f"{ixx_c:>{fmt}}")
+            table.add_row("iyy_c", f"{iyy_c:>{fmt}}")
+            table.add_row("ixy_c", f"{ixy_c:>{fmt}}")
+        except AssertionError:
+            pass
+    else:
+        try:
+            eixx_c, eiyy_c, eixy_c = section.get_eic()
+            table.add_row("e.ixx_c", f"{eixx_c:>{fmt}}")
+            table.add_row("e.iyy_c", f"{eiyy_c:>{fmt}}")
+            table.add_row("e.ixy_c", f"{eixy_c:>{fmt}}")
+        except AssertionError:
+            pass
 
-    try:
-        ixx_c, iyy_c, ixy_c = section.get_ic()
-        table.add_row(prefix + "ixx_c", f"{ixx_c:>{fmt}}")
-        table.add_row(prefix + "iyy_c", f"{iyy_c:>{fmt}}")
-        table.add_row(prefix + "ixy_c", f"{ixy_c:>{fmt}}")
-    except AssertionError:
-        pass
+    # print cross-section z
+    if not is_composite:
+        try:
+            zxx_plus, zxx_minus, zyy_plus, zyy_minus = section.get_z()
+            table.add_row("zxx+", f"{zxx_plus:>{fmt}}")
+            table.add_row("zxx-", f"{zxx_minus:>{fmt}}")
+            table.add_row("zyy+", f"{zyy_plus:>{fmt}}")
+            table.add_row("zyy-", f"{zyy_minus:>{fmt}}")
+        except AssertionError:
+            pass
+    else:
+        try:
+            ezxx_plus, ezxx_minus, ezyy_plus, ezyy_minus = section.get_ez()
+            table.add_row("e.zxx+", f"{ezxx_plus:>{fmt}}")
+            table.add_row("e.zxx-", f"{ezxx_minus:>{fmt}}")
+            table.add_row("e.zyy+", f"{ezyy_plus:>{fmt}}")
+            table.add_row("e.zyy-", f"{ezyy_minus:>{fmt}}")
+        except AssertionError:
+            pass
 
-    try:
-        zxx_plus, zxx_minus, zyy_plus, zyy_minus = section.get_z()
-        table.add_row(prefix + "zxx+", f"{zxx_plus:>{fmt}}")
-        table.add_row(prefix + "zxx-", f"{zxx_minus:>{fmt}}")
-        table.add_row(prefix + "zyy+", f"{zyy_plus:>{fmt}}")
-        table.add_row(prefix + "zyy-", f"{zyy_minus:>{fmt}}")
-    except AssertionError:
-        pass
-
+    # print cross-section rc
     try:
         rx, ry = section.get_rc()
         table.add_row("rx", f"{rx:>{fmt}}")
@@ -616,24 +658,50 @@ def print_results(
     except AssertionError:
         pass
 
+    # print cross-section ip
+    if not is_composite:
+        try:
+            i11_c, i22_c = section.get_ip()
+            table.add_row("i11_c", f"{i11_c:>{fmt}}")
+            table.add_row("i22_c", f"{i22_c:>{fmt}}")
+        except AssertionError:
+            pass
+    else:
+        try:
+            ei11_c, ei22_c = section.get_eip()
+            table.add_row("e.i11_c", f"{ei11_c:>{fmt}}")
+            table.add_row("e.i22_c", f"{ei22_c:>{fmt}}")
+        except AssertionError:
+            pass
+
+    # print cross-section phi
     try:
         phi = section.get_phi()
-        i11_c, i22_c = section.get_ip()
         table.add_row("phi", f"{phi:>{fmt}}")
-        table.add_row(prefix + "i11_c", f"{i11_c:>{fmt}}")
-        table.add_row(prefix + "i22_c", f"{i22_c:>{fmt}}")
     except AssertionError:
         pass
 
-    try:
-        z11_plus, z11_minus, z22_plus, z22_minus = section.get_zp()
-        table.add_row(prefix + "z11+", f"{z11_plus:>{fmt}}")
-        table.add_row(prefix + "z11-", f"{z11_minus:>{fmt}}")
-        table.add_row(prefix + "z22+", f"{z22_plus:>{fmt}}")
-        table.add_row(prefix + "z22-", f"{z22_minus:>{fmt}}")
-    except AssertionError:
-        pass
+    # print cross-section zp
+    if not is_composite:
+        try:
+            z11_plus, z11_minus, z22_plus, z22_minus = section.get_zp()
+            table.add_row("z11+", f"{z11_plus:>{fmt}}")
+            table.add_row("z11-", f"{z11_minus:>{fmt}}")
+            table.add_row("z22+", f"{z22_plus:>{fmt}}")
+            table.add_row("z22-", f"{z22_minus:>{fmt}}")
+        except AssertionError:
+            pass
+    else:
+        try:
+            ez11_plus, ez11_minus, ez22_plus, ez22_minus = section.get_ezp()
+            table.add_row("e.z11+", f"{ez11_plus:>{fmt}}")
+            table.add_row("e.z11-", f"{ez11_minus:>{fmt}}")
+            table.add_row("e.z22+", f"{ez22_plus:>{fmt}}")
+            table.add_row("e.z22-", f"{ez22_minus:>{fmt}}")
+        except AssertionError:
+            pass
 
+    # print cross-section rp
     try:
         r11, r22 = section.get_rp()
         table.add_row("r11", f"{r11:>{fmt}}")
@@ -641,7 +709,8 @@ def print_results(
     except AssertionError:
         pass
 
-    if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
+    # print effective material properties
+    if is_composite:
         try:
             e_eff = section.get_e_eff()
             g_eff = section.get_g_eff()
@@ -652,18 +721,21 @@ def print_results(
         except AssertionError:
             pass
 
-    try:
-        j = section.get_j()
-        table.add_row(prefix + "j", f"{j:>{fmt}}")
-    except AssertionError:
-        pass
+    # print cross-section j
+    if not is_composite:
+        try:
+            j = section.get_j()
+            table.add_row("j", f"{j:>{fmt}}")
+        except AssertionError:
+            pass
+    else:
+        try:
+            ej = section.get_ej()
+            table.add_row("e.j", f"{ej:>{fmt}}")
+        except AssertionError:
+            pass
 
-    try:
-        gamma = section.get_gamma()
-        table.add_row(prefix + "iw", f"{gamma:>{fmt}}")
-    except AssertionError:
-        pass
-
+    # print cross-section sc
     try:
         x_se, y_se = section.get_sc()
         table.add_row("x_se", f"{x_se:>{fmt}}")
@@ -671,13 +743,7 @@ def print_results(
     except AssertionError:
         pass
 
-    try:
-        x_st, y_st = section.get_sc_t()
-        table.add_row("x_st", f"{x_st:>{fmt}}")
-        table.add_row("y_st", f"{y_st:>{fmt}}")
-    except AssertionError:
-        pass
-
+    # print cross-section sc_p
     try:
         x1_se, y2_se = section.get_sc_p()
         table.add_row("x1_se", f"{x1_se:>{fmt}}")
@@ -685,20 +751,61 @@ def print_results(
     except AssertionError:
         pass
 
+    # print cross-section sc_t
     try:
-        a_sx, a_sy = section.get_as()
-        table.add_row(prefix + "a_sx", f"{a_sx:>{fmt}}")
-        table.add_row(prefix + "a_sy", f"{a_sy:>{fmt}}")
+        x_st, y_st = section.get_sc_t()
+        table.add_row("x_st", f"{x_st:>{fmt}}")
+        table.add_row("y_st", f"{y_st:>{fmt}}")
     except AssertionError:
         pass
 
-    try:
-        a_s11, a_s22 = section.get_as_p()
-        table.add_row(prefix + "a_s11", f"{a_s11:>{fmt}}")
-        table.add_row(prefix + "a_s22", f"{a_s22:>{fmt}}")
-    except AssertionError:
-        pass
+    # print cross-section gamma
+    if not is_composite:
+        try:
+            gamma = section.get_gamma()
+            table.add_row("iw", f"{gamma:>{fmt}}")
+        except AssertionError:
+            pass
+    else:
+        try:
+            egamma = section.get_egamma()
+            table.add_row("e.iw", f"{egamma:>{fmt}}")
+        except AssertionError:
+            pass
 
+    # print cross-section as
+    if not is_composite:
+        try:
+            a_sx, a_sy = section.get_as()
+            table.add_row("a_sx", f"{a_sx:>{fmt}}")
+            table.add_row("a_sy", f"{a_sy:>{fmt}}")
+        except AssertionError:
+            pass
+    else:
+        try:
+            ea_sx, ea_sy = section.get_eas()
+            table.add_row("e.a_sx", f"{ea_sx:>{fmt}}")
+            table.add_row("e.a_sy", f"{ea_sy:>{fmt}}")
+        except AssertionError:
+            pass
+
+    # print cross-section as_p
+    if not is_composite:
+        try:
+            a_s11, a_s22 = section.get_as_p()
+            table.add_row("a_s11", f"{a_s11:>{fmt}}")
+            table.add_row("a_s22", f"{a_s22:>{fmt}}")
+        except AssertionError:
+            pass
+    else:
+        try:
+            ea_s11, ea_s22 = section.get_eas_p()
+            table.add_row("e.a_s11", f"{ea_s11:>{fmt}}")
+            table.add_row("e.a_s22", f"{ea_s22:>{fmt}}")
+        except AssertionError:
+            pass
+
+    # print cross-section beta
     try:
         beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus = section.get_beta()
         table.add_row("beta_x+", f"{beta_x_plus:>{fmt}}")
@@ -708,6 +815,7 @@ def print_results(
     except AssertionError:
         pass
 
+    # print cross-section beta_p
     try:
         beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus = section.get_beta_p()
         table.add_row("beta_11+", f"{beta_11_plus:>{fmt}}")
@@ -717,6 +825,7 @@ def print_results(
     except AssertionError:
         pass
 
+    # print cross-section pc
     try:
         x_pc, y_pc = section.get_pc()
         table.add_row("x_pc", f"{x_pc:>{fmt}}")
@@ -724,26 +833,7 @@ def print_results(
     except AssertionError:
         pass
 
-    try:
-        sxx, syy = section.get_s()
-        if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
-            table.add_row("mp_xx", f"{sxx:>{fmt}}")
-            table.add_row("mp_yy", f"{syy:>{fmt}}")
-        else:
-            table.add_row("sxx", f"{sxx:>{fmt}}")
-            table.add_row("syy", f"{syy:>{fmt}}")
-    except AssertionError:
-        pass
-
-    try:
-        sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus = section.get_sf()
-        table.add_row("sf_xx+", f"{sf_xx_plus:>{fmt}}")
-        table.add_row("sf_xx-", f"{sf_xx_minus:>{fmt}}")
-        table.add_row("sf_yy+", f"{sf_yy_plus:>{fmt}}")
-        table.add_row("sf_yy-", f"{sf_yy_minus:>{fmt}}")
-    except AssertionError:
-        pass
-
+    # print cross-section pc_p
     try:
         x11_pc, y22_pc = section.get_pc_p()
         table.add_row("x11_pc", f"{x11_pc:>{fmt}}")
@@ -751,25 +841,60 @@ def print_results(
     except AssertionError:
         pass
 
-    try:
-        s11, s22 = section.get_sp()
-        if list(set(section.materials)) != [pre.DEFAULT_MATERIAL]:
-            table.add_row("mp_11", f"{s11:>{fmt}}")
-            table.add_row("mp_22", f"{s22:>{fmt}}")
-        else:
+    # print cross-section s/mp
+    if not is_composite:
+        try:
+            sxx, syy = section.get_s()
+            table.add_row("sxx", f"{sxx:>{fmt}}")
+            table.add_row("syy", f"{syy:>{fmt}}")
+        except AssertionError:
+            pass
+    else:
+        try:
+            mp_xx, mp_yy = section.get_mp()
+            table.add_row("mp_xx", f"{mp_xx:>{fmt}}")
+            table.add_row("mp_yy", f"{mp_yy:>{fmt}}")
+
+        except AssertionError:
+            pass
+
+    # print cross-section sp/mp_p
+    if not is_composite:
+        try:
+            s11, s22 = section.get_sp()
             table.add_row("s11", f"{s11:>{fmt}}")
             table.add_row("s22", f"{s22:>{fmt}}")
-    except AssertionError:
-        pass
+        except AssertionError:
+            pass
+    else:
+        try:
+            mp_11, mp_22 = section.get_mp_p()
+            table.add_row("mp_11", f"{mp_11:>{fmt}}")
+            table.add_row("mp_22", f"{mp_22:>{fmt}}")
+        except AssertionError:
+            pass
 
-    try:
-        sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus = section.get_sf_p()
-        table.add_row("sf_11+", f"{sf_11_plus:>{fmt}}")
-        table.add_row("sf_11-", f"{sf_11_minus:>{fmt}}")
-        table.add_row("sf_22+", f"{sf_22_plus:>{fmt}}")
-        table.add_row("sf_22-", f"{sf_22_minus:>{fmt}}")
-    except AssertionError:
-        pass
+    # print cross-section sf
+    if not is_composite:
+        try:
+            sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus = section.get_sf()
+            table.add_row("sf_xx+", f"{sf_xx_plus:>{fmt}}")
+            table.add_row("sf_xx-", f"{sf_xx_minus:>{fmt}}")
+            table.add_row("sf_yy+", f"{sf_yy_plus:>{fmt}}")
+            table.add_row("sf_yy-", f"{sf_yy_minus:>{fmt}}")
+        except AssertionError:
+            pass
+
+    # print cross-section sf_p
+    if not is_composite:
+        try:
+            sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus = section.get_sf_p()
+            table.add_row("sf_11+", f"{sf_11_plus:>{fmt}}")
+            table.add_row("sf_11-", f"{sf_11_minus:>{fmt}}")
+            table.add_row("sf_22+", f"{sf_22_plus:>{fmt}}")
+            table.add_row("sf_22-", f"{sf_22_minus:>{fmt}}")
+        except AssertionError:
+            pass
 
     console = Console()
     console.print(table)
