@@ -1710,23 +1710,21 @@ class Section:
 
     def get_e_ref(
         self,
-        e_trans: float | pre.Material,
+        e_ref: float | pre.Material,
     ) -> float:
-        """Extract transformed elastic modulus from e_trans (float or material).
+        """Extract transformed elastic modulus from e_ref (float or material).
 
         Args:
-            e_trans: Reference elastic modulus or material property by which to
+            e_ref: Reference elastic modulus or material property by which to
                 transform the results
 
         Returns:
             Transformed elastic modulus
         """
-        if isinstance(e_trans, pre.Material):
-            e_ref = e_trans.elastic_modulus
+        if isinstance(e_ref, pre.Material):
+            return e_ref.elastic_modulus
         else:
-            e_ref = e_trans
-
-        return e_ref
+            return e_ref
 
     def get_area(self) -> float:
         """Returns the cross-section area.
@@ -1788,7 +1786,7 @@ class Section:
 
     def get_ea(
         self,
-        e_trans: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1,
     ) -> float:
         """Returns the cross-section axial rigidity.
 
@@ -1799,8 +1797,8 @@ class Section:
         material property.
 
         Args:
-            e_trans: Reference elastic modulus or material property by which to
-                transform the results
+            e_ref: Reference elastic modulus or material property by which to transform
+                the results
 
         Returns:
             Modulus weighted area (axial rigidity)
@@ -1810,12 +1808,13 @@ class Section:
             AssertionError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
-            msg = "Material properties must be applied to calculate a cross-section "
-            msg += "axial rigidity."
+            msg = "Attempting to get a composite only property for a geometric analysis"
+            msg += " (material properties have not been applied). Consider using"
+            msg += " get_area()."
             raise RuntimeError(msg)
 
-        # calculate e_ref (transformed elastic modulus)
-        e_ref = self.get_e_ref(e_trans=e_trans)
+        # obtain e_ref (reference elastic modulus)
+        e_ref = self.get_e_ref(e_ref=e_ref)
 
         try:
             assert self.section_props.ea is not None
@@ -1852,7 +1851,7 @@ class Section:
 
     def get_eq(
         self,
-        e_trans: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1,
     ) -> tuple[float, float]:
         """Returns the modulus-weighted cross-section first moments of area.
 
@@ -1863,8 +1862,8 @@ class Section:
         material property.
 
         Args:
-            e_trans: Reference elastic modulus or material property by which to
-                transform the results
+            e_ref: Reference elastic modulus or material property by which to transform
+                the results
 
         Returns:
             Modulus-weighted first moments of area about the global axis (``eqx``,
@@ -1881,7 +1880,7 @@ class Section:
             raise RuntimeError(msg)
 
         # calculate e_ref (transformed elastic modulus)
-        e_ref = self.get_e_ref(e_trans=e_trans)
+        e_ref = self.get_e_ref(e_ref=e_ref)
 
         try:
             assert self.section_props.qx is not None
