@@ -223,7 +223,9 @@ def test_no_analysis():
 def test_get_geometric_only():
     """Check errors and results when a geometric analysis has been conducted.
 
-    RuntimeError = incorrect analysis type (geometric only vs. composite)
+    RuntimeError = incorrect analysis type (geometric only vs. composite), takes
+    precedence over...
+    AssertionError = relevant analysis has been conducted
     """
     rect_no_mat.calculate_geometric_properties()
     rect_mat.calculate_geometric_properties()
@@ -453,6 +455,366 @@ def test_get_geometric_only():
         rect_no_mat.get_g_eff()
 
     assert rect_mat.get_g_eff() == pytest.approx(2.5)
+
+    # now check errors from performing no warping analysis
+    # check j
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_j()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_j()
+
+    # check ej
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_ej()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_ej()
+
+    # check sc
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_sc()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_sc()
+
+    # check sc_p
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_sc_p()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_sc_p()
+
+    # check sc_t
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_sc_t()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_sc_t()
+
+    # check gamma
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_gamma()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_gamma()
+
+    # check egamma
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_egamma()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_egamma()
+
+    # check as
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_as()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_as()
+
+    # check eas
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_eas()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_eas()
+
+    # check as_p
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_as_p()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_as_p()
+
+    # check eas_p
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_eas_p()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_eas_p()
+
+    # check beta
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_beta()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_beta()
+
+    # check beta_p
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_beta_p()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_beta_p()
+
+    # check pc
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_pc()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_pc()
+
+    # check pc_p
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_pc_p()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_pc_p()
+
+    # check s
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_s()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_s()
+
+    # check mp
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_mp()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_mp()
+
+    # check sp
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_sp()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_sp()
+
+    # check mp_p
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_mp_p()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_mp_p()
+
+    # check sf
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_sf()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_sf()
+
+    # check sf_p
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_sf_p()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_sf_p()
+
+
+def test_get_warping():
+    """Check errors and results when a warping analysis has been conducted.
+
+    RuntimeError = incorrect analysis type (geometric only vs. composite), takes
+    precedence over...
+    AssertionError = relevant analysis has been conducted
+    """
+    rect_no_mat.calculate_geometric_properties()
+    rect_no_mat.calculate_warping_properties()
+    rect_mat.calculate_geometric_properties()
+    rect_mat.calculate_warping_properties()
+
+    # check j
+    assert rect_no_mat.get_j() == pytest.approx(1 / 6.0)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_j()
+
+    # check ej
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_ej()
+
+    assert rect_mat.get_ej() == pytest.approx(5 / 6.0)
+    assert rect_mat.get_ej(e_ref=2) == pytest.approx(5 / 12.0)
+    assert rect_mat.get_ej(e_ref=dummy_mat) == pytest.approx(1 / 6.0)
+
+    # check sc
+    x_se, y_se = rect_no_mat.get_sc()
+    assert x_se == pytest.approx(0.5)
+    assert y_se == pytest.approx(0.5)
+    x_se, y_se = rect_mat.get_sc()
+    assert x_se == pytest.approx(0.5)
+    assert y_se == pytest.approx(0.5)
+
+    # check sc_p
+    x11_se, y22_se = rect_no_mat.get_sc_p()
+    assert x11_se == pytest.approx(0.0)
+    assert y22_se == pytest.approx(0.0)
+    x11_se, y22_se = rect_mat.get_sc_p()
+    assert x11_se == pytest.approx(0.0)
+    assert y22_se == pytest.approx(0.0)
+
+    # check sc_t
+    x_st, y_st = rect_no_mat.get_sc_t()
+    assert x_st == pytest.approx(0.5)
+    assert y_st == pytest.approx(0.5)
+    x_st, y_st = rect_mat.get_sc_t()
+    assert x_st == pytest.approx(0.5)
+    assert y_st == pytest.approx(0.5)
+
+    # check gamma
+    assert rect_no_mat.get_gamma() == pytest.approx(0.0)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_gamma()
+
+    # check egamma
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_egamma()
+
+    assert rect_mat.get_egamma() == pytest.approx(0.0)
+    assert rect_mat.get_egamma(e_ref=2) == pytest.approx(0.0)
+    assert rect_mat.get_egamma(e_ref=dummy_mat) == pytest.approx(0.0)
+
+    # check as
+    a_sx, a_sy = rect_no_mat.get_as()
+    assert a_sx == pytest.approx(0.9523810)
+    assert a_sy == pytest.approx(0.9523810)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_as()
+
+    # check eas
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_eas()
+
+    ea_sx, ea_sy = rect_mat.get_eas()
+    assert ea_sx == pytest.approx(0.9523810 * 5)
+    assert ea_sy == pytest.approx(0.9523810 * 5)
+    ea_sx, ea_sy = rect_mat.get_eas(e_ref=2)
+    assert ea_sx == pytest.approx(0.9523810 * 2.5)
+    assert ea_sy == pytest.approx(0.9523810 * 2.5)
+    ea_sx, ea_sy = rect_mat.get_eas(e_ref=dummy_mat)
+    assert ea_sx == pytest.approx(0.9523810)
+    assert ea_sy == pytest.approx(0.9523810)
+
+    # check as_p
+    a_s11, a_s22 = rect_no_mat.get_as_p()
+    assert a_s11 == pytest.approx(0.9523810)
+    assert a_s22 == pytest.approx(0.9523810)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_as_p()
+
+    # check eas_p
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_eas_p()
+
+    ea_s11, ea_s22 = rect_mat.get_eas_p()
+    assert ea_s11 == pytest.approx(0.9523810 * 5)
+    assert ea_s22 == pytest.approx(0.9523810 * 5)
+    ea_s11, ea_s22 = rect_mat.get_eas_p(e_ref=2)
+    assert ea_s11 == pytest.approx(0.9523810 * 2.5)
+    assert ea_s22 == pytest.approx(0.9523810 * 2.5)
+    ea_s11, ea_s22 = rect_mat.get_eas_p(e_ref=dummy_mat)
+    assert ea_s11 == pytest.approx(0.9523810)
+    assert ea_s22 == pytest.approx(0.9523810)
+
+    # check beta
+    beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus = rect_no_mat.get_beta()
+    assert beta_x_plus == pytest.approx(0.0)
+    assert beta_x_minus == pytest.approx(0.0)
+    assert beta_y_plus == pytest.approx(0.0)
+    assert beta_y_minus == pytest.approx(0.0)
+    beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus = rect_mat.get_beta()
+    assert beta_x_plus == pytest.approx(0.0)
+    assert beta_x_minus == pytest.approx(0.0)
+    assert beta_y_plus == pytest.approx(0.0)
+    assert beta_y_minus == pytest.approx(0.0)
+
+    # check beta_p
+    beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus = rect_no_mat.get_beta_p()
+    assert beta_11_plus == pytest.approx(0.0)
+    assert beta_11_minus == pytest.approx(0.0)
+    assert beta_22_plus == pytest.approx(0.0)
+    assert beta_22_minus == pytest.approx(0.0)
+    beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus = rect_mat.get_beta_p()
+    assert beta_11_plus == pytest.approx(0.0)
+    assert beta_11_minus == pytest.approx(0.0)
+    assert beta_22_plus == pytest.approx(0.0)
+    assert beta_22_minus == pytest.approx(0.0)
+
+
+def test_get_plastic():
+    """Check errors and results when a plastic analysis has been conducted.
+
+    RuntimeError = incorrect analysis type (geometric only vs. composite), takes
+    precedence over...
+    AssertionError = relevant analysis has been conducted
+    """
+    rect_no_mat.calculate_plastic_properties()
+    rect_mat.calculate_plastic_properties()
+
+    # check pc
+    x_pc, y_pc = rect_no_mat.get_pc()
+    assert x_pc == pytest.approx(0.5)
+    assert y_pc == pytest.approx(0.5)
+    x_pc, y_pc = rect_mat.get_pc()
+    assert x_pc == pytest.approx(0.5)
+    assert y_pc == pytest.approx(0.5)
+
+    # check pc_p
+    x_pc, y_pc = rect_no_mat.get_pc_p()
+    assert x_pc == pytest.approx(0.5)
+    assert y_pc == pytest.approx(0.5)
+    x_pc, y_pc = rect_mat.get_pc_p()
+    assert x_pc == pytest.approx(0.5)
+    assert y_pc == pytest.approx(0.5)
+
+    # check s
+    sxx, syy = rect_no_mat.get_s()
+    assert sxx == pytest.approx(0.25)
+    assert syy == pytest.approx(0.25)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_s()
+
+    # check mp
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_mp()
+
+    mp_xx, mp_yy = rect_mat.get_mp()
+    assert mp_xx == pytest.approx(0.75)
+    assert mp_yy == pytest.approx(0.75)
+
+    # check sp
+    sxx, syy = rect_no_mat.get_sp()
+    assert sxx == pytest.approx(0.25)
+    assert syy == pytest.approx(0.25)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_sp()
+
+    # check mp_p
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_mp_p()
+
+    mp_xx, mp_yy = rect_mat.get_mp_p()
+    assert mp_xx == pytest.approx(0.75)
+    assert mp_yy == pytest.approx(0.75)
+
+    # check sf
+    sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus = rect_no_mat.get_sf()
+    assert sf_xx_plus == pytest.approx(1.5)
+    assert sf_xx_minus == pytest.approx(1.5)
+    assert sf_yy_plus == pytest.approx(1.5)
+    assert sf_yy_minus == pytest.approx(1.5)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_sf()
+
+    # check sf_p
+    sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus = rect_no_mat.get_sf_p()
+    assert sf_11_plus == pytest.approx(1.5)
+    assert sf_11_minus == pytest.approx(1.5)
+    assert sf_22_plus == pytest.approx(1.5)
+    assert sf_22_minus == pytest.approx(1.5)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_sf_p()
 
 
 def test_get_effective_material():
