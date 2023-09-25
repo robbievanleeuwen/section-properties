@@ -46,8 +46,8 @@ def test_rectangle():
     sec_nomat.calculate_plastic_properties()
 
     assert sec_nomat.get_s()[0] == pytest.approx(sx)
-    assert sec_mat.get_s()[0] == pytest.approx(mp)
-    assert sec_mat.get_s()[0] / fy == sec_nomat.get_s()[0]
+    assert sec_mat.get_mp()[0] == pytest.approx(mp)
+    assert sec_mat.get_mp()[0] / fy == sec_nomat.get_s()[0]
 
 
 def test_plastic_centroid():
