@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import numpy as np
 import pytest
 
 from sectionproperties.analysis import Section
@@ -30,6 +31,22 @@ def test_is_composite():
     """Check whether section is composite or not."""
     assert not rect_no_mat.is_composite()
     assert rect_mat.is_composite()
+
+    # check built up geometric only section
+    rect1 = rectangular_section(d=2, b=2)
+    rect2 = rectangular_section(d=4, b=5).shift_section(x_offset=2)
+    geom = rect1 + rect2
+    geom.create_mesh(mesh_sizes=[0])
+    sec = Section(geom)
+    assert not sec.is_composite()
+
+    # check section with hole geometric only section
+    rect_out = rectangular_section(d=10, b=10)
+    rect_in = rectangular_section(d=5, b=5).shift_section(x_offset=5, y_offset=5)
+    geom = rect_out - rect_in
+    geom.create_mesh(mesh_sizes=[0])
+    sec = Section(geom)
+    assert not sec.is_composite()
 
 
 def test_get_e_ref():
@@ -78,6 +95,9 @@ def test_no_analysis():
     with pytest.raises(AssertionError):
         rect_mat.get_mass()
 
+    with pytest.raises(AssertionError):
+        rect_mat.get_mass()
+
     # check q
     with pytest.raises(AssertionError):
         rect_no_mat.get_q()
@@ -105,6 +125,99 @@ def test_no_analysis():
 
     with pytest.raises(AssertionError):
         rect_mat.get_eig()
+
+    # check c
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_c()
+
+    # check ic
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_ic()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_ic()
+
+    # check eic
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_eic()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_eic()
+
+    # check z
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_z()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_z()
+
+    # check ez
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_ez()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_ez()
+
+    # check rc
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_rc()
+
+    # check ip
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_ip()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_ip()
+
+    # check eip
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_eip()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_eip()
+
+    # check phi
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_phi()
+
+    # check zp
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_zp()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_zp()
+
+    # check ezp
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_ezp()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_ezp()
+
+    # check rp
+    with pytest.raises(AssertionError):
+        rect_no_mat.get_rc()
+
+    # check nu_eff
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_nu_eff()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_nu_eff()
+
+    # check e_eff
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_e_eff()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_e_eff()
+
+    # check g_eff
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_g_eff()
+
+    with pytest.raises(AssertionError):
+        rect_mat.get_g_eff()
 
 
 def test_get_geometric_only():
@@ -184,3 +297,214 @@ def test_get_geometric_only():
     assert eigxx == pytest.approx(1 / 3.0)
     assert eigyy == pytest.approx(1 / 3.0)
     assert eigxy == pytest.approx(0.25)
+
+    # check c
+    cx, cy = rect_no_mat.get_c()
+    assert cx == pytest.approx(1 / 2.0)
+    assert cy == pytest.approx(1 / 2.0)
+    cx, cy = rect_mat.get_c()
+    assert cx == pytest.approx(1 / 2.0)
+    assert cy == pytest.approx(1 / 2.0)
+
+    # check ic
+    icxx, icyy, icxy = rect_no_mat.get_ic()
+    assert icxx == pytest.approx(1 / 12.0)
+    assert icyy == pytest.approx(1 / 12.0)
+    assert icxy == pytest.approx(0.0)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_ic()
+
+    # check eic
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_eic()
+
+    eicxx, eicyy, eicxy = rect_mat.get_eic()
+    assert eicxx == pytest.approx(5.0 / 12)
+    assert eicyy == pytest.approx(5.0 / 12)
+    assert eicxy == pytest.approx(0.0)
+    eicxx, eicyy, eicxy = rect_mat.get_eic(e_ref=2)
+    assert eicxx == pytest.approx(5.0 / 24)
+    assert eicyy == pytest.approx(5.0 / 24)
+    assert eicxy == pytest.approx(0.0)
+    eicxx, eicyy, eicxy = rect_mat.get_eic(e_ref=dummy_mat)
+    assert eicxx == pytest.approx(1 / 12.0)
+    assert eicyy == pytest.approx(1 / 12.0)
+    assert eicxy == pytest.approx(0.0)
+
+    # check z
+    zxx_plus, zxx_minus, zyy_plus, zyy_minus = rect_no_mat.get_z()
+    assert zxx_plus == pytest.approx(1 / 6.0)
+    assert zxx_minus == pytest.approx(1 / 6.0)
+    assert zyy_plus == pytest.approx(1 / 6.0)
+    assert zyy_minus == pytest.approx(1 / 6.0)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_z()
+
+    # check ez
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_ez()
+
+    ezxx_plus, ezxx_minus, ezyy_plus, ezyy_minus = rect_mat.get_ez()
+    assert ezxx_plus == pytest.approx(5 / 6.0)
+    assert ezxx_minus == pytest.approx(5 / 6.0)
+    assert ezyy_plus == pytest.approx(5 / 6.0)
+    assert ezyy_minus == pytest.approx(5 / 6.0)
+    ezxx_plus, ezxx_minus, ezyy_plus, ezyy_minus = rect_mat.get_ez(e_ref=2)
+    assert ezxx_plus == pytest.approx(5 / 12.0)
+    assert ezxx_minus == pytest.approx(5 / 12.0)
+    assert ezyy_plus == pytest.approx(5 / 12.0)
+    assert ezyy_minus == pytest.approx(5 / 12.0)
+    ezxx_plus, ezxx_minus, ezyy_plus, ezyy_minus = rect_mat.get_ez(e_ref=dummy_mat)
+    assert ezxx_plus == pytest.approx(1 / 6.0)
+    assert ezxx_minus == pytest.approx(1 / 6.0)
+    assert ezyy_plus == pytest.approx(1 / 6.0)
+    assert ezyy_minus == pytest.approx(1 / 6.0)
+
+    # check rc
+    rcx, rcy = rect_no_mat.get_rc()
+    assert rcx == pytest.approx(np.sqrt(1 / 12.0))
+    assert rcy == pytest.approx(np.sqrt(1 / 12.0))
+    rcx, rcy = rect_mat.get_rc()
+    assert rcx == pytest.approx(np.sqrt(1 / 12.0))
+    assert rcy == pytest.approx(np.sqrt(1 / 12.0))
+
+    # check ip
+    i11, i22 = rect_no_mat.get_ip()
+    assert i11 == pytest.approx(1 / 12.0)
+    assert i22 == pytest.approx(1 / 12.0)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_ip()
+
+    # check eip
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_eip()
+
+    ei11, ei22 = rect_mat.get_eip()
+    assert ei11 == pytest.approx(5.0 / 12)
+    assert ei22 == pytest.approx(5.0 / 12)
+    ei11, ei22 = rect_mat.get_eip(e_ref=2)
+    assert ei11 == pytest.approx(5.0 / 24)
+    assert ei22 == pytest.approx(5.0 / 24)
+    ei11, ei22 = rect_mat.get_eip(e_ref=dummy_mat)
+    assert ei11 == pytest.approx(1 / 12.0)
+    assert ei22 == pytest.approx(1 / 12.0)
+
+    # check phi
+    phi = rect_no_mat.get_phi()
+    assert phi == pytest.approx(0.0)
+    phi = rect_mat.get_phi()
+    assert phi == pytest.approx(0.0)
+
+    # check zp
+    z11_plus, z11_minus, z22_plus, z22_minus = rect_no_mat.get_zp()
+    assert z11_plus == pytest.approx(1 / 6.0)
+    assert z11_minus == pytest.approx(1 / 6.0)
+    assert z22_plus == pytest.approx(1 / 6.0)
+    assert z22_minus == pytest.approx(1 / 6.0)
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_z()
+
+    # check ezp
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_ezp()
+
+    ez11_plus, ez11_minus, ez22_plus, ez22_minus = rect_mat.get_ezp()
+    assert ez11_plus == pytest.approx(5 / 6.0)
+    assert ez11_minus == pytest.approx(5 / 6.0)
+    assert ez22_plus == pytest.approx(5 / 6.0)
+    assert ez22_minus == pytest.approx(5 / 6.0)
+    ez11_plus, ez11_minus, ez22_plus, ez22_minus = rect_mat.get_ezp(e_ref=2)
+    assert ez11_plus == pytest.approx(5 / 12.0)
+    assert ez11_minus == pytest.approx(5 / 12.0)
+    assert ez22_plus == pytest.approx(5 / 12.0)
+    assert ez22_minus == pytest.approx(5 / 12.0)
+    ez11_plus, ez11_minus, ez22_plus, ez22_minus = rect_mat.get_ezp(e_ref=dummy_mat)
+    assert ez11_plus == pytest.approx(1 / 6.0)
+    assert ez11_minus == pytest.approx(1 / 6.0)
+    assert ez22_plus == pytest.approx(1 / 6.0)
+    assert ez22_minus == pytest.approx(1 / 6.0)
+
+    # check rp
+    r11, r22 = rect_no_mat.get_rp()
+    assert r11 == pytest.approx(np.sqrt(1 / 12.0))
+    assert r22 == pytest.approx(np.sqrt(1 / 12.0))
+    r11, r22 = rect_mat.get_rp()
+    assert r11 == pytest.approx(np.sqrt(1 / 12.0))
+    assert r22 == pytest.approx(np.sqrt(1 / 12.0))
+
+    # check nu_eff
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_nu_eff()
+
+    assert rect_mat.get_nu_eff() == pytest.approx(0.0)
+
+    # check e_eff
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_e_eff()
+
+    assert rect_mat.get_e_eff() == pytest.approx(5.0)
+
+    # check g_eff
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_g_eff()
+
+    assert rect_mat.get_g_eff() == pytest.approx(2.5)
+
+
+def test_get_effective_material():
+    """Tests effective material properties."""
+    mat1 = Material(
+        name="test",
+        elastic_modulus=1,
+        poissons_ratio=0.5,  # g = 1 / 3
+        yield_strength=1,
+        density=1,
+        color="w",
+    )
+    mat2 = Material(
+        name="test",
+        elastic_modulus=2,
+        poissons_ratio=0.5,  # g = 2 / 3
+        yield_strength=1,
+        density=1,
+        color="w",
+    )
+    mat3 = Material(
+        name="test",
+        elastic_modulus=1,
+        poissons_ratio=0,  # g = 0.5
+        yield_strength=1,
+        density=1,
+        color="w",
+    )
+
+    rect1 = rectangular_section(d=2, b=2, material=mat1)
+    rect2 = rectangular_section(d=2, b=2, material=mat2)
+    rect3 = rectangular_section(d=2, b=2, material=mat3).shift_section(x_offset=2)
+    geom1 = rect1 + rect3
+    geom2 = rect2 + rect3
+
+    geom1.create_mesh(mesh_sizes=[0])
+    geom2.create_mesh(mesh_sizes=[0])
+    sec1 = Section(geom1)
+    sec2 = Section(geom2)
+    sec1.calculate_geometric_properties()
+    sec2.calculate_geometric_properties()
+
+    # test e_eff
+    assert sec1.get_e_eff() == pytest.approx(1.0)
+    assert sec2.get_e_eff() == pytest.approx((4 * 1 + 4 * 2) / 8)
+
+    # test g_eff
+    # g = e / (2 * (1 + nu))
+    assert sec1.get_g_eff() == pytest.approx((0.5 + 1 / 3.0) / 2)
+    assert sec2.get_g_eff() == pytest.approx((4 * 2 / 3.0 + 4 * 0.5) / 8)
+
+    # test nu_eff
+    # nu = ea / (2 * ga) - 1
+    assert sec1.get_nu_eff() == pytest.approx(4 / (2 * 5 / 3.0) - 1)
+    assert sec2.get_nu_eff() == pytest.approx(6 / (2 * 7 / 3.0) - 1)
