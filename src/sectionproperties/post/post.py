@@ -763,13 +763,13 @@ def print_results(
     if not is_composite:
         try:
             gamma = section.get_gamma()
-            table.add_row("iw", f"{gamma:>{fmt}}")
+            table.add_row("gamma", f"{gamma:>{fmt}}")
         except AssertionError:
             pass
     else:
         try:
             egamma = section.get_egamma()
-            table.add_row("e.iw", f"{egamma:>{fmt}}")
+            table.add_row("e.gamma", f"{egamma:>{fmt}}")
         except AssertionError:
             pass
 

@@ -162,7 +162,7 @@ modulus-weighted manner. If no materials are applied (i.e. the geometry has the
        modulus-weighted centroidal second moments of area.
 
     To illustrate this point, consider modelling a typical reinforced concrete section
-    with a composite analysis approac. By providing material properties,
+    with a composite analysis approach. By providing material properties,
     ``sectionproperties`` calculates the gross section bending stiffness,
     :math:`(EI)_g`.
 
