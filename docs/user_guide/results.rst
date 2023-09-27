@@ -311,10 +311,11 @@ Numerical values for cross-section stress can also be obtained with the
 Get Stress at Points
 ^^^^^^^^^^^^^^^^^^^^
 
-This method has no analysis pre-requisites and can be used to obtain the stress at one
-or multiple points. See `Retrieving Stresses <../examples/results/get_stress.ipynb>`_
-for an example of how this method can be used to plot the stress distribution along a
-line.
+This method can be used to obtain the stress at one or multiple points. A geometric
+analysis must be performed prior to calling this method. Further, if the shear force or
+torsion is non-zero, a warping analysis must also be performed. See
+`Retrieving Stresses <../examples/results/get_stress.ipynb>`_ for an example of how this
+method can be used to plot the stress distribution along a line.
 
 ..  automethod:: sectionproperties.analysis.section.Section.get_stress_at_points
     :noindex:
