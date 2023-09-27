@@ -779,21 +779,21 @@ class StressPost:
                 (0.5 * (sigma_2 + sigma_3), 0),
                 0.5 * (sigma_2 - sigma_3),
                 "r",
-                r"C1: ($\sigma_22$, $\sigma_33$)",
+                r"C1: ($\sigma_{22}$, $\sigma_{33}$)",
             )
             plot_circle(
                 ax,
                 (0.5 * (sigma_1 + sigma_3), 0),
                 0.5 * (sigma_1 - sigma_3),
                 "b",
-                r"C2: ($\sigma_11$, $\sigma_33$)",
+                r"C2: ($\sigma_{11}$, $\sigma_{33}$)",
             )
             plot_circle(
                 ax,
                 (0.5 * (sigma_1 + sigma_2), 0),
                 0.5 * (sigma_1 - sigma_2),
                 "k",
-                r"C3: ($\sigma_11$, $\sigma_22$)",
+                r"C3: ($\sigma_{11}$, $\sigma_{22}$)",
             )
 
             for i, plane, col in zip(range(3), ["X", "Y", "Z"], ["r", "b", "k"]):

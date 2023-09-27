@@ -2462,7 +2462,7 @@ class Section:
         return self.section_props.g_eff
 
     def get_j(self) -> float:
-        """Returns the cross-section St. Venant torsion constant.
+        """Returns the cross-section St Venant torsion constant.
 
         This is a geometric only property, as such this can only be returned if material
         properties have *not* been applied to the cross-section.
@@ -2490,7 +2490,7 @@ class Section:
         self,
         e_ref: float | pre.Material = 1,
     ) -> float:
-        """Returns the modulus-weighted cross-section St. Venant torsion constant.
+        """Returns the modulus-weighted cross-section St Venant torsion constant.
 
         This is a composite only property, as such this can only be returned if material
         properties have been applied to the cross-section.
@@ -2590,7 +2590,7 @@ class Section:
         return x_st, y_st
 
     def get_gamma(self) -> float:
-        """Returns the cross-section warping constant ($I_w$).
+        """Returns the cross-section warping constant.
 
         This is a geometric only property, as such this can only be returned if material
         properties have *not* been applied to the cross-section.
@@ -2820,7 +2820,7 @@ class Section:
         )
 
     def get_beta_p(self):
-        """Returns the cross-section global monosymmetry constants.
+        """Returns the cross-section principal monosymmetry constants.
 
         Returns:
             Monosymmetry constant for bending about both principal axes

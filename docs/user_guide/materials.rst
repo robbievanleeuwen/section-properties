@@ -1,3 +1,5 @@
+.. _label-materials:
+
 Materials
 =========
 
@@ -18,4 +20,4 @@ manipulate a :class:`~sectionproperties.pre.geometry.Geometry`'s material here,
 :ref:`label-geom-material`.
 
 Assigning materials affects the results reported by ``sectionproperties``, learn more
-here (TODO: create link).
+:ref:`here<label-material-affects-results>`.

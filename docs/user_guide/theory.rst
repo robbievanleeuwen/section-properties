@@ -924,7 +924,7 @@ However, for composite sections with variable Poisson's ratios, this assumption 
 hold. [Pilkey]_ does mention that engineering materials often have very
 similar Poisson's ratios and therefore the difference can be negligible.
 
-.. note::
+.. warning::
   If the Poisson's ratio of two materials used in a composite analysis are vastly
   different, the assumptions used in ``sectionproperties`` may not hold, see Chapter 5 &
   6 of [Pilkey]_.
