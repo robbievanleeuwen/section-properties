@@ -171,9 +171,8 @@ modulus-weighted manner. If no materials are applied (i.e. the geometry has the
 
     This can be obtained using the
     :meth:`~sectionproperties.analysis.section.Section.get_eic` method. If the user
-    wanted to obtain the effective concrete second moment of area for a code
-    calculation, they could simply divide the gross bending stiffness by the elastic
-    modulus for concrete:
+    wanted to obtain the transformed second moment of area for a code calculation, they
+    could simply divide the gross bending stiffness by the elastic modulus for concrete:
 
     .. math::
         I_{c,eff} = \frac{(EI)_g}{E_c}
@@ -223,8 +222,8 @@ resulting stresses can be visualised using any of the
 :meth:`~sectionproperties.post.stress_post.StressPost.plot_stress_vector` or
 :meth:`~sectionproperties.post.stress_post.StressPost.plot_mohrs_circles` methods.
 
-Plot Stress Contour
-^^^^^^^^^^^^^^^^^^^
+Plot Stress Contours
+^^^^^^^^^^^^^^^^^^^^
 
 ..  automethod:: sectionproperties.post.stress_post.StressPost.plot_stress
     :noindex:
