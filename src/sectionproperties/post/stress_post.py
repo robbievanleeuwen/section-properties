@@ -19,6 +19,7 @@ import sectionproperties.post.post as post
 
 if TYPE_CHECKING:
     from sectionproperties.analysis.section import MaterialGroup, Section
+    from sectionproperties.pre.pre import Material
 
 
 class StressPost:
@@ -62,6 +63,7 @@ class StressPost:
         fmt: str = "{x:.4e}",
         colorbar_label: str = "Stress",
         alpha: float = 0.5,
+        material_list: list[Material] | None = None,
         **kwargs,
     ) -> matplotlib.axes.Axes:
         r"""Plots filled stress contours over the finite element mesh.
@@ -80,6 +82,8 @@ class StressPost:
                 https://docs.python.org/3/library/string.html
             colorbar_label: Colorbar label
             alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
+            material_list: If specified, only plots materials present in the list. If
+                set to `None`, plots all materials.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -277,11 +281,17 @@ class StressPost:
             },
         }
 
-        # populate stresses
+        # populate stresses and plotted material groups
         sigs = []
+        plotted_material_groups = []
 
         for group in self.material_groups:
+            # if we are limiting materials to plot, check material is in list
+            if material_list and group.material not in material_list:
+                continue
+
             sigs.append(getattr(group.stress_result, stress_dict[stress]["attribute"]))
+            plotted_material_groups.append(group)
 
         # apply title
         if not title:
@@ -320,11 +330,15 @@ class StressPost:
             if normalize:
                 norm = CenteredNorm()
 
-            # plot the filled contour, looping through the materials
-            for i, sig in enumerate(sigs):
+            # plot the filled contour, looping through the plotted material groups
+            for group, sig in zip(plotted_material_groups, sigs):
+                # if we are limiting materials to plot, check material is in list
+                if material_list and group.material not in material_list:
+                    continue
+
                 # create and set the mask for the current material
                 mask_array = np.ones(shape=len(self.section.elements), dtype=bool)
-                mask_array[self.material_groups[i].el_ids] = False
+                mask_array[group.el_ids] = False
                 triang.set_mask(mask_array)
 
                 # plot the filled contour
