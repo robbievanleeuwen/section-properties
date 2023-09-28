@@ -154,9 +154,6 @@ class StressPost:
           - ``stress="zxy"`` - resultant shear stress :math:`\sigma_{zxy}` resulting
             from all actions
 
-          - ``stress="zxy"`` - resultant shear stress :math:`\sigma_{zxy}` resulting
-            from all actions
-
           - ``stress="11"`` - major principal stress :math:`\sigma_{11}` resulting from
             all actions
 
@@ -371,10 +368,10 @@ class StressPost:
             resulting from the torsion moment :math:`M_{zz}`
 
           - ``stress="vx_zxy"`` - resultant shear stress :math:`\sigma_{zxy,Vx}`
-            resulting from the torsion moment :math:`V_{x}`
+            resulting from the shear force :math:`V_{x}`
 
           - ``stress="vy_zxy"`` - resultant shear stress :math:`\sigma_{zxy,Vy}`
-            resulting from the torsion moment :math:`V_{y}`
+            resulting from the shear force :math:`V_{y}`
 
           - ``stress="v_zxy"`` - resultant shear stress :math:`\sigma_{zxy,\Sigma V}`
             resulting from the sum of the applied shear forces :math:`V_{x} + V_{y}`
@@ -960,7 +957,7 @@ class StressResult:
         self.sig_zx = self.sig_zx_mzz + self.sig_zx_v
         self.sig_zy = self.sig_zy_mzz + self.sig_zy_v
         self.sig_zxy = (self.sig_zx**2 + self.sig_zy**2) ** 0.5
-        self.sig_1 = self.sig_zz / 2 + np.sqrt(
+        self.sig_11 = self.sig_zz / 2 + np.sqrt(
             (self.sig_zz / 2) ** 2 + self.sig_zxy**2
         )
         self.sig_33 = self.sig_zz / 2 - np.sqrt(
