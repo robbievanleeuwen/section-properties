@@ -58,6 +58,7 @@ class StressPost:
         title: str | None = None,
         cmap: str = "coolwarm",
         normalize: bool = True,
+        fmt: str = "{x:.4e}",
         **kwargs,
     ) -> matplotlib.axes.Axes:
         r"""Plots filled stress contours over the finite element mesh.
@@ -70,6 +71,8 @@ class StressPost:
                 detail
             normalize: If set to True, ``CenteredNorm`` is used to scale the colormap,
                 if set to False, the default linear scaling is used
+            fmt: Number formatting string, see
+                https://docs.python.org/3/library/string.html
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -323,7 +326,7 @@ class StressPost:
 
             if trictr:
                 fig.colorbar(
-                    mappable=trictr, label="Stress", format="%.4e", ticks=ticks, cax=cax
+                    mappable=trictr, label="Stress", format=fmt, ticks=ticks, cax=cax
                 )
 
             # plot the finite element mesh
@@ -340,6 +343,7 @@ class StressPost:
         title: str | None = None,
         cmap: str = "YlOrBr",
         normalize: bool = False,
+        fmt: str = "{x:.4e}",
         **kwargs,
     ) -> matplotlib.axes.Axes:
         r"""Plots stress vectors over the finite element mesh.
@@ -352,6 +356,8 @@ class StressPost:
                 detail
             normalize: If set to True, ``CenteredNorm`` is used to scale the colormap,
                 if set to False, the default linear scaling is used
+            fmt: Number formatting string, see
+                https://docs.python.org/3/library/string.html
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -475,9 +481,7 @@ class StressPost:
             divider = make_axes_locatable(axes=ax)
             cax = divider.append_axes(position="right", size="5%", pad=0.1)
 
-            fig.colorbar(
-                mappable=quiv, label="Stress", format="%.4e", ticks=v1, cax=cax
-            )
+            fig.colorbar(mappable=quiv, label="Stress", format=fmt, ticks=v1, cax=cax)
 
             # plot the finite element mesh
             self.section.plot_mesh(materials=False, **dict(kwargs, ax=ax))
