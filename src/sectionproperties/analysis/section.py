@@ -1600,15 +1600,17 @@ class Section:
 
     def plot_centroids(
         self,
+        alpha: float = 0.5,
         title: str = "Centroids",
         **kwargs,
     ):
-        """Plots the calculated centroids over the mesh.
+        r"""Plots the calculated centroids over the mesh.
 
         Plots the elastic centroid, the shear centre, the plastic centroids and the
         principal axis, if they have been calculated, on top of the finite element mesh.
 
         Args:
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
             title: Plot title
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
@@ -1641,7 +1643,7 @@ class Section:
             assert ax
 
             # plot the finite element mesh
-            self.plot_mesh(**dict(kwargs, ax=ax))
+            self.plot_mesh(alpha=alpha, **dict(kwargs, ax=ax))
 
             # if the elastic centroid has been calculated
             try:

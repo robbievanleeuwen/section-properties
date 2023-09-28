@@ -59,6 +59,7 @@ class StressPost:
         cmap: str = "coolwarm",
         normalize: bool = True,
         fmt: str = "{x:.4e}",
+        alpha: float = 0.5,
         **kwargs,
     ) -> matplotlib.axes.Axes:
         r"""Plots filled stress contours over the finite element mesh.
@@ -73,6 +74,7 @@ class StressPost:
                 if set to False, the default linear scaling is used
             fmt: Number formatting string, see
                 https://docs.python.org/3/library/string.html
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -330,7 +332,7 @@ class StressPost:
                 )
 
             # plot the finite element mesh
-            self.section.plot_mesh(materials=False, **dict(kwargs, ax=ax))
+            self.section.plot_mesh(alpha=alpha, materials=False, **dict(kwargs, ax=ax))
 
         if ax:
             return ax
@@ -344,6 +346,7 @@ class StressPost:
         cmap: str = "YlOrBr",
         normalize: bool = False,
         fmt: str = "{x:.4e}",
+        alpha: float = 0.2,
         **kwargs,
     ) -> matplotlib.axes.Axes:
         r"""Plots stress vectors over the finite element mesh.
@@ -358,6 +361,7 @@ class StressPost:
                 if set to False, the default linear scaling is used
             fmt: Number formatting string, see
                 https://docs.python.org/3/library/string.html
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -484,7 +488,7 @@ class StressPost:
             fig.colorbar(mappable=quiv, label="Stress", format=fmt, ticks=v1, cax=cax)
 
             # plot the finite element mesh
-            self.section.plot_mesh(materials=False, **dict(kwargs, ax=ax))
+            self.section.plot_mesh(alpha=alpha, materials=False, **dict(kwargs, ax=ax))
 
         if ax:
             return ax
