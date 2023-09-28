@@ -417,6 +417,7 @@ class Geometry:
     def create_mesh(
         self,
         mesh_sizes: float | list[float],
+        min_angle: float = 30.0,
         coarse: bool = False,
     ) -> Geometry:
         r"""Creates a quadratic triangular mesh from the Geometry object.
@@ -425,6 +426,14 @@ class Geometry:
             mesh_sizes: A float describing the maximum mesh element area to be used
                 within the Geometry-object finite-element mesh (may also be a list of
                 length 1).
+            min_angle: The meshing algorithm adds vertices to the mesh to ensure that no
+                angle smaller than the minimum angle (in degrees, rounded to 1 decimal
+                place). Note that small angles between input segments cannot be
+                eliminated. If the minimum angle is 20.7 deg or smaller, the
+                triangulation algorithm is theoretically guaranteed to terminate (given
+                sufficient precision). The algorithm often doesn't terminate for angles
+                greater than 33 deg. Some meshes may require angles well below 20 deg to
+                avoid problems associated with insufficient floating-point precision.
             coarse: If set to True, will create a coarse mesh (no area or quality
                 constraints)
 
@@ -432,8 +441,8 @@ class Geometry:
             ValueError: ``mesh_sizes`` is not valid
 
         Returns:
-            Geometry-object with mesh data stored in .mesh attribute. Returned
-            Geometry-object is self, not a new instance.
+            ``Geometry`` object with mesh data stored in ``.mesh`` attribute. Returned
+            ``Geometry`` object is self, not a new instance.
 
         Example:
             The following example creates a circular cross-section with a diameter of
@@ -467,6 +476,7 @@ class Geometry:
             holes=self.holes,
             control_points=self.control_points,
             mesh_sizes=mesh_size,
+            min_angle=min_angle,
             coarse=coarse,
         )
 
@@ -1882,6 +1892,7 @@ class CompoundGeometry(Geometry):
     def create_mesh(
         self,
         mesh_sizes: list[float],
+        min_angle: float = 30.0,
         coarse: bool = False,
     ) -> CompoundGeometry:
         """Creates a quadratic triangular mesh from the CompoundGeometry object.
@@ -1891,12 +1902,20 @@ class CompoundGeometry(Geometry):
                 the finite-element mesh for each Geometry object within the
                 CompoundGeometry object. If a list of length 1 is passed, then the one
                 size will be applied to all constituent Geometry meshes.
+            min_angle: The meshing algorithm adds vertices to the mesh to ensure that no
+                angle smaller than the minimum angle (in degrees, rounded to 1 decimal
+                place). Note that small angles between input segments cannot be
+                eliminated. If the minimum angle is 20.7 deg or smaller, the
+                triangulation algorithm is theoretically guaranteed to terminate (given
+                sufficient precision). The algorithm often doesn't terminate for angles
+                greater than 33 deg. Some meshes may require angles well below 20 deg to
+                avoid problems associated with insufficient floating-point precision.
             coarse: If set to True, will create a coarse mesh (no area or quality
                 constraints)
 
         Returns:
-            CompoundGeometry object with mesh data stored in .mesh attribute. Returned
-            Geometry object is self, not a new instance.
+            ``CompoundGeometry`` object with mesh data stored in ``.mesh`` attribute.
+            Returned ``CompoundGeometry`` object is self, not a new instance.
 
         Example:
             The following example creates a mesh for a plate with a hole, with a refined
@@ -1932,6 +1951,7 @@ class CompoundGeometry(Geometry):
             holes=self.holes,
             control_points=self.control_points,
             mesh_sizes=mesh_sizes,
+            min_angle=min_angle,
             coarse=coarse,
         )
 
