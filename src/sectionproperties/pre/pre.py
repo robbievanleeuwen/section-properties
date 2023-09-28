@@ -85,6 +85,7 @@ def create_mesh(
     holes: list[tuple[float, float]],
     control_points: list[tuple[float, float]],
     mesh_sizes: list[float] | float,
+    min_angle: float,
     coarse: bool,
 ) -> dict[str, Any]:
     """Generates a triangular mesh.
@@ -103,6 +104,14 @@ def create_mesh(
             enclosed by facets.
         mesh_sizes: List of maximum element areas for each region defined by a control
             point
+        min_angle: The meshing algorithm adds vertices to the mesh to ensure that no
+            angle smaller than the minimum angle (in degrees, rounded to 1 decimal
+            place). Note that small angles between input segments cannot be eliminated.
+            If the minimum angle is 20.7 deg or smaller, the triangulation algorithm is
+            theoretically guaranteed to terminate (given sufficient precision). The
+            algorithm often doesn't terminate for angles greater than 33 deg. Some
+            meshes may require angles well below 20 deg to avoid problems associated
+            with insufficient floating-point precision.
         coarse: If set to True, will create a coarse mesh (no area or quality
             constraints)
 
@@ -131,6 +140,6 @@ def create_mesh(
     if coarse:
         mesh = triangle.triangulate(tri, "pAo2")
     else:
-        mesh = triangle.triangulate(tri, "pq30Aao2")
+        mesh = triangle.triangulate(tri, f"pq{min_angle:.1f}Aao2")
 
     return mesh
