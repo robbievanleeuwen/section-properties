@@ -57,8 +57,10 @@ class StressPost:
         stress: str,
         title: str | None = None,
         cmap: str = "coolwarm",
+        stress_limits: tuple[float, float] | None = None,
         normalize: bool = True,
         fmt: str = "{x:.4e}",
+        colorbar_label: str = "Stress",
         alpha: float = 0.5,
         **kwargs,
     ) -> matplotlib.axes.Axes:
@@ -70,10 +72,13 @@ class StressPost:
             cmap: Matplotlib color map, see
                 https://matplotlib.org/stable/tutorials/colors/colormaps.html for more
                 detail
+            stress_limits: Custom colorbar stress limits (`sig_min`, `sig_max`), values
+                outside these limits will appear as white
             normalize: If set to True, ``CenteredNorm`` is used to scale the colormap,
                 if set to False, the default linear scaling is used
             fmt: Number formatting string, see
                 https://docs.python.org/3/library/string.html
+            colorbar_label: Colorbar label
             alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
@@ -295,8 +300,12 @@ class StressPost:
             )
 
             # determine minimum and maximum stress values for the contour list
-            sig_min = min([min(x) for x in sigs])
-            sig_max = max([max(x) for x in sigs])
+            if stress_limits is None:
+                sig_min = min([min(x) for x in sigs])
+                sig_max = max([max(x) for x in sigs])
+            else:
+                sig_min = stress_limits[0]
+                sig_max = stress_limits[1]
 
             v = np.linspace(start=sig_min, stop=sig_max, num=15, endpoint=True)
 
@@ -328,7 +337,11 @@ class StressPost:
 
             if trictr:
                 fig.colorbar(
-                    mappable=trictr, label="Stress", format=fmt, ticks=ticks, cax=cax
+                    mappable=trictr,
+                    label=colorbar_label,
+                    format=fmt,
+                    ticks=ticks,
+                    cax=cax,
                 )
 
             # plot the finite element mesh
@@ -346,6 +359,7 @@ class StressPost:
         cmap: str = "YlOrBr",
         normalize: bool = False,
         fmt: str = "{x:.4e}",
+        colorbar_label: str = "Stress",
         alpha: float = 0.2,
         **kwargs,
     ) -> matplotlib.axes.Axes:
@@ -361,6 +375,7 @@ class StressPost:
                 if set to False, the default linear scaling is used
             fmt: Number formatting string, see
                 https://docs.python.org/3/library/string.html
+            colorbar_label: Colorbar label
             alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
@@ -485,7 +500,9 @@ class StressPost:
             divider = make_axes_locatable(axes=ax)
             cax = divider.append_axes(position="right", size="5%", pad=0.1)
 
-            fig.colorbar(mappable=quiv, label="Stress", format=fmt, ticks=v1, cax=cax)
+            fig.colorbar(
+                mappable=quiv, label=colorbar_label, format=fmt, ticks=v1, cax=cax
+            )
 
             # plot the finite element mesh
             self.section.plot_mesh(alpha=alpha, materials=False, **dict(kwargs, ax=ax))
