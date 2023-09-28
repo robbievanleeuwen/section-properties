@@ -256,16 +256,27 @@ class Geometry:
     @staticmethod
     def from_dxf(
         dxf_filepath: str | pathlib.Path,
+        spline_delta: float = 0.1,
+        degrees_per_segment: float = 1,
     ) -> Geometry | CompoundGeometry:
         """An interface for the creation of Geometry objects from CAD .dxf files.
 
         Args:
             dxf_filepath: A path-like object for the dxf file
+            spline_delta: Splines are not supported in ``shapely``, so they are
+                approximated as polylines, this argument affects the spline sampling
+                rate
+            degress_per_segment: The number of degrees discretised as a single line
+                segment
 
         Returns:
             Geometry or CompoundGeometry object
         """
-        return load_dxf(dxf_filepath)
+        return load_dxf(
+            dxf_filepath=dxf_filepath,
+            spline_delta=spline_delta,
+            degrees_per_segment=degrees_per_segment,
+        )
 
     @classmethod
     def from_3dm(
@@ -2390,11 +2401,18 @@ class CompoundGeometry(Geometry):
 
 def load_dxf(
     dxf_filepath: str | pathlib.Path,
+    spline_delta: float,
+    degrees_per_segment: float,
 ) -> Geometry | CompoundGeometry:
     """Import any-old-shape in ``.dxf`` format for analysis.
 
     Args:
         dxf_filepath: Path to ``.dxf`` file to load
+        spline_delta: Splines are not supported in ``shapely``, so they are
+            approximated as polylines, this argument affects the spline sampling
+            rate
+        degress_per_segment: The number of degrees discretised as a single line
+            segment
 
     Raises:
         ImportError: If ``cad_to_shapely`` is not installed. To enable dxf features use
@@ -2422,7 +2440,7 @@ def load_dxf(
         raise ValueError(f"The filepath does not exist: {dxf_filepath}")
 
     my_dxf = c2s.dxf.DxfImporter(dxf_filepath)
-    my_dxf.process()
+    my_dxf.process(spline_delta=spline_delta, degrees_per_segment=degrees_per_segment)
     my_dxf.cleanup()
 
     polygons = my_dxf.polygons
