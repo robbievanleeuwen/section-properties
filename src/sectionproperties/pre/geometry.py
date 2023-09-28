@@ -266,7 +266,7 @@ class Geometry:
             spline_delta: Splines are not supported in ``shapely``, so they are
                 approximated as polylines, this argument affects the spline sampling
                 rate
-            degress_per_segment: The number of degrees discretised as a single line
+            degrees_per_segment: The number of degrees discretised as a single line
                 segment
 
         Returns:
@@ -2408,11 +2408,9 @@ def load_dxf(
 
     Args:
         dxf_filepath: Path to ``.dxf`` file to load
-        spline_delta: Splines are not supported in ``shapely``, so they are
-            approximated as polylines, this argument affects the spline sampling
-            rate
-        degress_per_segment: The number of degrees discretised as a single line
-            segment
+        spline_delta: Splines are not supported in ``shapely``, so they are approximated
+            as polylines, this argument affects the spline sampling rate
+        degrees_per_segment: The number of degrees discretised as a single line segment
 
     Raises:
         ImportError: If ``cad_to_shapely`` is not installed. To enable dxf features use
