@@ -29,6 +29,10 @@ class Cell:
         """Converts a Tri6 element to a fibre cell.
 
         If `omega` is None, no warping is considered.
+
+        Args:
+            ele (Tri6): The Tri6 element
+            omega (ndarray): The warping function
         """
         n, dn, self.area = shape_function(
             ele.coords, (0.0, 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0)
@@ -50,6 +54,9 @@ class Cell:
         """Export the cell to a string.
 
         Needs to be implemented by subclasses.
+
+        Returns:
+            str: The exported cell
         """
         raise NotImplementedError
 
@@ -58,7 +65,11 @@ class Cell2D(Cell):
     """A 2D cell section."""
 
     def export(self):
-        """Export the cell to a 2D cell section."""
+        """Export the cell to a 2D cell section.
+
+        Returns:
+            str: The exported cell
+        """
         return f"section Cell2D {self.tag} {self.area:.8e} {self.material} {self.y:.8e}"
 
 
@@ -66,7 +77,11 @@ class Cell3D(Cell):
     """A 3D cell section."""
 
     def export(self):
-        """Export the cell to a 3D cell section."""
+        """Export the cell to a 3D cell section.
+
+        Returns:
+            str: The exported cell
+        """
         return (
             f"section Cell3D {self.tag} {self.area:.8e} {self.material}"
             f" {self.y:.8e} {self.z:.8e}"
@@ -77,7 +92,11 @@ class Cell3DOS(Cell):
     """A 3DOS cell section."""
 
     def export(self):
-        """Export the cell to a 3DOS cell section."""
+        """Export the cell to a 3DOS cell section.
+
+        Returns:
+            str: The exported cell
+        """
         return (
             f"section Cell3DOS {self.tag} {self.area:.8e}"
             f" {self.omega:.8e} {self.py:.8e} {self.pz:.8e}"
@@ -104,7 +123,7 @@ def to_fibre_section(
     Args:
         obj: The geometry/section to be exported
         main_section_tag (int): The tag of the main section
-        analysis_type (AnalysisType): The type of analysis to be performed
+        analysis_type (str): The type of analysis would be performed
         material_mapping (dict): A dictionary mapping material names to material tags
         max_width (int): The maximum width of a line in the output
         save_to (str): The path to save the output to
