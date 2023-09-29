@@ -100,17 +100,14 @@ class Tri6:
             # determine shape function, shape function derivative and jacobian
             n, _, j = shape_function(coords=self.coords, gauss_point=gp)
 
+            nx, ny = self.coords @ n
+
             area += gp[0] * j
-            qx += gp[0] * np.dot(n, np.transpose(self.coords[1, :])) * j
-            qy += gp[0] * np.dot(n, np.transpose(self.coords[0, :])) * j
-            ixx += gp[0] * np.dot(n, np.transpose(self.coords[1, :])) ** 2 * j
-            iyy += gp[0] * np.dot(n, np.transpose(self.coords[0, :])) ** 2 * j
-            ixy += (
-                gp[0]
-                * np.dot(n, np.transpose(self.coords[1, :]))
-                * np.dot(n, np.transpose(self.coords[0, :]))
-                * j
-            )
+            qx += gp[0] * ny * j
+            qy += gp[0] * nx * j
+            ixx += gp[0] * ny**2 * j
+            iyy += gp[0] * nx**2 * j
+            ixy += gp[0] * ny * nx * j
 
         return (
             area,
@@ -142,12 +139,11 @@ class Tri6:
             n, b, j = shape_function(coords=self.coords, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n, np.transpose(self.coords[0, :]))
-            ny = np.dot(n, np.transpose(self.coords[1, :]))
+            nx, ny = self.coords @ n
 
             # calculated modulus weighted stiffness matrix and load vector
             k_el += (
-                gp[0] * np.dot(np.transpose(b), b) * j * (self.material.elastic_modulus)
+                gp[0] * np.dot(np.transpose(b), b) * j * self.material.elastic_modulus
             )
             f_el += (
                 gp[0]
@@ -188,8 +184,7 @@ class Tri6:
             n, b, j = shape_function(coords=self.coords, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n, np.transpose(self.coords[0, :]))
-            ny = np.dot(n, np.transpose(self.coords[1, :]))
+            nx, ny = self.coords @ n
 
             # determine shear parameters
             r = nx**2 - ny**2
@@ -260,9 +255,9 @@ class Tri6:
             n, _, j = shape_function(coords=self.coords, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n, np.transpose(self.coords[0, :]))
-            ny = np.dot(n, np.transpose(self.coords[1, :]))
-            n_omega = np.dot(n, np.transpose(omega))
+            nx, ny = self.coords @ n
+
+            n_omega = np.dot(n, omega)
 
             sc_xint += (
                 gp[0]
@@ -320,8 +315,7 @@ class Tri6:
             n, b, j = shape_function(coords=self.coords, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n, np.transpose(self.coords[0, :]))
-            ny = np.dot(n, np.transpose(self.coords[1, :]))
+            nx, ny = self.coords @ n
 
             # determine shear parameters
             r = nx**2 - ny**2
@@ -385,8 +379,7 @@ class Tri6:
             n, _, j = shape_function(coords=self.coords, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n, np.transpose(self.coords[0, :]))
-            ny = np.dot(n, np.transpose(self.coords[1, :]))
+            nx, ny = self.coords @ n
 
             # determine 11 and 22 position at Gauss point
             nx_11, ny_22 = principal_coordinate(phi=phi, x=nx, y=ny)
@@ -519,8 +512,7 @@ class Tri6:
             n_shape, b, _ = shape_function(coords=coords_c, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n_shape, np.transpose(coords_c[0, :]))
-            ny = np.dot(n_shape, np.transpose(coords_c[1, :]))
+            nx, ny = coords_c @ n_shape
 
             # determine 11 and 22 position at Gauss point
             nx_11, ny_22 = principal_coordinate(phi=phi, x=nx, y=ny)
