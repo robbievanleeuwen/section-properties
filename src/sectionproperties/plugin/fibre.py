@@ -94,7 +94,7 @@ def to_fibre_section(
     material_mapping: dict = None,
     max_width: int = 160,
     save_to: str = None,
-) -> str | None:
+) -> list:
     """Export a section to the corresponding commands to create a fibre section.
 
     For a given geometry, this function computes necessary sectional properties and
@@ -110,7 +110,7 @@ def to_fibre_section(
         save_to (str): The path to save the output to
 
     Returns:
-        str: The commands to create a fibre section
+        list: A list of cells
     """
     if isinstance(obj, (Geometry, CompoundGeometry)):
         geometry = obj
@@ -169,8 +169,8 @@ def to_fibre_section(
         for name, tag in material_mapping.items():
             commands.replace("-".join(name.split()), str(tag))
 
-    if save_to is None:
-        return commands
+    if save_to is not None:
+        with open(save_to, "w") as f:
+            f.write(commands)
 
-    with open(save_to, "w") as f:
-        f.write(commands)
+    return cells
