@@ -8,6 +8,7 @@ Finite element classes:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from functools import lru_cache
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -849,19 +850,14 @@ def gauss_points(n: int) -> np.ndarray:
         raise ValueError("n must be 1, 3 or 6.")
 
 
-def shape_function(
-    coords: np.ndarray,
-    gauss_point: tuple[float, float, float, float],
-) -> tuple[np.ndarray, np.ndarray, float]:
-    """Calculates shape functions, derivates and the Jacobian determinant.
-
-    Computes the shape functions, shape function derivatives and the determinant of the
-    Jacobian matrix for a ``Tri6`` element at a given Gauss point.
+@lru_cache(maxsize=None)
+def __shape_function_cached(coords: tuple, gauss_point: tuple):
+    """The cached version.
 
     Args:
         coords: Global coordinates of the quadratic triangle vertices, of size
             ``[2 x 6]``
-        gauss_point: Gaussian weight and isoparametric location of the Gauss point
+        gauss_point: Isoparametric location of the Gauss point
 
     Returns:
         The value of the shape functions ``N(i)`` at the given Gauss point
@@ -870,9 +866,7 @@ def shape_function(
         matrix ``j``
     """
     # location of isoparametric co-ordinates for each Gauss point
-    eta = gauss_point[1]
-    xi = gauss_point[2]
-    zeta = gauss_point[3]
+    eta, xi, zeta = gauss_point
 
     # value of the shape functions
     n = np.array(
@@ -899,7 +893,7 @@ def shape_function(
 
     # form Jacobian matrix
     j_upper = np.array([[1, 1, 1]])
-    j_lower = np.dot(coords, np.transpose(b_iso))
+    j_lower = np.dot(np.array(coords).reshape((2, 6)), b_iso.transpose())
     j = np.vstack((j_upper, j_lower))
 
     # calculate the jacobian
@@ -908,16 +902,40 @@ def shape_function(
     # if the area of the element is not zero
     if jacobian != 0:
         # calculate the p matrix
-        p = np.dot(np.linalg.inv(j), np.array([[0, 0], [1, 0], [0, 1]]))
+        p = np.linalg.solve(j, np.array([[0, 0], [1, 0], [0, 1]]))
 
         # calculate the b matrix in terms of cartesian co-ordinates
-        b = np.transpose(np.dot(np.transpose(b_iso), p))
+        b = p.transpose() @ b_iso
     else:
         b = np.zeros((2, 6))  # empty b matrix
 
     return n, b, jacobian
 
 
+def shape_function(
+    coords: np.ndarray,
+    gauss_point: tuple[float, float, float, float],
+) -> tuple[np.ndarray, np.ndarray, float]:
+    """Calculates shape functions, derivates and the Jacobian determinant.
+
+    Computes the shape functions, shape function derivatives and the determinant of the
+    Jacobian matrix for a ``Tri6`` element at a given Gauss point.
+
+    Args:
+        coords: Global coordinates of the quadratic triangle vertices, of size
+            ``[2 x 6]``
+        gauss_point: Gaussian weight and isoparametric location of the Gauss point
+
+    Returns:
+        The value of the shape functions ``N(i)`` at the given Gauss point
+        (``[1 x 6]``), the derivative of the shape functions in the *j-th* global
+        direction ``B(i,j)`` (``[2 x 6]``) and the determinant of the Jacobian
+        matrix ``j``
+    """
+    return __shape_function_cached(tuple(coords.ravel()), tuple(gauss_point[1:]))
+
+
+@lru_cache(maxsize=None)
 def shape_function_only(p: tuple[float, float, float]) -> np.ndarray:
     """The values of the ``Tri6`` shape function at a point ``p``.
 
@@ -927,9 +945,7 @@ def shape_function_only(p: tuple[float, float, float]) -> np.ndarray:
     Returns:
         The shape function values at ``p``, of size ``[1 x 6]``
     """
-    eta = p[0]
-    xi = p[1]
-    zeta = p[2]
+    eta, xi, zeta = p
 
     return np.array(
         [
