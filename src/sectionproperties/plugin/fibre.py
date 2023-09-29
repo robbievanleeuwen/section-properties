@@ -128,6 +128,10 @@ def to_fibre_section(
         max_width (int): The maximum width of a line in the output
         save_to (str): The path to save the output to
 
+    Raises:
+        TypeError: If `obj` is not a Geometry or Section
+        ValueError: If `analysis_type` is not 2D, 3D or 3DOS
+
     Returns:
         list: A list of cells
     """
