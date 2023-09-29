@@ -106,7 +106,7 @@ class Cell3DOS(Cell):
 
 
 def to_fibre_section(
-    obj,
+    obj: Geometry | CompoundGeometry | Section,
     *,
     main_section_tag: int = 1,
     analysis_type: str = "3DOS",
@@ -121,7 +121,7 @@ def to_fibre_section(
     used in [suanPan](https://github.com/TLCFEM/suanPan).
 
     Args:
-        obj: The geometry/section to be exported
+        obj (Geometry | CompoundGeometry | Section): The geometry/section to be exported
         main_section_tag (int): The tag of the main section
         analysis_type (str): The type of analysis would be performed
         material_mapping (dict): A dictionary mapping material names to material tags
