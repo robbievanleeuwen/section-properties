@@ -257,7 +257,7 @@ class Section:
                 self.section_props.iyy_g += iyy_g * e
                 self.section_props.ixy_g += ixy_g * e
 
-                if progress and task:
+                if progress and task is not None:
                     progress.update(task_id=task, advance=1)
 
             self.section_props.nu_eff = (
@@ -270,7 +270,7 @@ class Section:
                 node_list=self.mesh["vertices"]
             )
 
-            if progress and task:
+            if progress and task is not None:
                 msg = "[bold green]:white_check_mark: Geometric analysis complete"
                 progress.update(task_id=task, description=msg)
 
@@ -880,7 +880,7 @@ class Section:
                 self.section_props.iyy_g += iyy_g * e
                 self.section_props.ixy_g += ixy_g * e
 
-                if progress and task:
+                if progress and task is not None:
                     progress.update(task_id=task, advance=1)
 
             # calculate elastic centroid location
@@ -916,7 +916,7 @@ class Section:
             else:
                 self.section_props.phi = np.arctan2(ixx_c - i11_c, ixy_c) * 180 / np.pi
 
-            if progress and task:
+            if progress and task is not None:
                 msg = "[bold green]:white_check_mark: Geometric analysis complete"
                 progress.update(task_id=task, description=msg)
 
@@ -1055,7 +1055,7 @@ class Section:
             progress_table = Table.grid()
             panel = Panel.fit(
                 renderable=progress,
-                title="[bold]Warping Analysis",
+                title="[bold]Warping (Frame) Analysis",
                 border_style="red",
                 padding=(1, 1),
             )
@@ -1564,10 +1564,6 @@ class Section:
                         legend_labels.append(patch)
 
                 cmap = ListedColormap(colors=color_array)  # custom colormap
-
-                # from rich.pretty import pprint
-                # pprint(len(self._mesh_nodes))
-                # pprint(self._mesh_elements.max())
 
                 # plot the mesh colors
                 ax.tripcolor(
