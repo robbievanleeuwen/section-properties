@@ -37,6 +37,7 @@ Analysis
     examples/analysis/warping_analysis
     examples/analysis/frame_analysis
     examples/analysis/stress_analysis
+    examples/analysis/export_fibre_section
 
 Results
 -------
