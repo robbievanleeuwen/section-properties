@@ -862,20 +862,7 @@ def gauss_points(n: int) -> np.ndarray:
 
 @lru_cache(maxsize=None)
 def __shape_function_cached(
-    coords: tuple[
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-        float,
-    ],
+    coords: tuple[float, ...],
     gauss_point: tuple[float, float, float],
 ) -> tuple[np.ndarray, np.ndarray, float]:
     """The cached version.
