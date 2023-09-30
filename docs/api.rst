@@ -13,3 +13,4 @@ API
     sectionproperties.pre
     sectionproperties.analysis
     sectionproperties.post
+    sectionproperties.plugin
