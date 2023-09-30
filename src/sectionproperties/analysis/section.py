@@ -1469,22 +1469,11 @@ class Section:
         row.extend(range(n_size))
         col.extend([n_size] * n_size)
         data.extend([1] * n_size)
-        # row = np.hstack((row, range(n_size)))
-        # col = np.hstack((col, np.repeat(n_size, n_size)))
-        # data = np.hstack((data, np.repeat(1, n_size)))
 
         # row vector of ones
         row.extend([n_size] * n_size)
         col.extend(range(n_size))
         data.extend([1] * n_size)
-        # row = np.hstack((row, np.repeat(n_size, n_size)))
-        # col = np.hstack((col, range(n_size)))
-        # data = np.hstack((data, np.repeat(1, n_size)))
-
-        # zero in bottom right corner
-        # row = np.hstack((row, n_size))
-        # col = np.hstack((col, n_size))
-        # data = np.hstack((data, 0))
 
         k_lg = coo_matrix(
             (data, (row, col)), shape=(n_size + 1, n_size + 1), dtype=float

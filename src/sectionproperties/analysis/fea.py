@@ -861,12 +861,28 @@ def gauss_points(n: int) -> np.ndarray:
 
 
 @lru_cache(maxsize=None)
-def __shape_function_cached(coords: tuple, gauss_point: tuple):
+def __shape_function_cached(
+    coords: tuple[
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+    ],
+    gauss_point: tuple[float, float, float],
+) -> tuple[np.ndarray, np.ndarray, float]:
     """The cached version.
 
     Args:
         coords: Global coordinates of the quadratic triangle vertices, of size
-            ``[2 x 6]``
+            ``[1 x 12]``
         gauss_point: Isoparametric location of the Gauss point
 
     Returns:
