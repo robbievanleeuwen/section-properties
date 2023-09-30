@@ -1442,20 +1442,6 @@ class Section:
             # assemble the torsion load vector
             f_torsion[el.node_ids] += f_el
 
-            # # create row index vector
-            # r = np.repeat(el.node_ids, n)
-            #
-            # # create column index vector
-            # c = np.tile(el.node_ids, n)
-            #
-            # # flatten element stiffness matrix
-            # k = k_el.flatten()
-            #
-            # # add to global arrays
-            # row = np.hstack((row, r))
-            # col = np.hstack((col, c))
-            # data = np.hstack((data, k))
-
             for node_id in el.node_ids:
                 row.extend([node_id] * n)
             col.extend(list(el.node_ids) * n)
