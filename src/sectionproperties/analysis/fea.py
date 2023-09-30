@@ -197,10 +197,8 @@ class Tri6:
             f_psi += (
                 gp[0]
                 * (
-                    nu
-                    / 2
-                    * np.transpose(np.transpose(b).dot(np.array([[d1], [d2]])))[0]
-                    + 2 * (1 + nu) * np.transpose(n) * (ixx * nx - ixy * ny)
+                    nu / 2 * b.transpose() @ np.array([d1, d2])
+                    + 2 * (1 + nu) * n * (ixx * nx - ixy * ny)
                 )
                 * j
                 * self.material.elastic_modulus
@@ -208,10 +206,8 @@ class Tri6:
             f_phi += (
                 gp[0]
                 * (
-                    nu
-                    / 2
-                    * np.transpose(np.transpose(b).dot(np.array([[h1], [h2]])))[0]
-                    + 2 * (1 + nu) * np.transpose(n) * (iyy * ny - ixy * nx)
+                    nu / 2 * b.transpose() @ np.array([h1, h2])
+                    + 2 * (1 + nu) * n * (iyy * ny - ixy * nx)
                 )
                 * j
                 * self.material.elastic_modulus
