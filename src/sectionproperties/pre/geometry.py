@@ -144,13 +144,11 @@ class Geometry:
         holes: list[tuple[float, float]] | None = None,
         material: pre.Material = pre.DEFAULT_MATERIAL,
     ) -> Geometry:
-        """Creates a Geometry object from points, facets and holes.
+        """Creates Geometry from points, facets, a control point and holes.
 
         Args:
             points: List of points (``x``, ``y``) defining the vertices of the section
-                geometry. If facets are not provided, it is a assumed the that the list
-                of points are ordered around the perimeter, either clockwise or
-                anti-clockwise.
+                geometry.
             facets: A list of (``start``, ``end``) indices of vertices defining the
                 edges of the section geoemtry. Can be used to define both external and
                 internal perimeters of holes. Facets are assumed to be described in the
@@ -158,7 +156,7 @@ class Geometry:
                 etc.
             control_points: An (``x``, ``y``) coordinate that describes the distinct,
                 contiguous, region of a single material within the geometry. Must be
-                entered as a list of coordinates, e.g. [[0.5, 3.2]]. Exactly one point
+                entered as a list of coordinates, e.g. [(0.5, 3.2)]. Exactly one point
                 is required for each geometry with a distinct material. If there are
                 multiple distinct regions, then use
                 :meth:`sectionproperties.pre.geometry.CompoundGeometry.from_points()`
@@ -1641,29 +1639,27 @@ class CompoundGeometry(Geometry):
         holes: list[tuple[float, float]] | None = None,
         materials: list[pre.Material] | None = None,
     ) -> CompoundGeometry:
-        """Creates a CompoundGeometry object from points, facets and holes.
+        """Creates CompoundGeometry from points, facets, control points and holes.
 
         An interface for the creation of CompoundGeometry objects through the definition
-        of points, facets, holes, and control points. Geometries created through this
+        of points, facets, control points and holes. Geometries created through this
         method are expected to be non-ambiguous meaning that no "overlapping" geometries
         exists and that nodal connectivity is maintained (e.g. there are no nodes
         "overlapping" with facets without nodal connectivity).
 
         Args:
             points: List of points (``x``, ``y``) defining the vertices of the
-                section geometry. If any empty list of facets is provided, it is a
-                assumed that the list of points are ordered around the perimeter, either
-                clockwise or anti-clockwise.
+                section geometry.
             facets: A list of (``start``, ``end``) indices of vertices defining the
                 edges of the section geoemtry. Can be used to define both external and
                 internal perimeters of holes. Facets are assumed to be described in the
                 order of exterior perimeter, interior perimeter 1, interior perimeter 2,
                 etc.
-            control_points: A list of points (``x``, ``y``) that define non-interior
-                regions as being distinct, contiguous, and having one material. The
-                point can be located anywhere within region. Only one point is permitted
-                per region. The order of ``control_points`` must be given in the same
-                order as the order that polygons are created by ``facets``.
+            control_points: A list of points (``x``, ``y``) that define regions as being
+                distinct, contiguous, and having one material. The point can be located
+                anywhere within region. Only one point is permitted per region. The
+                order of ``control_points`` must be given in the same order as the order
+                that polygons are created by ``facets``.
             holes: A list of points (``x``, ``y``) that define interior regions as
                 being holes or voids. The point can be located anywhere within the hole
                 region. Only one point is required per hole region.
