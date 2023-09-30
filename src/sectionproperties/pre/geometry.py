@@ -2384,7 +2384,10 @@ class CompoundGeometry(Geometry):
         # Determine if new holes have been created or if existing
         # holes have been destroyed (or "filled in").
         resultant_holes = []
+        SCALE_CONSTANT = 1e-9
         unionized_poly = unary_union([geom.geom for geom in self.geoms])
+        buffer_amount = unionized_poly.area * SCALE_CONSTANT
+        unionized_poly = unionized_poly.buffer(buffer_amount)
 
         if isinstance(unionized_poly, MultiPolygon):
             for poly in unionized_poly.geoms:
