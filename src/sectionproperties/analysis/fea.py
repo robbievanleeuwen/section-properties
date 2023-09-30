@@ -8,6 +8,7 @@ Finite element classes:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from functools import lru_cache
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -99,17 +100,14 @@ class Tri6:
             # determine shape function, shape function derivative and jacobian
             n, _, j = shape_function(coords=self.coords, gauss_point=gp)
 
+            nx, ny = self.coords @ n
+
             area += gp[0] * j
-            qx += gp[0] * np.dot(n, np.transpose(self.coords[1, :])) * j
-            qy += gp[0] * np.dot(n, np.transpose(self.coords[0, :])) * j
-            ixx += gp[0] * np.dot(n, np.transpose(self.coords[1, :])) ** 2 * j
-            iyy += gp[0] * np.dot(n, np.transpose(self.coords[0, :])) ** 2 * j
-            ixy += (
-                gp[0]
-                * np.dot(n, np.transpose(self.coords[1, :]))
-                * np.dot(n, np.transpose(self.coords[0, :]))
-                * j
-            )
+            qx += gp[0] * ny * j
+            qy += gp[0] * nx * j
+            ixx += gp[0] * ny**2 * j
+            iyy += gp[0] * nx**2 * j
+            ixy += gp[0] * ny * nx * j
 
         return (
             area,
@@ -141,12 +139,11 @@ class Tri6:
             n, b, j = shape_function(coords=self.coords, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n, np.transpose(self.coords[0, :]))
-            ny = np.dot(n, np.transpose(self.coords[1, :]))
+            nx, ny = self.coords @ n
 
             # calculated modulus weighted stiffness matrix and load vector
             k_el += (
-                gp[0] * np.dot(np.transpose(b), b) * j * (self.material.elastic_modulus)
+                gp[0] * np.dot(np.transpose(b), b) * j * self.material.elastic_modulus
             )
             f_el += (
                 gp[0]
@@ -187,8 +184,7 @@ class Tri6:
             n, b, j = shape_function(coords=self.coords, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n, np.transpose(self.coords[0, :]))
-            ny = np.dot(n, np.transpose(self.coords[1, :]))
+            nx, ny = self.coords @ n
 
             # determine shear parameters
             r = nx**2 - ny**2
@@ -201,10 +197,8 @@ class Tri6:
             f_psi += (
                 gp[0]
                 * (
-                    nu
-                    / 2
-                    * np.transpose(np.transpose(b).dot(np.array([[d1], [d2]])))[0]
-                    + 2 * (1 + nu) * np.transpose(n) * (ixx * nx - ixy * ny)
+                    nu / 2 * b.transpose() @ np.array([d1, d2])
+                    + 2 * (1 + nu) * n * (ixx * nx - ixy * ny)
                 )
                 * j
                 * self.material.elastic_modulus
@@ -212,10 +206,8 @@ class Tri6:
             f_phi += (
                 gp[0]
                 * (
-                    nu
-                    / 2
-                    * np.transpose(np.transpose(b).dot(np.array([[h1], [h2]])))[0]
-                    + 2 * (1 + nu) * np.transpose(n) * (iyy * ny - ixy * nx)
+                    nu / 2 * b.transpose() @ np.array([h1, h2])
+                    + 2 * (1 + nu) * n * (iyy * ny - ixy * nx)
                 )
                 * j
                 * self.material.elastic_modulus
@@ -259,9 +251,9 @@ class Tri6:
             n, _, j = shape_function(coords=self.coords, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n, np.transpose(self.coords[0, :]))
-            ny = np.dot(n, np.transpose(self.coords[1, :]))
-            n_omega = np.dot(n, np.transpose(omega))
+            nx, ny = self.coords @ n
+
+            n_omega = np.dot(n, omega)
 
             sc_xint += (
                 gp[0]
@@ -319,8 +311,7 @@ class Tri6:
             n, b, j = shape_function(coords=self.coords, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n, np.transpose(self.coords[0, :]))
-            ny = np.dot(n, np.transpose(self.coords[1, :]))
+            nx, ny = self.coords @ n
 
             # determine shear parameters
             r = nx**2 - ny**2
@@ -384,8 +375,7 @@ class Tri6:
             n, _, j = shape_function(coords=self.coords, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n, np.transpose(self.coords[0, :]))
-            ny = np.dot(n, np.transpose(self.coords[1, :]))
+            nx, ny = self.coords @ n
 
             # determine 11 and 22 position at Gauss point
             nx_11, ny_22 = principal_coordinate(phi=phi, x=nx, y=ny)
@@ -518,8 +508,7 @@ class Tri6:
             n_shape, b, _ = shape_function(coords=coords_c, gauss_point=gp)
 
             # determine x and y position at Gauss point
-            nx = np.dot(n_shape, np.transpose(coords_c[0, :]))
-            ny = np.dot(n_shape, np.transpose(coords_c[1, :]))
+            nx, ny = coords_c @ n_shape
 
             # determine 11 and 22 position at Gauss point
             nx_11, ny_22 = principal_coordinate(phi=phi, x=nx, y=ny)
@@ -800,11 +789,16 @@ class Tri6:
         return eta, xi, zeta
 
 
+@lru_cache(maxsize=None)
 def gauss_points(n: int) -> np.ndarray:
     """Gaussian weights and locations for ``n`` point Gaussian integration of a Tri6.
 
+    Reference:
+        https://doi.org/10.2307/2002483
+        https://doi.org/10.1002/nme.1620070316
+
     Args:
-        n: Number of Gauss points (1, 3 or 6)
+        n: Number of Gauss points (1, 3, 4 or 6)
 
     Raises:
         ValueError: ``n`` is invalid
@@ -817,7 +811,7 @@ def gauss_points(n: int) -> np.ndarray:
         # one point gaussian integration
         return np.array([[1.0, 1.0 / 3, 1.0 / 3, 1.0 / 3]], dtype=float)
 
-    elif n == 3:
+    if n == 3:
         # three point gaussian integration
         return np.array(
             [
@@ -827,7 +821,20 @@ def gauss_points(n: int) -> np.ndarray:
             ],
             dtype=float,
         )
-    elif n == 6:
+
+    if n == 4:
+        # four-point integration
+        return np.array(
+            [
+                [-27.0 / 48.0, 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0],
+                [25.0 / 48.0, 0.6, 0.2, 0.2],
+                [25.0 / 48.0, 0.2, 0.6, 0.2],
+                [25.0 / 48.0, 0.2, 0.2, 0.6],
+            ],
+            dtype=float,
+        )
+
+    if n == 6:
         # six point gaussian integration
         g1 = 1.0 / 18 * (8 - np.sqrt(10) + np.sqrt(38 - 44 * np.sqrt(2.0 / 5)))
         g2 = 1.0 / 18 * (8 - np.sqrt(10) - np.sqrt(38 - 44 * np.sqrt(2.0 / 5)))
@@ -845,23 +852,21 @@ def gauss_points(n: int) -> np.ndarray:
             ],
             dtype=float,
         )
-    else:
-        raise ValueError("n must be 1, 3 or 6.")
+
+    raise ValueError("n must be 1, 3, 4 or 6.")
 
 
-def shape_function(
-    coords: np.ndarray,
-    gauss_point: tuple[float, float, float, float],
+@lru_cache(maxsize=None)
+def __shape_function_cached(
+    coords: tuple[float, ...],
+    gauss_point: tuple[float, float, float],
 ) -> tuple[np.ndarray, np.ndarray, float]:
-    """Calculates shape functions, derivates and the Jacobian determinant.
-
-    Computes the shape functions, shape function derivatives and the determinant of the
-    Jacobian matrix for a ``Tri6`` element at a given Gauss point.
+    """The cached version.
 
     Args:
         coords: Global coordinates of the quadratic triangle vertices, of size
-            ``[2 x 6]``
-        gauss_point: Gaussian weight and isoparametric location of the Gauss point
+            ``[1 x 12]``
+        gauss_point: Isoparametric location of the Gauss point
 
     Returns:
         The value of the shape functions ``N(i)`` at the given Gauss point
@@ -870,9 +875,7 @@ def shape_function(
         matrix ``j``
     """
     # location of isoparametric co-ordinates for each Gauss point
-    eta = gauss_point[1]
-    xi = gauss_point[2]
-    zeta = gauss_point[3]
+    eta, xi, zeta = gauss_point
 
     # value of the shape functions
     n = np.array(
@@ -899,7 +902,7 @@ def shape_function(
 
     # form Jacobian matrix
     j_upper = np.array([[1, 1, 1]])
-    j_lower = np.dot(coords, np.transpose(b_iso))
+    j_lower = np.dot(np.array(coords).reshape((2, 6)), b_iso.transpose())
     j = np.vstack((j_upper, j_lower))
 
     # calculate the jacobian
@@ -908,16 +911,40 @@ def shape_function(
     # if the area of the element is not zero
     if jacobian != 0:
         # calculate the p matrix
-        p = np.dot(np.linalg.inv(j), np.array([[0, 0], [1, 0], [0, 1]]))
+        p = np.linalg.solve(j, np.array([[0, 0], [1, 0], [0, 1]]))
 
         # calculate the b matrix in terms of cartesian co-ordinates
-        b = np.transpose(np.dot(np.transpose(b_iso), p))
+        b = p.transpose() @ b_iso
     else:
         b = np.zeros((2, 6))  # empty b matrix
 
     return n, b, jacobian
 
 
+def shape_function(
+    coords: np.ndarray,
+    gauss_point: tuple[float, float, float, float],
+) -> tuple[np.ndarray, np.ndarray, float]:
+    """Calculates shape functions, derivates and the Jacobian determinant.
+
+    Computes the shape functions, shape function derivatives and the determinant of the
+    Jacobian matrix for a ``Tri6`` element at a given Gauss point.
+
+    Args:
+        coords: Global coordinates of the quadratic triangle vertices, of size
+            ``[2 x 6]``
+        gauss_point: Gaussian weight and isoparametric location of the Gauss point
+
+    Returns:
+        The value of the shape functions ``N(i)`` at the given Gauss point
+        (``[1 x 6]``), the derivative of the shape functions in the *j-th* global
+        direction ``B(i,j)`` (``[2 x 6]``) and the determinant of the Jacobian
+        matrix ``j``
+    """
+    return __shape_function_cached(tuple(coords.ravel()), tuple(gauss_point[1:]))
+
+
+@lru_cache(maxsize=None)
 def shape_function_only(p: tuple[float, float, float]) -> np.ndarray:
     """The values of the ``Tri6`` shape function at a point ``p``.
 
@@ -927,9 +954,7 @@ def shape_function_only(p: tuple[float, float, float]) -> np.ndarray:
     Returns:
         The shape function values at ``p``, of size ``[1 x 6]``
     """
-    eta = p[0]
-    xi = p[1]
-    zeta = p[2]
+    eta, xi, zeta = p
 
     return np.array(
         [

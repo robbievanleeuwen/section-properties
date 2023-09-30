@@ -1442,38 +1442,24 @@ class Section:
             # assemble the torsion load vector
             f_torsion[el.node_ids] += f_el
 
-            # create row index vector
-            r = np.repeat(el.node_ids, n)
-
-            # create column index vector
-            c = np.tile(el.node_ids, n)
-
-            # flatten element stiffness matrix
-            k = k_el.flatten()
-
-            # add to global arrays
-            row = np.hstack((row, r))
-            col = np.hstack((col, c))
-            data = np.hstack((data, k))
+            for node_id in el.node_ids:
+                row.extend([node_id] * n)
+            col.extend(list(el.node_ids) * n)
+            data.extend(k_el.flatten())
 
             if progress and task:
                 progress.update(task_id=task, advance=1)
 
         # construct Lagrangian multiplier matrix:
         # column vector of ones
-        row = np.hstack((row, range(n_size)))
-        col = np.hstack((col, np.repeat(n_size, n_size)))
-        data = np.hstack((data, np.repeat(1, n_size)))
+        row.extend(range(n_size))
+        col.extend([n_size] * n_size)
+        data.extend([1] * n_size)
 
         # row vector of ones
-        row = np.hstack((row, np.repeat(n_size, n_size)))
-        col = np.hstack((col, range(n_size)))
-        data = np.hstack((data, np.repeat(1, n_size)))
-
-        # zero in bottom right corner
-        row = np.hstack((row, n_size))
-        col = np.hstack((col, n_size))
-        data = np.hstack((data, 0))
+        row.extend([n_size] * n_size)
+        col.extend(range(n_size))
+        data.extend([1] * n_size)
 
         k_lg = coo_matrix(
             (data, (row, col)), shape=(n_size + 1, n_size + 1), dtype=float
