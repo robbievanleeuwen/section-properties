@@ -148,7 +148,10 @@ class Geometry:
 
         Args:
             points: List of points (``x``, ``y``) defining the vertices of the section
-                geometry.
+                geometry. If the geometry simply contains a continuous list of exterior
+                points, consider creating a :class:`shapely.Polygon` object (only
+                requiring points), and create a ``Geometry`` object using the
+                constructor.
             facets: A list of (``start``, ``end``) indices of vertices defining the
                 edges of the section geoemtry. Can be used to define both external and
                 internal perimeters of holes. Facets are assumed to be described in the
