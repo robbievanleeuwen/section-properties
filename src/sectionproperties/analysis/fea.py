@@ -793,11 +793,16 @@ class Tri6:
         return eta, xi, zeta
 
 
+@lru_cache(maxsize=None)
 def gauss_points(n: int) -> np.ndarray:
     """Gaussian weights and locations for ``n`` point Gaussian integration of a Tri6.
 
+    Reference:
+        https://doi.org/10.2307/2002483
+        https://doi.org/10.1002/nme.1620070316
+
     Args:
-        n: Number of Gauss points (1, 3 or 6)
+        n: Number of Gauss points (1, 3, 4 or 6)
 
     Raises:
         ValueError: ``n`` is invalid
@@ -810,7 +815,7 @@ def gauss_points(n: int) -> np.ndarray:
         # one point gaussian integration
         return np.array([[1.0, 1.0 / 3, 1.0 / 3, 1.0 / 3]], dtype=float)
 
-    elif n == 3:
+    if n == 3:
         # three point gaussian integration
         return np.array(
             [
@@ -820,7 +825,20 @@ def gauss_points(n: int) -> np.ndarray:
             ],
             dtype=float,
         )
-    elif n == 6:
+
+    if n == 4:
+        # four-point integration
+        return np.array(
+            [
+                [-27.0 / 48.0, 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0],
+                [25.0 / 48.0, 0.6, 0.2, 0.2],
+                [25.0 / 48.0, 0.2, 0.6, 0.2],
+                [25.0 / 48.0, 0.2, 0.2, 0.6],
+            ],
+            dtype=float,
+        )
+
+    if n == 6:
         # six point gaussian integration
         g1 = 1.0 / 18 * (8 - np.sqrt(10) + np.sqrt(38 - 44 * np.sqrt(2.0 / 5)))
         g2 = 1.0 / 18 * (8 - np.sqrt(10) - np.sqrt(38 - 44 * np.sqrt(2.0 / 5)))
@@ -838,8 +856,8 @@ def gauss_points(n: int) -> np.ndarray:
             ],
             dtype=float,
         )
-    else:
-        raise ValueError("n must be 1, 3 or 6.")
+
+    raise ValueError("n must be 1, 3, 4 or 6.")
 
 
 @lru_cache(maxsize=None)
