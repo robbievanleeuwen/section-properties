@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class Tri6:
-    """Class for a six noded quadratic triangular element.
+    """Class for a six-node quadratic triangular element.
 
     Provides methods for the calculation of section properties based on the finite
     element method.
@@ -59,7 +59,7 @@ class Tri6:
         r0 = p0 - self._x0
         r1 = p1 - self._x0
 
-        # Asseble the equations to solve for the transformation for the unit triangle
+        # Assemble the equations to solve for the transformation for the unit triangle
         x = np.array([r0, r1]).transpose()
         b = np.array([[1, 0], [0, 1]])
         self._m = np.linalg.solve(x, b)
@@ -92,8 +92,8 @@ class Tri6:
         iyy: float = 0.0
         ixy: float = 0.0
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(n=6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         # loop through each Gauss point
         for gp in gps:
@@ -102,12 +102,14 @@ class Tri6:
 
             nx, ny = self.coords @ n
 
-            area += gp[0] * j
-            qx += gp[0] * ny * j
-            qy += gp[0] * nx * j
-            ixx += gp[0] * ny**2 * j
-            iyy += gp[0] * nx**2 * j
-            ixy += gp[0] * ny * nx * j
+            weight = gp[0] * j
+
+            area += weight
+            qx += weight * ny
+            qy += weight * nx
+            ixx += weight * ny**2
+            iyy += weight * nx**2
+            ixy += weight * ny * nx
 
         return (
             area,
@@ -131,8 +133,8 @@ class Tri6:
         k_el = np.zeros(shape=(6, 6), dtype=float)
         f_el = np.zeros(shape=6, dtype=float)
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(n=6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         for gp in gps:
             # determine shape function, shape function derivative and jacobian
@@ -141,16 +143,11 @@ class Tri6:
             # determine x and y position at Gauss point
             nx, ny = self.coords @ n
 
+            weight = gp[0] * j * self.material.elastic_modulus
+
             # calculated modulus weighted stiffness matrix and load vector
-            k_el += (
-                gp[0] * np.dot(np.transpose(b), b) * j * self.material.elastic_modulus
-            )
-            f_el += (
-                gp[0]
-                * np.dot(np.transpose(b), np.transpose(np.array([ny, -nx])))
-                * j
-                * self.material.elastic_modulus
-            )
+            k_el += weight * b.transpose() @ b
+            f_el += weight * b.transpose() @ np.array([ny, -nx])
 
         return k_el, f_el
 
@@ -176,8 +173,8 @@ class Tri6:
         f_psi = np.zeros(shape=6, dtype=float)
         f_phi = np.zeros(shape=6, dtype=float)
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         for gp in gps:
             # determine shape function, shape function derivative and jacobian
@@ -185,6 +182,8 @@ class Tri6:
 
             # determine x and y position at Gauss point
             nx, ny = self.coords @ n
+
+            weight = gp[0] * j * self.material.elastic_modulus
 
             # determine shear parameters
             r = nx**2 - ny**2
@@ -194,23 +193,13 @@ class Tri6:
             h1 = -ixy * r + iyy * q
             h2 = -iyy * r - ixy * q
 
-            f_psi += (
-                gp[0]
-                * (
-                    nu / 2 * b.transpose() @ np.array([d1, d2])
-                    + 2 * (1 + nu) * n * (ixx * nx - ixy * ny)
-                )
-                * j
-                * self.material.elastic_modulus
+            f_psi += weight * (
+                nu / 2 * b.transpose() @ np.array([d1, d2])
+                + 2 * (1 + nu) * n * (ixx * nx - ixy * ny)
             )
-            f_phi += (
-                gp[0]
-                * (
-                    nu / 2 * b.transpose() @ np.array([h1, h2])
-                    + 2 * (1 + nu) * n * (iyy * ny - ixy * nx)
-                )
-                * j
-                * self.material.elastic_modulus
+            f_phi += weight * (
+                nu / 2 * b.transpose() @ np.array([h1, h2])
+                + 2 * (1 + nu) * n * (iyy * ny - ixy * nx)
             )
 
         return f_psi, f_phi
@@ -243,8 +232,8 @@ class Tri6:
         i_xomega: float = 0
         i_yomega: float = 0
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(n=6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         for gp in gps:
             # determine shape function, shape function derivative and jacobian
@@ -253,26 +242,16 @@ class Tri6:
             # determine x and y position at Gauss point
             nx, ny = self.coords @ n
 
+            weight = gp[0] * j * self.material.elastic_modulus
+
             n_omega = np.dot(n, omega)
 
-            sc_xint += (
-                gp[0]
-                * (iyy * nx + ixy * ny)
-                * (nx**2 + ny**2)
-                * j
-                * self.material.elastic_modulus
-            )
-            sc_yint += (
-                gp[0]
-                * (ixx * ny + ixy * nx)
-                * (nx**2 + ny**2)
-                * j
-                * self.material.elastic_modulus
-            )
-            q_omega += gp[0] * n_omega * j * self.material.elastic_modulus
-            i_omega += gp[0] * n_omega**2 * j * self.material.elastic_modulus
-            i_xomega += gp[0] * nx * n_omega * j * self.material.elastic_modulus
-            i_yomega += gp[0] * ny * n_omega * j * self.material.elastic_modulus
+            sc_xint += weight * (iyy * nx + ixy * ny) * (nx**2 + ny**2)
+            sc_yint += weight * (ixx * ny + ixy * nx) * (nx**2 + ny**2)
+            q_omega += weight * n_omega
+            i_omega += weight * n_omega**2
+            i_xomega += weight * nx * n_omega
+            i_yomega += weight * ny * n_omega
 
         return sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega
 
@@ -303,8 +282,8 @@ class Tri6:
         kappa_y: float = 0
         kappa_xy: float = 0
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(n=6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         for gp in gps:
             # determine shape function, shape function derivative and jacobian
@@ -312,6 +291,8 @@ class Tri6:
 
             # determine x and y position at Gauss point
             nx, ny = self.coords @ n
+
+            weight = gp[0] * j * self.material.elastic_modulus
 
             # determine shear parameters
             r = nx**2 - ny**2
@@ -321,30 +302,15 @@ class Tri6:
             h1 = -ixy * r + iyy * q
             h2 = -iyy * r - ixy * q
 
-            kappa_x += (
-                gp[0]
-                * (psi_shear.dot(np.transpose(b)) - nu / 2 * np.array([d1, d2])).dot(
-                    b.dot(psi_shear) - nu / 2 * np.array([d1, d2])
-                )
-                * j
-                * self.material.elastic_modulus
-            )
-            kappa_y += (
-                gp[0]
-                * (phi_shear.dot(np.transpose(b)) - nu / 2 * np.array([h1, h2])).dot(
-                    b.dot(phi_shear) - nu / 2 * np.array([h1, h2])
-                )
-                * j
-                * self.material.elastic_modulus
-            )
-            kappa_xy += (
-                gp[0]
-                * (psi_shear.dot(np.transpose(b)) - nu / 2 * np.array([d1, d2])).dot(
-                    b.dot(phi_shear) - nu / 2 * np.array([h1, h2])
-                )
-                * j
-                * self.material.elastic_modulus
-            )
+            kappa_x += weight * (
+                psi_shear.dot(np.transpose(b)) - nu / 2 * np.array([d1, d2])
+            ).dot(b.dot(psi_shear) - nu / 2 * np.array([d1, d2]))
+            kappa_y += weight * (
+                phi_shear.dot(np.transpose(b)) - nu / 2 * np.array([h1, h2])
+            ).dot(b.dot(phi_shear) - nu / 2 * np.array([h1, h2]))
+            kappa_xy += weight * (
+                psi_shear.dot(np.transpose(b)) - nu / 2 * np.array([d1, d2])
+            ).dot(b.dot(phi_shear) - nu / 2 * np.array([h1, h2]))
 
         return kappa_x, kappa_y, kappa_xy
 
@@ -367,8 +333,8 @@ class Tri6:
         int_11: float = 0
         int_22: float = 0
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(n=6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         for gp in gps:
             # determine shape function and jacobian
@@ -377,34 +343,16 @@ class Tri6:
             # determine x and y position at Gauss point
             nx, ny = self.coords @ n
 
+            weight = gp[0] * j * self.material.elastic_modulus
+
             # determine 11 and 22 position at Gauss point
             nx_11, ny_22 = principal_coordinate(phi=phi, x=nx, y=ny)
 
             # weight the monosymmetry integrals by the section elastic modulus
-            int_x += (
-                gp[0]
-                * (nx * nx * ny + ny * ny * ny)
-                * j
-                * self.material.elastic_modulus
-            )
-            int_y += (
-                gp[0]
-                * (ny * ny * nx + nx * nx * nx)
-                * j
-                * self.material.elastic_modulus
-            )
-            int_11 += (
-                gp[0]
-                * (nx_11 * nx_11 * ny_22 + ny_22 * ny_22 * ny_22)
-                * j
-                * self.material.elastic_modulus
-            )
-            int_22 += (
-                gp[0]
-                * (ny_22 * ny_22 * nx_11 + nx_11 * nx_11 * nx_11)
-                * j
-                * self.material.elastic_modulus
-            )
+            int_x += weight * (nx * nx * ny + ny * ny * ny)
+            int_y += weight * (ny * ny * nx + nx * nx * nx)
+            int_11 += weight * (nx_11 * nx_11 * ny_22 + ny_22 * ny_22 * ny_22)
+            int_22 += weight * (ny_22 * ny_22 * nx_11 + nx_11 * nx_11 * nx_11)
 
         return int_x, int_y, int_11, int_22
 
@@ -790,7 +738,7 @@ class Tri6:
 
 
 @lru_cache(maxsize=None)
-def gauss_points(n: int) -> np.ndarray:
+def gauss_points(*, n: int) -> np.ndarray:
     """Gaussian weights and locations for ``n`` point Gaussian integration of a Tri6.
 
     Reference:
@@ -1060,12 +1008,12 @@ def global_coordinate(
     x11: float,
     y22: float,
 ) -> tuple[float, float]:
-    """Converts prinicpal coordinates to global coordinates.
+    """Converts principal coordinates to global coordinates.
 
     Args:
         phi: Principal bending axis angle, in degrees
-        x11: 11-coordinate in the principal coorindate system
-        y22: 22-coordinate in the principal coorindate system
+        x11: 11-coordinate in the principal coordinate system
+        y22: 22-coordinate in the principal coordinate system
 
     Returns:
         Global axis coordinates (``x``, ``y``)
