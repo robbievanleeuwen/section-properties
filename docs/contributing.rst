@@ -1,3 +1,5 @@
+.. _label-contributing:
+
 Contributor Guide
 =================
 
@@ -47,47 +49,82 @@ on your ideas.
 How to set up your development environment
 ------------------------------------------
 
-You need Python 3.8+ and the following tools:
+You need Python 3.9, 3.10 or 3.11, and the following tools:
 
 -  `Poetry <https://python-poetry.org/>`__
 -  `Nox <https://nox.thea.codes/>`__
 -  `nox-poetry <https://nox-poetry.readthedocs.io/>`__
 
-Install the package with development requirements:
+Recommended dependency installation method:
 
-.. code:: console
+#. Install `pipx <https://pypa.github.io/pipx/installation/>`_:
 
-   > poetry install
+   .. code:: shell
 
-You can now run an interactive Python session, or the command-line
-interface:
+      python3 -m pip install --user pipx
+      python3 -m pipx ensurepath
 
-.. code:: console
 
-   > poetry run python
-   > poetry run sectionproperties
+#. Install `Poetry <https://python-poetry.org/>`__:
+
+   .. code:: shell
+
+      pipx install poetry
+      poetry --version
+
+#. Install `Nox <https://nox.thea.codes/>`__ and
+   `nox-poetry <https://nox-poetry.readthedocs.io/>`__:
+
+   .. code:: shell
+
+      pipx install nox
+      pipx inject nox nox-poetry
+
+#. If you do not have ``pandoc`` installed, it will be required to build the docs. The
+   `installation method <https://pandoc.org/installing.html>`_ depends on which OS you
+   are running.
+
+Now that you have all the dependencies up and running, you can install
+``sectionproperties`` with development requirements:
+
+.. code:: shell
+
+   poetry install
+
+Install with the ``rhino`` and ``cad`` extras:
+
+.. code:: shell
+
+   poetry install --all-extras
+
+You can now run an interactive Python session, or the command-line interface:
+
+.. code:: shell
+
+   poetry run python
+   poetry run sectionproperties
 
 How to test the project
 -----------------------
 
 Run the full test suite:
 
-.. code:: console
+.. code:: shell
 
-   > nox
+   nox
 
 List the available Nox sessions:
 
-.. code:: console
+.. code:: shell
 
-   > nox --list-sessions
+   nox --list-sessions
 
-You can also run a specific Nox session. For example, invoke the unit
-test suite like this:
+You can also run a specific Nox session. For example, invoke the unit test suite like
+this:
 
-.. code:: console
+.. code:: shell
 
-   > nox --session=tests
+   nox --session=tests
 
 Unit tests are located in the *tests* directory, and are written using
 the `pytest <https://pytest.readthedocs.io/>`__ testing framework.
@@ -110,9 +147,9 @@ To run linting and code formatting checks before committing your change,
 you can install pre-commit as a Git hook by running the following
 command:
 
-.. code:: console
+.. code:: shell
 
-   > nox --session=pre-commit -- install
+   nox --session=pre-commit -- install
 
 It is recommended to open an issue before starting work on anything.
 This will allow a chance to talk it over with the owners and validate

@@ -52,6 +52,7 @@ intersphinx_mapping = {
 # html theme
 html_theme = "furo"
 html_static_path = ["_static"]
+html_favicon = "_static/favicon.ico"
 html_theme_options = {
     "light_logo": "logo-light-mode.png",  # add light mode logo
     "dark_logo": "logo-dark-mode.png",  # add dark mode logo

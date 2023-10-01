@@ -40,26 +40,57 @@ duplication of work, and allows for feedback on your ideas.
 
 ## How to set up your development environment
 
-TODO: pandoc installation
-
-You need Python 3.8+ and the following tools:
+You need Python 3.9, 3.10 or 3.11, and the following tools:
 
 - [Poetry]
 - [Nox]
 - [nox-poetry]
 
-Install the package with development requirements:
+Recommended dependency installation method:
 
-```console
-> poetry install
+1. Install [pipx](https://pypa.github.io/pipx/installation/):
+
+```shell
+python3 -m pip install --user pipx
+python3 -m pipx ensurepath
 ```
 
-You can now run an interactive Python session,
-or the command-line interface:
+2. Install [Poetry]:
 
-```console
-> poetry run python
-> poetry run sectionproperties
+```shell
+pipx install poetry
+poetry --version
+```
+
+3. Install [Nox] and [nox-poetry]:
+
+```shell
+pipx install nox
+pipx inject nox nox-poetry
+```
+
+4. If you do not have `pandoc` installed, it will be required to build the docs. The
+   [installation method](https://pandoc.org/installing.html) depends on what OS you are
+   running.
+
+Now that you have all the dependencies up and running, you can install
+`sectionproperties` with development requirements:
+
+```shell
+poetry install
+```
+
+Install with the `rhino` and `cad` extras:
+
+```shell
+poetry install --all-extras
+```
+
+You can now run an interactive Python session, or the command-line interface:
+
+```shell
+poetry run python
+poetry run sectionproperties
 ```
 
 [poetry]: https://python-poetry.org/
@@ -70,25 +101,25 @@ or the command-line interface:
 
 Run the full test suite:
 
-```console
-> nox
+```shell
+nox
 ```
 
 List the available Nox sessions:
 
-```console
-> nox --list-sessions
+```shell
+nox --list-sessions
 ```
 
-You can also run a specific Nox session.
-For example, invoke the unit test suite like this:
+You can also run a specific Nox session. For example, invoke the unit test suite like
+this:
 
-```console
-> nox --session=tests
+```shell
+nox --session=tests
 ```
 
-Unit tests are located in the _tests_ directory,
-and are written using the [pytest] testing framework.
+Unit tests are located in the _tests_ directory, and are written using the [pytest]
+testing framework.
 
 [pytest]: https://pytest.readthedocs.io/
 
@@ -105,15 +136,12 @@ Your pull request needs to meet the following guidelines for acceptance:
 To run linting and code formatting checks before committing your change, you can install
 pre-commit as a Git hook by running the following command:
 
-```console
-> nox --session=pre-commit -- install
+```shell
+nox --session=pre-commit -- install
 ```
 
 It is recommended to open an issue before starting work on anything.
 This will allow a chance to talk it over with the owners and validate your approach.
 
 [pull request]: https://github.com/robbievanleeuwen/section-properties/pulls
-
-<!-- github-only -->
-
 [code of conduct]: CODE_OF_CONDUCT.md
