@@ -45,7 +45,7 @@ class Cell:
             ele: The Tri6 element
             omega: The warping function
         """
-        n, dn, self.area = shape_function(
+        n, dn, self.area, _, _ = shape_function(
             ele.coords, (0.0, 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0)
         )
         self.material = "-".join(ele.material.name.split())
