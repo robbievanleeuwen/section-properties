@@ -1,6 +1,6 @@
 """Provides functionalities to export a section to a fibre section.
 
-It can be used in [suanPan](https://github.com/TLCFEM/suanPan) to perform further FEA.
+It can be used in `suanPan <https://github.com/TLCFEM/suanPan>`_ to perform further FEA.
 """
 from __future__ import annotations
 
@@ -14,7 +14,18 @@ from sectionproperties.pre import CompoundGeometry, Geometry
 
 
 class Cell:
-    """Holds the information of a fibre cell."""
+    """Holds the information of a fibre cell.
+
+    Attributes:
+        tag: The tag of the cell
+        area: The area of the cell
+        material: The material name of the cell
+        y: The y-coordinate of the cell
+        z: The z-coordinate of the cell
+        omega: The warping function of the cell
+        py: The derivative of the warping function with respect to y
+        pz: The derivative of the warping function with respect to z
+    """
 
     tag: int
     area: float
@@ -25,14 +36,14 @@ class Cell:
     py: float
     pz: float
 
-    def __init__(self, ele: Tri6, omega: ndarray = None):
+    def __init__(self, ele: Tri6, omega: ndarray | None = None):
         """Converts a Tri6 element to a fibre cell.
 
         If `omega` is None, no warping is considered.
 
         Args:
-            ele (Tri6): The Tri6 element
-            omega (ndarray): The warping function
+            ele: The Tri6 element
+            omega: The warping function
         """
         n, dn, self.area = shape_function(
             ele.coords, (0.0, 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0)
@@ -50,7 +61,7 @@ class Cell:
             self.pz = 0.0
 
     @abstractmethod
-    def export(self):
+    def export(self) -> str:
         """Export the cell to a string.
 
         Needs to be implemented by subclasses.
@@ -64,7 +75,7 @@ class Cell:
 class Cell2D(Cell):
     """A 2D cell section."""
 
-    def export(self):
+    def export(self) -> str:
         """Export the cell to a 2D cell section.
 
         Returns:
@@ -76,7 +87,7 @@ class Cell2D(Cell):
 class Cell3D(Cell):
     """A 3D cell section."""
 
-    def export(self):
+    def export(self) -> str:
         """Export the cell to a 3D cell section.
 
         Returns:
@@ -91,7 +102,7 @@ class Cell3D(Cell):
 class Cell3DOS(Cell):
     """A 3DOS cell section."""
 
-    def export(self):
+    def export(self) -> str:
         """Export the cell to a 3DOS cell section.
 
         Returns:
@@ -110,23 +121,23 @@ def to_fibre_section(
     *,
     main_section_tag: int = 1,
     analysis_type: str = "3DOS",
-    material_mapping: dict = None,
+    material_mapping: dict | None = None,
     max_width: int = 160,
-    save_to: str = None,
+    save_to: str | None = None,
 ) -> str:
     """Export a section to the corresponding commands to create a fibre section.
 
     For a given geometry, this function computes necessary sectional properties and
     exports the corresponding commands to create a fibre/composite section that can be
-    used in [suanPan](https://github.com/TLCFEM/suanPan).
+    used in `suanPan <https://github.com/TLCFEM/suanPan>`_.
 
     Args:
-        obj (Geometry | CompoundGeometry | Section): The geometry/section to be exported
-        main_section_tag (int): The tag of the main section
-        analysis_type (str): The type of analysis would be performed
-        material_mapping (dict): A dictionary mapping material names to material tags
-        max_width (int): The maximum width of a line in the output
-        save_to (str): The path to save the output to
+        obj: The geometry/section to be exported
+        main_section_tag: The tag of the main section
+        analysis_type: The type of analysis would be performed
+        material_mapping: A dictionary mapping material names to material tags
+        max_width: The maximum width of a line in the output
+        save_to: The path to save the output to
 
     Raises:
         TypeError: If `obj` is not a Geometry or Section
