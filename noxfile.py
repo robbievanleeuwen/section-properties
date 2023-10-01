@@ -22,7 +22,7 @@ except ImportError:
 
 
 package = "sectionproperties"
-python_versions = ["3.11", "3.10", "3.9"]
+python_versions = ["3.9", "3.11", "3.10"]
 nox.needs_version = ">= 2021.6.6"
 nox.options.sessions = (
     "pre-commit",
@@ -143,8 +143,11 @@ def tests(session: Session) -> None:
     Args:
         session: Nox session
     """
-    # install sectionproperties
-    session.run_always("poetry", "install", "--all-extras", external=True)
+    # provide only dxf dependencies if python version is 3.10 or 3.11
+    if session.python == "3.9":
+        session.run_always("poetry", "install", "--all-extras", external=True)
+    else:
+        session.run_always("poetry", "install", "--extras", "dxf", external=True)
 
     # install relevant tooling
     session.install("coverage[toml]", "pytest", "pygments", "pytest-check")
