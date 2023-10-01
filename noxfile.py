@@ -22,7 +22,7 @@ except ImportError:
 
 
 package = "sectionproperties"
-python_versions = ["3.10", "3.9", "3.8"]
+python_versions = ["3.9", "3.11", "3.10"]
 nox.needs_version = ">= 2021.6.6"
 nox.options.sessions = (
     "pre-commit",
@@ -143,9 +143,8 @@ def tests(session: Session) -> None:
     Args:
         session: Nox session
     """
-    # install sectionproperties
-    # provide only dxf dependencies if python version is > 3.10
-    if session.python in ["3.8", "3.9"]:
+    # provide only dxf dependencies if python version is 3.10 or 3.11
+    if session.python == "3.9":
         session.run_always("poetry", "install", "--all-extras", external=True)
     else:
         session.run_always("poetry", "install", "--extras", "dxf", external=True)
@@ -177,7 +176,7 @@ def coverage(session: Session) -> None:
     session.run("coverage", *args)
 
 
-@session(name="docs-build", python="3.9")
+@session(name="docs-build", python=python_versions[0])
 def docs_build(session: Session) -> None:
     """Build the documentation.
 
@@ -204,7 +203,7 @@ def docs_build(session: Session) -> None:
     session.run("sphinx-build", *args)
 
 
-@session(python="3.9")
+@session(python=python_versions[0])
 def docs(session: Session) -> None:
     """Build and serve the documentation with live reloading on file changes.
 

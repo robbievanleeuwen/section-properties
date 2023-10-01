@@ -354,7 +354,7 @@ def test_geometry_from_dxf():
     assert sp_geom.Geometry.from_dxf(section_holes_dxf).geom.wkt == poly
 
 
-@pytest.mark.skipif(sys.version_info > (3, 9), reason="requires python3.9 or lower")
+@pytest.mark.skipif(sys.version_info >= (3, 10), reason="requires python 3.9")
 def test_geometry_from_3dm_file_simple():
     """Tests loading geometry from a simple .3dm file."""
     section = Path(__file__).parent.absolute() / "3in x 2in.3dm"
@@ -363,7 +363,7 @@ def test_geometry_from_3dm_file_simple():
     assert (test.geom - exp).is_empty
 
 
-@pytest.mark.skipif(sys.version_info > (3, 9), reason="requires python3.9 or lower")
+@pytest.mark.skipif(sys.version_info >= (3, 10), reason="requires python 3.9")
 def test_geometry_from_3dm_file_complex():
     """Tests loading geometry from a complex .3dm file."""
     section_3dm = Path(__file__).parent.absolute() / "complex_shape.3dm"
@@ -375,7 +375,7 @@ def test_geometry_from_3dm_file_complex():
     assert (test.geom - exp).is_empty
 
 
-@pytest.mark.skipif(sys.version_info > (3, 9), reason="requires python3.9 or lower")
+@pytest.mark.skipif(sys.version_info >= (3, 10), reason="requires python 3.9")
 def test_geometry_from_3dm_file_compound():
     """Tests loading compound geometry from a .3dm file."""
     section_3dm = Path(__file__).parent.absolute() / "compound_shape.3dm"
@@ -387,7 +387,7 @@ def test_geometry_from_3dm_file_compound():
     assert (MultiPolygon([ii.geom for ii in test.geoms]) - MultiPolygon(exp)).is_empty
 
 
-@pytest.mark.skipif(sys.version_info > (3, 9), reason="requires python3.9 or lower")
+@pytest.mark.skipif(sys.version_info >= (3, 10), reason="requires python 3.9")
 def test_geometry_from_3dm_encode():
     """Tests loading compound geometry from a .json file."""
     section_3dm = Path(__file__).parent.absolute() / "rhino_data.json"
