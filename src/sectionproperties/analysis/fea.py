@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class Tri6:
-    """Class for a six noded quadratic triangular element.
+    """Class for a six-node quadratic triangular element.
 
     Provides methods for the calculation of section properties based on the finite
     element method.
@@ -59,7 +59,7 @@ class Tri6:
         r0 = p0 - self._x0
         r1 = p1 - self._x0
 
-        # Asseble the equations to solve for the transformation for the unit triangle
+        # Assemble the equations to solve for the transformation for the unit triangle
         x = np.array([r0, r1]).transpose()
         b = np.array([[1, 0], [0, 1]])
         self._m = np.linalg.solve(x, b)
@@ -92,22 +92,23 @@ class Tri6:
         iyy: float = 0.0
         ixy: float = 0.0
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(n=6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         # loop through each Gauss point
         for gp in gps:
-            # determine shape function, shape function derivative and jacobian
-            n, _, j = shape_function(coords=self.coords, gauss_point=gp)
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n, _, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
-            nx, ny = self.coords @ n
+            weight = gp[0] * j
 
-            area += gp[0] * j
-            qx += gp[0] * ny * j
-            qy += gp[0] * nx * j
-            ixx += gp[0] * ny**2 * j
-            iyy += gp[0] * nx**2 * j
-            ixy += gp[0] * ny * nx * j
+            area += weight
+            qx += weight * ny
+            qy += weight * nx
+            ixx += weight * ny**2
+            iyy += weight * nx**2
+            ixy += weight * ny * nx
 
         return (
             area,
@@ -131,26 +132,19 @@ class Tri6:
         k_el = np.zeros(shape=(6, 6), dtype=float)
         f_el = np.zeros(shape=6, dtype=float)
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(n=6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         for gp in gps:
-            # determine shape function, shape function derivative and jacobian
-            n, b, j = shape_function(coords=self.coords, gauss_point=gp)
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
-            # determine x and y position at Gauss point
-            nx, ny = self.coords @ n
+            weight = gp[0] * j * self.material.elastic_modulus
 
             # calculated modulus weighted stiffness matrix and load vector
-            k_el += (
-                gp[0] * np.dot(np.transpose(b), b) * j * self.material.elastic_modulus
-            )
-            f_el += (
-                gp[0]
-                * np.dot(np.transpose(b), np.transpose(np.array([ny, -nx])))
-                * j
-                * self.material.elastic_modulus
-            )
+            k_el += weight * b.transpose() @ b
+            f_el += weight * b.transpose() @ np.array([ny, -nx])
 
         return k_el, f_el
 
@@ -176,15 +170,15 @@ class Tri6:
         f_psi = np.zeros(shape=6, dtype=float)
         f_phi = np.zeros(shape=6, dtype=float)
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         for gp in gps:
-            # determine shape function, shape function derivative and jacobian
-            n, b, j = shape_function(coords=self.coords, gauss_point=gp)
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
-            # determine x and y position at Gauss point
-            nx, ny = self.coords @ n
+            weight = gp[0] * j * self.material.elastic_modulus
 
             # determine shear parameters
             r = nx**2 - ny**2
@@ -194,23 +188,13 @@ class Tri6:
             h1 = -ixy * r + iyy * q
             h2 = -iyy * r - ixy * q
 
-            f_psi += (
-                gp[0]
-                * (
-                    nu / 2 * b.transpose() @ np.array([d1, d2])
-                    + 2 * (1 + nu) * n * (ixx * nx - ixy * ny)
-                )
-                * j
-                * self.material.elastic_modulus
+            f_psi += weight * (
+                nu / 2 * b.transpose() @ np.array([d1, d2])
+                + 2 * (1 + nu) * n * (ixx * nx - ixy * ny)
             )
-            f_phi += (
-                gp[0]
-                * (
-                    nu / 2 * b.transpose() @ np.array([h1, h2])
-                    + 2 * (1 + nu) * n * (iyy * ny - ixy * nx)
-                )
-                * j
-                * self.material.elastic_modulus
+            f_phi += weight * (
+                nu / 2 * b.transpose() @ np.array([h1, h2])
+                + 2 * (1 + nu) * n * (iyy * ny - ixy * nx)
             )
 
         return f_psi, f_phi
@@ -243,36 +227,24 @@ class Tri6:
         i_xomega: float = 0
         i_yomega: float = 0
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(n=6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         for gp in gps:
-            # determine shape function, shape function derivative and jacobian
-            n, _, j = shape_function(coords=self.coords, gauss_point=gp)
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n, _, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
-            # determine x and y position at Gauss point
-            nx, ny = self.coords @ n
+            weight = gp[0] * j * self.material.elastic_modulus
 
             n_omega = np.dot(n, omega)
 
-            sc_xint += (
-                gp[0]
-                * (iyy * nx + ixy * ny)
-                * (nx**2 + ny**2)
-                * j
-                * self.material.elastic_modulus
-            )
-            sc_yint += (
-                gp[0]
-                * (ixx * ny + ixy * nx)
-                * (nx**2 + ny**2)
-                * j
-                * self.material.elastic_modulus
-            )
-            q_omega += gp[0] * n_omega * j * self.material.elastic_modulus
-            i_omega += gp[0] * n_omega**2 * j * self.material.elastic_modulus
-            i_xomega += gp[0] * nx * n_omega * j * self.material.elastic_modulus
-            i_yomega += gp[0] * ny * n_omega * j * self.material.elastic_modulus
+            sc_xint += weight * (iyy * nx + ixy * ny) * (nx**2 + ny**2)
+            sc_yint += weight * (ixx * ny + ixy * nx) * (nx**2 + ny**2)
+            q_omega += weight * n_omega
+            i_omega += weight * n_omega**2
+            i_xomega += weight * nx * n_omega
+            i_yomega += weight * ny * n_omega
 
         return sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega
 
@@ -303,15 +275,15 @@ class Tri6:
         kappa_y: float = 0
         kappa_xy: float = 0
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(n=6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         for gp in gps:
-            # determine shape function, shape function derivative and jacobian
-            n, b, j = shape_function(coords=self.coords, gauss_point=gp)
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
-            # determine x and y position at Gauss point
-            nx, ny = self.coords @ n
+            weight = gp[0] * j * self.material.elastic_modulus
 
             # determine shear parameters
             r = nx**2 - ny**2
@@ -321,30 +293,12 @@ class Tri6:
             h1 = -ixy * r + iyy * q
             h2 = -iyy * r - ixy * q
 
-            kappa_x += (
-                gp[0]
-                * (psi_shear.dot(np.transpose(b)) - nu / 2 * np.array([d1, d2])).dot(
-                    b.dot(psi_shear) - nu / 2 * np.array([d1, d2])
-                )
-                * j
-                * self.material.elastic_modulus
-            )
-            kappa_y += (
-                gp[0]
-                * (phi_shear.dot(np.transpose(b)) - nu / 2 * np.array([h1, h2])).dot(
-                    b.dot(phi_shear) - nu / 2 * np.array([h1, h2])
-                )
-                * j
-                * self.material.elastic_modulus
-            )
-            kappa_xy += (
-                gp[0]
-                * (psi_shear.dot(np.transpose(b)) - nu / 2 * np.array([d1, d2])).dot(
-                    b.dot(phi_shear) - nu / 2 * np.array([h1, h2])
-                )
-                * j
-                * self.material.elastic_modulus
-            )
+            b_psi_d = b @ psi_shear - nu / 2 * np.array([d1, d2])  # 2x1
+            b_phi_h = b @ phi_shear - nu / 2 * np.array([h1, h2])  # 2x1
+
+            kappa_x += weight * b_psi_d.dot(b_psi_d)  # 6.133
+            kappa_y += weight * b_phi_h.dot(b_phi_h)  # 6.137
+            kappa_xy += weight * b_psi_d.dot(b_phi_h)  # 6.140
 
         return kappa_x, kappa_y, kappa_xy
 
@@ -367,44 +321,24 @@ class Tri6:
         int_11: float = 0
         int_22: float = 0
 
-        # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(n=6)
+        # Gauss points for 4 point Gaussian integration
+        gps = gauss_points(n=4)
 
         for gp in gps:
-            # determine shape function and jacobian
-            n, _, j = shape_function(coords=self.coords, gauss_point=gp)
+            # determine shape function,
+            # jacobian and global coordinates
+            n, _, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
-            # determine x and y position at Gauss point
-            nx, ny = self.coords @ n
+            weight = gp[0] * j * self.material.elastic_modulus
 
             # determine 11 and 22 position at Gauss point
             nx_11, ny_22 = principal_coordinate(phi=phi, x=nx, y=ny)
 
             # weight the monosymmetry integrals by the section elastic modulus
-            int_x += (
-                gp[0]
-                * (nx * nx * ny + ny * ny * ny)
-                * j
-                * self.material.elastic_modulus
-            )
-            int_y += (
-                gp[0]
-                * (ny * ny * nx + nx * nx * nx)
-                * j
-                * self.material.elastic_modulus
-            )
-            int_11 += (
-                gp[0]
-                * (nx_11 * nx_11 * ny_22 + ny_22 * ny_22 * ny_22)
-                * j
-                * self.material.elastic_modulus
-            )
-            int_22 += (
-                gp[0]
-                * (ny_22 * ny_22 * nx_11 + nx_11 * nx_11 * nx_11)
-                * j
-                * self.material.elastic_modulus
-            )
+            int_x += weight * (nx * nx * ny + ny * ny * ny)
+            int_y += weight * (ny * ny * nx + nx * nx * nx)
+            int_11 += weight * (nx_11 * nx_11 * ny_22 + ny_22 * ny_22 * ny_22)
+            int_22 += weight * (ny_22 * ny_22 * nx_11 + nx_11 * nx_11 * nx_11)
 
         return int_x, int_y, int_11, int_22
 
@@ -504,11 +438,9 @@ class Tri6:
             coords_c[0, :] = self.coords[0, :] - cx
             coords_c[1, :] = self.coords[1, :] - cy
 
-            # determine shape function, shape function derivative and jacobian
-            n_shape, b, _ = shape_function(coords=coords_c, gauss_point=gp)
-
-            # determine x and y position at Gauss point
-            nx, ny = coords_c @ n_shape
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n_shape, b, _, nx, ny = shape_function(coords=coords_c, gauss_point=gp)
 
             # determine 11 and 22 position at Gauss point
             nx_11, ny_22 = principal_coordinate(phi=phi, x=nx, y=ny)
@@ -790,7 +722,7 @@ class Tri6:
 
 
 @lru_cache(maxsize=None)
-def gauss_points(n: int) -> np.ndarray:
+def gauss_points(*, n: int) -> np.ndarray:
     """Gaussian weights and locations for ``n`` point Gaussian integration of a Tri6.
 
     Reference:
@@ -856,11 +788,14 @@ def gauss_points(n: int) -> np.ndarray:
     raise ValueError("n must be 1, 3, 4 or 6.")
 
 
+tmp_array = np.array([[0, 1, 0], [0, 0, 1]])
+
+
 @lru_cache(maxsize=None)
 def __shape_function_cached(
     coords: tuple[float, ...],
     gauss_point: tuple[float, float, float],
-) -> tuple[np.ndarray, np.ndarray, float]:
+) -> tuple[np.ndarray, np.ndarray, float, float, float]:
     """The cached version.
 
     Args:
@@ -871,8 +806,8 @@ def __shape_function_cached(
     Returns:
         The value of the shape functions ``N(i)`` at the given Gauss point
         (``[1 x 6]``), the derivative of the shape functions in the *j-th* global
-        direction ``B(i,j)`` (``[2 x 6]``) and the determinant of the Jacobian
-        matrix ``j``
+        direction ``B(i,j)`` (``[2 x 6]``), the determinant of the Jacobian
+        matrix ``j``, the global cooridnates of the Gauss point (``x``, ``y``)
     """
     # location of isoparametric co-ordinates for each Gauss point
     eta, xi, zeta = gauss_point
@@ -900,31 +835,30 @@ def __shape_function_cached(
         dtype=float,
     )
 
+    coords_array = np.array(coords).reshape((2, 6))
+
     # form Jacobian matrix
-    j_upper = np.array([[1, 1, 1]])
-    j_lower = np.dot(np.array(coords).reshape((2, 6)), b_iso.transpose())
-    j = np.vstack((j_upper, j_lower))
+    j = np.ones((3, 3))
+    j[:, 1:] = b_iso @ coords_array.transpose()
 
     # calculate the jacobian
     jacobian = 0.5 * np.linalg.det(j)
 
     # if the area of the element is not zero
     if jacobian != 0:
-        # calculate the p matrix
-        p = np.linalg.solve(j, np.array([[0, 0], [1, 0], [0, 1]]))
-
-        # calculate the b matrix in terms of cartesian co-ordinates
-        b = p.transpose() @ b_iso
+        b = tmp_array @ np.linalg.solve(j, b_iso)
     else:
         b = np.zeros((2, 6))  # empty b matrix
 
-    return n, b, jacobian
+    nx, ny = coords_array @ n
+
+    return n, b, jacobian, nx, ny
 
 
 def shape_function(
     coords: np.ndarray,
     gauss_point: tuple[float, float, float, float],
-) -> tuple[np.ndarray, np.ndarray, float]:
+) -> tuple[np.ndarray, np.ndarray, float, float, float]:
     """Calculates shape functions, derivates and the Jacobian determinant.
 
     Computes the shape functions, shape function derivatives and the determinant of the
@@ -938,8 +872,8 @@ def shape_function(
     Returns:
         The value of the shape functions ``N(i)`` at the given Gauss point
         (``[1 x 6]``), the derivative of the shape functions in the *j-th* global
-        direction ``B(i,j)`` (``[2 x 6]``) and the determinant of the Jacobian
-        matrix ``j``
+        direction ``B(i,j)`` (``[2 x 6]``), the determinant of the Jacobian
+        matrix ``j``, the global cooridnates of the Gauss point (``x``, ``y``)
     """
     return __shape_function_cached(tuple(coords.ravel()), tuple(gauss_point[1:]))
 
@@ -1060,12 +994,12 @@ def global_coordinate(
     x11: float,
     y22: float,
 ) -> tuple[float, float]:
-    """Converts prinicpal coordinates to global coordinates.
+    """Converts principal coordinates to global coordinates.
 
     Args:
         phi: Principal bending axis angle, in degrees
-        x11: 11-coordinate in the principal coorindate system
-        y22: 22-coordinate in the principal coorindate system
+        x11: 11-coordinate in the principal coordinate system
+        y22: 22-coordinate in the principal coordinate system
 
     Returns:
         Global axis coordinates (``x``, ``y``)

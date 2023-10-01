@@ -118,9 +118,10 @@ def solve_direct_lagrange(
     u = spsolve(A=k_lg, b=np.append(f, 0))
 
     # compute error
-    err = u[-1] / max(np.absolute(u))
+    multiplier = abs(u[-1])
+    rel_error = multiplier / max(np.absolute(u))
 
-    if err > 1e-5:
+    if rel_error > 1e-7 and multiplier > 10.0 * np.finfo(float).eps:
         msg = "Lagrangian multiplier method error exceeds tolerance of 1e-5."
         raise RuntimeError(msg)
 
