@@ -97,10 +97,9 @@ class Tri6:
 
         # loop through each Gauss point
         for gp in gps:
-            # determine shape function, shape function derivative and jacobian
-            n, _, j = shape_function(coords=self.coords, gauss_point=gp)
-
-            nx, ny = self.coords @ n
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n, _, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
             weight = gp[0] * j
 
@@ -137,11 +136,9 @@ class Tri6:
         gps = gauss_points(n=4)
 
         for gp in gps:
-            # determine shape function, shape function derivative and jacobian
-            n, b, j = shape_function(coords=self.coords, gauss_point=gp)
-
-            # determine x and y position at Gauss point
-            nx, ny = self.coords @ n
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
             weight = gp[0] * j * self.material.elastic_modulus
 
@@ -177,11 +174,9 @@ class Tri6:
         gps = gauss_points(n=4)
 
         for gp in gps:
-            # determine shape function, shape function derivative and jacobian
-            n, b, j = shape_function(coords=self.coords, gauss_point=gp)
-
-            # determine x and y position at Gauss point
-            nx, ny = self.coords @ n
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
             weight = gp[0] * j * self.material.elastic_modulus
 
@@ -236,11 +231,9 @@ class Tri6:
         gps = gauss_points(n=4)
 
         for gp in gps:
-            # determine shape function, shape function derivative and jacobian
-            n, _, j = shape_function(coords=self.coords, gauss_point=gp)
-
-            # determine x and y position at Gauss point
-            nx, ny = self.coords @ n
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n, _, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
             weight = gp[0] * j * self.material.elastic_modulus
 
@@ -286,11 +279,9 @@ class Tri6:
         gps = gauss_points(n=4)
 
         for gp in gps:
-            # determine shape function, shape function derivative and jacobian
-            n, b, j = shape_function(coords=self.coords, gauss_point=gp)
-
-            # determine x and y position at Gauss point
-            nx, ny = self.coords @ n
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
             weight = gp[0] * j * self.material.elastic_modulus
 
@@ -302,15 +293,12 @@ class Tri6:
             h1 = -ixy * r + iyy * q
             h2 = -iyy * r - ixy * q
 
-            kappa_x += weight * (
-                psi_shear.dot(np.transpose(b)) - nu / 2 * np.array([d1, d2])
-            ).dot(b.dot(psi_shear) - nu / 2 * np.array([d1, d2]))
-            kappa_y += weight * (
-                phi_shear.dot(np.transpose(b)) - nu / 2 * np.array([h1, h2])
-            ).dot(b.dot(phi_shear) - nu / 2 * np.array([h1, h2]))
-            kappa_xy += weight * (
-                psi_shear.dot(np.transpose(b)) - nu / 2 * np.array([d1, d2])
-            ).dot(b.dot(phi_shear) - nu / 2 * np.array([h1, h2]))
+            b_psi_d = b @ psi_shear - nu / 2 * np.array([d1, d2])  # 2x1
+            b_phi_h = b @ phi_shear - nu / 2 * np.array([h1, h2])  # 2x1
+
+            kappa_x += weight * b_psi_d.dot(b_psi_d)  # 6.133
+            kappa_y += weight * b_phi_h.dot(b_phi_h)  # 6.137
+            kappa_xy += weight * b_psi_d.dot(b_phi_h)  # 6.140
 
         return kappa_x, kappa_y, kappa_xy
 
@@ -337,11 +325,9 @@ class Tri6:
         gps = gauss_points(n=4)
 
         for gp in gps:
-            # determine shape function and jacobian
-            n, _, j = shape_function(coords=self.coords, gauss_point=gp)
-
-            # determine x and y position at Gauss point
-            nx, ny = self.coords @ n
+            # determine shape function,
+            # jacobian and global coordinates
+            n, _, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
             weight = gp[0] * j * self.material.elastic_modulus
 
@@ -452,11 +438,9 @@ class Tri6:
             coords_c[0, :] = self.coords[0, :] - cx
             coords_c[1, :] = self.coords[1, :] - cy
 
-            # determine shape function, shape function derivative and jacobian
-            n_shape, b, _ = shape_function(coords=coords_c, gauss_point=gp)
-
-            # determine x and y position at Gauss point
-            nx, ny = coords_c @ n_shape
+            # determine shape function, shape function derivative,
+            # jacobian and global coordinates
+            n_shape, b, _, nx, ny = shape_function(coords=coords_c, gauss_point=gp)
 
             # determine 11 and 22 position at Gauss point
             nx_11, ny_22 = principal_coordinate(phi=phi, x=nx, y=ny)
@@ -804,11 +788,14 @@ def gauss_points(*, n: int) -> np.ndarray:
     raise ValueError("n must be 1, 3, 4 or 6.")
 
 
+tmp_array = np.array([[0, 1, 0], [0, 0, 1]])
+
+
 @lru_cache(maxsize=None)
 def __shape_function_cached(
     coords: tuple[float, ...],
     gauss_point: tuple[float, float, float],
-) -> tuple[np.ndarray, np.ndarray, float]:
+) -> tuple[np.ndarray, np.ndarray, float, float, float]:
     """The cached version.
 
     Args:
@@ -819,8 +806,8 @@ def __shape_function_cached(
     Returns:
         The value of the shape functions ``N(i)`` at the given Gauss point
         (``[1 x 6]``), the derivative of the shape functions in the *j-th* global
-        direction ``B(i,j)`` (``[2 x 6]``) and the determinant of the Jacobian
-        matrix ``j``
+        direction ``B(i,j)`` (``[2 x 6]``), the determinant of the Jacobian
+        matrix ``j``, the global cooridnates of the Gauss point (``x``, ``y``)
     """
     # location of isoparametric co-ordinates for each Gauss point
     eta, xi, zeta = gauss_point
@@ -848,31 +835,30 @@ def __shape_function_cached(
         dtype=float,
     )
 
+    coords_array = np.array(coords).reshape((2, 6))
+
     # form Jacobian matrix
-    j_upper = np.array([[1, 1, 1]])
-    j_lower = np.dot(np.array(coords).reshape((2, 6)), b_iso.transpose())
-    j = np.vstack((j_upper, j_lower))
+    j = np.ones((3, 3))
+    j[:, 1:] = b_iso @ coords_array.transpose()
 
     # calculate the jacobian
     jacobian = 0.5 * np.linalg.det(j)
 
     # if the area of the element is not zero
     if jacobian != 0:
-        # calculate the p matrix
-        p = np.linalg.solve(j, np.array([[0, 0], [1, 0], [0, 1]]))
-
-        # calculate the b matrix in terms of cartesian co-ordinates
-        b = p.transpose() @ b_iso
+        b = tmp_array @ np.linalg.solve(j, b_iso)
     else:
         b = np.zeros((2, 6))  # empty b matrix
 
-    return n, b, jacobian
+    nx, ny = coords_array @ n
+
+    return n, b, jacobian, nx, ny
 
 
 def shape_function(
     coords: np.ndarray,
     gauss_point: tuple[float, float, float, float],
-) -> tuple[np.ndarray, np.ndarray, float]:
+) -> tuple[np.ndarray, np.ndarray, float, float, float]:
     """Calculates shape functions, derivates and the Jacobian determinant.
 
     Computes the shape functions, shape function derivatives and the determinant of the
@@ -886,8 +872,8 @@ def shape_function(
     Returns:
         The value of the shape functions ``N(i)`` at the given Gauss point
         (``[1 x 6]``), the derivative of the shape functions in the *j-th* global
-        direction ``B(i,j)`` (``[2 x 6]``) and the determinant of the Jacobian
-        matrix ``j``
+        direction ``B(i,j)`` (``[2 x 6]``), the determinant of the Jacobian
+        matrix ``j``, the global cooridnates of the Gauss point (``x``, ``y``)
     """
     return __shape_function_cached(tuple(coords.ravel()), tuple(gauss_point[1:]))
 
