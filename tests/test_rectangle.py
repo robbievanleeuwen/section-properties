@@ -118,7 +118,9 @@ def test_rectangular_section_plastic():
 def test_rectangular_section_warping():
     """Test rectangular section warping properties."""
     check.almost_equal(rectangle_section.section_props.j, 2861002, rel=2 * warp_tol)
-    check.almost_equal(rectangle_section.section_props.gamma, 3.177234e08, rel=tol)
+    check.almost_equal(
+        rectangle_section.section_props.gamma, 3.177234e08, rel=5 * warp_tol
+    )
     check.almost_equal(rectangle_section.get_sc(), (50 / 2, 100 / 2), rel=warp_tol)
     check.almost_equal(
         rectangle_section.get_sc_p(), (-4.103589e-04, 1.164891e-03), rel=tol

@@ -351,8 +351,8 @@ purpose of creating novel, custom section geometries that the user may require.
 
    This gives ``sectionproperties`` geometries a *fluent API*, meaning that
    transformation methods can be chained together, see
-   `Advanced Geometry Creation <../examples/advanced_geometry.ipynb>`_ for further
-   examples.
+   `Advanced Geometry Creation <../examples/geometry/advanced_geometry.ipynb>`_ for
+   further examples.
 
 Align
 ^^^^^
@@ -429,8 +429,8 @@ Set Operations
 Both :class:`~sectionproperties.pre.geometry.Geometry` and
 :class:`~sectionproperties.pre.geometry.CompoundGeometry` objects can be manipulated
 using Python's set operators. See
-`Advanced Geometry Creation <../examples/advanced_geometry.ipynb>`_ for further examples
-using set operations.
+`Advanced Geometry Creation <../examples/geometry/advanced_geometry.ipynb>`_ for further
+examples using set operations.
 
 
 ``|`` (Union)
@@ -487,7 +487,7 @@ material as an argument to the constructor.
 .. warning::
 
     See more about how asssigning material properties affects the results reported by
-    ``sectionproperties`` here (TODO: create link).
+    ``sectionproperties`` :ref:`here<label-material-affects-results>`.
 
 Below are a few examples showcasing the different ways to generate geometry discussed
 above:

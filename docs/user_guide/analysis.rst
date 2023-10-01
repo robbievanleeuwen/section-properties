@@ -77,7 +77,7 @@ Stress Analysis
 
 A stress analysis calculates the section stresses arising from a set of forces
 and moments. Executing this method returns a
-:class:`~sectionproperties.post.stress_post.StressResult` object, which stores the
+:class:`~sectionproperties.post.stress_post.StressPost` object, which stores the
 section stresses and provides stress plotting methods.
 
 ..  warning:: The stress analysis in *sectionproperties* is linear-elastic and does not

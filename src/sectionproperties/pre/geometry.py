@@ -144,13 +144,14 @@ class Geometry:
         holes: list[tuple[float, float]] | None = None,
         material: pre.Material = pre.DEFAULT_MATERIAL,
     ) -> Geometry:
-        """Creates a Geometry object from points, facets and holes.
+        """Creates Geometry from points, facets, a control point and holes.
 
         Args:
             points: List of points (``x``, ``y``) defining the vertices of the section
-                geometry. If facets are not provided, it is a assumed the that the list
-                of points are ordered around the perimeter, either clockwise or
-                anti-clockwise.
+                geometry. If the geometry simply contains a continuous list of exterior
+                points, consider creating a :class:`shapely.Polygon` object (only
+                requiring points), and create a ``Geometry`` object using the
+                constructor.
             facets: A list of (``start``, ``end``) indices of vertices defining the
                 edges of the section geoemtry. Can be used to define both external and
                 internal perimeters of holes. Facets are assumed to be described in the
@@ -158,7 +159,7 @@ class Geometry:
                 etc.
             control_points: An (``x``, ``y``) coordinate that describes the distinct,
                 contiguous, region of a single material within the geometry. Must be
-                entered as a list of coordinates, e.g. [[0.5, 3.2]]. Exactly one point
+                entered as a list of coordinates, e.g. [(0.5, 3.2)]. Exactly one point
                 is required for each geometry with a distinct material. If there are
                 multiple distinct regions, then use
                 :meth:`sectionproperties.pre.geometry.CompoundGeometry.from_points()`
@@ -256,16 +257,27 @@ class Geometry:
     @staticmethod
     def from_dxf(
         dxf_filepath: str | pathlib.Path,
+        spline_delta: float = 0.1,
+        degrees_per_segment: float = 1,
     ) -> Geometry | CompoundGeometry:
         """An interface for the creation of Geometry objects from CAD .dxf files.
 
         Args:
             dxf_filepath: A path-like object for the dxf file
+            spline_delta: Splines are not supported in ``shapely``, so they are
+                approximated as polylines, this argument affects the spline sampling
+                rate
+            degrees_per_segment: The number of degrees discretised as a single line
+                segment
 
         Returns:
             Geometry or CompoundGeometry object
         """
-        return load_dxf(dxf_filepath)
+        return load_dxf(
+            dxf_filepath=dxf_filepath,
+            spline_delta=spline_delta,
+            degrees_per_segment=degrees_per_segment,
+        )
 
     @classmethod
     def from_3dm(
@@ -417,6 +429,7 @@ class Geometry:
     def create_mesh(
         self,
         mesh_sizes: float | list[float],
+        min_angle: float = 30.0,
         coarse: bool = False,
     ) -> Geometry:
         r"""Creates a quadratic triangular mesh from the Geometry object.
@@ -425,6 +438,14 @@ class Geometry:
             mesh_sizes: A float describing the maximum mesh element area to be used
                 within the Geometry-object finite-element mesh (may also be a list of
                 length 1).
+            min_angle: The meshing algorithm adds vertices to the mesh to ensure that no
+                angle smaller than the minimum angle (in degrees, rounded to 1 decimal
+                place). Note that small angles between input segments cannot be
+                eliminated. If the minimum angle is 20.7 deg or smaller, the
+                triangulation algorithm is theoretically guaranteed to terminate (given
+                sufficient precision). The algorithm often doesn't terminate for angles
+                greater than 33 deg. Some meshes may require angles well below 20 deg to
+                avoid problems associated with insufficient floating-point precision.
             coarse: If set to True, will create a coarse mesh (no area or quality
                 constraints)
 
@@ -432,8 +453,8 @@ class Geometry:
             ValueError: ``mesh_sizes`` is not valid
 
         Returns:
-            Geometry-object with mesh data stored in .mesh attribute. Returned
-            Geometry-object is self, not a new instance.
+            ``Geometry`` object with mesh data stored in ``.mesh`` attribute. Returned
+            ``Geometry`` object is self, not a new instance.
 
         Example:
             The following example creates a circular cross-section with a diameter of
@@ -467,6 +488,7 @@ class Geometry:
             holes=self.holes,
             control_points=self.control_points,
             mesh_sizes=mesh_size,
+            min_angle=min_angle,
             coarse=coarse,
         )
 
@@ -1620,29 +1642,27 @@ class CompoundGeometry(Geometry):
         holes: list[tuple[float, float]] | None = None,
         materials: list[pre.Material] | None = None,
     ) -> CompoundGeometry:
-        """Creates a CompoundGeometry object from points, facets and holes.
+        """Creates CompoundGeometry from points, facets, control points and holes.
 
         An interface for the creation of CompoundGeometry objects through the definition
-        of points, facets, holes, and control points. Geometries created through this
+        of points, facets, control points and holes. Geometries created through this
         method are expected to be non-ambiguous meaning that no "overlapping" geometries
         exists and that nodal connectivity is maintained (e.g. there are no nodes
         "overlapping" with facets without nodal connectivity).
 
         Args:
             points: List of points (``x``, ``y``) defining the vertices of the
-                section geometry. If any empty list of facets is provided, it is a
-                assumed that the list of points are ordered around the perimeter, either
-                clockwise or anti-clockwise.
+                section geometry.
             facets: A list of (``start``, ``end``) indices of vertices defining the
                 edges of the section geoemtry. Can be used to define both external and
                 internal perimeters of holes. Facets are assumed to be described in the
                 order of exterior perimeter, interior perimeter 1, interior perimeter 2,
                 etc.
-            control_points: A list of points (``x``, ``y``) that define non-interior
-                regions as being distinct, contiguous, and having one material. The
-                point can be located anywhere within region. Only one point is permitted
-                per region. The order of ``control_points`` must be given in the same
-                order as the order that polygons are created by ``facets``.
+            control_points: A list of points (``x``, ``y``) that define regions as being
+                distinct, contiguous, and having one material. The point can be located
+                anywhere within region. Only one point is permitted per region. The
+                order of ``control_points`` must be given in the same order as the order
+                that polygons are created by ``facets``.
             holes: A list of points (``x``, ``y``) that define interior regions as
                 being holes or voids. The point can be located anywhere within the hole
                 region. Only one point is required per hole region.
@@ -1882,6 +1902,7 @@ class CompoundGeometry(Geometry):
     def create_mesh(
         self,
         mesh_sizes: list[float],
+        min_angle: float = 30.0,
         coarse: bool = False,
     ) -> CompoundGeometry:
         """Creates a quadratic triangular mesh from the CompoundGeometry object.
@@ -1891,12 +1912,20 @@ class CompoundGeometry(Geometry):
                 the finite-element mesh for each Geometry object within the
                 CompoundGeometry object. If a list of length 1 is passed, then the one
                 size will be applied to all constituent Geometry meshes.
+            min_angle: The meshing algorithm adds vertices to the mesh to ensure that no
+                angle smaller than the minimum angle (in degrees, rounded to 1 decimal
+                place). Note that small angles between input segments cannot be
+                eliminated. If the minimum angle is 20.7 deg or smaller, the
+                triangulation algorithm is theoretically guaranteed to terminate (given
+                sufficient precision). The algorithm often doesn't terminate for angles
+                greater than 33 deg. Some meshes may require angles well below 20 deg to
+                avoid problems associated with insufficient floating-point precision.
             coarse: If set to True, will create a coarse mesh (no area or quality
                 constraints)
 
         Returns:
-            CompoundGeometry object with mesh data stored in .mesh attribute. Returned
-            Geometry object is self, not a new instance.
+            ``CompoundGeometry`` object with mesh data stored in ``.mesh`` attribute.
+            Returned ``CompoundGeometry`` object is self, not a new instance.
 
         Example:
             The following example creates a mesh for a plate with a hole, with a refined
@@ -1932,6 +1961,7 @@ class CompoundGeometry(Geometry):
             holes=self.holes,
             control_points=self.control_points,
             mesh_sizes=mesh_sizes,
+            min_angle=min_angle,
             coarse=coarse,
         )
 
@@ -2390,11 +2420,16 @@ class CompoundGeometry(Geometry):
 
 def load_dxf(
     dxf_filepath: str | pathlib.Path,
+    spline_delta: float,
+    degrees_per_segment: float,
 ) -> Geometry | CompoundGeometry:
     """Import any-old-shape in ``.dxf`` format for analysis.
 
     Args:
         dxf_filepath: Path to ``.dxf`` file to load
+        spline_delta: Splines are not supported in ``shapely``, so they are approximated
+            as polylines, this argument affects the spline sampling rate
+        degrees_per_segment: The number of degrees discretised as a single line segment
 
     Raises:
         ImportError: If ``cad_to_shapely`` is not installed. To enable dxf features use
@@ -2422,7 +2457,7 @@ def load_dxf(
         raise ValueError(f"The filepath does not exist: {dxf_filepath}")
 
     my_dxf = c2s.dxf.DxfImporter(dxf_filepath)
-    my_dxf.process()
+    my_dxf.process(spline_delta=spline_delta, degrees_per_segment=degrees_per_segment)
     my_dxf.cleanup()
 
     polygons = my_dxf.polygons

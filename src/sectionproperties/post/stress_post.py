@@ -19,6 +19,7 @@ import sectionproperties.post.post as post
 
 if TYPE_CHECKING:
     from sectionproperties.analysis.section import MaterialGroup, Section
+    from sectionproperties.pre.pre import Material
 
 
 class StressPost:
@@ -57,7 +58,12 @@ class StressPost:
         stress: str,
         title: str | None = None,
         cmap: str = "coolwarm",
+        stress_limits: tuple[float, float] | None = None,
         normalize: bool = True,
+        fmt: str = "{x:.4e}",
+        colorbar_label: str = "Stress",
+        alpha: float = 0.5,
+        material_list: list[Material] | None = None,
         **kwargs,
     ) -> matplotlib.axes.Axes:
         r"""Plots filled stress contours over the finite element mesh.
@@ -68,8 +74,16 @@ class StressPost:
             cmap: Matplotlib color map, see
                 https://matplotlib.org/stable/tutorials/colors/colormaps.html for more
                 detail
+            stress_limits: Custom colorbar stress limits (`sig_min`, `sig_max`), values
+                outside these limits will appear as white
             normalize: If set to True, ``CenteredNorm`` is used to scale the colormap,
                 if set to False, the default linear scaling is used
+            fmt: Number formatting string, see
+                https://docs.python.org/3/library/string.html
+            colorbar_label: Colorbar label
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
+            material_list: If specified, only plots materials present in the list. If
+                set to `None`, plots all materials.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -150,9 +164,6 @@ class StressPost:
 
           - ``stress="zy"`` - ``y`` component of the shear stress :math:`\sigma_{zy}`
             resulting from all actions
-
-          - ``stress="zxy"`` - resultant shear stress :math:`\sigma_{zxy}` resulting
-            from all actions
 
           - ``stress="zxy"`` - resultant shear stress :math:`\sigma_{zxy}` resulting
             from all actions
@@ -270,11 +281,17 @@ class StressPost:
             },
         }
 
-        # populate stresses
+        # populate stresses and plotted material groups
         sigs = []
+        plotted_material_groups = []
 
         for group in self.material_groups:
+            # if we are limiting materials to plot, check material is in list
+            if material_list and group.material not in material_list:
+                continue
+
             sigs.append(getattr(group.stress_result, stress_dict[stress]["attribute"]))
+            plotted_material_groups.append(group)
 
         # apply title
         if not title:
@@ -293,8 +310,12 @@ class StressPost:
             )
 
             # determine minimum and maximum stress values for the contour list
-            sig_min = min([min(x) for x in sigs])
-            sig_max = max([max(x) for x in sigs])
+            if stress_limits is None:
+                sig_min = min([min(x) for x in sigs])
+                sig_max = max([max(x) for x in sigs])
+            else:
+                sig_min = stress_limits[0]
+                sig_max = stress_limits[1]
 
             v = np.linspace(start=sig_min, stop=sig_max, num=15, endpoint=True)
 
@@ -309,11 +330,15 @@ class StressPost:
             if normalize:
                 norm = CenteredNorm()
 
-            # plot the filled contour, looping through the materials
-            for i, sig in enumerate(sigs):
+            # plot the filled contour, looping through the plotted material groups
+            for group, sig in zip(plotted_material_groups, sigs):
+                # if we are limiting materials to plot, check material is in list
+                if material_list and group.material not in material_list:
+                    continue
+
                 # create and set the mask for the current material
                 mask_array = np.ones(shape=len(self.section.elements), dtype=bool)
-                mask_array[self.material_groups[i].el_ids] = False
+                mask_array[group.el_ids] = False
                 triang.set_mask(mask_array)
 
                 # plot the filled contour
@@ -326,11 +351,15 @@ class StressPost:
 
             if trictr:
                 fig.colorbar(
-                    mappable=trictr, label="Stress", format="%.4e", ticks=ticks, cax=cax
+                    mappable=trictr,
+                    label=colorbar_label,
+                    format=fmt,
+                    ticks=ticks,
+                    cax=cax,
                 )
 
             # plot the finite element mesh
-            self.section.plot_mesh(materials=False, **dict(kwargs, ax=ax))
+            self.section.plot_mesh(alpha=alpha, materials=False, **dict(kwargs, ax=ax))
 
         if ax:
             return ax
@@ -343,6 +372,9 @@ class StressPost:
         title: str | None = None,
         cmap: str = "YlOrBr",
         normalize: bool = False,
+        fmt: str = "{x:.4e}",
+        colorbar_label: str = "Stress",
+        alpha: float = 0.2,
         **kwargs,
     ) -> matplotlib.axes.Axes:
         r"""Plots stress vectors over the finite element mesh.
@@ -355,6 +387,10 @@ class StressPost:
                 detail
             normalize: If set to True, ``CenteredNorm`` is used to scale the colormap,
                 if set to False, the default linear scaling is used
+            fmt: Number formatting string, see
+                https://docs.python.org/3/library/string.html
+            colorbar_label: Colorbar label
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -371,10 +407,10 @@ class StressPost:
             resulting from the torsion moment :math:`M_{zz}`
 
           - ``stress="vx_zxy"`` - resultant shear stress :math:`\sigma_{zxy,Vx}`
-            resulting from the torsion moment :math:`V_{x}`
+            resulting from the shear force :math:`V_{x}`
 
           - ``stress="vy_zxy"`` - resultant shear stress :math:`\sigma_{zxy,Vy}`
-            resulting from the torsion moment :math:`V_{y}`
+            resulting from the shear force :math:`V_{y}`
 
           - ``stress="v_zxy"`` - resultant shear stress :math:`\sigma_{zxy,\Sigma V}`
             resulting from the sum of the applied shear forces :math:`V_{x} + V_{y}`
@@ -479,11 +515,11 @@ class StressPost:
             cax = divider.append_axes(position="right", size="5%", pad=0.1)
 
             fig.colorbar(
-                mappable=quiv, label="Stress", format="%.4e", ticks=v1, cax=cax
+                mappable=quiv, label=colorbar_label, format=fmt, ticks=v1, cax=cax
             )
 
             # plot the finite element mesh
-            self.section.plot_mesh(materials=False, **dict(kwargs, ax=ax))
+            self.section.plot_mesh(alpha=alpha, materials=False, **dict(kwargs, ax=ax))
 
         if ax:
             return ax
@@ -779,21 +815,21 @@ class StressPost:
                 (0.5 * (sigma_2 + sigma_3), 0),
                 0.5 * (sigma_2 - sigma_3),
                 "r",
-                r"C1: ($\sigma_22$, $\sigma_33$)",
+                r"C1: ($\sigma_{22}$, $\sigma_{33}$)",
             )
             plot_circle(
                 ax,
                 (0.5 * (sigma_1 + sigma_3), 0),
                 0.5 * (sigma_1 - sigma_3),
                 "b",
-                r"C2: ($\sigma_11$, $\sigma_33$)",
+                r"C2: ($\sigma_{11}$, $\sigma_{33}$)",
             )
             plot_circle(
                 ax,
                 (0.5 * (sigma_1 + sigma_2), 0),
                 0.5 * (sigma_1 - sigma_2),
                 "k",
-                r"C3: ($\sigma_11$, $\sigma_22$)",
+                r"C3: ($\sigma_{11}$, $\sigma_{22}$)",
             )
 
             for i, plane, col in zip(range(3), ["X", "Y", "Z"], ["r", "b", "k"]):
@@ -960,7 +996,7 @@ class StressResult:
         self.sig_zx = self.sig_zx_mzz + self.sig_zx_v
         self.sig_zy = self.sig_zy_mzz + self.sig_zy_v
         self.sig_zxy = (self.sig_zx**2 + self.sig_zy**2) ** 0.5
-        self.sig_1 = self.sig_zz / 2 + np.sqrt(
+        self.sig_11 = self.sig_zz / 2 + np.sqrt(
             (self.sig_zz / 2) ** 2 + self.sig_zxy**2
         )
         self.sig_33 = self.sig_zz / 2 - np.sqrt(

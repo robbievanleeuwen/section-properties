@@ -28,14 +28,14 @@ using the finite element method. `sectionproperties` can be used to determine
 section properties to be used in structural design and visualise cross-sectional
 stresses resulting from combinations of applied forces and bending moments.
 
-[Subscribe](http://eepurl.com/dMMUeg) to the mailing list!
+[Subscribe](http://eepurl.com/dMMUeg) to the `sectionproperties` mailing list!
 
 ## Installation
 
 You can install `sectionproperties` via [pip] from [PyPI]:
 
-```console
-> pip install sectionproperties
+```shell
+pip install sectionproperties
 ```
 
 ## Documentation
@@ -46,84 +46,24 @@ background theory and an API guide. The documentation can found at
 
 ## Features
 
-### Pre-Processor
-
-- [x] Python API
-- [x] Geometry manipulation by Shapely
-- [x] Common section geometry functions
-- [x] Custom section geometry input
-- [x] Rhino .3dm import
-- [x] .dxf import
-- [x] Perimeter offset tool
-- [x] Quadratic triangular mesh generation
-- [x] Composite material definition
-
-### Cross-Section Analysis
-
-- [x] Global axis geometric section properties:
-  - [x] Area
-  - [x] Perimeter
-  - [x] Mass
-  - [x] First moments of area
-  - [x] Second moments of area
-  - [x] Elastic centroid
-- [x] Centroidal axis geometric section properties:
-  - [x] Second moments of area
-  - [x] Elastic section moduli
-  - [ ] Yield moment
-  - [x] Radii of gyration
-  - [x] Plastic centroid
-  - [x] Plastic section moduli
-  - [x] Shape factors
-- [x] Principal axis geometric section properties:
-  - [x] Second moments of area
-  - [x] Elastic section moduli
-  - [ ] Yield moment
-  - [x] Radii of gyration
-  - [x] Plastic centroid
-  - [x] Plastic section moduli
-  - [x] Shape factors
-- [x] Warping section properties:
-  - [x] Torsion constant
-  - [x] Warping constant
-  - [x] Monosymmetry constants
-- [x] Shear section properties:
-  - [x] Shear centre (elastic method)
-  - [x] Shear centre (Trefftz's method)
-  - [x] Shear areas (global axis)
-  - [x] Shear areas (principal axis)
-- [x] Cross-section stress analysis
-- [x] Mohr's circles for stresses at a point
-
-### Solver
-
-- [x] Direct solver
-- [x] CGS iterative solver
-- [x] Sparse matrices
-
-### Post-Processor
-
-- [x] Plot geometry
-- [x] Plot mesh
-- [x] Plot centroids
-- [x] Plot cross-section stresses
-- [x] Retrieve cross-section stresses
-- [ ] Generate cross-section report
+See the complete list of `sectionproperties` features
+[here](https://sectionproperties.readthedocs.io/en/latest/user_guide.html).
 
 ## Contributing
 
-Contributions are very welcome.
-To learn more, see the [Contributor Guide].
+Contributions are very welcome. To learn more, see the [Contributor Guide].
 
 ## License
 
-Distributed under the terms of the [MIT license][license],
-`sectionproperties` is free and open source software.
+Distributed under the terms of the [MIT license][license], `sectionproperties` is free
+and open source software.
 
-## Issues
+## Support
 
-If you encounter any problems,
-please [file an issue] along with a detailed description.
+Found a bug 🐛, or have a feature request ✨, raise an issue on the
+GitHub [issue tracker](https://github.com/robbievanleeuwen/section-properties/issues)
+Alternatively you can get support on the
+[discussions](https://github.com/robbievanleeuwen/section-properties/discussions) page.
 
 ## Disclaimer
 
@@ -135,15 +75,12 @@ user's responsibility to confirm and accept the output. Refer to the
 
 ## Credits
 
-This project was generated from [@cjolowicz]'s [Hypermodern Python Cookiecutter] template.
+This project was generated from [@cjolowicz]'s [Hypermodern Python Cookiecutter]
+template.
 
 [@cjolowicz]: https://github.com/cjolowicz
 [pypi]: https://pypi.org/
 [hypermodern python cookiecutter]: https://github.com/cjolowicz/cookiecutter-hypermodern-python
-[file an issue]: https://github.com/robbievanleeuwen/section-properties/issues
 [pip]: https://pip.pypa.io/
-
-<!-- github-only -->
-
 [license]: https://github.com/robbievanleeuwen/section-properties/blob/master/LICENSE
 [contributor guide]: https://github.com/robbievanleeuwen/section-properties/blob/master/CONTRIBUTING.md

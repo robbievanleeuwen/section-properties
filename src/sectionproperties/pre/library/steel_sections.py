@@ -1390,10 +1390,10 @@ def bulb_section(
     points += sp_utils.draw_radius(
         pt=ptb, r=r, theta=-np.pi * 1 / 3, n=n_r, ccw=True, phi=np.pi / 3
     )
+    points.pop()  # delete duplicate point
     points += sp_utils.draw_radius(pt=ptb, r=r, theta=0, n=n_r, ccw=True)
 
     # build the top part
-    points.append((b + t * 0.5 - r, d))
     points.append((-t * 0.5, d))
 
     polygon = Polygon(points)

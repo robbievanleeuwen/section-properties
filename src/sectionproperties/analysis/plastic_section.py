@@ -94,7 +94,7 @@ class PlasticSection:
         if verbose:
             self.print_verbose(d=y_pc, root_result=r, axis="x-axis")
 
-        if progress and task:
+        if progress and task is not None:
             progress.update(task_id=task, advance=1)
 
         # 1b) Calculate y-axis plastic centroid
@@ -112,7 +112,7 @@ class PlasticSection:
         if verbose:
             self.print_verbose(d=x_pc, root_result=r, axis="y-axis")
 
-        if progress and task:
+        if progress and task is not None:
             progress.update(task_id=task, advance=1)
 
         # 2) Calculate plastic properties for principal axis
@@ -152,7 +152,7 @@ class PlasticSection:
         if verbose:
             self.print_verbose(d=y22_pc, root_result=r, axis="11-axis")
 
-        if progress and task:
+        if progress and task is not None:
             progress.update(task_id=task, advance=1)
 
         # 2b) Calculate 22-axis plastic centroid
@@ -178,7 +178,7 @@ class PlasticSection:
         if verbose:
             self.print_verbose(d=x11_pc, root_result=r, axis="22-axis")
 
-        if progress and task:
+        if progress and task is not None:
             progress.update(task_id=task, advance=1)
 
         # if there are no materials specified, calculate shape factors
@@ -220,7 +220,7 @@ class PlasticSection:
                     section.section_props.s22 / section.section_props.z22_minus
                 )
 
-        if progress and task:
+        if progress and task is not None:
             progress.update(
                 task_id=task,
                 description="[bold green]:white_check_mark: Plastic analysis complete",
