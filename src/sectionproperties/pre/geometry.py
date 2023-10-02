@@ -1357,8 +1357,7 @@ class Geometry:
 
         Example:
             The following example performs a symmetric difference on two circles with
-            the ``|`` operator. A mesh is generated to highlight the regions that
-            remain:
+            the ``^`` operator:
 
             .. plot::
                 :include-source: True
@@ -1369,9 +1368,7 @@ class Geometry:
 
                 circ1 = circular_section(d=100, n=64)
                 circ2 = circular_section(d=100, n=64).shift_section(x_offset=35)
-                geom = circ1 ^ circ2
-                geom.create_mesh(mesh_sizes=5)
-                Section(geometry=geom).plot_mesh()
+                (circ1 ^ circ2).plot_geometry()
         """
         material = self.material or other.material
 
