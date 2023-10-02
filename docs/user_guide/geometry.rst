@@ -117,16 +117,9 @@ Various CAD files can be imported to creating ``sectionproperties`` geometries.
 ``.dxf``
 """"""""
 
-.. attention::
-    TODO - confirm this behaviour once PR #246 is merged,
-    `link <https://github.com/robbievanleeuwen/section-properties/issues/246>`_.
-
 :class:`~sectionproperties.pre.geometry.Geometry` objects can be created from ``.dxf``
 files using the
-:meth:`sectionproperties.pre.geometry.Geometry.from_dxf` method. The returned geometry
-will either be a :class:`~sectionproperties.pre.geometry.Geometry` or
-:class:`~sectionproperties.pre.geometry.CompoundGeometry` object depending on the
-geometry in the file, i.e. the number of contiguous regions.
+:meth:`sectionproperties.pre.geometry.Geometry.from_dxf` method.
 
 ..  automethod:: sectionproperties.pre.geometry.Geometry.from_dxf
    :noindex:
@@ -148,6 +141,13 @@ geometry in the file, i.e. the number of contiguous regions.
         # load dxf file into a Geometry object
         geom = Geometry.from_dxf(dxf_filepath=dxf_path)
         geom.plot_geometry()
+
+.. note::
+
+    Loading multiple regions from a single ``.dxf`` file into a ``CompoundGeometry`` is
+    not currently supported in ``sectionproperties``. A possible work around involves
+    saving each region as a separate ``.dxf`` file, importing each region individually
+    using ``Geometry.from_dxf()``, then combining the regions using the ``+`` operator.
 
 Rhino
 """""

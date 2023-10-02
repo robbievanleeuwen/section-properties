@@ -347,12 +347,11 @@ class Section:
             polygons = [sec_geom.geom for sec_geom in self.geometry.geoms]
             disjoint_regions = sp_geom.check_geometry_disjoint(lop=polygons)
             if disjoint_regions:
-                # TODO: fix link
                 msg = "\nThe section geometry contains disjoint regions which is "
                 msg += "invalid for warping analysis.\n Please revise your geometry to "
                 msg += "ensure there is connectivity between all regions.\n Please see "
-                msg += "https://sectionproperties.rtfd.io/en/latest/rst/analysis.html"
-                msg += "#warping-analysis for more information."
+                msg += "https://sectionproperties.rtfd.io/en/latest/user_guide/"
+                msg += "analysis.html#warping-analysis for more information."
                 warnings.warn(msg)
 
         # create a new Section with the origin shifted to the centroid for calculation
@@ -1138,15 +1137,14 @@ class Section:
             overlapped_regions = sp_geom.check_geometry_overlaps(lop=polygons)
 
             if overlapped_regions:
-                # TODO: fix link
                 msg = "\nThe section geometry contains overlapping regions and the area"
                 msg += " of these overlapped regions will be 'double counted' in the"
                 msg += "  plastic analysis which may result in incorrect values.\n"
                 msg += "If you do not intend for this double counting to occur, use"
                 msg += " a subtractive modelling approach to remove the overlapping"
                 msg += " region.\nPlease see "
-                msg += "https://sectionproperties.rtfd.io/en/latest/advanced_geom.html"
-                msg += " for more information."
+                msg += "https://sectionproperties.rtfd.io/en/latest/examples/geometry/"
+                msg += "advanced_geometry.html for more information."
                 warnings.warn(msg)
 
         def calc_plastic(progress=None):

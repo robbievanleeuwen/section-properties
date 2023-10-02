@@ -487,7 +487,6 @@ def nastran_fcross(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    # TODO: Finish dimension checks.
     np.testing.assert_(dim_5 > dim_3, "Invalid geometry specified.")
     np.testing.assert_(dim_7 > dim_4, "Invalid geometry specified.")
     np.testing.assert_(dim_7 < dim_1, "Invalid geometry specified.")
