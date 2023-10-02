@@ -25,6 +25,7 @@ import sectionproperties.post.post as post
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.pre.pre as pre
 
+
 SCALE_CONSTANT = 1e-9
 
 
