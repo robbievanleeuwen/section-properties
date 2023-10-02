@@ -9,7 +9,7 @@ updates:
   - package-ecosystem: pip
     directory: "/.github/workflows"
     schedule:
-      interval: weekly
+      interval: monthly
 
   - package-ecosystem: pip
     directory: "/docs"
@@ -20,6 +20,3 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-    versioning-strategy: lockfile-only
-    allow:
-      - dependency-type: "all"
