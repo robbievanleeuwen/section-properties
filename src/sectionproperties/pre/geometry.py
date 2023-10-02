@@ -26,6 +26,9 @@ import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.pre.pre as pre
 
 
+SCALE_CONSTANT = 1e-9
+
+
 class Geometry:
     """Class for defining the geometry of a contiguous section of a single material.
 
@@ -1354,8 +1357,7 @@ class Geometry:
 
         Example:
             The following example performs a symmetric difference on two circles with
-            the ``|`` operator. A mesh is generated to highlight the regions that
-            remain:
+            the ``^`` operator:
 
             .. plot::
                 :include-source: True
@@ -1366,9 +1368,7 @@ class Geometry:
 
                 circ1 = circular_section(d=100, n=64)
                 circ2 = circular_section(d=100, n=64).shift_section(x_offset=35)
-                geom = circ1 ^ circ2
-                geom.create_mesh(mesh_sizes=5)
-                Section(geometry=geom).plot_mesh()
+                (circ1 ^ circ2).plot_geometry()
         """
         material = self.material or other.material
 
@@ -2385,6 +2385,8 @@ class CompoundGeometry(Geometry):
         # holes have been destroyed (or "filled in").
         resultant_holes = []
         unionized_poly = unary_union([geom.geom for geom in self.geoms])
+        buffer_amount = unionized_poly.area * SCALE_CONSTANT
+        unionized_poly = unionized_poly.buffer(buffer_amount)
 
         if isinstance(unionized_poly, MultiPolygon):
             for poly in unionized_poly.geoms:
