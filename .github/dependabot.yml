@@ -1,22 +1,22 @@
-version: 2
+# version: 2
 
-updates:
-  - package-ecosystem: github-actions
-    directory: "/"
-    schedule:
-      interval: weekly
+# updates:
+#   - package-ecosystem: github-actions
+#     directory: "/"
+#     schedule:
+#       interval: weekly
 
-  - package-ecosystem: pip
-    directory: "/.github/workflows"
-    schedule:
-      interval: monthly
+#   - package-ecosystem: pip
+#     directory: "/.github/workflows"
+#     schedule:
+#       interval: monthly
 
-  - package-ecosystem: pip
-    directory: "/docs"
-    schedule:
-      interval: monthly
+#   - package-ecosystem: pip
+#     directory: "/docs"
+#     schedule:
+#       interval: monthly
 
-  # - package-ecosystem: pip
-  #   directory: "/"
-  #   schedule:
-  #     interval: weekly
+# - package-ecosystem: pip
+#   directory: "/"
+#   schedule:
+#     interval: weekly
