@@ -1060,9 +1060,6 @@ def cee_section(
     Returns:
         Cee section geometry
 
-    Raises:
-        ValueError: Lip length must be greater than the outer radius
-
     Example:
         The following example creates a cee section with a depth of 125 mm, a width of
         30 mm, a lip of 30 mm, a thickness of 1.5 mm and an outer radius of 6 mm, using
@@ -1076,10 +1073,6 @@ def cee_section(
 
             cee_section(d=125, b=50, l=30, t=1.5, r_out=6, n_r=8).plot_geometry()
     """
-    # ensure the lip length is greater than the outer radius
-    if l < r_out:
-        raise ValueError("Lip length must be greater than the outer radius")
-
     points: list[tuple[float, float]] = []
 
     # calculate internal radius
@@ -1209,9 +1202,6 @@ def zed_section(
     Returns:
         Zed section geometry
 
-    Raises:
-        ValueError: Lip length must be greater than the outer radius
-
     Example:
         The following example creates a zed section with a depth of 100 mm, a left
         flange width of 40 mm, a right flange width of 50 mm, a lip of 20 mm, a
@@ -1228,10 +1218,6 @@ def zed_section(
                 d=100, b_l=40, b_r=50, l=20, t=1.2, r_out=5, n_r=8
             ).plot_geometry()
     """
-    # ensure the lip length is greater than the outer radius
-    if l < r_out:
-        raise ValueError("Lip length must be greater than the outer radius")
-
     points: list[tuple[float, float]] = []
 
     # calculate internal radius
