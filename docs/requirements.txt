@@ -1,7 +1,7 @@
 furo==2023.9.10
 ipykernel==6.25.2
 ipython==8.12.1
-ipywidgets==8.0.6
+ipywidgets==8.1.1
 nbconvert==7.8.0
 nbsphinx==0.9.3
 sphinx==7.1.2
