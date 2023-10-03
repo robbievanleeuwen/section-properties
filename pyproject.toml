@@ -48,12 +48,12 @@ Changelog = "https://github.com/robbievanleeuwen/section-properties/releases"
 
 [tool.poetry.dependencies]
 python = ">=3.9.0,<3.12"
-numpy = "^1.24.3"  # 1.25.0 onwards requires python 3.9
-scipy = "^1.10.1"  # 1.11.0 onwards requires python 3.9
-matplotlib = "^3.7.3"  # 3.8.0 onwards requires python 3.9
+numpy = "^1.26.0"
+scipy = "^1.11.3"
+matplotlib = "^3.8.0"
 shapely = "^2.0.1"
 triangle = "^20230923"
-rich = "^13.5.3"
+rich = "^13.6.0"
 click = "^8.1.7"
 more-itertools = "^10.1.0"
 cad-to-shapely = { version = "^0.3.1", optional = true }
@@ -70,8 +70,8 @@ flake8-docstrings = "^1.7.0"
 flake8-rst-docstrings = "^0.3.0"
 furo = "^2023.9.10"
 ipykernel = "^6.25.2"
-ipython = "^8.12.1"  # 8.13.0 onwards requires python 3.9
-ipywidgets = "^8.0.6"
+ipython = "^8.16.1"
+ipywidgets = "^8.1.1"
 isort = "^5.12.0"
 nbconvert = "^7.8.0"
 nbsphinx = "^0.9.3"
@@ -83,7 +83,7 @@ Pygments = "^2.16.1"
 pytest = "^7.4.2"
 pytest-check = "^2.2.2"
 pyupgrade = "^3.13.0"
-sphinx = "^7.1.2"  # 7.2.0 onwards requires python 3.9
+sphinx = "^7.2.6"
 sphinx-autobuild = "^2021.3.14"
 sphinx-click = "^5.0.1"
 sphinx-copybutton = "^0.5.2"
