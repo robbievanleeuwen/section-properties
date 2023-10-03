@@ -51,7 +51,7 @@
 
 - name: help wanted
   description: Extra attention is needed
-  color: 008672
+  color: 33aa3f
 
 - name: invalid
   description: This doesn't seem right
@@ -88,3 +88,7 @@
 - name: wontfix
   description: This will not be worked on
   color: ffffff
+
+- name: stale
+  description: This issue hasn't received enough love
+  color: 922A20
