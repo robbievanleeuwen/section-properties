@@ -1,17 +1,27 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-
+name: "✨ Feature Request"
+about: Do you have ideas for new features or improvements?
+labels: enhancement
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+<!--
+    Hi there! Thank you for submitting a feature request!
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+    Before you submit your issue, please review and follow the instructions at
+    https://github.com/robbievanleeuwen/section-properties/blob/master/CONTRIBUTING.md#How-to-request-a-feature.
+-->
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+<!--
+    All the below steps should be completed before submitting your issue. Checked
+    checkbox should look like this: [x]
+-->
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+- [ ] I have searched the [issues](https://github.com/robbievanleeuwen/section-properties/issues)
+      of this repo and believe that this is not a duplicate.
+- [ ] I have searched the [documentation](https://sectionproperties.readthedocs.io/) and
+      believe that my question is not already covered.
+
+## Feature Request
+
+<!-- Now feel free to write your issue, and please be as descriptive as possible! -->
+<!-- Thanks again 🙌 ❤ -->

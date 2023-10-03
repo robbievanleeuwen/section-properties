@@ -1,5 +1,116 @@
+[tool.poetry]
+name = "sectionproperties"
+version = "2.1.5"
+description = "A python package for the analysis of arbitrary cross-sections using the finite element method."
+license = "MIT"
+authors = [
+    "Robbie van Leeuwen <robbie.vanleeuwen@gmail.com>",
+]
+maintainers = [
+    "Robbie van Leeuwen <robbie.vanleeuwen@gmail.com>",
+    "Connor Ferster <connorferster@gmail.com>",
+]
+readme = "README.md"
+homepage = "https://github.com/robbievanleeuwen/section-properties"
+repository = "https://github.com/robbievanleeuwen/section-properties"
+documentation = "https://sectionproperties.readthedocs.io"
+keywords = [
+    "cross-section",
+    "structural-engineering",
+    "finite-element-analysis",
+    "computational-mechanics",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Scientific/Engineering",
+    "Environment :: Console",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+packages = [
+    { include = "sectionproperties", from = "src" },
+    { include = "src/sectionproperties/py.typed"},
+]
+include = [
+    "*.3dm",
+    "*.dxf",
+    "*.json",
+    "tests/complex_shape.txt",
+    "tests/compound_shape.txt",
+]
+
+[tool.poetry.urls]
+Changelog = "https://github.com/robbievanleeuwen/section-properties/releases"
+"Bug Tracker" = "https://github.com/robbievanleeuwen/section-properties/issues"
+
+[tool.poetry.dependencies]
+python = ">=3.9.0,<3.12"
+numpy = "^1.24.3"  # 1.25.0 onwards requires python 3.9
+scipy = "^1.10.1"  # 1.11.0 onwards requires python 3.9
+matplotlib = "^3.7.3"  # 3.8.0 onwards requires python 3.9
+shapely = "^2.0.1"
+triangle = "^20230923"
+rich = "^13.5.3"
+click = "^8.1.7"
+more-itertools = "^10.1.0"
+cad-to-shapely = { version = "^0.3.1", optional = true }
+rhino-shapley-interop = { version = "^0.0.4", python = ">=3.9.0,<3.10", optional = true }
+rhino3dm = { version = "==8.0.0b2", python = ">=3.9.0,<3.10", optional = true }
+
+[tool.poetry.dev-dependencies]
+black = { extras = ["jupyter"], version = "^23.9.1" }
+coverage = { extras = ["toml"], version = "^7.3.1" }
+darglint = "^1.8.1"
+flake8 = "^6.1.0"
+flake8-bugbear = "^23.9.16"
+flake8-docstrings = "^1.7.0"
+flake8-rst-docstrings = "^0.3.0"
+furo = "^2023.9.10"
+ipykernel = "^6.25.2"
+ipython = "^8.12.1"  # 8.13.0 onwards requires python 3.9
+ipywidgets = "^8.0.6"
+isort = "^5.12.0"
+nbconvert = "^7.8.0"
+nbsphinx = "^0.9.3"
+notebook = "^7.0.4"
+pep8-naming = "^0.13.3"
+pre-commit = "^3.4.0"
+pre-commit-hooks = "^4.4.0"
+Pygments = "^2.16.1"
+pytest = "^7.4.2"
+pytest-check = "^2.2.2"
+pyupgrade = "^3.13.0"
+sphinx = "^7.1.2"  # 7.2.0 onwards requires python 3.9
+sphinx-autobuild = "^2021.3.14"
+sphinx-click = "^5.0.1"
+sphinx-copybutton = "^0.5.2"
+sphinxext-opengraph = "^0.8.2"
+
+[tool.poetry.extras]
+dxf = ["cad-to-shapely"]
+rhino = ["rhino-shapley-interop", "rhino3dm"]
+
+[tool.poetry.scripts]
+sectionproperties = "sectionproperties.__main__:main"
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+tests = ["tests", "*/tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["sectionproperties", "tests"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.isort]
+profile = "black"
+lines_after_imports = 2
+
 [build-system]
-# These are the assumed default build requirements from pip:
-# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
-requires = ["setuptools>=43.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

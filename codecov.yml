@@ -1,10 +1,9 @@
-codecov:
-  require_ci_to_pass: yes
+comment: false
 
 coverage:
   precision: 2
-  round: down
-  range: "70...100"
+  round: nearest
+  range: "50...90"
   status:
     project:
       default:
@@ -12,14 +11,9 @@ coverage:
         target: auto
         threshold: 5%
         base: auto
-    patch: off
-
-parsers:
-  gcov:
-    branch_detection:
-      conditional: yes
-      loop: yes
-      method: no
-      macro: no
-
-comment: false
+    patch:
+      default:
+        # basic
+        target: auto
+        threshold: 5%
+        base: auto

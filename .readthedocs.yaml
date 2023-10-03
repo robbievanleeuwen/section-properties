@@ -3,18 +3,23 @@ version: 2
 
 # Set the version of Python and other tools you might need
 build:
-  os: ubuntu-20.04
+  os: ubuntu-22.04
   tools:
     python: "3.9"
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
-   configuration: docs/source/conf.py
+  configuration: docs/conf.py
 
 # Default is HTML
-formats: all
+# formats: all
 
 # Optionally declare the Python requirements required to build your docs
 python:
-   install:
-   - requirements: docs/source/requirements_docs.txt
+  install:
+    - requirements: docs/requirements.txt
+    - method: pip
+      path: .
+      extra_requirements:
+        - dxf
+        - rhino

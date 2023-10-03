@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "💬 Discussions"
+    url: https://github.com/robbievanleeuwen/section-properties/discussions
+    about: |
+      Ask questions about using sectionproperties, sectionproperties's features and roadmap, or get support and feedback for your usage of sectionproperties.

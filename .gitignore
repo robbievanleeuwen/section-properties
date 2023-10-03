@@ -2,8 +2,8 @@
 *.pyc
 
 # Setuptools distribution folder.
-/dist/
-/build/
+dist/
+build/
 
 # Common virtual environments
 .venv/
@@ -11,14 +11,15 @@
 .python-version
 
 # doc generated
-/docs/build
-/docs/source/sphinx_gallery_examples/
+docs/_build
+docs/gen
 
 # Python egg metadata, regenerated from source files by setuptools.
-/*.egg-info
+*.egg-info
+src/*.egg-info/
 
 # Pycharm IDE file folder
-/.idea/
+.idea/
 
 # vscode
 .vscode/
@@ -26,3 +27,20 @@
 
 # mac
 .DS_Store
+
+# coverage reports
+.coverage
+.coverage.*
+
+# nox
+.nox/
+
+# cache
+__pycache__/
+.pytest_cache
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# temp folder
+.temp/
