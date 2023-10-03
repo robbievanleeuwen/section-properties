@@ -149,10 +149,7 @@ def concrete_rectangular_section(
         x_i_side_left = c_side + dia_side / 2
         x_i_side_right = b - x_i_side_left
 
-        if n_side == 1:
-            spacing_side = 0
-        else:
-            spacing_side = (d - c_top - c_bot - dia_top / 2 - dia_bot / 2) / (
+        spacing_side = (d - c_top - c_bot - dia_top / 2 - dia_bot / 2) / (
                 n_side + 1
             )
     else:
