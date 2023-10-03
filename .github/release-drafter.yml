@@ -34,7 +34,28 @@ categories:
       - "dependencies"
       - "build"
 
+version-resolver:
+  major:
+    labels:
+      - "major"
+  minor:
+    labels:
+      - "minor"
+  patch:
+    labels:
+      - "patch"
+  default: patch
+
+exclude-contributors:
+  - "robbievanleeuwen"
+
+header: |
+  Custom text at start of release...
+
 template: |
-  ## Changes
+  ## What's Changed
 
   $CHANGES
+
+footer: |
+  **Full changelog:** [$PREVIOUS_TAG -> $RESOLVED_VERSION](https://github.com/robbievanleeuwen/section-properties/compare/$PREVIOUS_TAG...$RESOLVED_VERSION)
