@@ -1103,7 +1103,7 @@ def cee_section(
         points += sp_utils.draw_radius(
             pt=(b - t - r_in, t + r_in), r=r_in, theta=0, n=n_r, ccw=False
         )
-    
+
     # if the lip is shorter than the outer radius (curve only)
     elif l > t and l <= r_out:
         # construct a smaller corner for bottom right if t < l < r_out
@@ -1152,7 +1152,11 @@ def cee_section(
     elif l > t and l <= r_out:
         # construct a smaller corner for top right if t < l < r_out
         points += sp_utils.draw_radius(
-            pt=(b - t - r_in_l, d - t - r_in_l), r=r_in_l, theta=0.5 * np.pi, n=n_r, ccw=False
+            pt=(b - t - r_in_l, d - t - r_in_l),
+            r=r_in_l,
+            theta=0.5 * np.pi,
+            n=n_r,
+            ccw=False,
         )
         points += sp_utils.draw_radius(
             pt=(b - r_out_l, d - r_out_l), r=r_out_l, theta=0, n=n_r
@@ -1301,7 +1305,11 @@ def zed_section(
             pt=(t - b_l + r_out_l, d - r_out_l), r=r_out_l, theta=0.5 * np.pi, n=n_r
         )
         points += sp_utils.draw_radius(
-            pt=(2 * t - b_l + r_in_l, d - t - r_in_l), r=r_in_l, theta=np.pi, n=n_r, ccw=False
+            pt=(2 * t - b_l + r_in_l, d - t - r_in_l),
+            r=r_in_l,
+            theta=np.pi,
+            n=n_r,
+            ccw=False,
         )
 
     # if the lip length is less than the section thickness (no lip)
