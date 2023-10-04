@@ -51,8 +51,10 @@ version-resolver:
 exclude-contributors:
   - "robbievanleeuwen"
 
+# Custom text at start of release
 header: |
-  Custom text at start of release...
+  This release addresses a bug with the concrete rectangular section side bars and
+  bumps several python and github actions dependencies.
 
 template: |
   ## What's Changed
