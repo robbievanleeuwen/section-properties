@@ -392,6 +392,9 @@ def concrete_tee_section(
         conc_mat: Material object to assign to the concrete area
         steel_mat: Material object to assign to the steel area
 
+    Raises:
+        ValueError: Geometry generation failed
+
     Returns:
         Reinforced concrete tee section geometry
 
