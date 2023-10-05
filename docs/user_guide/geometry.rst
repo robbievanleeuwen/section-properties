@@ -79,6 +79,8 @@ from a shapely :class:`~shapely.Polygon`.
         geom = CompoundGeometry(geoms=[geom_sq1, geom_sq2])
         geom.plot_geometry()
 
+.. _label-from-points:
+
 Cartesian Coordinates
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -114,6 +116,8 @@ Various CAD files can be imported to creating ``sectionproperties`` geometries.
     pip install sectionproperties[dxf]
     pip install sectionproperties[rhino]
 
+.. _label-geometry-dxf:
+
 ``.dxf``
 """"""""
 
@@ -148,6 +152,8 @@ files using the
     not currently supported in ``sectionproperties``. A possible work around involves
     saving each region as a separate ``.dxf`` file, importing each region individually
     using ``Geometry.from_dxf()``, then combining the regions using the ``+`` operator.
+
+.. _label-geometry-3dm:
 
 Rhino
 """""
@@ -251,6 +257,8 @@ generate typical structural cross-sections, resulting in
 :class:`~sectionproperties.pre.geometry.CompoundGeometry` objects. These typical
 cross-sections reside in the ``sectionproperties.pre.library`` module.
 
+.. _label-primitive-library:
+
 Primitive Sections
 """"""""""""""""""
 
@@ -287,6 +295,8 @@ Steel Sections
     ~sectionproperties.pre.library.steel_sections.box_girder_section
     ~sectionproperties.pre.library.steel_sections.bulb_section
 
+.. _label-concrete-library:
+
 Concrete Sections
 """""""""""""""""
 
@@ -297,6 +307,8 @@ Concrete Sections
     ~sectionproperties.pre.library.concrete_sections.concrete_column_section
     ~sectionproperties.pre.library.concrete_sections.concrete_tee_section
     ~sectionproperties.pre.library.concrete_sections.concrete_circular_section
+
+.. _label-bridge-library:
 
 Bridge Sections
 """""""""""""""
@@ -422,6 +434,8 @@ value.
 
 ..  automethod:: sectionproperties.pre.geometry.CompoundGeometry.offset_perimeter
     :noindex:
+
+.. _label-geometry-set:
 
 Set Operations
 ^^^^^^^^^^^^^^

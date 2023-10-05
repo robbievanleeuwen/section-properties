@@ -397,7 +397,7 @@ def concrete_tee_section(
 
     Example:
         The following example creates a 900 mm deep x 450 mm wide concrete tee beam with
-        a 150 mm deep x 1800 mm wide flange. The tee beam is reinforced with 5 x 24 mm
+        a 150 mm deep x 1800 mm wide flange. The tee beam is reinforced with 12 x 24 mm
         top bars, 5 x 28 mm bottom bars and 4 x 16 mm side bars, with 42 mm cover all
         around (30 mm cover + 12 mm tie). A coarse finite element mesh is generated to
         show the different material regions:
@@ -434,7 +434,7 @@ def concrete_tee_section(
                 b_f=1800,
                 dia_top=24,
                 area_top=450,
-                n_top=5,
+                n_top=12,
                 c_top=42,
                 dia_bot=28,
                 area_bot=620,
@@ -452,38 +452,91 @@ def concrete_tee_section(
             geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
             Section(geometry=geom).plot_mesh()
     """
-    # generate rectangular section of the beam
-    geom = concrete_rectangular_section(
-        d=d,
-        b=b,
-        dia_top=dia_top,
-        area_top=area_top,
-        n_top=n_top,
-        c_top=c_top,
-        dia_bot=dia_bot,
-        area_bot=area_bot,
-        n_bot=n_bot,
-        c_bot=c_bot,
-        dia_side=dia_side,
-        area_side=area_side,
-        n_side=n_side,
-        c_side=c_side,
-        n_circle=n_circle,
-        conc_mat=conc_mat,
-        steel_mat=steel_mat,
+    # generate concrete geometry
+    beam = primitive_sections.rectangular_section(b=b, d=d - d_f, material=conc_mat)
+    flange = primitive_sections.rectangular_section(b=b_f, d=d_f, material=conc_mat)
+    geom = beam + flange.align_to(other=beam, on="top").shift_section(
+        x_offset=-(b_f / 2 - b / 2)
     )
+    geom = geom.shift_section(x_offset=-b / 2)
 
-    # add flange
-    left_flange = (
-        primitive_sections.rectangular_section(
-            d=d_f, b=(b_f - b) / 2, material=conc_mat
+    # calculate reinforcing bar dimensions for top and bottom layers
+    if n_top == 1:
+        x_i_top = 0
+        spacing_top = 0
+    else:
+        if c_side:
+            x_i_top = -b_f / 2 + c_side + dia_top / 2
+            spacing_top = (b_f - 2 * c_side - dia_top) / (n_top - 1)
+        else:
+            x_i_top = -b_f / 2 + c_top + dia_top / 2
+            spacing_top = (b_f - 2 * c_top - dia_top) / (n_top - 1)
+
+    if n_bot == 1:
+        x_i_bot = 0
+        spacing_bot = 0
+    else:
+        if c_side:
+            x_i_bot = -b / 2 + c_side + dia_bot / 2
+            spacing_bot = (b - 2 * c_side - dia_bot) / (n_bot - 1)
+        else:
+            x_i_bot = -b / 2 + c_bot + dia_bot / 2
+            spacing_bot = (b - 2 * c_bot - dia_bot) / (n_bot - 1)
+
+    # calculate reinforcing bar dimensions for side layers if specified
+    if dia_side and n_side != 0:
+        x_i_side_left = -b / 2 + c_side + dia_side / 2
+        x_i_side_right = -x_i_side_left
+
+        spacing_side = (d - c_top - c_bot - dia_top / 2 - dia_bot / 2) / (n_side + 1)
+    else:
+        x_i_side_left = 0
+        x_i_side_right = 0
+        spacing_side = 0
+
+    # add top bars
+    for idx in range(n_top):
+        bar = primitive_sections.circular_section_by_area(
+            area=area_top,
+            n=n_circle,
+            material=steel_mat,
+        ).shift_section(
+            x_offset=x_i_top + spacing_top * idx,
+            y_offset=d - c_top - dia_top / 2,
         )
-        .align_to(other=geom, on="left")
-        .align_to(other=geom, on="top", inner=True)
-    )
-    right_flange = left_flange.mirror_section(axis="y", mirror_point=(b / 2, 0))
+        geom = (geom - bar) + bar
 
-    return geom + left_flange + right_flange
+    # add bot bars
+    for i in range(n_bot):
+        bar = primitive_sections.circular_section_by_area(
+            area=area_bot,
+            n=n_circle,
+            material=steel_mat,
+        ).shift_section(
+            x_offset=x_i_bot + spacing_bot * i,
+            y_offset=c_bot + dia_bot / 2,
+        )
+        geom = (geom - bar) + bar
+
+    # add side bars
+    if area_side:
+        for i in range(n_side):
+            bar_left = primitive_sections.circular_section_by_area(
+                area=area_side,
+                n=n_circle,
+                material=steel_mat,
+            ).shift_section(
+                x_offset=x_i_side_left,
+                y_offset=c_bot + dia_bot / 2 + spacing_side * (i + 1),
+            )
+            bar_right = bar_left.shift_section(x_offset=x_i_side_right - x_i_side_left)
+
+            geom = (geom - bar_left - bar_right) + bar_left + bar_right
+
+    if isinstance(geom, geometry.CompoundGeometry):
+        return geom
+    else:
+        raise ValueError("Concrete section generation failed.")
 
 
 def concrete_circular_section(
