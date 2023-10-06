@@ -350,7 +350,7 @@ class Section:
                 msg = "\nThe section geometry contains disjoint regions which is "
                 msg += "invalid for warping analysis.\n Please revise your geometry to "
                 msg += "ensure there is connectivity between all regions.\n Please see "
-                msg += "https://sectionproperties.rtfd.io/en/latest/user_guide/"
+                msg += "https://sectionproperties.rtfd.io/en/stable/user_guide/"
                 msg += "analysis.html#warping-analysis for more information."
                 warnings.warn(msg)
 
@@ -1143,7 +1143,7 @@ class Section:
                 msg += "If you do not intend for this double counting to occur, use"
                 msg += " a subtractive modelling approach to remove the overlapping"
                 msg += " region.\nPlease see "
-                msg += "https://sectionproperties.rtfd.io/en/latest/examples/geometry/"
+                msg += "https://sectionproperties.rtfd.io/en/stable/examples/geometry/"
                 msg += "advanced_geometry.html for more information."
                 warnings.warn(msg)
 
