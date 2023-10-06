@@ -189,8 +189,13 @@ def docs_build(session: Session) -> None:
 
     session.run_always("poetry", "install", "--all-extras", external=True)
     session.install(
-        "sphinx",
         "furo",
+        "ipykernel",
+        "ipython",
+        "ipywidgets",
+        "nbconvert",
+        "nbsphinx",
+        "sphinx",
         "sphinx-click",
         "sphinx-copybutton",
         "sphinxext-opengraph",
@@ -213,12 +218,17 @@ def docs(session: Session) -> None:
     args = session.posargs or ["--open-browser", "docs", "docs/_build"]
     session.run_always("poetry", "install", "--all-extras", external=True)
     session.install(
-        "sphinx",
-        "sphinx-autobuild",
         "furo",
+        "ipykernel",
+        "ipython",
+        "ipywidgets",
+        "nbconvert",
+        "nbsphinx",
+        "sphinx",
         "sphinx-click",
         "sphinx-copybutton",
         "sphinxext-opengraph",
+        "sphinx-autobuild",
     )
 
     build_dir = Path("docs", "_build")
