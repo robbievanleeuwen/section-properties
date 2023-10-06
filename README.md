@@ -8,7 +8,7 @@
 [![Status](https://img.shields.io/pypi/status/sectionproperties.svg)][status]
 [![Python Version](https://img.shields.io/pypi/pyversions/sectionproperties)][python version]
 [![License](https://img.shields.io/pypi/l/sectionproperties)][license]
-[![Read the documentation at https://sectionproperties.readthedocs.io/](https://img.shields.io/readthedocs/sectionproperties/latest.svg?label=Read%20the%20Docs)][read the docs]
+[![Read the documentation at https://sectionproperties.readthedocs.io/](https://img.shields.io/readthedocs/sectionproperties/stable.svg?label=Read%20the%20Docs)][read the docs]
 [![Tests](https://github.com/robbievanleeuwen/section-properties/workflows/Tests/badge.svg)][tests]
 [![Codecov](https://codecov.io/gh/robbievanleeuwen/section-properties/branch/master/graph/badge.svg)][codecov]
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][pre-commit]
@@ -47,7 +47,7 @@ background theory and an API guide. The documentation can found at
 ## Features
 
 See the complete list of `sectionproperties` features
-[here](https://sectionproperties.readthedocs.io/en/latest/user_guide.html).
+[here](https://sectionproperties.readthedocs.io/en/stable/user_guide.html).
 
 ## Contributing
 
