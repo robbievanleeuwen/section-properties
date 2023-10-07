@@ -61,7 +61,7 @@ rhino-shapley-interop = { version = "^0.0.4", python = ">=3.9.0,<3.10", optional
 rhino3dm = { version = "==8.0.0b2", python = ">=3.9.0,<3.10", optional = true }
 
 [tool.poetry.dev-dependencies]
-black = { extras = ["jupyter"], version = "^23.9.1" }
+black = "^23.9.1"
 coverage = { extras = ["toml"], version = "^7.3.2" }
 darglint = "^1.8.1"
 flake8 = "^6.1.0"
