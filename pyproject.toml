@@ -38,8 +38,8 @@ include = [
     "*.3dm",
     "*.dxf",
     "*.json",
-    "tests/complex_shape.txt",
-    "tests/compound_shape.txt",
+    "tests/geometry/complex_shape.txt",
+    "tests/geometry/compound_shape.txt",
 ]
 
 [tool.poetry.urls]
