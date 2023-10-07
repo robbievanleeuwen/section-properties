@@ -1,2 +1,3 @@
 [darglint]
 strictness = full
+ignore_regex=^test_(.*)
