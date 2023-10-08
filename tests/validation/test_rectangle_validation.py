@@ -49,7 +49,7 @@ def test_rectangular_section_geometric(rect_section):
     check.almost_equal(sec.section_props.cy, 100 / 2, rel=tol)
     check.almost_equal(sec.section_props.ixx_c, 50 * 100**3 / 12, rel=tol)
     check.almost_equal(sec.section_props.iyy_c, 100 * 50**3 / 12, rel=tol)
-    check.almost_equal(sec.section_props.ixy_c, 0, abs=tol)
+    check.almost_equal(sec.section_props.ixy_c, 0, abs=zero_tol)
     check.almost_equal(sec.section_props.zxx_plus, 50 * 100**2 / 6, rel=tol)
     check.almost_equal(sec.section_props.zxx_minus, 50 * 100**2 / 6, rel=tol)
     check.almost_equal(sec.section_props.zyy_plus, 100 * 50**2 / 6, rel=tol)
@@ -62,7 +62,7 @@ def test_rectangular_section_geometric(rect_section):
     )
     check.almost_equal(sec.section_props.i11_c, (50 * 100**3 / 12), rel=tol)
     check.almost_equal(sec.section_props.i22_c, (100 * 50**3 / 12), rel=tol)
-    check.almost_equal(sec.section_props.phi, 0, abs=tol)
+    check.almost_equal(sec.section_props.phi, 0, abs=zero_tol)
     check.almost_equal(sec.section_props.z11_plus, 50 * 100**2 / 6, rel=tol)
     check.almost_equal(sec.section_props.z11_minus, 50 * 100**2 / 6, rel=tol)
     check.almost_equal(sec.section_props.z22_plus, 100 * 50**2 / 6, rel=tol)
@@ -79,7 +79,8 @@ def test_rectangular_section_warping(rect_section):
     """Test rectangular section warping properties.
 
     Several non-trivial warping results were obtained from sectionproperties v3.0.2
-    (previously inaccurate numerical results from Strand7).
+    with a refined mesh [mesh_sizes=1.0], (previously inaccurate numerical results were
+    from Strand7).
     """
     sec = rect_section
     sec.calculate_warping_properties()
