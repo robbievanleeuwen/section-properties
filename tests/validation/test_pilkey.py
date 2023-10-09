@@ -21,13 +21,14 @@ from typing import Callable
 import numpy as np
 import pytest
 import pytest_check as check
-from shapely import Polygon
+from shapely import LineString, Polygon, buffer
 
 from sectionproperties.analysis import Section
 from sectionproperties.pre import Geometry, Material
 from sectionproperties.pre.library import (
     circular_hollow_section,
     circular_section_by_area,
+    elliptical_hollow_section,
     elliptical_section,
     rectangular_section,
 )
@@ -100,13 +101,27 @@ def figure_6_8() -> Callable:
         Section object
     """
 
-    def _generate_sec(d: float, t: float) -> Section:
+    def _generate_sec(
+        d: float,
+        t: float,
+        mat: Material | None = None,
+        shift: tuple[float, float] | None = None,
+    ) -> Section:
         geom = circular_hollow_section(d=d, t=t, n=128)
         ms = geom.calculate_area() / 500.0
         geom.points[0] = (d / 2, -1e-3)
         geom.points[128] = (d / 2 - t, 1e-3)
-        geom = Geometry(Polygon(geom.points))
+
+        if mat:
+            geom = Geometry(Polygon(geom.points), material=mat)
+        else:
+            geom = Geometry(Polygon(geom.points))
+
         geom = geom.rotate_section(angle=-90)
+
+        if shift:
+            geom = geom.shift_section(x_offset=shift[0], y_offset=shift[1])
+
         geom.create_mesh(mesh_sizes=[ms])
         sec = Section(geometry=geom)
         sec.calculate_geometric_properties()
@@ -124,12 +139,14 @@ def figure_6_9() -> Callable:
         Section object
     """
 
-    def _generate_sec(beta: float) -> Section:
-        geom = rectangular_section(d=1, b=2).align_center(align_to=(0, 0))
-        geom.rotate_section(angle=beta)
-        geom.create_mesh(mesh_sizes=geom.calculate_area() / 1000.0)
+    def _generate_sec(beta: float, mat: Material) -> Section:
+        geom = rectangular_section(d=1.0, b=2.0, material=mat).rotate_section(
+            angle=beta
+        )
+        geom.create_mesh(mesh_sizes=0.01)
         sec = Section(geometry=geom)
         sec.calculate_geometric_properties()
+        sec.calculate_warping_properties()
 
         return sec
 
@@ -451,29 +468,11 @@ def test_example_6_3(figure_6_7, nu: float, result: float):
     check.almost_equal(x_sct - x_c, -0.62055, rel=tol)
 
 
-def test_example_6_4(figure_6_8):
-    """Validation test for Example 6.4 (page 263)."""
-    tol = 1e-3
-
-    # define geometry and perform analysis
-    sec = figure_6_8(d=17.25, t=1.25)
-    sec.calculate_warping_properties()
-
-    # check results
-    _, y_sc = sec.get_sc()
-    area = sec.get_area()
-    a_sx, a_sy = sec.get_as()
-    check.almost_equal(y_sc, 15.90306, rel=tol)
-    check.almost_equal(area / a_sx, 5.93977, rel=tol)
-    check.almost_equal(area / a_sy, 1.98015, rel=tol)
-    check.almost_equal(sec.get_j(), 32.23967, rel=2 * tol)
-
-
 @pytest.mark.parametrize(("nu", "nu_idx"), [(0.0, 0), (0.3, 1), (0.5, 2)])
 @pytest.mark.parametrize(
     ("beta", "beta_idx"), [(0.0, 0), (30.0, 1), (45.0, 2), (90.0, 3)]
 )
-def test_example_6_5(nu: float, nu_idx: int, beta: float, beta_idx: int):
+def test_example_6_5(figure_6_9, nu: float, nu_idx: int, beta: float, beta_idx: int):
     """Validation test for Example 6.5 (page 264).
 
     Note that the table entry for beta = 60.0 should read beta = 45.0 (note that a_x =
@@ -513,11 +512,7 @@ def test_example_6_5(nu: float, nu_idx: int, beta: float, beta_idx: int):
     mat = Material("a", 1, nu, 1, 1, "w")
 
     # define geometry and perform analysis
-    geom = rectangular_section(d=1.0, b=2.0, material=mat).rotate_section(angle=beta)
-    geom.create_mesh(mesh_sizes=[0.01])
-    sec = Section(geometry=geom)
-    sec.calculate_geometric_properties()
-    sec.calculate_warping_properties()
+    sec = figure_6_9(beta=beta, mat=mat)
 
     # check results
     area = sec.get_area()
@@ -721,11 +716,371 @@ def test_example_6_7(nu: float, idx: int, sym: bool):
     check.almost_equal(sec.get_phi(), result["phi"], rel=tol)
 
 
-# TODO:
-# EXAMPLE B.1
-# EXAMPLE B.2
-# EXAMPLE B.3
-# EXAMPLE B.4
-# EXAMPLE B.5
-# EXAMPLE B.7
-# EXAMPLE B.8
+def test_example_b_1():
+    """Validation test for Example B.1 - Closed Elliptical Tube (page 434)."""
+    # define input values
+    a_mid = 8  # x-distance from centre to mid-line of EHS
+    b_mid = 5  # y-distance from centre to mid-line of EHS
+    t = 1  # thickness of EHS
+    mat = Material("a", 2.1e8, 0.33333, 1, 1, "w")
+    tol = 2e-2  # note differences in spline approach used by Pilkey (not an ellipse)
+
+    # create geometry, mesh, section, and run analysis
+    geom = elliptical_hollow_section(
+        d_x=2 * a_mid + t,
+        d_y=2 * b_mid + t,
+        t=t,
+        n=128,
+        material=mat,
+    )
+    geom.create_mesh(mesh_sizes=[0.1])
+    sec = Section(geometry=geom)
+    sec.calculate_geometric_properties()
+    sec.calculate_warping_properties()
+
+    # conduct checks
+    ixx, iyy, ixy = sec.get_eic(e_ref=mat)
+    zxx, _, zyy, _ = sec.get_ez(e_ref=mat)
+    rx, ry = sec.get_rc()
+    a_sx, a_sy = sec.get_eas(e_ref=mat)
+    a_sxy = sec.section_props.a_sxy
+    assert a_sxy
+    check.almost_equal(sec.get_area(), 41.38626, rel=tol)
+    check.almost_equal(ixx, 580.42697, rel=tol)
+    check.almost_equal(iyy, 1180.33120, rel=tol)
+    check.almost_equal(ixy, 0, abs=1e-3)
+    check.almost_equal(zxx, 105.54076, rel=tol)
+    check.almost_equal(zyy, 138.86247, rel=tol)
+    check.almost_equal(rx, 3.74495, rel=tol)
+    check.almost_equal(ry, 5.34040, rel=tol)
+    check.almost_equal(sec.get_phi(), -90.0, rel=tol)
+    check.almost_equal(sec.get_area() / a_sx, 1.51457, rel=tol)
+    check.almost_equal(sec.get_area() / a_sy, 3.05985, rel=tol)
+    check.almost_equal(sec.get_ea() / a_sxy, 0.0, abs=1e-3)
+    check.almost_equal(sec.get_ej(e_ref=mat), 1537.38165, rel=tol)
+    # gamma is within 7%, possible spline error amplifies this?
+    check.almost_equal(sec.get_egamma(e_ref=mat), 451.90976, rel=7e-2)
+
+
+def test_example_b_2():
+    """Validation test for Example B.2 - Symmetric Channel Section (page 437)."""
+    # define input values
+    b = 8
+    h = 18
+    t = 1
+    mat = Material("a", 2.1e8, 0.33333, 1, 1, "w")
+    tol = 1e-5
+    warp_tol = 1e-3
+    zero_tol = 1e-3
+
+    # create geometry, mesh, section, and run analysis
+    geom = Geometry(
+        Polygon(
+            [
+                (-0.5 * t, -0.5 * h - 0.5 * t),
+                (b, -0.5 * h - 0.5 * t),
+                (b, -0.5 * h + 0.5 * t),
+                (0.5 * t, -0.5 * h + 0.5 * t),
+                (0.5 * t, 0.5 * h - 0.5 * t),
+                (b, 0.5 * h - 0.5 * t),
+                (b, 0.5 * h + 0.5 * t),
+                (-0.5 * t, 0.5 * h + 0.5 * t),
+            ]
+        ),
+        material=mat,
+    )
+    geom.create_mesh(mesh_sizes=[0.1])
+    sec = Section(geometry=geom)
+    sec.calculate_geometric_properties()
+    sec.calculate_warping_properties()
+
+    # conduct checks
+    qx, qy = sec.get_eq(e_ref=mat)
+    cx, cy = sec.get_c()
+    ixx_g, iyy_g, ixy_g = sec.get_eig(e_ref=mat)
+    ixx_c, iyy_c, ixy_c = sec.get_eic(e_ref=mat)
+    zxx_p, zxx_m, zyy_p, zyy_m = sec.get_ez(e_ref=mat)
+    rx, ry = sec.get_rc()
+    x_sc, y_sc = sec.get_sc()
+    x_sct, y_sct = sec.get_sc_t()
+    a_sx, a_sy = sec.get_eas(e_ref=mat)
+    a_sxy = sec.section_props.a_sxy
+    assert a_sxy
+    check.almost_equal(sec.get_area(), 34.0, rel=tol)
+    check.almost_equal(qx, 0.0, abs=zero_tol)
+    check.almost_equal(qy, 63.75, rel=tol)
+    check.almost_equal(cx, 1.875, rel=tol)
+    check.almost_equal(cy, 0, abs=zero_tol)
+    check.almost_equal(x_sc, -2.86769, rel=warp_tol)
+    check.almost_equal(y_sc, 0, abs=zero_tol)
+    check.almost_equal(x_sct, -2.86759, rel=warp_tol)
+    check.almost_equal(y_sct, 0, abs=zero_tol)
+    # textbook erroneously printed 1 instead of 7, ixx_g should equal ixx_c
+    check.almost_equal(ixx_g, 1787.83333, rel=tol)
+    check.almost_equal(iyy_g, 342.83333, rel=tol)
+    check.almost_equal(ixy_g, 0.0, abs=zero_tol)
+    check.almost_equal(ixx_c, 1787.83333, rel=tol)
+    check.almost_equal(iyy_c, 223.30208, rel=tol)
+    check.almost_equal(ixy_c, 0.0, abs=zero_tol)
+    check.almost_equal(min(zxx_p, zxx_m), 188.19298, rel=tol)
+    check.almost_equal(min(zyy_p, zyy_m), 36.45748, rel=tol)
+    check.almost_equal(rx, 7.25144, rel=tol)
+    check.almost_equal(ry, 2.56275, rel=tol)
+    check.almost_equal(sec.get_phi(), 0.0, abs=zero_tol)
+    check.almost_equal(sec.get_area() / a_sx, 3.40789, rel=warp_tol)
+    check.almost_equal(sec.get_area() / a_sy, 2.15337, rel=warp_tol)
+    check.almost_equal(sec.get_ea() / a_sxy, 0.0, abs=zero_tol)
+    check.almost_equal(sec.get_ej(e_ref=mat), 11.28862, rel=warp_tol)
+    check.almost_equal(sec.get_egamma(e_ref=mat), 12763.15184, rel=warp_tol)
+
+
+def test_example_b_3():
+    """Validation test for Example B.3 - L Section Without Symmetry (page 441)."""
+    # define input values
+    b = 5.625
+    h = 7.625
+    t = 0.75
+    mat = Material("a", 2.1e8, 0.33333, 1, 1, "w")
+    tol = 1e-5
+    warp_tol = 1e-3
+
+    # create geometry, mesh, section, and run analysis
+    geom = Geometry(
+        Polygon(
+            [
+                (-0.5 * t, -0.5 * t),
+                (b, -0.5 * t),
+                (b, 0.5 * t),
+                (0.5 * t, 0.5 * t),
+                (0.5 * t, h),
+                (-0.5 * t, h),
+            ]
+        ),
+        material=mat,
+    )
+    geom.create_mesh(mesh_sizes=[0.05])
+    sec = Section(geometry=geom)
+    sec.calculate_geometric_properties()
+    sec.calculate_warping_properties()
+
+    # conduct checks
+    qx, qy = sec.get_eq(e_ref=mat)
+    cx, cy = sec.get_c()
+    ixx_c, iyy_c, ixy_c = sec.get_eic(e_ref=mat)
+    x_sc, y_sc = sec.get_sc()
+    i11_c, i22_c = sec.get_eip(e_ref=mat)
+    check.almost_equal(sec.get_area(), 9.93750, rel=tol)
+    check.almost_equal(qx, 21.75000, rel=tol)
+    check.almost_equal(qy, 11.81250, rel=tol)
+    check.almost_equal(cx, 1.18868, rel=tol)
+    check.almost_equal(cy, 2.18868, rel=tol)
+    check.almost_equal(x_sc, 0.00313, rel=10 * warp_tol)  # lack of precision in digits
+    check.almost_equal(y_sc, 0.05735, rel=warp_tol)
+    check.almost_equal(ixx_c, 63.42455, rel=tol)
+    check.almost_equal(iyy_c, 30.72142, rel=tol)
+    check.almost_equal(ixy_c, -25.85377, rel=tol)
+    check.almost_equal(sec.get_phi(), 28.84407 - 180.0, rel=tol)
+    check.almost_equal(i11_c, 77.66369, rel=tol)
+    check.almost_equal(i22_c, 16.48228, rel=tol)
+
+
+def test_example_b_4(figure_6_8):
+    """Validation test for Example B.4 (page 444)."""
+    # define input values
+    r_mid = 8
+    t = 1.25
+    mat = Material("a", 2.1e8, 0.33333, 1, 1, "w")
+    tol = 1e-3
+    warp_tol = 1e-3
+    zero_tol = 1e-2
+
+    # define geometry and perform analysis
+    sec = figure_6_8(d=2 * r_mid + t, t=t, mat=mat, shift=(0.0, 8.0))
+    sec.calculate_warping_properties()
+
+    # conduct checks
+    qx, qy = sec.get_eq(e_ref=mat)
+    cx, cy = sec.get_c()
+    ixx_g, iyy_g, ixy_g = sec.get_eig(e_ref=mat)
+    ixx_c, iyy_c, ixy_c = sec.get_eic(e_ref=mat)
+    zxx_p, zxx_m, zyy_p, zyy_m = sec.get_ez(e_ref=mat)
+    rx, ry = sec.get_rc()
+    x_sc, y_sc = sec.get_sc()
+    x_sct, y_sct = sec.get_sc_t()
+    a_sx, a_sy = sec.get_eas(e_ref=mat)
+    a_sxy = sec.section_props.a_sxy
+    assert a_sxy
+    check.almost_equal(sec.get_area(), 62.83182, rel=tol)
+    check.almost_equal(qx, 502.65457, rel=tol)
+    check.almost_equal(qy, 0.0, abs=zero_tol)
+    check.almost_equal(cx, 0.0, abs=zero_tol)
+    check.almost_equal(cy, 8.0, rel=tol)
+    check.almost_equal(x_sc, 0.0, abs=zero_tol)
+    check.almost_equal(y_sc, 23.90306, rel=warp_tol)
+    check.almost_equal(x_sct, 0.0, abs=zero_tol)
+    check.almost_equal(y_sct, 23.90282, rel=warp_tol)
+    check.almost_equal(ixx_g, 6044.12555, rel=tol)
+    check.almost_equal(iyy_g, 2022.88907, rel=tol)
+    check.almost_equal(ixy_g, 0.0, abs=zero_tol)
+    check.almost_equal(ixx_c, 2022.88890, rel=tol)
+    check.almost_equal(iyy_c, 2022.88907, rel=tol)
+    check.almost_equal(ixy_c, 0.0, abs=0.1)
+    check.almost_equal(min(zxx_p, zxx_m), 234.53784, rel=tol)
+    check.almost_equal(min(zyy_p, zyy_m), 234.53789, rel=tol)
+    check.almost_equal(rx, 5.67409, rel=tol)
+    check.almost_equal(ry, 5.67409, rel=tol)
+    check.almost_equal(sec.get_area() / a_sx, 5.93977, rel=warp_tol)
+    check.almost_equal(sec.get_area() / a_sy, 1.98015, rel=warp_tol)
+    check.almost_equal(sec.get_ea() / a_sxy, 0.0, abs=zero_tol)
+    check.almost_equal(sec.get_ej(e_ref=mat), 32.23967, rel=2 * warp_tol)
+    check.almost_equal(sec.get_egamma(e_ref=mat), 331651.29223, rel=2 * warp_tol)
+
+
+def test_example_b_5():
+    """Validation test for Example B.5 (page 445)."""
+    # define input values
+    mat = Material("a", 2.1e8, 0.33333, 1, 1, "w")
+    tol = 5e-2  # note differences in modelling and mesh (pilkey uses splines)
+    zero_tol = 1e-3
+
+    # define geometry and perform analysis
+    bot_plate = rectangular_section(d=0.75, b=31, material=mat).shift_section(
+        y_offset=-0.75
+    )
+    top_plate_l = rectangular_section(d=0.75, b=6, material=mat)
+    top_plate_r = rectangular_section(d=0.75, b=6, material=mat).shift_section(
+        x_offset=25
+    )
+
+    sep = 1e-3  # separation between hat and bottom plate to simulate lack of weld
+    # hat centreline
+    line_pts = [
+        (6, 0.375),
+        (8, 0.375 + sep),
+        (12, 6),
+        (19, 6),
+        (23, 0.375 + sep),
+        (25, 0.375),
+    ]
+    line = LineString(coordinates=line_pts)
+    # buffer hat centreline
+    poly = buffer(geometry=line, distance=0.375, cap_style="flat", join_style="mitre")
+    hat = Geometry(geom=poly, material=mat)
+
+    # we must correct the ends of the hat to make sure they are orthogonal to x-y axes
+    hat.points[4] = (25, 0.75)
+    hat.points[5] = (25, 0)
+    hat.points[10] = (6, 0)
+    hat.points[11] = (6, 0.75)
+
+    geom = bot_plate + hat + top_plate_l + top_plate_r
+    geom.holes = [geom.holes[1]]  # remove erroneous holes
+    geom.create_mesh(mesh_sizes=[0.1])
+    sec = Section(geometry=geom)
+
+    # perform analysis
+    sec.calculate_geometric_properties()
+    sec.calculate_warping_properties()
+
+    # conduct checks
+    qx, qy = sec.get_eq(e_ref=mat)
+    cx, cy = sec.get_c()
+    ixx_g, iyy_g, ixy_g = sec.get_eig(e_ref=mat)
+    ixx_c, iyy_c, ixy_c = sec.get_eic(e_ref=mat)
+    zxx_p, zxx_m, zyy_p, zyy_m = sec.get_ez(e_ref=mat)
+    rx, ry = sec.get_rc()
+    x_sc, y_sc = sec.get_sc()
+    a_sx, a_sy = sec.get_eas(e_ref=mat)
+    a_sxy = sec.section_props.a_sxy
+    assert a_sxy
+    check.almost_equal(sec.get_area(), 50.10830, rel=tol)
+    check.almost_equal(qx, 57.90772, rel=tol)
+    check.almost_equal(qy, 776.70074, rel=tol)
+    check.almost_equal(cx, 15.50044, rel=tol)
+    check.almost_equal(cy, 1.15565, rel=tol)
+    check.almost_equal(x_sc, 15.50097, rel=tol)
+    check.almost_equal(y_sc, 2.29918, rel=tol)
+    check.almost_equal(ixx_g, 316.10331, rel=tol)
+    check.almost_equal(iyy_g, 15874.79940, rel=tol)
+    check.almost_equal(ixy_g, 897.57735, rel=tol)
+    check.almost_equal(ixx_c, 249.18219, rel=tol)
+    check.almost_equal(iyy_c, 3835.59608, rel=tol)
+    check.almost_equal(ixy_c, 0.0, abs=1e-1)
+    check.almost_equal(min(zxx_p, zxx_m), 47.74201, rel=tol)
+    check.almost_equal(min(zyy_p, zyy_m), 247.45078, rel=tol)
+    check.almost_equal(rx, 2.22999, rel=tol)
+    check.almost_equal(ry, 8.74906, rel=tol)
+    check.almost_equal(sec.get_phi(), -90, rel=tol)
+    check.almost_equal(sec.get_area() / a_sx, 1.47731, rel=tol)
+    check.almost_equal(sec.get_area() / a_sy, 9.98545, rel=tol)
+    check.almost_equal(sec.get_ea() / a_sxy, 0.0, abs=zero_tol)
+    check.almost_equal(sec.get_ej(e_ref=mat), 401.99583, rel=tol)
+    check.almost_equal(sec.get_egamma(e_ref=mat), 1856.54586, rel=tol)
+
+
+def test_example_b_7():
+    """Validation test for Example B.7 (page 451)."""
+    # define input values
+    mat = Material("a", 2.1e8, 0.33333, 1, 1, "w")
+    r = 16  # radius
+    t = 0.5  # thickness
+    alpha = 2 * np.pi / 3  # arc angle
+    n = 128  # number of points defining arc
+    tol = 1e-4
+    zero_tol = 1e-3
+
+    # define points on the arc
+    pts = []
+    for idx in range(n):
+        theta = -alpha / 2 + idx / (n - 1) * alpha
+        x = r * np.sin(theta)
+        y = r * np.cos(theta)
+        pts.append((x, y))
+
+    # create a centreline defining the arc
+    line = LineString(coordinates=pts)
+    # buffer the arc by the thickness
+    poly = poly = buffer(
+        geometry=line, distance=0.5 * t, cap_style="flat", join_style="mitre"
+    )
+    # create geometry, mesh, section and perform analysis
+    geom = Geometry(geom=poly, material=mat)
+    geom.create_mesh(mesh_sizes=[0.1])
+    sec = Section(geometry=geom)
+    sec.calculate_geometric_properties()
+    sec.calculate_warping_properties()
+
+    # conduct checks
+    qx, qy = sec.get_eq(e_ref=mat)
+    cx, cy = sec.get_c()
+    ixx_g, iyy_g, ixy_g = sec.get_eig(e_ref=mat)
+    ixx_c, iyy_c, ixy_c = sec.get_eic(e_ref=mat)
+    zxx_p, zxx_m, zyy_p, zyy_m = sec.get_ez(e_ref=mat)
+    rx, ry = sec.get_rc()
+    x_sc, y_sc = sec.get_sc()
+    a_sx, a_sy = sec.get_eas(e_ref=mat)
+    a_sxy = sec.section_props.a_sxy
+    assert a_sxy
+    check.almost_equal(sec.get_area(), 16.75516, rel=tol)
+    check.almost_equal(qx, 221.72054, rel=tol)
+    check.almost_equal(qy, 0.0, abs=zero_tol)
+    check.almost_equal(cx, 0.0, abs=zero_tol)
+    check.almost_equal(cy, 13.23297, rel=tol)
+    check.almost_equal(x_sc, 0.0, abs=zero_tol)
+    check.almost_equal(y_sc, 17.83662, rel=tol)
+    check.almost_equal(ixx_g, 3032.21070, rel=tol)
+    check.almost_equal(iyy_g, 1258.15764, rel=tol)
+    check.almost_equal(ixy_g, 0.0, abs=zero_tol)
+    check.almost_equal(ixx_c, 98.18931, rel=tol)
+    check.almost_equal(iyy_c, 1258.15764, rel=tol)
+    check.almost_equal(ixy_c, 0.0, abs=zero_tol)
+    check.almost_equal(min(zxx_p, zxx_m), 18.32584, rel=5 * tol)
+    check.almost_equal(min(zyy_p, zyy_m), 89.40279, rel=tol)
+    check.almost_equal(rx, 2.42079, rel=tol)
+    check.almost_equal(ry, 8.66549, rel=tol)
+    check.almost_equal(sec.get_phi(), -90, rel=tol)
+    check.almost_equal(sec.get_area() / a_sx, 1.50823, rel=tol)
+    check.almost_equal(sec.get_area() / a_sy, 4.60034, rel=tol)
+    check.almost_equal(sec.get_ea() / a_sxy, 0.0, abs=zero_tol)
+    check.almost_equal(sec.get_ej(e_ref=mat), 1.38355, rel=tol)
+    check.almost_equal(sec.get_egamma(e_ref=mat), 1046.49221, rel=tol)
