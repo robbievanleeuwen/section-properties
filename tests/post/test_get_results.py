@@ -11,24 +11,32 @@ from sectionproperties.pre.library import rectangular_section
 
 
 # sections setup
-geom_no_mat = rectangular_section(d=1, b=1)
-dummy_mat = Material(
-    name="test",
-    elastic_modulus=5,
-    poissons_ratio=0,
-    yield_strength=3,
-    density=2,
-    color="w",
-)
-geom_mat = rectangular_section(d=1, b=1, material=dummy_mat)
-geom_no_mat.create_mesh(mesh_sizes=0)
-geom_mat.create_mesh(mesh_sizes=0)
-rect_no_mat = Section(geom_no_mat)
-rect_mat = Section(geom_mat)
+@pytest.fixture
+def sec_no_mat_and_mat() -> tuple[Section, Section, Material]:
+    """Creates two unit squares, one with materials, another without.
+
+    Returns:
+        Section objects and dummy material
+    """
+    geom_no_mat = rectangular_section(d=1, b=1)
+    dummy_mat = Material(
+        name="test",
+        elastic_modulus=5,
+        poissons_ratio=0,
+        yield_strength=3,
+        density=2,
+        color="w",
+    )
+    geom_mat = rectangular_section(d=1, b=1, material=dummy_mat)
+    geom_no_mat.create_mesh(mesh_sizes=0)
+    geom_mat.create_mesh(mesh_sizes=0)
+
+    return Section(geom_no_mat), Section(geom_mat), dummy_mat
 
 
-def test_is_composite():
+def test_is_composite(sec_no_mat_and_mat):
     """Check whether section is composite or not."""
+    rect_no_mat, rect_mat, _ = sec_no_mat_and_mat
     assert not rect_no_mat.is_composite()
     assert rect_mat.is_composite()
 
@@ -49,8 +57,9 @@ def test_is_composite():
     assert not sec.is_composite()
 
 
-def test_get_e_ref():
+def test_get_e_ref(sec_no_mat_and_mat):
     """Check get_e_ref results."""
+    rect_no_mat, _, dummy_mat = sec_no_mat_and_mat
     test_mat = Material(
         name="test",
         elastic_modulus=10,
@@ -66,13 +75,14 @@ def test_get_e_ref():
     assert rect_no_mat.get_e_ref(test_mat) == 10
 
 
-def test_no_analysis():
+def test_no_analysis(sec_no_mat_and_mat):
     """Check errors when no analysis has been conducted.
 
     RuntimeError = incorrect analysis type (geometric only vs. composite), takes
     precedence over...
     AssertionError = relevant analysis has been conducted
     """
+    rect_no_mat, rect_mat, _ = sec_no_mat_and_mat
     # check area
     with pytest.raises(AssertionError):
         rect_no_mat.get_area()
@@ -220,13 +230,14 @@ def test_no_analysis():
         rect_mat.get_g_eff()
 
 
-def test_get_geometric_only():
+def test_get_geometric_only(sec_no_mat_and_mat):
     """Check errors and results when a geometric analysis has been conducted.
 
     RuntimeError = incorrect analysis type (geometric only vs. composite), takes
     precedence over...
     AssertionError = relevant analysis has been conducted
     """
+    rect_no_mat, rect_mat, dummy_mat = sec_no_mat_and_mat
     rect_no_mat.calculate_geometric_properties()
     rect_mat.calculate_geometric_properties()
 
@@ -605,13 +616,14 @@ def test_get_geometric_only():
         rect_mat.get_sf_p()
 
 
-def test_get_warping():
+def test_get_warping(sec_no_mat_and_mat):
     """Check errors and results when a warping analysis has been conducted.
 
     RuntimeError = incorrect analysis type (geometric only vs. composite), takes
     precedence over...
     AssertionError = relevant analysis has been conducted
     """
+    rect_no_mat, rect_mat, dummy_mat = sec_no_mat_and_mat
     rect_no_mat.calculate_geometric_properties()
     rect_no_mat.calculate_warping_properties()
     rect_mat.calculate_geometric_properties()
@@ -738,13 +750,16 @@ def test_get_warping():
     assert beta_22_minus == pytest.approx(0.0)
 
 
-def test_get_plastic():
+def test_get_plastic(sec_no_mat_and_mat):
     """Check errors and results when a plastic analysis has been conducted.
 
     RuntimeError = incorrect analysis type (geometric only vs. composite), takes
     precedence over...
     AssertionError = relevant analysis has been conducted
     """
+    rect_no_mat, rect_mat, _ = sec_no_mat_and_mat
+    rect_no_mat.calculate_geometric_properties()
+    rect_mat.calculate_geometric_properties()
     rect_no_mat.calculate_plastic_properties()
     rect_mat.calculate_plastic_properties()
 

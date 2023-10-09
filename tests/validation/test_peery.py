@@ -24,7 +24,6 @@ import pytest
 import pytest_check as check
 
 from sectionproperties.analysis.section import Section
-from sectionproperties.pre import Geometry
 from sectionproperties.pre.library import nastran_sections
 
 
@@ -72,7 +71,10 @@ class ZSection:
         # fig = ax.get_figure()
         # fig.savefig(f'geom.png')
 
-    def apply_load(self, v: float) -> None:
+    def apply_load(
+        self,
+        v: tuple[float, float],
+    ) -> None:
         """Applies a load to the section.
 
         This method applies the suplied load to the section. ``v`` is a tuple with the
@@ -106,7 +108,7 @@ def get_node(
         Node index and coorindate
     """
     for index, var in enumerate(nodes):
-        if all(var == coord):
+        if var[0] == coord[0] and var[1] == coord[1]:
             return index, var
         else:
             continue
@@ -116,7 +118,7 @@ def get_node(
 
 # Fixtures
 @pytest.fixture
-def peery_ex_6_2_1() -> tuple[Geometry, Section]:
+def peery_ex_6_2_1() -> Section:
     """Ex 6.2.1.
 
     Example 1 in Sec. 6.2 (Symmetric Bending) This is a symmetric I-section with no
@@ -124,7 +126,7 @@ def peery_ex_6_2_1() -> tuple[Geometry, Section]:
     here are **inches**, to match the text.
 
     Returns:
-        Geometry and Section object
+        Section object
     """
     geom = nastran_sections.nastran_i(
         dim_1=6, dim_2=3, dim_3=3, dim_4=1, dim_5=1, dim_6=1
@@ -133,17 +135,12 @@ def peery_ex_6_2_1() -> tuple[Geometry, Section]:
     geom = geom.create_mesh([0.25])
     xsect = Section(geom)
     xsect.calculate_geometric_properties()
-    # This plotting code was just for verifying the section offsets.
-    # ax = xsect.plot_centroids(pause=False, render=False)
-    # ax.grid(1, which='both', linestyle=':')
-    # fig = ax.get_figure()
-    # fig.savefig(f'Peery_6-2-1_geom.png')
 
-    return geom, xsect
+    return xsect
 
 
 @pytest.fixture
-def peery_ex_7_2_1() -> Geometry:
+def peery_ex_7_2_1() -> ZSection:
     """Example 7.2.1.
 
     Example 1 in Sec. 7.2. (Unsymmetric Bending) This is an unsymmetric Z-section with
@@ -152,7 +149,7 @@ def peery_ex_7_2_1() -> Geometry:
     Returns:
         Geometry object
     """
-    return ZSection(dim1=4, dim2=2, dim3=8, dim4=12, shift=[-5, -6], m=0.25)
+    return ZSection(dim1=4, dim2=2, dim3=8, dim4=12, shift=(-5, -6), m=0.25)
 
 
 # Tests
@@ -164,7 +161,7 @@ def test_symmetric_ixx(peery_ex_6_2_1: Callable) -> None:
     """
     # Directly from the example, we know that
     # the 2nd moment of inertia resisting bending is.
-    _, xsect = peery_ex_6_2_1
+    xsect = peery_ex_6_2_1
 
     check.almost_equal(xsect.section_props.ixx_g, 43.3, rel=1e-3)
 
@@ -175,7 +172,7 @@ def test_symmetric_fb(peery_ex_6_2_1: Callable) -> None:
     Args:
         peery_ex_6_2_1: peery_ex_6_2_1 test fixture
     """
-    _, xsect = peery_ex_6_2_1
+    xsect = peery_ex_6_2_1
 
     # Defined in the text
     moment = 8e5
