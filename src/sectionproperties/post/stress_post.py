@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 import matplotlib.axes
-import matplotlib.cm as cm
 import matplotlib.tri as tri
 import numpy as np
 from matplotlib.colors import CenteredNorm
@@ -300,7 +299,7 @@ class StressPost:
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # set up the colormap
-            colormap = cm.get_cmap(name=cmap)
+            colormap = matplotlib.colormaps.get_cmap(cmap=cmap)
 
             # create triangulation
             triang = tri.Triangulation(
@@ -311,8 +310,8 @@ class StressPost:
 
             # determine minimum and maximum stress values for the contour list
             if stress_limits is None:
-                sig_min = min([min(x) for x in sigs])
-                sig_max = max([max(x) for x in sigs])
+                sig_min = min([min(x) for x in sigs]) - 1e-12
+                sig_max = max([max(x) for x in sigs]) + 1e-12
             else:
                 sig_min = stress_limits[0]
                 sig_max = stress_limits[1]
@@ -462,7 +461,7 @@ class StressPost:
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # set up the colormap
-            colormap = cm.get_cmap(name=cmap)
+            colormap = matplotlib.colormaps.get_cmap(cmap=cmap)
 
             # initialise quiver plot list max scale
             quiv_list = []
@@ -510,7 +509,9 @@ class StressPost:
                 quiv_plot.scale = max_scale
 
             # apply the colorbar
-            v1 = np.linspace(start=c_min, stop=c_max, num=15, endpoint=True)
+            v1 = np.linspace(
+                start=c_min - 1e-12, stop=c_max + 1e-12, num=15, endpoint=True
+            )
             divider = make_axes_locatable(axes=ax)
             cax = divider.append_axes(position="right", size="5%", pad=0.1)
 

@@ -124,6 +124,7 @@ def precommit(session: Session) -> None:
         "flake8",
         "flake8-bugbear",
         "flake8-docstrings",
+        "flake8-pytest-style",
         "flake8-rst-docstrings",
         "isort",
         "pep8-naming",
