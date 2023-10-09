@@ -102,7 +102,7 @@ def figure_6_8() -> Callable:
 
     def _generate_sec(d: float, t: float) -> Section:
         geom = circular_hollow_section(d=d, t=t, n=128)
-        ms = geom.calculate_area() / 1000.0
+        ms = geom.calculate_area() / 500.0
         geom.points[0] = (d / 2, -1e-3)
         geom.points[128] = (d / 2 - t, 1e-3)
         geom = Geometry(Polygon(geom.points))
@@ -186,7 +186,7 @@ def test_example_1_1(figure_1_8):
     check.almost_equal(sigs[2][0], 12.5, rel=stress_tol)
 
 
-@pytest.mark.parametrize("d", [1.0, 50.0, 500.0])
+@pytest.mark.parametrize("d", [1.0, 50.0, 150.0])
 def test_example_5_1(d: float):
     """Validation test for Example 5.1 (page 174).
 
@@ -202,7 +202,7 @@ def test_example_5_1(d: float):
 
     # create solid geometry
     area = np.pi * d**2 / 4
-    ms = area / 1000.0
+    ms = area / 500.0
     geom_solid = circular_section_by_area(area=area, n=64)
     geom_solid.create_mesh(mesh_sizes=[ms])
     sec_solid = Section(geometry=geom_solid)
@@ -255,7 +255,7 @@ def test_example_5_3(a: float, b: float):
 
     # create geometry
     geom = elliptical_section(d_x=2 * a, d_y=2 * b, n=64)
-    ms = geom.calculate_area() / 1000.0
+    ms = geom.calculate_area() / 500.0
     geom.create_mesh(mesh_sizes=[ms])
     sec = Section(geometry=geom)
 
@@ -316,7 +316,7 @@ def test_example_5_7(figure_6_8):
 
     # create chs
     chs = circular_hollow_section(d=8, t=0.25, n=64)
-    ms = chs.calculate_area() / 1000.0
+    ms = chs.calculate_area() / 500.0
     chs.create_mesh(mesh_sizes=[ms])
     sec_chs = Section(geometry=chs)
 
