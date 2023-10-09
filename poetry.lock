@@ -3842,4 +3842,4 @@ rhino = ["rhino-shapley-interop", "rhino3dm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9.0,<3.12"
-content-hash = "191a2d57daedfceb3f6d67fec2c9bee31204cc2e7cc79f217af77b7fb25d193b"
+content-hash = "bff542fa49bad95a4cea361c177e30b2b12b02c666f967cef301dec59fa4244a"
