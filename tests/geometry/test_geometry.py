@@ -146,25 +146,6 @@ def composite_geom(
 
 
 @pytest.fixture
-def composite_sec(composite_geom: Geometry) -> Section:
-    """Generates a composite section object, with geom and plast analysis completed.
-
-    Args:
-        composite_geom: Composite geometry fixture
-
-    Returns:
-        Section
-    """
-    comp_geom = composite_geom
-    comp_geom.create_mesh(mesh_sizes=[200])
-    comp_sec = Section(geometry=comp_geom)
-    comp_sec.calculate_geometric_properties()
-    comp_sec.calculate_plastic_properties()
-
-    return comp_sec
-
-
-@pytest.fixture
 def nested_geometry(small_square: Geometry, small_hole: Geometry) -> Geometry:
     """Generates a nested geometry object.
 
@@ -179,41 +160,6 @@ def nested_geometry(small_square: Geometry, small_hole: Geometry) -> Geometry:
     small_hl = small_hole
 
     return (small_sq - small_hl) + small_hl
-
-
-@pytest.fixture
-def nested_section(nested_geometry: Geometry) -> Section:
-    """Generates a nesed section object.
-
-    Args:
-        nested_geometry: Nested geometry fixture
-
-    Returns:
-        Section
-    """
-    nested_geom = nested_geometry
-
-    nested_geom.create_mesh(mesh_sizes=[50])
-    return Section(geometry=nested_geom)
-
-
-@pytest.fixture
-def overlay_section(small_square: Geometry, small_hole: Geometry) -> Section:
-    """Generates an overlay section object.
-
-    Args:
-        small_square: Small square fixture
-        small_hole: Small hole fixture
-
-    Returns:
-        Section
-    """
-    small_sq = small_square
-    small_hl = small_hole
-
-    overlay_geom = small_sq + small_hl
-    overlay_geom.create_mesh(mesh_sizes=[50])
-    return Section(geometry=overlay_geom)
 
 
 @pytest.fixture
