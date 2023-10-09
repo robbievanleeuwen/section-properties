@@ -549,84 +549,81 @@ class StressPost:
 
           - ``"material"`` - material name
 
-          - ``"n_zz"`` - normal stress :math:`\sigma_{zz,N}` resulting from the
+          - ``"sig_zz_n"`` - normal stress :math:`\sigma_{zz,N}` resulting from the
             axial load :math:`N`
 
-          - ``"mxx_zz"`` - normal stress :math:`\sigma_{zz,Mxx}` resulting from
+          - ``"sig_zz_mxx"`` - normal stress :math:`\sigma_{zz,Mxx}` resulting from
             the bending moment :math:`M_{xx}`
 
-          - ``"myy_zz"`` - normal stress :math:`\sigma_{zz,Myy}` resulting from
+          - ``"sig_zz_myy"`` - normal stress :math:`\sigma_{zz,Myy}` resulting from
             the bending moment :math:`M_{yy}`
 
-          - ``"m11_zz"`` - normal stress :math:`\sigma_{zz,M11}` resulting from
+          - ``"sig_zz_m11"`` - normal stress :math:`\sigma_{zz,M11}` resulting from
             the bending moment :math:`M_{11}`
 
-          - ``"m22_zz"`` - normal stress :math:`\sigma_{zz,M22}` resulting from
+          - ``"sig_zz_m22"`` - normal stress :math:`\sigma_{zz,M22}` resulting from
             the bending moment :math:`M_{22}`
 
-          - ``"m_zz"`` - normal stress :math:`\sigma_{zz,\Sigma M}` resulting
+          - ``"sig_zz_m"`` - normal stress :math:`\sigma_{zz,\Sigma M}` resulting
             from all bending moments :math:`M_{xx} + M_{yy} + M_{11} + M_{22}`
 
-          - ``"mzz_zx"`` - ``x`` component of the shear stress
+          - ``"sig_zx_mzz"`` - ``x`` component of the shear stress
             :math:`\sigma_{zx,Mzz}` resulting from the torsion moment :math:`M_{zz}`
 
-          - ``"mzz_zy"`` - ``y`` component of the shear stress
+          - ``"sig_zy_mzz"`` - ``y`` component of the shear stress
             :math:`\sigma_{zy,Mzz}` resulting from the torsion moment :math:`M_{zz}`
 
-          - ``"mzz_zxy"`` - resultant shear stress :math:`\sigma_{zxy,Mzz}`
+          - ``"sig_zxy_mzz"`` - resultant shear stress :math:`\sigma_{zxy,Mzz}`
             resulting from the torsion moment :math:`M_{zz}`
 
-          - ``"vx_zx"`` - ``x`` component of the shear stress
+          - ``"sig_zx_vx"`` - ``x`` component of the shear stress
             :math:`\sigma_{zx,Vx}` resulting from the shear force :math:`V_{x}`
 
-          - ``"vx_zy"`` - ``y`` component of the shear stress
+          - ``"sig_zy_vx"`` - ``y`` component of the shear stress
             :math:`\sigma_{zy,Vx}` resulting from the shear force :math:`V_{x}`
 
-          - ``"vx_zxy"`` - resultant shear stress :math:`\sigma_{zxy,Vx}`
+          - ``"sig_zxy_vx"`` - resultant shear stress :math:`\sigma_{zxy,Vx}`
             resulting from the shear force :math:`V_{x}`
 
-          - ``"vy_zx"`` - ``x`` component of the shear stress
+          - ``"sig_zx_vy"`` - ``x`` component of the shear stress
             :math:`\sigma_{zx,Vy}` resulting from the shear force :math:`V_{y}`
 
-          - ``"vy_zy"`` - ``y`` component of the shear stress
+          - ``"sig_zy_vy"`` - ``y`` component of the shear stress
             :math:`\sigma_{zy,Vy}` resulting from the shear force :math:`V_{y}`
 
-          - ``"vy_zxy"`` - resultant shear stress :math:`\sigma_{zxy,Vy}`
+          - ``"sig_zxy_vy"`` - resultant shear stress :math:`\sigma_{zxy,Vy}`
             resulting from the shear force :math:`V_{y}`
 
-          - ``"v_zx"`` - ``x`` component of the shear stress
+          - ``"sig_zx_v"`` - ``x`` component of the shear stress
             :math:`\sigma_{zx,\Sigma V}` resulting from the sum of the applied shear
             forces :math:`V_{x} + V_{y}`.
 
-          - ``"v_zy"`` - ``y`` component of the shear stress
+          - ``"sig_zy_v"`` - ``y`` component of the shear stress
             :math:`\sigma_{zy,\Sigma V}` resulting from the sum of the applied shear
             forces :math:`V_{x} + V_{y}`.
 
-          - ``"v_zxy"`` - resultant shear stress :math:`\sigma_{zxy,\Sigma V}`
+          - ``"sig_zxy_v"`` - resultant shear stress :math:`\sigma_{zxy,\Sigma V}`
             resulting from the sum of the applied shear forces :math:`V_{x} + V_{y}`
 
-          - ``"zz"`` - combined normal stress :math:`\sigma_{zz}` resulting from
+          - ``"sig_zz"`` - combined normal stress :math:`\sigma_{zz}` resulting from
             all actions
 
-          - ``"zx"`` - ``x`` component of the shear stress :math:`\sigma_{zx}`
+          - ``"sig_zx"`` - ``x`` component of the shear stress :math:`\sigma_{zx}`
             resulting from all actions
 
-          - ``"zy"`` - ``y`` component of the shear stress :math:`\sigma_{zy}`
+          - ``"sig_zy"`` - ``y`` component of the shear stress :math:`\sigma_{zy}`
             resulting from all actions
 
-          - ``"zxy"`` - resultant shear stress :math:`\sigma_{zxy}` resulting
+          - ``"sig_zxy"`` - resultant shear stress :math:`\sigma_{zxy}` resulting
             from all actions
 
-          - ``"zxy"`` - resultant shear stress :math:`\sigma_{zxy}` resulting
-            from all actions
-
-          - ``"11"`` - major principal stress :math:`\sigma_{11}` resulting from
+          - ``"sig_11"`` - major principal stress :math:`\sigma_{11}` resulting from
             all actions
 
-          - ``"33"`` - minor principal stress :math:`\sigma_{33}` resulting from
+          - ``"sig_33"`` - minor principal stress :math:`\sigma_{33}` resulting from
             all actions
 
-          - ``"vm"`` - von Mises stress :math:`\sigma_{vM}` resulting from all
+          - ``"sig_vm"`` - von Mises stress :math:`\sigma_{vM}` resulting from all
             actions
         """
         # generate list
