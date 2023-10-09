@@ -29,25 +29,41 @@ from sectionproperties.pre.pre import Material
 
 @pytest.fixture
 def big_square() -> Geometry:
-    """Generates a 300 x 250 rectangular geometry object."""
+    """Generates a 300 x 250 rectangular geometry object.
+
+    Returns:
+        Geometry
+    """
     return primitive_sections.rectangular_section(d=300, b=250)
 
 
 @pytest.fixture
 def small_square() -> Geometry:
-    """Generates a 100 x 75 rectangular geometry object."""
+    """Generates a 100 x 75 rectangular geometry object.
+
+    Returns:
+        Geometry
+    """
     return primitive_sections.rectangular_section(d=100, b=75)
 
 
 @pytest.fixture
 def unit_square() -> Geometry:
-    """Generates a unit square geometry object."""
+    """Generates a unit square geometry object.
+
+    Returns:
+        Geometry
+    """
     return Geometry(Polygon([(0, 0), (1, 0), (1, 1), (0, 1)]))
 
 
 @pytest.fixture
 def unit_square_compound() -> CompoundGeometry:
-    """Generates a unit square geometry object."""
+    """Generates a unit square geometry object.
+
+    Returns:
+        Geometry
+    """
     left = Geometry(Polygon([(0, 0), (0.5, 0), (0.5, 1), (0, 1)]))
     right = Geometry(Polygon([(0.5, 0), (1, 0), (1, 1), (0.5, 1)]))
 
@@ -56,7 +72,14 @@ def unit_square_compound() -> CompoundGeometry:
 
 @pytest.fixture
 def small_hole(small_square: Geometry) -> Geometry:
-    """Generates a 100 x 75 rectangular geometry object."""
+    """Generates a 100 x 75 rectangular geometry object.
+
+    Args:
+        small_square: Small square fixture
+
+    Returns:
+        Geometry
+    """
     small_sq = small_square
 
     return primitive_sections.rectangular_section(d=40, b=30).align_center(
@@ -66,7 +89,15 @@ def small_hole(small_square: Geometry) -> Geometry:
 
 @pytest.fixture
 def small_square_with_hole(small_square: Geometry, small_hole: Geometry) -> Geometry:
-    """Generates a 100 x 75 rectangular geometry object with 40 x 30 hole."""
+    """Generates a 100 x 75 rectangular geometry object with 40 x 30 hole.
+
+    Args:
+        small_square: Small square fixture
+        small_hole: Small hole fixture
+
+    Returns:
+        Geometry
+    """
     small_sq = small_square
     small_hl = small_hole
 
@@ -75,7 +106,11 @@ def small_square_with_hole(small_square: Geometry, small_hole: Geometry) -> Geom
 
 @pytest.fixture
 def i_section_geom() -> Geometry:
-    """Generates a 200 deep i-section geometry object."""
+    """Generates a 200 deep i-section geometry object.
+
+    Returns:
+        Geometry
+    """
     return steel_sections.i_section(d=200, b=100, t_f=20, t_w=10, r=12, n_r=12)
 
 
@@ -83,7 +118,16 @@ def i_section_geom() -> Geometry:
 def composite_geom(
     big_square: Geometry, small_square_with_hole: Geometry, i_section_geom: Geometry
 ) -> Geometry:
-    """Generates a composite geometry object."""
+    """Generates a composite geometry object.
+
+    Args:
+        big_square: Big square fixture
+        small_square_with_hole: Small square with hole fixture
+        i_section_geom: I-section fixture
+
+    Returns:
+        Geometry
+    """
     big_sq = big_square
     small_sq_w_hole = small_square_with_hole
     i_sec = i_section_geom
@@ -103,7 +147,14 @@ def composite_geom(
 
 @pytest.fixture
 def composite_sec(composite_geom: Geometry) -> Section:
-    """Generates a composite section object, with geom and plast analysis completed."""
+    """Generates a composite section object, with geom and plast analysis completed.
+
+    Args:
+        composite_geom: Composite geometry fixture
+
+    Returns:
+        Section
+    """
     comp_geom = composite_geom
     comp_geom.create_mesh(mesh_sizes=[200])
     comp_sec = Section(geometry=comp_geom)
@@ -115,7 +166,15 @@ def composite_sec(composite_geom: Geometry) -> Section:
 
 @pytest.fixture
 def nested_geometry(small_square: Geometry, small_hole: Geometry) -> Geometry:
-    """Generates a nested geometry object."""
+    """Generates a nested geometry object.
+
+    Args:
+        small_square: Small square fixture
+        small_hole: Small hole fixture
+
+    Returns:
+        Geometry
+    """
     small_sq = small_square
     small_hl = small_hole
 
@@ -124,7 +183,14 @@ def nested_geometry(small_square: Geometry, small_hole: Geometry) -> Geometry:
 
 @pytest.fixture
 def nested_section(nested_geometry: Geometry) -> Section:
-    """Generates a nesed section object."""
+    """Generates a nesed section object.
+
+    Args:
+        nested_geometry: Nested geometry fixture
+
+    Returns:
+        Section
+    """
     nested_geom = nested_geometry
 
     nested_geom.create_mesh(mesh_sizes=[50])
@@ -133,7 +199,15 @@ def nested_section(nested_geometry: Geometry) -> Section:
 
 @pytest.fixture
 def overlay_section(small_square: Geometry, small_hole: Geometry) -> Section:
-    """Generates an overlay section object."""
+    """Generates an overlay section object.
+
+    Args:
+        small_square: Small square fixture
+        small_hole: Small hole fixture
+
+    Returns:
+        Section
+    """
     small_sq = small_square
     small_hl = small_hole
 
@@ -144,7 +218,11 @@ def overlay_section(small_square: Geometry, small_hole: Geometry) -> Section:
 
 @pytest.fixture
 def steel_material() -> Material:
-    """Generates a steel material."""
+    """Generates a steel material.
+
+    Returns:
+        Material
+    """
     return Material(
         name="steel",
         elastic_modulus=200e3,
