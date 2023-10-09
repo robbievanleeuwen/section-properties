@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 import pytest_check as check
 
 import sectionproperties.pre.library.concrete_sections as cs
@@ -11,27 +12,41 @@ import sectionproperties.pre.pre as pre
 
 
 r_tol = 1e-6
-conc_mat = pre.Material(
-    name="Concrete",
-    elastic_modulus=32.8e3,
-    poissons_ratio=0.2,
-    density=2.4e-6,
-    yield_strength=40,
-    color="lightgrey",
-)
-
-steel_mat = pre.Material(
-    name="Steel",
-    elastic_modulus=200e3,
-    poissons_ratio=0.3,
-    density=7.85e-6,
-    yield_strength=500,
-    color="grey",
-)
 
 
-def test_concrete_rectangular_section():
+# material setup
+@pytest.fixture
+def get_materials() -> tuple[pre.Material, pre.Material]:
+    """Creates a concrete and steel material.
+
+    Returns:
+        Material objects
+    """
+    conc_mat = pre.Material(
+        name="Concrete",
+        elastic_modulus=32.8e3,
+        poissons_ratio=0.2,
+        density=2.4e-6,
+        yield_strength=40,
+        color="lightgrey",
+    )
+
+    steel_mat = pre.Material(
+        name="Steel",
+        elastic_modulus=200e3,
+        poissons_ratio=0.3,
+        density=7.85e-6,
+        yield_strength=500,
+        color="grey",
+    )
+
+    return conc_mat, steel_mat
+
+
+def test_concrete_rectangular_section(get_materials):
     """Tests the concrete_rectangular_section() method."""
+    conc_mat, steel_mat = get_materials
+
     rect = cs.concrete_rectangular_section(
         d=600,
         b=300,
@@ -66,8 +81,10 @@ def test_concrete_rectangular_section():
     check.almost_equal(steel_area, actual_steel_area, rel=r_tol)
 
 
-def test_concrete_tee_section():
+def test_concrete_tee_section(get_materials):
     """Tests the concrete_tee_section() method."""
+    conc_mat, steel_mat = get_materials
+
     rect = cs.concrete_tee_section(
         d=900,
         b=300,
@@ -104,8 +121,10 @@ def test_concrete_tee_section():
     check.almost_equal(steel_area, actual_steel_area, rel=r_tol)
 
 
-def test_concrete_circular_section():
+def test_concrete_circular_section(get_materials):
     """Tests the concrete_circular_section() method."""
+    conc_mat, steel_mat = get_materials
+
     rect = cs.concrete_circular_section(
         d=600,
         area_conc=np.pi * 600 * 600 / 4,
@@ -137,8 +156,10 @@ def test_concrete_circular_section():
     check.almost_equal(steel_area, actual_steel_area, rel=r_tol)
 
 
-def test_concrete_column_section():
+def test_concrete_column_section(get_materials):
     """Tests the concrete_column_section() method."""
+    conc_mat, steel_mat = get_materials
+
     concrete = pre.Material(
         name="Concrete",
         elastic_modulus=30.1e3,

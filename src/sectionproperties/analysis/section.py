@@ -384,7 +384,7 @@ class Section:
                 msg = f"[green]:white_check_mark: {self.num_nodes}x{self.num_nodes} "
                 msg += "stiffness matrix assembled"
                 progress.update(task_id=task, description=msg)
-                progress.update(0, advance=1)  # type: ignore (task_id not needed here)
+                progress.update(0, advance=1)
             else:
                 k_lg, f_torsion = warping_section.assemble_torsion()
 
@@ -441,7 +441,7 @@ class Section:
                 msg = "[green]:white_check_mark: Warping function solved "
                 msg += f"({solver_type})"
                 progress.update(task, description=msg)
-                progress.update(0, advance=1)  # type: ignore (task_id not needed here)
+                progress.update(0, advance=1)
             else:
                 omega = solve_warping()
 
@@ -456,7 +456,7 @@ class Section:
 
             self.section_props.j = (
                 ixx_c + iyy_c - omega.dot(k_lg[:-1, :-1].dot(np.transpose(omega)))
-            )  # type: ignore (last line always evaluates to a float due to dims)
+            )
 
             # assemble shear function load vectors
             if self.is_composite():
@@ -495,7 +495,7 @@ class Section:
 
                 msg = "[green]:white_check_mark: Shear function vectors assembled"
                 progress.update(task, description=msg)
-                progress.update(0, advance=1)  # type: ignore (task_id not needed here)
+                progress.update(0, advance=1)
             else:
                 f_psi, f_phi = assemble_shear_load()
 
@@ -543,7 +543,7 @@ class Section:
                 msg = "[green]:white_check_mark: Shear functions solved "
                 msg += f"({solver_type})"
                 progress.update(task, description=msg)
-                progress.update(0, advance=1)  # type: ignore (task_id not needed here)
+                progress.update(0, advance=1)
             else:
                 psi_shear, phi_shear = solve_shear_functions()
 
@@ -606,7 +606,7 @@ class Section:
 
                 msg = "[green]:white_check_mark: Shear and warping integrals assembled"
                 progress.update(task, description=msg)
-                progress.update(0, advance=1)  # type: ignore (task_id not needed here)
+                progress.update(0, advance=1)
             else:
                 (
                     sc_xint,
@@ -687,7 +687,7 @@ class Section:
                 msg = "[green]:white_check_mark: Shear deformation coefficients "
                 msg += "assembled"
                 progress.update(task_id=task, description=msg)
-                progress.update(0, advance=1)  # type: ignore (task_id not needed here)
+                progress.update(0, advance=1)
             else:
                 kappa_x, kappa_y, kappa_xy = assemble_shear_deformation()
 
@@ -758,7 +758,7 @@ class Section:
 
                 msg = "[green]:white_check_mark: Monosymmetry integrals assembled"
                 progress.update(task_id=task, description=msg)
-                progress.update(0, advance=1)  # type: ignore (task_id not needed here)
+                progress.update(0, advance=1)
             else:
                 int_x, int_y, int_11, int_22 = calculate_monosymmetry_integrals()
 
@@ -969,7 +969,7 @@ class Section:
                 msg = f"[green]:white_check_mark: {self.num_nodes}x{self.num_nodes} "
                 msg += "stiffness matrix assembled"
                 progress.update(task_id=task, description=msg)
-                progress.update(0, advance=1)  # type: ignore (task_id not needed here)
+                progress.update(0, advance=1)
             else:
                 k_lg, f_torsion = warping_section.assemble_torsion()
 
@@ -1026,7 +1026,7 @@ class Section:
                 msg = "[green]:white_check_mark: Warping function solved "
                 msg += f"({solver_type})"
                 progress.update(task, description=msg)
-                progress.update(0, advance=1)  # type: ignore (task_id not needed here)
+                progress.update(0, advance=1)
             else:
                 omega = solve_warping()
 
@@ -1041,7 +1041,7 @@ class Section:
 
             self.section_props.j = (
                 ixx_c + iyy_c - omega.dot(k_lg[:-1, :-1].dot(np.transpose(omega)))
-            )  # type: ignore (last line always evaluates to a float due to dims)
+            )
 
         # conduct warping analysis
         if self.time_info:

@@ -388,7 +388,7 @@ class Geometry:
             A Geometry object found in the encoded string.
         """
         try:
-            import sectionproperties.pre.rhino as rhino_importer  # type: ignore
+            import sectionproperties.pre.rhino as rhino_importer
         except ImportError as e:
             msg = "There is something wrong with your rhino library installation. "
             msg += "Please report this error at "
