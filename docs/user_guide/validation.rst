@@ -69,7 +69,7 @@ Again, the automated test against this checks the hardcoded value with a toleran
 
 For full details and the most updated code of this example, see the
 :doc:`examples page <../examples>`. For the exact test code execution, check the
-`source <https://github.com/robbievanleeuwen/section-properties/blob/master/tests/test_peery.py>`_.
+`source <https://github.com/robbievanleeuwen/section-properties/blob/master/tests/validation/test_peery.py>`_.
 
 Peery - Unsymmetric Sections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -139,7 +139,7 @@ text, which also matches the computed value from the ``sectionproperties`` FEM.
 
 For full details and the most updated code of this example, see the
 :doc:`examples page <../examples>`. For the exact test code execution, check the
-`source <https://github.com/robbievanleeuwen/section-properties/blob/master/tests/test_peery.py>`_.
+`source <https://github.com/robbievanleeuwen/section-properties/blob/master/tests/validation/test_peery.py>`_.
 
 References
 ----------
