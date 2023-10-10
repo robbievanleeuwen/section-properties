@@ -1,9 +1,8 @@
 """Validation tests from Pilkey.
 
-Bibtex reference:
-@book{PilkeyWalterD2002AaDo,
+BibTeX reference:
+@book{Pilkey,
     author = {Pilkey, Walter D},
-    address = {Newark},
     booktitle = {Analysis and Design of Elastic Beams},
     edition = {First},
     isbn = {0471381527},

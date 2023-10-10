@@ -56,7 +56,7 @@ Validation
 ----------
 
 .. nbgallery::
-    :name: advanced-gallery
+    :name: validation-gallery
     :maxdepth: 1
 
     examples/validation/pilkey_channel

@@ -20,7 +20,7 @@ An obvious starting location is replicating examples from academic texts. The ma
 reference text for ``sectionproperties`` is "Analysis and Design of Elastic Beams" by
 Walter D. Pilkey [Pilkey]_. This text contains several examples and validation tests
 which are covered in the testing suite, see
-`source <https://github.com/robbievanleeuwen/section-properties/blob/master/tests/validation/test_peery.py>`_.
+`source <https://github.com/robbievanleeuwen/section-properties/blob/master/tests/validation/test_pilkey.py>`_.
 Selected validation tests from [Pilkey]_ are found in the examples section of the
 documentation, notably the :ref:`/examples/validation/pilkey_channel.ipynb`,
 :ref:`/examples/validation/pilkey_arc.ipynb` and :ref:`/examples/validation/pilkey_composite.ipynb`
