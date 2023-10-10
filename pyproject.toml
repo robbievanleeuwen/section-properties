@@ -113,6 +113,13 @@ show_missing = true
 profile = "black"
 lines_after_imports = 2
 
+[tool.pytest.ini_options]
+markers = [
+    "benchmark_geom: geometry benchmark tests (select with '-m benchmark_geom')",
+    "benchmark_mesh: mesh benchmark tests (select with '-m benchmark_mesh')",
+    "benchmark_analysis: analysis benchmark tests (select with '-m benchmark_analysis')",
+]
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
