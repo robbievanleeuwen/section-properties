@@ -1,9 +1,8 @@
 """Validation tests from Pilkey.
 
-Bibtex reference:
-@book{PilkeyWalterD2002AaDo,
+BibTeX reference:
+@book{Pilkey,
     author = {Pilkey, Walter D},
-    address = {Newark},
     booktitle = {Analysis and Design of Elastic Beams},
     edition = {First},
     isbn = {0471381527},
@@ -355,7 +354,7 @@ def test_example_5_7(figure_6_8):
 
 
 def test_example_5_13(al_cu: tuple[Material, Material]):
-    """Validation test for Example 5.13 (page 220).
+    """Validation test for Example 5.13 - Composite Rectangular Strip (page 220).
 
     2 off 15 x 2 bars (1 Aluminium, 1 Copper)
 
@@ -885,7 +884,7 @@ def test_example_b_3():
 
 
 def test_example_b_4(figure_6_8):
-    """Validation test for Example B.4 (page 444)."""
+    """Validation test for Example B.4 - Open Circular Cross Section (page 444)."""
     # define input values
     r_mid = 8
     t = 1.25
@@ -937,7 +936,7 @@ def test_example_b_4(figure_6_8):
 
 
 def test_example_b_5():
-    """Validation test for Example B.5 (page 445)."""
+    """Validation test for Example B.5 - Welded Hat Section (page 445)."""
     # define input values
     mat = Material("a", 2.1e8, 0.33333, 1, 1, "w")
     tol = 5e-2  # note differences in modelling and mesh (pilkey uses splines)
@@ -1019,7 +1018,7 @@ def test_example_b_5():
 
 
 def test_example_b_7():
-    """Validation test for Example B.7 (page 451)."""
+    """Validation test for Example B.7 - Circular Arc (page 451)."""
     # define input values
     mat = Material("a", 2.1e8, 0.33333, 1, 1, "w")
     r = 16  # radius
