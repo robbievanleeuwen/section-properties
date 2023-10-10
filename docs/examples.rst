@@ -37,7 +37,6 @@ Analysis
     examples/analysis/warping_analysis
     examples/analysis/frame_analysis
     examples/analysis/stress_analysis
-    examples/analysis/export_fibre_section
 
 Results
 -------
@@ -51,6 +50,19 @@ Results
     examples/results/plot_centroids
     examples/results/plot_stress
     examples/results/get_stress
+    examples/results/export_fibre_section
+
+Validation
+----------
+
+.. nbgallery::
+    :name: advanced-gallery
+    :maxdepth: 1
+
+    examples/validation/pilkey_channel
+    examples/validation/pilkey_arc
+    examples/validation/pilkey_composite
+    examples/validation/peery
 
 Advanced
 --------
@@ -61,5 +73,4 @@ Advanced
 
     examples/advanced/advanced_plot
     examples/advanced/rectangle_torsion
-    examples/advanced/peery
     examples/advanced/trapezoidal_torsion
