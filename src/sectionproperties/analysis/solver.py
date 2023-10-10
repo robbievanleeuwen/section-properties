@@ -17,6 +17,14 @@ from scipy.sparse import csc_matrix, linalg
 from scipy.sparse.linalg import LinearOperator, spsolve
 
 
+try:
+    import pypardiso
+
+    sp_solve = pypardiso.spsolve
+except ImportError:
+    sp_solve = spsolve
+
+
 def solve_cgs(
     k: csc_matrix,
     f: np.ndarray,
@@ -95,7 +103,7 @@ def solve_direct(
     Returns:
         The solution vector to the linear system of equations
     """
-    return spsolve(A=k, b=f)
+    return sp_solve(A=k, b=f)
 
 
 def solve_direct_lagrange(
@@ -115,7 +123,7 @@ def solve_direct_lagrange(
         RuntimeError: If the Lagrangian multiplier method exceeds a tolerance of
             ``1e-5``
     """
-    u = spsolve(A=k_lg, b=np.append(f, 0))
+    u = sp_solve(A=k_lg, b=np.append(f, 0))
 
     # compute error
     multiplier = abs(u[-1])

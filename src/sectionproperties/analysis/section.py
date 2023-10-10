@@ -131,21 +131,8 @@ class Section:
 
         # build the mesh one element at a time
         for i, node_ids in enumerate(self._mesh_elements):
-            x1 = self._mesh_nodes[node_ids[0]][0]
-            y1 = self._mesh_nodes[node_ids[0]][1]
-            x2 = self._mesh_nodes[node_ids[1]][0]
-            y2 = self._mesh_nodes[node_ids[1]][1]
-            x3 = self._mesh_nodes[node_ids[2]][0]
-            y3 = self._mesh_nodes[node_ids[2]][1]
-            x4 = self._mesh_nodes[node_ids[3]][0]
-            y4 = self._mesh_nodes[node_ids[3]][1]
-            x5 = self._mesh_nodes[node_ids[4]][0]
-            y5 = self._mesh_nodes[node_ids[4]][1]
-            x6 = self._mesh_nodes[node_ids[5]][0]
-            y6 = self._mesh_nodes[node_ids[5]][1]
-
             # create a list containing the vertex and mid-node coordinates
-            coords = np.array([[x1, x2, x3, x4, x5, x6], [y1, y2, y3, y4, y5, y6]])
+            coords = self._mesh_nodes[node_ids, :].transpose()
 
             # if materials are specified, get the material
             if self.materials:
@@ -454,9 +441,7 @@ class Section:
             else:
                 ixx_c, iyy_c, ixy_c = self.get_ic()
 
-            self.section_props.j = (
-                ixx_c + iyy_c - omega.dot(k_lg[:-1, :-1].dot(np.transpose(omega)))
-            )
+            self.section_props.j = ixx_c + iyy_c - omega.dot(f_torsion)
 
             # assemble shear function load vectors
             if self.is_composite():
@@ -1039,9 +1024,7 @@ class Section:
             else:
                 ixx_c, iyy_c, _ = self.get_ic()
 
-            self.section_props.j = (
-                ixx_c + iyy_c - omega.dot(k_lg[:-1, :-1].dot(np.transpose(omega)))
-            )
+            self.section_props.j = ixx_c + iyy_c - omega.dot(f_torsion)
 
         # conduct warping analysis
         if self.time_info:
