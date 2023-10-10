@@ -82,6 +82,7 @@ pre-commit = "^3.4.0"
 pre-commit-hooks = "^4.5.0"
 Pygments = "^2.16.1"
 pytest = "^7.4.2"
+pytest-benchmark = { extras = ["histogram"], version = "^4.0.0" }
 pytest-check = "^2.2.2"
 pyupgrade = "^3.15.0"
 sphinx = "^7.2.6"
@@ -111,6 +112,13 @@ show_missing = true
 [tool.isort]
 profile = "black"
 lines_after_imports = 2
+
+[tool.pytest.ini_options]
+markers = [
+    "benchmark_geom: geometry benchmark tests (select with '-m benchmark_geom')",
+    "benchmark_mesh: mesh benchmark tests (select with '-m benchmark_mesh')",
+    "benchmark_analysis: analysis benchmark tests (select with '-m benchmark_analysis')",
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
