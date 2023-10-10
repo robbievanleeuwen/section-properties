@@ -73,8 +73,12 @@ def chs_geom() -> Geometry:
 def concrete_column_with_hole(concrete, steel) -> Callable:
     """Creates a concrete column with a hole at its centre.
 
-    Return:
-        Geometry
+    Args:
+        concrete: Concrete material
+        steel: Steel material
+
+    Returns:
+        Generator function
     """
 
     def _generate_geom() -> Geometry:
@@ -100,7 +104,11 @@ def concrete_column_with_hole(concrete, steel) -> Callable:
 
 @pytest.fixture
 def analysis_geometry() -> Callable:
-    """Create a geometry to be used for analysis."""
+    """Create a geometry to be used for analysis.
+
+    Returns:
+        Generator function
+    """
 
     def _generate_geom(num_elements: int) -> Geometry:
         mat_a = Material("a", 1, 0, 1, 1, color="b")
