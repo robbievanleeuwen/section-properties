@@ -77,6 +77,8 @@ Now that you have all the dependencies up and running, you can install
 `sectionproperties` with development requirements:
 
 ```shell
+git clone https://github.com/robbievanleeuwen/section-properties.git
+cd section-properties
 poetry install
 ```
 

@@ -89,6 +89,8 @@ Now that you have all the dependencies up and running, you can install
 
 .. code:: shell
 
+   git clone https://github.com/robbievanleeuwen/section-properties.git
+   cd section-properties
    poetry install
 
 Install with the ``rhino`` and ``cad`` extras:

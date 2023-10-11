@@ -43,4 +43,4 @@ __pycache__/
 .ipynb_checkpoints
 
 # benchmark results
-.benchmarks
+.benchmarks/
