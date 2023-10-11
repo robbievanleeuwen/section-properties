@@ -43,6 +43,3 @@ To install ``sectionproperties`` with the above functionality, use the ``dxf`` a
 
     pip install sectionproperties[dxf]
     pip install sectionproperties[rhino]
-
-Note that the ``rhino`` option only supports python ``3.9`` due to incomplete wheel
-coverage of ``rhino3dm``.

@@ -111,10 +111,10 @@ Various CAD files can be imported to creating ``sectionproperties`` geometries.
     installation. To install ``sectionproperties`` with CAD import functionality,  use
     the ``dxf`` and/or ``rhino`` options:
 
-.. code-block:: shell
+    .. code-block:: shell
 
-    pip install sectionproperties[dxf]
-    pip install sectionproperties[rhino]
+        pip install sectionproperties[dxf]
+        pip install sectionproperties[rhino]
 
 .. _label-geometry-dxf:
 

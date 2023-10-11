@@ -144,11 +144,9 @@ def tests(session: Session) -> None:
     Args:
         session: Nox session
     """
-    # provide only dxf dependencies if python version is 3.10 or 3.11
-    if session.python == "3.9":
-        session.run_always("poetry", "install", "--all-extras", external=True)
-    else:
-        session.run_always("poetry", "install", "--extras", "dxf", external=True)
+    session.run_always(
+        "poetry", "install", "--only", "main", "--extras", "dxf rhino", external=True
+    )
 
     # install relevant tooling
     session.install("coverage[toml]", "pytest", "pygments", "pytest-check")
@@ -161,7 +159,7 @@ def tests(session: Session) -> None:
             "-m",
             "pytest",
             "-m",
-            "not benchmark",
+            "not benchmark_suite",
             *session.posargs,
         )
     finally:
@@ -197,7 +195,9 @@ def docs_build(session: Session) -> None:
     if not session.posargs and "FORCE_COLOR" in os.environ:
         args.insert(0, "--color")
 
-    session.run_always("poetry", "install", "--all-extras", external=True)
+    session.run_always(
+        "poetry", "install", "--only", "main", "--extras", "dxf rhino", external=True
+    )
     session.install(
         "furo",
         "ipykernel",
@@ -226,7 +226,9 @@ def docs(session: Session) -> None:
         session: Nox session
     """
     args = session.posargs or ["--open-browser", "docs", "docs/_build"]
-    session.run_always("poetry", "install", "--all-extras", external=True)
+    session.run_always(
+        "poetry", "install", "--only", "main", "--extras", "dxf rhino", external=True
+    )
     session.install(
         "furo",
         "ipykernel",

@@ -5,7 +5,7 @@ import pytest
 from sectionproperties.analysis import Section
 
 
-@pytest.mark.benchmark
+@pytest.mark.benchmark_suite
 @pytest.mark.benchmark_analysis
 @pytest.mark.parametrize("elements", [50, 500, 5000])
 def test_create_section(benchmark, analysis_geometry, elements):
@@ -18,7 +18,7 @@ def test_create_section(benchmark, analysis_geometry, elements):
     benchmark(create_section)
 
 
-@pytest.mark.benchmark
+@pytest.mark.benchmark_suite
 @pytest.mark.benchmark_analysis
 @pytest.mark.parametrize("elements", [50, 500, 5000])
 def test_geometric_analysis(benchmark, analysis_geometry, elements):
@@ -32,7 +32,7 @@ def test_geometric_analysis(benchmark, analysis_geometry, elements):
     benchmark(geometric_analysis)
 
 
-@pytest.mark.benchmark
+@pytest.mark.benchmark_suite
 @pytest.mark.benchmark_analysis
 def test_plastic_analysis(benchmark, analysis_geometry):
     """Benchmark test for conducting a plastic analysis.
@@ -49,7 +49,7 @@ def test_plastic_analysis(benchmark, analysis_geometry):
     benchmark(plastic_analysis)
 
 
-@pytest.mark.benchmark
+@pytest.mark.benchmark_suite
 @pytest.mark.benchmark_analysis
 @pytest.mark.parametrize("elements", [50, 500, 5000])
 def test_warping_analysis(benchmark, analysis_geometry, elements):
@@ -64,7 +64,7 @@ def test_warping_analysis(benchmark, analysis_geometry, elements):
     benchmark(warping_analysis)
 
 
-@pytest.mark.benchmark
+@pytest.mark.benchmark_suite
 @pytest.mark.benchmark_analysis
 @pytest.mark.parametrize("elements", [50, 500, 5000])
 def test_frame_analysis(benchmark, analysis_geometry, elements):
@@ -78,7 +78,7 @@ def test_frame_analysis(benchmark, analysis_geometry, elements):
     benchmark(frame_analysis)
 
 
-@pytest.mark.benchmark
+@pytest.mark.benchmark_suite
 @pytest.mark.benchmark_analysis
 @pytest.mark.parametrize("elements", [50, 500, 5000])
 def test_stress_analysis(benchmark, analysis_geometry, elements):
