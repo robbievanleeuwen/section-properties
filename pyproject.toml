@@ -48,7 +48,7 @@ Changelog = "https://github.com/robbievanleeuwen/section-properties/releases"
 
 [tool.poetry.dependencies]
 python = ">=3.9.0,<3.12"
-numpy = "^1.25.2" # numba requires numpy <1.26
+numpy = "^1.25.2"  # numba requires numpy <1.26
 scipy = "^1.11.3"
 matplotlib = "^3.8.0"
 shapely = "^2.0.1"
