@@ -52,10 +52,16 @@ exclude-contributors:
   - "robbievanleeuwen"
 
 # Custom text at start of release
-header: >
-  This release restores the top reinforcement distribution for concrete_tee_sections()
-  present in `sectionproperties` v2.1.5. It also includes some minor docs fixes, CI
-  updates and dependency updates.
+header: |
+  ## ⭐ Highlights
+
+  - Get significant performance improvements for large meshes by using the `pardiso`
+    solver, see installation docs [here](https://sectionproperties.readthedocs.io/en/stable/installation.html#installing-pardiso-solver).
+    Further performance gains with the introduction of `numba`, both thanks to @TLCFEM.
+  - Vastly increased the number of tests, including 19 extra validation tests from
+    Pilkey (2002), three of which can be found in the [examples](https://sectionproperties.readthedocs.io/en/stable/examples.html#validation).
+  - Added benchmark tests to aid performance improvements.
+  - Rhino methods are now support in python 3.10 and 3.11.
 
 template: |
   ## What's Changed
