@@ -12,10 +12,158 @@ from functools import lru_cache
 from typing import TYPE_CHECKING
 
 import numpy as np
+from numba import njit
 
 
 if TYPE_CHECKING:
     from sectionproperties.pre.pre import Material
+
+
+@njit(cache=True, nogil=True)
+def _assemble_torsion(
+    k_el: np.ndarray,
+    f_el: np.ndarray,
+    b: np.ndarray,
+    weight: float,
+    nx: float,
+    ny: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Utility function for calculating the torsion stiffness matrix and load vector.
+
+    Args:
+        k_el: Element stiffness matrix
+        f_el: Element load vector
+        b: Strain matrix
+        weight: Effective weight
+        nx: Global x-coordinate
+        ny: Global y-coordinate
+
+    Returns:
+        Torsion stiffness matrix and load vector (``k_el``, ``f_el``)
+    """
+    # calculated modulus weighted stiffness matrix and load vector
+    k_el += weight * b.transpose() @ b
+    f_el += weight * b.transpose() @ np.array([ny, -nx])
+    return k_el, f_el
+
+
+@njit(cache=True, nogil=True)
+def _shear_parameter(
+    nx: float, ny: float, ixx: float, iyy: float, ixy: float
+) -> tuple[float, float, float, float, float, float]:
+    """Utility function for calculating the shear parameters.
+
+    Args:
+        nx: Global x-coordinate
+        ny: Global y-coordinate
+        ixx: Second moment of area about the centroidal x-axis
+        iyy: Second moment of area about the centroidal y-axis
+        ixy: Second moment of area about the centroidal xy-axis
+
+    Returns:
+        Shear parameters (``r``, ``q``, ``d1``, ``d2``, ``h1``, ``h2``)
+    """
+    # determine shear parameters
+    r = nx**2 - ny**2
+    q = 2 * nx * ny
+    d1 = ixx * r - ixy * q
+    d2 = ixy * r + ixx * q
+    h1 = -ixy * r + iyy * q
+    h2 = -iyy * r - ixy * q
+    return r, q, d1, d2, h1, h2
+
+
+@njit(cache=True, nogil=True)
+def _assemble_shear_load(
+    f_psi: np.ndarray,
+    f_phi: np.ndarray,
+    b: np.ndarray,
+    n: np.ndarray,
+    weight: float,
+    nx: float,
+    ny: float,
+    ixx: float,
+    iyy: float,
+    ixy: float,
+    nu: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Utility function for calculating the shear load vectors.
+
+    Args:
+        f_psi: Values of the psi shear function at the element nodes
+        f_phi: Values of the phi shear function at the element nodes
+        b: Strain matrix
+        n: Shape function
+        weight: Effective weight
+        nx: Global x-coordinate
+        ny: Global y-coordinate
+        ixx: Second moment of area about the centroidal x-axis
+        iyy: Second moment of area about the centroidal y-axis
+        ixy: Second moment of area about the centroidal xy-axis
+        nu: Poisson's ratio
+
+    Returns:
+        Shear load vectors (``f_psi``, ``f_phi``)
+    """
+    r, q, d1, d2, h1, h2 = _shear_parameter(nx, ny, ixx, iyy, ixy)
+
+    f_psi += weight * (
+        nu / 2 * b.transpose() @ np.array([d1, d2])
+        + 2 * (1 + nu) * n * (ixx * nx - ixy * ny)
+    )
+    f_phi += weight * (
+        nu / 2 * b.transpose() @ np.array([h1, h2])
+        + 2 * (1 + nu) * n * (iyy * ny - ixy * nx)
+    )
+    return f_psi, f_phi
+
+
+@njit(cache=True, nogil=True)
+def _assemble_shear_coefficients(
+    kappa_x: float,
+    kappa_y: float,
+    kappa_xy: float,
+    psi_shear: np.ndarray,
+    phi_shear: np.ndarray,
+    b: np.ndarray,
+    weight: float,
+    nx: float,
+    ny: float,
+    ixx: float,
+    iyy: float,
+    ixy: float,
+    nu: float,
+) -> tuple[float, float, float]:
+    """Utility function for calculating the shear deformation coefficients.
+
+    Args:
+        kappa_x: Shear deformation coefficient about the x-axis
+        kappa_y: Shear deformation coefficient about the y-axis
+        kappa_xy: Shear deformation coefficient about the xy-axis
+        psi_shear: Values of the psi shear function at the element nodes
+        phi_shear: Values of the phi shear function at the element nodes
+        b: Strain matrix
+        weight: Effective weight
+        nx: Global x-coordinate
+        ny: Global y-coordinate
+        ixx: Second moment of area about the centroidal x-axis
+        iyy: Second moment of area about the centroidal y-axis
+        ixy: Second moment of area about the centroidal xy-axis
+        nu: Poisson's ratio
+
+    Returns:
+        Shear deformation coefficients (``kappa_x``, ``kappa_y``, ``kappa_xy``)
+
+    """
+    r, q, d1, d2, h1, h2 = _shear_parameter(nx, ny, ixx, iyy, ixy)
+
+    b_psi_d = b @ psi_shear - nu / 2 * np.array([d1, d2])  # 2x1
+    b_phi_h = b @ phi_shear - nu / 2 * np.array([h1, h2])  # 2x1
+
+    kappa_x += weight * b_psi_d.dot(b_psi_d)  # 6.133
+    kappa_y += weight * b_phi_h.dot(b_phi_h)  # 6.137
+    kappa_xy += weight * b_psi_d.dot(b_phi_h)  # 6.140
+    return kappa_x, kappa_y, kappa_xy
 
 
 @dataclass
@@ -99,7 +247,7 @@ class Tri6:
         for gp in gps:
             # determine shape function, shape function derivative,
             # jacobian and global coordinates
-            n, _, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
+            _, _, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
             weight = gp[0] * j
 
@@ -138,13 +286,12 @@ class Tri6:
         for gp in gps:
             # determine shape function, shape function derivative,
             # jacobian and global coordinates
-            n, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
+            _, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
             weight = gp[0] * j * self.material.elastic_modulus
 
             # calculated modulus weighted stiffness matrix and load vector
-            k_el += weight * b.transpose() @ b
-            f_el += weight * b.transpose() @ np.array([ny, -nx])
+            k_el, f_el = _assemble_torsion(k_el, f_el, b, weight, nx, ny)
 
         return k_el, f_el
 
@@ -180,21 +327,18 @@ class Tri6:
 
             weight = gp[0] * j * self.material.elastic_modulus
 
-            # determine shear parameters
-            r = nx**2 - ny**2
-            q = 2 * nx * ny
-            d1 = ixx * r - ixy * q
-            d2 = ixy * r + ixx * q
-            h1 = -ixy * r + iyy * q
-            h2 = -iyy * r - ixy * q
-
-            f_psi += weight * (
-                nu / 2 * b.transpose() @ np.array([d1, d2])
-                + 2 * (1 + nu) * n * (ixx * nx - ixy * ny)
-            )
-            f_phi += weight * (
-                nu / 2 * b.transpose() @ np.array([h1, h2])
-                + 2 * (1 + nu) * n * (iyy * ny - ixy * nx)
+            f_psi, f_phi = _assemble_shear_load(
+                f_psi,
+                f_phi,
+                b,
+                n,
+                weight,
+                nx,
+                ny,
+                ixx,
+                iyy,
+                ixy,
+                nu,
             )
 
         return f_psi, f_phi
@@ -281,24 +425,26 @@ class Tri6:
         for gp in gps:
             # determine shape function, shape function derivative,
             # jacobian and global coordinates
-            n, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
+            _, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
             weight = gp[0] * j * self.material.elastic_modulus
 
             # determine shear parameters
-            r = nx**2 - ny**2
-            q = 2 * nx * ny
-            d1 = ixx * r - ixy * q
-            d2 = ixy * r + ixx * q
-            h1 = -ixy * r + iyy * q
-            h2 = -iyy * r - ixy * q
-
-            b_psi_d = b @ psi_shear - nu / 2 * np.array([d1, d2])  # 2x1
-            b_phi_h = b @ phi_shear - nu / 2 * np.array([h1, h2])  # 2x1
-
-            kappa_x += weight * b_psi_d.dot(b_psi_d)  # 6.133
-            kappa_y += weight * b_phi_h.dot(b_phi_h)  # 6.137
-            kappa_xy += weight * b_psi_d.dot(b_phi_h)  # 6.140
+            kappa_x, kappa_y, kappa_xy = _assemble_shear_coefficients(
+                kappa_x,
+                kappa_y,
+                kappa_xy,
+                psi_shear,
+                phi_shear,
+                b,
+                weight,
+                nx,
+                ny,
+                ixx,
+                iyy,
+                ixy,
+                nu,
+            )
 
         return kappa_x, kappa_y, kappa_xy
 
@@ -327,7 +473,7 @@ class Tri6:
         for gp in gps:
             # determine shape function,
             # jacobian and global coordinates
-            n, _, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
+            _, _, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
             weight = gp[0] * j * self.material.elastic_modulus
 
@@ -417,20 +563,22 @@ class Tri6:
             :math:`\sigma_{zy,vx}`, :math:`\sigma_{zx,vy}`,
             :math:`\sigma_{zy,vy}`, :math:`w_i`)
         """
+        n_points: int = 6
+
         # calculate axial stress
-        sig_zz_n = n * np.ones(6) * self.material.elastic_modulus / ea
+        sig_zz_n = n * np.ones(n_points) * self.material.elastic_modulus / ea
 
         # initialise stresses at the gauss points
-        sig_zz_mxx_gp = np.zeros((6, 1))
-        sig_zz_myy_gp = np.zeros((6, 1))
-        sig_zz_m11_gp = np.zeros((6, 1))
-        sig_zz_m22_gp = np.zeros((6, 1))
-        sig_zxy_mzz_gp = np.zeros((6, 2))
-        sig_zxy_vx_gp = np.zeros((6, 2))
-        sig_zxy_vy_gp = np.zeros((6, 2))
+        sig_zz_mxx_gp = np.zeros(n_points)
+        sig_zz_myy_gp = np.zeros(n_points)
+        sig_zz_m11_gp = np.zeros(n_points)
+        sig_zz_m22_gp = np.zeros(n_points)
+        sig_zxy_mzz_gp = np.zeros((n_points, 2))
+        sig_zxy_vx_gp = np.zeros((n_points, 2))
+        sig_zxy_vy_gp = np.zeros((n_points, 2))
 
         # Gauss points for 6 point Gaussian integration
-        gps = gauss_points(n=6)
+        gps = gauss_points(n=n_points)
 
         for i, gp in enumerate(gps):
             # determine x and y positions with respect to the centroidal axis
@@ -440,30 +588,25 @@ class Tri6:
 
             # determine shape function, shape function derivative,
             # jacobian and global coordinates
-            n_shape, b, _, nx, ny = shape_function(coords=coords_c, gauss_point=gp)
+            _, b, _, nx, ny = shape_function(coords=coords_c, gauss_point=gp)
 
             # determine 11 and 22 position at Gauss point
             nx_11, ny_22 = principal_coordinate(phi=phi, x=nx, y=ny)
 
             # determine shear parameters
-            r = nx**2 - ny**2
-            q = 2 * nx * ny
-            d1 = ixx * r - ixy * q
-            d2 = ixy * r + ixx * q
-            h1 = -ixy * r + iyy * q
-            h2 = -iyy * r - ixy * q
+            r, q, d1, d2, h1, h2 = _shear_parameter(nx, ny, ixx, iyy, ixy)
 
             # calculate element stresses
-            sig_zz_mxx_gp[i, :] = self.material.elastic_modulus * (
+            sig_zz_mxx_gp[i] = self.material.elastic_modulus * (
                 -(ixy * mxx) / (ixx * iyy - ixy**2) * nx
                 + (iyy * mxx) / (ixx * iyy - ixy**2) * ny
             )
-            sig_zz_myy_gp[i, :] = self.material.elastic_modulus * (
+            sig_zz_myy_gp[i] = self.material.elastic_modulus * (
                 -(ixx * myy) / (ixx * iyy - ixy**2) * nx
                 + (ixy * myy) / (ixx * iyy - ixy**2) * ny
             )
-            sig_zz_m11_gp[i, :] = self.material.elastic_modulus * m11 / i11 * ny_22
-            sig_zz_m22_gp[i, :] = self.material.elastic_modulus * -m22 / i22 * nx_11
+            sig_zz_m11_gp[i] = self.material.elastic_modulus * m11 / i11 * ny_22
+            sig_zz_m22_gp[i] = self.material.elastic_modulus * -m22 / i22 * nx_11
 
             if mzz != 0:
                 sig_zxy_mzz_gp[i, :] = (
@@ -490,10 +633,10 @@ class Tri6:
                 )
 
         # extrapolate results to nodes
-        sig_zz_mxx = extrapolate_to_nodes(w=sig_zz_mxx_gp[:, 0])
-        sig_zz_myy = extrapolate_to_nodes(w=sig_zz_myy_gp[:, 0])
-        sig_zz_m11 = extrapolate_to_nodes(w=sig_zz_m11_gp[:, 0])
-        sig_zz_m22 = extrapolate_to_nodes(w=sig_zz_m22_gp[:, 0])
+        sig_zz_mxx = extrapolate_to_nodes(w=sig_zz_mxx_gp)
+        sig_zz_myy = extrapolate_to_nodes(w=sig_zz_myy_gp)
+        sig_zz_m11 = extrapolate_to_nodes(w=sig_zz_m11_gp)
+        sig_zz_m22 = extrapolate_to_nodes(w=sig_zz_m22_gp)
         sig_zx_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 0])
         sig_zy_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 1])
         sig_zx_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 0])
@@ -788,10 +931,11 @@ def gauss_points(*, n: int) -> np.ndarray:
     raise ValueError("n must be 1, 3, 4 or 6.")
 
 
-tmp_array = np.array([[0, 1, 0], [0, 0, 1]])
+tmp_array = np.array([[0, 1, 0], [0, 0, 1]], dtype=np.double)
 
 
 @lru_cache(maxsize=None)
+@njit(cache=True, nogil=True)
 def __shape_function_cached(
     coords: tuple[float, ...],
     gauss_point: tuple[float, float, float],
@@ -822,7 +966,7 @@ def __shape_function_cached(
             4 * xi * zeta,
             4 * eta * zeta,
         ],
-        dtype=float,
+        dtype=np.double,
     )
 
     # derivatives of the shape functions wrt the isoparametric co-ordinates
@@ -832,7 +976,7 @@ def __shape_function_cached(
             [0, 4 * xi - 1, 0, 4 * eta, 4 * zeta, 0],
             [0, 0, 4 * zeta - 1, 0, 4 * xi, 4 * eta],
         ],
-        dtype=float,
+        dtype=np.double,
     )
 
     coords_array = np.array(coords).reshape((2, 6))
@@ -879,6 +1023,7 @@ def shape_function(
 
 
 @lru_cache(maxsize=None)
+@njit(cache=True, nogil=True)
 def shape_function_only(p: tuple[float, float, float]) -> np.ndarray:
     """The values of the ``Tri6`` shape function at a point ``p``.
 
@@ -902,6 +1047,61 @@ def shape_function_only(p: tuple[float, float, float]) -> np.ndarray:
     )
 
 
+h_inv = np.array(
+    [
+        [
+            1.87365927351160,
+            0.138559587411935,
+            0.138559587411935,
+            -0.638559587411936,
+            0.126340726488397,
+            -0.638559587411935,
+        ],
+        [
+            0.138559587411935,
+            1.87365927351160,
+            0.138559587411935,
+            -0.638559587411935,
+            -0.638559587411935,
+            0.126340726488397,
+        ],
+        [
+            0.138559587411935,
+            0.138559587411935,
+            1.87365927351160,
+            0.126340726488396,
+            -0.638559587411935,
+            -0.638559587411935,
+        ],
+        [
+            0.0749010751157440,
+            0.0749010751157440,
+            0.180053080734478,
+            1.36051633430762,
+            -0.345185782636792,
+            -0.345185782636792,
+        ],
+        [
+            0.180053080734478,
+            0.0749010751157440,
+            0.0749010751157440,
+            -0.345185782636792,
+            1.36051633430762,
+            -0.345185782636792,
+        ],
+        [
+            0.0749010751157440,
+            0.180053080734478,
+            0.0749010751157440,
+            -0.345185782636792,
+            -0.345185782636792,
+            1.36051633430762,
+        ],
+    ]
+)
+
+
+@njit(cache=True, nogil=True)
 def extrapolate_to_nodes(w: np.ndarray) -> np.ndarray:
     """Extrapolates results at six Gauss points to the six nodes of a ``Tri6`` element.
 
@@ -911,62 +1111,10 @@ def extrapolate_to_nodes(w: np.ndarray) -> np.ndarray:
     Returns:
         Extrapolated nodal values at the six nodes, of size ``[1 x 6]``
     """
-    h_inv = np.array(
-        [
-            [
-                1.87365927351160,
-                0.138559587411935,
-                0.138559587411935,
-                -0.638559587411936,
-                0.126340726488397,
-                -0.638559587411935,
-            ],
-            [
-                0.138559587411935,
-                1.87365927351160,
-                0.138559587411935,
-                -0.638559587411935,
-                -0.638559587411935,
-                0.126340726488397,
-            ],
-            [
-                0.138559587411935,
-                0.138559587411935,
-                1.87365927351160,
-                0.126340726488396,
-                -0.638559587411935,
-                -0.638559587411935,
-            ],
-            [
-                0.0749010751157440,
-                0.0749010751157440,
-                0.180053080734478,
-                1.36051633430762,
-                -0.345185782636792,
-                -0.345185782636792,
-            ],
-            [
-                0.180053080734478,
-                0.0749010751157440,
-                0.0749010751157440,
-                -0.345185782636792,
-                1.36051633430762,
-                -0.345185782636792,
-            ],
-            [
-                0.0749010751157440,
-                0.180053080734478,
-                0.0749010751157440,
-                -0.345185782636792,
-                -0.345185782636792,
-                1.36051633430762,
-            ],
-        ]
-    )
-
-    return h_inv.dot(w)
+    return h_inv @ w
 
 
+@njit(cache=True, nogil=True)
 def principal_coordinate(
     phi: float,
     x: float,
@@ -989,6 +1137,7 @@ def principal_coordinate(
     return x * cos_phi + y * sin_phi, y * cos_phi - x * sin_phi
 
 
+@njit(cache=True, nogil=True)
 def global_coordinate(
     phi: float,
     x11: float,
@@ -1011,6 +1160,7 @@ def global_coordinate(
     return x11 * cos_phi - y22 * sin_phi, x11 * sin_phi + y22 * cos_phi
 
 
+@njit(cache=True, nogil=True)
 def point_above_line(
     u: np.ndarray,
     px: float,
