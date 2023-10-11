@@ -149,7 +149,9 @@ def tests(session: Session) -> None:
     )
 
     # install relevant tooling
-    session.install("coverage[toml]", "pytest", "pygments", "pytest-check")
+    session.install(
+        "coverage[toml]", "pytest", "pygments", "pytest-check", "pytest-benchmark"
+    )
 
     try:
         session.run(
