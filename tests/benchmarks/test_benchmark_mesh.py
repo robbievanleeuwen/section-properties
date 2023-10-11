@@ -3,7 +3,7 @@
 import pytest
 
 
-@pytest.mark.benchmark
+@pytest.mark.benchmark_suite
 @pytest.mark.benchmark_mesh
 @pytest.mark.parametrize("ms", [0.0, 50.0, 5.0])
 def test_create_simple_mesh(benchmark, rect_geom, ms):
@@ -12,7 +12,7 @@ def test_create_simple_mesh(benchmark, rect_geom, ms):
     benchmark(geom.create_mesh, ms)
 
 
-@pytest.mark.benchmark
+@pytest.mark.benchmark_suite
 @pytest.mark.benchmark_mesh
 @pytest.mark.parametrize("ms", [0.0, 1.0, 0.3])
 def test_create_intermediate_mesh(benchmark, chs_geom, ms):
@@ -21,7 +21,7 @@ def test_create_intermediate_mesh(benchmark, chs_geom, ms):
     benchmark(geom.create_mesh, ms)
 
 
-@pytest.mark.benchmark
+@pytest.mark.benchmark_suite
 @pytest.mark.benchmark_mesh
 @pytest.mark.parametrize("ms", [0.0, 100.0, 20.0])
 def test_create_complex_mesh(benchmark, concrete_column_with_hole, ms):

@@ -58,11 +58,11 @@ click = "^8.1.7"
 more-itertools = "^10.1.0"
 numba = "^0.58.0"
 cad-to-shapely = { version = "^0.3.1", optional = true }
-rhino-shapley-interop = { version = "^0.0.4", python = ">=3.9.0,<3.10", optional = true }
-rhino3dm = { version = "==8.0.0b2", python = ">=3.9.0,<3.10", optional = true }
+rhino-shapley-interop = { version = "^0.0.4", optional = true }
+rhino3dm = { version = "==8.0.0b3", optional = true }
 pypardiso = { version = "^0.4.2", optional = true }
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
 coverage = { extras = ["toml"], version = "^7.3.2" }
 darglint = "^1.8.1"
@@ -108,6 +108,7 @@ tests = ["tests", "*/tests"]
 [tool.coverage.run]
 branch = true
 source = ["sectionproperties", "tests"]
+omit = ["*/benchmarks/*"]
 
 [tool.coverage.report]
 show_missing = true
@@ -118,6 +119,7 @@ lines_after_imports = 2
 
 [tool.pytest.ini_options]
 markers = [
+    "benchmark_suite: entire benchmark test suite (select with '-m benchmark_suite')",
     "benchmark_geom: geometry benchmark tests (select with '-m benchmark_geom')",
     "benchmark_mesh: mesh benchmark tests (select with '-m benchmark_mesh')",
     "benchmark_analysis: analysis benchmark tests (select with '-m benchmark_analysis')",

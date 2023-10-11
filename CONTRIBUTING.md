@@ -83,7 +83,7 @@ poetry install
 Install with the `rhino` and `cad` extras:
 
 ```shell
-poetry install --all-extras
+poetry install --extras "dxf rhino"
 ```
 
 You can now run an interactive Python session, or the command-line interface:

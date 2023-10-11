@@ -3083,24 +3083,26 @@ dev = ["Shapely (==1.8.0)", "black", "flake8", "isort", "matplotlib", "numpy (==
 
 [[package]]
 name = "rhino3dm"
-version = "8.0.0b2"
+version = "8.0.0b3"
 description = "Python library based on OpenNURBS with a RhinoCommon style"
 optional = true
 python-versions = "*"
 files = [
-    {file = "rhino3dm-8.0.0b2-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:a6c489e437f3f0b01b9e8e65279b1b5034ee2fba9eebd66fb768f1ed7ecd3a20"},
-    {file = "rhino3dm-8.0.0b2-cp310-cp310-win_amd64.whl", hash = "sha256:d38cba0936d11daa29971a8673d3a73943baaf68ff6dada677dcead776143a40"},
-    {file = "rhino3dm-8.0.0b2-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:3acbad0f786dce24aed81cc32260aca476a87687fafc8bb19aaa60b89de8fe96"},
-    {file = "rhino3dm-8.0.0b2-cp311-cp311-win_amd64.whl", hash = "sha256:373cc750cb2da540eaab10da186e23bddfc9c36e1e66804eb78fbc84478d14db"},
-    {file = "rhino3dm-8.0.0b2-cp37-cp37m-macosx_11_0_x86_64.whl", hash = "sha256:d9739559084afc489f38c5577871315d46db0b910ac9032373433975a3d0a062"},
-    {file = "rhino3dm-8.0.0b2-cp37-cp37m-win_amd64.whl", hash = "sha256:0fc38de1771ee5cd066b93c89d09dc0bed1f2a0685a1b34bc02bccbe741aa6c0"},
-    {file = "rhino3dm-8.0.0b2-cp38-cp38-macosx_11_0_x86_64.whl", hash = "sha256:9e69b21527294551418683b7bf1836d4432f70a3ada9211df861ac249b1cb78d"},
-    {file = "rhino3dm-8.0.0b2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:90b8711ff0aaf462aec4e4bddec892dc64390f3af213d5a0c292d38adf527dcd"},
-    {file = "rhino3dm-8.0.0b2-cp38-cp38-win_amd64.whl", hash = "sha256:56280cfbf3bc2e2e70e92bda264f9553bb34037e6f48749d9c8466a5c76bf061"},
-    {file = "rhino3dm-8.0.0b2-cp39-cp39-macosx_11_0_x86_64.whl", hash = "sha256:ee636135ace4a3b6ffc36808fe4ccdebc8b6bc4894b52cca91c5a21779aacb6e"},
-    {file = "rhino3dm-8.0.0b2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a741766ecc7f4d10e3001f8a2ab3d3d224503de0a130b9ea80fe0c437bb6a8ec"},
-    {file = "rhino3dm-8.0.0b2-cp39-cp39-win_amd64.whl", hash = "sha256:b98c0935c4900c2c56ff2af03b7191ff36e464703622837ac719597201eb7d35"},
-    {file = "rhino3dm-8.0.0b2.tar.gz", hash = "sha256:934dfa02c48f9c13951b2961bbda39dce099c88c62c93eaac98ac36f85f0a419"},
+    {file = "rhino3dm-8.0.0b3-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:8ce7eadf037909e1c42c36f64559bfca61a51a1d1bc5a06b6576446beb62d038"},
+    {file = "rhino3dm-8.0.0b3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cf8ea5e97cc8aa51cf54884c0efaa054348b6cfd97cf099fc228812e23ba089c"},
+    {file = "rhino3dm-8.0.0b3-cp310-cp310-win_amd64.whl", hash = "sha256:eabdcc357cc5400a1bf4c7096980ee233291995256f1745eb7b046e3795abc0f"},
+    {file = "rhino3dm-8.0.0b3-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:8373a63ee4af8c4de6d2d6cc8e89d852623385d9989ba983d13626b9deeffe08"},
+    {file = "rhino3dm-8.0.0b3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:72b3a7a72a21b0cfa77386454a0a7bff56aafca57b926de6500e49e46dffde56"},
+    {file = "rhino3dm-8.0.0b3-cp311-cp311-win_amd64.whl", hash = "sha256:9e8f8727ccd444e4e30161e2b5ac3472c1a0bf29ca779bf343a94ea36942e0c0"},
+    {file = "rhino3dm-8.0.0b3-cp37-cp37m-macosx_11_0_x86_64.whl", hash = "sha256:58ab7c87451880d047fdf55801e57b3888a506b03c59882cf583d60fc41d005d"},
+    {file = "rhino3dm-8.0.0b3-cp37-cp37m-win_amd64.whl", hash = "sha256:62e3eb71742dac2b7786527cd38df39902bb7745d76b83782f984d05734e5685"},
+    {file = "rhino3dm-8.0.0b3-cp38-cp38-macosx_11_0_x86_64.whl", hash = "sha256:abfb8350a5776d7dc74ca62b6b02095024966e0b34f849fe2d40e313ac07c777"},
+    {file = "rhino3dm-8.0.0b3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2a6dd819a8f16cda66089c73febd715643a8d796492732cbd7283865e5d323ce"},
+    {file = "rhino3dm-8.0.0b3-cp38-cp38-win_amd64.whl", hash = "sha256:8c408d001fd77ffc40e71656db17eb1a32f4042950e9eabb5994ab636403fbea"},
+    {file = "rhino3dm-8.0.0b3-cp39-cp39-macosx_11_0_x86_64.whl", hash = "sha256:312f8bc96dc430bafd23fceb973a4698685cee3272ba866c005897b5e8b2a613"},
+    {file = "rhino3dm-8.0.0b3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d0f597ffa1997b3631842d7c1a9a46b345b30461908df45761bd5d29c0cdd9c5"},
+    {file = "rhino3dm-8.0.0b3-cp39-cp39-win_amd64.whl", hash = "sha256:0c4b84354b0384b60b85da9b05f6ffbfe0816596601334a647f406aaaacc48e3"},
+    {file = "rhino3dm-8.0.0b3.tar.gz", hash = "sha256:be3290e8198d2af25ad8807de99919a27674c0827adad3c36689810f9558c301"},
 ]
 
 [[package]]
@@ -4043,4 +4045,4 @@ rhino = ["rhino-shapley-interop", "rhino3dm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9.0,<3.12"
-content-hash = "5e52fcdf9e1a59101071bde17d6938f0736a8ed5ac69c0b1992b8286e8386aaa"
+content-hash = "52426e22d8d53cfb7d2f531b7c31874c9dc5b19ca297cd6f6b032addeb55941b"

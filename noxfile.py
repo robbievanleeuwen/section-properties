@@ -22,7 +22,7 @@ except ImportError:
 
 
 package = "sectionproperties"
-python_versions = ["3.9", "3.11", "3.10"]
+python_versions = ["3.11", "3.10", "3.9"]
 nox.needs_version = ">= 2021.6.6"
 nox.options.sessions = (
     "pre-commit",
@@ -144,11 +144,9 @@ def tests(session: Session) -> None:
     Args:
         session: Nox session
     """
-    # provide only dxf dependencies if python version is 3.10 or 3.11
-    if session.python == "3.9":
-        session.run_always("poetry", "install", "--all-extras", external=True)
-    else:
-        session.run_always("poetry", "install", "--extras", "dxf", external=True)
+    session.run_always(
+        "poetry", "install", "--only", "main", "--extras", "dxf rhino", external=True
+    )
 
     # install relevant tooling
     session.install("coverage[toml]", "pytest", "pygments", "pytest-check")
@@ -161,7 +159,7 @@ def tests(session: Session) -> None:
             "-m",
             "pytest",
             "-m",
-            "not benchmark",
+            "not benchmark_suite",
             *session.posargs,
         )
     finally:
@@ -186,7 +184,7 @@ def coverage(session: Session) -> None:
     session.run("coverage", *args)
 
 
-@session(name="docs-build", python=python_versions[0])
+@session(name="docs-build", python=python_versions[1])
 def docs_build(session: Session) -> None:
     """Build the documentation.
 
@@ -197,7 +195,9 @@ def docs_build(session: Session) -> None:
     if not session.posargs and "FORCE_COLOR" in os.environ:
         args.insert(0, "--color")
 
-    session.run_always("poetry", "install", "--all-extras", external=True)
+    session.run_always(
+        "poetry", "install", "--only", "main", "--extras", "dxf rhino", external=True
+    )
     session.install(
         "furo",
         "ipykernel",
@@ -218,7 +218,7 @@ def docs_build(session: Session) -> None:
     session.run("sphinx-build", *args)
 
 
-@session(python=python_versions[0])
+@session(python=python_versions[1])
 def docs(session: Session) -> None:
     """Build and serve the documentation with live reloading on file changes.
 
@@ -226,7 +226,9 @@ def docs(session: Session) -> None:
         session: Nox session
     """
     args = session.posargs or ["--open-browser", "docs", "docs/_build"]
-    session.run_always("poetry", "install", "--all-extras", external=True)
+    session.run_always(
+        "poetry", "install", "--only", "main", "--extras", "dxf rhino", external=True
+    )
     session.install(
         "furo",
         "ipykernel",
