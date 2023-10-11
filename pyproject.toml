@@ -115,6 +115,7 @@ lines_after_imports = 2
 
 [tool.pytest.ini_options]
 markers = [
+    "benchmark_suite: entire benchmark test suite (select with '-m benchmark_suite')",
     "benchmark_geom: geometry benchmark tests (select with '-m benchmark_geom')",
     "benchmark_mesh: mesh benchmark tests (select with '-m benchmark_mesh')",
     "benchmark_analysis: analysis benchmark tests (select with '-m benchmark_analysis')",

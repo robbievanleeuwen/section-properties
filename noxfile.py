@@ -149,9 +149,7 @@ def tests(session: Session) -> None:
     )
 
     # install relevant tooling
-    session.install(
-        "coverage[toml]", "pytest", "pygments", "pytest-check", "pytest-benchmark"
-    )
+    session.install("coverage[toml]", "pytest", "pygments", "pytest-check")
 
     try:
         session.run(
@@ -161,7 +159,7 @@ def tests(session: Session) -> None:
             "-m",
             "pytest",
             "-m",
-            "not benchmark",
+            "not benchmark_suite",
             *session.posargs,
         )
     finally:
