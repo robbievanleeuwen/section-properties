@@ -563,16 +563,16 @@ class Tri6:
             :math:`\sigma_{zy,vx}`, :math:`\sigma_{zx,vy}`,
             :math:`\sigma_{zy,vy}`, :math:`w_i`)
         """
-        # calculate axial stress
-        sig_zz_n = n * np.ones(6) * self.material.elastic_modulus / ea
-
         n_points: int = 6
 
+        # calculate axial stress
+        sig_zz_n = n * np.ones(n_points) * self.material.elastic_modulus / ea
+
         # initialise stresses at the gauss points
-        sig_zz_mxx_gp = np.zeros((n_points, 1))
-        sig_zz_myy_gp = np.zeros((n_points, 1))
-        sig_zz_m11_gp = np.zeros((n_points, 1))
-        sig_zz_m22_gp = np.zeros((n_points, 1))
+        sig_zz_mxx_gp = np.zeros(n_points)
+        sig_zz_myy_gp = np.zeros(n_points)
+        sig_zz_m11_gp = np.zeros(n_points)
+        sig_zz_m22_gp = np.zeros(n_points)
         sig_zxy_mzz_gp = np.zeros((n_points, 2))
         sig_zxy_vx_gp = np.zeros((n_points, 2))
         sig_zxy_vy_gp = np.zeros((n_points, 2))
@@ -597,16 +597,16 @@ class Tri6:
             r, q, d1, d2, h1, h2 = _shear_parameter(nx, ny, ixx, iyy, ixy)
 
             # calculate element stresses
-            sig_zz_mxx_gp[i, :] = self.material.elastic_modulus * (
+            sig_zz_mxx_gp[i] = self.material.elastic_modulus * (
                 -(ixy * mxx) / (ixx * iyy - ixy**2) * nx
                 + (iyy * mxx) / (ixx * iyy - ixy**2) * ny
             )
-            sig_zz_myy_gp[i, :] = self.material.elastic_modulus * (
+            sig_zz_myy_gp[i] = self.material.elastic_modulus * (
                 -(ixx * myy) / (ixx * iyy - ixy**2) * nx
                 + (ixy * myy) / (ixx * iyy - ixy**2) * ny
             )
-            sig_zz_m11_gp[i, :] = self.material.elastic_modulus * m11 / i11 * ny_22
-            sig_zz_m22_gp[i, :] = self.material.elastic_modulus * -m22 / i22 * nx_11
+            sig_zz_m11_gp[i] = self.material.elastic_modulus * m11 / i11 * ny_22
+            sig_zz_m22_gp[i] = self.material.elastic_modulus * -m22 / i22 * nx_11
 
             if mzz != 0:
                 sig_zxy_mzz_gp[i, :] = (
@@ -633,10 +633,10 @@ class Tri6:
                 )
 
         # extrapolate results to nodes
-        sig_zz_mxx = extrapolate_to_nodes(w=sig_zz_mxx_gp[:, 0])
-        sig_zz_myy = extrapolate_to_nodes(w=sig_zz_myy_gp[:, 0])
-        sig_zz_m11 = extrapolate_to_nodes(w=sig_zz_m11_gp[:, 0])
-        sig_zz_m22 = extrapolate_to_nodes(w=sig_zz_m22_gp[:, 0])
+        sig_zz_mxx = extrapolate_to_nodes(w=sig_zz_mxx_gp)
+        sig_zz_myy = extrapolate_to_nodes(w=sig_zz_myy_gp)
+        sig_zz_m11 = extrapolate_to_nodes(w=sig_zz_m11_gp)
+        sig_zz_m22 = extrapolate_to_nodes(w=sig_zz_m22_gp)
         sig_zx_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 0])
         sig_zy_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 1])
         sig_zx_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 0])
@@ -1111,7 +1111,7 @@ def extrapolate_to_nodes(w: np.ndarray) -> np.ndarray:
     Returns:
         Extrapolated nodal values at the six nodes, of size ``[1 x 6]``
     """
-    return h_inv.dot(w)
+    return h_inv @ w
 
 
 @njit(cache=True, nogil=True)

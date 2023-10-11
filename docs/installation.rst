@@ -32,7 +32,7 @@ Installing ``PARDISO`` Solver
 
 The default sparse solver used in ``scipy`` is ``SuperLU``.
 It performs okay for small matrices but appears to be very slow for larger matrices.
-The ``PARDISO`` solver is a much faster alternative, but it requires the installation of the ``MKL`` library, which takes a lot of disk space.
+The ``PARDISO`` solver is a much faster alternative (see `pypadiso <https://github.com/haasad/PyPardisoProject>`_), but it requires the installation of the ``MKL`` library, which takes a lot of disk space.
 
 If you do not have a disk space constraint, you can use the ``PARDISO`` solver by:
 
