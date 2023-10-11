@@ -184,7 +184,7 @@ def coverage(session: Session) -> None:
     session.run("coverage", *args)
 
 
-@session(name="docs-build", python=python_versions[0])
+@session(name="docs-build", python=python_versions[1])
 def docs_build(session: Session) -> None:
     """Build the documentation.
 
@@ -218,7 +218,7 @@ def docs_build(session: Session) -> None:
     session.run("sphinx-build", *args)
 
 
-@session(python=python_versions[0])
+@session(python=python_versions[1])
 def docs(session: Session) -> None:
     """Build and serve the documentation with live reloading on file changes.
 
