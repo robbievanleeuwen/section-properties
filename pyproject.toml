@@ -105,6 +105,7 @@ tests = ["tests", "*/tests"]
 [tool.coverage.run]
 branch = true
 source = ["sectionproperties", "tests"]
+omit = ["*/benchmarks/*"]
 
 [tool.coverage.report]
 show_missing = true

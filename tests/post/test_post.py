@@ -58,6 +58,7 @@ def test_save_plot(example_section, tmp_path):
     d.mkdir()
 
     sec.plot_mesh(filename=d / "fig.png")
+    plt.close("all")
 
 
 def test_supplied_axis(example_section):
@@ -66,10 +67,14 @@ def test_supplied_axis(example_section):
     _, ax = plt.subplots()
 
     sec.plot_mesh(ax=ax, render=False)
+    plt.close("all")
     sec.plot_mesh(nrows=2, axis_index=1, render=False)
+    plt.close("all")
 
     with pytest.raises(ValueError, match="is not compatible"):
-        sec.plot_mesh(nrows=2, ncols=2, axis_index=5)
+        sec.plot_mesh(nrows=2, ncols=2, axis_index=5, render=False)
+
+    plt.close("all")
 
 
 def test_plot_centroids(example_section):
@@ -77,6 +82,7 @@ def test_plot_centroids(example_section):
     sec = example_section
     sec.calculate_geometric_properties()
     sec.plot_centroids(render=False)
+    plt.close("all")
 
 
 def test_print_results(example_section):
