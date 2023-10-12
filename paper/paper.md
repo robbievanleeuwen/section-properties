@@ -60,12 +60,13 @@ complex modelling problem of composite, arbitrary geometric and warping analyses
 
 # Implementation
 
-`sectionproperties` harnesses the power of @shapely to streamline geometry generation,
-and @triangle (a python port of [@shewchuck]) to produce a triangular mesh of six-noded
-quadratic elements. The finite element method is used to solve for the geometric and
-warping properties, the latter involving the solution of partial differential equations
-and boundary value problems [@pilkey]. For example, the Saint-Venant torsion constant
-($J$) is obtained by solving for the warping function, $\omega$ [@pilkey]:
+`sectionproperties` harnesses the power of Shapely [@shapely] to streamline geometry
+generation, and triangle [@triangle] (a python port of Triangle [@shewchuck]) to produce
+a triangular mesh of six-noded quadratic elements. The finite element method is used to
+solve for the geometric and warping properties, the latter involving the solution of
+partial differential equations and boundary value problems [@pilkey]. For example, the
+Saint-Venant torsion constant ($J$) is obtained by solving for the warping function,
+$\omega$ [@pilkey]:
 
 $$
 \nabla^2 \omega = 0
@@ -87,7 +88,10 @@ $$
 where the stiffness matrix and load vector at the element level are defined as:
 
 $$
-\textbf{k}^e = \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T} \textbf{B}_i J_e \\
+\textbf{k}^e = \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T} \textbf{B}_i J_e
+$$
+
+$$
 \textbf{f}^e = \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T}
 \begin{bmatrix}
   \textbf{N}_i \textbf{y}_e \\
