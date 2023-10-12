@@ -79,10 +79,13 @@ For a quick reference, the following citation commands can be used:
 # Figures
 
 Figures can be included like this:
-![Caption for example figure.\label{fig:example}](figures/arbitrary-section.png)
+
+![Caption for example figure.\label{fig:example}](figures/arbitrary-section.png){ width=50% }
+
 and referenced from text using \autoref{fig:example}.
 
 Figure sizes can be customized by adding an optional second parameter:
+
 ![Caption for example figure.](figures/arbitrary-section.png){ width=20% }
 
 # Acknowledgements
