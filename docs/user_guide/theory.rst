@@ -531,7 +531,7 @@ Applying numerical integration to the stiffness matrix and load vector results i
 following expressions:
 
 .. math::
-  \textbf{k}^e &= \sum_{i=1}^3 w_i \textbf{B}_i^{\rm T} \textbf{B}_i J_e \\
+  \textbf{k}^e &= \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T} \textbf{B}_i J_e \\
   \textbf{f}^e &= \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T}
   \begin{bmatrix}
     \textbf{N}_i \textbf{y}_e \\
