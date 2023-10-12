@@ -53,7 +53,7 @@ exclude-contributors:
 
 # Custom text at start of release
 header: |
-  xxx
+  Minor release for Zenodo archival.
 
 template: |
   ## What's Changed
