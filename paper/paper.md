@@ -72,9 +72,9 @@ citation) then you can do it with the example BibTeX entry below for xxx.
 
 For a quick reference, the following citation commands can be used:
 
-- @pilkey:2002 -> "Author et al. (2001)"
-- [@pilkey:2002] -> "(Author et al., 2001)"
-- [@pilkey:2002; @larson:2013] -> "(Author1 et al., 2001; Author2 et al., 2002)"
+- @pilkey -> "Author et al. (2001)"
+- [@pilkey] -> "(Author et al., 2001)"
+- [@pilkey; @larson] -> "(Author1 et al., 2001; Author2 et al., 2002)"
 
 # Figures
 
