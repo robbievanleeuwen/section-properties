@@ -7,12 +7,14 @@ Finite element classes:
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
 import numpy as np
 from numba import njit
+from numba.core.errors import NumbaPerformanceWarning
 
 
 if TYPE_CHECKING:
@@ -632,17 +634,19 @@ class Tri6:
                     * (b.dot(phi_shear) - nu / 2 * np.array([h1, h2]))
                 )
 
-        # extrapolate results to nodes
-        sig_zz_mxx = extrapolate_to_nodes(w=sig_zz_mxx_gp)
-        sig_zz_myy = extrapolate_to_nodes(w=sig_zz_myy_gp)
-        sig_zz_m11 = extrapolate_to_nodes(w=sig_zz_m11_gp)
-        sig_zz_m22 = extrapolate_to_nodes(w=sig_zz_m22_gp)
-        sig_zx_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 0])
-        sig_zy_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 1])
-        sig_zx_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 0])
-        sig_zy_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 1])
-        sig_zx_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 0])
-        sig_zy_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 1])
+        # extrapolate results to nodes, ignore numba warnings about performance
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
+            sig_zz_mxx = extrapolate_to_nodes(w=sig_zz_mxx_gp)
+            sig_zz_myy = extrapolate_to_nodes(w=sig_zz_myy_gp)
+            sig_zz_m11 = extrapolate_to_nodes(w=sig_zz_m11_gp)
+            sig_zz_m22 = extrapolate_to_nodes(w=sig_zz_m22_gp)
+            sig_zx_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 0])
+            sig_zy_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 1])
+            sig_zx_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 0])
+            sig_zy_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 1])
+            sig_zx_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 0])
+            sig_zy_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 1])
 
         return (
             sig_zz_n,
