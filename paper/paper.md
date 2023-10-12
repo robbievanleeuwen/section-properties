@@ -27,71 +27,54 @@ bibliography: paper.bib
 
 # Summary
 
-Summary of `sectionproperties`...
+Properties of plane cross-sections are often required in engineering research, analysis,
+and design. For example, cross-sectional properties are used to determine the
+displacements, natural frequencies, and stresses within beams under complex loading.
+`sectionproperties` is a Python package for the analysis of _arbitrary_ cross-sections
+using the finite element method. `sectionproperties` can be used to determine
+geometric and warping properties, as well as visualising cross-sectional stresses
+resulting from combinations of applied loads. `sectionproperties` aims to provide a
+pre-processor, analysis engine, and post-processor in a single open source and
+accessible package, that can be used by researchers, practising engineers, and students.
 
-Has a clear description of the high-level functionality and purpose of the software for
-a diverse, non-specialist audience been provided?
+# Statement of Need
 
-# Statement of need
+Obtaining the geometric properties of simple shapes is a classical engineering problem
+with well-defined analytical solutions. However, obtaining warping properties (e.g. for
+torsion and shear analyses) involves solving partial differential equations [@pilkey].
+While some analytical solutions exist for a small subset of geometries, the method for
+obtaining these results is not able to be generalised to shapes commonly used in
+engineering pratice. Further, the analysis of arbitrary composite geometries, in which a
+cross-section could consist of any shape with any number of internal holes, and be made
+up of any number of materials, complicates both geometric and warping computations.
 
-Statement of need...
+To the best of our knowledge, there is no open source software available for the
+computation of both geometric and warping propreties for composite, arbitary
+cross-sections. While there are several commercial programs available, e.g.
+[`RSECTION 1`](https://www.dlubal.com/en/products/cross-section-properties-software/rsection),
+[`ShapeDesigner SaaS`](http://mechatools.com/en/shapedesigner.html), or
+[`CADRE Profiler`](https://www.cadreanalytic.com/profiler.htm), none of these are
+open source or provide an application programming interface (API) that would enable
+these programs to be used for research. As a result, `sectionproperties` supports both
+engineering practice and research, by implementing an open source solution to the
+complex modelling problem of composite, arbitrary geometric and warping analyses.
 
-Does the paper have a section titled ‘Statement of need’ that clearly states what
-problems the software is designed to solve, who the target audience is, and its relation
-to other work?
+IMPLEMENTATION
 
-Do the authors describe how this software compares to other commonly-used packages?
+# Availability
 
-# Mathematics
-
-Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
-
-Double dollars make self-standing equations:
-
-$$
-\Theta(x) = \left\{\begin{array}{l}
-0\textrm{ if } x < 0\cr
-1\textrm{ else}
-\end{array}\right.
-$$
-
-You can also use plain \LaTeX for equations
-\begin{equation}\label{eq:fourier}
-\hat f(\omega) = \int\_{-\infty}^{\infty} f(x) e^{i\omega x} dx
-\end{equation}
-and refer to \autoref{eq:fourier} from text.
-
-# Citations
-
-Citations to entries in paper.bib should be in
-[rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
-
-If you want to cite a software repository URL (e.g. something on GitHub without a preferred
-citation) then you can do it with the example BibTeX entry below for xxx.
-
-For a quick reference, the following citation commands can be used:
-
-- @pilkey -> "Author et al. (2001)"
-- [@pilkey] -> "(Author et al., 2001)"
-- [@pilkey; @larson] -> "(Author1 et al., 2001; Author2 et al., 2002)"
-
-# Figures
-
-Figures can be included like this:
-
-![Caption for example figure.\label{fig:example}](figures/arbitrary-section.png){ width=50% }
-
-and referenced from text using \autoref{fig:example}.
-
-Figure sizes can be customized by adding an optional second parameter:
-
-![Caption for example figure.](figures/arbitrary-section.png){ width=20% }
+The `sectionproperties` package is available on [GitHub](https://github.com/robbievanleeuwen/section-properties),
+where the source code, issue tracker, CI workflow, and discussion board can be found.
+The [documentation](https://sectionproperties.readthedocs.io) includes
+[installation instructions](https://sectionproperties.readthedocs.io/en/stable/installation.html),
+a detailed [user guide](https://sectionproperties.readthedocs.io/en/stable/user_guide.html),
+a list of [examples](https://sectionproperties.readthedocs.io/en/stable/examples.html),
+and an [API reference](https://sectionproperties.readthedocs.io/en/stable/api.html).
 
 # Acknowledgements
 
-We acknowledge the contributions from all the contributors to `sectionproperties`, a
-list of which can be found
-[here](https://github.com/robbievanleeuwen/section-properties/graphs/contributors).
+We acknowledge the contributions from all the
+[contributors](https://github.com/robbievanleeuwen/section-properties/graphs/contributors)
+to `sectionproperties`.
 
 # References
