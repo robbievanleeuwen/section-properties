@@ -1334,7 +1334,7 @@ class Section:
                     # add nodal weights
                     nodal_weights[el.node_ids] += weights
 
-                    if progress and task:
+                    if progress and task is not None:
                         progress.update(task_id=task, advance=1)
 
                 # nodal averaging
@@ -1355,7 +1355,7 @@ class Section:
                 # calculate combined stresses
                 sr.calculate_combined_stresses()
 
-            if progress and task:
+            if progress and task is not None:
                 msg = "[bold green]:white_check_mark: Stress analysis complete"
                 progress.update(task_id=task, description=msg)
 
