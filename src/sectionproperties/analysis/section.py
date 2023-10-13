@@ -12,6 +12,7 @@ from typing import Callable
 
 import matplotlib.axes
 import matplotlib.patches as mpatches
+import matplotlib.tri as tri
 import numpy as np
 from matplotlib.colors import ListedColormap
 from rich.console import Console
@@ -1680,6 +1681,7 @@ class Section:
         title: str = "Warping Function",
         level: int = 20,
         cmap: str = "viridis",
+        alpha: float = 0.2,
         with_lines: bool = True,
         **kwargs,
     ):
@@ -1690,6 +1692,7 @@ class Section:
             level: Number of contour levels
             cmap: Colormap
             with_lines: If set to True, contour lines are displayed
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -1707,26 +1710,30 @@ class Section:
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             assert ax
 
-            loc = self.mesh["vertices"]
+            # create triangulation
+            triang = tri.Triangulation(
+                self._mesh_nodes[:, 0],
+                self._mesh_nodes[:, 1],
+                self._mesh_elements[:, 0:3],
+            )
 
             if with_lines:
                 ax.tricontour(
-                    loc[:, 0],
-                    loc[:, 1],
+                    triang,
                     self.section_props.omega,
                     colors="k",
                     levels=level,
                 )
 
             ax.tricontourf(
-                loc[:, 0],
-                loc[:, 1],
+                triang,
                 self.section_props.omega,
                 cmap=cmap,
                 levels=level,
             )
-            ax.set_xlabel("X")
-            ax.set_ylabel("Y")
+
+            # plot the finite element mesh
+            self.plot_mesh(alpha=alpha, materials=False, **dict(kwargs, ax=ax))
 
         return ax
 
