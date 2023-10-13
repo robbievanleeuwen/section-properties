@@ -121,7 +121,7 @@ def create_mesh(
     if not isinstance(mesh_sizes, list):
         mesh_sizes = [mesh_sizes]
 
-    tri = {}  # create tri dictionary
+    tri: dict[str, Any] = {}  # create tri dictionary
     tri["vertices"] = points  # set point
     tri["segments"] = facets  # set facets
 

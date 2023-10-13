@@ -124,7 +124,7 @@ def concrete_rectangular_section(
     # calculate reinforcing bar dimensions for top and bottom layers
     if n_top == 1:
         x_i_top = b / 2
-        spacing_top = 0
+        spacing_top = 0.0
     else:
         if c_side:
             x_i_top = c_side + dia_top / 2
@@ -135,7 +135,7 @@ def concrete_rectangular_section(
 
     if n_bot == 1:
         x_i_bot = b / 2
-        spacing_bot = 0
+        spacing_bot = 0.0
     else:
         if c_side:
             x_i_bot = c_side + dia_bot / 2
@@ -151,9 +151,9 @@ def concrete_rectangular_section(
 
         spacing_side = (d - c_top - c_bot - dia_top / 2 - dia_bot / 2) / (n_side + 1)
     else:
-        x_i_side_left = 0
-        x_i_side_right = 0
-        spacing_side = 0
+        x_i_side_left = 0.0
+        x_i_side_right = 0.0
+        spacing_side = 0.0
 
     # add top bars
     for idx in range(n_top):
@@ -299,8 +299,8 @@ def concrete_column_section(
     ).calculate_extents()
     bar_x_min, bar_x_max, bar_y_min, bar_y_max = bar_extents
 
-    b_edge_bars_x = np.linspace(bar_x_min, bar_x_max, n_x)
-    d_edge_bars_y = np.linspace(bar_y_min, bar_y_max, n_y)
+    b_edge_bars_x: list[float] = np.linspace(bar_x_min, bar_x_max, n_x).tolist()
+    d_edge_bars_y: list[float] = np.linspace(bar_y_min, bar_y_max, n_y).tolist()
 
     if not filled:
         b_edge_bars_y1 = [bar_y_min] * n_x
@@ -324,7 +324,7 @@ def concrete_column_section(
         )
     else:
         xy = np.meshgrid(b_edge_bars_x, d_edge_bars_y)
-        all_bar_coords = np.append(xy[0].reshape(-1, 1), xy[1].reshape(-1, 1), axis=1)
+        all_bar_coords = np.append(xy[0].reshape(-1, 1), xy[1].reshape(-1, 1), axis=1)  # type: ignore
 
     for bar_coord in all_bar_coords:
         concrete_geometry = add_bar(
@@ -465,8 +465,8 @@ def concrete_tee_section(
 
     # calculate reinforcing bar dimensions for top and bottom layers
     if n_top == 1:
-        x_i_top = 0
-        spacing_top = 0
+        x_i_top = 0.0
+        spacing_top = 0.0
     else:
         if c_side:
             x_i_top = -b_f / 2 + c_side + dia_top / 2
@@ -476,8 +476,8 @@ def concrete_tee_section(
             spacing_top = (b_f - 2 * c_top - dia_top) / (n_top - 1)
 
     if n_bot == 1:
-        x_i_bot = 0
-        spacing_bot = 0
+        x_i_bot = 0.0
+        spacing_bot = 0.0
     else:
         if c_side:
             x_i_bot = -b / 2 + c_side + dia_bot / 2
@@ -493,9 +493,9 @@ def concrete_tee_section(
 
         spacing_side = (d - c_top - c_bot - dia_top / 2 - dia_bot / 2) / (n_side + 1)
     else:
-        x_i_side_left = 0
-        x_i_side_right = 0
-        spacing_side = 0
+        x_i_side_left = 0.0
+        x_i_side_right = 0.0
+        spacing_side = 0.0
 
     # add top bars
     for idx in range(n_top):

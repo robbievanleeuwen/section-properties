@@ -270,7 +270,7 @@ def polygon_hollow_section(
 
     # calculate external radius, if r_in is zero, r_out also is zero
     if r_in == 0:
-        r_out = 0
+        r_out = 0.0
         n_r = 1
     else:
         r_out = r_in + t

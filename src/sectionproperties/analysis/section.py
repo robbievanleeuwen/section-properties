@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import warnings
 from dataclasses import dataclass, field
-from typing import Callable
+from typing import Callable, cast
 
 import matplotlib.axes
 import matplotlib.patches as mpatches
@@ -199,16 +199,16 @@ class Section:
 
         def calculate_geom(progress: Progress | None = None) -> None:
             # initialise properties
-            self.section_props.area = 0
-            self.section_props.perimeter = 0
-            self.section_props.mass = 0
-            self.section_props.ea = 0
-            self.section_props.ga = 0
-            self.section_props.qx = 0
-            self.section_props.qy = 0
-            self.section_props.ixx_g = 0
-            self.section_props.iyy_g = 0
-            self.section_props.ixy_g = 0
+            self.section_props.area = 0.0
+            self.section_props.perimeter = 0.0
+            self.section_props.mass = 0.0
+            self.section_props.ea = 0.0
+            self.section_props.ga = 0.0
+            self.section_props.qx = 0.0
+            self.section_props.qy = 0.0
+            self.section_props.ixx_g = 0.0
+            self.section_props.iyy_g = 0.0
+            self.section_props.ixy_g = 0.0
 
             # calculate perimeter
             self.section_props.perimeter = self.geometry.calculate_perimeter()
@@ -371,7 +371,7 @@ class Section:
                 msg = f"[green]:white_check_mark: {self.num_nodes}x{self.num_nodes} "
                 msg += "stiffness matrix assembled"
                 progress.update(task_id=task, description=msg)
-                progress.update(0, advance=1)
+                progress.update(cast(TaskID, 0), advance=1)
             else:
                 k_lg, f_torsion = warping_section.assemble_torsion()
 
@@ -406,7 +406,7 @@ class Section:
 
             # solve for warping function
             def solve_warping() -> np.ndarray:
-                if solver_type == "cgs":
+                if solver_type == "cgs" and k_lg_precond:
                     omega = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_torsion, m=k_lg_precond
                     )
@@ -428,7 +428,7 @@ class Section:
                 msg = "[green]:white_check_mark: Warping function solved "
                 msg += f"({solver_type})"
                 progress.update(task, description=msg)
-                progress.update(0, advance=1)
+                progress.update(cast(TaskID, 0), advance=1)
             else:
                 omega = solve_warping()
 
@@ -480,7 +480,7 @@ class Section:
 
                 msg = "[green]:white_check_mark: Shear function vectors assembled"
                 progress.update(task, description=msg)
-                progress.update(0, advance=1)
+                progress.update(cast(TaskID, 0), advance=1)
             else:
                 f_psi, f_phi = assemble_shear_load()
 
@@ -489,7 +489,7 @@ class Section:
                 progress: Progress | None = None,
                 task: TaskID | None = None,
             ) -> tuple[np.ndarray, np.ndarray]:
-                if solver_type == "cgs":
+                if solver_type == "cgs" and k_lg_precond:
                     psi_shear = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_psi, m=k_lg_precond
                     )
@@ -528,7 +528,7 @@ class Section:
                 msg = "[green]:white_check_mark: Shear functions solved "
                 msg += f"({solver_type})"
                 progress.update(task, description=msg)
-                progress.update(0, advance=1)
+                progress.update(cast(TaskID, 0), advance=1)
             else:
                 psi_shear, phi_shear = solve_shear_functions()
 
@@ -591,7 +591,7 @@ class Section:
 
                 msg = "[green]:white_check_mark: Shear and warping integrals assembled"
                 progress.update(task, description=msg)
-                progress.update(0, advance=1)
+                progress.update(cast(TaskID, 0), advance=1)
             else:
                 (
                     sc_xint,
@@ -672,7 +672,7 @@ class Section:
                 msg = "[green]:white_check_mark: Shear deformation coefficients "
                 msg += "assembled"
                 progress.update(task_id=task, description=msg)
-                progress.update(0, advance=1)
+                progress.update(cast(TaskID, 0), advance=1)
             else:
                 kappa_x, kappa_y, kappa_xy = assemble_shear_deformation()
 
@@ -743,7 +743,7 @@ class Section:
 
                 msg = "[green]:white_check_mark: Monosymmetry integrals assembled"
                 progress.update(task_id=task, description=msg)
-                progress.update(0, advance=1)
+                progress.update(cast(TaskID, 0), advance=1)
             else:
                 int_x, int_y, int_11, int_22 = calculate_monosymmetry_integrals()
 
@@ -831,18 +831,18 @@ class Section:
 
         def calculate_geom(progress: Progress | None = None) -> None:
             # initialise geometric properties
-            self.section_props.area = 0
-            self.section_props.ea = 0
-            self.section_props.qx = 0
-            self.section_props.qy = 0
-            self.section_props.ixx_g = 0
-            self.section_props.iyy_g = 0
-            self.section_props.ixy_g = 0
-            self.section_props.ixx_c = 0
-            self.section_props.iyy_c = 0
-            self.section_props.ixy_c = 0
-            self.section_props.j = 0
-            self.section_props.phi = 0
+            self.section_props.area = 0.0
+            self.section_props.ea = 0.0
+            self.section_props.qx = 0.0
+            self.section_props.qy = 0.0
+            self.section_props.ixx_g = 0.0
+            self.section_props.iyy_g = 0.0
+            self.section_props.ixy_g = 0.0
+            self.section_props.ixx_c = 0.0
+            self.section_props.iyy_c = 0.0
+            self.section_props.ixy_c = 0.0
+            self.section_props.j = 0.0
+            self.section_props.phi = 0.0
 
             if progress:
                 task = progress.add_task(
@@ -896,7 +896,7 @@ class Section:
 
             # calculate initial principal axis angle
             if abs(ixx_c - i11_c) < 1e-12 * i11_c:
-                self.section_props.phi = 0
+                self.section_props.phi = 0.0
             else:
                 self.section_props.phi = np.arctan2(ixx_c - i11_c, ixy_c) * 180 / np.pi
 
@@ -954,7 +954,7 @@ class Section:
                 msg = f"[green]:white_check_mark: {self.num_nodes}x{self.num_nodes} "
                 msg += "stiffness matrix assembled"
                 progress.update(task_id=task, description=msg)
-                progress.update(0, advance=1)
+                progress.update(cast(TaskID, 0), advance=1)
             else:
                 k_lg, f_torsion = warping_section.assemble_torsion()
 
@@ -989,7 +989,7 @@ class Section:
 
             # solve for warping function
             def solve_warping() -> np.ndarray:
-                if solver_type == "cgs":
+                if solver_type == "cgs" and k_lg_precond:
                     omega = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_torsion, m=k_lg_precond
                     )
@@ -1011,7 +1011,7 @@ class Section:
                 msg = "[green]:white_check_mark: Warping function solved "
                 msg += f"({solver_type})"
                 progress.update(task, description=msg)
-                progress.update(0, advance=1)
+                progress.update(cast(TaskID, 0), advance=1)
             else:
                 omega = solve_warping()
 
@@ -1407,9 +1407,9 @@ class Section:
         """
         # initialise variables
         n_size = self.num_nodes  # size of matrix
-        row = []  # list holding row indices
-        col = []  # list holding column indices
-        data = []  # list holding stiffness matrix entries
+        row: list[float] = []  # list holding row indices
+        col: list[float] = []  # list holding column indices
+        data: list[float] = []  # list holding stiffness matrix entries
         f_torsion = np.zeros(n_size)  # force vector array
 
         # loop through all elements in the mesh

@@ -465,7 +465,7 @@ class StressPost:
 
             # initialise quiver plot list max scale
             quiv_list = []
-            max_scale = 0
+            max_scale = 0.0
 
             norm = None
             quiv = None
@@ -765,9 +765,9 @@ class StressPost:
         tau_yz = tau_yz_interp(*pt).item()
 
         # assemble the stress tensor
-        sigma_xx = 0
-        sigma_yy = 0
-        tau_xy = 0
+        sigma_xx = 0.0
+        sigma_yy = 0.0
+        tau_xy = 0.0
         sigma = np.array(
             [
                 [sigma_xx, tau_xy, tau_xz],
@@ -807,7 +807,7 @@ class StressPost:
             title = f"Mohr's Circles for 3D Stress State at {(*pt,)}"
 
         # create plot and setup the plot
-        with post.plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (_, ax):
             plot_circle(
                 ax,
                 (0.5 * (sigma_2 + sigma_3), 0),
@@ -830,9 +830,9 @@ class StressPost:
                 r"C3: ($\sigma_{11}$, $\sigma_{22}$)",
             )
 
-            for i, plane, col in zip(range(3), ["X", "Y", "Z"], ["r", "b", "k"]):
+            for idx, plane, color in zip(range(3), ["X", "Y", "Z"], ["r", "b", "k"]):
                 if ax:
-                    ax.plot(*tractions[i], f"{col}.", label=rf"{plane}-face")
+                    ax.plot(*tractions[idx], f"{color}.", label=rf"{plane}-face")
 
             if ax:
                 ax.set_axisbelow(True)

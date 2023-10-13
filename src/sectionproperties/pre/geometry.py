@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import math
 import pathlib
+from typing import Any, cast
 
 import matplotlib.axes
 import more_itertools
@@ -81,12 +82,11 @@ class Geometry:
         self.geom = round_polygon_vertices(geom, self.tol)
         self.material = pre.DEFAULT_MATERIAL if material is None else material
         self.control_points: list[tuple[float, float]] = []
-        self.shift = []
-        self.points = []
-        self.facets = []
-        self.holes = []
-        self.perimeter = []
-        self._recovery_points = []
+        self.points: list[tuple[float, float]] = []
+        self.facets: list[tuple[int, int]] = []
+        self.holes: list[tuple[float, float]] = []
+        self._recovery_points: list[tuple[float, float]] | list[Point] = []
+        self.mesh: dict[str, Any] | None = None
 
         self.compile_geometry()
 
@@ -208,12 +208,12 @@ class Geometry:
         if holes is None:
             holes = []
 
-        prev_facet = []
+        prev_facet: tuple[int, int] | None = None
 
         # Initialize the total number of accumulators needed
         # Always an exterior, plus, a separate accumulator for each interior region
-        exterior = []
-        interiors = [[] for _ in holes]
+        exterior: list[tuple[float, float]] = []
+        interiors: list[list[tuple[float, float]]] = [[] for _ in holes]
         interior_counter = 0  # To keep track of interior regions
         active_list = exterior  # The active_list is the list being accumulated on
 
@@ -221,7 +221,8 @@ class Geometry:
             i_idx, _ = facet
 
             if not prev_facet:  # Add the first facet vertex to exterior and move on
-                active_list.append(points[i_idx])
+                vertex = points[i_idx]
+                active_list.append(vertex)
                 prev_facet = facet
                 continue
 
@@ -232,9 +233,8 @@ class Geometry:
             if i_idx != prev_j_idx and holes:
                 # ...and we are still accumulating on the exterior...
                 if active_list == exterior:
-                    active_list = interiors[
-                        interior_counter
-                    ]  # ... then move to the interior accumulator
+                    active_list = interiors[interior_counter]
+                    # ... then move to the interior accumulator
                 # ...or if we are already in the interior accumulator...
                 else:
                     # ...then start the next interior accumulator for a new hole.
@@ -403,10 +403,9 @@ class Geometry:
         Generates points, facets, control points, holes and perimeter from the
         shapely geometry.
         """
-        self.perimeter = list(range(len(self.geom.exterior.coords)))
-        self.holes: list[tuple[float, float]] = []
-        self.points: list[tuple[float, float]] = []
-        self.facets: list[tuple[int, int]] = []
+        self.holes = []
+        self.points = []
+        self.facets = []
         self.points, self.facets = create_points_and_facets(
             shape=self.geom,
             tol=self.tol,
@@ -499,7 +498,7 @@ class Geometry:
 
     def align_to(
         self,
-        other: Geometry | tuple[float, float],
+        other: Geometry | CompoundGeometry | tuple[float, float],
         on: str,
         inner: bool = False,
     ) -> Geometry:
@@ -562,25 +561,19 @@ class Geometry:
         }
 
         self_align_idx = align_self_map[on]
-        align_to_geometry = isinstance(other, (Geometry, CompoundGeometry))
 
-        if align_to_geometry:
+        if isinstance(other, (Geometry, CompoundGeometry)):
             align_to_idx = other_as_geom_map[on]
+            align_to_coord = other.calculate_extents()[align_to_idx]
         else:
             align_to_idx = other_as_point_map[on]
+            align_to_coord = other[align_to_idx]
 
         self_extents = self.calculate_extents()  # min x, max x, min y, max y
         self_align_coord = self_extents[self_align_idx]
 
         if inner:
             self_align_coord = self_extents[align_to_idx]
-
-        if align_to_geometry:
-            other_extents = other.calculate_extents()
-        else:
-            other_extents = other
-
-        align_to_coord = other_extents[align_to_idx]
 
         offset = align_to_coord - self_align_coord
         arg = "x_offset"
@@ -683,13 +676,14 @@ class Geometry:
                 (rect1 + rect2).plot_geometry()
         """
         # Move assigned control point
-        new_ctrl_point = None
+        new_ctrl_point: tuple[float, float] | None = None
 
         if self.assigned_control_point:
-            new_ctrl_point = tuple(
+            new_ctrl_point = cast(
+                tuple[float, float],
                 affinity.translate(
                     self.assigned_control_point, x_offset, y_offset
-                ).coords[0]
+                ).coords[0],
             )
 
         return Geometry(
@@ -782,12 +776,13 @@ class Geometry:
                 geom = channel_section(d=200, b=75, t_f=12, t_w=6, r=12, n_r=8)
                 geom.mirror_section(axis="y", mirror_point=(0, 0)).plot_geometry()
         """
-        x_mirror = 1
-        y_mirror = 1
+        x_mirror = 1.0
+        y_mirror = 1.0
+        m_pt: tuple[float, float] | str
 
-        if mirror_point != "center":
+        if mirror_point != "center" and not isinstance(mirror_point, str):
             x, y = mirror_point
-            m_pt = (x, y, 0)
+            m_pt = (x, y)
         else:
             m_pt = mirror_point
 
@@ -800,17 +795,18 @@ class Geometry:
             self.geom, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=m_pt
         )
 
-        new_ctrl_point = None
+        new_ctrl_point: tuple[float, float] | None = None
 
         if self.assigned_control_point:
-            new_ctrl_point = tuple(
+            new_ctrl_point = cast(
+                tuple[float, float],
                 affinity.scale(
                     self.assigned_control_point,
                     xfact=y_mirror,
                     yfact=x_mirror,
                     zfact=1.0,
                     origin=mirror_point,
-                ).coords[0]
+                ).coords[0],
             )
 
         return Geometry(
@@ -1200,7 +1196,7 @@ class Geometry:
                     for i, fct in enumerate(self.facets):
                         pt1 = self.points[fct[0]]
                         pt2 = self.points[fct[1]]
-                        xy = [(pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2]
+                        xy = ((pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2)
 
                         ax.annotate(str(i), xy=xy, color="b")
 
@@ -1612,11 +1608,9 @@ class CompoundGeometry(Geometry):
         self.points = []
         self.facets = []
         self.holes = []
-        self.perimeter = []
-        self.material = None
         self.compile_geometry()
         self.tol = 12
-        self.mesh = None
+        self.mesh: dict[str, Any] | None = None
 
     def _repr_svg_(self) -> str:
         """Returns an svg representation of the CompoundGeometry.
@@ -1640,7 +1634,7 @@ class CompoundGeometry(Geometry):
         facets: list[tuple[int, int]],
         control_points: list[tuple[float, float]],
         holes: list[tuple[float, float]] | None = None,
-        materials: list[pre.Material] | None = None,
+        materials: list[pre.Material] | None = None,  # type: ignore
     ) -> CompoundGeometry:
         """Creates CompoundGeometry from points, facets, control points and holes.
 
@@ -1825,7 +1819,7 @@ class CompoundGeometry(Geometry):
 
             for idx, exterior in enumerate(exteriors):
                 punched_exterior = exterior
-                exterior_control_point = 0, 0  # initialise
+                exterior_control_point = 0.0, 0.0  # initialise
 
                 for interior in interiors:
                     punched_exterior = punched_exterior - interior
@@ -1901,7 +1895,7 @@ class CompoundGeometry(Geometry):
 
     def create_mesh(
         self,
-        mesh_sizes: list[float],
+        mesh_sizes: float | list[float],
         min_angle: float = 30.0,
         coarse: bool = False,
     ) -> CompoundGeometry:
@@ -1910,8 +1904,8 @@ class CompoundGeometry(Geometry):
         Args:
             mesh_sizes: A float describing the maximum mesh element area to be used in
                 the finite-element mesh for each Geometry object within the
-                CompoundGeometry object. If a list of length 1 is passed, then the one
-                size will be applied to all constituent Geometry meshes.
+                CompoundGeometry object. If a list of length 1 or a float is passed,
+                then the one size will be applied to all constituent Geometry meshes.
             min_angle: The meshing algorithm adds vertices to the mesh to ensure that no
                 angle smaller than the minimum angle (in degrees, rounded to 1 decimal
                 place). Note that small angles between input segments cannot be
@@ -2158,8 +2152,8 @@ class CompoundGeometry(Geometry):
             ]
         )
 
-        cx_ea_acc = 0
-        cy_ea_acc = 0
+        cx_ea_acc = 0.0
+        cy_ea_acc = 0.0
 
         for geom in self.geoms:
             e = geom.material.elastic_modulus
@@ -2379,11 +2373,11 @@ class CompoundGeometry(Geometry):
 
             # add control points
             for control_point in geom.control_points:
-                self.control_points.append(tuple(control_point))
+                self.control_points.append(control_point)
 
         # Determine if new holes have been created or if existing
         # holes have been destroyed (or "filled in").
-        resultant_holes = []
+        resultant_holes: list[tuple[float, float]] = []
         unionized_poly = unary_union([geom.geom for geom in self.geoms])
         buffer_amount = unionized_poly.area * SCALE_CONSTANT
         unionized_poly = unionized_poly.buffer(buffer_amount)
@@ -2391,9 +2385,9 @@ class CompoundGeometry(Geometry):
         if isinstance(unionized_poly, MultiPolygon):
             for poly in unionized_poly.geoms:
                 for interior in poly.interiors:
-                    resultant_holes.append(
-                        tuple(Polygon(interior).representative_point().coords[0])
-                    )
+                    rp: Point = Polygon(interior).representative_point()
+                    coords = cast(tuple[float, float], rp.coords[0])
+                    resultant_holes.append(coords)
 
         elif isinstance(unionized_poly, Polygon):
             if Geometry(unionized_poly).holes:
@@ -2442,8 +2436,6 @@ def load_dxf(
     Returns:
         Geometry or CompoundGeometry loaded from ``.dxf`` file
     """
-    c2s = None
-
     try:
         import cad_to_shapely as c2s
     except ImportError as e:
@@ -2519,7 +2511,9 @@ def create_exterior_points(
     Returns:
         List of exterior points
     """
-    return [tuple(coord) for coord in shape.exterior.coords]
+    return cast(
+        list[tuple[float, float]], [tuple(coord) for coord in shape.exterior.coords]
+    )
 
 
 def create_interior_points(
@@ -2536,7 +2530,7 @@ def create_interior_points(
     Returns:
         List of interior points
     """
-    return [tuple(coord) for coord in lr.coords]
+    return cast(list[tuple[float, float]], [tuple(coord) for coord in lr.coords])
 
 
 def create_points_and_facets(
@@ -2720,7 +2714,7 @@ def check_geometry_disjoint(
         Whether or not there is disjoint geometry
     """
     # Build polygon connectivity network
-    network = {}
+    network: dict[int, set[int]] = {}
 
     for idx_i, poly1 in enumerate(lop):
         for idx_j, poly2 in enumerate(lop):

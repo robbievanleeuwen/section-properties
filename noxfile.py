@@ -140,7 +140,11 @@ def precommit(session: Session) -> None:
 
 @session(python=python_versions)
 def mypy(session: Session) -> None:
-    """Type-check using mypy."""
+    """Type-check using mypy.
+
+    Args:
+        session: Nox session
+    """
     args = session.posargs or ["src", "docs/conf.py"]
     session.install(".")
     session.install("mypy", "pytest")

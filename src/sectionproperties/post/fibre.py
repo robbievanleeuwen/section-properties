@@ -155,6 +155,7 @@ def to_fibre_section(
 
     analysis_type = analysis_type.upper()
 
+    cell_class: type
     if analysis_type == "2D":
         cell_class = Cell2D
         fibre_class = "Fibre2D"

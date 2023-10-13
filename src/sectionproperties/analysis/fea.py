@@ -366,12 +366,12 @@ class Tri6:
             ``i_yomega``)
         """
         # initialise integrals
-        sc_xint: float = 0
-        sc_yint: float = 0
-        q_omega: float = 0
-        i_omega: float = 0
-        i_xomega: float = 0
-        i_yomega: float = 0
+        sc_xint: float = 0.0
+        sc_yint: float = 0.0
+        q_omega: float = 0.0
+        i_omega: float = 0.0
+        i_xomega: float = 0.0
+        i_yomega: float = 0.0
 
         # Gauss points for 4 point Gaussian integration
         gps = gauss_points(n=4)
@@ -417,9 +417,9 @@ class Tri6:
             Shear deformation variables (``kappa_x``, ``kappa_y``, ``kappa_xy``)
         """
         # initialise properties
-        kappa_x: float = 0
-        kappa_y: float = 0
-        kappa_xy: float = 0
+        kappa_x: float = 0.0
+        kappa_y: float = 0.0
+        kappa_xy: float = 0.0
 
         # Gauss points for 4 point Gaussian integration
         gps = gauss_points(n=4)
@@ -464,10 +464,10 @@ class Tri6:
             ``int_11``, ``int_22``)
         """
         # initialise properties
-        int_x: float = 0
-        int_y: float = 0
-        int_11: float = 0
-        int_22: float = 0
+        int_x: float = 0.0
+        int_y: float = 0.0
+        int_11: float = 0.0
+        int_22: float = 0.0
 
         # Gauss points for 4 point Gaussian integration
         gps = gauss_points(n=4)
