@@ -1,7 +1,8 @@
 ---
 title: "sectionproperties: A Python package for the analysis of arbitrary cross-sections using the finite element method"
 tags:
-  - Python
+  - python
+  - computational mechanics
   - finite element method
   - cross-section
   - stress analysis
@@ -9,7 +10,7 @@ tags:
 authors:
   - given-names: Robbie
     non-dropping-particle: van
-    surname: Leeuwen^[corresponding author]
+    surname: Leeuwen
     orcid: 0009-0004-8056-3977
     affiliation: 1
   - name: Connor Ferster
@@ -18,9 +19,9 @@ authors:
 affiliations:
   - name: Independent Researcher, Australia
     index: 1
-  - name: Institution Name, Country
+  - name: Institution Name, Country # update
     index: 2
-date: 12 October 2023
+date: 13 October 2023
 bibliography: paper.bib
 ---
 
@@ -33,30 +34,30 @@ displacements, natural frequencies, and stresses within beams under complex load
 using the finite element method. `sectionproperties` can be used to determine
 geometric and warping properties, as well as visualising cross-sectional stresses
 resulting from combinations of applied loads. `sectionproperties` aims to provide a
-pre-processor, analysis engine, and post-processor in a single open source and
+pre-processor, analysis engine, and post-processor, in a single open source and
 accessible package, that can be used by researchers, practising engineers, and students.
 
 # Statement of Need
 
 Obtaining the geometric properties of simple shapes is a classical engineering problem
-with well-defined analytical solutions. However, obtaining warping properties (e.g. for
-torsion and shear analyses) involves solving partial differential equations [@pilkey].
+with well-defined analytical solutions. However, obtaining warping properties, e.g. for
+torsion and shear analyses, involves solving partial differential equations [@pilkey].
 While some analytical solutions exist for a small subset of geometries, the method for
 obtaining these results is not able to be generalised to shapes commonly used in
 engineering pratice. Further, the analysis of arbitrary composite geometries, in which a
 cross-section could consist of any shape with any number of internal holes, and be made
-up of any number of materials, complicates both geometric and warping computations.
+from any number of materials, complicates both geometric and warping computations.
 
 To the best of our knowledge, there is no open source software available for the
 computation of both geometric and warping propreties for composite, arbitary
-cross-sections. While there are several commercial programs available, e.g.
+cross-sections. While there are several commercial solutions available, e.g.
 [`RSECTION 1`](https://www.dlubal.com/en/products/cross-section-properties-software/rsection),
 [`ShapeDesigner SaaS`](http://mechatools.com/en/shapedesigner.html), or
 [`CADRE Profiler`](https://www.cadreanalytic.com/profiler.htm), none of these are
 open source or provide an application programming interface (API) that would enable
 these programs to be used for research. As a result, `sectionproperties` supports both
 engineering practice and research, by implementing an open source solution to the
-complex modelling problem of composite, arbitrary geometric and warping analyses.
+complex modelling problem that is arbitrary composite geometric and warping analyses.
 
 # Implementation
 
@@ -99,13 +100,13 @@ $$
 \end{bmatrix} J_i
 $$
 
-where $\textbf{N}$ and $\textbf{B}$ are the shape functions and their derivatives
-respectively, and $w_i$ and $J_i$ is the weight and Jacobian of the current integration
-point respectively. The boundary conditions of this problem involves the inversion of a
-nearly singular global stiffness matrix. As such, the Lagrangian multiplier method is
-used to solve the set of linear equations of the form
-$\textbf{K} \textbf{u} = \textbf{F}$ by introducing an extra constraint on the solution
-vector whereby the mean value is equal to zero [@larson].
+In the above, $\textbf{N}$ and $\textbf{B}$ are the shape functions and their
+derivatives, and $w_i$ and $J_i$ are the weights and Jacobians of the current
+integration point. The boundary conditions neccesitate the inversion of a nearly
+singular global stiffness matrix. As such, the Lagrangian multiplier method is used to
+solve the set of linear equations of the form $\textbf{K} \textbf{u} = \textbf{F}$ by
+introducing an extra constraint on the solution vector, whereby the mean value is equal
+to zero [@larson].
 
 $$
 \begin{bmatrix}
@@ -148,7 +149,7 @@ where the source code, issue tracker, CI workflow, and discussion board can be f
 Pre-commit hooks are used to ensure code quality and style is consistent across all
 contributions. There is an extensive testing and validation suite used to ensure that
 the output produced by `sectionproperties` is verified and repeatable, including a set
-of benchmarking tests. `sectionproperties` has actively maintained
+of benchmarking tests. `sectionproperties` has an actively maintained and complete
 [documentation](https://sectionproperties.readthedocs.io), including
 [installation instructions](https://sectionproperties.readthedocs.io/en/stable/installation.html),
 a detailed [user guide](https://sectionproperties.readthedocs.io/en/stable/user_guide.html),
