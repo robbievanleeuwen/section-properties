@@ -1678,12 +1678,18 @@ class Section:
     def plot_warping_function(
         self,
         title: str = "Warping Function",
+        level: int = 20,
+        cmap: str = "viridis",
+        with_lines: bool = True,
         **kwargs,
     ):
         r"""Plots the warping function over the mesh.
 
         Args:
             title: Plot title
+            level: Number of contour levels
+            cmap: Colormap
+            with_lines: If set to True, contour lines are displayed
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -1696,10 +1702,6 @@ class Section:
             raise RuntimeError(
                 "Perform a warping analysis before plotting the warping function."
             )
-
-        level = kwargs.pop("level", 20)
-        cmap = kwargs.pop("cmap", "viridis")
-        with_lines = kwargs.pop("with_lines", True)
 
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
