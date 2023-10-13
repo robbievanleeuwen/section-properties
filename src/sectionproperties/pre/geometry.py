@@ -1608,6 +1608,7 @@ class CompoundGeometry(Geometry):
         self.points = []
         self.facets = []
         self.holes = []
+        self.material = None  # type: ignore
         self.compile_geometry()
         self.tol = 12
         self.mesh: dict[str, Any] | None = None
