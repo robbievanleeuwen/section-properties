@@ -89,7 +89,7 @@ $$
 where the stiffness matrix and load vector at the element level are defined as:
 
 $$
-\textbf{k}^e = \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T} \textbf{B}_i J_e
+\textbf{k}^e = \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T} \textbf{B}_i J_i
 $$
 
 $$
@@ -123,9 +123,10 @@ $$
 \end{bmatrix}
 $$
 
-where $\textbf{C}$ is a row vector of ones and $\lambda$ may be though of as a
-relatively small force acting to enforce the constraints. Once the warping function has
-been evaluated, the Saint-Venant torsion constant can be calculated as follows:
+where $\textbf{C}$ is the assembly of $\sum_{i=1} w_i \textbf{N}_i J_i$, and $\lambda$
+may be though of as a relatively small force acting to enforce the constraints. Once the
+warping function has been evaluated, the Saint-Venant torsion constant can be calculated
+as follows:
 
 $$
 J = I_{xx} + I_{yy} - \boldsymbol{\omega}^{\rm T} \textbf{K} \boldsymbol{\omega}

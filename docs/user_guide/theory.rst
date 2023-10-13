@@ -320,9 +320,10 @@ describe the resulting modified stiffness matrix, and solution and load vector:
     0 \\
   \end{bmatrix}
 
-where :math:`\textbf{C}` is a row vector of ones and :math:`\lambda` may be though of as
-a force acting to enforce the constraints, which should be relatively small when
-compared to the values in the force vector and can be omitted from the solution vector.
+where :math:`\textbf{C}` is the assembly of :math:`\int_{\Omega} \textbf{N} \, d \Omega`
+and :math:`\lambda` may be though of as a force acting to enforce the constraints, which
+should be relatively small when compared to the values in the force vector and can be
+omitted from the solution vector.
 
 Calculation of Cross-Section Properties
 ---------------------------------------
