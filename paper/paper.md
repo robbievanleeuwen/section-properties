@@ -123,7 +123,7 @@ $$
 \end{bmatrix}
 $$
 
-where $\textbf{C}$ is the assembly of $\sum_{i=1} w_i \textbf{N}_i J_i$, and $\lambda$
+where $\textbf{C}$ is the assembly of $\sum_{i} w_i \textbf{N}_i J_i$, and $\lambda$
 may be though of as a relatively small force acting to enforce the constraints. Once the
 warping function has been evaluated, the Saint-Venant torsion constant can be calculated
 as follows:
