@@ -25,28 +25,33 @@ if TYPE_CHECKING:
 def _assemble_torsion(
     k_el: np.ndarray,
     f_el: np.ndarray,
+    c_el: np.ndarray,
+    n: np.ndarray,
     b: np.ndarray,
     weight: float,
     nx: float,
     ny: float,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Utility function for calculating the torsion stiffness matrix and load vector.
 
     Args:
         k_el: Element stiffness matrix
         f_el: Element load vector
+        c_el: Element constraint vector
+        n: Shape function
         b: Strain matrix
         weight: Effective weight
         nx: Global x-coordinate
         ny: Global y-coordinate
 
     Returns:
-        Torsion stiffness matrix and load vector (``k_el``, ``f_el``)
+        Torsion stiffness matrix and load vector (``k_el``, ``f_el``, ``c_el``)
     """
     # calculated modulus weighted stiffness matrix and load vector
     k_el += weight * b.transpose() @ b
     f_el += weight * b.transpose() @ np.array([ny, -nx])
-    return k_el, f_el
+    c_el += weight * n
+    return k_el, f_el, c_el
 
 
 @njit(cache=True, nogil=True)
@@ -272,15 +277,17 @@ class Tri6:
             self.material.density,
         )
 
-    def torsion_properties(self) -> tuple[np.ndarray, np.ndarray]:
+    def torsion_properties(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Calculates the element warping stiffness matrix and the torsion load vector.
 
         Returns:
-            Element stiffness matrix ``k_el`` and element torsion load vector ``f_el``
+            Element stiffness matrix ``k_el``, element torsion load vector ``f_el``
+            and element constraint vector ``c_el``
         """
         # initialise stiffness matrix and load vector
         k_el = np.zeros(shape=(6, 6), dtype=float)
         f_el = np.zeros(shape=6, dtype=float)
+        c_el = np.zeros(shape=6, dtype=float)
 
         # Gauss points for 4 point Gaussian integration
         gps = gauss_points(n=4)
@@ -288,14 +295,14 @@ class Tri6:
         for gp in gps:
             # determine shape function, shape function derivative,
             # jacobian and global coordinates
-            _, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
+            n, b, j, nx, ny = shape_function(coords=self.coords, gauss_point=gp)
 
             weight = gp[0] * j * self.material.elastic_modulus
 
             # calculated modulus weighted stiffness matrix and load vector
-            k_el, f_el = _assemble_torsion(k_el, f_el, b, weight, nx, ny)
+            k_el, f_el, c_el = _assemble_torsion(k_el, f_el, c_el, n, b, weight, nx, ny)
 
-        return k_el, f_el
+        return k_el, f_el, c_el
 
     def shear_load_vectors(
         self,
