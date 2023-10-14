@@ -280,7 +280,9 @@ class Tri6:
 
     def torsion_properties(
         self,
-    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    ) -> tuple[
+        npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]
+    ]:
         """Calculates the element warping stiffness matrix and the torsion load vector.
 
         Returns:

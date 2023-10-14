@@ -1690,8 +1690,8 @@ class Section:
         cmap: str = "viridis",
         alpha: float = 0.2,
         with_lines: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> matplotlib.axes.Axes:
         r"""Plots the warping function over the mesh.
 
         Args:
