@@ -1416,6 +1416,7 @@ class Section:
         col: list[float] = []  # list holding column indices
         data: list[float] = []  # list holding stiffness matrix entries
         f_torsion = np.zeros(n_size)  # force vector array
+        c_torsion = np.zeros(n_size)  # constraint vector array
 
         # loop through all elements in the mesh
         for el in self.elements:
@@ -1423,10 +1424,11 @@ class Section:
             n = len(el.node_ids)
 
             # calculate the element stiffness matrix and torsion load vector
-            k_el, f_el = el.torsion_properties()
+            k_el, f_el, c_el = el.torsion_properties()
 
             # assemble the torsion load vector
             f_torsion[el.node_ids] += f_el
+            c_torsion[el.node_ids] += c_el
 
             for node_id in el.node_ids:
                 row.extend([node_id] * n)
@@ -1437,15 +1439,15 @@ class Section:
                 progress.update(task_id=task, advance=1)
 
         # construct Lagrangian multiplier matrix:
-        # column vector of ones
+        # column vector
         row.extend(range(n_size))
         col.extend([n_size] * n_size)
-        data.extend([1] * n_size)
+        data.extend(c_torsion)
 
-        # row vector of ones
+        # row vector
         row.extend([n_size] * n_size)
         col.extend(range(n_size))
-        data.extend([1] * n_size)
+        data.extend(c_torsion)
 
         k_lg = coo_matrix(
             (data, (row, col)), shape=(n_size + 1, n_size + 1), dtype=float
@@ -1678,6 +1680,67 @@ class Section:
 
             # display the legend
             ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+
+        return ax
+
+    def plot_warping_function(
+        self,
+        title: str = "Warping Function",
+        level: int = 20,
+        cmap: str = "viridis",
+        alpha: float = 0.2,
+        with_lines: bool = True,
+        **kwargs,
+    ):
+        r"""Plots the warping function over the mesh.
+
+        Args:
+            title: Plot title
+            level: Number of contour levels
+            cmap: Colormap
+            with_lines: If set to True, contour lines are displayed
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
+            kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
+
+        Raises:
+            RuntimeError: If a warping analysis has not been performed
+
+        Returns:
+            Matplotlib axes object
+        """
+        if self.section_props.omega is None:
+            raise RuntimeError(
+                "Perform a warping analysis before plotting the warping function."
+            )
+
+        # create plot and setup the plot
+        with post.plotting_context(title=title, **kwargs) as (fig, ax):
+            assert ax
+
+            # create triangulation
+            triang = tri.Triangulation(
+                self._mesh_nodes[:, 0],
+                self._mesh_nodes[:, 1],
+                self._mesh_elements[:, 0:3],
+            )
+
+            if with_lines:
+                ax.tricontour(
+                    triang,
+                    self.section_props.omega,
+                    colors="k",
+                    levels=level,
+                )
+
+            ax.tricontourf(
+                triang,
+                self.section_props.omega,
+                cmap=cmap,
+                levels=level,
+            )
+
+            # plot the finite element mesh
+            self.plot_mesh(alpha=alpha, materials=False, **dict(kwargs, ax=ax))
 
         return ax
 
