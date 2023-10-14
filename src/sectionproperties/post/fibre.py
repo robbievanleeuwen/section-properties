@@ -126,7 +126,7 @@ def to_fibre_section(
     *,
     main_section_tag: int = 1,
     analysis_type: str = "3DOS",
-    material_mapping: dict[str, str] | None = None,
+    material_mapping: dict[str, int] | None = None,
     max_width: int = 160,
     save_to: str | None = None,
 ) -> str:
