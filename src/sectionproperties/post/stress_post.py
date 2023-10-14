@@ -6,6 +6,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
+import matplotlib
 import matplotlib.tri as tri
 import numpy as np
 import numpy.typing as npt
