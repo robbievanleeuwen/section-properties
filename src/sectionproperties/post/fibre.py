@@ -6,7 +6,8 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from numpy import ndarray
+import numpy as np
+import numpy.typing as npt
 
 from sectionproperties.analysis import Section, solver
 from sectionproperties.analysis.fea import Tri6, shape_function
@@ -36,7 +37,11 @@ class Cell:
     py: float
     pz: float
 
-    def __init__(self, ele: Tri6, omega: ndarray | None = None):
+    def __init__(
+        self,
+        ele: Tri6,
+        omega: npt.NDArray[np.float64] | None = None,
+    ) -> None:
         """Converts a Tri6 element to a fibre cell.
 
         If `omega` is None, no warping is considered.
@@ -121,7 +126,7 @@ def to_fibre_section(
     *,
     main_section_tag: int = 1,
     analysis_type: str = "3DOS",
-    material_mapping: dict | None = None,
+    material_mapping: dict[str, str] | None = None,
     max_width: int = 160,
     save_to: str | None = None,
 ) -> str:
