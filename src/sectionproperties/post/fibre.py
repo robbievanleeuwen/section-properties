@@ -9,9 +9,9 @@ from abc import abstractmethod
 import numpy as np
 import numpy.typing as npt
 
-from sectionproperties.analysis import Section, solver
 from sectionproperties.analysis.fea import Tri6, shape_function
-from sectionproperties.pre import CompoundGeometry, Geometry
+from sectionproperties.analysis.section import Section, solver
+from sectionproperties.pre.geometry import CompoundGeometry, Geometry
 
 
 class Cell:

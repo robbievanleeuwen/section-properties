@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-import matplotlib.axes
 import matplotlib.tri as tri
 import numpy as np
 import numpy.typing as npt
@@ -18,6 +17,8 @@ import sectionproperties.post.post as post
 
 
 if TYPE_CHECKING:
+    import matplotlib.axes
+
     from sectionproperties.analysis.section import MaterialGroup, Section
     from sectionproperties.pre.pre import Material
 
@@ -64,7 +65,7 @@ class StressPost:
         colorbar_label: str = "Stress",
         alpha: float = 0.5,
         material_list: list[Material] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> matplotlib.axes.Axes:
         r"""Plots filled stress contours over the finite element mesh.
 
@@ -375,7 +376,7 @@ class StressPost:
         fmt: str = "{x:.4e}",
         colorbar_label: str = "Stress",
         alpha: float = 0.2,
-        **kwargs,
+        **kwargs: Any,
     ) -> matplotlib.axes.Axes:
         r"""Plots stress vectors over the finite element mesh.
 
@@ -497,7 +498,8 @@ class StressPost:
                     )
 
                     # get the scale and store the max value
-                    quiv._init()
+                    quiv._init()  # type: ignore
+                    assert isinstance(quiv.scale, float)
                     max_scale = max(max_scale, quiv.scale)
                     quiv_list.append(quiv)
 
@@ -516,6 +518,7 @@ class StressPost:
             divider = make_axes_locatable(axes=ax)
             cax = divider.append_axes(position="right", size="5%", pad=0.1)
 
+            assert quiv is not None
             fig.colorbar(
                 mappable=quiv, label=colorbar_label, format=fmt, ticks=v1, cax=cax
             )
@@ -670,7 +673,7 @@ class StressPost:
         x: float,
         y: float,
         title: str | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> matplotlib.axes.Axes:
         r"""Plots Mohr's circles of the 3D stress state at position (``x``, ``y``).
 
@@ -809,6 +812,7 @@ class StressPost:
 
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (_, ax):
+            assert ax is not None
             plot_circle(
                 ax,
                 (0.5 * (sigma_2 + sigma_3), 0),

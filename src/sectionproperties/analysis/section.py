@@ -8,10 +8,10 @@ from __future__ import annotations
 
 import warnings
 from dataclasses import dataclass, field
-from typing import Callable, cast
+from typing import TYPE_CHECKING, Any, Callable, cast
 
-import matplotlib.axes
 import matplotlib.patches as mpatches
+import matplotlib.tri as tri
 import numpy as np
 import numpy.typing as npt
 from matplotlib.colors import ListedColormap
@@ -31,6 +31,10 @@ import sectionproperties.post.post as post
 import sectionproperties.post.stress_post as sp_stress_post
 import sectionproperties.pre.geometry as sp_geom
 import sectionproperties.pre.pre as pre
+
+
+if TYPE_CHECKING:
+    import matplotlib.axes
 
 
 class Section:
@@ -1131,7 +1135,7 @@ class Section:
                 msg += "advanced_geometry.html for more information."
                 warnings.warn(msg)
 
-        def calc_plastic(progress=None):
+        def calc_plastic(progress: Progress | None = None) -> None:
             plastic_section = sp_plastic.PlasticSection(geometry=self.geometry)
             plastic_section.calculate_plastic_properties(
                 section=self, verbose=verbose, progress=progress
@@ -1455,7 +1459,7 @@ class Section:
         materials: bool = True,
         mask: list[bool] | None = None,
         title: str = "Finite Element Mesh",
-        **kwargs,
+        **kwargs: Any,
     ) -> matplotlib.axes.Axes:
         r"""Plots the finite element mesh.
 
@@ -1510,6 +1514,14 @@ class Section:
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             assert ax
 
+            # create mesh triangulation
+            triang = tri.Triangulation(
+                self._mesh_nodes[:, 0],
+                self._mesh_nodes[:, 1],
+                self._mesh_elements[:, 0:3],
+                mask=mask,
+            )
+
             # if the material colors are to be displayed
             if materials and self.materials:
                 color_array = []
@@ -1535,9 +1547,7 @@ class Section:
 
                 # plot the mesh colors
                 ax.tripcolor(
-                    self._mesh_nodes[:, 0],
-                    self._mesh_nodes[:, 1],
-                    self._mesh_elements[:, 0:3],
+                    triang,
                     c,
                     cmap=cmap,
                 )
@@ -1551,10 +1561,7 @@ class Section:
 
             # plot the mesh
             ax.triplot(
-                self._mesh_nodes[:, 0],
-                self._mesh_nodes[:, 1],
-                self._mesh_elements[:, 0:3],
-                mask=mask,
+                triang,
                 lw=0.5,
                 color="black",
                 alpha=alpha,
@@ -1566,8 +1573,8 @@ class Section:
         self,
         alpha: float = 0.5,
         title: str = "Centroids",
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> matplotlib.axes.Axes:
         r"""Plots the calculated centroids over the mesh.
 
         Plots the elastic centroid, the shear centre, the plastic centroids and the
@@ -2785,7 +2792,7 @@ class Section:
             self.section_props.beta_y_minus,
         )
 
-    def get_beta_p(self):
+    def get_beta_p(self) -> tuple[float, float, float, float]:
         """Returns the cross-section principal monosymmetry constants.
 
         Returns:

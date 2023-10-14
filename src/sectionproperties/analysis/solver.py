@@ -52,7 +52,7 @@ def solve_cgs(
     if info != 0:
         raise RuntimeError("CGS iterative method did not converge.")
 
-    return u
+    return u  # type: ignore
 
 
 def solve_cgs_lagrange(
@@ -88,7 +88,7 @@ def solve_cgs_lagrange(
     if err > tol:
         raise RuntimeError("Lagrangian multiplier method error exceeds tolerance.")
 
-    return u[:-1]
+    return u[:-1]  # type: ignore
 
 
 def solve_direct(
@@ -104,7 +104,7 @@ def solve_direct(
     Returns:
         The solution vector to the linear system of equations
     """
-    return sp_solve(A=k, b=f)
+    return sp_solve(A=k, b=f)  # type: ignore
 
 
 def solve_direct_lagrange(
@@ -134,7 +134,7 @@ def solve_direct_lagrange(
         msg = "Lagrangian multiplier method error exceeds tolerance of 1e-5."
         raise RuntimeError(msg)
 
-    return u[:-1]
+    return u[:-1]  # type: ignore
 
 
 class CustomTimeElapsedColumn(ProgressColumn):

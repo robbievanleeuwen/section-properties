@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import contextlib
+from collections.abc import Generator
 from dataclasses import asdict, dataclass
 from typing import TYPE_CHECKING, Any
 
-import matplotlib.axes
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
@@ -17,6 +17,9 @@ import sectionproperties.analysis.fea as fea
 
 
 if TYPE_CHECKING:
+    import matplotlib.axes
+    import matplotlib.figure
+
     from sectionproperties.analysis.section import Section
 
 
@@ -322,8 +325,10 @@ def plotting_context(
     filename: str = "",
     render: bool = True,
     axis_index: int | tuple[int, int] | None = None,
-    **kwargs,
-):
+    **kwargs: Any,
+) -> Generator[
+    tuple[matplotlib.figure.Figure, matplotlib.axes.Axes | Any | None], None, None
+]:
     """Executes code required to set up a matplotlib figure.
 
     Args:
@@ -396,7 +401,7 @@ def plotting_context(
 
     if render:
         if pause:
-            plt.show()
+            plt.show()  # type: ignore
         else:
             plt.draw()
             plt.pause(0.001)

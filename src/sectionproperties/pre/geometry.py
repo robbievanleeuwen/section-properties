@@ -5,9 +5,8 @@ from __future__ import annotations
 import copy
 import math
 import pathlib
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
-import matplotlib.axes
 import more_itertools
 import numpy as np
 import numpy.typing as npt
@@ -26,6 +25,10 @@ from shapely.ops import split, unary_union
 import sectionproperties.post.post as post
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.pre.pre as pre
+
+
+if TYPE_CHECKING:
+    import matplotlib.axes
 
 
 SCALE_CONSTANT = 1e-9
@@ -100,7 +103,7 @@ class Geometry:
         print("sectionproperties.pre.geometry.Geometry")
         print(f"object at: {hex(id(self))}")
         print(f"Material: {self.material.name}")
-        return self.geom._repr_svg_()
+        return str(self.geom._repr_svg_())
 
     def assign_control_point(
         self,
@@ -287,7 +290,7 @@ class Geometry:
     def from_3dm(
         cls,
         filepath: str | pathlib.Path,
-        **kwargs,
+        **kwargs: Any,
     ) -> Geometry:
         """Creates a Geometry object from a Rhino ``.3dm`` file.
 
@@ -351,7 +354,11 @@ class Geometry:
         return geom
 
     @classmethod
-    def from_rhino_encoding(cls, r3dm_brep: str, **kwargs) -> Geometry:
+    def from_rhino_encoding(
+        cls,
+        r3dm_brep: str,
+        **kwargs: Any,
+    ) -> Geometry:
         """Load an encoded single surface planer brep.
 
         Args:
@@ -1125,7 +1132,7 @@ class Geometry:
         title: str = "Cross-Section Geometry",
         cp: bool = True,
         legend: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ) -> matplotlib.axes.Axes:
         """Plots the geometry defined by the input section.
 
@@ -1231,7 +1238,7 @@ class Geometry:
         Returns:
             Geometry perimeter
         """
-        return self.geom.exterior.length
+        return float(self.geom.exterior.length)
 
     def calculate_area(self) -> float:
         """Calculates the area of the geometry.
@@ -1239,7 +1246,7 @@ class Geometry:
         Returns:
             Geometry area
         """
-        return self.geom.area
+        return float(self.geom.area)
 
     def calculate_centroid(self) -> tuple[float, float]:
         """Calculates the centroid of the geometry.
@@ -1247,7 +1254,7 @@ class Geometry:
         Returns:
             Geometry centroid
         """
-        return self.geom.centroid.coords[0]
+        return cast(tuple[float, float], self.geom.centroid.coords[0])
 
     @property
     def recovery_points(self) -> list[tuple[float, float]] | list[Point]:
@@ -1628,7 +1635,7 @@ class CompoundGeometry(Geometry):
         print(f"object at: {hex(id(self))}")
         print(f"Materials incl.: {list(set(materials_list))}")
 
-        return self.geom._repr_svg_()
+        return str(self.geom._repr_svg_())
 
     @staticmethod
     def from_points(
@@ -1846,7 +1853,11 @@ class CompoundGeometry(Geometry):
             return CompoundGeometry(punched_exterior_geometries)
 
     @classmethod
-    def from_3dm(cls, filepath: str | pathlib.Path, **kwargs) -> CompoundGeometry:
+    def from_3dm(
+        cls,
+        filepath: str | pathlib.Path,
+        **kwargs: Any,
+    ) -> CompoundGeometry:
         """Creates a CompoundGeometry object from the objects in a Rhino ``3dm`` file.
 
         Args:
@@ -2413,7 +2424,7 @@ class CompoundGeometry(Geometry):
         if isinstance(unionized_poly, MultiPolygon):
             return -1.0
 
-        return unionized_poly.exterior.length
+        return float(unionized_poly.exterior.length)
 
 
 def load_dxf(

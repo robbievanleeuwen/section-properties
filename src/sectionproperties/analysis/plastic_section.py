@@ -331,7 +331,7 @@ class PlasticSection:
         else:
             u_p = np.array([u[1], -u[0]])
 
-        return brentq(
+        d, r = brentq(
             f=self.evaluate_force_eq,
             a=dlim[0],
             b=dlim[1],
@@ -341,6 +341,7 @@ class PlasticSection:
             xtol=1e-6,
             rtol=1e-6,
         )
+        return float(d), r
 
     def evaluate_force_eq(
         self,

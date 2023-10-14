@@ -1322,7 +1322,7 @@ def box_girder_section(
     t_fb: float,
     t_w: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-):
+) -> geometry.Geometry:
     """Constructs a box girder section.
 
     Constructs a box girder section centered at at ``(max(b_t, b_b)/2, d/2)``, with

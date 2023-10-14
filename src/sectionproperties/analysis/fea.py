@@ -1026,7 +1026,7 @@ def shape_function(
         direction ``B(i,j)`` (``[2 x 6]``), the determinant of the Jacobian
         matrix ``j``, the global cooridnates of the Gauss point (``x``, ``y``)
     """
-    return __shape_function_cached(tuple(coords.ravel()), tuple(gauss_point[1:]))
+    return __shape_function_cached(tuple(coords.ravel()), tuple(gauss_point[1:]))  # type: ignore
 
 
 @lru_cache(maxsize=None)
