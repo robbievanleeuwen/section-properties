@@ -10,6 +10,7 @@ from typing import Any, cast
 import matplotlib.axes
 import more_itertools
 import numpy as np
+import numpy.typing as npt
 from shapely import (
     GeometryCollection,
     LinearRing,
@@ -820,7 +821,7 @@ class Geometry:
         self,
         point_i: tuple[float, float],
         point_j: tuple[float, float] | None = None,
-        vector: tuple[float, float] | np.ndarray | None = None,
+        vector: tuple[float, float] | npt.NDArray[np.float64] | None = None,
     ) -> tuple[list[Geometry], list[Geometry]]:
         """Splits geometry about a line.
 
@@ -2194,7 +2195,7 @@ class CompoundGeometry(Geometry):
         self,
         point_i: tuple[float, float],
         point_j: tuple[float, float] | None = None,
-        vector: tuple[float, float] | None | np.ndarray = None,
+        vector: tuple[float, float] | None | npt.NDArray[np.float64] = None,
     ) -> tuple[list[Geometry], list[Geometry]]:
         """Splits CompoundGeometry about a line.
 
@@ -2725,7 +2726,11 @@ def check_geometry_disjoint(
                     connectivity.add(idx_j)
                 network[idx_i] = connectivity
 
-    def walk_network(node: int, network: dict, nodes_visited: list[int]) -> list[int]:
+    def walk_network(
+        node: int,
+        network: dict[int, set[int]],
+        nodes_visited: list[int],
+    ) -> list[int]:
         """Walks the network modifying 'nodes_visited' as it walks.
 
         Args:

@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import contextlib
 from dataclasses import asdict, dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import matplotlib.axes
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 from rich.console import Console
 from rich.table import Table
 
@@ -161,9 +162,9 @@ class SectionProperties:
     r11_c: float | None = None
     r22_c: float | None = None
     j: float | None = None
-    omega: np.ndarray | None = None
-    psi_shear: np.ndarray | None = None
-    phi_shear: np.ndarray | None = None
+    omega: npt.NDArray[np.float64] | None = None
+    psi_shear: npt.NDArray[np.float64] | None = None
+    phi_shear: npt.NDArray[np.float64] | None = None
     delta_s: float | None = None
     x_se: float | None = None
     y_se: float | None = None
@@ -202,7 +203,7 @@ class SectionProperties:
     sf_22_plus: float | None = None
     sf_22_minus: float | None = None
 
-    def asdict(self) -> dict:
+    def asdict(self) -> dict[str, Any]:
         """Returns the SectionProperties dataclass object as a dictionary.
 
         Returns:
@@ -429,7 +430,7 @@ def draw_principal_axis(
 
     def add_point(
         vec: list[list[float]],
-        basis: np.ndarray,
+        basis: npt.NDArray[np.float64],
         centroid: tuple[float, float],
         num: float,
         denom: float,
@@ -448,10 +449,10 @@ def draw_principal_axis(
             vec.append([point[0], point[1]])
 
     def get_principal_points(
-        basis: np.ndarray,
+        basis: npt.NDArray[np.float64],
         lims: tuple[float, float, float, float],
         centroid: tuple[float, float],
-    ) -> np.ndarray:
+    ) -> npt.NDArray[np.float64]:
         """Returns intersection points of prinicipal axis with bounding box.
 
         Determines the intersections of the principal axis with the four lines

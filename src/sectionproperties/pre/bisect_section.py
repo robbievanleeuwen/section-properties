@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import numpy as np
+import numpy.typing as npt
 from shapely import GeometryCollection, LineString, Polygon
 
 
 def create_line_segment(
-    point_on_line: tuple[float, float] | np.ndarray,
-    vector: np.ndarray,
+    point_on_line: tuple[float, float] | npt.NDArray[np.float64],
+    vector: npt.NDArray[np.float64],
     bounds: tuple[float, float, float, float],
 ) -> LineString:
     """Create a line segment given a point, vector and bounds.

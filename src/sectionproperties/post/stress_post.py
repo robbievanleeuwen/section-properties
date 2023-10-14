@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 import matplotlib.axes
 import matplotlib.tri as tri
 import numpy as np
+import numpy.typing as npt
 from matplotlib.colors import CenteredNorm
 from matplotlib.patches import Circle
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
@@ -527,7 +528,7 @@ class StressPost:
         else:
             raise RuntimeError("Plot failed.")
 
-    def get_stress(self) -> list[dict]:
+    def get_stress(self) -> list[dict[str, object]]:
         r"""Returns the stresses within each material.
 
         Returns:
@@ -922,31 +923,31 @@ class StressResult:
         sig_vm: von Mises stress (:math:`\sigma_{VM}`) resulting from all actions
     """
     num_nodes: int
-    sig_zz_n: np.ndarray = field(init=False)
-    sig_zz_mxx: np.ndarray = field(init=False)
-    sig_zz_myy: np.ndarray = field(init=False)
-    sig_zz_m11: np.ndarray = field(init=False)
-    sig_zz_m22: np.ndarray = field(init=False)
-    sig_zx_mzz: np.ndarray = field(init=False)
-    sig_zy_mzz: np.ndarray = field(init=False)
-    sig_zx_vx: np.ndarray = field(init=False)
-    sig_zy_vx: np.ndarray = field(init=False)
-    sig_zx_vy: np.ndarray = field(init=False)
-    sig_zy_vy: np.ndarray = field(init=False)
-    sig_zz_m: np.ndarray = field(init=False)
-    sig_zxy_mzz: np.ndarray = field(init=False)
-    sig_zxy_vx: np.ndarray = field(init=False)
-    sig_zxy_vy: np.ndarray = field(init=False)
-    sig_zx_v: np.ndarray = field(init=False)
-    sig_zy_v: np.ndarray = field(init=False)
-    sig_zxy_v: np.ndarray = field(init=False)
-    sig_zz: np.ndarray = field(init=False)
-    sig_zx: np.ndarray = field(init=False)
-    sig_zy: np.ndarray = field(init=False)
-    sig_zxy: np.ndarray = field(init=False)
-    sig_11: np.ndarray = field(init=False)
-    sig_33: np.ndarray = field(init=False)
-    sig_vm: np.ndarray = field(init=False)
+    sig_zz_n: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_mxx: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_myy: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_m11: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_m22: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_mzz: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_mzz: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_vx: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_vx: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_vy: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_vy: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_m: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_mzz: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_vx: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_vy: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_v: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_v: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_v: npt.NDArray[np.float64] = field(init=False)
+    sig_zz: npt.NDArray[np.float64] = field(init=False)
+    sig_zx: npt.NDArray[np.float64] = field(init=False)
+    sig_zy: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy: npt.NDArray[np.float64] = field(init=False)
+    sig_11: npt.NDArray[np.float64] = field(init=False)
+    sig_33: npt.NDArray[np.float64] = field(init=False)
+    sig_vm: npt.NDArray[np.float64] = field(init=False)
 
     def __post_init__(self) -> None:
         """Preallocates the numpy arrays in StressResult."""

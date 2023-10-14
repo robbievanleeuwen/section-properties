@@ -13,6 +13,7 @@ from typing import Callable, cast
 import matplotlib.axes
 import matplotlib.patches as mpatches
 import numpy as np
+import numpy.typing as npt
 from matplotlib.colors import ListedColormap
 from rich.console import Console
 from rich.live import Live
@@ -405,7 +406,7 @@ class Section:
                     k_lg_precond = ilu_decomp()
 
             # solve for warping function
-            def solve_warping() -> np.ndarray:
+            def solve_warping() -> npt.NDArray[np.float64]:
                 if solver_type == "cgs" and k_lg_precond:
                     omega = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_torsion, m=k_lg_precond
@@ -452,7 +453,7 @@ class Section:
             def assemble_shear_load(
                 progress: Progress | None = None,
                 task: TaskID | None = None,
-            ) -> tuple[np.ndarray, np.ndarray]:
+            ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
                 f_psi = np.zeros(self.num_nodes)
                 f_phi = np.zeros(self.num_nodes)
 
@@ -488,7 +489,7 @@ class Section:
             def solve_shear_functions(
                 progress: Progress | None = None,
                 task: TaskID | None = None,
-            ) -> tuple[np.ndarray, np.ndarray]:
+            ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
                 if solver_type == "cgs" and k_lg_precond:
                     psi_shear = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_psi, m=k_lg_precond
@@ -988,7 +989,7 @@ class Section:
                     k_lg_precond = ilu_decomp()
 
             # solve for warping function
-            def solve_warping() -> np.ndarray:
+            def solve_warping() -> npt.NDArray[np.float64]:
                 if solver_type == "cgs" and k_lg_precond:
                     omega = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_torsion, m=k_lg_precond
@@ -1389,7 +1390,7 @@ class Section:
         self,
         progress: Progress | None = None,
         task: TaskID | None = None,
-    ) -> tuple[csc_matrix, np.ndarray]:
+    ) -> tuple[csc_matrix, npt.NDArray[np.float64]]:
         """Assembles the warping stiffness matrix.
 
         Assembles stiffness matrices to be used for the computation of warping
@@ -3052,7 +3053,7 @@ class Section:
         mzz: float = 0.0,
         vx: float = 0.0,
         vy: float = 0.0,
-        agg_func: Callable = np.average,
+        agg_func: Callable[[list[float]], float] = np.average,
     ) -> list[tuple[float, float, float] | None]:
         """Calculates the stress for a list of points.
 
