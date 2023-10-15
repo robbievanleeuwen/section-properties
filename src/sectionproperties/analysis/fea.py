@@ -13,6 +13,7 @@ from functools import lru_cache
 from typing import TYPE_CHECKING
 
 import numpy as np
+import numpy.typing as npt
 from numba import njit
 from numba.core.errors import NumbaPerformanceWarning
 
@@ -21,17 +22,17 @@ if TYPE_CHECKING:
     from sectionproperties.pre.pre import Material
 
 
-@njit(cache=True, nogil=True)
+@njit(cache=True, nogil=True)  # type: ignore
 def _assemble_torsion(
-    k_el: np.ndarray,
-    f_el: np.ndarray,
-    c_el: np.ndarray,
-    n: np.ndarray,
-    b: np.ndarray,
+    k_el: npt.NDArray[np.float64],
+    f_el: npt.NDArray[np.float64],
+    c_el: npt.NDArray[np.float64],
+    n: npt.NDArray[np.float64],
+    b: npt.NDArray[np.float64],
     weight: float,
     nx: float,
     ny: float,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     """Utility function for calculating the torsion stiffness matrix and load vector.
 
     Args:
@@ -54,7 +55,7 @@ def _assemble_torsion(
     return k_el, f_el, c_el
 
 
-@njit(cache=True, nogil=True)
+@njit(cache=True, nogil=True)  # type: ignore
 def _shear_parameter(
     nx: float, ny: float, ixx: float, iyy: float, ixy: float
 ) -> tuple[float, float, float, float, float, float]:
@@ -80,12 +81,12 @@ def _shear_parameter(
     return r, q, d1, d2, h1, h2
 
 
-@njit(cache=True, nogil=True)
+@njit(cache=True, nogil=True)  # type: ignore
 def _assemble_shear_load(
-    f_psi: np.ndarray,
-    f_phi: np.ndarray,
-    b: np.ndarray,
-    n: np.ndarray,
+    f_psi: npt.NDArray[np.float64],
+    f_phi: npt.NDArray[np.float64],
+    b: npt.NDArray[np.float64],
+    n: npt.NDArray[np.float64],
     weight: float,
     nx: float,
     ny: float,
@@ -93,7 +94,7 @@ def _assemble_shear_load(
     iyy: float,
     ixy: float,
     nu: float,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     """Utility function for calculating the shear load vectors.
 
     Args:
@@ -125,14 +126,14 @@ def _assemble_shear_load(
     return f_psi, f_phi
 
 
-@njit(cache=True, nogil=True)
+@njit(cache=True, nogil=True)  # type: ignore
 def _assemble_shear_coefficients(
     kappa_x: float,
     kappa_y: float,
     kappa_xy: float,
-    psi_shear: np.ndarray,
-    phi_shear: np.ndarray,
-    b: np.ndarray,
+    psi_shear: npt.NDArray[np.float64],
+    phi_shear: npt.NDArray[np.float64],
+    b: npt.NDArray[np.float64],
     weight: float,
     nx: float,
     ny: float,
@@ -190,13 +191,13 @@ class Tri6:
     """
 
     el_id: int
-    coords: np.ndarray
+    coords: npt.NDArray[np.float64]
     node_ids: list[int]
     material: Material
 
     # _m and _x0 are used for global coord to local coord mapping
-    _m: np.ndarray = field(init=False)
-    _x0: np.ndarray = field(init=False)
+    _m: npt.NDArray[np.float64] = field(init=False)
+    _x0: npt.NDArray[np.float64] = field(init=False)
 
     def __post_init__(self) -> None:
         """Sets up the global to local mapping."""
@@ -277,7 +278,11 @@ class Tri6:
             self.material.density,
         )
 
-    def torsion_properties(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def torsion_properties(
+        self,
+    ) -> tuple[
+        npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]
+    ]:
         """Calculates the element warping stiffness matrix and the torsion load vector.
 
         Returns:
@@ -310,7 +315,7 @@ class Tri6:
         iyy: float,
         ixy: float,
         nu: float,
-    ) -> tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         """Calculates the element shear load vectors for evaluating the shear functions.
 
         Args:
@@ -357,7 +362,7 @@ class Tri6:
         ixx: float,
         iyy: float,
         ixy: float,
-        omega: np.ndarray,
+        omega: npt.NDArray[np.float64],
     ) -> tuple[float, float, float, float, float, float]:
         """Calculates the element shear centre and warping integrals for shear analysis.
 
@@ -373,12 +378,12 @@ class Tri6:
             ``i_yomega``)
         """
         # initialise integrals
-        sc_xint: float = 0
-        sc_yint: float = 0
-        q_omega: float = 0
-        i_omega: float = 0
-        i_xomega: float = 0
-        i_yomega: float = 0
+        sc_xint: float = 0.0
+        sc_yint: float = 0.0
+        q_omega: float = 0.0
+        i_omega: float = 0.0
+        i_xomega: float = 0.0
+        i_yomega: float = 0.0
 
         # Gauss points for 4 point Gaussian integration
         gps = gauss_points(n=4)
@@ -406,8 +411,8 @@ class Tri6:
         ixx: float,
         iyy: float,
         ixy: float,
-        psi_shear: np.ndarray,
-        phi_shear: np.ndarray,
+        psi_shear: npt.NDArray[np.float64],
+        phi_shear: npt.NDArray[np.float64],
         nu: float,
     ) -> tuple[float, float, float]:
         """Calculates the variables used to for the shear deformation coefficients.
@@ -424,9 +429,9 @@ class Tri6:
             Shear deformation variables (``kappa_x``, ``kappa_y``, ``kappa_xy``)
         """
         # initialise properties
-        kappa_x: float = 0
-        kappa_y: float = 0
-        kappa_xy: float = 0
+        kappa_x: float = 0.0
+        kappa_y: float = 0.0
+        kappa_xy: float = 0.0
 
         # Gauss points for 4 point Gaussian integration
         gps = gauss_points(n=4)
@@ -471,10 +476,10 @@ class Tri6:
             ``int_11``, ``int_22``)
         """
         # initialise properties
-        int_x: float = 0
-        int_y: float = 0
-        int_11: float = 0
-        int_22: float = 0
+        int_x: float = 0.0
+        int_y: float = 0.0
+        int_11: float = 0.0
+        int_22: float = 0.0
 
         # Gauss points for 4 point Gaussian integration
         gps = gauss_points(n=4)
@@ -518,23 +523,23 @@ class Tri6:
         phi: float,
         j: float,
         nu: float,
-        omega: np.ndarray,
-        psi_shear: np.ndarray,
-        phi_shear: np.ndarray,
+        omega: npt.NDArray[np.float64],
+        psi_shear: npt.NDArray[np.float64],
+        phi_shear: npt.NDArray[np.float64],
         delta_s: float,
     ) -> tuple[
-        np.ndarray,
-        np.ndarray,
-        np.ndarray,
-        np.ndarray,
-        np.ndarray,
-        np.ndarray,
-        np.ndarray,
-        np.ndarray,
-        np.ndarray,
-        np.ndarray,
-        np.ndarray,
-        np.ndarray,
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
     ]:
         r"""Calculates the stress within an element resulting from a specified loading.
 
@@ -692,9 +697,9 @@ class Tri6:
         phi: float,
         j: float,
         nu: float,
-        omega: np.ndarray,
-        psi_shear: np.ndarray,
-        phi_shear: np.ndarray,
+        omega: npt.NDArray[np.float64],
+        psi_shear: npt.NDArray[np.float64],
+        phi_shear: npt.NDArray[np.float64],
         delta_s: float,
     ) -> tuple[float, float, float]:
         r"""Calculates the stress at a point resulting from a specified loading.
@@ -876,7 +881,7 @@ class Tri6:
 
 
 @lru_cache(maxsize=None)
-def gauss_points(*, n: int) -> np.ndarray:
+def gauss_points(*, n: int) -> npt.NDArray[np.float64]:
     """Gaussian weights and locations for ``n`` point Gaussian integration of a Tri6.
 
     Reference:
@@ -946,11 +951,11 @@ tmp_array = np.array([[0, 1, 0], [0, 0, 1]], dtype=np.double)
 
 
 @lru_cache(maxsize=None)
-@njit(cache=True, nogil=True)
+@njit(cache=True, nogil=True)  # type: ignore
 def __shape_function_cached(
     coords: tuple[float, ...],
     gauss_point: tuple[float, float, float],
-) -> tuple[np.ndarray, np.ndarray, float, float, float]:
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], float, float, float]:
     """The cached version.
 
     Args:
@@ -1011,9 +1016,9 @@ def __shape_function_cached(
 
 
 def shape_function(
-    coords: np.ndarray,
+    coords: npt.NDArray[np.float64],
     gauss_point: tuple[float, float, float, float],
-) -> tuple[np.ndarray, np.ndarray, float, float, float]:
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], float, float, float]:
     """Calculates shape functions, derivates and the Jacobian determinant.
 
     Computes the shape functions, shape function derivatives and the determinant of the
@@ -1030,12 +1035,12 @@ def shape_function(
         direction ``B(i,j)`` (``[2 x 6]``), the determinant of the Jacobian
         matrix ``j``, the global cooridnates of the Gauss point (``x``, ``y``)
     """
-    return __shape_function_cached(tuple(coords.ravel()), tuple(gauss_point[1:]))
+    return __shape_function_cached(tuple(coords.ravel()), tuple(gauss_point[1:]))  # type: ignore
 
 
 @lru_cache(maxsize=None)
-@njit(cache=True, nogil=True)
-def shape_function_only(p: tuple[float, float, float]) -> np.ndarray:
+@njit(cache=True, nogil=True)  # type: ignore
+def shape_function_only(p: tuple[float, float, float]) -> npt.NDArray[np.float64]:
     """The values of the ``Tri6`` shape function at a point ``p``.
 
     Args:
@@ -1112,8 +1117,8 @@ h_inv = np.array(
 )
 
 
-@njit(cache=True, nogil=True)
-def extrapolate_to_nodes(w: np.ndarray) -> np.ndarray:
+@njit(cache=True, nogil=True)  # type: ignore
+def extrapolate_to_nodes(w: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """Extrapolates results at six Gauss points to the six nodes of a ``Tri6`` element.
 
     Args:
@@ -1125,7 +1130,7 @@ def extrapolate_to_nodes(w: np.ndarray) -> np.ndarray:
     return h_inv @ w
 
 
-@njit(cache=True, nogil=True)
+@njit(cache=True, nogil=True)  # type: ignore
 def principal_coordinate(
     phi: float,
     x: float,
@@ -1148,7 +1153,7 @@ def principal_coordinate(
     return x * cos_phi + y * sin_phi, y * cos_phi - x * sin_phi
 
 
-@njit(cache=True, nogil=True)
+@njit(cache=True, nogil=True)  # type: ignore
 def global_coordinate(
     phi: float,
     x11: float,
@@ -1171,9 +1176,9 @@ def global_coordinate(
     return x11 * cos_phi - y22 * sin_phi, x11 * sin_phi + y22 * cos_phi
 
 
-@njit(cache=True, nogil=True)
+@njit(cache=True, nogil=True)  # type: ignore
 def point_above_line(
-    u: np.ndarray,
+    u: npt.NDArray[np.float64],
     px: float,
     py: float,
     x: float,

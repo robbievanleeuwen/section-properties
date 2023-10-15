@@ -417,8 +417,8 @@ def nastran_cross(
     # construct the points and facets
     d = 0.5 * (dim_3 - dim_4)
     points = [
-        (0.5 * dim_1, 0),
-        (0.5 * dim_1 + dim_2, 0),
+        (0.5 * dim_1, 0.0),
+        (0.5 * dim_1 + dim_2, 0.0),
         (0.5 * dim_1 + dim_2, d),
         (dim_1 + dim_2, d),
         (dim_1 + dim_2, d + dim_4),
@@ -426,18 +426,18 @@ def nastran_cross(
         (0.5 * dim_1 + dim_2, dim_3),
         (0.5 * dim_1, dim_3),
         (0.5 * dim_1, d + dim_4),
-        (0, d + dim_4),
-        (0, d),
+        (0.0, d + dim_4),
+        (0.0, d),
         (0.5 * dim_1, d),
     ]
 
     geom = geometry.Geometry(geom=Polygon(points), material=material)
 
-    c = (0, 0.5 * dim_3)
-    d = (0.5 * (dim_1 + dim_2), 0)
-    e = (0, -0.5 * dim_3)
-    f = (-0.5 * (dim_1 + dim_2), 0)
-    geom.recovery_points = [c, d, e, f]
+    c = (0.0, 0.5 * dim_3)
+    d_r = (0.5 * (dim_1 + dim_2), 0.0)
+    e = (0.0, -0.5 * dim_3)
+    f = (-0.5 * (dim_1 + dim_2), 0.0)
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 
@@ -528,10 +528,10 @@ def nastran_fcross(
 
     geom = geometry.Geometry(geom=Polygon(points), material=material)
 
-    c = (0, 0.5 * dim_1)
-    d = (0.5 * dim_2, 0)
-    e = (0, -0.5 * dim_1)
-    f = (-0.5 * dim_2, 0)
+    c = (0.0, 0.5 * dim_1)
+    d = (0.5 * dim_2, 0.0)
+    e = (0.0, -0.5 * dim_1)
+    f = (-0.5 * dim_2, 0.0)
     geom.recovery_points = [c, d, e, f]
 
     return geom
@@ -697,10 +697,10 @@ def nastran_gbox(
     )
 
     c = (0.5 * dim_1, 0.5 * dim_2)
-    d = (0.5 * dim_1, -0.5 * dim_2)
+    d_r = (0.5 * dim_1, -0.5 * dim_2)
     e = (-0.5 * dim_1, -0.5 * dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_2)
-    geom.recovery_points = [c, d, e, f]
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 
@@ -898,8 +898,8 @@ def nastran_hat1(
         + bottom_plate
     )
 
-    c = (-0.5 * dim_1, 0)
-    d = (0.5 * dim_1, 0)
+    c = (-0.5 * dim_1, 0.0)
+    d = (0.5 * dim_1, 0.0)
     e = (-0.5 * dim_3, dim_2)
     f = (0.5 * dim_3, dim_2)
 
@@ -955,10 +955,10 @@ def nastran_hexa(
 
     geom = geometry.Geometry(geom=Polygon(points), material=material)
 
-    c = 0, 0.5 * dim_3
-    d = 0, -0.5 * dim_3
-    e = 0.5 * dim_2, 0
-    f = -0.5 * dim_2, 0
+    c = 0.0, 0.5 * dim_3
+    d = 0.0, -0.5 * dim_3
+    e = 0.5 * dim_2, 0.0
+    f = -0.5 * dim_2, 0.0
     geom.recovery_points = [c, d, e, f]
 
     return geom
@@ -1207,11 +1207,11 @@ def nastran_rod(
 
     geom = geometry.Geometry(geom=Polygon(points), material=material)
 
-    c = (0, dim_1)
-    d = (dim_1, 0)
-    e = (0, -dim_1)
-    f = (-dim_1, 0)
-    geom.recovery_points = [c, d, e, f]
+    c = (0.0, dim_1)
+    d_r = (dim_1, 0.0)
+    e = (0.0, -dim_1)
+    f = (-dim_1, 0.0)
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 
@@ -1258,7 +1258,7 @@ def nastran_tee(
     b = dim_1
     t_f = dim_3
     t_w = dim_4
-    r = 0
+    r = 0.0
     n_r = 1
 
     points: list[tuple[float, float]] = []
@@ -1283,11 +1283,11 @@ def nastran_tee(
 
     geom = geometry.Geometry(geom=Polygon(points), material=material)
 
-    c = (0, 0.5 * dim_3)
-    d = (0.5 * dim_1, 0.5 * dim_3)
-    e = (0, 0.5 * dim_3 - dim_2)
+    c = (0.0, 0.5 * dim_3)
+    d_r = (0.5 * dim_1, 0.5 * dim_3)
+    e = (0.0, 0.5 * dim_3 - dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_3)
-    geom.recovery_points = [c, d, e, f]
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 
@@ -1474,11 +1474,11 @@ def nastran_tube(
     interior = geometry.Geometry(geom=Polygon(points_inner), material=material)
     geom = exterior - interior
 
-    c = (0, dim_1)
-    d = (dim_1, 0)
-    e = (0, -dim_1)
-    f = (-dim_1, 0)
-    geom.recovery_points = [c, d, e, f]
+    c = (0.0, dim_1)
+    d_r = (dim_1, 0.0)
+    e = (0.0, -dim_1)
+    f = (-dim_1, 0.0)
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 
@@ -1543,11 +1543,11 @@ def nastran_tube2(
     interior = geometry.Geometry(geom=Polygon(points_inner), material=material)
     geom = exterior - interior
 
-    c = (0, dim_1)
-    d = (dim_1, 0)
-    e = (0, -dim_1)
-    f = (-dim_1, 0)
-    geom.recovery_points = [c, d, e, f]
+    c = (0.0, dim_1)
+    d_r = (dim_1, 0.0)
+    e = (0.0, -dim_1)
+    f = (-dim_1, 0.0)
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 

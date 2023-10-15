@@ -44,3 +44,6 @@ __pycache__/
 
 # benchmark results
 .benchmarks/
+
+# mypy cache
+.mypy_cache/
