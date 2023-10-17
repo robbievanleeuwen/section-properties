@@ -26,6 +26,7 @@ python_versions = ["3.11", "3.10", "3.9"]
 nox.needs_version = ">= 2021.6.6"
 nox.options.sessions = (
     "pre-commit",
+    "mypy",
     "tests",
     "docs-build",
 )
@@ -135,6 +136,21 @@ def precommit(session: Session) -> None:
     session.run("pre-commit", *args)
     if args and args[0] == "install":
         activate_virtualenv_in_precommit_hooks(session)
+
+
+@session(python=python_versions)
+def mypy(session: Session) -> None:
+    """Type-check using mypy.
+
+    Args:
+        session: Nox session
+    """
+    args = session.posargs or ["src", "docs/conf.py"]
+    session.install(".")
+    session.install("mypy", "pytest")
+    session.run("mypy", *args)
+    if not session.posargs:
+        session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
 @session(python=python_versions)

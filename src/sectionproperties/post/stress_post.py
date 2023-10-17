@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-import matplotlib.axes
+import matplotlib
 import matplotlib.tri as tri
 import numpy as np
+import numpy.typing as npt
 from matplotlib.colors import CenteredNorm
 from matplotlib.patches import Circle
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
@@ -17,6 +18,8 @@ import sectionproperties.post.post as post
 
 
 if TYPE_CHECKING:
+    import matplotlib.axes
+
     from sectionproperties.analysis.section import MaterialGroup, Section
     from sectionproperties.pre.pre import Material
 
@@ -63,7 +66,7 @@ class StressPost:
         colorbar_label: str = "Stress",
         alpha: float = 0.5,
         material_list: list[Material] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> matplotlib.axes.Axes:
         r"""Plots filled stress contours over the finite element mesh.
 
@@ -374,7 +377,7 @@ class StressPost:
         fmt: str = "{x:.4e}",
         colorbar_label: str = "Stress",
         alpha: float = 0.2,
-        **kwargs,
+        **kwargs: Any,
     ) -> matplotlib.axes.Axes:
         r"""Plots stress vectors over the finite element mesh.
 
@@ -465,7 +468,7 @@ class StressPost:
 
             # initialise quiver plot list max scale
             quiv_list = []
-            max_scale = 0
+            max_scale = 0.0
 
             norm = None
             quiv = None
@@ -496,7 +499,8 @@ class StressPost:
                     )
 
                     # get the scale and store the max value
-                    quiv._init()
+                    quiv._init()  # type: ignore
+                    assert isinstance(quiv.scale, float)
                     max_scale = max(max_scale, quiv.scale)
                     quiv_list.append(quiv)
 
@@ -515,6 +519,7 @@ class StressPost:
             divider = make_axes_locatable(axes=ax)
             cax = divider.append_axes(position="right", size="5%", pad=0.1)
 
+            assert quiv is not None
             fig.colorbar(
                 mappable=quiv, label=colorbar_label, format=fmt, ticks=v1, cax=cax
             )
@@ -527,7 +532,7 @@ class StressPost:
         else:
             raise RuntimeError("Plot failed.")
 
-    def get_stress(self) -> list[dict]:
+    def get_stress(self) -> list[dict[str, object]]:
         r"""Returns the stresses within each material.
 
         Returns:
@@ -669,7 +674,7 @@ class StressPost:
         x: float,
         y: float,
         title: str | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> matplotlib.axes.Axes:
         r"""Plots Mohr's circles of the 3D stress state at position (``x``, ``y``).
 
@@ -765,9 +770,9 @@ class StressPost:
         tau_yz = tau_yz_interp(*pt).item()
 
         # assemble the stress tensor
-        sigma_xx = 0
-        sigma_yy = 0
-        tau_xy = 0
+        sigma_xx = 0.0
+        sigma_yy = 0.0
+        tau_xy = 0.0
         sigma = np.array(
             [
                 [sigma_xx, tau_xy, tau_xz],
@@ -807,7 +812,8 @@ class StressPost:
             title = f"Mohr's Circles for 3D Stress State at {(*pt,)}"
 
         # create plot and setup the plot
-        with post.plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (_, ax):
+            assert ax is not None
             plot_circle(
                 ax,
                 (0.5 * (sigma_2 + sigma_3), 0),
@@ -830,9 +836,9 @@ class StressPost:
                 r"C3: ($\sigma_{11}$, $\sigma_{22}$)",
             )
 
-            for i, plane, col in zip(range(3), ["X", "Y", "Z"], ["r", "b", "k"]):
+            for idx, plane, color in zip(range(3), ["X", "Y", "Z"], ["r", "b", "k"]):
                 if ax:
-                    ax.plot(*tractions[i], f"{col}.", label=rf"{plane}-face")
+                    ax.plot(*tractions[idx], f"{color}.", label=rf"{plane}-face")
 
             if ax:
                 ax.set_axisbelow(True)
@@ -922,31 +928,31 @@ class StressResult:
         sig_vm: von Mises stress (:math:`\sigma_{VM}`) resulting from all actions
     """
     num_nodes: int
-    sig_zz_n: np.ndarray = field(init=False)
-    sig_zz_mxx: np.ndarray = field(init=False)
-    sig_zz_myy: np.ndarray = field(init=False)
-    sig_zz_m11: np.ndarray = field(init=False)
-    sig_zz_m22: np.ndarray = field(init=False)
-    sig_zx_mzz: np.ndarray = field(init=False)
-    sig_zy_mzz: np.ndarray = field(init=False)
-    sig_zx_vx: np.ndarray = field(init=False)
-    sig_zy_vx: np.ndarray = field(init=False)
-    sig_zx_vy: np.ndarray = field(init=False)
-    sig_zy_vy: np.ndarray = field(init=False)
-    sig_zz_m: np.ndarray = field(init=False)
-    sig_zxy_mzz: np.ndarray = field(init=False)
-    sig_zxy_vx: np.ndarray = field(init=False)
-    sig_zxy_vy: np.ndarray = field(init=False)
-    sig_zx_v: np.ndarray = field(init=False)
-    sig_zy_v: np.ndarray = field(init=False)
-    sig_zxy_v: np.ndarray = field(init=False)
-    sig_zz: np.ndarray = field(init=False)
-    sig_zx: np.ndarray = field(init=False)
-    sig_zy: np.ndarray = field(init=False)
-    sig_zxy: np.ndarray = field(init=False)
-    sig_11: np.ndarray = field(init=False)
-    sig_33: np.ndarray = field(init=False)
-    sig_vm: np.ndarray = field(init=False)
+    sig_zz_n: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_mxx: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_myy: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_m11: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_m22: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_mzz: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_mzz: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_vx: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_vx: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_vy: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_vy: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_m: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_mzz: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_vx: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_vy: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_v: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_v: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_v: npt.NDArray[np.float64] = field(init=False)
+    sig_zz: npt.NDArray[np.float64] = field(init=False)
+    sig_zx: npt.NDArray[np.float64] = field(init=False)
+    sig_zy: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy: npt.NDArray[np.float64] = field(init=False)
+    sig_11: npt.NDArray[np.float64] = field(init=False)
+    sig_33: npt.NDArray[np.float64] = field(init=False)
+    sig_vm: npt.NDArray[np.float64] = field(init=False)
 
     def __post_init__(self) -> None:
         """Preallocates the numpy arrays in StressResult."""

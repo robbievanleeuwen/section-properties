@@ -87,7 +87,7 @@ def create_mesh(
     mesh_sizes: list[float] | float,
     min_angle: float,
     coarse: bool,
-) -> dict[str, Any]:
+) -> dict[str, list[list[float]] | list[list[int]]]:
     """Generates a triangular mesh.
 
     Creates a quadratic triangular mesh using the triangle module, which utilises the
@@ -121,7 +121,7 @@ def create_mesh(
     if not isinstance(mesh_sizes, list):
         mesh_sizes = [mesh_sizes]
 
-    tri = {}  # create tri dictionary
+    tri: dict[str, Any] = {}  # create tri dictionary
     tri["vertices"] = points  # set point
     tri["segments"] = facets  # set facets
 
@@ -129,10 +129,11 @@ def create_mesh(
         tri["holes"] = holes  # set holes
 
     # prepare regions
-    regions = []
+    regions: list[list[float | int]] = []
 
     for i, cp in enumerate(control_points):
-        regions.append([cp[0], cp[1], i, mesh_sizes[i]])
+        rg = [cp[0], cp[1], i, mesh_sizes[i]]
+        regions.append(rg)
 
     tri["regions"] = regions  # set regions
 
@@ -142,4 +143,4 @@ def create_mesh(
     else:
         mesh = triangle.triangulate(tri, f"pq{min_angle:.1f}Aao2")
 
-    return mesh
+    return mesh  # type: ignore

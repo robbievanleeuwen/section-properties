@@ -81,7 +81,7 @@ class PlasticSection:
 
         # 1a) Calculate x-axis plastic centroid
         y_pc, r = self.pc_algorithm(
-            u=(1, 0),
+            u=(1.0, 0.0),
             dlim=fibres[2:],  # fibres[2:] = ymin, ymax
             axis=1,
             verbose=verbose,
@@ -99,7 +99,7 @@ class PlasticSection:
 
         # 1b) Calculate y-axis plastic centroid
         x_pc, r = self.pc_algorithm(
-            u=(0, 1),
+            u=(0.0, 1.0),
             dlim=fibres[0:2],  # fibres[0:2] = xmin, xmax
             axis=2,
             verbose=verbose,
@@ -202,7 +202,9 @@ class PlasticSection:
                     section.section_props.syy / section.section_props.zyy_minus
                 )
             if (
-                section.section_props.z11_plus
+                section.section_props.s11
+                and section.section_props.s22
+                and section.section_props.z11_plus
                 and section.section_props.z11_minus
                 and section.section_props.z22_plus
                 and section.section_props.z22_minus
@@ -329,7 +331,7 @@ class PlasticSection:
         else:
             u_p = np.array([u[1], -u[0]])
 
-        return brentq(
+        d, r = brentq(
             f=self.evaluate_force_eq,
             a=dlim[0],
             b=dlim[1],
@@ -337,8 +339,9 @@ class PlasticSection:
             full_output=True,
             disp=False,
             xtol=1e-6,
-            rtol=1e-6,  # type:ignore
+            rtol=1e-6,
         )
+        return float(d), r
 
     def evaluate_force_eq(
         self,
@@ -396,10 +399,10 @@ class PlasticSection:
             Force in the above and below the axis line (``f_top``, ``f_bot``)
         """
         # initialise variables
-        f_top, f_bot = 0, 0
-        a_top, a_bot = 0, 0
-        qx_top, qx_bot = 0, 0
-        qy_top, qy_bot = 0, 0
+        f_top, f_bot = 0.0, 0.0
+        a_top, a_bot = 0.0, 0.0
+        qx_top, qx_bot = 0.0, 0.0
+        qy_top, qy_bot = 0.0, 0.0
 
         # split geometry above and below the line
         top_geoms, bot_geoms = self.geometry.split_section(point_i=p, vector=u)
@@ -437,12 +440,12 @@ class PlasticSection:
             self._c_top = [qy_top / a_top, qx_top / a_top]
             self._f_top = f_top
         except ZeroDivisionError:
-            self._c_top = [0, 0]
-            self._f_top = 0
+            self._c_top = [0.0, 0.0]
+            self._f_top = 0.0
 
         try:
             self._c_bot = [qy_bot / a_bot, qx_bot / a_bot]
         except ZeroDivisionError:
-            self._c_bot = [0, 0]
+            self._c_bot = [0.0, 0.0]
 
         return f_top, f_bot

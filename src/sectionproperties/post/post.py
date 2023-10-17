@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import contextlib
+from collections.abc import Generator
 from dataclasses import asdict, dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-import matplotlib.axes
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 from rich.console import Console
 from rich.table import Table
 
@@ -16,6 +17,9 @@ import sectionproperties.analysis.fea as fea
 
 
 if TYPE_CHECKING:
+    import matplotlib.axes
+    import matplotlib.figure
+
     from sectionproperties.analysis.section import Section
 
 
@@ -161,9 +165,9 @@ class SectionProperties:
     r11_c: float | None = None
     r22_c: float | None = None
     j: float | None = None
-    omega: np.ndarray | None = None
-    psi_shear: np.ndarray | None = None
-    phi_shear: np.ndarray | None = None
+    omega: npt.NDArray[np.float64] | None = None
+    psi_shear: npt.NDArray[np.float64] | None = None
+    phi_shear: npt.NDArray[np.float64] | None = None
     delta_s: float | None = None
     x_se: float | None = None
     y_se: float | None = None
@@ -202,7 +206,7 @@ class SectionProperties:
     sf_22_plus: float | None = None
     sf_22_minus: float | None = None
 
-    def asdict(self) -> dict:
+    def asdict(self) -> dict[str, Any]:
         """Returns the SectionProperties dataclass object as a dictionary.
 
         Returns:
@@ -263,13 +267,15 @@ class SectionProperties:
             self.ry_c = (self.iyy_c / self.ea) ** 0.5
 
             # calculate principal 2nd moments of area about the centroidal xy axis
-            delta = (((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c**2) ** 0.5
+            delta: float = (
+                ((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c**2
+            ) ** 0.5
             self.i11_c = (self.ixx_c + self.iyy_c) / 2 + delta
             self.i22_c = (self.ixx_c + self.iyy_c) / 2 - delta
 
             # calculate initial principal axis angle
             if abs(self.ixx_c - self.i11_c) < 1e-12 * self.i11_c:
-                self.phi = 0
+                self.phi = 0.0
             else:
                 self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
 
@@ -319,8 +325,10 @@ def plotting_context(
     filename: str = "",
     render: bool = True,
     axis_index: int | tuple[int, int] | None = None,
-    **kwargs,
-):
+    **kwargs: Any,
+) -> Generator[
+    tuple[matplotlib.figure.Figure, matplotlib.axes.Axes | Any | None], None, None
+]:
     """Executes code required to set up a matplotlib figure.
 
     Args:
@@ -358,9 +366,9 @@ def plotting_context(
 
         try:
             if axis_index is None:
-                axis_index = (0,) * ax.ndim
+                axis_index = (0,) * ax.ndim  # type: ignore
 
-            ax = ax[axis_index]
+            ax = ax[axis_index]  # type: ignore
         except (AttributeError, TypeError):
             pass  # only 1 axis, not an array
         except IndexError as exc:
@@ -368,7 +376,7 @@ def plotting_context(
             msg += f"with arguments to subplots: {kwargs}"
             raise ValueError(msg) from exc
     else:
-        fig = ax.get_figure()
+        fig = ax.get_figure()  # type: ignore
         ax_supplied = True
 
         if not render:
@@ -393,7 +401,7 @@ def plotting_context(
 
     if render:
         if pause:
-            plt.show()
+            plt.show()  # type: ignore
         else:
             plt.draw()
             plt.pause(0.001)
@@ -427,7 +435,7 @@ def draw_principal_axis(
 
     def add_point(
         vec: list[list[float]],
-        basis: np.ndarray,
+        basis: npt.NDArray[np.float64],
         centroid: tuple[float, float],
         num: float,
         denom: float,
@@ -446,10 +454,10 @@ def draw_principal_axis(
             vec.append([point[0], point[1]])
 
     def get_principal_points(
-        basis: np.ndarray,
+        basis: npt.NDArray[np.float64],
         lims: tuple[float, float, float, float],
         centroid: tuple[float, float],
-    ) -> np.ndarray:
+    ) -> npt.NDArray[np.float64]:
         """Returns intersection points of prinicipal axis with bounding box.
 
         Determines the intersections of the principal axis with the four lines
@@ -465,7 +473,7 @@ def draw_principal_axis(
         Returns:
             List of intersection points
         """
-        pts = []  # initialise list containing the intersection points
+        pts: list[list[float]] = []  # initialise list containing the intersection pts
 
         # add intersection points to the list
         add_point(
@@ -498,14 +506,14 @@ def draw_principal_axis(
         )
 
         # sort point vector
-        pts = np.array(pts)
-        pts = pts[pts[:, 0].argsort()]  # stackoverflow sort numpy array by col
+        pts_np = np.array(pts)
+        pts_np = pts_np[pts_np[:, 0].argsort()]  # stackoverflow sort numpy array by col
 
         # if there are four points, take the middle two points
-        if len(pts) == 4:
-            return pts[1:3, :]
+        if len(pts_np) == 4:
+            return pts_np[1:3, :]
 
-        return pts
+        return pts_np
 
     # get intersection points for the 11 and 22 axes
     x11 = get_principal_points(

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pathlib
+from typing import Any
 
 from rhino_shapely_interop.importers import RhImporter
 from shapely import Polygon
@@ -10,7 +11,7 @@ from shapely import Polygon
 
 def load_3dm(
     r3dm_filepath: pathlib.Path | str,
-    **kwargs,
+    **kwargs: Any,
 ) -> list[Polygon]:
     """Load a Rhino ``.3dm`` file and import the single surface planer breps.
 
@@ -64,7 +65,7 @@ def load_3dm(
 
 def load_brep_encoding(
     brep: str,
-    **kwargs,
+    **kwargs: Any,
 ) -> list[Polygon]:
     """Load an encoded single surface planer brep.
 
