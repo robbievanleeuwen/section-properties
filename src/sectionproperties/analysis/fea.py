@@ -29,7 +29,11 @@ try:
 except ImportError:
 
     def njit() -> None:
-        """Assigns empty function to njit if numba isn't installed."""
+        """Assigns empty function to njit if numba isn't installed.
+
+        Returns:
+            None
+        """
         return None
 
     USE_NUMBA = False
