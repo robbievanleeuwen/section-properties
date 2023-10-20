@@ -72,9 +72,9 @@ repos:
     rev: 1.7.0
     hooks:
       - id: nbqa-black
-        additional_dependencies: [black==23.9.1]
+        additional_dependencies: [black==23.10.0]
       - id: nbqa-pyupgrade
-        additional_dependencies: [pyupgrade==3.14.0]
+        additional_dependencies: [pyupgrade==3.15.0]
         args: ["--py39-plus"]
       - id: nbqa-isort
         additional_dependencies: [isort==5.12.0]
