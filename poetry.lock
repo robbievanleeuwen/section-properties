@@ -1755,7 +1755,7 @@ tornado = {version = "*", markers = "python_version > \"2.7\""}
 name = "llvmlite"
 version = "0.41.0"
 description = "lightweight wrapper around basic LLVM functionality"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "llvmlite-0.41.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:acc81c1279f858e5eab460844cc381e30d6666bc8eea04724b54d4eeb1fd1e54"},
@@ -2219,7 +2219,7 @@ test = ["pytest", "pytest-console-scripts", "pytest-jupyter", "pytest-tornasync"
 name = "numba"
 version = "0.58.0"
 description = "compiling Python code using LLVM"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "numba-0.58.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:2f146c11af62ad25021d93fccf48715a96d1ea76d43c1c3bc97dca561c6a2693"},
@@ -4068,10 +4068,11 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [extras]
 dxf = ["cad-to-shapely"]
+numba = ["numba"]
 pardiso = ["pypardiso"]
 rhino = ["rhino-shapley-interop", "rhino3dm"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9.0,<3.12"
-content-hash = "ec8bdd1ec8cf8b11014cd9f46f4fd5e33f5d90293edfc82c8ba6901a5c07a6a4"
+content-hash = "fc7856a00a6a1e5b6be85d69b75d593ceef9e498796bb546dee0b93e90afbaf4"
