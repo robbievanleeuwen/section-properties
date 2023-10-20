@@ -10,19 +10,63 @@ from __future__ import annotations
 import warnings
 from dataclasses import dataclass, field
 from functools import lru_cache
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 import numpy.typing as npt
-from numba import njit
-from numba.core.errors import NumbaPerformanceWarning
 
 
 if TYPE_CHECKING:
     from sectionproperties.pre.pre import Material
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+# numba is an optional dependency
+try:
+    from numba import njit
+    from numba.core.errors import NumbaPerformanceWarning
+
+    USE_NUMBA = True
+except ImportError:
+
+    def njit() -> None:
+        """Assigns empty function to njit if numba isn't installed."""
+        return None
+
+    USE_NUMBA = False
+
+
+def conditional_decorator(
+    dec: Callable[[Any], Any],
+    condition: bool,
+) -> Callable[[Any], Any]:
+    """A decorator that applies a decorator only if a condition is True.
+
+    Args:
+        dec: Decorator to apply
+        condition: Apply decorator if this is true
+
+    Returns:
+        Decorator wrapper
+    """
+
+    def decorator(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
+        """Decorator wrapper.
+
+        Args:
+            func: Function decorator operates on.
+
+        Returns:
+            Original or decorated function.
+        """
+        if not condition:
+            return func
+
+        return dec(func)  # type: ignore
+
+    return decorator
+
+
+@conditional_decorator(njit, USE_NUMBA)
 def _assemble_torsion(
     k_el: npt.NDArray[np.float64],
     f_el: npt.NDArray[np.float64],
@@ -55,7 +99,7 @@ def _assemble_torsion(
     return k_el, f_el, c_el
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@conditional_decorator(njit, USE_NUMBA)
 def _shear_parameter(
     nx: float, ny: float, ixx: float, iyy: float, ixy: float
 ) -> tuple[float, float, float, float, float, float]:
@@ -81,7 +125,7 @@ def _shear_parameter(
     return r, q, d1, d2, h1, h2
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@conditional_decorator(njit, USE_NUMBA)
 def _assemble_shear_load(
     f_psi: npt.NDArray[np.float64],
     f_phi: npt.NDArray[np.float64],
@@ -126,7 +170,7 @@ def _assemble_shear_load(
     return f_psi, f_phi
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@conditional_decorator(njit, USE_NUMBA)
 def _assemble_shear_coefficients(
     kappa_x: float,
     kappa_y: float,
@@ -648,7 +692,9 @@ class Tri6:
 
         # extrapolate results to nodes, ignore numba warnings about performance
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
+            if USE_NUMBA:
+                warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
+
             sig_zz_mxx = extrapolate_to_nodes(w=sig_zz_mxx_gp)
             sig_zz_myy = extrapolate_to_nodes(w=sig_zz_myy_gp)
             sig_zz_m11 = extrapolate_to_nodes(w=sig_zz_m11_gp)
@@ -951,7 +997,7 @@ tmp_array = np.array([[0, 1, 0], [0, 0, 1]], dtype=np.double)
 
 
 @lru_cache(maxsize=None)
-@njit(cache=True, nogil=True)  # type: ignore
+@conditional_decorator(njit, USE_NUMBA)
 def __shape_function_cached(
     coords: tuple[float, ...],
     gauss_point: tuple[float, float, float],
@@ -1039,7 +1085,7 @@ def shape_function(
 
 
 @lru_cache(maxsize=None)
-@njit(cache=True, nogil=True)  # type: ignore
+@conditional_decorator(njit, USE_NUMBA)
 def shape_function_only(p: tuple[float, float, float]) -> npt.NDArray[np.float64]:
     """The values of the ``Tri6`` shape function at a point ``p``.
 
@@ -1117,7 +1163,7 @@ h_inv = np.array(
 )
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@conditional_decorator(njit, USE_NUMBA)
 def extrapolate_to_nodes(w: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """Extrapolates results at six Gauss points to the six nodes of a ``Tri6`` element.
 
@@ -1130,7 +1176,7 @@ def extrapolate_to_nodes(w: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     return h_inv @ w
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@conditional_decorator(njit, USE_NUMBA)
 def principal_coordinate(
     phi: float,
     x: float,
@@ -1153,7 +1199,7 @@ def principal_coordinate(
     return x * cos_phi + y * sin_phi, y * cos_phi - x * sin_phi
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@conditional_decorator(njit, USE_NUMBA)
 def global_coordinate(
     phi: float,
     x11: float,
@@ -1176,7 +1222,7 @@ def global_coordinate(
     return x11 * cos_phi - y22 * sin_phi, x11 * sin_phi + y22 * cos_phi
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@conditional_decorator(njit, USE_NUMBA)
 def point_above_line(
     u: npt.NDArray[np.float64],
     px: float,

@@ -26,6 +26,18 @@ package index:
 
     pip install sectionproperties
 
+Installing ``Numba``
+--------------------
+
+``Numba`` translates a subset of Python and NumPy code into fast machine code, allowing
+algorithms to approach the speeds of C. The speed of several ``sectionproperties``
+analysis functions have been enhanced with `numba <https://github.com/numba/numba>`_.
+To take advantage of this increase in performance you can install ``numba`` alongside
+``sectionproperties`` with:
+
+.. code-block:: shell
+
+    pip install sectionproperties[numba]
 
 Installing ``PARDISO`` Solver
 -----------------------------
