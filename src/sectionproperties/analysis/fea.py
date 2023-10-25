@@ -29,6 +29,9 @@ except ImportError:
 
         Args:
             options: Optional keyword arguments for numba that are discarded.
+
+        Returns:
+            Empty njit decorator.
         """
 
         def decorator(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
