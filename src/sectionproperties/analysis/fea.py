@@ -7,7 +7,6 @@ Finite element classes:
 
 from __future__ import annotations
 
-import warnings
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Callable
@@ -23,54 +22,43 @@ if TYPE_CHECKING:
 # numba is an optional dependency
 try:
     from numba import njit
-    from numba.core.errors import NumbaPerformanceWarning
-
-    USE_NUMBA = True
 except ImportError:
 
-    def njit() -> None:
-        """Assigns empty function to njit if numba isn't installed.
-
-        Returns:
-            None
-        """
-        return None
-
-    USE_NUMBA = False
-
-
-def conditional_decorator(
-    dec: Callable[[Any], Any],
-    condition: bool,
-) -> Callable[[Any], Any]:
-    """A decorator that applies a decorator only if a condition is True.
-
-    Args:
-        dec: Decorator to apply
-        condition: Apply decorator if this is true
-
-    Returns:
-        Decorator wrapper
-    """
-
-    def decorator(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
-        """Decorator wrapper.
+    def njit(**options: Any) -> Callable[[Any], Any]:
+        """Empty decorator if numba is not installed.
 
         Args:
-            func: Function decorator operates on.
-
-        Returns:
-            Original or decorated function.
+            options: Optional keyword arguments for numba that are discarded.
         """
-        if not condition:
-            return func
 
-        return dec(func)  # type: ignore
+        def decorator(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
+            """Decorator.
 
-    return decorator
+            Args:
+                func: Function to decorate.
+
+            Returns:
+                Decorated function.
+            """
+
+            def wrapper(*args: Any, **kwargs: Any) -> Callable[[Any], Any]:
+                """Wrapper.
+
+                Args:
+                    args: Arguments.
+                    kwargs: Keyword arguments.
+
+                Returns:
+                    Wrapped function.
+                """
+                return func(*args, **kwargs)  # type: ignore
+
+            return wrapper
+
+        return decorator
 
 
-@conditional_decorator(njit, USE_NUMBA)
+@njit(cache=True, nogil=True)  # type: ignore
 def _assemble_torsion(
     k_el: npt.NDArray[np.float64],
     f_el: npt.NDArray[np.float64],
@@ -103,7 +91,7 @@ def _assemble_torsion(
     return k_el, f_el, c_el
 
 
-@conditional_decorator(njit, USE_NUMBA)
+@njit(cache=True, nogil=True)  # type: ignore
 def _shear_parameter(
     nx: float, ny: float, ixx: float, iyy: float, ixy: float
 ) -> tuple[float, float, float, float, float, float]:
@@ -129,7 +117,7 @@ def _shear_parameter(
     return r, q, d1, d2, h1, h2
 
 
-@conditional_decorator(njit, USE_NUMBA)
+@njit(cache=True, nogil=True)  # type: ignore
 def _assemble_shear_load(
     f_psi: npt.NDArray[np.float64],
     f_phi: npt.NDArray[np.float64],
@@ -174,7 +162,7 @@ def _assemble_shear_load(
     return f_psi, f_phi
 
 
-@conditional_decorator(njit, USE_NUMBA)
+@njit(cache=True, nogil=True)  # type: ignore
 def _assemble_shear_coefficients(
     kappa_x: float,
     kappa_y: float,
@@ -635,9 +623,9 @@ class Tri6:
         sig_zz_myy_gp = np.zeros(n_points)
         sig_zz_m11_gp = np.zeros(n_points)
         sig_zz_m22_gp = np.zeros(n_points)
-        sig_zxy_mzz_gp = np.zeros((n_points, 2))
-        sig_zxy_vx_gp = np.zeros((n_points, 2))
-        sig_zxy_vy_gp = np.zeros((n_points, 2))
+        sig_zxy_mzz_gp = np.zeros((n_points, 2), order="F")
+        sig_zxy_vx_gp = np.zeros((n_points, 2), order="F")
+        sig_zxy_vy_gp = np.zeros((n_points, 2), order="F")
 
         # Gauss points for 6 point Gaussian integration
         gps = gauss_points(n=n_points)
@@ -694,21 +682,17 @@ class Tri6:
                     * (b.dot(phi_shear) - nu / 2 * np.array([h1, h2]))
                 )
 
-        # extrapolate results to nodes, ignore numba warnings about performance
-        with warnings.catch_warnings():
-            if USE_NUMBA:
-                warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
-
-            sig_zz_mxx = extrapolate_to_nodes(w=sig_zz_mxx_gp)
-            sig_zz_myy = extrapolate_to_nodes(w=sig_zz_myy_gp)
-            sig_zz_m11 = extrapolate_to_nodes(w=sig_zz_m11_gp)
-            sig_zz_m22 = extrapolate_to_nodes(w=sig_zz_m22_gp)
-            sig_zx_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 0])
-            sig_zy_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 1])
-            sig_zx_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 0])
-            sig_zy_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 1])
-            sig_zx_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 0])
-            sig_zy_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 1])
+        # extrapolate results to nodes
+        sig_zz_mxx = extrapolate_to_nodes(w=sig_zz_mxx_gp)
+        sig_zz_myy = extrapolate_to_nodes(w=sig_zz_myy_gp)
+        sig_zz_m11 = extrapolate_to_nodes(w=sig_zz_m11_gp)
+        sig_zz_m22 = extrapolate_to_nodes(w=sig_zz_m22_gp)
+        sig_zx_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 0])
+        sig_zy_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 1])
+        sig_zx_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 0])
+        sig_zy_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 1])
+        sig_zx_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 0])
+        sig_zy_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 1])
 
         return (
             sig_zz_n,
@@ -1001,7 +985,7 @@ tmp_array = np.array([[0, 1, 0], [0, 0, 1]], dtype=np.double)
 
 
 @lru_cache(maxsize=None)
-@conditional_decorator(njit, USE_NUMBA)
+@njit(cache=True, nogil=True)  # type: ignore
 def __shape_function_cached(
     coords: tuple[float, ...],
     gauss_point: tuple[float, float, float],
@@ -1089,7 +1073,7 @@ def shape_function(
 
 
 @lru_cache(maxsize=None)
-@conditional_decorator(njit, USE_NUMBA)
+@njit(cache=True, nogil=True)  # type: ignore
 def shape_function_only(p: tuple[float, float, float]) -> npt.NDArray[np.float64]:
     """The values of the ``Tri6`` shape function at a point ``p``.
 
@@ -1167,7 +1151,7 @@ h_inv = np.array(
 )
 
 
-@conditional_decorator(njit, USE_NUMBA)
+@njit(cache=True, nogil=True)  # type: ignore
 def extrapolate_to_nodes(w: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """Extrapolates results at six Gauss points to the six nodes of a ``Tri6`` element.
 
@@ -1180,7 +1164,7 @@ def extrapolate_to_nodes(w: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     return h_inv @ w
 
 
-@conditional_decorator(njit, USE_NUMBA)
+@njit(cache=True, nogil=True)  # type: ignore
 def principal_coordinate(
     phi: float,
     x: float,
@@ -1203,7 +1187,7 @@ def principal_coordinate(
     return x * cos_phi + y * sin_phi, y * cos_phi - x * sin_phi
 
 
-@conditional_decorator(njit, USE_NUMBA)
+@njit(cache=True, nogil=True)  # type: ignore
 def global_coordinate(
     phi: float,
     x11: float,
@@ -1226,7 +1210,7 @@ def global_coordinate(
     return x11 * cos_phi - y22 * sin_phi, x11 * sin_phi + y22 * cos_phi
 
 
-@conditional_decorator(njit, USE_NUMBA)
+@njit(cache=True, nogil=True)  # type: ignore
 def point_above_line(
     u: npt.NDArray[np.float64],
     px: float,
