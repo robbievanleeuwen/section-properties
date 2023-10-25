@@ -121,8 +121,9 @@ def solve_direct_lagrange(
         The solution vector to the linear system of equations
 
     Raises:
-        RuntimeError: If the Lagrangian multiplier method exceeds a tolerance of
-            ``1e-5``
+        RuntimeError: If the Lagrangian multiplier method exceeds a relative tolerance
+            of ``1e-7`` or absolute tolerance related to your machine's floating point
+            precision.
     """
     u = sp_solve(A=k_lg, b=np.append(f, 0))
 
@@ -131,8 +132,11 @@ def solve_direct_lagrange(
     rel_error = multiplier / max(np.absolute(u))
 
     if rel_error > 1e-7 and multiplier > 10.0 * np.finfo(float).eps:
-        msg = "Lagrangian multiplier method error exceeds tolerance of 1e-5."
-        raise RuntimeError(msg)
+        raise RuntimeError(
+            "Lagrangian multiplier method error exceeds the prescribed tolerance, "
+            "consider refining your mesh. If this error is unexpected raise an issue "
+            "at https://github.com/robbievanleeuwen/section-properties/issues."
+        )
 
     return u[:-1]  # type: ignore
 
