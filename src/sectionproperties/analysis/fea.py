@@ -7,19 +7,58 @@ Finite element classes:
 
 from __future__ import annotations
 
-import warnings
 from dataclasses import dataclass, field
 from functools import lru_cache
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 import numpy.typing as npt
-from numba import njit
-from numba.core.errors import NumbaPerformanceWarning
 
 
 if TYPE_CHECKING:
     from sectionproperties.pre.pre import Material
+
+
+# numba is an optional dependency
+try:
+    from numba import njit
+except ImportError:
+
+    def njit(**options: Any) -> Callable[[Any], Any]:
+        """Empty decorator if numba is not installed.
+
+        Args:
+            options: Optional keyword arguments for numba that are discarded.
+
+        Returns:
+            Empty njit decorator.
+        """
+
+        def decorator(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
+            """Decorator.
+
+            Args:
+                func: Function to decorate.
+
+            Returns:
+                Decorated function.
+            """
+
+            def wrapper(*args: Any, **kwargs: Any) -> Callable[[Any], Any]:
+                """Wrapper.
+
+                Args:
+                    args: Arguments.
+                    kwargs: Keyword arguments.
+
+                Returns:
+                    Wrapped function.
+                """
+                return func(*args, **kwargs)  # type: ignore
+
+            return wrapper
+
+        return decorator
 
 
 @njit(cache=True, nogil=True)  # type: ignore
@@ -587,9 +626,9 @@ class Tri6:
         sig_zz_myy_gp = np.zeros(n_points)
         sig_zz_m11_gp = np.zeros(n_points)
         sig_zz_m22_gp = np.zeros(n_points)
-        sig_zxy_mzz_gp = np.zeros((n_points, 2))
-        sig_zxy_vx_gp = np.zeros((n_points, 2))
-        sig_zxy_vy_gp = np.zeros((n_points, 2))
+        sig_zxy_mzz_gp = np.zeros((n_points, 2), order="F")
+        sig_zxy_vx_gp = np.zeros((n_points, 2), order="F")
+        sig_zxy_vy_gp = np.zeros((n_points, 2), order="F")
 
         # Gauss points for 6 point Gaussian integration
         gps = gauss_points(n=n_points)
@@ -646,19 +685,17 @@ class Tri6:
                     * (b.dot(phi_shear) - nu / 2 * np.array([h1, h2]))
                 )
 
-        # extrapolate results to nodes, ignore numba warnings about performance
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
-            sig_zz_mxx = extrapolate_to_nodes(w=sig_zz_mxx_gp)
-            sig_zz_myy = extrapolate_to_nodes(w=sig_zz_myy_gp)
-            sig_zz_m11 = extrapolate_to_nodes(w=sig_zz_m11_gp)
-            sig_zz_m22 = extrapolate_to_nodes(w=sig_zz_m22_gp)
-            sig_zx_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 0])
-            sig_zy_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 1])
-            sig_zx_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 0])
-            sig_zy_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 1])
-            sig_zx_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 0])
-            sig_zy_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 1])
+        # extrapolate results to nodes
+        sig_zz_mxx = extrapolate_to_nodes(w=sig_zz_mxx_gp)
+        sig_zz_myy = extrapolate_to_nodes(w=sig_zz_myy_gp)
+        sig_zz_m11 = extrapolate_to_nodes(w=sig_zz_m11_gp)
+        sig_zz_m22 = extrapolate_to_nodes(w=sig_zz_m22_gp)
+        sig_zx_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 0])
+        sig_zy_mzz = extrapolate_to_nodes(w=sig_zxy_mzz_gp[:, 1])
+        sig_zx_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 0])
+        sig_zy_vx = extrapolate_to_nodes(w=sig_zxy_vx_gp[:, 1])
+        sig_zx_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 0])
+        sig_zy_vy = extrapolate_to_nodes(w=sig_zxy_vy_gp[:, 1])
 
         return (
             sig_zz_n,

@@ -48,22 +48,22 @@ Changelog = "https://github.com/robbievanleeuwen/section-properties/releases"
 
 [tool.poetry.dependencies]
 python = ">=3.9.0,<3.12"
-numpy = "^1.25.2"  # numba requires numpy <1.26
-scipy = "^1.11.3"
+numpy = "^1.24.0"
+scipy = "^1.10.0"
 matplotlib = "^3.8.0"
-shapely = "^2.0.1"
+shapely = "^2.0.2"
 triangle = "^20230923"
-rich = "^13.6.0"
+rich = "^13.5.0"
 click = "^8.1.7"
-more-itertools = "^10.1.0"
-numba = "^0.58.0"
+more-itertools = "^10.0.0"
+numba = { version = "^0.58.0", optional = true }
 cad-to-shapely = { version = "^0.3.1", optional = true }
 rhino-shapley-interop = { version = "^0.0.4", optional = true }
 rhino3dm = { version = "==8.0.0b3", optional = true }
 pypardiso = { version = "^0.4.2", optional = true }
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.9.1"
+black = "^23.10.0"
 coverage = { extras = ["toml"], version = "^7.3.2" }
 darglint = "^1.8.1"
 flake8 = "^6.1.0"
@@ -76,12 +76,12 @@ ipykernel = "^6.25.2"
 ipython = "^8.16.1"
 ipywidgets = "^8.1.1"
 isort = "^5.12.0"
-mypy ="^1.6.0"
+mypy = "^1.6.1"
 nbconvert = "^7.9.2"
 nbsphinx = "^0.9.3"
-notebook = "^7.0.4"
+notebook = "^7.0.6"
 pep8-naming = "^0.13.3"
-pre-commit = "^3.4.0"
+pre-commit = "^3.5.0"
 pre-commit-hooks = "^4.5.0"
 Pygments = "^2.16.1"
 pytest = "^7.4.2"
@@ -97,6 +97,7 @@ sphinxext-opengraph = "^0.8.2"
 [tool.poetry.extras]
 dxf = ["cad-to-shapely"]
 rhino = ["rhino-shapley-interop", "rhino3dm"]
+numba = ["numba"]
 pardiso = ["pypardiso"]
 
 [tool.poetry.scripts]

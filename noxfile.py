@@ -212,7 +212,13 @@ def docs_build(session: Session) -> None:
         args.insert(0, "--color")
 
     session.run_always(
-        "poetry", "install", "--only", "main", "--extras", "dxf rhino", external=True
+        "poetry",
+        "install",
+        "--only",
+        "main",
+        "--extras",
+        "dxf rhino numba",
+        external=True,
     )
     session.install(
         "furo",
@@ -243,7 +249,13 @@ def docs(session: Session) -> None:
     """
     args = session.posargs or ["--open-browser", "docs", "docs/_build"]
     session.run_always(
-        "poetry", "install", "--only", "main", "--extras", "dxf rhino", external=True
+        "poetry",
+        "install",
+        "--only",
+        "main",
+        "--extras",
+        "dxf rhino numba",
+        external=True,
     )
     session.install(
         "furo",
