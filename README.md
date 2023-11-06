@@ -13,6 +13,7 @@
 [![Codecov](https://codecov.io/gh/robbievanleeuwen/section-properties/branch/master/graph/badge.svg)][codecov]
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][pre-commit]
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
+[![DOI](https://zenodo.org/badge/104638241.svg)][zenodo]
 
 [pypi_]: https://pypi.org/project/sectionproperties/
 [status]: https://pypi.org/project/sectionproperties/
@@ -22,6 +23,7 @@
 [codecov]: https://app.codecov.io/gh/robbievanleeuwen/section-properties
 [pre-commit]: https://github.com/pre-commit/pre-commit
 [black]: https://github.com/psf/black
+[zenodo]: https://zenodo.org/badge/latestdoi/104638241
 
 `sectionproperties` is a python package for the analysis of arbitrary cross-sections
 using the finite element method. `sectionproperties` can be used to determine
