@@ -61,9 +61,10 @@ cad-to-shapely = { version = "^0.3.1", optional = true }
 rhino-shapley-interop = { version = "^0.0.4", optional = true }
 rhino3dm = { version = "==8.0.0b3", optional = true }
 pypardiso = { version = "^0.4.2", optional = true }
+intel-openmp = { version = "==2023.2.0", optional = true}
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.10.0"
+black = "^23.10.1"
 coverage = { extras = ["toml"], version = "^7.3.2" }
 darglint = "^1.8.1"
 flake8 = "^6.1.0"
@@ -72,19 +73,19 @@ flake8-docstrings = "^1.7.0"
 flake8-pytest-style = "^1.7.2"
 flake8-rst-docstrings = "^0.3.0"
 furo = "^2023.9.10"
-ipykernel = "^6.25.2"
-ipython = "^8.16.1"
+ipykernel = "^6.26.0"
+ipython = "^8.17.2"
 ipywidgets = "^8.1.1"
 isort = "^5.12.0"
 mypy = "^1.6.1"
-nbconvert = "^7.9.2"
+nbconvert = "^7.10.0"
 nbsphinx = "^0.9.3"
 notebook = "^7.0.6"
 pep8-naming = "^0.13.3"
 pre-commit = "^3.5.0"
 pre-commit-hooks = "^4.5.0"
 Pygments = "^2.16.1"
-pytest = "^7.4.2"
+pytest = "^7.4.3"
 pytest-benchmark = { extras = ["histogram"], version = "^4.0.0" }
 pytest-check = "^2.2.2"
 pyupgrade = "^3.15.0"
@@ -98,7 +99,7 @@ sphinxext-opengraph = "^0.8.2"
 dxf = ["cad-to-shapely"]
 rhino = ["rhino-shapley-interop", "rhino3dm"]
 numba = ["numba"]
-pardiso = ["pypardiso"]
+pardiso = ["pypardiso", "intel-openmp"]
 
 [tool.poetry.scripts]
 sectionproperties = "sectionproperties.__main__:main"
