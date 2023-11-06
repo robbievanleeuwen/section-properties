@@ -401,7 +401,7 @@ def plotting_context(
 
     if render:
         if pause:
-            plt.show()  # type: ignore
+            plt.show()
         else:
             plt.draw()
             plt.pause(0.001)
