@@ -53,7 +53,7 @@ exclude-contributors:
 
 # Custom text at start of release
 header: |
-  Minor release for Zenodo archival.
+  This release makes `numba` an optional dependency, adds strict `mypy` type checking and modifies the application of the Lagrangian Multipler method.
 
 template: |
   ## What's Changed
