@@ -321,7 +321,7 @@ describe the resulting modified stiffness matrix, and solution and load vector:
   \end{bmatrix}
 
 where :math:`\textbf{C}` is the assembly of :math:`\int_{\Omega} \textbf{N} \, d \Omega`
-and :math:`\lambda` may be though of as a force acting to enforce the constraints, which
+and :math:`\lambda` may be thought of as a force acting to enforce the constraints, which
 should be relatively small when compared to the values in the force vector and can be
 omitted from the solution vector.
 
