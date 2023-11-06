@@ -14,12 +14,12 @@ authors:
     orcid: 0009-0004-8056-3977
     affiliation: 1
   - name: Connor Ferster
-    orcid: 0000-0000-0000-0000 # update
+    orcid: 0009-0005-0861-2428
     affiliation: 2
 affiliations:
   - name: Independent Researcher, Australia
     index: 1
-  - name: Institution Name, Country # update
+  - name: Independent Researcher, Canada # update
     index: 2
 date: 13 October 2023
 bibliography: paper.bib
