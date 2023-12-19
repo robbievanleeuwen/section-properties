@@ -1157,13 +1157,13 @@ files = [
 
 [[package]]
 name = "ipykernel"
-version = "6.26.0"
+version = "6.27.1"
 description = "IPython Kernel for Jupyter"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "ipykernel-6.26.0-py3-none-any.whl", hash = "sha256:3ba3dc97424b87b31bb46586b5167b3161b32d7820b9201a9e698c71e271602c"},
-    {file = "ipykernel-6.26.0.tar.gz", hash = "sha256:553856658eb8430bbe9653ea041a41bff63e9606fc4628873fc92a6cf3abd404"},
+    {file = "ipykernel-6.27.1-py3-none-any.whl", hash = "sha256:dab88b47f112f9f7df62236511023c9bdeef67abc73af7c652e4ce4441601686"},
+    {file = "ipykernel-6.27.1.tar.gz", hash = "sha256:7d5d594b6690654b4d299edba5e872dc17bb7396a8d0609c97cb7b8a1c605de6"},
 ]
 
 [package.dependencies]
@@ -4056,4 +4056,4 @@ rhino = ["rhino-shapley-interop", "rhino3dm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9.0,<3.12"
-content-hash = "356cc63778ddb1760ecbae7e0c98664e38dc9e3d4ee126af07bf8232189da429"
+content-hash = "19073f51edae278531899254a6549f8dfc98025769359507c1d81034963e875c"
