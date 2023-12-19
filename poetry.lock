@@ -2675,17 +2675,17 @@ plugins = ["importlib-metadata"]
 
 [[package]]
 name = "pypardiso"
-version = "0.4.3"
+version = "0.4.4"
 description = "Python interface to the Intel MKL Pardiso library to solve large sparse linear systems of equations"
 optional = true
-python-versions = "*"
+python-versions = ">=3.8"
 files = [
-    {file = "pypardiso-0.4.3-py3-none-any.whl", hash = "sha256:f5ff18b982063882d67d09d83ba97059cfe776484e2f754d1c6ef8175ccd98f9"},
-    {file = "pypardiso-0.4.3.tar.gz", hash = "sha256:8eeafbda5fbf104162da2292fa69c190beee244acf3c95cdb6aac0edb3382bd1"},
+    {file = "pypardiso-0.4.4-py3-none-any.whl", hash = "sha256:73fb63db89cbb25d844cf25cde215e89d57f6a69da25c1f172182de9ebaa2e5a"},
+    {file = "pypardiso-0.4.4.tar.gz", hash = "sha256:16209259ce8bd480b4121f3834f7ec646bea23e96cabb60914ee147c464801f7"},
 ]
 
 [package.dependencies]
-mkl = "*"
+mkl = "<2024"
 numpy = "*"
 scipy = "*"
 
@@ -4056,4 +4056,4 @@ rhino = ["rhino-shapley-interop", "rhino3dm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9.0,<3.12"
-content-hash = "356cc63778ddb1760ecbae7e0c98664e38dc9e3d4ee126af07bf8232189da429"
+content-hash = "2796c635b5bcc31c2e8595bca8100c77103b5bca3be69b67c1300e2636e0b560"
