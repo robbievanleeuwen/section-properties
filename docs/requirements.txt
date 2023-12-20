@@ -1,8 +1,8 @@
 furo==2023.9.10
-ipykernel==6.26.0
+ipykernel==6.27.1
 ipython==8.17.2
 ipywidgets==8.1.1
-nbconvert==7.10.0
+nbconvert==7.13.0
 nbsphinx==0.9.3
 sphinx==7.2.6
 sphinx-click==5.1.0
