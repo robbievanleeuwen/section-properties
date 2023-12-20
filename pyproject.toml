@@ -61,7 +61,8 @@ cad-to-shapely = { version = "^0.3.1", optional = true }
 rhino-shapley-interop = { version = "^0.0.4", optional = true }
 rhino3dm = { version = "==8.0.0b3", optional = true }
 pypardiso = { version = "^0.4.4", optional = true }
-intel-openmp = { version = "==2023.2.0", optional = true}
+intel-openmp = { version = "==2023.2.0", optional = true }
+mkl = { version = "==2023.2.0", optional = true }
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.10.1"
@@ -99,7 +100,7 @@ sphinxext-opengraph = "^0.8.2"
 dxf = ["cad-to-shapely"]
 rhino = ["rhino-shapley-interop", "rhino3dm"]
 numba = ["numba"]
-pardiso = ["pypardiso", "intel-openmp"]
+pardiso = ["pypardiso", "intel-openmp", "mkl"]
 
 [tool.poetry.scripts]
 sectionproperties = "sectionproperties.__main__:main"
