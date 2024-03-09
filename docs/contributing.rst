@@ -49,7 +49,7 @@ on your ideas.
 How to set up your development environment
 ------------------------------------------
 
-You need Python 3.9, 3.10 or 3.11, and the following tools:
+You need Python 3.9, 3.10, 3.11 or 3.12, and the following tools:
 
 -  `Poetry <https://python-poetry.org/>`__
 -  `Nox <https://nox.thea.codes/>`__

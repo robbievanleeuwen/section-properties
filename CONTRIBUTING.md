@@ -40,7 +40,7 @@ duplication of work, and allows for feedback on your ideas.
 
 ## How to set up your development environment
 
-You need Python 3.9, 3.10 or 3.11, and the following tools:
+You need Python 3.9, 3.10, 3.11 or 3.12, and the following tools:
 
 - [Poetry]
 - [Nox]

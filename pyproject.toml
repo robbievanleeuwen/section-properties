@@ -29,6 +29,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 packages = [
     { include = "sectionproperties", from = "src" },
@@ -47,9 +48,9 @@ Changelog = "https://github.com/robbievanleeuwen/section-properties/releases"
 "Bug Tracker" = "https://github.com/robbievanleeuwen/section-properties/issues"
 
 [tool.poetry.dependencies]
-python = ">=3.9.0,<3.12"
-numpy = "^1.24.4"
-scipy = "^1.10.1"
+python = ">=3.9.0,<3.13"
+numpy = "^1.26.4"
+scipy = "^1.12.0"
 matplotlib = "^3.8.3"
 shapely = "^2.0.3"
 triangle = "^20230923"
@@ -58,8 +59,8 @@ click = "^8.1.7"
 more-itertools = "^10.2.0"
 numba = { version = "^0.59.0", optional = true }
 cad-to-shapely = { version = "^0.3.1", optional = true }
-rhino-shapley-interop = { version = "^0.0.4", optional = true }
-rhino3dm = { version = "^8.4.0", optional = true }
+rhino-shapley-interop = { version = "^0.0.4", python = ">=3.9.0,<3.12", optional = true }
+rhino3dm = { version = "^8.4.0", python = ">=3.9.0,<3.12", optional = true }
 pypardiso = { version = "^0.4.5", optional = true }
 intel-openmp = { version = "==2023.2.0", optional = true }
 mkl = { version = "==2023.2.0", optional = true }
