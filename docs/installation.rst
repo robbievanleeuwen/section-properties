@@ -4,7 +4,7 @@ Installation
 ============
 
 These instructions will get you a copy of ``sectionproperties`` up and running on your
-machine. You will need a working copy of python 3.9, 3.10 or 3.11 to get started.
+machine. You will need a working copy of python 3.9, 3.10, 3.11 or 3.12 to get started.
 
 Installing ``sectionproperties``
 --------------------------------
@@ -71,3 +71,6 @@ To install ``sectionproperties`` with the above functionality, use the ``dxf`` a
 
     pip install sectionproperties[dxf]
     pip install sectionproperties[rhino]
+
+..  warning:: The "rhino" extras do not currently support python 3.12, this may only be
+  installed for python 3.9, 3.10 and 3.11.
