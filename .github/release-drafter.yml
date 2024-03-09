@@ -53,7 +53,7 @@ exclude-contributors:
 
 # Custom text at start of release
 header: |
-  This release updates core and dev dependencies, as well as minor docs changes.
+  This release adds Python 3.12 support!
 
 template: |
   ## What's Changed
