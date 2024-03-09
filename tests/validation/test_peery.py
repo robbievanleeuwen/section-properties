@@ -16,6 +16,7 @@ BibTeX Entry for reference:
     ISBN = {978-0486485805}
 }
 """
+
 from __future__ import annotations
 
 from typing import Callable

@@ -927,6 +927,7 @@ class StressResult:
         sig_33: Minor principal stress (:math:`\sigma_{33}`) resulting from all actions
         sig_vm: von Mises stress (:math:`\sigma_{VM}`) resulting from all actions
     """
+
     num_nodes: int
     sig_zz_n: npt.NDArray[np.float64] = field(init=False)
     sig_zz_mxx: npt.NDArray[np.float64] = field(init=False)
