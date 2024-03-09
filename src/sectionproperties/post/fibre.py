@@ -2,6 +2,7 @@
 
 It can be used in `suanPan <https://github.com/TLCFEM/suanPan>`_ to perform further FEA.
 """
+
 from __future__ import annotations
 
 from abc import abstractmethod

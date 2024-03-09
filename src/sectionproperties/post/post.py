@@ -267,9 +267,7 @@ class SectionProperties:
             self.ry_c = (self.iyy_c / self.ea) ** 0.5
 
             # calculate principal 2nd moments of area about the centroidal xy axis
-            delta: float = (
-                ((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c**2
-            ) ** 0.5
+            delta: float = (((self.ixx_c - self.iyy_c) / 2) ** 2 + self.ixy_c**2) ** 0.5
             self.i11_c = (self.ixx_c + self.iyy_c) / 2 + delta
             self.i22_c = (self.ixx_c + self.iyy_c) / 2 - delta
 
