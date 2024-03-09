@@ -53,7 +53,7 @@ exclude-contributors:
 
 # Custom text at start of release
 header: |
-  This release makes `numba` an optional dependency, adds strict `mypy` type checking and modifies the application of the Lagrangian Multipler method.
+  This release updates core and dev dependencies, as well as minor docs changes.
 
 template: |
   ## What's Changed
