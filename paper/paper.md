@@ -89,11 +89,11 @@ $$
 where the stiffness matrix and load vector at the element level are defined as:
 
 $$
-\textbf{k}^e = \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T} \textbf{B}_i J_i
+\textbf{k}^e = \sum_{i=1}^6 w_i \textbf{B}_i^{\textrm{T}} \textbf{B}_i J_i
 $$
 
 $$
-\textbf{f}^e = \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T}
+\textbf{f}^e = \sum_{i=1}^6 w_i \textbf{B}_i^{\textrm{T}}
 \begin{bmatrix}
   \textbf{N}_i \textbf{y}_e \\
   -\textbf{N}_i \textbf{x}_e \\
@@ -110,7 +110,7 @@ to zero [@larson].
 
 $$
 \begin{bmatrix}
-  \textbf{K} & \textbf{C}^{\rm{T}} \\
+  \textbf{K} & \textbf{C}^{\textrm{T}} \\
   \textbf{C} & 0 \\
 \end{bmatrix}
 \begin{bmatrix}
@@ -129,7 +129,7 @@ warping function has been evaluated, the Saint-Venant torsion constant can be ca
 as follows:
 
 $$
-J = I_{xx} + I_{yy} - \boldsymbol{\omega}^{\rm T} \textbf{K} \boldsymbol{\omega}
+J = I_{xx} + I_{yy} - \boldsymbol{\omega}^{\textrm{T}} \textbf{K} \boldsymbol{\omega}
 $$
 
 The calculation of plastic properties is meshless, and is conducted using an iterative
