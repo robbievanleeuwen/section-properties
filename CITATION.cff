@@ -1,0 +1,36 @@
+cff-version: "1.2.0"
+authors:
+  - family-names: Leeuwen
+    given-names: Robbie
+    name-particle: van
+    orcid: "https://orcid.org/0009-0004-8056-3977"
+  - family-names: Ferster
+    given-names: Connor
+    orcid: "https://orcid.org/0009-0005-0861-2428"
+doi: 10.21105/joss.06105
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+    - family-names: Leeuwen
+      given-names: Robbie
+      name-particle: van
+      orcid: "https://orcid.org/0009-0004-8056-3977"
+    - family-names: Ferster
+      given-names: Connor
+      orcid: "https://orcid.org/0009-0005-0861-2428"
+  date-published: 2024-04-19
+  doi: 10.21105/joss.06105
+  issn: 2475-9066
+  issue: 96
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 6105
+  title: "sectionproperties: A Python package for the analysis of
+    arbitrary cross-sections using the finite element method"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.06105"
+  volume: 9
+title: "sectionproperties: A Python package for the analysis of
+  arbitrary cross-sections using the finite element method"
