@@ -9,11 +9,11 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/sectionproperties)][python version]
 [![License](https://img.shields.io/pypi/l/sectionproperties)][license]
 [![Read the documentation at https://sectionproperties.readthedocs.io/](https://img.shields.io/readthedocs/sectionproperties/stable.svg?label=Read%20the%20Docs)][read the docs]
-[![Tests](https://github.com/robbievanleeuwen/section-properties/workflows/Tests/badge.svg)][tests]
+[![Tests](https://github.com/robbievanleeuwen/section-properties/actions/workflows/tests.yml/badge.svg?branch=master)][tests]
 [![Codecov](https://codecov.io/gh/robbievanleeuwen/section-properties/branch/master/graph/badge.svg)][codecov]
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][pre-commit]
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
-[![JOSS](https://joss.theoj.org/papers/6c3ad57a38202562726b4a7b86a86c32/status.svg)][joss]
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.06105/status.svg)](joss)
 
 [pypi_]: https://pypi.org/project/sectionproperties/
 [status]: https://pypi.org/project/sectionproperties/
@@ -23,7 +23,7 @@
 [codecov]: https://app.codecov.io/gh/robbievanleeuwen/section-properties
 [pre-commit]: https://github.com/pre-commit/pre-commit
 [black]: https://github.com/psf/black
-[joss]: https://joss.theoj.org/papers/6c3ad57a38202562726b4a7b86a86c32
+[joss]: https://doi.org/10.21105/joss.06105
 
 `sectionproperties` is a python package for the analysis of arbitrary cross-sections
 using the finite element method. `sectionproperties` can be used to determine

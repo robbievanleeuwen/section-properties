@@ -53,7 +53,7 @@ exclude-contributors:
 
 # Custom text at start of release
 header: |
-  This release adds Python 3.12 support!
+  Release for JOSS publication and dependency updates.
 
 template: |
   ## What's Changed

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sectionproperties"
-version = "3.2.0"
+version = "3.2.1"
 description = "A python package for the analysis of arbitrary cross-sections using the finite element method."
 license = "MIT"
 authors = [
