@@ -9,7 +9,7 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/sectionproperties)][python version]
 [![License](https://img.shields.io/pypi/l/sectionproperties)][license]
 [![Read the documentation at https://sectionproperties.readthedocs.io/](https://img.shields.io/readthedocs/sectionproperties/stable.svg?label=Read%20the%20Docs)][read the docs]
-[![Tests](https://github.com/robbievanleeuwen/section-properties/workflows/Tests/badge.svg)][tests]
+[![Tests](https://github.com/robbievanleeuwen/section-properties/actions/workflows/tests.yml/badge.svg?branch=master)][tests]
 [![Codecov](https://codecov.io/gh/robbievanleeuwen/section-properties/branch/master/graph/badge.svg)][codecov]
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][pre-commit]
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
