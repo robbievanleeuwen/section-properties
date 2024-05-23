@@ -175,6 +175,7 @@ def tests(session: Session) -> None:
             "--extras",
             "dxf rhino",
             "--no-cache",
+            "-vvv",
             external=True,
         )
 
