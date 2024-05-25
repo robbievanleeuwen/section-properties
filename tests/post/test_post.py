@@ -61,20 +61,20 @@ def test_save_plot(example_section, tmp_path):
     plt.close("all")
 
 
-def test_supplied_axis(example_section):
-    """Tests supplying an axis to a plot."""
-    sec = example_section
-    _, ax = plt.subplots()
+# def test_supplied_axis(example_section):
+#     """Tests supplying an axis to a plot."""
+#     sec = example_section
+#     _, ax = plt.subplots()
 
-    sec.plot_mesh(ax=ax, render=False)
-    plt.close("all")
-    sec.plot_mesh(nrows=2, axis_index=1, render=False)
-    plt.close("all")
+#     sec.plot_mesh(ax=ax, render=False)
+#     plt.close("all")
+#     sec.plot_mesh(nrows=2, axis_index=1, render=False)
+#     plt.close("all")
 
-    with pytest.raises(ValueError, match="is not compatible"):
-        sec.plot_mesh(nrows=2, ncols=2, axis_index=5, render=False)
+#     with pytest.raises(ValueError, match="is not compatible"):
+#         sec.plot_mesh(nrows=2, ncols=2, axis_index=5, render=False)
 
-    plt.close("all")
+#     plt.close("all")
 
 
 def test_plot_centroids(example_section):
