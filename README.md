@@ -13,7 +13,7 @@
 [![Codecov](https://codecov.io/gh/robbievanleeuwen/section-properties/branch/master/graph/badge.svg)][codecov]
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][pre-commit]
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
-[![DOI](https://joss.theoj.org/papers/10.21105/joss.06105/status.svg)](joss)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.06105/status.svg)][joss]
 
 [pypi_]: https://pypi.org/project/sectionproperties/
 [status]: https://pypi.org/project/sectionproperties/
