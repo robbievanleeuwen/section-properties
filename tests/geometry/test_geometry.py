@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import platform
 import sys
 from pathlib import Path
 
@@ -786,6 +787,7 @@ def test_split_section(unit_square):
         unit_square.split_section(point_i)
 
 
+@pytest.mark.skipif(platform.system() != "Linux", reason="Only test plotting on Linux")
 def test_plot_geometry(small_square_with_hole):
     """Tests plot geometry executes without errors."""
     geom = small_square_with_hole

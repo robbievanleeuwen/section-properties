@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
+import platform
+
 import pytest
 
 from sectionproperties.analysis import Section
 from sectionproperties.pre import Material
 from sectionproperties.pre.library import rectangular_section
+
+
+linux_only = pytest.mark.skipif(
+    platform.system() != "Linux", reason="Only test plotting on Linux"
+)
 
 
 @pytest.fixture
@@ -26,6 +33,7 @@ def example_section() -> tuple[Section, Material]:
     return Section(geometry=geom), mat_b
 
 
+@linux_only
 def test_stress_plot(example_section):
     """Tests the plot_stress() method."""
     sec, mat_b = example_section
@@ -36,6 +44,7 @@ def test_stress_plot(example_section):
     stress.plot_stress(stress="n_zz", material_list=[mat_b], render=False)
 
 
+@linux_only
 def test_stress_plot_constant():
     """Tests the plot_stress() method with a constant stress."""
     geom = rectangular_section(d=1, b=1)
@@ -45,6 +54,7 @@ def test_stress_plot_constant():
     sec.calculate_stress(n=1).plot_stress(stress="n_zz", render=False)
 
 
+@linux_only
 def test_stress_vector_plot(example_section):
     """Tests the plot_stress_vector() method."""
     sec, _ = example_section
@@ -53,6 +63,7 @@ def test_stress_vector_plot(example_section):
     sec.calculate_stress(mzz=1).plot_stress_vector(stress="zxy", render=False)
 
 
+@linux_only
 def test_plot_mohrs_circles(example_section):
     """Tests the plot_mohrs_circles() method."""
     sec, _ = example_section

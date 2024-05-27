@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import platform
+
 import matplotlib.pyplot as plt
 import pytest
 import pytest_check as check
@@ -9,6 +11,11 @@ import pytest_check as check
 from sectionproperties.analysis import Section
 from sectionproperties.pre import Material
 from sectionproperties.pre.library import rectangular_section
+
+
+linux_only = pytest.mark.skipif(
+    platform.system() != "Linux", reason="Only test plotting on Linux"
+)
 
 
 @pytest.fixture
@@ -51,6 +58,7 @@ def test_centroidal_properties_error(example_section):
         )
 
 
+@linux_only
 def test_save_plot(example_section, tmp_path):
     """Tests saving a plot."""
     sec = example_section
@@ -61,22 +69,24 @@ def test_save_plot(example_section, tmp_path):
     plt.close("all")
 
 
-# def test_supplied_axis(example_section):
-#     """Tests supplying an axis to a plot."""
-#     sec = example_section
-#     _, ax = plt.subplots()
+@linux_only
+def test_supplied_axis(example_section):
+    """Tests supplying an axis to a plot."""
+    sec = example_section
+    _, ax = plt.subplots()
 
-#     sec.plot_mesh(ax=ax, render=False)
-#     plt.close("all")
-#     sec.plot_mesh(nrows=2, axis_index=1, render=False)
-#     plt.close("all")
+    sec.plot_mesh(ax=ax, render=False)
+    plt.close("all")
+    sec.plot_mesh(nrows=2, axis_index=1, render=False)
+    plt.close("all")
 
-#     with pytest.raises(ValueError, match="is not compatible"):
-#         sec.plot_mesh(nrows=2, ncols=2, axis_index=5, render=False)
+    with pytest.raises(ValueError, match="is not compatible"):
+        sec.plot_mesh(nrows=2, ncols=2, axis_index=5, render=False)
 
-#     plt.close("all")
+    plt.close("all")
 
 
+@linux_only
 def test_plot_centroids(example_section):
     """Tests plotting centroids."""
     sec = example_section
