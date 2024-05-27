@@ -161,21 +161,15 @@ def tests(session: Session) -> None:
     Args:
         session: Nox session
     """
-    # if python version is 3.12, don't install rhino extras
-    if session.python == "3.12":
-        session.run_always(
-            "poetry", "install", "--only", "main", "--extras", "dxf", external=True
-        )
-    else:
-        session.run_always(
-            "poetry",
-            "install",
-            "--only",
-            "main",
-            "--extras",
-            "dxf rhino",
-            external=True,
-        )
+    session.run_always(
+        "poetry",
+        "install",
+        "--only",
+        "main",
+        "--extras",
+        "dxf rhino",
+        external=True,
+    )
 
     # install relevant tooling
     session.install("coverage[toml]", "pytest", "pygments", "pytest-check")
