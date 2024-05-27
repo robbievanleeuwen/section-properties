@@ -71,6 +71,3 @@ To install ``sectionproperties`` with the above functionality, use the ``dxf`` a
 
     pip install sectionproperties[dxf]
     pip install sectionproperties[rhino]
-
-..  warning:: The "rhino" extras do not currently support python 3.12, this may only be
-  installed for python 3.9, 3.10 and 3.11.
