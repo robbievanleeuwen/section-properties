@@ -53,7 +53,7 @@ numpy = "^1.26.4"
 scipy = "^1.12.0"
 matplotlib = "^3.8.3"
 shapely = "^2.0.3"
-cytriangle = "^1.0.0"
+cytriangle = "^1.0.1"
 rich = "^13.7.1"
 click = "^8.1.7"
 more-itertools = "^10.2.0"
@@ -139,7 +139,7 @@ module = [
     "rhino_shapely_interop.*",
     "scipy.*",
     "shapely.*",
-    "triangle.*",
+    "cytriangle.*",
 ]
 ignore_missing_imports = true
 

@@ -47,4 +47,3 @@ __pycache__/
 
 # mypy cache
 .mypy_cache/
-poetry.lock
