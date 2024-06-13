@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-import triangle
+import cytriangle as triangle
 
 
 @dataclass(eq=True, frozen=True)

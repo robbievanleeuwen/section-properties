@@ -663,6 +663,34 @@ docs = ["ipython", "matplotlib", "numpydoc", "sphinx"]
 tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
+name = "cytriangle"
+version = "1.0.1"
+description = "Object-oriented Cython wrapper of Shewchuk's Triangle Library"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "cytriangle-1.0.1-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:00ef40a4fb92c358a233d9f98012f6f4e46c5b1ef78cc464ca746a330f796ee2"},
+    {file = "cytriangle-1.0.1-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:6a6eec93b90b96d677ae9a8cd63109c3cb1e2a503a44fa590b00b597d1c392d7"},
+    {file = "cytriangle-1.0.1-cp310-cp310-manylinux_2_35_x86_64.whl", hash = "sha256:113fda032d8a272042d134beefb86f7a46f400736dd442d50557f737558a8ac1"},
+    {file = "cytriangle-1.0.1-cp310-cp310-win_amd64.whl", hash = "sha256:b49053d119a2c898fcdcddf71b3d57a2ae7427a8fae21c31f685337f1cdecb4f"},
+    {file = "cytriangle-1.0.1-cp311-cp311-macosx_13_0_x86_64.whl", hash = "sha256:0c8e9947a231360bf8cb2fb0895774d23d804641489cc774adad09a8c877b232"},
+    {file = "cytriangle-1.0.1-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:7c16c0a9d30a0eaea33bb8cf5e314a98a07b207d9947c091a4c0ab331b2ed89a"},
+    {file = "cytriangle-1.0.1-cp311-cp311-manylinux_2_35_x86_64.whl", hash = "sha256:1a9431a9fc967acacd2da71b4ebc12678081db88958ba4348d05cca6714ec375"},
+    {file = "cytriangle-1.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:a99e0a9a81756ec43ff9803ad7e7abc159b6e2c0ca0fdc251ca0292449fb9fac"},
+    {file = "cytriangle-1.0.1-cp312-cp312-macosx_13_0_x86_64.whl", hash = "sha256:a0511e3f833f25781f3a7787a342d42496160ed52174f4fd3a8aa30e1ee4641a"},
+    {file = "cytriangle-1.0.1-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:3da909fa6af49bdd05484aa555fc92f70cf983caf59f9fe7a96ffeab441813a3"},
+    {file = "cytriangle-1.0.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:e2964f6d9c7fca8f49428d476f925486b71b50ed5168989490beca406a73654b"},
+    {file = "cytriangle-1.0.1-cp312-cp312-win_amd64.whl", hash = "sha256:fb25d07cce9e36238942186e20e493ad4f00899a141d64b06bb453ee9fc90d31"},
+    {file = "cytriangle-1.0.1-cp39-cp39-macosx_13_0_x86_64.whl", hash = "sha256:d8e09fb123ed231dd9a771c90dadaed1cbc7b5e8dc72710cdea91dc2070756f5"},
+    {file = "cytriangle-1.0.1-cp39-cp39-macosx_14_0_arm64.whl", hash = "sha256:affd117cf7450a5daeb771da7e472ffb59e7ff74dbcac56042d86dcf5bf0ad34"},
+    {file = "cytriangle-1.0.1-cp39-cp39-manylinux_2_35_x86_64.whl", hash = "sha256:a32a99a68d899bd29913dec6fe54aac8e9eeaa5322a375a07dd6d0caacce429e"},
+    {file = "cytriangle-1.0.1-cp39-cp39-win_amd64.whl", hash = "sha256:64d989296a6d2aa4ce6885884415277741ae449dc09f292e59250546caef4d20"},
+]
+
+[package.dependencies]
+numpy = ">=1.25.2,<2.0.0"
+
+[[package]]
 name = "darglint"
 version = "1.8.1"
 description = "A utility for ensuring Google-style docstrings stay up to date with the source code."
@@ -3942,51 +3970,6 @@ docs = ["myst-parser", "pydata-sphinx-theme", "sphinx"]
 test = ["argcomplete (>=3.0.3)", "mypy (>=1.7.0)", "pre-commit", "pytest (>=7.0,<8.2)", "pytest-mock", "pytest-mypy-testing"]
 
 [[package]]
-name = "triangle"
-version = "20230923"
-description = "Python binding to the triangle library"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "triangle-20230923-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:9b73207eaaeab23f3ca4c70ceb6b759e8dff729501b21c12d8ea1d972fecb5e7"},
-    {file = "triangle-20230923-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0a4ec064dbd6b35eb14a552e4435d3e17330f93c3caaebee0ef37b1c60ed13e4"},
-    {file = "triangle-20230923-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3dcf9881b88c9c192c59f911e75808f64dc71506d3dda3423fd3ff99a4eaa9ae"},
-    {file = "triangle-20230923-cp310-cp310-win32.whl", hash = "sha256:c8148839b8e082fa0691c6be651bb2e351357b103754b79216cb3a06cd98e137"},
-    {file = "triangle-20230923-cp310-cp310-win_amd64.whl", hash = "sha256:adcab59db17aaa6f1ff70a1b82952c7ac0342070a4cc39d4fe5f574fc71cfd5b"},
-    {file = "triangle-20230923-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:58c3f1e4c4ed3105dd33f885313200514669cc36b43a9a36101d0c286d2433fc"},
-    {file = "triangle-20230923-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4baec5494bcba194b8c1d435382254bf394dc01f591bed452a8b8bd086b74845"},
-    {file = "triangle-20230923-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4aae0afb29d286456d9c494f7d7c668994b59ac15026eeeb07ec7e2fbb348ac3"},
-    {file = "triangle-20230923-cp311-cp311-win32.whl", hash = "sha256:aa5018fd5b87d0b798a933d54466bfebc5bb23efa59a59398b198ed19d22cc94"},
-    {file = "triangle-20230923-cp311-cp311-win_amd64.whl", hash = "sha256:f6a5270fb5ff4a48abe6a752420e438b05d087bda98ca807498f4ab720aee096"},
-    {file = "triangle-20230923-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:19dca27055bd9097d2704fce6874ddadd786453e7fb58fa52a7fad9b2c0ccf78"},
-    {file = "triangle-20230923-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:17a61ccd56620ed88c651e73b694c174a8532072618229df6366726c877bb2f0"},
-    {file = "triangle-20230923-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6b3f149a8535ee1c4ca502150214c9d215690f8f3003d5b0cb971cf04497c96d"},
-    {file = "triangle-20230923-cp312-cp312-win32.whl", hash = "sha256:356dc18d627baa67536bb47c164e30eb5755d7ec2a99a7c87ed997dbd60c96c0"},
-    {file = "triangle-20230923-cp312-cp312-win_amd64.whl", hash = "sha256:f083b4c2a1a11cf89835910a5c93b2c50f94b8ca68af425e9372215ec8e22252"},
-    {file = "triangle-20230923-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:1209da51f034d4b4fd73f3fafaaebb4d19a4c113e58cdf7b8e5b51af5887fa30"},
-    {file = "triangle-20230923-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:14e70116168e4658bb1bf19d91ebbe4bb9fb15a9ee82f0efdd9a7abd35a2005a"},
-    {file = "triangle-20230923-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:0253dc5005751489b6ea8e93034e6e3d028a080f605f5398b0c9b85d55218ca7"},
-    {file = "triangle-20230923-cp37-cp37m-win32.whl", hash = "sha256:c9f04a1963d91cbf7729629fe535851eff13850eca3590a5d8a0d633a5044376"},
-    {file = "triangle-20230923-cp37-cp37m-win_amd64.whl", hash = "sha256:a40c7348a4c40f2c2a5feb54c2cc89a82c48d9bc41dfc03c8f88f44f4b230af8"},
-    {file = "triangle-20230923-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:9251e15e7811d00d4166d0368c62d603c284e04925cd3138caa4743dac8f61a4"},
-    {file = "triangle-20230923-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:542cc693ea6b02d933a3594950e1eaf9c7f175a317c56e30bac4ca6356ef7db0"},
-    {file = "triangle-20230923-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:234ce3c9e9cb9c7be92de6022bafbe6173c064085cdbf9e9a7ea751665ab8a16"},
-    {file = "triangle-20230923-cp38-cp38-win32.whl", hash = "sha256:e3718560534b3b903e77fbc8fdf371429ae4703537392d989307ff2a9f077a45"},
-    {file = "triangle-20230923-cp38-cp38-win_amd64.whl", hash = "sha256:8ea964906da3dd93d3ba952ef18c10e2ec2f46bedf05d7a8024d99f425504bc4"},
-    {file = "triangle-20230923-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:393d0e88c860523fc5a0383332882d1e9de4161dab80e78fc49898974173f407"},
-    {file = "triangle-20230923-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f8fa4906c211b2181b9191239af315079f3211de8eed4715fd1df43376571c77"},
-    {file = "triangle-20230923-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2abf798207d52e9144c03c0191dd48b6cc64e2b32424f08afea7243a4f41a9c0"},
-    {file = "triangle-20230923-cp39-cp39-win32.whl", hash = "sha256:6ec882cc57a161616971c9e7c07c000e5f43e0e60f975e38bd88d477cec377ec"},
-    {file = "triangle-20230923-cp39-cp39-win_amd64.whl", hash = "sha256:177a47d7fbe4ba2318fdbf766c19a0b290d285ca069c33e17014f0056a2abe58"},
-]
-
-[package.dependencies]
-numpy = "*"
-
-[package.extras]
-test = ["pytest"]
-
-[[package]]
 name = "types-python-dateutil"
 version = "2.9.0.20240316"
 description = "Typing stubs for python-dateutil"
@@ -4334,4 +4317,4 @@ rhino = ["rhino-shapley-interop", "rhino3dm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9.0,<3.13"
-content-hash = "64cc7ee9c042e7400eec1c629022a2786cf37a87cf36fc3dd6a69b058bd87f48"
+content-hash = "dad4ea89f3182eb8bf41752f0ccac56415bef73038e623446c0a1656679d0018"
