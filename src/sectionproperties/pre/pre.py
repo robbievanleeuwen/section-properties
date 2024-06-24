@@ -90,8 +90,8 @@ def create_mesh(
 ) -> dict[str, list[list[float]] | list[list[int]]]:
     """Generates a triangular mesh.
 
-    Creates a quadratic triangular mesh using the triangle module, which utilises the
-    code ``Triangle``, by Jonathan Shewchuk.
+    Creates a quadratic triangular mesh using the ``CyTriangle`` module, which utilises
+    the code ``Triangle``, by Jonathan Shewchuk.
 
     Args:
         points: List of points (``x``, ``y``) defining the vertices of the cross-section
