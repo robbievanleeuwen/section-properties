@@ -35,9 +35,9 @@ Mesh Generation
 ---------------
 
 The cross-section is meshed using quadratic superparametric triangular elements
-(``Tri6``) using the `triangle library <https://github.com/drufat/triangle>`__ for
+(``Tri6``) using the `CyTriangle library <https://github.com/m-clare/cytriangle>`__ for
 Python. Superparametric quadratic elements are defined as having straight edges and
-mid-nodes located at the mid-point between adjacent corner nodes. ``triangle``
+mid-nodes located at the mid-point between adjacent corner nodes. ``CyTriangle``
 implements `Triangle <https://www.cs.cmu.edu/~quake/triangle.html>`__, which is a two
 dimensional quality mesh generator and Delaunay triangulator written by Jonathan
 Shewchuk in C.
