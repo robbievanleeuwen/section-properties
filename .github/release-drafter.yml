@@ -52,13 +52,15 @@ exclude-contributors:
   - "robbievanleeuwen"
 
 # Custom text at start of release
-header: |
-  This release swaps the new `Triangle` wrapper,
-  [`CyTriangle`](https://github.com/m-clare/cytriangle), for
-  [`triangle`](https://github.com/drufat/triangle), thus supporting users with Apple
-  Silicon (`macos-arm64`).
+header: >
+
+  This release swaps the new `Triangle` wrapper, [`CyTriangle`](https://github.com/m-clare/cytriangle),
+  for [`triangle`](https://github.com/drufat/triangle), thus supporting users with Apple
+  Silicon (`macos-arm64`). Many thanks for @m-clare for the hard work with this new
+  package!
 
 template: |
+
   ## What's Changed
 
   $CHANGES
