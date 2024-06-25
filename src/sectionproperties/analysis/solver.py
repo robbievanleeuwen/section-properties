@@ -38,8 +38,7 @@ def solve_cgs(
         k: ``N x N`` matrix of the linear system
         f: ``N x 1`` right hand side of the linear system
         m: Preconditioner for the linear matrix approximating the inverse of ``k``
-        tol: Tolerance for the solver to achieve. The algorithm terminates when either
-            the relative or the absolute residual is below ``tol``
+        tol: Relative tolerance for the solver to achieve.
 
     Returns:
         The solution vector to the linear system of equations
@@ -47,7 +46,7 @@ def solve_cgs(
     Raises:
         RuntimeError: If the CGS iterative method does not converge
     """
-    u, info = linalg.cgs(A=k, b=f, tol=tol, M=m)
+    u, info = linalg.cgs(A=k, b=f, rtol=tol, M=m)
 
     if info != 0:
         raise RuntimeError("CGS iterative method did not converge.")
@@ -67,8 +66,7 @@ def solve_cgs_lagrange(
         k_lg: ``(N+1) x (N+1)`` Lagrangian multiplier matrix of the linear system
         f: ``N x 1`` right hand side of the linear system
         m: Preconditioner for the linear matrix approximating the inverse of ``k``
-        tol: Tolerance for the solver to achieve. The algorithm terminates when either
-            the relative or the absolute residual is below ``tol``
+        tol: Relative tolerance for the solver to achieve.
 
     Returns:
         The solution vector to the linear system of equations
@@ -77,7 +75,7 @@ def solve_cgs_lagrange(
         RuntimeError: If the CGS iterative method does not converge or the error from
             the Lagrangian multiplier method exceeds the tolerance
     """
-    u, info = linalg.cgs(A=k_lg, b=np.append(f, 0), tol=tol, M=m)
+    u, info = linalg.cgs(A=k_lg, b=np.append(f, 0), rtol=tol, M=m)
 
     if info != 0:
         raise RuntimeError("CGS iterative method did not converge.")
