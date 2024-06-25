@@ -53,7 +53,10 @@ exclude-contributors:
 
 # Custom text at start of release
 header: |
-  Release for JOSS publication and dependency updates.
+  This release swaps the new `Triangle` wrapper,
+  [`CyTriangle`](https://github.com/m-clare/cytriangle), for
+  [`triangle`](https://github.com/drufat/triangle), thus supporting users with Apple
+  Silicon (`macos-arm64`).
 
 template: |
   ## What's Changed
