@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sectionproperties"
-version = "3.2.1"
+version = "3.2.2"
 description = "A python package for the analysis of arbitrary cross-sections using the finite element method."
 license = "MIT"
 authors = [
@@ -53,17 +53,18 @@ numpy = "^1.26.4"
 scipy = "^1.12.0"
 matplotlib = "^3.8.3"
 shapely = "^2.0.3"
-triangle = "^20230923"
+cytriangle = "^1.0.1"
 rich = "^13.7.1"
 click = "^8.1.7"
 more-itertools = "^10.2.0"
 numba = { version = "^0.59.0", optional = true }
 cad-to-shapely = { version = "^0.3.1", optional = true }
-rhino-shapley-interop = { version = "^0.0.4", python = ">=3.9.0,<3.12", optional = true }
-rhino3dm = { version = "^8.4.0", python = ">=3.9.0,<3.12", optional = true }
+rhino-shapley-interop = { version = "^0.0.4", optional = true }
+rhino3dm = { version = "==8.6.1", optional = true }
 pypardiso = { version = "^0.4.5", optional = true }
 intel-openmp = { version = "==2023.2.0", optional = true }
 mkl = { version = "==2023.2.0", optional = true }
+tbb = { version = "==2021.10.0", optional = true }
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.2.0"
@@ -101,7 +102,7 @@ sphinxext-opengraph = "^0.9.1"
 dxf = ["cad-to-shapely"]
 rhino = ["rhino-shapley-interop", "rhino3dm"]
 numba = ["numba"]
-pardiso = ["pypardiso", "intel-openmp", "mkl"]
+pardiso = ["pypardiso", "intel-openmp", "mkl", "tbb"]
 
 [tool.poetry.scripts]
 sectionproperties = "sectionproperties.__main__:main"
@@ -138,7 +139,7 @@ module = [
     "rhino_shapely_interop.*",
     "scipy.*",
     "shapely.*",
-    "triangle.*",
+    "cytriangle.*",
 ]
 ignore_missing_imports = true
 

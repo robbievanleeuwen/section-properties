@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import platform
+
 import matplotlib.pyplot as plt
 import pytest
 import pytest_check as check
@@ -9,6 +11,11 @@ import pytest_check as check
 from sectionproperties.analysis import Section
 from sectionproperties.pre import Material
 from sectionproperties.pre.library import rectangular_section
+
+
+linux_only = pytest.mark.skipif(
+    platform.system() != "Linux", reason="Only test plotting on Linux"
+)
 
 
 @pytest.fixture
@@ -51,6 +58,7 @@ def test_centroidal_properties_error(example_section):
         )
 
 
+@linux_only
 def test_save_plot(example_section, tmp_path):
     """Tests saving a plot."""
     sec = example_section
@@ -61,6 +69,7 @@ def test_save_plot(example_section, tmp_path):
     plt.close("all")
 
 
+@linux_only
 def test_supplied_axis(example_section):
     """Tests supplying an axis to a plot."""
     sec = example_section
@@ -77,6 +86,7 @@ def test_supplied_axis(example_section):
     plt.close("all")
 
 
+@linux_only
 def test_plot_centroids(example_section):
     """Tests plotting centroids."""
     sec = example_section

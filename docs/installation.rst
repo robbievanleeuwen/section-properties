@@ -10,7 +10,7 @@ Installing ``sectionproperties``
 --------------------------------
 
 ``sectionproperties`` uses `shapely <https://github.com/shapely/shapely>`_ to prepare
-the cross-section geometry and `triangle <https://github.com/drufat/triangle>`_ to
+the cross-section geometry and `CyTriangle <https://github.com/m-clare/cytriangle>`_ to
 efficiently generate a conforming triangular mesh.
 `numpy <https://github.com/numpy/numpy>`_ and `scipy <https://github.com/scipy/scipy>`_
 are used to aid finite element computations, while
@@ -71,6 +71,3 @@ To install ``sectionproperties`` with the above functionality, use the ``dxf`` a
 
     pip install sectionproperties[dxf]
     pip install sectionproperties[rhino]
-
-..  warning:: The "rhino" extras do not currently support python 3.12, this may only be
-  installed for python 3.9, 3.10 and 3.11.
