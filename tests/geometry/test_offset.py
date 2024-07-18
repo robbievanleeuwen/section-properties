@@ -118,7 +118,7 @@ def test_compound_rectangular_offset():
     geom.create_mesh(mesh_sizes=[0])
     section = Section(geometry=geom)
     section.calculate_geometric_properties()
-    area = 100 * 50 + 2 * (5 * 100 + 5 * 50) + np.pi * 5**2 / 4
+    area = 100 * 50 + 2 * (5 * 100 + 5 * 50) + np.pi * 5**2
     check.almost_equal(section.get_area(), area, rel=r_tol)
 
 
