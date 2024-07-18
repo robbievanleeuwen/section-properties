@@ -2702,7 +2702,7 @@ def check_geometry_overlaps(
     return not math.isclose(union_area, sum_polygons)
 
 
-def compound_dilation(geoms: list[Geometry], offset: float) -> list[Polygon]:
+def compound_dilation(geoms: list[Geometry], offset: float) -> CompoundGeometry:
     """
     Test function for improved compound dilation
     """
@@ -2785,7 +2785,7 @@ def build_geometry_network(lop: list[Polygon]) -> dict[int, set[int]]:
     return network
 
 
-def extract_shared_paths(arr_of_geom_coll) -> list[LineString]:
+def extract_shared_paths(arr_of_geom_coll: npt.ArrayLike[GeometryCollection]) -> list[LineString]:
     acc = []
     for geom_col in arr_of_geom_coll:
         for mls in geom_col.geoms:
