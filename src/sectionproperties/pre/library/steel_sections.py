@@ -270,7 +270,7 @@ def polygon_hollow_section(
 
     # calculate external radius, if r_in is zero, r_out also is zero
     if r_in == 0:
-        r_out = 0
+        r_out = 0.0
         n_r = 1
     else:
         r_out = r_in + t
@@ -985,7 +985,7 @@ def angle_section(
         Angle section geometry
 
     Raises:
-        ValueError: If the toe radius is larger than the toe thickness
+        ValueError: If the toe radius is larger than the thickness
 
     Example:
         The following example creates an angle section with a depth of 150 mm, a width
@@ -1002,14 +1002,16 @@ def angle_section(
     """
     if r_t > t:
         raise ValueError(
-            "The radius of the toe (r_t) cannot be larger than the toe thickness (t)."
+            "The radius of the toe (r_t) cannot be larger than the thickness (t)."
         )
 
     points: list[tuple[float, float]] = []
 
-    # add first two points
+    # add first two points, but don't add second if the toe radius equals the thickness
     points.append((0, 0))
-    points.append((b, 0))
+
+    if not np.isclose(t, r_t):
+        points.append((b, 0))
 
     # construct the bottom toe radius
     pt = b - r_t, t - r_t
@@ -1023,8 +1025,9 @@ def angle_section(
     pt = t - r_t, d - r_t
     points += sp_utils.draw_radius(pt=pt, r=r_t, theta=0, n=n_r)
 
-    # add the next point
-    points.append((0, d))
+    # add the last point, only if the toe radius does not equal the thickness
+    if not np.isclose(t, r_t):
+        points.append((0, d))
 
     polygon = Polygon(points)
 
@@ -1322,7 +1325,7 @@ def box_girder_section(
     t_fb: float,
     t_w: float,
     material: pre.Material = pre.DEFAULT_MATERIAL,
-):
+) -> geometry.Geometry:
     """Constructs a box girder section.
 
     Constructs a box girder section centered at at ``(max(b_t, b_b)/2, d/2)``, with

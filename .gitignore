@@ -41,3 +41,9 @@ __pycache__/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+# benchmark results
+.benchmarks/
+
+# mypy cache
+.mypy_cache/

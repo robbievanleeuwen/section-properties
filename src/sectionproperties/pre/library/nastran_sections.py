@@ -93,8 +93,8 @@ def nastran_box(
             nastran_box(dim_1=4.0, dim_2=3.0, dim_3=0.375, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(2.0 * dim_4 < dim_1, "Invalid geometry specified.")
-    np.testing.assert_(2.0 * dim_3 < dim_2, "Invalid geometry specified.")
+    assert 2.0 * dim_4 < dim_1, "Invalid geometry specified."
+    assert 2.0 * dim_3 < dim_2, "Invalid geometry specified."
 
     points_outer = [
         (-0.5 * dim_1, -0.5 * dim_2),
@@ -164,8 +164,8 @@ def nastran_box1(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_5 + dim_6 < dim_1, "Invalid geometry specified.")
-    np.testing.assert_(dim_3 + dim_4 < dim_2, "Invalid geometry specified.")
+    assert dim_5 + dim_6 < dim_1, "Invalid geometry specified."
+    assert dim_3 + dim_4 < dim_2, "Invalid geometry specified."
 
     exterior_points = [
         (0.0, 0.0),
@@ -228,8 +228,8 @@ def nastran_chan(
             nastran_chan(dim_1=2.0, dim_2=4.0, dim_3=0.25, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(2.0 * dim_4 < dim_2, "Invalid geometry specified.")
-    np.testing.assert_(dim_3 < dim_1, "Invalid geometry specified.")
+    assert 2.0 * dim_4 < dim_2, "Invalid geometry specified."
+    assert dim_3 < dim_1, "Invalid geometry specified."
 
     # construct the points
     points = [
@@ -290,7 +290,7 @@ def nastran_chan1(
             nastran_chan1(dim_1=0.75, dim_2=1.0, dim_3=3.5, dim_4=4.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_4 > dim_3, "Invalid geometry specified.")
+    assert dim_4 > dim_3, "Invalid geometry specified."
 
     # construct the points and facets
     tf = 0.5 * (dim_4 - dim_3)
@@ -351,8 +351,8 @@ def nastran_chan2(
             nastran_chan2(dim_1=0.375, dim_2=0.5, dim_3=2.0, dim_4=4.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_4 > 2.0 * dim_1, "Invalid geometry specified.")
-    np.testing.assert_(dim_3 > dim_2, "Invalid geometry specified.")
+    assert dim_4 > 2.0 * dim_1, "Invalid geometry specified."
+    assert dim_3 > dim_2, "Invalid geometry specified."
 
     # construct the points and facets
     points = [
@@ -412,13 +412,13 @@ def nastran_cross(
             nastran_cross(dim_1=1.5, dim_2=0.375, dim_3=3.0, dim_4=0.25).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_4 < dim_3, "Invalid geometry specified.")
+    assert dim_4 < dim_3, "Invalid geometry specified."
 
     # construct the points and facets
     d = 0.5 * (dim_3 - dim_4)
     points = [
-        (0.5 * dim_1, 0),
-        (0.5 * dim_1 + dim_2, 0),
+        (0.5 * dim_1, 0.0),
+        (0.5 * dim_1 + dim_2, 0.0),
         (0.5 * dim_1 + dim_2, d),
         (dim_1 + dim_2, d),
         (dim_1 + dim_2, d + dim_4),
@@ -426,18 +426,18 @@ def nastran_cross(
         (0.5 * dim_1 + dim_2, dim_3),
         (0.5 * dim_1, dim_3),
         (0.5 * dim_1, d + dim_4),
-        (0, d + dim_4),
-        (0, d),
+        (0.0, d + dim_4),
+        (0.0, d),
         (0.5 * dim_1, d),
     ]
 
     geom = geometry.Geometry(geom=Polygon(points), material=material)
 
-    c = (0, 0.5 * dim_3)
-    d = (0.5 * (dim_1 + dim_2), 0)
-    e = (0, -0.5 * dim_3)
-    f = (-0.5 * (dim_1 + dim_2), 0)
-    geom.recovery_points = [c, d, e, f]
+    c = (0.0, 0.5 * dim_3)
+    d_r = (0.5 * (dim_1 + dim_2), 0.0)
+    e = (0.0, -0.5 * dim_3)
+    f = (-0.5 * (dim_1 + dim_2), 0.0)
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 
@@ -487,16 +487,12 @@ def nastran_fcross(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_5 > dim_3, "Invalid geometry specified.")
-    np.testing.assert_(dim_7 > dim_4, "Invalid geometry specified.")
-    np.testing.assert_(dim_7 < dim_1, "Invalid geometry specified.")
-    np.testing.assert_(dim_5 < dim_2, "Invalid geometry specified.")
-    np.testing.assert_(
-        dim_8 < (0.5 * dim_2 - 0.5 * dim_3), "Invalid geometry specified."
-    )
-    np.testing.assert_(
-        dim_6 < (0.5 * dim_1 - 0.5 * dim_4), "Invalid geometry specified."
-    )
+    assert dim_5 > dim_3, "Invalid geometry specified."
+    assert dim_7 > dim_4, "Invalid geometry specified."
+    assert dim_7 < dim_1, "Invalid geometry specified."
+    assert dim_5 < dim_2, "Invalid geometry specified."
+    assert dim_8 < (0.5 * dim_2 - 0.5 * dim_3), "Invalid geometry specified."
+    assert dim_6 < (0.5 * dim_1 - 0.5 * dim_4), "Invalid geometry specified."
 
     # construct the points and facets
     points = [
@@ -532,10 +528,10 @@ def nastran_fcross(
 
     geom = geometry.Geometry(geom=Polygon(points), material=material)
 
-    c = (0, 0.5 * dim_1)
-    d = (0.5 * dim_2, 0)
-    e = (0, -0.5 * dim_1)
-    f = (-0.5 * dim_2, 0)
+    c = (0.0, 0.5 * dim_1)
+    d = (0.5 * dim_2, 0.0)
+    e = (0.0, -0.5 * dim_1)
+    f = (-0.5 * dim_2, 0.0)
     geom.recovery_points = [c, d, e, f]
 
     return geom
@@ -591,10 +587,10 @@ def nastran_dbox(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_((dim_4 + dim_5 + dim_6) < dim_1, "Invalid geometry specified.")
-    np.testing.assert_((dim_4 + 0.5 * dim_5) < dim_3, "Invalid geometry specified.")
-    np.testing.assert_((dim_7 + dim_8) < dim_2, "Invalid geometry specified.")
-    np.testing.assert_((dim_9 + dim_10) < dim_2, "Invalid geometry specified.")
+    assert (dim_4 + dim_5 + dim_6) < dim_1, "Invalid geometry specified."
+    assert (dim_4 + 0.5 * dim_5) < dim_3, "Invalid geometry specified."
+    assert (dim_7 + dim_8) < dim_2, "Invalid geometry specified."
+    assert (dim_9 + dim_10) < dim_2, "Invalid geometry specified."
 
     # construct the points and facets
     exterior_points = [
@@ -671,8 +667,8 @@ def nastran_gbox(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_((dim_3 + dim_4) < dim_2, "Invalid geometry specified.")
-    np.testing.assert_((2.0 * dim_5 + dim_6) < dim_1, "Invalid geometry specified.")
+    assert (dim_3 + dim_4) < dim_2, "Invalid geometry specified."
+    assert (2.0 * dim_5 + dim_6) < dim_1, "Invalid geometry specified."
 
     # construct the points and facets
     d = 0.5 * (dim_1 - dim_6 - 2.0 * dim_5)
@@ -701,10 +697,10 @@ def nastran_gbox(
     )
 
     c = (0.5 * dim_1, 0.5 * dim_2)
-    d = (0.5 * dim_1, -0.5 * dim_2)
+    d_r = (0.5 * dim_1, -0.5 * dim_2)
     e = (-0.5 * dim_1, -0.5 * dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_2)
-    geom.recovery_points = [c, d, e, f]
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 
@@ -746,7 +742,7 @@ def nastran_h(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_4 < dim_3, "Invalid geometry specified.")
+    assert dim_4 < dim_3, "Invalid geometry specified."
 
     d1 = 0.5 * (dim_3 - dim_4)
     d2 = 0.5 * dim_2
@@ -813,7 +809,7 @@ def nastran_hat(
             nastran_hat(dim_1=1.25, dim_2=0.25, dim_3=1.5, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(2.0 * dim_2 < dim_1, "Invalid geometry specified.")
+    assert 2.0 * dim_2 < dim_1, "Invalid geometry specified."
 
     # construct the points and facets
     points = [
@@ -881,8 +877,8 @@ def nastran_hat1(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_((2.0 * dim_4 + dim_5) < dim_2, "Invalid geometry specified.")
-    np.testing.assert_(dim_3 < dim_1, "Invalid geometry specified.")
+    assert (2.0 * dim_4 + dim_5) < dim_2, "Invalid geometry specified."
+    assert dim_3 < dim_1, "Invalid geometry specified."
 
     # create bottom rectangular plate
     bottom_plate = nastran_bar(
@@ -902,8 +898,8 @@ def nastran_hat1(
         + bottom_plate
     )
 
-    c = (-0.5 * dim_1, 0)
-    d = (0.5 * dim_1, 0)
+    c = (-0.5 * dim_1, 0.0)
+    d = (0.5 * dim_1, 0.0)
     e = (-0.5 * dim_3, dim_2)
     f = (0.5 * dim_3, dim_2)
 
@@ -945,7 +941,7 @@ def nastran_hexa(
             nastran_hexa(dim_1=0.5, dim_2=2.0, dim_3=1.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_2 > dim_1, "Invalid geometry specified.")
+    assert dim_2 > dim_1, "Invalid geometry specified."
 
     # construct the points and facets
     points = [
@@ -959,10 +955,10 @@ def nastran_hexa(
 
     geom = geometry.Geometry(geom=Polygon(points), material=material)
 
-    c = 0, 0.5 * dim_3
-    d = 0, -0.5 * dim_3
-    e = 0.5 * dim_2, 0
-    f = -0.5 * dim_2, 0
+    c = 0.0, 0.5 * dim_3
+    d = 0.0, -0.5 * dim_3
+    e = 0.5 * dim_2, 0.0
+    f = -0.5 * dim_2, 0.0
     geom.recovery_points = [c, d, e, f]
 
     return geom
@@ -1008,9 +1004,9 @@ def nastran_i(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_((dim_5 + dim_6) < dim_1, "Invalid geometry specified.")
-    np.testing.assert_(dim_4 < dim_3, "Invalid geometry specified.")
-    np.testing.assert_(dim_4 < dim_2, "Invalid geometry specified.")
+    assert (dim_5 + dim_6) < dim_1, "Invalid geometry specified."
+    assert dim_4 < dim_3, "Invalid geometry specified."
+    assert dim_4 < dim_2, "Invalid geometry specified."
 
     # construct the points and facets
     db = 0.5 * (dim_2 - dim_4)
@@ -1075,7 +1071,7 @@ def nastran_i1(
             nastran_i1(dim_1=1.0, dim_2=0.75, dim_3=4.0, dim_4=5.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_4 > dim_3, "Invalid geometry specified.")
+    assert dim_4 > dim_3, "Invalid geometry specified."
 
     # construct the points and facets
     t = 0.5 * (dim_4 - dim_3)
@@ -1140,8 +1136,8 @@ def nastran_l(
             nastran_l(dim_1=3.0, dim_2=6.0, dim_3=0.375, dim_4=0.625).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_4 < dim_1, "Invalid geometry specified.")
-    np.testing.assert_(dim_3 < dim_2, "Invalid geometry specified.")
+    assert dim_4 < dim_1, "Invalid geometry specified."
+    assert dim_3 < dim_2, "Invalid geometry specified."
 
     # construct the points and facets
     points = [
@@ -1211,11 +1207,11 @@ def nastran_rod(
 
     geom = geometry.Geometry(geom=Polygon(points), material=material)
 
-    c = (0, dim_1)
-    d = (dim_1, 0)
-    e = (0, -dim_1)
-    f = (-dim_1, 0)
-    geom.recovery_points = [c, d, e, f]
+    c = (0.0, dim_1)
+    d_r = (dim_1, 0.0)
+    e = (0.0, -dim_1)
+    f = (-dim_1, 0.0)
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 
@@ -1255,14 +1251,14 @@ def nastran_tee(
             nastran_tee(dim_1=3.0, dim_2=4.0, dim_3=0.375, dim_4=0.25).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_4 < dim_1, "Invalid geometry specified.")
-    np.testing.assert_(dim_3 < dim_2, "Invalid geometry specified.")
+    assert dim_4 < dim_1, "Invalid geometry specified."
+    assert dim_3 < dim_2, "Invalid geometry specified."
 
     d = dim_2
     b = dim_1
     t_f = dim_3
     t_w = dim_4
-    r = 0
+    r = 0.0
     n_r = 1
 
     points: list[tuple[float, float]] = []
@@ -1287,11 +1283,11 @@ def nastran_tee(
 
     geom = geometry.Geometry(geom=Polygon(points), material=material)
 
-    c = (0, 0.5 * dim_3)
-    d = (0.5 * dim_1, 0.5 * dim_3)
-    e = (0, 0.5 * dim_3 - dim_2)
+    c = (0.0, 0.5 * dim_3)
+    d_r = (0.5 * dim_1, 0.5 * dim_3)
+    e = (0.0, 0.5 * dim_3 - dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_3)
-    geom.recovery_points = [c, d, e, f]
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 
@@ -1331,7 +1327,7 @@ def nastran_tee1(
             nastran_tee1(dim_1=3.0, dim_2=3.5, dim_3=0.375, dim_4=0.25).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_4 < dim_1, "Invalid geometry specified.")
+    assert dim_4 < dim_1, "Invalid geometry specified."
 
     # construct the points and facets
     d1 = (dim_1 - dim_4) / 2.0
@@ -1392,8 +1388,8 @@ def nastran_tee2(
             nastran_tee2(dim_1=3.0, dim_2=4.0, dim_3=0.375, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_4 < dim_1, "Invalid geometry specified.")
-    np.testing.assert_(dim_3 < dim_2, "Invalid geometry specified.")
+    assert dim_4 < dim_1, "Invalid geometry specified."
+    assert dim_3 < dim_2, "Invalid geometry specified."
 
     # construct the points and facets
     d1 = 0.5 * (dim_1 - dim_4)
@@ -1452,7 +1448,7 @@ def nastran_tube(
             nastran_tube(dim_1=3.0, dim_2=2.5, n=37).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_2 < dim_1, "Invalid geometry specified.")
+    assert dim_2 < dim_1, "Invalid geometry specified."
 
     d = 2.0 * dim_1
     t = dim_1 - dim_2
@@ -1478,11 +1474,11 @@ def nastran_tube(
     interior = geometry.Geometry(geom=Polygon(points_inner), material=material)
     geom = exterior - interior
 
-    c = (0, dim_1)
-    d = (dim_1, 0)
-    e = (0, -dim_1)
-    f = (-dim_1, 0)
-    geom.recovery_points = [c, d, e, f]
+    c = (0.0, dim_1)
+    d_r = (dim_1, 0.0)
+    e = (0.0, -dim_1)
+    f = (-dim_1, 0.0)
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 
@@ -1520,7 +1516,7 @@ def nastran_tube2(
             nastran_tube2(dim_1=3.0, dim_2=0.5, n=37).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_2 < dim_1, "Invalid geometry specified.")
+    assert dim_2 < dim_1, "Invalid geometry specified."
 
     d = 2.0 * dim_1
     t = dim_2
@@ -1547,11 +1543,11 @@ def nastran_tube2(
     interior = geometry.Geometry(geom=Polygon(points_inner), material=material)
     geom = exterior - interior
 
-    c = (0, dim_1)
-    d = (dim_1, 0)
-    e = (0, -dim_1)
-    f = (-dim_1, 0)
-    geom.recovery_points = [c, d, e, f]
+    c = (0.0, dim_1)
+    d_r = (dim_1, 0.0)
+    e = (0.0, -dim_1)
+    f = (-dim_1, 0.0)
+    geom.recovery_points = [c, d_r, e, f]
 
     return geom
 
@@ -1591,7 +1587,7 @@ def nastran_zed(
             nastran_zed(dim_1=1.125, dim_2=0.5, dim_3=3.5, dim_4=4.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    np.testing.assert_(dim_4 > dim_3, "Invalid geometry specified.")
+    assert dim_4 > dim_3, "Invalid geometry specified."
 
     # construct the points and facets
     t = 0.5 * (dim_4 - dim_3)

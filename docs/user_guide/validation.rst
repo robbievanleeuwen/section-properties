@@ -3,21 +3,32 @@
 Validation
 ==========
 
-``sectionproperties`` has a (slowly) growing suite of tests. The testing suite serves to
+``sectionproperties`` has a growing suite of tests. The testing suite serves to
 verify functionality and find exceptions from edge cases, but also validate the results
-against known cases. Since this library performs engineering calculations, it should
-have some manner of proving its accuracy. Each analyst who uses it is responsible for
-their own projects and calculations, but having a high level of confidence that the
-software can produce *correct* results, *given the correct inputs*, is a boon to all
-users. Some test results and explanations from the latter category will be outlined on
-this page, since the former really serves no use to the end user.
+against known cases. Most importantly, it ensures that whenever any changes are made to
+the code base, the expected output is preserved. Further, since this library performs
+engineering calculations, it should have some manner of proving its accuracy. Each
+analyst who uses it is responsible for their own projects and calculations, but having a
+high level of confidence that the software can produce *correct* results,
+*given the correct inputs*, is beneficial to all users. Some test results and
+explanations from the latter category will be outlined on this page.
 
 Textbook Examples
 -----------------
 
-An obvious starting location is replicating examples from academic texts.
-"Aircraft Structures" by David J. Peery is a highly regarded text in the
-field of aerospace structures [Peery]_.
+An obvious starting location is replicating examples from academic texts. The main
+reference text for ``sectionproperties`` is "Analysis and Design of Elastic Beams" by
+Walter D. Pilkey [Pilkey]_. This text contains several examples and validation tests
+which are covered in the testing suite, see
+`source <https://github.com/robbievanleeuwen/section-properties/blob/master/tests/validation/test_pilkey.py>`_.
+Selected validation tests from [Pilkey]_ are found in the examples section of the
+documentation, notably the :ref:`/examples/validation/pilkey_channel.ipynb`,
+:ref:`/examples/validation/pilkey_arc.ipynb` and :ref:`/examples/validation/pilkey_composite.ipynb`
+examples.
+
+"Aircraft Structures" by David J. Peery is also a highly regarded text in the
+field of aerospace structures [Peery]_. Several examples from [Peery]_ are described
+below, and can also be found in the :ref:`/examples/validation/peery.ipynb` example.
 
 Peery - Symmetric Sections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,8 +79,9 @@ Again, the automated test against this checks the hardcoded value with a toleran
 :math:`\pm 0.1`\ %. For accuracy, 55,427.3 is used instead of the rounded value.
 
 For full details and the most updated code of this example, see the
-:doc:`examples page <../examples>`. For the exact test code execution, check the
-`source <https://github.com/robbievanleeuwen/section-properties/blob/master/tests/test_peery.py>`_.
+:ref:`/examples/validation/peery.ipynb` example. For the exact test code execution,
+check the
+`source <https://github.com/robbievanleeuwen/section-properties/blob/master/tests/validation/test_peery.py>`_.
 
 Peery - Unsymmetric Sections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -138,11 +150,15 @@ text, which also matches the computed value from the ``sectionproperties`` FEM.
 
 
 For full details and the most updated code of this example, see the
-:doc:`examples page <../examples>`. For the exact test code execution, check the
-`source <https://github.com/robbievanleeuwen/section-properties/blob/master/tests/test_peery.py>`_.
+:ref:`/examples/validation/peery.ipynb` example. For the exact test code execution,
+check the
+`source <https://github.com/robbievanleeuwen/section-properties/blob/master/tests/validation/test_peery.py>`_.
 
 References
 ----------
+
+.. [Pilkey] W. D. Pilkey, *Analysis and Design of Elastic Beams: Computational Methods*,
+    John Wiley & Sons, Inc., New York, 2002.
 
 .. [Peery] D. J. Peery, *Aircraft Structures.* New York: Dover Publications, 2011.
     ISBN-10: 0-486-48580-3

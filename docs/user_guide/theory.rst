@@ -35,9 +35,9 @@ Mesh Generation
 ---------------
 
 The cross-section is meshed using quadratic superparametric triangular elements
-(``Tri6``) using the `triangle library <https://github.com/drufat/triangle>`__ for
+(``Tri6``) using the `CyTriangle library <https://github.com/m-clare/cytriangle>`__ for
 Python. Superparametric quadratic elements are defined as having straight edges and
-mid-nodes located at the mid-point between adjacent corner nodes. ``triangle``
+mid-nodes located at the mid-point between adjacent corner nodes. ``CyTriangle``
 implements `Triangle <https://www.cs.cmu.edu/~quake/triangle.html>`__, which is a two
 dimensional quality mesh generator and Delaunay triangulator written by Jonathan
 Shewchuk in C.
@@ -320,9 +320,10 @@ describe the resulting modified stiffness matrix, and solution and load vector:
     0 \\
   \end{bmatrix}
 
-where :math:`\textbf{C}` is a row vector of ones and :math:`\lambda` may be though of as
-a force acting to enforce the constraints, which should be relatively small when
-compared to the values in the force vector and can be omitted from the solution vector.
+where :math:`\textbf{C}` is the assembly of :math:`\int_{\Omega} \textbf{N} \, d \Omega`
+and :math:`\lambda` may be thought of as a force acting to enforce the constraints, which
+should be relatively small when compared to the values in the force vector and can be
+omitted from the solution vector.
 
 Calculation of Cross-Section Properties
 ---------------------------------------
@@ -531,7 +532,7 @@ Applying numerical integration to the stiffness matrix and load vector results i
 following expressions:
 
 .. math::
-  \textbf{k}^e &= \sum_{i=1}^3 w_i \textbf{B}_i^{\rm T} \textbf{B}_i J_e \\
+  \textbf{k}^e &= \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T} \textbf{B}_i J_e \\
   \textbf{f}^e &= \sum_{i=1}^6 w_i \textbf{B}_i^{\rm T}
   \begin{bmatrix}
     \textbf{N}_i \textbf{y}_e \\

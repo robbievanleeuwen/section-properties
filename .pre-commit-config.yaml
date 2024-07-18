@@ -11,6 +11,7 @@ repos:
         name: Check for added large files
         entry: check-added-large-files
         language: system
+        args: ["--maxkb=750"]
       - id: check-toml
         name: Check Toml
         entry: check-toml
@@ -61,10 +62,21 @@ repos:
         types: [text]
         stages: [commit, push, manual]
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.3
+    rev: v3.1.0
     hooks:
       - id: prettier
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.6.1
+    rev: 0.7.1
     hooks:
       - id: nbstripout
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.8.4
+    hooks:
+      - id: nbqa-black
+        additional_dependencies: [black==24.2.0]
+      - id: nbqa-pyupgrade
+        additional_dependencies: [pyupgrade==3.15.1]
+        args: ["--py39-plus"]
+      - id: nbqa-isort
+        additional_dependencies: [isort==5.13.2]
+        args: [--profile=black]

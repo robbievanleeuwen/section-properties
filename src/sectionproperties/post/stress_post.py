@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-import matplotlib.axes
-import matplotlib.cm as cm
+import matplotlib
 import matplotlib.tri as tri
 import numpy as np
+import numpy.typing as npt
 from matplotlib.colors import CenteredNorm
 from matplotlib.patches import Circle
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
@@ -18,6 +18,8 @@ import sectionproperties.post.post as post
 
 
 if TYPE_CHECKING:
+    import matplotlib.axes
+
     from sectionproperties.analysis.section import MaterialGroup, Section
     from sectionproperties.pre.pre import Material
 
@@ -64,7 +66,7 @@ class StressPost:
         colorbar_label: str = "Stress",
         alpha: float = 0.5,
         material_list: list[Material] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> matplotlib.axes.Axes:
         r"""Plots filled stress contours over the finite element mesh.
 
@@ -300,7 +302,7 @@ class StressPost:
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # set up the colormap
-            colormap = cm.get_cmap(name=cmap)
+            colormap = matplotlib.colormaps.get_cmap(cmap=cmap)
 
             # create triangulation
             triang = tri.Triangulation(
@@ -311,8 +313,8 @@ class StressPost:
 
             # determine minimum and maximum stress values for the contour list
             if stress_limits is None:
-                sig_min = min([min(x) for x in sigs])
-                sig_max = max([max(x) for x in sigs])
+                sig_min = min([min(x) for x in sigs]) - 1e-12
+                sig_max = max([max(x) for x in sigs]) + 1e-12
             else:
                 sig_min = stress_limits[0]
                 sig_max = stress_limits[1]
@@ -375,7 +377,7 @@ class StressPost:
         fmt: str = "{x:.4e}",
         colorbar_label: str = "Stress",
         alpha: float = 0.2,
-        **kwargs,
+        **kwargs: Any,
     ) -> matplotlib.axes.Axes:
         r"""Plots stress vectors over the finite element mesh.
 
@@ -462,11 +464,11 @@ class StressPost:
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # set up the colormap
-            colormap = cm.get_cmap(name=cmap)
+            colormap = matplotlib.colormaps.get_cmap(cmap=cmap)
 
             # initialise quiver plot list max scale
             quiv_list = []
-            max_scale = 0
+            max_scale = 0.0
 
             norm = None
             quiv = None
@@ -497,7 +499,8 @@ class StressPost:
                     )
 
                     # get the scale and store the max value
-                    quiv._init()
+                    quiv._init()  # type: ignore
+                    assert isinstance(quiv.scale, float)
                     max_scale = max(max_scale, quiv.scale)
                     quiv_list.append(quiv)
 
@@ -510,10 +513,13 @@ class StressPost:
                 quiv_plot.scale = max_scale
 
             # apply the colorbar
-            v1 = np.linspace(start=c_min, stop=c_max, num=15, endpoint=True)
+            v1 = np.linspace(
+                start=c_min - 1e-12, stop=c_max + 1e-12, num=15, endpoint=True
+            )
             divider = make_axes_locatable(axes=ax)
             cax = divider.append_axes(position="right", size="5%", pad=0.1)
 
+            assert quiv is not None
             fig.colorbar(
                 mappable=quiv, label=colorbar_label, format=fmt, ticks=v1, cax=cax
             )
@@ -526,7 +532,7 @@ class StressPost:
         else:
             raise RuntimeError("Plot failed.")
 
-    def get_stress(self) -> list[dict]:
+    def get_stress(self) -> list[dict[str, object]]:
         r"""Returns the stresses within each material.
 
         Returns:
@@ -549,84 +555,81 @@ class StressPost:
 
           - ``"material"`` - material name
 
-          - ``"n_zz"`` - normal stress :math:`\sigma_{zz,N}` resulting from the
+          - ``"sig_zz_n"`` - normal stress :math:`\sigma_{zz,N}` resulting from the
             axial load :math:`N`
 
-          - ``"mxx_zz"`` - normal stress :math:`\sigma_{zz,Mxx}` resulting from
+          - ``"sig_zz_mxx"`` - normal stress :math:`\sigma_{zz,Mxx}` resulting from
             the bending moment :math:`M_{xx}`
 
-          - ``"myy_zz"`` - normal stress :math:`\sigma_{zz,Myy}` resulting from
+          - ``"sig_zz_myy"`` - normal stress :math:`\sigma_{zz,Myy}` resulting from
             the bending moment :math:`M_{yy}`
 
-          - ``"m11_zz"`` - normal stress :math:`\sigma_{zz,M11}` resulting from
+          - ``"sig_zz_m11"`` - normal stress :math:`\sigma_{zz,M11}` resulting from
             the bending moment :math:`M_{11}`
 
-          - ``"m22_zz"`` - normal stress :math:`\sigma_{zz,M22}` resulting from
+          - ``"sig_zz_m22"`` - normal stress :math:`\sigma_{zz,M22}` resulting from
             the bending moment :math:`M_{22}`
 
-          - ``"m_zz"`` - normal stress :math:`\sigma_{zz,\Sigma M}` resulting
+          - ``"sig_zz_m"`` - normal stress :math:`\sigma_{zz,\Sigma M}` resulting
             from all bending moments :math:`M_{xx} + M_{yy} + M_{11} + M_{22}`
 
-          - ``"mzz_zx"`` - ``x`` component of the shear stress
+          - ``"sig_zx_mzz"`` - ``x`` component of the shear stress
             :math:`\sigma_{zx,Mzz}` resulting from the torsion moment :math:`M_{zz}`
 
-          - ``"mzz_zy"`` - ``y`` component of the shear stress
+          - ``"sig_zy_mzz"`` - ``y`` component of the shear stress
             :math:`\sigma_{zy,Mzz}` resulting from the torsion moment :math:`M_{zz}`
 
-          - ``"mzz_zxy"`` - resultant shear stress :math:`\sigma_{zxy,Mzz}`
+          - ``"sig_zxy_mzz"`` - resultant shear stress :math:`\sigma_{zxy,Mzz}`
             resulting from the torsion moment :math:`M_{zz}`
 
-          - ``"vx_zx"`` - ``x`` component of the shear stress
+          - ``"sig_zx_vx"`` - ``x`` component of the shear stress
             :math:`\sigma_{zx,Vx}` resulting from the shear force :math:`V_{x}`
 
-          - ``"vx_zy"`` - ``y`` component of the shear stress
+          - ``"sig_zy_vx"`` - ``y`` component of the shear stress
             :math:`\sigma_{zy,Vx}` resulting from the shear force :math:`V_{x}`
 
-          - ``"vx_zxy"`` - resultant shear stress :math:`\sigma_{zxy,Vx}`
+          - ``"sig_zxy_vx"`` - resultant shear stress :math:`\sigma_{zxy,Vx}`
             resulting from the shear force :math:`V_{x}`
 
-          - ``"vy_zx"`` - ``x`` component of the shear stress
+          - ``"sig_zx_vy"`` - ``x`` component of the shear stress
             :math:`\sigma_{zx,Vy}` resulting from the shear force :math:`V_{y}`
 
-          - ``"vy_zy"`` - ``y`` component of the shear stress
+          - ``"sig_zy_vy"`` - ``y`` component of the shear stress
             :math:`\sigma_{zy,Vy}` resulting from the shear force :math:`V_{y}`
 
-          - ``"vy_zxy"`` - resultant shear stress :math:`\sigma_{zxy,Vy}`
+          - ``"sig_zxy_vy"`` - resultant shear stress :math:`\sigma_{zxy,Vy}`
             resulting from the shear force :math:`V_{y}`
 
-          - ``"v_zx"`` - ``x`` component of the shear stress
+          - ``"sig_zx_v"`` - ``x`` component of the shear stress
             :math:`\sigma_{zx,\Sigma V}` resulting from the sum of the applied shear
             forces :math:`V_{x} + V_{y}`.
 
-          - ``"v_zy"`` - ``y`` component of the shear stress
+          - ``"sig_zy_v"`` - ``y`` component of the shear stress
             :math:`\sigma_{zy,\Sigma V}` resulting from the sum of the applied shear
             forces :math:`V_{x} + V_{y}`.
 
-          - ``"v_zxy"`` - resultant shear stress :math:`\sigma_{zxy,\Sigma V}`
+          - ``"sig_zxy_v"`` - resultant shear stress :math:`\sigma_{zxy,\Sigma V}`
             resulting from the sum of the applied shear forces :math:`V_{x} + V_{y}`
 
-          - ``"zz"`` - combined normal stress :math:`\sigma_{zz}` resulting from
+          - ``"sig_zz"`` - combined normal stress :math:`\sigma_{zz}` resulting from
             all actions
 
-          - ``"zx"`` - ``x`` component of the shear stress :math:`\sigma_{zx}`
+          - ``"sig_zx"`` - ``x`` component of the shear stress :math:`\sigma_{zx}`
             resulting from all actions
 
-          - ``"zy"`` - ``y`` component of the shear stress :math:`\sigma_{zy}`
+          - ``"sig_zy"`` - ``y`` component of the shear stress :math:`\sigma_{zy}`
             resulting from all actions
 
-          - ``"zxy"`` - resultant shear stress :math:`\sigma_{zxy}` resulting
+          - ``"sig_zxy"`` - resultant shear stress :math:`\sigma_{zxy}` resulting
             from all actions
 
-          - ``"zxy"`` - resultant shear stress :math:`\sigma_{zxy}` resulting
-            from all actions
-
-          - ``"11"`` - major principal stress :math:`\sigma_{11}` resulting from
+          - ``"sig_11"`` - major principal stress :math:`\sigma_{11}` resulting from
             all actions
 
-          - ``"33"`` - minor principal stress :math:`\sigma_{33}` resulting from
+          - ``"sig_33"`` - minor principal stress :math:`\sigma_{33}` resulting from
             all actions
 
-          - ``"vm"`` - von Mises stress :math:`\sigma_{vM}` resulting from all
+          - ``"sig_vm"`` - von Mises stress :math:`\sigma_{vM}` resulting from all
             actions
         """
         # generate list
@@ -671,7 +674,7 @@ class StressPost:
         x: float,
         y: float,
         title: str | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> matplotlib.axes.Axes:
         r"""Plots Mohr's circles of the 3D stress state at position (``x``, ``y``).
 
@@ -767,9 +770,9 @@ class StressPost:
         tau_yz = tau_yz_interp(*pt).item()
 
         # assemble the stress tensor
-        sigma_xx = 0
-        sigma_yy = 0
-        tau_xy = 0
+        sigma_xx = 0.0
+        sigma_yy = 0.0
+        tau_xy = 0.0
         sigma = np.array(
             [
                 [sigma_xx, tau_xy, tau_xz],
@@ -809,7 +812,8 @@ class StressPost:
             title = f"Mohr's Circles for 3D Stress State at {(*pt,)}"
 
         # create plot and setup the plot
-        with post.plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (_, ax):
+            assert ax is not None
             plot_circle(
                 ax,
                 (0.5 * (sigma_2 + sigma_3), 0),
@@ -832,9 +836,9 @@ class StressPost:
                 r"C3: ($\sigma_{11}$, $\sigma_{22}$)",
             )
 
-            for i, plane, col in zip(range(3), ["X", "Y", "Z"], ["r", "b", "k"]):
+            for idx, plane, color in zip(range(3), ["X", "Y", "Z"], ["r", "b", "k"]):
                 if ax:
-                    ax.plot(*tractions[i], f"{col}.", label=rf"{plane}-face")
+                    ax.plot(*tractions[idx], f"{color}.", label=rf"{plane}-face")
 
             if ax:
                 ax.set_axisbelow(True)
@@ -923,32 +927,33 @@ class StressResult:
         sig_33: Minor principal stress (:math:`\sigma_{33}`) resulting from all actions
         sig_vm: von Mises stress (:math:`\sigma_{VM}`) resulting from all actions
     """
+
     num_nodes: int
-    sig_zz_n: np.ndarray = field(init=False)
-    sig_zz_mxx: np.ndarray = field(init=False)
-    sig_zz_myy: np.ndarray = field(init=False)
-    sig_zz_m11: np.ndarray = field(init=False)
-    sig_zz_m22: np.ndarray = field(init=False)
-    sig_zx_mzz: np.ndarray = field(init=False)
-    sig_zy_mzz: np.ndarray = field(init=False)
-    sig_zx_vx: np.ndarray = field(init=False)
-    sig_zy_vx: np.ndarray = field(init=False)
-    sig_zx_vy: np.ndarray = field(init=False)
-    sig_zy_vy: np.ndarray = field(init=False)
-    sig_zz_m: np.ndarray = field(init=False)
-    sig_zxy_mzz: np.ndarray = field(init=False)
-    sig_zxy_vx: np.ndarray = field(init=False)
-    sig_zxy_vy: np.ndarray = field(init=False)
-    sig_zx_v: np.ndarray = field(init=False)
-    sig_zy_v: np.ndarray = field(init=False)
-    sig_zxy_v: np.ndarray = field(init=False)
-    sig_zz: np.ndarray = field(init=False)
-    sig_zx: np.ndarray = field(init=False)
-    sig_zy: np.ndarray = field(init=False)
-    sig_zxy: np.ndarray = field(init=False)
-    sig_11: np.ndarray = field(init=False)
-    sig_33: np.ndarray = field(init=False)
-    sig_vm: np.ndarray = field(init=False)
+    sig_zz_n: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_mxx: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_myy: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_m11: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_m22: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_mzz: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_mzz: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_vx: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_vx: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_vy: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_vy: npt.NDArray[np.float64] = field(init=False)
+    sig_zz_m: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_mzz: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_vx: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_vy: npt.NDArray[np.float64] = field(init=False)
+    sig_zx_v: npt.NDArray[np.float64] = field(init=False)
+    sig_zy_v: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy_v: npt.NDArray[np.float64] = field(init=False)
+    sig_zz: npt.NDArray[np.float64] = field(init=False)
+    sig_zx: npt.NDArray[np.float64] = field(init=False)
+    sig_zy: npt.NDArray[np.float64] = field(init=False)
+    sig_zxy: npt.NDArray[np.float64] = field(init=False)
+    sig_11: npt.NDArray[np.float64] = field(init=False)
+    sig_33: npt.NDArray[np.float64] = field(init=False)
+    sig_vm: npt.NDArray[np.float64] = field(init=False)
 
     def __post_init__(self) -> None:
         """Preallocates the numpy arrays in StressResult."""
