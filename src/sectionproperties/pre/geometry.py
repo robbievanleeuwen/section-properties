@@ -2785,7 +2785,9 @@ def build_geometry_network(lop: list[Polygon]) -> dict[int, set[int]]:
     return network
 
 
-def extract_shared_paths(arr_of_geom_coll: npt.ArrayLike[GeometryCollection]) -> list[LineString]:
+def extract_shared_paths(
+    arr_of_geom_coll: npt.ArrayLike[GeometryCollection],
+) -> list[LineString]:
     acc = []
     for geom_col in arr_of_geom_coll:
         for mls in geom_col.geoms:
