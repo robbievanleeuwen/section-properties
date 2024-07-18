@@ -2704,7 +2704,14 @@ def check_geometry_overlaps(
 
 def compound_dilation(geoms: list[Geometry], offset: float) -> CompoundGeometry:
     """
-    Test function for improved compound dilation
+    Returns a CompoundGeometry representing the input Geometries, dilated
+
+    Args:
+        geoms: List of Geometry
+        offset: a positive float or int
+
+    Returns:
+        The geometries dilated by 'offset'
     """
     polys = [geom.geom for geom in geoms]
     geom_network = build_geometry_network(polys)
@@ -2774,6 +2781,18 @@ def check_geometry_disjoint(
 
 
 def build_geometry_network(lop: list[Polygon]) -> dict[int, set[int]]:
+    """
+    Returns a graph describing the connectivity of each polygon to each
+    other polygon in 'lop'. The keys are the indexes of the polygons in
+    'lop' and the values are a set of indexes that the key is connected
+    to.
+
+    Args:
+        lop: List of Polygon
+
+    Returns:
+        A dictionary describing the connectivity graph of the polygons
+    """
     network: dict[int, set[int]] = {}
     for idx_i, poly1 in enumerate(lop):
         for idx_j, poly2 in enumerate(lop):
