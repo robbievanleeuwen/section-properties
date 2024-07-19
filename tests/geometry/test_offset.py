@@ -107,7 +107,7 @@ def test_compound_rectangular_offset():
     area = 90 * 40
     check.almost_equal(section.get_area(), area, rel=r_tol)
 
-    # balloon case
+    # balloon case (two rectangles)
     geom = rect1 + rect2
     geom = geom.offset_perimeter(amount=5, where="exterior")
 
@@ -119,6 +119,20 @@ def test_compound_rectangular_offset():
     section = Section(geometry=geom)
     section.calculate_geometric_properties()
     area = 100 * 50 + 2 * (5 * 100 + 5 * 50) + np.pi * 5**2
+    check.almost_equal(section.get_area(), area, rel=r_tol)
+
+    # balloon case (three rectangles)
+    geom = rect1 + rect2 + rect1.align_to(rect2, "right")
+    geom = geom.offset_perimeter(amount=5, where="exterior")
+
+    # ensure there are no overlaps
+    assert not check_geometry_overlaps([g.geom for g in geom.geoms])
+
+    # calculate area
+    geom.create_mesh(mesh_sizes=[0])
+    section = Section(geometry=geom)
+    section.calculate_geometric_properties()
+    area = 150 * 50 + 2 * (5 * 150 + 5 * 50) + np.pi * 5**2
     check.almost_equal(section.get_area(), area, rel=r_tol)
 
 
