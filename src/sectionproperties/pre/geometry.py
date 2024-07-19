@@ -14,11 +14,14 @@ from shapely import (
     GeometryCollection,
     LinearRing,
     LineString,
+    MultiLineString,
     MultiPolygon,
     Point,
     Polygon,
     affinity,
     box,
+    line_merge,
+    shared_paths,
 )
 from shapely.ops import split, unary_union
 
@@ -2310,34 +2313,18 @@ class CompoundGeometry(Geometry):
 
             return CompoundGeometry(geoms=geoms_acc)
         elif amount > 0:  # Ballooning condition
-            # This produces predictable results up to a point.
-            # That point is when the offset is so great it exceeds the thickness
-            # of the material at an interface of two materials.
-            # e.g. A 50 deep plate on top of the top flange of an I Section with a
-            # flange depth of 10
-            # When the offset exceeds 10 (the depth of the flange at the intersection),
-            # the meshed material regions will become unpredictable.
-            geoms_acc = []
+            # The algorithm used in the compound_dilation function cannot
+            # currently handle re-entrant corners between different
+            # geometries (a re-entrant corner in a single geometry is fine).
+            # Re-entrant corners will require the creation of a new
+            # "interface line" in the overlapping region created during
+            # the dilation. I have a thought on how to do this but I just
+            # have not gotten to it yet (note for later: it's like rotating
+            # the overlap region between shear wall corners except cutting
+            # across it from the shared vertex to the opposite vertex)
+            # connorferster 2024-07-18
 
-            for i_idx, geom in enumerate(self.geoms):
-                # Offset each geom...
-                offset_geom = geom.offset_perimeter(
-                    amount=amount,
-                    where=where,
-                    resolution=resolution,
-                )
-
-                for j_idx, orig_geom in enumerate(self.geoms):
-                    if i_idx != j_idx:
-                        # ... then remove the parts that intersect with the other
-                        # constituents of the compound geometry (because they are
-                        # occupying that space already)
-                        offset_geom = offset_geom - orig_geom
-
-                if not offset_geom.geom.is_empty:
-                    geoms_acc.append(offset_geom)
-
-            return CompoundGeometry(geoms=geoms_acc)
+            return compound_dilation(self.geoms, offset=amount)
         else:
             return self
 
@@ -2715,6 +2702,36 @@ def check_geometry_overlaps(
     return not math.isclose(union_area, sum_polygons)
 
 
+def compound_dilation(geoms: list[Geometry], offset: float) -> CompoundGeometry:
+    """Returns a CompoundGeometry representing the input Geometries, dilated.
+
+    Args:
+        geoms: List of Geometry objects
+        offset: A positive ``float`` or ``int``
+
+    Returns:
+        The geometries dilated by ``offset``
+    """
+    polys = [geom.geom for geom in geoms]
+    geom_network = build_geometry_network(polys)
+    acc = []
+
+    for poly_idx, connectivity in geom_network.items():
+        poly_orig = polys[poly_idx]
+        poly_orig_exterior = poly_orig.exterior
+        connected_polys = [polys[idx].exterior for idx in connectivity]
+        mucky_shared_paths = shared_paths(poly_orig_exterior, connected_polys)
+        shared_path_geometries = MultiLineString(
+            extract_shared_paths(mucky_shared_paths)
+        )
+        source = line_merge(poly_orig_exterior - shared_path_geometries)
+        buff = source.buffer(offset, cap_style="flat")
+        new = Geometry(poly_orig | buff, material=geoms[poly_idx].material)
+        acc.append(new)
+
+    return CompoundGeometry(acc)
+
+
 def check_geometry_disjoint(
     lop: list[Polygon],
 ) -> bool:
@@ -2727,15 +2744,7 @@ def check_geometry_disjoint(
         Whether or not there is disjoint geometry
     """
     # Build polygon connectivity network
-    network: dict[int, set[int]] = {}
-
-    for idx_i, poly1 in enumerate(lop):
-        for idx_j, poly2 in enumerate(lop):
-            if idx_i != idx_j:
-                connectivity = network.get(idx_i, set())
-                if poly1.intersection(poly2):
-                    connectivity.add(idx_j)
-                network[idx_i] = connectivity
+    network = build_geometry_network(lop)
 
     def walk_network(
         node: int,
@@ -2767,3 +2776,55 @@ def check_geometry_disjoint(
     nodes_visited = [0]
     walk_network(0, network, nodes_visited)
     return set(nodes_visited) != set(network.keys())
+
+
+def build_geometry_network(lop: list[Polygon]) -> dict[int, set[int]]:
+    """Builds a geometry connectivity graph.
+
+    Returns a graph describing the connectivity of each polygon to each other polygon in
+    ``lop``. The keys are the indexes of the polygons in ``lop`` and the values are a
+    set of indexes that the key is connected to.
+
+    Args:
+        lop: List of Polygon
+
+    Returns:
+        A dictionary describing the connectivity graph of the polygons
+    """
+    network: dict[int, set[int]] = {}
+
+    for idx_i, poly1 in enumerate(lop):
+        for idx_j, poly2 in enumerate(lop):
+            if idx_i != idx_j:
+                connectivity = network.get(idx_i, set())
+
+                if poly1.intersection(poly2):
+                    connectivity.add(idx_j)
+
+                network[idx_i] = connectivity
+
+    return network
+
+
+def extract_shared_paths(
+    arr_of_geom_coll: npt.ArrayLike,
+) -> list[LineString]:
+    """Extracts a list of LineStrings exported by the shapely ``shared_paths`` method.
+
+    Args:
+        arr_of_geom_coll: An array of geometry collections
+
+    Returns:
+        List of LineStrings.
+    """
+    acc = []
+
+    for geom_col in arr_of_geom_coll:  # type: ignore
+        for mls in geom_col.geoms:  # type: ignore
+            if mls.is_empty:
+                continue
+
+            ls = line_merge(mls)
+            acc.append(ls)
+
+    return acc

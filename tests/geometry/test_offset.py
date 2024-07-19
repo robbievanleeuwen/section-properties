@@ -9,7 +9,7 @@ from shapely import Polygon
 import sectionproperties.pre.library.primitive_sections as sections
 import sectionproperties.pre.library.steel_sections as steel_sections
 from sectionproperties.analysis.section import Section
-from sectionproperties.pre.geometry import Geometry
+from sectionproperties.pre.geometry import Geometry, check_geometry_overlaps
 
 
 r_tol = 1e-3
@@ -105,6 +105,34 @@ def test_compound_rectangular_offset():
     section = Section(geometry=geom_neg)
     section.calculate_geometric_properties()
     area = 90 * 40
+    check.almost_equal(section.get_area(), area, rel=r_tol)
+
+    # balloon case (two rectangles)
+    geom = rect1 + rect2
+    geom = geom.offset_perimeter(amount=5, where="exterior")
+
+    # ensure there are no overlaps
+    assert not check_geometry_overlaps([g.geom for g in geom.geoms])
+
+    # calculate area
+    geom.create_mesh(mesh_sizes=[0])
+    section = Section(geometry=geom)
+    section.calculate_geometric_properties()
+    area = 100 * 50 + 2 * (5 * 100 + 5 * 50) + np.pi * 5**2
+    check.almost_equal(section.get_area(), area, rel=r_tol)
+
+    # balloon case (three rectangles)
+    geom = rect1 + rect2 + rect1.align_to(rect2, "right")
+    geom = geom.offset_perimeter(amount=5, where="exterior")
+
+    # ensure there are no overlaps
+    assert not check_geometry_overlaps([g.geom for g in geom.geoms])
+
+    # calculate area
+    geom.create_mesh(mesh_sizes=[0])
+    section = Section(geometry=geom)
+    section.calculate_geometric_properties()
+    area = 150 * 50 + 2 * (5 * 150 + 5 * 50) + np.pi * 5**2
     check.almost_equal(section.get_area(), area, rel=r_tol)
 
 
