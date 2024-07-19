@@ -2703,19 +2703,19 @@ def check_geometry_overlaps(
 
 
 def compound_dilation(geoms: list[Geometry], offset: float) -> CompoundGeometry:
-    """
-    Returns a CompoundGeometry representing the input Geometries, dilated
+    """Returns a CompoundGeometry representing the input Geometries, dilated.
 
     Args:
-        geoms: List of Geometry
-        offset: a positive float or int
+        geoms: List of Geometry objects
+        offset: A positive ``float`` or ``int``
 
     Returns:
-        The geometries dilated by 'offset'
+        The geometries dilated by ``offset``
     """
     polys = [geom.geom for geom in geoms]
     geom_network = build_geometry_network(polys)
     acc = []
+
     for poly_idx, connectivity in geom_network.items():
         poly_orig = polys[poly_idx]
         poly_orig_exterior = poly_orig.exterior
@@ -2726,11 +2726,9 @@ def compound_dilation(geoms: list[Geometry], offset: float) -> CompoundGeometry:
         )
         source = line_merge(poly_orig_exterior - shared_path_geometries)
         buff = source.buffer(offset, cap_style="flat")
-        new = Geometry(
-            poly_orig | buff,
-            material=geoms[poly_idx].material,
-        )
+        new = Geometry(poly_orig | buff, material=geoms[poly_idx].material)
         acc.append(new)
+
     return CompoundGeometry(acc)
 
 
@@ -2781,11 +2779,11 @@ def check_geometry_disjoint(
 
 
 def build_geometry_network(lop: list[Polygon]) -> dict[int, set[int]]:
-    """
-    Returns a graph describing the connectivity of each polygon to each
-    other polygon in 'lop'. The keys are the indexes of the polygons in
-    'lop' and the values are a set of indexes that the key is connected
-    to.
+    """Builds a geometry connectivity graph.
+
+    Returns a graph describing the connectivity of each polygon to each other polygon in
+    ``lop``. The keys are the indexes of the polygons in ``lop`` and the values are a
+    set of indexes that the key is connected to.
 
     Args:
         lop: List of Polygon
@@ -2794,24 +2792,39 @@ def build_geometry_network(lop: list[Polygon]) -> dict[int, set[int]]:
         A dictionary describing the connectivity graph of the polygons
     """
     network: dict[int, set[int]] = {}
+
     for idx_i, poly1 in enumerate(lop):
         for idx_j, poly2 in enumerate(lop):
             if idx_i != idx_j:
                 connectivity = network.get(idx_i, set())
+
                 if poly1.intersection(poly2):
                     connectivity.add(idx_j)
+
                 network[idx_i] = connectivity
+
     return network
 
 
 def extract_shared_paths(
     arr_of_geom_coll: npt.ArrayLike,
 ) -> list[LineString]:
+    """Extracts a list of LineStrings exported by the shapely ``shared_paths`` method.
+
+    Args:
+        arr_of_geom_coll: An array of geometry collections
+
+    Returns:
+        List of LineStrings.
+    """
     acc = []
+
     for geom_col in arr_of_geom_coll:
         for mls in geom_col.geoms:
             if mls.is_empty:
                 continue
+
             ls = line_merge(mls)
             acc.append(ls)
+
     return acc
