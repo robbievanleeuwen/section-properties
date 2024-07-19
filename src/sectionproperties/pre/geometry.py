@@ -2819,8 +2819,8 @@ def extract_shared_paths(
     """
     acc = []
 
-    for geom_col in arr_of_geom_coll:
-        for mls in geom_col.geoms:
+    for geom_col in arr_of_geom_coll:  # type: ignore
+        for mls in geom_col.geoms:  # type: ignore
             if mls.is_empty:
                 continue
 
