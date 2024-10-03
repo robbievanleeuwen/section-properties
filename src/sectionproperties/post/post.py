@@ -324,9 +324,7 @@ def plotting_context(
     render: bool = True,
     axis_index: int | tuple[int, int] | None = None,
     **kwargs: Any,
-) -> Generator[
-    tuple[matplotlib.figure.Figure, matplotlib.axes.Axes | Any | None], None, None
-]:
+) -> Generator[tuple[matplotlib.figure.Figure, matplotlib.axes.Axes | Any | None]]:
     """Executes code required to set up a matplotlib figure.
 
     Args:
