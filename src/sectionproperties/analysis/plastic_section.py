@@ -163,10 +163,10 @@ class PlasticSection:
         # loop through each geometry force & xy-centroid
         for f, cx, cy in zip(self._f_list, self._cx_list, self._cy_list):
             # convert centroid to principal coordinates
-            c = fea.principal_coordinate(phi=section.section_props.phi, x=cx, y=cy)
+            cen = fea.principal_coordinate(phi=section.section_props.phi, x=cx, y=cy)
 
             # calculate distance from 22-centroid to plastic centroid
-            d22 = abs(c[1] - y22_pc)
+            d22 = abs(cen[1] - y22_pc)
             section.section_props.s11 += f * d22
 
         if verbose:
@@ -192,10 +192,10 @@ class PlasticSection:
         # loop through each geometry force & xy-centroid
         for f, cx, cy in zip(self._f_list, self._cx_list, self._cy_list):
             # convert centroid to principal coordinates
-            c = fea.principal_coordinate(phi=section.section_props.phi, x=cx, y=cy)
+            cen = fea.principal_coordinate(phi=section.section_props.phi, x=cx, y=cy)
 
             # calculate distance from 11-centroid to plastic centroid
-            d11 = abs(c[0] - x11_pc)
+            d11 = abs(cen[0] - x11_pc)
             section.section_props.s22 += f * d11
 
         if verbose:
