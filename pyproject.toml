@@ -76,6 +76,8 @@ flake8-docstrings = "==1.7.0"
 flake8-pytest-style = "==2.0.0"
 flake8-rst-docstrings = "==0.3.0"
 furo = "==2024.8.6"
+ipykernel = "==6.29.5"
+ipython = "==8.18.1"  # 8.19 and above drops 3.9 support
 isort = "==5.13.2"
 mypy = "==1.11.2"
 nbconvert = "==7.16.4"
