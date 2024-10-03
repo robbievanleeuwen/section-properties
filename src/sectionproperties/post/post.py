@@ -372,7 +372,7 @@ def plotting_context(
             msg += f"with arguments to subplots: {kwargs}"
             raise ValueError(msg) from exc
     else:
-        fig = ax.get_figure()  # type: ignore
+        fig = ax.get_figure()
         ax_supplied = True
 
         if not render:
