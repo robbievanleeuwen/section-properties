@@ -23,7 +23,7 @@ except ImportError:
 
 
 package = "sectionproperties"
-python_versions = ["3.12", "3.11", "3.10", "3.9"]
+python_versions = ["3.12", "3.11", "3.10"]
 nox.needs_version = ">= 2021.6.6"
 nox.options.sessions = (
     "pre-commit",
@@ -207,7 +207,7 @@ def coverage(session: Session) -> None:
     session.run("coverage", *args)
 
 
-@session(name="docs-build", python=python_versions[2])
+@session(name="docs-build", python=python_versions[0])
 def docs_build(session: Session) -> None:
     """Build the documentation.
 
@@ -246,7 +246,7 @@ def docs_build(session: Session) -> None:
     session.run("sphinx-build", *args)
 
 
-@session(python=python_versions[2])
+@session(python=python_versions[0])
 def docs(session: Session) -> None:
     """Build and serve the documentation with live reloading on file changes.
 

@@ -26,7 +26,6 @@ classifiers = [
     "Environment :: Console",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -48,20 +47,20 @@ Changelog = "https://github.com/robbievanleeuwen/section-properties/releases"
 "Bug Tracker" = "https://github.com/robbievanleeuwen/section-properties/issues"
 
 [tool.poetry.dependencies]
-python = ">=3.9.0,<3.13"
+python = ">=3.10.0,<3.13"
 numpy = "^1.26.4"
-scipy = "^1.12.0"
-matplotlib = "^3.8.3"
-shapely = "^2.0.3"
-cytriangle = "^1.0.1"
-rich = { extras = ["jupyter"], version = "^13.7.1"}
+scipy = "^1.14.1"
+matplotlib = "^3.9.2"
+shapely = "^2.0.6"
+cytriangle = "^1.0.3"
+rich = { extras = ["jupyter"], version = "^13.9.1"}
 click = "^8.1.7"
-more-itertools = "^10.2.0"
-numba = { version = "^0.59.0", optional = true }
+more-itertools = "^10.5.0"
+numba = { version = "^0.60.0", optional = true }
 cad-to-shapely = { version = "^0.3.1", optional = true }
 rhino-shapley-interop = { version = "^0.0.4", optional = true }
-rhino3dm = { version = "==8.6.1", optional = true }
-pypardiso = { version = "^0.4.5", optional = true }
+rhino3dm = { version = "==8.9.0", optional = true }
+pypardiso = { version = "^0.4.6", optional = true }
 intel-openmp = { version = "==2023.2.0", optional = true }
 mkl = { version = "==2023.2.0", optional = true }
 tbb = { version = "==2021.10.0", optional = true }
@@ -77,7 +76,7 @@ flake8-pytest-style = "==2.0.0"
 flake8-rst-docstrings = "==0.3.0"
 furo = "==2024.8.6"
 ipykernel = "==6.29.5"
-ipython = "==8.18.1"  # 8.19 and above drops 3.9 support
+ipython = "==8.28.0"
 isort = "==5.13.2"
 mypy = "==1.11.2"
 nbconvert = "==7.16.4"
@@ -90,7 +89,7 @@ pytest = "==8.3.3"
 pytest-benchmark = { extras = ["histogram"], version = "==4.0.0" }
 pytest-check = "==2.4.1"
 pyupgrade = "==3.17.0"
-sphinx = "==7.4.7"
+sphinx = "==8.0.2"
 sphinx-autobuild = "==2024.10.3"
 sphinx-click = "==6.0.0"
 sphinx-copybutton = "==0.5.2"
