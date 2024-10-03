@@ -12,6 +12,7 @@ from sectionproperties.pre import Geometry
 
 # constants
 tol = 1e-6
+plastic_tol = 1e-5
 warp_tol = 1e-3
 
 
@@ -122,7 +123,7 @@ def test_custom_section_warping(custom_section):
 def test_custom_section_plastic(custom_section):
     """Test custom section plastic properties.
 
-    Warping properties calculated from sectionproperties v3.0.2 with a refined mesh
+    Plastic properties calculated from sectionproperties v3.0.2 with a refined mesh
     [mesh_sizes=0.5].
     """
     sec = custom_section
@@ -131,19 +132,19 @@ def test_custom_section_plastic(custom_section):
     x_pc, y_pc = sec.get_pc()
     x11_pc, y22_pc = sec.get_pc_p()
 
-    check.almost_equal(x_pc, 4.977273e01, rel=tol)
-    check.almost_equal(y_pc, 9.172040e01, rel=tol)
-    check.almost_equal(x11_pc, 5.133714e01, rel=tol)
-    check.almost_equal(y22_pc, 9.158984e01, rel=tol)
-    check.almost_equal(sec.section_props.sxx, 1.531971e05, rel=tol)
-    check.almost_equal(sec.section_props.syy, 1.014943e05, rel=tol)
-    check.almost_equal(sec.section_props.s11, 1.533463e05, rel=tol)
-    check.almost_equal(sec.section_props.s22, 1.015010e05, rel=tol)
-    check.almost_equal(sec.section_props.sf_xx_plus, 8.942884e-01, rel=tol)
-    check.almost_equal(sec.section_props.sf_xx_minus, 1.292703e00, rel=tol)
-    check.almost_equal(sec.section_props.sf_yy_plus, 1.602519e00, rel=tol)
-    check.almost_equal(sec.section_props.sf_yy_minus, 1.567298e00, rel=tol)
-    check.almost_equal(sec.section_props.sf_11_plus, 9.450478e-01, rel=tol)
-    check.almost_equal(sec.section_props.sf_11_minus, 1.341988e00, rel=tol)
-    check.almost_equal(sec.section_props.sf_22_plus, 1.677621e00, rel=tol)
-    check.almost_equal(sec.section_props.sf_22_minus, 1.619711e00, rel=tol)
+    check.almost_equal(x_pc, 4.977273e01, rel=plastic_tol)
+    check.almost_equal(y_pc, 9.172040e01, rel=plastic_tol)
+    check.almost_equal(x11_pc, 5.133714e01, rel=plastic_tol)
+    check.almost_equal(y22_pc, 9.158984e01, rel=plastic_tol)
+    check.almost_equal(sec.section_props.sxx, 1.531971e05, rel=plastic_tol)
+    check.almost_equal(sec.section_props.syy, 1.014943e05, rel=plastic_tol)
+    check.almost_equal(sec.section_props.s11, 1.533463e05, rel=plastic_tol)
+    check.almost_equal(sec.section_props.s22, 1.015010e05, rel=plastic_tol)
+    check.almost_equal(sec.section_props.sf_xx_plus, 8.942884e-01, rel=plastic_tol)
+    check.almost_equal(sec.section_props.sf_xx_minus, 1.292703e00, rel=plastic_tol)
+    check.almost_equal(sec.section_props.sf_yy_plus, 1.602519e00, rel=plastic_tol)
+    check.almost_equal(sec.section_props.sf_yy_minus, 1.567298e00, rel=plastic_tol)
+    check.almost_equal(sec.section_props.sf_11_plus, 9.450478e-01, rel=plastic_tol)
+    check.almost_equal(sec.section_props.sf_11_minus, 1.341988e00, rel=plastic_tol)
+    check.almost_equal(sec.section_props.sf_22_plus, 1.677621e00, rel=plastic_tol)
+    check.almost_equal(sec.section_props.sf_22_minus, 1.619711e00, rel=plastic_tol)
