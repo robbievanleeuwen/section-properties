@@ -70,12 +70,12 @@ repos:
     hooks:
       - id: nbstripout
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.8.4
+    rev: 1.9.0
     hooks:
       - id: nbqa-black
-        additional_dependencies: [black==24.2.0]
+        additional_dependencies: [black==24.8.0]
       - id: nbqa-pyupgrade
-        additional_dependencies: [pyupgrade==3.15.1]
+        additional_dependencies: [pyupgrade==3.17.0]
         args: ["--py39-plus"]
       - id: nbqa-isort
         additional_dependencies: [isort==5.13.2]
