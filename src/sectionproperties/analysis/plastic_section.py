@@ -35,13 +35,14 @@ class PlasticSection:
         Args:
             geometry: Section geometry object
         """
+        # move geometry to geometric centroid
         self.geometry = geometry.align_center()
         self.geometry.compile_geometry()
 
         # initialize variables to be defined later within calculate_plastic_force
-        self._c_top = [0.0, 0.0]
-        self._c_bot = [0.0, 0.0]
-        self._f_top = 0.0
+        self._f_list: list[float] = []
+        self._cx_list: list[float] = []
+        self._cy_list: list[float] = []
 
     def calculate_plastic_properties(
         self,
@@ -89,7 +90,15 @@ class PlasticSection:
 
         self.check_convergence(root_result=r, axis="x-axis")
         section.section_props.y_pc = y_pc
-        section.section_props.sxx = self._f_top * abs(self._c_top[1] - self._c_bot[1])
+
+        # calculate plastic section moduli (plastic moment if composite)
+        section.section_props.sxx = 0.0
+
+        # loop through each geometry force & y-centroid
+        for f, c in zip(self._f_list, self._cy_list):
+            # calculate distance from y-centroid to plastic centroid
+            d_y = abs(c - y_pc)
+            section.section_props.sxx += f * d_y
 
         if verbose:
             self.print_verbose(d=y_pc, root_result=r, axis="x-axis")
@@ -107,7 +116,15 @@ class PlasticSection:
 
         self.check_convergence(root_result=r, axis="y-axis")
         section.section_props.x_pc = x_pc
-        section.section_props.syy = self._f_top * abs(self._c_top[0] - self._c_bot[0])
+
+        # calculate plastic section moduli (plastic moment if composite)
+        section.section_props.syy = 0.0
+
+        # loop through each geometry force & x-centroid
+        for f, c in zip(self._f_list, self._cx_list):
+            # calculate distance from x-centroid to plastic centroid
+            d_x = abs(c - x_pc)
+            section.section_props.syy += f * d_x
 
         if verbose:
             self.print_verbose(d=x_pc, root_result=r, axis="y-axis")
@@ -137,17 +154,20 @@ class PlasticSection:
             verbose=verbose,
         )
 
-        # calculate the centroids in the principal coordinate system
-        c_top_p = fea.principal_coordinate(
-            phi=section.section_props.phi, x=self._c_top[0], y=self._c_top[1]
-        )
-        c_bot_p = fea.principal_coordinate(
-            phi=section.section_props.phi, x=self._c_bot[0], y=self._c_bot[1]
-        )
-
         self.check_convergence(root_result=r, axis="11-axis")
         section.section_props.y22_pc = y22_pc
-        section.section_props.s11 = self._f_top * abs(c_top_p[1] - c_bot_p[1])
+
+        # calculate plastic section moduli (plastic moment if composite)
+        section.section_props.s11 = 0.0
+
+        # loop through each geometry force & xy-centroid
+        for f, cx, cy in zip(self._f_list, self._cx_list, self._cy_list):
+            # convert centroid to principal coordinates
+            c = fea.principal_coordinate(phi=section.section_props.phi, x=cx, y=cy)
+
+            # calculate distance from 22-centroid to plastic centroid
+            d22 = abs(c[1] - y22_pc)
+            section.section_props.s11 += f * d22
 
         if verbose:
             self.print_verbose(d=y22_pc, root_result=r, axis="11-axis")
@@ -163,17 +183,20 @@ class PlasticSection:
             verbose=verbose,
         )
 
-        # calculate the centroids in the principal coordinate system
-        c_top_p = fea.principal_coordinate(
-            phi=section.section_props.phi, x=self._c_top[0], y=self._c_top[1]
-        )
-        c_bot_p = fea.principal_coordinate(
-            phi=section.section_props.phi, x=self._c_bot[0], y=self._c_bot[1]
-        )
-
         self.check_convergence(root_result=r, axis="22-axis")
         section.section_props.x11_pc = x11_pc
-        section.section_props.s22 = self._f_top * abs(c_top_p[0] - c_bot_p[0])
+
+        # calculate plastic section moduli (plastic moment if composite)
+        section.section_props.s22 = 0.0
+
+        # loop through each geometry force & xy-centroid
+        for f, cx, cy in zip(self._f_list, self._cx_list, self._cy_list):
+            # convert centroid to principal coordinates
+            c = fea.principal_coordinate(phi=section.section_props.phi, x=cx, y=cy)
+
+            # calculate distance from 11-centroid to plastic centroid
+            d11 = abs(c[0] - x11_pc)
+            section.section_props.s22 += f * d11
 
         if verbose:
             self.print_verbose(d=x11_pc, root_result=r, axis="22-axis")
@@ -396,13 +419,13 @@ class PlasticSection:
             p: Point on the axis line
 
         Returns:
-            Force in the above and below the axis line (``f_top``, ``f_bot``)
+            Force in the geometries above and below the axis line (``f_top``, ``f_bot``)
         """
         # initialise variables
         f_top, f_bot = 0.0, 0.0
-        a_top, a_bot = 0.0, 0.0
-        qx_top, qx_bot = 0.0, 0.0
-        qy_top, qy_bot = 0.0, 0.0
+        self._f_list = []
+        self._cx_list = []
+        self._cy_list = []
 
         # split geometry above and below the line
         top_geoms, bot_geoms = self.geometry.split_section(point_i=p, vector=u)
@@ -415,11 +438,13 @@ class PlasticSection:
                 area_top = top_geom.calculate_area()
                 cx, cy = top_geom.calculate_centroid()
 
-                # sum properties
-                a_top += area_top
-                qx_top += cy * area_top
-                qy_top += cx * area_top
+                # sum force
                 f_top += f_y * area_top
+
+                # add force and centroids to list
+                self._f_list.append(f_y * area_top)
+                self._cx_list.append(cx)
+                self._cy_list.append(cy)
 
         if bot_geoms:
             # loop through all bottom geometries
@@ -429,23 +454,12 @@ class PlasticSection:
                 area_bot = bot_geom.calculate_area()
                 cx, cy = bot_geom.calculate_centroid()
 
-                # sum properties
-                a_bot += area_bot
-                qx_bot += cy * area_bot
-                qy_bot += cx * area_bot
+                # sum force
                 f_bot += f_y * area_bot
 
-        # calculate centroid of force action
-        try:
-            self._c_top = [qy_top / a_top, qx_top / a_top]
-            self._f_top = f_top
-        except ZeroDivisionError:
-            self._c_top = [0.0, 0.0]
-            self._f_top = 0.0
-
-        try:
-            self._c_bot = [qy_bot / a_bot, qx_bot / a_bot]
-        except ZeroDivisionError:
-            self._c_bot = [0.0, 0.0]
+                # add force and centroids to list
+                self._f_list.append(f_y * area_bot)
+                self._cx_list.append(cx)
+                self._cy_list.append(cy)
 
         return f_top, f_bot
