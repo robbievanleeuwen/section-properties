@@ -13,7 +13,7 @@ def timber_rectangular_section(
         d: float,
         b: float,
         timb_mat: pre.Material = pre.DEFAULT_MATERIAL
-) -> geometry.Geometry
+) -> geometry.Geometry:
         """Constructs a timber rectangular section.
 
         Constructs a timber rectangular section of depth ``d`` and width ``b``.
@@ -41,6 +41,18 @@ def timber_rectangular_section(
             from sectionproperties.pre import Material
             from sectionproperties.pre.library import timber_rectangular_section
             from sectionproperties.analysis import Section
+
+            geom = timber_rectangular_section(500, 300)
+            geom.create_mesh(mesh_sizes=[200])
+
+            sec = Section(geometry=geom)
+            sec.calculate_geometric_properties()
+
+            ixx_c, iyy_c, ixy_c = sec.get_ic()
+            print(f"Ixx = {ixx_c:.3e} mm4")
+            print(f"Irec = {300 * 500**3 / 12:.3e} mm4")
+            print(f"Iyy = {iyy_c:.3e} mm4")
+            print(f"Irec = {500 * 300**3 / 12:.3e} mm4")
         """
 
         # create rectangular timber geometry
