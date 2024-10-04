@@ -54,10 +54,18 @@ exclude-contributors:
 # Custom text at start of release
 header: >
 
-  This release swaps the new `Triangle` wrapper, [`CyTriangle`](https://github.com/m-clare/cytriangle),
-  for [`triangle`](https://github.com/drufat/triangle), thus supporting users with Apple
-  Silicon (`macos-arm64`). Many thanks for @m-clare for the hard work with this new
-  package!
+  This release contains several important bug fixes and dependency updates.
+
+  Python 3.9 support is dropped ahead of the upcoming 3.13 release. Python 3.13 support
+  will be added once all the core upstream dependencies support 3.13.
+
+  A bug in the `CompoundGeometry` offset dilation algorithm was fixed by @connorferster,
+  a live stream of this fix can be watched [here](https://www.youtube.com/live/hSfsojAAJjc?si=Zuwn7Mr6zXS1wHFF).
+
+  Most importantly a critical bug in the plastic moment calculation was found and fixed,
+  see issue 460. Note that this bug affected plastic moment calculations for composite
+  sections only, the plastic centroid calculation and geometric-only analyses were
+  unaffected.
 
 template: |
 
