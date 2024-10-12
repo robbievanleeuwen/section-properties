@@ -2,63 +2,65 @@
 
 from __future__ import annotations
 
-import numpy as np
-
 import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.library.primitive_sections as primitive_sections
 import sectionproperties.pre.pre as pre
 
 
-def timber_rectangular_section(
-        d: float,
-        b: float,
-        timb_mat: pre.Material = pre.DEFAULT_MATERIAL
-) -> geometry.Geometry:
-        """Constructs a timber rectangular section.
+def clt_rectangular_section(
+    d: list[float],
+    lay_orient: list[int],
+    b: float,
+    timb_mat0: pre.Material = pre.DEFAULT_MATERIAL,
+    timb_mat90: pre.Material = pre.DEFAULT_MATERIAL,
+) -> geometry.CompoundGeometry:
+    """Constructs a timber rectangular section.
 
-        Constructs a timber rectangular section of depth ``d`` and width ``b``.
+    Constructs a timber rectangular section of depth ``d`` and width ``b``.
 
-        .. note::
+    .. note::
 
-        Args:
-            d: Timber section depth
-            b: Timber section width
-            timb_mat: Material object to assign to the timber area
+    Args:
+        d: Timber layer section thickness
+        lay_orient: List of layer orientation
+        b: Timber section width
+        timb_mat0: Material object to assign to the timber area
+                   parallel-to-grain
+        timb_mat90: Material object to assign to the timber area,
+                    perpendicular-to-grain
 
-        Raises:
-            ValueError: Geometry generation failed
+    Raises:
+        ValueError: Geometry generation failed
 
-        Returns:
-            Timber rectangular section geometry
+    Returns:
+        Timber rectangular section geometry
 
-        Example:
-            The following example creates a 600mm deep x 300mm wide timber gluelaminated beam.
+    Example:
+        The following example creates a 120mm CLT cross-section.
+    """
 
-        .. plot::
-            :include-source: True
-            :caption: Timber rectangular section geometry
+    layer_geom = list()
+    for idx in range(len(d)):
+        di = float(d[idx])
+        layer = lay_orient[idx]
 
-            from sectionproperties.pre import Material
-            from sectionproperties.pre.library import timber_rectangular_section
-            from sectionproperties.analysis import Section
-
-            geom = timber_rectangular_section(500, 300)
-            geom.create_mesh(mesh_sizes=[200])
-
-            sec = Section(geometry=geom)
-            sec.calculate_geometric_properties()
-
-            ixx_c, iyy_c, ixy_c = sec.get_ic()
-            print(f"Ixx = {ixx_c:.3e} mm4")
-            print(f"Irec = {300 * 500**3 / 12:.3e} mm4")
-            print(f"Iyy = {iyy_c:.3e} mm4")
-            print(f"Irec = {500 * 300**3 / 12:.3e} mm4")
-        """
+        if layer is int(0):
+            timb_mat = timb_mat0
+        else:
+            timb_mat = timb_mat90
 
         # create rectangular timber geometry
-        geom = primitive_sections.rectangular_section(b=b, d=d, material=timb_mat)
+        layer = primitive_sections.rectangular_section(d=di, b=b,
+                                                       material=timb_mat)
+        offset = -d[idx] * (idx + 1)
+        layer = layer.shift_section(y_offset=offset)
 
-        if isinstance(geom, geometry.Geometry):
-            return geom
-        else:
-            raise ValueError("Timber section generation failed.")
+        layer_geom.append(layer)
+
+    # create compound geometry
+    geom = geometry.CompoundGeometry(geoms=layer_geom)
+
+    if isinstance(geom, geometry.CompoundGeometry):
+        return geom
+    else:
+        raise ValueError("Timber section generation failed.")

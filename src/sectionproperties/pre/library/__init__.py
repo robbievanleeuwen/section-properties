@@ -63,7 +63,6 @@ from sectionproperties.pre.library.steel_sections import (
     tee_section,
     zed_section,
 )
-
 from sectionproperties.pre.library.timber_sections import (
-    timber_rectangular_section
+    clt_rectangular_section
 )
