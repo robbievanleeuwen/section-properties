@@ -17,7 +17,6 @@ from rich.text import Text
 from scipy.sparse import csc_matrix, linalg
 from scipy.sparse.linalg import LinearOperator, spsolve
 
-
 try:
     import pypardiso
 
@@ -49,7 +48,8 @@ def solve_cgs(
     u, info = linalg.cgs(A=k, b=f, rtol=tol, M=m)
 
     if info != 0:
-        raise RuntimeError("CGS iterative method did not converge.")
+        msg = "CGS iterative method did not converge."
+        raise RuntimeError(msg)
 
     return u  # type: ignore
 
@@ -78,13 +78,15 @@ def solve_cgs_lagrange(
     u, info = linalg.cgs(A=k_lg, b=np.append(f, 0), rtol=tol, M=m)
 
     if info != 0:
-        raise RuntimeError("CGS iterative method did not converge.")
+        msg = "CGS iterative method did not converge."
+        raise RuntimeError(msg)
 
     # compute error
     err = u[-1] / max(np.absolute(u))
 
     if err > tol:
-        raise RuntimeError("Lagrangian multiplier method error exceeds tolerance.")
+        msg = "Lagrangian multiplier method error exceeds tolerance."
+        raise RuntimeError(msg)
 
     return u[:-1]  # type: ignore
 
@@ -130,11 +132,10 @@ def solve_direct_lagrange(
     rel_error = multiplier / max(np.absolute(u))
 
     if rel_error > 1e-7 and multiplier > 10.0 * np.finfo(float).eps:
-        raise RuntimeError(
-            "Lagrangian multiplier method error exceeds the prescribed tolerance, "
-            "consider refining your mesh. If this error is unexpected raise an issue "
-            "at https://github.com/robbievanleeuwen/section-properties/issues."
-        )
+        msg = "Lagrangian multiplier method error exceeds the prescribed tolerance, "
+        msg += "consider refining your mesh. If this error is unexpected raise an "
+        msg += "issue at https://github.com/robbievanleeuwen/section-properties/issues."
+        raise RuntimeError(msg)
 
     return u[:-1]  # type: ignore
 

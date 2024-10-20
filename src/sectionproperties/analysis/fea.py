@@ -8,14 +8,15 @@ Finite element classes:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Callable
+from functools import cache
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import numpy.typing as npt
 
-
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from sectionproperties.pre.pre import Material
 
 
@@ -895,10 +896,7 @@ class Tri6:
         gamma = 1.0 - alpha - beta
 
         # if the point lies within an element
-        if alpha >= 0 and beta >= 0 and gamma >= 0:
-            return True
-        else:
-            return False
+        return bool(alpha >= 0 and beta >= 0 and gamma >= 0)
 
     def local_coord(
         self,
@@ -917,7 +915,7 @@ class Tri6:
         return eta, xi, zeta
 
 
-@lru_cache(maxsize=None)
+@cache
 def gauss_points(*, n: int) -> npt.NDArray[np.float64]:
     """Gaussian weights and locations for ``n`` point Gaussian integration of a Tri6.
 
@@ -981,13 +979,14 @@ def gauss_points(*, n: int) -> npt.NDArray[np.float64]:
             dtype=float,
         )
 
-    raise ValueError("n must be 1, 3, 4 or 6.")
+    msg = "n must be 1, 3, 4 or 6."
+    raise ValueError(msg)
 
 
 tmp_array = np.array([[0, 1, 0], [0, 0, 1]], dtype=np.double)
 
 
-@lru_cache(maxsize=None)
+@cache
 @njit(cache=True, nogil=True)  # type: ignore
 def __shape_function_cached(
     coords: tuple[float, ...],
@@ -1041,12 +1040,8 @@ def __shape_function_cached(
     # calculate the jacobian
     jacobian = 0.5 * np.linalg.det(j)
 
-    # if the area of the element is not zero
-    if jacobian != 0:
-        b = tmp_array @ np.linalg.solve(j, b_iso)
-    else:
-        b = np.zeros((2, 6))  # empty b matrix
-
+    # if the area of the element is not zero -> assign, otherwise empty b matrix
+    b = tmp_array @ np.linalg.solve(j, b_iso) if jacobian != 0 else np.zeros((2, 6))
     nx, ny = coords_array @ n
 
     return n, b, jacobian, nx, ny
@@ -1075,7 +1070,7 @@ def shape_function(
     return __shape_function_cached(tuple(coords.ravel()), tuple(gauss_point[1:]))  # type: ignore
 
 
-@lru_cache(maxsize=None)
+@cache
 @njit(cache=True, nogil=True)  # type: ignore
 def shape_function_only(p: tuple[float, float, float]) -> npt.NDArray[np.float64]:
     """The values of the ``Tri6`` shape function at a point ``p``.

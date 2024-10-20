@@ -8,7 +8,6 @@ import pytest_check as check
 from sectionproperties.analysis import Section
 from sectionproperties.pre.library import rectangular_section
 
-
 # constants
 tol = 1e-6
 warp_tol = 1e-4
@@ -55,10 +54,14 @@ def test_rectangular_section_geometric(rect_section):
     check.almost_equal(sec.section_props.zyy_plus, 100 * 50**2 / 6, rel=tol)
     check.almost_equal(sec.section_props.zyy_minus, 100 * 50**2 / 6, rel=tol)
     check.almost_equal(
-        sec.section_props.rx_c, (50 * 100**3 / 12 / 100 / 50) ** 0.5, rel=tol
+        sec.section_props.rx_c,
+        (50 * 100**3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
     )
     check.almost_equal(
-        sec.section_props.ry_c, (100 * 50**3 / 12 / 100 / 50) ** 0.5, rel=tol
+        sec.section_props.ry_c,
+        (100 * 50**3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
     )
     check.almost_equal(sec.section_props.i11_c, (50 * 100**3 / 12), rel=tol)
     check.almost_equal(sec.section_props.i22_c, (100 * 50**3 / 12), rel=tol)
@@ -68,10 +71,14 @@ def test_rectangular_section_geometric(rect_section):
     check.almost_equal(sec.section_props.z22_plus, 100 * 50**2 / 6, rel=tol)
     check.almost_equal(sec.section_props.z22_minus, 100 * 50**2 / 6, rel=tol)
     check.almost_equal(
-        sec.section_props.r11_c, (50 * 100**3 / 12 / 100 / 50) ** 0.5, rel=tol
+        sec.section_props.r11_c,
+        (50 * 100**3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
     )
     check.almost_equal(
-        sec.section_props.r22_c, (100 * 50**3 / 12 / 100 / 50) ** 0.5, rel=tol
+        sec.section_props.r22_c,
+        (100 * 50**3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
     )
 
 

@@ -36,10 +36,7 @@ def draw_radius(
         points.append(pt)
         return points
 
-    if ccw:
-        mult = 1
-    else:
-        mult = -1
+    mult = 1 if ccw else -1
 
     # calculate radius of points
     for i in range(n):

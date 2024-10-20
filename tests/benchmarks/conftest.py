@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -13,6 +13,9 @@ from sectionproperties.pre.library import (
     concrete_column_section,
     rectangular_section,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 @pytest.fixture

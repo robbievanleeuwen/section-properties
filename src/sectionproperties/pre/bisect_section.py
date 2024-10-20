@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
-import numpy as np
-import numpy.typing as npt
+from typing import TYPE_CHECKING
+
 from shapely import GeometryCollection, LineString, Polygon
+
+if TYPE_CHECKING:
+    import numpy as np
+    import numpy.typing as npt
 
 
 def create_line_segment(

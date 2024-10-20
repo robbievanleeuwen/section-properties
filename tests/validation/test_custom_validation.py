@@ -9,7 +9,6 @@ from shapely import Polygon
 from sectionproperties.analysis import Section
 from sectionproperties.pre import Geometry
 
-
 # constants
 tol = 1e-6
 plastic_tol = 1e-5

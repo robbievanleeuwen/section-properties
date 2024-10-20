@@ -6,14 +6,16 @@ It can be used in `suanPan <https://github.com/TLCFEM/suanPan>`_ to perform furt
 from __future__ import annotations
 
 from abc import abstractmethod
-
-import numpy as np
-import numpy.typing as npt
+from typing import TYPE_CHECKING
 
 import sectionproperties.analysis.solver as solver
 from sectionproperties.analysis.fea import Tri6, shape_function
 from sectionproperties.analysis.section import Section
 from sectionproperties.pre.geometry import CompoundGeometry, Geometry
+
+if TYPE_CHECKING:
+    import numpy as np
+    import numpy.typing as npt
 
 
 class Cell:
@@ -153,12 +155,13 @@ def to_fibre_section(
     Returns:
         str: The exported commands
     """
-    if isinstance(obj, (Geometry, CompoundGeometry)):
+    if isinstance(obj, Geometry | CompoundGeometry):
         geometry = obj
     elif isinstance(obj, Section):
         geometry = obj.geometry
     else:
-        raise TypeError(f"Expected a Geometry or Section, got {type(obj).__name__}")
+        msg = f"Expected a Geometry or Section, got {type(obj).__name__}"
+        raise TypeError(msg)
 
     analysis_type = analysis_type.upper()
 
@@ -173,7 +176,8 @@ def to_fibre_section(
         cell_class = Cell3DOS
         fibre_class = "Fibre3DOS"
     else:
-        raise ValueError("Invalid analysis type, expected 2D, 3D or 3DOS")
+        msg = "Invalid analysis type, expected 2D, 3D or 3DOS"
+        raise ValueError(msg)
 
     section = Section(geometry)
 
