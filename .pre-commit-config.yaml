@@ -1,82 +1,15 @@
 repos:
-  - repo: local
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
     hooks:
-      - id: black
-        name: black
-        entry: black
-        language: system
-        types: [python]
-        require_serial: true
-      - id: check-added-large-files
-        name: Check for added large files
-        entry: check-added-large-files
-        language: system
-        args: ["--maxkb=750"]
-      - id: check-toml
-        name: Check Toml
-        entry: check-toml
-        language: system
-        types: [toml]
-      - id: check-yaml
-        name: Check Yaml
-        entry: check-yaml
-        language: system
-        types: [yaml]
-      - id: darglint
-        name: darglint
-        entry: darglint
-        language: system
-        types: [python]
-        stages: [manual]
-      - id: end-of-file-fixer
-        name: Fix End of Files
-        entry: end-of-file-fixer
-        language: system
-        types: [text]
-        stages: [commit, push, manual]
-      - id: flake8
-        name: flake8
-        entry: flake8
-        language: system
-        types: [python]
-        require_serial: true
-        args: [--darglint-ignore-regex, .*]
-      - id: isort
-        name: isort
-        entry: isort
-        require_serial: true
-        language: system
-        types_or: [cython, pyi, python]
-        args: ["--filter-files"]
-      - id: pyupgrade
-        name: pyupgrade
-        description: Automatically upgrade syntax for newer versions.
-        entry: pyupgrade
-        language: system
-        types: [python]
-        args: [--py39-plus]
-      - id: trailing-whitespace
-        name: Trim Trailing Whitespace
-        entry: trailing-whitespace-fixer
-        language: system
-        types: [text]
-        stages: [commit, push, manual]
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.1.0
+    - id: check-yaml
+    - id: check-toml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+    - id: requirements-txt-fixer
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.0
     hooks:
-      - id: prettier
-  - repo: https://github.com/kynan/nbstripout
-    rev: 0.7.1
-    hooks:
-      - id: nbstripout
-  - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.9.0
-    hooks:
-      - id: nbqa-black
-        additional_dependencies: [black==24.8.0]
-      - id: nbqa-pyupgrade
-        additional_dependencies: [pyupgrade==3.17.0]
-        args: ["--py39-plus"]
-      - id: nbqa-isort
-        additional_dependencies: [isort==5.13.2]
-        args: [--profile=black]
+      - id: ruff
+        args: [ --fix ]
+      - id: ruff-format

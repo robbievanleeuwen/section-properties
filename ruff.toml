@@ -1,0 +1,35 @@
+target-version = "py312"
+
+[lint]
+select = [
+  "A",      # warn about shadowing built-ins
+  "ANN",   # flake8-annotations
+  "B",      # flake8-bugbear
+  "C4",     # flake8-comprehensions
+  "COM",    # flake8-commas
+  "D",      # pydocstyle
+  "DOC",    # pydoclint
+  "E",      # pycodestyle errors
+  "EM",     # flake8-errmsg
+  "F",      # pyflakes
+  "FA",     # flake8-future-annotations
+  "I",      # isort
+  "ICN",    # flake8-import-conventions
+  "ISC",    # flake8-implicit-str-concat
+  "N",      # pep8-naming
+  "NPY",    # NumPy-specific rules
+  "PERF",   # Perflint
+  "PT",     # flake8-pytest-style
+  "RUF",    # Ruff-specific
+  "S",      # flake8-bandit
+  "SIM",    # flake8-simplify
+  "TCH",    # flake8-type-checking
+  "UP",     # pyupgrade
+  "W",      # pycodestyle warnings
+]
+
+[lint.pydocstyle]
+convention = "google"
+
+[format]
+docstring-code-format = true

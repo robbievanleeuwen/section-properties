@@ -1,49 +1,35 @@
-# Compiled python modules.
-*.pyc
-
-# Setuptools distribution folder.
-dist/
+# python generated files
+__pycache__/
+*.py[oc]
 build/
+dist/
+wheels/
+*.egg-info
 
-# Common virtual environments
-.venv/
-.env/
-.python-version
+# venv
+.venv
 
 # doc generated
 docs/_build
 docs/gen
 
-# Python egg metadata, regenerated from source files by setuptools.
-*.egg-info
-src/*.egg-info/
-
-# Pycharm IDE file folder
-.idea/
-
-# vscode
-.vscode/
-*.code-workspace
-
-# mac
-.DS_Store
+# pytest
+.pytest_cache
+.benchmarks/
 
 # coverage reports
 .coverage
 .coverage.*
-
-# nox
-.nox/
-
-# cache
-__pycache__/
-.pytest_cache
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# benchmark results
-.benchmarks/
+htmlcov/
 
 # mypy cache
 .mypy_cache/
+
+# jupyter notebook
+.ipynb_checkpoints
+
+# ruff
+.ruff_cache
+
+# mac
+.DS_Store
