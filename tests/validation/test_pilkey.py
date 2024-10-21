@@ -15,7 +15,7 @@ BibTeX reference:
 
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pytest
@@ -31,6 +31,9 @@ from sectionproperties.pre.library import (
     elliptical_section,
     rectangular_section,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 @pytest.fixture
@@ -140,7 +143,7 @@ def figure_6_9() -> Callable:
 
     def _generate_sec(beta: float, mat: Material) -> Section:
         geom = rectangular_section(d=1.0, b=2.0, material=mat).rotate_section(
-            angle=beta
+            angle=beta,
         )
         geom.create_mesh(mesh_sizes=0.01)
         sec = Section(geometry=geom)
@@ -448,7 +451,8 @@ def test_example_6_2(figure_6_7):
 
 
 @pytest.mark.parametrize(
-    ("nu", "result"), [(0.0, -0.62055), (0.333, -0.62056), (0.5, -0.62057)]
+    ("nu", "result"),
+    [(0.0, -0.62055), (0.333, -0.62056), (0.5, -0.62057)],
 )
 def test_example_6_3(figure_6_7, nu: float, result: float):
     """Validation test for Example 6.3 (page 256)."""
@@ -469,7 +473,8 @@ def test_example_6_3(figure_6_7, nu: float, result: float):
 
 @pytest.mark.parametrize(("nu", "nu_idx"), [(0.0, 0), (0.3, 1), (0.5, 2)])
 @pytest.mark.parametrize(
-    ("beta", "beta_idx"), [(0.0, 0), (30.0, 1), (45.0, 2), (90.0, 3)]
+    ("beta", "beta_idx"),
+    [(0.0, 0), (30.0, 1), (45.0, 2), (90.0, 3)],
 )
 def test_example_6_5(figure_6_9, nu: float, nu_idx: int, beta: float, beta_idx: int):
     """Validation test for Example 6.5 (page 264).
@@ -673,11 +678,7 @@ def test_example_6_7(nu: float, idx: int, sym: bool):
 
     # set tol and get result
     tol = 1e-3
-
-    if sym:
-        result = results_sym[idx]
-    else:
-        result = results_unsym[idx]
+    result = results_sym[idx] if sym else results_unsym[idx]
 
     # define materials
     mat = Material("a", 1, nu, 1, 1, "w")
@@ -691,7 +692,8 @@ def test_example_6_7(nu: float, idx: int, sym: bool):
         up2 = (0, 15.5)
 
     geom = Geometry(
-        Polygon([(0, 0), (10.5, 0), (10.5, 1), (1, 1), up1, up2]), material=mat
+        Polygon([(0, 0), (10.5, 0), (10.5, 1), (1, 1), up1, up2]),
+        material=mat,
     )
     geom.create_mesh(mesh_sizes=[0.1])
     sec = Section(geometry=geom)
@@ -784,7 +786,7 @@ def test_example_b_2():
                 (b, 0.5 * h - 0.5 * t),
                 (b, 0.5 * h + 0.5 * t),
                 (-0.5 * t, 0.5 * h + 0.5 * t),
-            ]
+            ],
         ),
         material=mat,
     )
@@ -853,7 +855,7 @@ def test_example_b_3():
                 (0.5 * t, 0.5 * t),
                 (0.5 * t, h),
                 (-0.5 * t, h),
-            ]
+            ],
         ),
         material=mat,
     )
@@ -944,11 +946,11 @@ def test_example_b_5():
 
     # define geometry and perform analysis
     bot_plate = rectangular_section(d=0.75, b=31, material=mat).shift_section(
-        y_offset=-0.75
+        y_offset=-0.75,
     )
     top_plate_l = rectangular_section(d=0.75, b=6, material=mat)
     top_plate_r = rectangular_section(d=0.75, b=6, material=mat).shift_section(
-        x_offset=25
+        x_offset=25,
     )
 
     sep = 1e-3  # separation between hat and bottom plate to simulate lack of weld
@@ -1040,7 +1042,10 @@ def test_example_b_7():
     line = LineString(coordinates=pts)
     # buffer the arc by the thickness
     poly = poly = buffer(
-        geometry=line, distance=0.5 * t, cap_style="flat", join_style="mitre"
+        geometry=line,
+        distance=0.5 * t,
+        cap_style="flat",
+        join_style="mitre",
     )
     # create geometry, mesh, section and perform analysis
     geom = Geometry(geom=poly, material=mat)

@@ -6,7 +6,8 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
-import matplotlib
+import matplotlib as mpl
+import matplotlib.axes
 import matplotlib.tri as tri
 import numpy as np
 import numpy.typing as npt
@@ -16,10 +17,7 @@ from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
 import sectionproperties.post.post as post
 
-
 if TYPE_CHECKING:
-    import matplotlib.axes
-
     from sectionproperties.analysis.section import MaterialGroup, Section
     from sectionproperties.pre.pre import Material
 
@@ -302,7 +300,7 @@ class StressPost:
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # set up the colormap
-            colormap = matplotlib.colormaps.get_cmap(cmap=cmap)
+            colormap = mpl.colormaps.get_cmap(cmap=cmap)
 
             # create triangulation
             triang = tri.Triangulation(
@@ -333,7 +331,7 @@ class StressPost:
                 norm = CenteredNorm()
 
             # plot the filled contour, looping through the plotted material groups
-            for group, sig in zip(plotted_material_groups, sigs):
+            for group, sig in zip(plotted_material_groups, sigs, strict=False):
                 # if we are limiting materials to plot, check material is in list
                 if material_list and group.material not in material_list:
                     continue
@@ -366,7 +364,8 @@ class StressPost:
         if ax:
             return ax
         else:
-            raise RuntimeError("Plot failed.")
+            msg = "Plot failed."
+            raise RuntimeError(msg)
 
     def plot_stress_vector(
         self,
@@ -464,7 +463,7 @@ class StressPost:
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # set up the colormap
-            colormap = matplotlib.colormaps.get_cmap(cmap=cmap)
+            colormap = mpl.colormaps.get_cmap(cmap=cmap)
 
             # initialise quiver plot list max scale
             quiv_list = []
@@ -500,7 +499,10 @@ class StressPost:
 
                     # get the scale and store the max value
                     quiv._init()  # type: ignore
-                    assert isinstance(quiv.scale, float)
+                    if not isinstance(quiv.scale, float):
+                        msg = "Cannot set quiver scale."
+                        raise RuntimeError(msg)
+
                     max_scale = max(max_scale, quiv.scale)
                     quiv_list.append(quiv)
 
@@ -519,7 +521,10 @@ class StressPost:
             divider = make_axes_locatable(axes=ax)
             cax = divider.append_axes(position="right", size="5%", pad=0.1)
 
-            assert quiv is not None
+            if quiv is None:
+                msg = "Quiver plot failed."
+                raise RuntimeError(msg)
+
             fig.colorbar(
                 mappable=quiv, label=colorbar_label, format=fmt, ticks=v1, cax=cax
             )
@@ -530,7 +535,8 @@ class StressPost:
         if ax:
             return ax
         else:
-            raise RuntimeError("Plot failed.")
+            msg = "Plot failed."
+            raise RuntimeError(msg)
 
     def get_stress(self) -> list[dict[str, object]]:
         r"""Returns the stresses within each material.
@@ -636,7 +642,7 @@ class StressPost:
         stress = []
 
         for group in self.material_groups:
-            stress.append(
+            stress.append(  # noqa: PERF401
                 {
                     "material": group.material.name,
                     "sig_zz_n": group.stress_result.sig_zz_n,
@@ -752,7 +758,8 @@ class StressPost:
             triang.set_mask(None)
 
         if pt_group is None:
-            raise ValueError(f"Point {(*pt,)} is not within mesh")
+            msg = f"Point {(*pt,)} is not within mesh"
+            raise ValueError(msg)
 
         # assesmble the stress results from the relevant material group
         sigma_zz_v = pt_group.stress_result.sig_zz
@@ -813,7 +820,10 @@ class StressPost:
 
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (_, ax):
-            assert ax is not None
+            if ax is None:
+                msg = "Matplotlib axes not created."
+                raise RuntimeError(msg)
+
             plot_circle(
                 ax,
                 (0.5 * (sigma_2 + sigma_3), 0),
@@ -836,7 +846,9 @@ class StressPost:
                 r"C3: ($\sigma_{11}$, $\sigma_{22}$)",
             )
 
-            for idx, plane, color in zip(range(3), ["X", "Y", "Z"], ["r", "b", "k"]):
+            for idx, plane, color in zip(
+                range(3), ["X", "Y", "Z"], ["r", "b", "k"], strict=False
+            ):
                 if ax:
                     ax.plot(*tractions[idx], f"{color}.", label=rf"{plane}-face")
 
@@ -871,7 +883,8 @@ class StressPost:
         if ax:
             return ax
         else:
-            raise RuntimeError("Plot failed.")
+            msg = "Plot failed."
+            raise RuntimeError(msg)
 
 
 @dataclass

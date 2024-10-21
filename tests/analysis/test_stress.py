@@ -9,7 +9,6 @@ import pytest
 import sectionproperties.pre.library.primitive_sections as primitive_sections
 from sectionproperties.analysis.section import Section
 
-
 # define geometry
 rect = primitive_sections.rectangular_section(b=50, d=100)
 rect.create_mesh(mesh_sizes=0)  # coarse mesh

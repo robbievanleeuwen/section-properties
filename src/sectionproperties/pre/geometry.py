@@ -29,7 +29,6 @@ import sectionproperties.post.post as post
 import sectionproperties.pre.bisect_section as bisect
 import sectionproperties.pre.pre as pre
 
-
 if TYPE_CHECKING:
     import matplotlib.axes
 
@@ -71,12 +70,12 @@ class Geometry:
                 MultiPolygon object
         """
         if isinstance(geom, MultiPolygon):
-            raise ValueError("Use CompoundGeometry(...) for a MultiPolygon object.")
+            msg = "Use CompoundGeometry(...) for a MultiPolygon object."
+            raise ValueError(msg)
 
         if not isinstance(geom, Polygon):
-            raise ValueError(
-                f"Argument is not a valid shapely.Polygon object: {repr(geom)}"
-            )
+            msg = f"Argument is not a valid shapely.Polygon object: {geom!r}"
+            raise ValueError(msg)
 
         self.assigned_control_point = None
 
@@ -487,13 +486,12 @@ class Geometry:
         """
         if isinstance(mesh_sizes, list) and len(mesh_sizes) == 1:
             mesh_size = mesh_sizes[0]
-        elif isinstance(mesh_sizes, (float, int)):
+        elif isinstance(mesh_sizes, float | int):
             mesh_size = mesh_sizes
         else:
-            raise ValueError(
-                "Argument 'mesh_sizes' for a Geometry must be either "
-                f"a float, or a list of float with length of 1, not {mesh_sizes}."
-            )
+            msg = "Argument 'mesh_sizes' for a Geometry must be either a float, or a "
+            msg += f"list of float with length of 1, not {mesh_sizes}."
+            raise ValueError(msg)
 
         self.mesh = pre.create_mesh(
             points=self.points,
@@ -573,7 +571,7 @@ class Geometry:
 
         self_align_idx = align_self_map[on]
 
-        if isinstance(other, (Geometry, CompoundGeometry)):
+        if isinstance(other, Geometry | CompoundGeometry):
             align_to_idx = other_as_geom_map[on]
             align_to_coord = other.calculate_extents()[align_to_idx]
         else:
@@ -634,7 +632,7 @@ class Geometry:
                 geom.control_points = [(25, 25)]
                 geom.plot_geometry()
         """
-        cx, cy = list(self.geom.centroid.coords)[0]
+        cx, cy = next(iter(self.geom.centroid.coords))
 
         # Suggested by @Agent6-6-6: Hard-rounding of cx and cy allows
         # for greater precision in placing geometry with its centroid
@@ -643,7 +641,7 @@ class Geometry:
         if align_to is None:
             shift_x, shift_y = round(-cx, self.tol), round(-cy, self.tol)
         elif isinstance(align_to, Geometry):
-            align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
+            align_cx, align_cy = next(iter(align_to.geom.centroid.coords))  # RUF015
             shift_x = round(align_cx - cx, self.tol)
             shift_y = round(align_cy - cy, self.tol)
         else:
@@ -889,9 +887,8 @@ class Geometry:
         elif vector is not None:
             vector = np.array(vector)
         else:
-            raise ValueError(
-                "Either a second point or a vector must be given to define the line."
-            )
+            msg = "Either a second point or a vector must be given to define the line."
+            raise ValueError(msg)
 
         bounds = self.calculate_extents()
         line_segment = bisect.create_line_segment(
@@ -979,9 +976,8 @@ class Geometry:
                 tol=self.tol,
             )
         elif not self.geom.interiors and where == "interior":
-            raise ValueError(
-                "Cannot buffer interior of Geometry object if it has no holes."
-            )
+            msg = "Cannot buffer interior of Geometry object if it has no holes."
+            raise ValueError(msg)
         elif where == "exterior":
             exterior_polygon = Polygon(self.geom.exterior)
             buffered_exterior = buffer_polygon(exterior_polygon, amount, resolution)
@@ -1039,7 +1035,8 @@ class Geometry:
                 tol=self.tol,
             )
         else:
-            raise ValueError("where must be 'exterior', 'interior' or 'all'.")
+            msg = "'where' must be 'exterior', 'interior' or 'all'."
+            raise ValueError(msg)
 
     def shift_points(
         self,
@@ -1153,15 +1150,13 @@ class Geometry:
         """
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
-            assert ax
+            if not ax:
+                msg = "Matplotlib axes not created."
+                raise RuntimeError(msg)
 
             # plot the points and facets
             for i, f in enumerate(self.facets):
-                if i == 0:
-                    label = "Points & Facets"
-                else:
-                    label = None
-
+                label = "Points & Facets" if i == 0 else None
                 ax.plot(
                     [self.points[f[0]][0], self.points[f[1]][0]],
                     [self.points[f[0]][1], self.points[f[1]][1]],
@@ -1173,21 +1168,13 @@ class Geometry:
 
             # plot the holes
             for i, h in enumerate(self.holes):
-                if i == 0:
-                    label = "Holes"
-                else:
-                    label = None
-
+                label = "Holes" if i == 0 else None
                 ax.plot(h[0], h[1], "rx", markersize=5, markeredgewidth=1, label=label)
 
             if cp:
                 # plot the control points
                 for i, cp_i in enumerate(self.control_points):
-                    if i == 0:
-                        label = "Control Points"
-                    else:
-                        label = None
-
+                    label = "Control Points" if i == 0 else None
                     ax.plot(cp_i[0], cp_i[1], "bo", markersize=5, label=label)
 
             # display the labels
@@ -1341,9 +1328,8 @@ class Geometry:
                 tol=self.tol,
             )
         except Exception as e:
-            raise ValueError(
-                f"Cannot perform 'union' on these two objects: {self} | {other}"
-            ) from e
+            msg = f"Cannot perform 'union' on these two objects: {self} | {other}"
+            raise ValueError(msg) from e
 
     def __xor__(
         self,
@@ -1736,13 +1722,12 @@ class CompoundGeometry(Geometry):
             materials = [pre.DEFAULT_MATERIAL] * len(control_points)
 
         if materials and not control_points:
-            raise ValueError(
-                "Materials cannot be assigned without control_points. "
-                "Please provide corresponding control_points for each material."
-            )
+            msg = "Materials cannot be assigned without control_points. Please provide "
+            msg += "corresponding control_points for each material."
+            raise ValueError(msg)
 
         if holes is None:
-            holes = list()
+            holes = []
 
         if len(materials) != len(control_points):
             msg = "If materials are provided, the number of materials in the list "
@@ -1959,7 +1944,7 @@ class CompoundGeometry(Geometry):
                 geom.create_mesh(mesh_sizes=[100, 5])
                 Section(geometry=geom).plot_mesh(materials=False)
         """
-        if isinstance(mesh_sizes, (float, int)):
+        if isinstance(mesh_sizes, float | int):
             mesh_sizes = [mesh_sizes]
 
         if len(mesh_sizes) == 1:
@@ -1991,10 +1976,10 @@ class CompoundGeometry(Geometry):
         Returns:
             New Geometry object shifted by ``x_offset`` and ``y_offset``
         """
-        geoms_acc = []
-
-        for geom in self.geoms:
-            geoms_acc.append(geom.shift_section(x_offset=x_offset, y_offset=y_offset))
+        geoms_acc = [
+            geom.shift_section(x_offset=x_offset, y_offset=y_offset)
+            for geom in self.geoms
+        ]
 
         return CompoundGeometry(geoms=geoms_acc)
 
@@ -2039,17 +2024,15 @@ class CompoundGeometry(Geometry):
                 )
                 compound.rotate_section(angle=-30).plot_geometry()
         """
-        geoms_acc = []
-
         if rot_point == "center":
             rp = box(*MultiPolygon(self.geom).bounds).centroid
         else:
             rp = rot_point
 
-        for geom in self.geoms:
-            geoms_acc.append(
-                geom.rotate_section(angle=angle, rot_point=rp, use_radians=use_radians)
-            )
+        geoms_acc = [
+            geom.rotate_section(angle=angle, rot_point=rp, use_radians=use_radians)
+            for geom in self.geoms
+        ]
 
         return CompoundGeometry(geoms=geoms_acc)
 
@@ -2087,10 +2070,10 @@ class CompoundGeometry(Geometry):
                 )
                 compound.mirror_section(axis="y", mirror_point=(0,0)).plot_geometry()
         """
-        geoms_acc = []
-
-        for geom in self.geoms:
-            geoms_acc.append(geom.mirror_section(axis=axis, mirror_point=mirror_point))
+        geoms_acc = [
+            geom.mirror_section(axis=axis, mirror_point=mirror_point)
+            for geom in self.geoms
+        ]
 
         return CompoundGeometry(geoms=geoms_acc)
 
@@ -2189,7 +2172,7 @@ class CompoundGeometry(Geometry):
             )
 
         elif isinstance(align_to, Geometry):
-            align_cx, align_cy = list(align_to.geom.centroid.coords)[0]
+            align_cx, align_cy = next(iter(align_to.geom.centroid.coords))
             shift_x = round(align_cx - weighted_cx, self.tol)
             shift_y = round(align_cy - weighted_cy, self.tol)
 
@@ -2365,12 +2348,6 @@ class CompoundGeometry(Geometry):
                 j_pnt_idx = self.points.index(j_pnt)  # using <list>.index method
                 self.facets.append((i_pnt_idx, j_pnt_idx))
 
-            # add holes
-
-            existing_geom_holes = []
-            for hole in geom.holes:
-                existing_geom_holes.append(tuple(hole))
-
             # add control points
             for control_point in geom.control_points:
                 self.control_points.append(control_point)
@@ -2440,15 +2417,15 @@ def load_dxf(
         import cad_to_shapely as c2s
     except ImportError as e:
         print(e)
-        raise ImportError(
-            "To use 'from_dxf(...)' you need to 'pip install cad_to_shapely'"
-        ) from e
+        msg = "To use 'from_dxf(...)' you need to 'pip install cad_to_shapely'"
+        raise ImportError(msg) from e
 
     if isinstance(dxf_filepath, str):
         dxf_filepath = pathlib.Path(dxf_filepath)
 
     if not dxf_filepath.exists():
-        raise ValueError(f"The filepath does not exist: {dxf_filepath}")
+        msg = f"The filepath does not exist: {dxf_filepath}"
+        raise ValueError(msg)
 
     my_dxf = c2s.dxf.DxfImporter(dxf_filepath)
     my_dxf.process(spline_delta=spline_delta, degrees_per_segment=degrees_per_segment)
@@ -2462,7 +2439,8 @@ def load_dxf(
     elif isinstance(new_polygons, Polygon):
         return Geometry(new_polygons)
     else:
-        raise RuntimeError(f"No shapely.Polygon objects found in file: {dxf_filepath}")
+        msg = f"No shapely.Polygon objects found in file: {dxf_filepath}"
+        raise RuntimeError(msg)
 
 
 def create_facets(
@@ -2584,7 +2562,9 @@ def create_points_and_facets(
 
 
 def buffer_polygon(
-    polygon: Polygon, amount: float, resolution: int
+    polygon: Polygon,
+    amount: float,
+    resolution: int,
 ) -> Polygon | MultiPolygon:
     """Buffers (erode/corrode) a polygon by amount given a resolution.
 
@@ -2600,20 +2580,16 @@ def buffer_polygon(
     buffered_polygon = polygon.buffer(distance=amount, resolution=resolution)
 
     if isinstance(buffered_polygon, GeometryCollection):
-        remaining_polygons = []
-
-        for item in buffered_polygon.geoms:
-            if isinstance(item, Polygon):
-                remaining_polygons.append(Polygon)
+        remaining_polygons = [
+            item for item in buffered_polygon.geoms if isinstance(item, Polygon)
+        ]
 
         if len(remaining_polygons) == 1:
             return remaining_polygons[0]
         else:
             return MultiPolygon(remaining_polygons)
 
-    elif isinstance(buffered_polygon, MultiPolygon) or isinstance(
-        buffered_polygon, Polygon
-    ):
+    elif isinstance(buffered_polygon, MultiPolygon | Polygon):
         return buffered_polygon
     else:
         return Polygon()
@@ -2634,16 +2610,14 @@ def filter_non_polygons(
     Returns:
         Filtered polygon
     """
-    if isinstance(input_geom, (Polygon, MultiPolygon)):
+    if isinstance(input_geom, Polygon | MultiPolygon):
         return input_geom
     elif isinstance(input_geom, GeometryCollection):
-        acc = []
-
-        for item in input_geom.geoms:
-            if isinstance(item, MultiPolygon):
-                acc.append(item)
-            elif isinstance(item, Polygon):
-                acc.append(item)
+        acc = [
+            item
+            for item in input_geom.geoms
+            if isinstance(item, MultiPolygon | Polygon)
+        ]
 
         if len(acc) == 0:
             return Polygon()
@@ -2651,7 +2625,7 @@ def filter_non_polygons(
             return acc[0]
         else:
             return MultiPolygon(acc)
-    elif isinstance(input_geom, (Point, LineString)):
+    elif isinstance(input_geom, Point | LineString):
         return Polygon()
     else:
         return Polygon()
@@ -2671,10 +2645,7 @@ def round_polygon_vertices(
         Polygon with rounded vertices
     """
     rounded_exterior = np.round(poly.exterior.coords, tol)
-    rounded_interiors = []
-
-    for interior in poly.interiors:
-        rounded_interiors.append(np.round(interior.coords, tol))
+    rounded_interiors = [np.round(interior.coords, tol) for interior in poly.interiors]
 
     if not rounded_exterior.any():
         return Polygon()
