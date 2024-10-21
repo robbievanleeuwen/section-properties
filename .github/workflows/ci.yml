@@ -30,10 +30,10 @@ jobs:
         run: uv python install 3.12
 
       - name: Install dependencies
-        run: uv sync --frozen
+        run: uv sync -p 3.12 --frozen
 
       - name: Run pre-commit
-        run: uv run pre-commit run --all-files --color always --show-diff-on-failure
+        run: uv run -p 3.12 pre-commit run --all-files --color always --show-diff-on-failure
 
   # TODO: mypy:
     # - { python: "3.12", os: "ubuntu-latest", session: "mypy" }
@@ -76,14 +76,14 @@ jobs:
 
       - name: Install test dependencies
         if: matrix.session != 'tests-extended'
-        run: uv sync --frozen --extra rhino --extra dxf
+        run: uv sync -p ${{ matrix.python }} --frozen --extra rhino --extra dxf
 
       - name: Install extended test dependencies
         if: matrix.session == 'tests-extended'
-        run: uv sync --frozen --all-extras
+        run: uv sync -p ${{ matrix.python }} --frozen --all-extras
 
       - name: Run pytest
-        run: uv run pytest -m 'not benchmark_suite'
+        run: uv run -p ${{ matrix.python }} pytest -m 'not benchmark_suite'
 
   docs-build:
     name: docs-build 3.12 [ubuntu-latest]
@@ -103,13 +103,13 @@ jobs:
         run: uv python install 3.12
 
       - name: Install dependencies
-        run: uv sync --frozen --extra rhino --extra dxf
+        run: uv sync -p 3.12 --frozen --extra rhino --extra dxf
 
       - name: Install pandoc
         uses: pandoc/actions/setup@v1
 
       - name: Build docs
-        run: uv run sphinx-build --color docs docs/_build
+        run: uv run -p 3.12 sphinx-build --color docs docs/_build
 
       - name: Upload docs
         uses: actions/upload-artifact@v4
