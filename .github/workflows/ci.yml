@@ -75,16 +75,15 @@ jobs:
         run: uv python install ${{ matrix.python }}
 
       - name: Install test dependencies
+        if: matrix.session != 'tests-extended'
         run: uv sync --frozen --extra rhino --extra dxf
-        if: matrix.session != "tests-extended"
 
       - name: Install extended test dependencies
+        if: matrix.session == 'tests-extended'
         run: uv sync --frozen --all-extras
-        if: matrix.session == "tests-extended"
 
       - name: Run pytest
-        if: matrix.session == "tests"
-        run: uv run pytest -m "not benchmark_suite"
+        run: uv run pytest -m 'not benchmark_suite'
 
   docs-build:
     name: docs-build 3.12 [ubuntu]
