@@ -93,7 +93,7 @@ def nastran_box(
             nastran_box(dim_1=4.0, dim_2=3.0, dim_3=0.375, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if 2.0 * dim_4 < dim_1 or 2.0 * dim_3 < dim_2:
+    if not 2.0 * dim_4 < dim_1 or not 2.0 * dim_3 < dim_2:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -165,7 +165,7 @@ def nastran_box1(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_5 + dim_6 < dim_1 or dim_3 + dim_4 < dim_2:
+    if not dim_5 + dim_6 < dim_1 or not dim_3 + dim_4 < dim_2:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -231,7 +231,7 @@ def nastran_chan(
             nastran_chan(dim_1=2.0, dim_2=4.0, dim_3=0.25, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if 2.0 * dim_4 < dim_2 or dim_3 < dim_1:
+    if not 2.0 * dim_4 < dim_2 or not dim_3 < dim_1:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -294,7 +294,7 @@ def nastran_chan1(
             nastran_chan1(dim_1=0.75, dim_2=1.0, dim_3=3.5, dim_4=4.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_4 > dim_3:
+    if not dim_4 > dim_3:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -357,7 +357,7 @@ def nastran_chan2(
             nastran_chan2(dim_1=0.375, dim_2=0.5, dim_3=2.0, dim_4=4.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_4 > 2.0 * dim_1 or dim_3 > dim_2:
+    if not dim_4 > 2.0 * dim_1 or not dim_3 > dim_2:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -419,7 +419,7 @@ def nastran_cross(
             nastran_cross(dim_1=1.5, dim_2=0.375, dim_3=3.0, dim_4=0.25).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_4 < dim_3:
+    if not dim_4 < dim_3:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -497,12 +497,12 @@ def nastran_fcross(
     """
     # Ensure dimensions are physically relevant
     if (
-        dim_5 > dim_3
-        or dim_7 > dim_4
-        or dim_7 < dim_1
-        or dim_5 < dim_2
-        or dim_8 < (0.5 * dim_2 - 0.5 * dim_3)
-        or dim_6 < (0.5 * dim_1 - 0.5 * dim_4)
+        not dim_5 > dim_3
+        or not dim_7 > dim_4
+        or not dim_7 < dim_1
+        or not dim_5 < dim_2
+        or not dim_8 < (0.5 * dim_2 - 0.5 * dim_3)
+        or not dim_6 < (0.5 * dim_1 - 0.5 * dim_4)
     ):
         msg = "Invalid geometry specified."
         raise ValueError(msg)
@@ -601,10 +601,10 @@ def nastran_dbox(
     """
     # Ensure dimensions are physically relevant
     if (
-        (dim_4 + dim_5 + dim_6) < dim_1
-        or (dim_4 + 0.5 * dim_5) < dim_3
-        or (dim_7 + dim_8) < dim_2
-        or (dim_9 + dim_10) < dim_2
+        not (dim_4 + dim_5 + dim_6) < dim_1
+        or not (dim_4 + 0.5 * dim_5) < dim_3
+        or not (dim_7 + dim_8) < dim_2
+        or not (dim_9 + dim_10) < dim_2
     ):
         msg = "Invalid geometry specified."
         raise ValueError(msg)
@@ -684,7 +684,7 @@ def nastran_gbox(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if (dim_3 + dim_4) < dim_2 or (2.0 * dim_5 + dim_6) < dim_1:
+    if not (dim_3 + dim_4) < dim_2 or not (2.0 * dim_5 + dim_6) < dim_1:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -761,7 +761,7 @@ def nastran_h(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_4 < dim_3:
+    if not dim_4 < dim_3:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -830,7 +830,7 @@ def nastran_hat(
             nastran_hat(dim_1=1.25, dim_2=0.25, dim_3=1.5, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if 2.0 * dim_2 < dim_1:
+    if not 2.0 * dim_2 < dim_1:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -900,7 +900,7 @@ def nastran_hat1(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if (2.0 * dim_4 + dim_5) < dim_2 or dim_3 < dim_1:
+    if not (2.0 * dim_4 + dim_5) < dim_2 or not dim_3 < dim_1:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -967,7 +967,7 @@ def nastran_hexa(
             nastran_hexa(dim_1=0.5, dim_2=2.0, dim_3=1.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_2 > dim_1:
+    if not dim_2 > dim_1:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -1032,7 +1032,7 @@ def nastran_i(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if (dim_5 + dim_6) < dim_1 or dim_4 < dim_3 or dim_4 < dim_2:
+    if not (dim_5 + dim_6) < dim_1 or not dim_4 < dim_3 or not dim_4 < dim_2:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -1099,7 +1099,7 @@ def nastran_i1(
             nastran_i1(dim_1=1.0, dim_2=0.75, dim_3=4.0, dim_4=5.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_4 > dim_3:
+    if not dim_4 > dim_3:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -1166,7 +1166,7 @@ def nastran_l(
             nastran_l(dim_1=3.0, dim_2=6.0, dim_3=0.375, dim_4=0.625).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_4 < dim_1 or dim_3 < dim_2:
+    if not dim_4 < dim_1 or not dim_3 < dim_2:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -1282,7 +1282,7 @@ def nastran_tee(
             nastran_tee(dim_1=3.0, dim_2=4.0, dim_3=0.375, dim_4=0.25).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_4 < dim_1 or dim_3 < dim_2:
+    if not dim_4 < dim_1 or not dim_3 < dim_2:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -1359,7 +1359,7 @@ def nastran_tee1(
             nastran_tee1(dim_1=3.0, dim_2=3.5, dim_3=0.375, dim_4=0.25).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_4 < dim_1:
+    if not dim_4 < dim_1:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -1422,7 +1422,7 @@ def nastran_tee2(
             nastran_tee2(dim_1=3.0, dim_2=4.0, dim_3=0.375, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_4 < dim_1 or dim_3 < dim_2:
+    if not dim_4 < dim_1 or not dim_3 < dim_2:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -1483,7 +1483,7 @@ def nastran_tube(
             nastran_tube(dim_1=3.0, dim_2=2.5, n=37).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_2 < dim_1:
+    if not dim_2 < dim_1:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -1553,7 +1553,7 @@ def nastran_tube2(
             nastran_tube2(dim_1=3.0, dim_2=0.5, n=37).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_2 < dim_1:
+    if not dim_2 < dim_1:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 
@@ -1626,7 +1626,7 @@ def nastran_zed(
             nastran_zed(dim_1=1.125, dim_2=0.5, dim_3=3.5, dim_4=4.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    if dim_4 > dim_3:
+    if not dim_4 > dim_3:
         msg = "Invalid geometry specified."
         raise ValueError(msg)
 

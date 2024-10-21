@@ -18,7 +18,6 @@ extensions = [
     "sphinx.ext.viewcode",
     "matplotlib.sphinxext.plot_directive",
     "nbsphinx",
-    "sphinx_click",
     "sphinx_copybutton",
     "sphinxext.opengraph",
 ]

@@ -16,8 +16,6 @@ efficiently generate a conforming triangular mesh.
 are used to aid finite element computations, while
 `matplotlib <https://github.com/matplotlib/matplotlib>`_ and
 `rich <https://github.com/Textualize/rich>`_ are used for post-processing.
-Finally, `click <https://github.com/pallets/click>`_ is used to power the
-``sectionproperties`` CLI.
 
 ``sectionproperties`` and all of its dependencies can be installed through the python
 package index:
