@@ -13,17 +13,17 @@ concurrency:
 
 jobs:
   pre-commit:
-    name: pre-commit 3.12 [ubuntu]
+    name: pre-commit 3.12 [ubuntu-latest]
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      - name: Install uv version $UV_VERSION
+      - name: Install uv version ${{ env.UV_VERSION }}
         uses: astral-sh/setup-uv@v3
         with:
-          version: $UV_VERSION
+          version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Install python 3.12 using uv
@@ -65,10 +65,10 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      - name: Install uv version $UV_VERSION
+      - name: Install uv version ${{ env.UV_VERSION }}
         uses: astral-sh/setup-uv@v3
         with:
-          version: $UV_VERSION
+          version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Install python ${{ matrix.python }} using uv
@@ -86,17 +86,17 @@ jobs:
         run: uv run pytest -m 'not benchmark_suite'
 
   docs-build:
-    name: docs-build 3.12 [ubuntu]
+    name: docs-build 3.12 [ubuntu-latest]
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      - name: Install uv version $UV_VERSION
+      - name: Install uv version ${{ env.UV_VERSION }}
         uses: astral-sh/setup-uv@v3
         with:
-          version: $UV_VERSION
+          version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Install python 3.12 using uv
