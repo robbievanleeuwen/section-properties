@@ -47,8 +47,8 @@ jobs:
       - name: Install python ${{ matrix.python }} using uv
         run: uv python install ${{ matrix.python }}
 
-      - name: Install dependencies  # TODO: which extras to install?
-        run: uv sync
+      - name: Install dependencies  # TODO: test numba/pardiso?
+        run: uv sync --extra rhino --extra dxf
 
       - name: Install pandoc
         if: matrix.session == 'docs-build'
