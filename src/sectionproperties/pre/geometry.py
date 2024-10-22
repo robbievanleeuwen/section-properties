@@ -750,9 +750,12 @@ class Geometry:
 
             new_ctrl_point = tuple(
                 affinity.rotate(
-                    self.assigned_control_point, angle, rotate_point, use_radians
+                    self.assigned_control_point,
+                    angle,
+                    rotate_point,  # type: ignore
+                    use_radians,
                 ).coords[0]
-            )  # type: ignore
+            )
 
         return Geometry(
             geom=affinity.rotate(self.geom, angle, rot_point, use_radians),  # type: ignore
@@ -806,8 +809,12 @@ class Geometry:
             y_mirror = -y_mirror
 
         mirrored_geom = affinity.scale(
-            self.geom, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=m_pt
-        )  # type: ignore
+            self.geom,
+            xfact=y_mirror,
+            yfact=x_mirror,
+            zfact=1.0,
+            origin=m_pt,  # type: ignore
+        )
 
         new_ctrl_point: tuple[float, float] | None = None
 

@@ -278,8 +278,8 @@ class SectionProperties:
             else:
                 self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
 
-            # initialise min, max variables
-            if self.phi:
+            # initialise min, max variables TODO: check for `if xxx:` where xxx is float
+            if self.phi is not None:
                 x1, y2 = fea.principal_coordinate(
                     phi=self.phi,
                     x=nodes[0][0] - self.cx,
