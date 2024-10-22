@@ -28,6 +28,9 @@ def circular_hollow_section(
         n: Number of points discretising the inner and outer circles
         material: Material to associate with this geometry
 
+    Raises:
+        RuntimeError: If the geometry generation fails
+
     Returns:
         Circular hollow section geometry
 
@@ -63,8 +66,13 @@ def circular_hollow_section(
 
     inner_circle = Polygon(points_inner)
     outer_circle = Polygon(points_outer)
+    poly_sub = outer_circle - inner_circle
 
-    return geometry.Geometry(geom=outer_circle - inner_circle, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def elliptical_hollow_section(
@@ -86,6 +94,9 @@ def elliptical_hollow_section(
         t: Thickness of the EHS
         n: Number of points discretising the inner and outer ellipses
         material: Material to associate with this geometry
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Elliptical hollow section geometry
@@ -121,10 +132,15 @@ def elliptical_hollow_section(
         points_outer.append((x_outer, y_outer))
         points_inner.append((x_inner, y_inner))
 
-    outer = Polygon(points_outer)
-    inner = Polygon(points_inner)
+    outer_polygon = Polygon(points_outer)
+    inner_polygon = Polygon(points_inner)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer - inner, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def rectangular_hollow_section(
@@ -149,6 +165,9 @@ def rectangular_hollow_section(
         r_out: Outer radius of the RHS
         n_r: Number of points discretising the inner and outer radii
         material: Material to associate with this geometry
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Rectangular hollow section geometry
@@ -193,10 +212,15 @@ def rectangular_hollow_section(
         n_r,
     )
 
-    outer = Polygon(points_outer)
-    inner = Polygon(points_inner)
+    outer_polygon = Polygon(points_outer)
+    inner_polygon = Polygon(points_inner)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer - inner, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def polygon_hollow_section(
@@ -230,6 +254,7 @@ def polygon_hollow_section(
 
     Raises:
         ValueError: Number of sides in polygon must be greater than or equal to 3
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Regular hollow polygon section geometry
@@ -323,8 +348,13 @@ def polygon_hollow_section(
 
     outer_polygon = Polygon(outer_points)
     inner_polygon = Polygon(inner_points)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer_polygon - inner_polygon, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def i_section(
@@ -1086,6 +1116,10 @@ def cee_section(
     # calculate internal radius
     r_in = max(r_out - t, 0)
 
+    # initialise lip variables
+    r_out_l = 0.0
+    r_in_l = 0.0
+
     # construct the outer bottom left radius
     points += sp_utils.draw_radius(pt=(r_out, r_out), r=r_out, theta=np.pi, n=n_r)
 
@@ -1266,6 +1300,10 @@ def zed_section(
     # calculate internal radius
     r_in = max(r_out - t, 0)
 
+    # initialise lip variables
+    r_out_l = 0.0
+    r_in_l = 0.0
+
     # construct the outer bottom left radius
     points += sp_utils.draw_radius(pt=(r_out, r_out), r=r_out, theta=np.pi, n=n_r)
 
@@ -1413,6 +1451,9 @@ def box_girder_section(
         t_w: Web thickness of the box girder section
         material: Material to associate with this geometry
 
+    Raises:
+        RuntimeError: If the geometry generation fails
+
     Returns:
         Box girder section geometry
 
@@ -1464,8 +1505,13 @@ def box_girder_section(
 
     outer_polygon = Polygon(outer_points)
     inner_polygon = Polygon(inner_points)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer_polygon - inner_polygon, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def bulb_section(

@@ -35,10 +35,28 @@ jobs:
       - name: Run pre-commit
         run: uv run -p 3.12 pre-commit run --all-files --color always --show-diff-on-failure
 
-  # TODO: mypy:
-    # - { python: "3.12", os: "ubuntu-latest", session: "mypy" }
-    # - { python: "3.11", os: "ubuntu-latest", session: "mypy" }
-    # - { python: "3.10", os: "ubuntu-latest", session: "mypy" }
+  type-checking:
+    name: type-checking 3.12 [ubuntu-latest]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Install uv version ${{ env.UV_VERSION }}
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Install python 3.12 using uv
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync -p 3.12 --frozen
+
+      - name: Run pyright
+        run: uv run -p 3.12 pyright
 
   tests:
     name: ${{ matrix.session }} ${{ matrix.python }} [${{ matrix.os }}]

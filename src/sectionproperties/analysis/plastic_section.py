@@ -359,7 +359,7 @@ class PlasticSection:
             full_output=True,
             disp=False,
             xtol=1e-6,
-            rtol=1e-6,
+            rtol=1e-6,  # type: ignore
         )
         return float(d), r
 

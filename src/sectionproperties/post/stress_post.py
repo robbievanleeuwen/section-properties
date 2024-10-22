@@ -877,8 +877,8 @@ class StressPost:
                 ax.spines["left"].set_position(position=("data", 0.0))
 
                 # Now set the coords
-                ax.xaxis.set_label_coords(*x_lbl_pos)
-                ax.yaxis.set_label_coords(*y_lbl_pos)
+                ax.xaxis.set_label_coords(x=x_lbl_pos[0], y=x_lbl_pos[1])
+                ax.yaxis.set_label_coords(x=y_lbl_pos[0], y=y_lbl_pos[1])
 
         if ax:
             return ax

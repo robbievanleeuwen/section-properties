@@ -408,10 +408,12 @@ class Section:
                     progress.update(task_id=task, description=msg)
                 else:
                     k_lg_precond = ilu_decomp()
+            else:
+                k_lg_precond = None
 
             # solve for warping function
             def solve_warping() -> npt.NDArray[np.float64]:
-                if solver_type == "cgs" and k_lg_precond:
+                if solver_type == "cgs":
                     omega = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_torsion, m=k_lg_precond
                     )
@@ -986,10 +988,12 @@ class Section:
                     progress.update(task_id=task, description=msg)
                 else:
                     k_lg_precond = ilu_decomp()
+            else:
+                k_lg_precond = None
 
             # solve for warping function
             def solve_warping() -> npt.NDArray[np.float64]:
-                if solver_type == "cgs" and k_lg_precond:
+                if solver_type == "cgs":
                     omega = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_torsion, m=k_lg_precond
                     )
@@ -3214,9 +3218,7 @@ class Section:
 
         for pt in pts:
             query_geom = Point(pt)
-            tri_ids: list[int] = self.mesh_search_tree.query(
-                query_geom, predicate="intersects"
-            )
+            tri_ids = self.mesh_search_tree.query(query_geom, predicate="intersects")
 
             if len(tri_ids) == 0:
                 sig = None

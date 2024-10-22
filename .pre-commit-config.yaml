@@ -17,4 +17,3 @@ repos:
     rev: 0.7.1
     hooks:
       - id: nbstripout
-#TODO: local versions??

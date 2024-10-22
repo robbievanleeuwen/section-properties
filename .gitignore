@@ -22,9 +22,6 @@ docs/gen
 .coverage.*
 htmlcov/
 
-# mypy cache
-.mypy_cache/
-
 # jupyter notebook
 .ipynb_checkpoints
 

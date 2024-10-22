@@ -180,6 +180,7 @@ class Geometry:
 
         Raises:
             ValueError: If there is not exactly one control point specified
+            RuntimeError: If geometry generation failed
 
         Returns:
             Geometry object
@@ -256,12 +257,15 @@ class Geometry:
         exterior_geometry = Polygon(exterior)
         interior_polys = [Polygon(interior) for interior in interiors]
         interior_geometry = MultiPolygon(interior_polys)
+        sub_poly = exterior_geometry - interior_geometry
 
-        return Geometry(
-            geom=exterior_geometry - interior_geometry,
-            material=material,
-            control_points=control_points[0],
-        )
+        if isinstance(sub_poly, Polygon):
+            return Geometry(
+                geom=sub_poly, material=material, control_points=control_points[0]
+            )
+        else:
+            msg = "Geometry generation failed."
+            raise RuntimeError(msg)
 
     @staticmethod
     def from_dxf(
@@ -739,7 +743,8 @@ class Geometry:
 
         if self.assigned_control_point:
             if rot_point == "center":
-                rotate_point = box(*self.geom.bounds).centroid
+                centre = box(*self.geom.bounds).centroid
+                rotate_point = centre.x, centre.y
             else:
                 rotate_point = rot_point
 
@@ -747,12 +752,12 @@ class Geometry:
                 affinity.rotate(
                     self.assigned_control_point, angle, rotate_point, use_radians
                 ).coords[0]
-            )
+            )  # type: ignore
 
         return Geometry(
-            geom=affinity.rotate(self.geom, angle, rot_point, use_radians),
+            geom=affinity.rotate(self.geom, angle, rot_point, use_radians),  # type: ignore
             material=self.material,
-            control_points=new_ctrl_point,
+            control_points=new_ctrl_point,  # type: ignore
             tol=self.tol,
         )
 
@@ -766,8 +771,8 @@ class Geometry:
         Args:
             axis: Axis about which to mirror the geometry, ``"x"`` or ``"y"``
             mirror_point: Point about which to mirror the geometry (``x``, ``y``). If no
-                point is provided, mirrors the geometry about the centroid of the
-                shape's bounding box.
+                point is provided, mirrors the geometry about the center of the shape's
+                bounding box.
 
         Returns:
             New Geometry object mirrored on ``axis`` about ``mirror_point``
@@ -802,7 +807,7 @@ class Geometry:
 
         mirrored_geom = affinity.scale(
             self.geom, xfact=y_mirror, yfact=x_mirror, zfact=1.0, origin=m_pt
-        )
+        )  # type: ignore
 
         new_ctrl_point: tuple[float, float] | None = None
 
@@ -814,7 +819,7 @@ class Geometry:
                     xfact=y_mirror,
                     yfact=x_mirror,
                     zfact=1.0,
-                    origin=mirror_point,
+                    origin=mirror_point,  # type: ignore
                 ).coords[0],
             )
 
@@ -929,6 +934,7 @@ class Geometry:
         Raises:
             ValueError: ``where`` is invalid
             ValueError: Attempted to offset internally where there are no holes
+            RuntimeError: If geometry generation fails
 
         Returns:
             Geometry object translated to new alignment
@@ -956,8 +962,13 @@ class Geometry:
 
             if isinstance(exterior_polygon, MultiPolygon):
                 return CompoundGeometry(
-                    geoms=[Geometry(poly, self.material) for poly in exterior_polygon]
+                    geoms=[
+                        Geometry(poly, self.material) for poly in exterior_polygon.geoms
+                    ]
                 )
+            elif not isinstance(exterior_polygon, Polygon):
+                msg = "Geometry generation failed."
+                raise RuntimeError(msg)
 
             # Check to see if assigned_control_point is still valid
             if self.assigned_control_point and exterior_polygon.contains(
@@ -993,6 +1004,9 @@ class Geometry:
                         for poly in buffered_exterior.geoms
                     ]
                 )
+            elif not isinstance(buffered_exterior, Polygon):
+                msg = "Geometry generation failed."
+                raise RuntimeError(msg)
 
             # Check to see if assigned_control_point is still valid
             if self.assigned_control_point and buffered_exterior.contains(
@@ -1015,7 +1029,9 @@ class Geometry:
 
             if isinstance(buffered_geom, MultiPolygon):
                 compound_geom = CompoundGeometry(
-                    geoms=[Geometry(poly, self.material) for poly in buffered_geom]
+                    geoms=[
+                        Geometry(poly, self.material) for poly in buffered_geom.geoms
+                    ]
                 )
                 return compound_geom
 
@@ -1315,7 +1331,16 @@ class Geometry:
         material = self.material or other.material
 
         try:
-            new_polygon = filter_non_polygons(input_geom=self.geom | other.geom)
+            or_poly = self.geom | other.geom
+
+            if isinstance(
+                or_poly,
+                GeometryCollection | LineString | Point | Polygon | MultiPolygon,
+            ):
+                new_polygon = filter_non_polygons(or_poly)
+            else:
+                msg = "Geometry generation failed."
+                raise RuntimeError(msg)
 
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
@@ -1366,7 +1391,16 @@ class Geometry:
         material = self.material or other.material
 
         try:
-            new_polygon = filter_non_polygons(input_geom=self.geom ^ other.geom)
+            xor_poly = self.geom ^ other.geom
+
+            if isinstance(
+                xor_poly,
+                GeometryCollection | LineString | Point | Polygon | MultiPolygon,
+            ):
+                new_polygon = filter_non_polygons(xor_poly)
+            else:
+                msg = "Geometry generation failed."
+                raise RuntimeError(msg)
 
             if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
@@ -1430,7 +1464,16 @@ class Geometry:
             material = self.material or pre.DEFAULT_MATERIAL
 
             try:
-                new_polygon = filter_non_polygons(input_geom=self.geom - other.geom)
+                sub_poly = self.geom - other.geom
+
+                if isinstance(
+                    sub_poly,
+                    GeometryCollection | LineString | Point | Polygon | MultiPolygon,
+                ):
+                    new_polygon = filter_non_polygons(sub_poly)
+                else:
+                    msg = "Geometry generation failed."
+                    raise RuntimeError(msg)
 
                 if isinstance(new_polygon, GeometryCollection):  # Non-polygon results
                     msg = "Cannot perform 'difference' on these two objects: "
@@ -1541,12 +1584,22 @@ class Geometry:
         material = self.material or other.material
 
         try:
-            new_polygon = filter_non_polygons(self.geom & other.geom)
+            and_poly = self.geom & other.geom
 
-            if isinstance(new_polygon, MultiPolygon) and len(new_polygon.geoms) > 1:
+            if isinstance(
+                and_poly,
+                GeometryCollection | LineString | Point | Polygon | MultiPolygon,
+            ):
+                new_polygon = filter_non_polygons(and_poly)
+            else:
+                msg = "Geometry generation failed."
+                raise RuntimeError(msg)
+
+            if isinstance(new_polygon, MultiPolygon):
                 return CompoundGeometry(
                     geoms=[Geometry(polygon, material) for polygon in new_polygon.geoms]
                 )
+
             return Geometry(
                 geom=new_polygon,
                 material=material,
@@ -1627,12 +1680,12 @@ class CompoundGeometry(Geometry):
         return str(self.geom._repr_svg_())
 
     @staticmethod
-    def from_points(
+    def from_points(  # type: ignore
         points: list[tuple[float, float]],
         facets: list[tuple[int, int]],
         control_points: list[tuple[float, float]],
         holes: list[tuple[float, float]] | None = None,
-        materials: list[pre.Material] | None = None,  # type: ignore
+        materials: list[pre.Material] | None = None,
     ) -> CompoundGeometry:
         """Creates CompoundGeometry from points, facets, control points and holes.
 
@@ -2025,7 +2078,8 @@ class CompoundGeometry(Geometry):
                 compound.rotate_section(angle=-30).plot_geometry()
         """
         if rot_point == "center":
-            rp = box(*MultiPolygon(self.geom).bounds).centroid
+            centre = box(*MultiPolygon(self.geom).bounds).centroid
+            rp = centre.x, centre.y
         else:
             rp = rot_point
 
@@ -2046,8 +2100,8 @@ class CompoundGeometry(Geometry):
         Args:
             axis: Axis about which to mirror the geometry, ``"x"`` or ``"y"``
             mirror_point: Point about which to mirror the geometry (``x``, ``y``). If no
-                point is provided, mirrors the geometry about the centroid of the
-                shape's bounding box.
+                point is provided, mirrors the geometry about the center of the shape's
+                bounding box.
 
         Returns:
             CompoundGeometry object mirrored on ``axis`` about ``mirror_point``
@@ -2278,11 +2332,17 @@ class CompoundGeometry(Geometry):
         """
         if amount < 0:  # Eroding condition
             unionized_poly = unary_union([geom.geom for geom in self.geoms])
-            offset_geom = Geometry(geom=unionized_poly).offset_perimeter(
-                amount=amount,
-                where=where,
-                resolution=resolution,
-            )
+
+            if isinstance(unionized_poly, Polygon):
+                offset_geom = Geometry(geom=unionized_poly).offset_perimeter(
+                    amount=amount,
+                    where=where,
+                    resolution=resolution,
+                )
+            else:
+                msg = "Geometry generation failed."
+                raise RuntimeError(msg)
+
             # Using the offset_geom as a "mask"
             geoms_acc = []
 
@@ -2385,10 +2445,10 @@ class CompoundGeometry(Geometry):
         """
         unionized_poly = unary_union([geom.geom for geom in self.geoms])
 
-        if isinstance(unionized_poly, MultiPolygon):
-            return -1.0
+        if isinstance(unionized_poly, Polygon):
+            return float(unionized_poly.exterior.length)
 
-        return float(unionized_poly.exterior.length)
+        return -1.0
 
 
 def load_dxf(
@@ -2624,9 +2684,7 @@ def filter_non_polygons(
         elif len(acc) == 1:
             return acc[0]
         else:
-            return MultiPolygon(acc)
-    elif isinstance(input_geom, Point | LineString):
-        return Polygon()
+            return MultiPolygon(acc)  # type: ignore
     else:
         return Polygon()
 
@@ -2680,6 +2738,9 @@ def compound_dilation(geoms: list[Geometry], offset: float) -> CompoundGeometry:
         geoms: List of Geometry objects
         offset: A positive ``float`` or ``int``
 
+    Raises:
+        RuntimeError: If geometry generation fails
+
     Returns:
         The geometries dilated by ``offset``
     """
@@ -2697,7 +2758,14 @@ def compound_dilation(geoms: list[Geometry], offset: float) -> CompoundGeometry:
         )
         source = line_merge(poly_orig_exterior - shared_path_geometries)
         buff = source.buffer(offset, cap_style="flat")
-        new = Geometry(poly_orig | buff, material=geoms[poly_idx].material)
+        union = poly_orig | buff
+
+        if isinstance(union, Polygon):
+            new = Geometry(union, material=geoms[poly_idx].material)
+        else:
+            msg = "Geometry generation failed."
+            raise RuntimeError(msg)
+
         acc.append(new)
 
     return CompoundGeometry(acc)

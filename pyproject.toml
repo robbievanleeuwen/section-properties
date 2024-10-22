@@ -65,7 +65,7 @@ dev-dependencies = [
     # linting & code formatting
     "ruff==0.7.0",
     # type checking
-    "mypy==1.11.2",
+    "pyright>=1.1.385",
     # testing
     "pytest==8.3.3",
     "pytest-benchmark[histogram]==4.0.0",
@@ -86,25 +86,13 @@ dev-dependencies = [
     "pre-commit-hooks==5.0.0",
 ]
 
-[tool.mypy]
-strict = true
-# output formatting
-pretty = true
-show_column_numbers = true
-show_error_context = true
-
-[[tool.mypy.overrides]]
-module = [
-    "cad_to_shapely.*",
-    "mpl_toolkits.*",
-    "numba.*",
-    "pypardiso.*",
-    "rhino_shapely_interop.*",
-    "scipy.*",
-    "shapely.*",
-    "cytriangle.*",
-]
-ignore_missing_imports = true
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.10"
+include = ["src"]
+# strict = ["src"]    # use 'strict' checking on all files
+# reportMissingTypeStubs = true
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]

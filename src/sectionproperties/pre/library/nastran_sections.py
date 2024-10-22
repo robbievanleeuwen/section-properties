@@ -77,6 +77,9 @@ def nastran_box(
         dim_4: Thickness of box in x direction
         material: Material to associate with this geometry
 
+    Raises:
+        RuntimeError: If the geometry generation fails
+
     Returns:
         BOX section geometry
 
@@ -112,16 +115,21 @@ def nastran_box(
 
     inner_box = Polygon(points_inner)
     outer_box = Polygon(points_outer)
+    poly_sub = outer_box - inner_box
 
     c = (0.5 * dim_1, 0.5 * dim_2)
     d = (0.5 * dim_1, -0.5 * dim_2)
     e = (-0.5 * dim_1, -0.5 * dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_2)
 
-    geom = geometry.Geometry(geom=outer_box - inner_box, material=material)
-    geom.recovery_points = [c, d, e, f]
+    if isinstance(poly_sub, Polygon):
+        geom = geometry.Geometry(geom=poly_sub, material=material)
+        geom.recovery_points = [c, d, e, f]
 
-    return geom
+        return geom
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def nastran_box1(
@@ -146,6 +154,9 @@ def nastran_box1(
         dim_5: Thickness of left wall
         dim_6: Thickness of right wall
         material: Material to associate with this geometry
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         BOX1 section geometry
@@ -181,19 +192,21 @@ def nastran_box1(
         (dim_1 - dim_5, dim_2 - dim_3),
         (dim_6, dim_2 - dim_3),
     ]
-
-    geom = geometry.Geometry(
-        geom=Polygon(exterior_points) - Polygon(interior_points),
-        material=material,
-    )
+    poly_sub = Polygon(exterior_points) - Polygon(interior_points)
 
     c = (0.5 * dim_1, 0.5 * dim_2)
     d = (0.5 * dim_1, -0.5 * dim_2)
     e = (-0.5 * dim_1, -0.5 * dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_2)
-    geom.recovery_points = [c, d, e, f]
 
-    return geom
+    if isinstance(poly_sub, Polygon):
+        geom = geometry.Geometry(geom=poly_sub, material=material)
+        geom.recovery_points = [c, d, e, f]
+
+        return geom
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def nastran_chan(
@@ -581,6 +594,9 @@ def nastran_dbox(
         dim_10: Thickness of bottom right wall
         material: Material to associate with this geometry
 
+    Raises:
+        RuntimeError: If the geometry generation fails
+
     Returns:
         DBOX section geometry
 
@@ -628,19 +644,25 @@ def nastran_dbox(
         (dim_1 - dim_6, dim_2 - dim_9),
         (dim_3 + dim_5 / 2.0, dim_2 - dim_9),
     ]
-    geom = geometry.Geometry(
-        geom=Polygon(exterior_points)
+    poly_sub = (
+        Polygon(exterior_points)
         - Polygon(interior_points_1)
-        - Polygon(interior_points_2),
-        material=material,
+        - Polygon(interior_points_2)
     )
+
     c = (0.5 * dim_1, 0.5 * dim_2)
     d = (0.5 * dim_1, -0.5 * dim_2)
     e = (-0.5 * dim_1, -0.5 * dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_2)
-    geom.recovery_points = [c, d, e, f]
 
-    return geom
+    if isinstance(poly_sub, Polygon):
+        geom = geometry.Geometry(geom=poly_sub, material=material)
+        geom.recovery_points = [c, d, e, f]
+
+        return geom
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def nastran_gbox(
@@ -665,6 +687,9 @@ def nastran_gbox(
         dim_5: Thickness of webs
         dim_6: Spacing between webs
         material: Material to associate with this geometry
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         GBOX section geometry
@@ -710,18 +735,21 @@ def nastran_gbox(
         (d + dim_5 + dim_6, dim_2 - dim_3),
         (d + dim_5, dim_2 - dim_3),
     ]
-    geom = geometry.Geometry(
-        geom=Polygon(exterior_points) - Polygon(interior_points),
-        material=material,
-    )
+    poly_sub = Polygon(exterior_points) - Polygon(interior_points)
 
     c = (0.5 * dim_1, 0.5 * dim_2)
     d_r = (0.5 * dim_1, -0.5 * dim_2)
     e = (-0.5 * dim_1, -0.5 * dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_2)
-    geom.recovery_points = [c, d_r, e, f]
 
-    return geom
+    if isinstance(poly_sub, Polygon):
+        geom = geometry.Geometry(geom=poly_sub, material=material)
+        geom.recovery_points = [c, d_r, e, f]
+
+        return geom
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def nastran_h(

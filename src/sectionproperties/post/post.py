@@ -279,11 +279,16 @@ class SectionProperties:
                 self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
 
             # initialise min, max variables
-            x1, y2 = fea.principal_coordinate(
-                phi=self.phi,
-                x=nodes[0][0] - self.cx,
-                y=nodes[0][1] - self.cy,
-            )
+            if self.phi:
+                x1, y2 = fea.principal_coordinate(
+                    phi=self.phi,
+                    x=nodes[0][0] - self.cx,
+                    y=nodes[0][1] - self.cy,
+                )
+            else:
+                msg = "Arctan error."
+                raise RuntimeError(msg)
+
             x1max = x1
             x1min = x1
             y2max = y2
@@ -380,7 +385,7 @@ def plotting_context(
         if not render:
             plt.ioff()
 
-    yield fig, ax
+    yield fig, ax  # type: ignore
 
     if ax is not None:
         ax.set_title(title)
@@ -393,7 +398,7 @@ def plotting_context(
         return
 
     if filename:
-        fig.savefig(filename, dpi=fig.dpi)
+        fig.savefig(filename, dpi=fig.dpi)  # type: ignore
         plt.close(fig)  # close the figure to free the memory
         return  # if the figure was to be saved, then don't show it also
 

@@ -82,7 +82,7 @@ def solve_cgs_lagrange(
         raise RuntimeError(msg)
 
     # compute error
-    err = u[-1] / max(np.absolute(u))
+    err = u[-1] / max(np.absolute(u))  # type: ignore
 
     if err > tol:
         msg = "Lagrangian multiplier method error exceeds tolerance."
