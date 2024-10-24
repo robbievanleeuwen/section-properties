@@ -3,7 +3,7 @@
 # project information
 project = "sectionproperties"
 author = "Robbie van Leeuwen"
-copyright = "2024, Robbie van Leeuwen"
+copyright = "2024, Robbie van Leeuwen"  # noqa: A001
 
 # sphinx config
 templates_path = ["_templates"]
@@ -18,7 +18,6 @@ extensions = [
     "sphinx.ext.viewcode",
     "matplotlib.sphinxext.plot_directive",
     "nbsphinx",
-    "sphinx_click",
     "sphinx_copybutton",
     "sphinxext.opengraph",
 ]

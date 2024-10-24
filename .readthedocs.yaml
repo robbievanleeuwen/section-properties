@@ -23,4 +23,3 @@ python:
       extra_requirements:
         - dxf
         - rhino
-        - numba

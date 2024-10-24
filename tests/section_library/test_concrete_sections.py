@@ -10,7 +10,6 @@ import sectionproperties.pre.library.concrete_sections as cs
 import sectionproperties.pre.library.primitive_sections as ps
 import sectionproperties.pre.pre as pre
 
-
 r_tol = 1e-6
 
 

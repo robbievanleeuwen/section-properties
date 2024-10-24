@@ -76,40 +76,35 @@ def test_get_e_ref(sec_no_mat_and_mat):
 
 
 def test_no_analysis(sec_no_mat_and_mat):
-    """Check errors when no analysis has been conducted.
-
-    RuntimeError = incorrect analysis type (geometric only vs. composite), takes
-    precedence over...
-    AssertionError = relevant analysis has been conducted
-    """
+    """Check errors when no analysis has been conducted or incorrect analysis."""
     rect_no_mat, rect_mat, _ = sec_no_mat_and_mat
     # check area
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_area()
 
     # check perimeter
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_perimeter()
 
     # check mass
     with pytest.raises(RuntimeError):
         rect_no_mat.get_mass()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_mass()
 
     # check ea
     with pytest.raises(RuntimeError):
         rect_no_mat.get_mass()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_mass()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_mass()
 
     # check q
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_q()
 
     with pytest.raises(RuntimeError):
@@ -119,11 +114,11 @@ def test_no_analysis(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_eq()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_eq()
 
     # check ig
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_ig()
 
     with pytest.raises(RuntimeError):
@@ -133,15 +128,15 @@ def test_no_analysis(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_eig()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_eig()
 
     # check c
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_c()
 
     # check ic
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_ic()
 
     with pytest.raises(RuntimeError):
@@ -151,11 +146,11 @@ def test_no_analysis(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_eic()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_eic()
 
     # check z
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_z()
 
     with pytest.raises(RuntimeError):
@@ -165,15 +160,15 @@ def test_no_analysis(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_ez()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_ez()
 
     # check rc
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_rc()
 
     # check ip
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_ip()
 
     with pytest.raises(RuntimeError):
@@ -183,15 +178,15 @@ def test_no_analysis(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_eip()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_eip()
 
     # check phi
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_phi()
 
     # check zp
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_zp()
 
     with pytest.raises(RuntimeError):
@@ -201,42 +196,37 @@ def test_no_analysis(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_ezp()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_ezp()
 
     # check rp
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_rc()
 
     # check nu_eff
     with pytest.raises(RuntimeError):
         rect_no_mat.get_nu_eff()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_nu_eff()
 
     # check e_eff
     with pytest.raises(RuntimeError):
         rect_no_mat.get_e_eff()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_e_eff()
 
     # check g_eff
     with pytest.raises(RuntimeError):
         rect_no_mat.get_g_eff()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_g_eff()
 
 
 def test_get_geometric_only(sec_no_mat_and_mat):
-    """Check errors and results when a geometric analysis has been conducted.
-
-    RuntimeError = incorrect analysis type (geometric only vs. composite), takes
-    precedence over...
-    AssertionError = relevant analysis has been conducted
-    """
+    """Check errors and results when a geometric analysis has been conducted."""
     rect_no_mat, rect_mat, dummy_mat = sec_no_mat_and_mat
     rect_no_mat.calculate_geometric_properties()
     rect_mat.calculate_geometric_properties()
@@ -469,7 +459,7 @@ def test_get_geometric_only(sec_no_mat_and_mat):
 
     # now check errors from performing no warping analysis
     # check j
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_j()
 
     with pytest.raises(RuntimeError):
@@ -479,32 +469,32 @@ def test_get_geometric_only(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_ej()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_ej()
 
     # check sc
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_sc()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_sc()
 
     # check sc_p
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_sc_p()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_sc_p()
 
     # check sc_t
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_sc_t()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_sc_t()
 
     # check gamma
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_gamma()
 
     with pytest.raises(RuntimeError):
@@ -514,11 +504,11 @@ def test_get_geometric_only(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_egamma()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_egamma()
 
     # check as
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_as()
 
     with pytest.raises(RuntimeError):
@@ -528,11 +518,11 @@ def test_get_geometric_only(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_eas()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_eas()
 
     # check as_p
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_as_p()
 
     with pytest.raises(RuntimeError):
@@ -542,39 +532,39 @@ def test_get_geometric_only(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_eas_p()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_eas_p()
 
     # check beta
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_beta()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_beta()
 
     # check beta_p
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_beta_p()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_beta_p()
 
     # check pc
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_pc()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_pc()
 
     # check pc_p
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_pc_p()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_pc_p()
 
     # check s
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_s()
 
     with pytest.raises(RuntimeError):
@@ -584,11 +574,11 @@ def test_get_geometric_only(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_mp()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_mp()
 
     # check sp
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_sp()
 
     with pytest.raises(RuntimeError):
@@ -598,18 +588,18 @@ def test_get_geometric_only(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_no_mat.get_mp_p()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_mat.get_mp_p()
 
     # check sf
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_sf()
 
     with pytest.raises(RuntimeError):
         rect_mat.get_sf()
 
     # check sf_p
-    with pytest.raises(AssertionError):
+    with pytest.raises(RuntimeError):
         rect_no_mat.get_sf_p()
 
     with pytest.raises(RuntimeError):
@@ -617,12 +607,7 @@ def test_get_geometric_only(sec_no_mat_and_mat):
 
 
 def test_get_warping(sec_no_mat_and_mat):
-    """Check errors and results when a warping analysis has been conducted.
-
-    RuntimeError = incorrect analysis type (geometric only vs. composite), takes
-    precedence over...
-    AssertionError = relevant analysis has been conducted
-    """
+    """Check errors and results when a warping analysis has been conducted."""
     rect_no_mat, rect_mat, dummy_mat = sec_no_mat_and_mat
     rect_no_mat.calculate_geometric_properties()
     rect_no_mat.calculate_warping_properties()
@@ -751,12 +736,7 @@ def test_get_warping(sec_no_mat_and_mat):
 
 
 def test_get_plastic(sec_no_mat_and_mat):
-    """Check errors and results when a plastic analysis has been conducted.
-
-    RuntimeError = incorrect analysis type (geometric only vs. composite), takes
-    precedence over...
-    AssertionError = relevant analysis has been conducted
-    """
+    """Check errors and results when a plastic analysis has been conducted."""
     rect_no_mat, rect_mat, _ = sec_no_mat_and_mat
     rect_no_mat.calculate_geometric_properties()
     rect_mat.calculate_geometric_properties()

@@ -77,7 +77,13 @@ def test_plastic_centroid():
 
     # create 310UB40.4
     ub = steel_sections.i_section(
-        d=304, b=165, t_f=10.2, t_w=6.1, r=11.4, n_r=8, material=steel
+        d=304,
+        b=165,
+        t_f=10.2,
+        t_w=6.1,
+        r=11.4,
+        n_r=8,
+        material=steel,
     )
 
     # create timber panel on top of the UB
@@ -220,7 +226,13 @@ def test_plastic_composite_example():
 
     # universal steel beam
     ub = steel_sections.i_section(
-        d=304, b=165, t_f=10.2, t_w=6.1, r=0, n_r=2, material=steel
+        d=304,
+        b=165,
+        t_f=10.2,
+        t_w=6.1,
+        r=0,
+        n_r=2,
+        material=steel,
     )
 
     # timber floor panel

@@ -197,7 +197,8 @@ def concrete_rectangular_section(
     if isinstance(geom, geometry.CompoundGeometry):
         return geom
     else:
-        raise ValueError("Concrete section generation failed.")
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
 
 
 def concrete_column_section(
@@ -309,10 +310,10 @@ def concrete_column_section(
         d_edge_bars_x1 = [bar_x_min] * n_y
         d_edge_bars_x2 = [bar_x_max] * n_y
 
-        b_edge_bars_top = list(zip(b_edge_bars_x, b_edge_bars_y2))
-        b_edge_bars_bottom = list(zip(b_edge_bars_x, b_edge_bars_y1))
-        d_edge_bars_right = list(zip(d_edge_bars_x2, d_edge_bars_y))
-        d_edge_bars_left = list(zip(d_edge_bars_x1, d_edge_bars_y))
+        b_edge_bars_top = list(zip(b_edge_bars_x, b_edge_bars_y2, strict=False))
+        b_edge_bars_bottom = list(zip(b_edge_bars_x, b_edge_bars_y1, strict=False))
+        d_edge_bars_right = list(zip(d_edge_bars_x2, d_edge_bars_y, strict=False))
+        d_edge_bars_left = list(zip(d_edge_bars_x1, d_edge_bars_y, strict=False))
 
         all_bar_coords = list(
             set(
@@ -339,7 +340,8 @@ def concrete_column_section(
     if isinstance(concrete_geometry, geometry.CompoundGeometry):
         return concrete_geometry
     else:
-        raise ValueError("Concrete section generation failed.")
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
 
 
 def concrete_tee_section(
@@ -539,7 +541,8 @@ def concrete_tee_section(
     if isinstance(geom, geometry.CompoundGeometry):
         return geom
     else:
-        raise ValueError("Concrete section generation failed.")
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
 
 
 def concrete_circular_section(
@@ -629,7 +632,8 @@ def concrete_circular_section(
             Section(geometry=geom).plot_mesh()
     """
     if n_bar < 2:
-        raise ValueError("Please provide 2 or more steel reinforcing bars.")
+        msg = "Please provide 2 or more steel reinforcing bars."
+        raise ValueError(msg)
 
     # create circular geometry
     geom = primitive_sections.circular_section_by_area(
@@ -654,7 +658,8 @@ def concrete_circular_section(
     if isinstance(geom, geometry.CompoundGeometry):
         return geom
     else:
-        raise ValueError("Concrete section generation failed.")
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
 
 
 def add_bar(

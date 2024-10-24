@@ -12,9 +12,9 @@ from sectionproperties.analysis import Section
 from sectionproperties.pre import Material
 from sectionproperties.pre.library import rectangular_section
 
-
 linux_only = pytest.mark.skipif(
-    platform.system() != "Linux", reason="Only test plotting on Linux"
+    platform.system() != "Linux",
+    reason="Only test plotting on Linux",
 )
 
 
@@ -54,7 +54,7 @@ def test_centroidal_properties_error(example_section):
 
     with pytest.raises(RuntimeError, match="Calculate geometric properties first"):
         sec.section_props.calculate_centroidal_properties(
-            node_list=sec.mesh["vertices"]
+            node_list=sec.mesh["vertices"],
         )
 
 

@@ -28,6 +28,9 @@ def circular_hollow_section(
         n: Number of points discretising the inner and outer circles
         material: Material to associate with this geometry
 
+    Raises:
+        RuntimeError: If the geometry generation fails
+
     Returns:
         Circular hollow section geometry
 
@@ -63,8 +66,13 @@ def circular_hollow_section(
 
     inner_circle = Polygon(points_inner)
     outer_circle = Polygon(points_outer)
+    poly_sub = outer_circle - inner_circle
 
-    return geometry.Geometry(geom=outer_circle - inner_circle, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def elliptical_hollow_section(
@@ -86,6 +94,9 @@ def elliptical_hollow_section(
         t: Thickness of the EHS
         n: Number of points discretising the inner and outer ellipses
         material: Material to associate with this geometry
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Elliptical hollow section geometry
@@ -121,10 +132,15 @@ def elliptical_hollow_section(
         points_outer.append((x_outer, y_outer))
         points_inner.append((x_inner, y_inner))
 
-    outer = Polygon(points_outer)
-    inner = Polygon(points_inner)
+    outer_polygon = Polygon(points_outer)
+    inner_polygon = Polygon(points_inner)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer - inner, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def rectangular_hollow_section(
@@ -149,6 +165,9 @@ def rectangular_hollow_section(
         r_out: Outer radius of the RHS
         n_r: Number of points discretising the inner and outer radii
         material: Material to associate with this geometry
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Rectangular hollow section geometry
@@ -180,17 +199,28 @@ def rectangular_hollow_section(
 
     points_inner += sp_utils.draw_radius((t + r_in, t + r_in), r_in, np.pi, n_r)
     points_inner += sp_utils.draw_radius(
-        (b - t - r_in, t + r_in), r_in, 1.5 * np.pi, n_r
+        (b - t - r_in, t + r_in),
+        r_in,
+        1.5 * np.pi,
+        n_r,
     )
     points_inner += sp_utils.draw_radius((b - t - r_in, d - t - r_in), r_in, 0, n_r)
     points_inner += sp_utils.draw_radius(
-        (t + r_in, d - t - r_in), r_in, 0.5 * np.pi, n_r
+        (t + r_in, d - t - r_in),
+        r_in,
+        0.5 * np.pi,
+        n_r,
     )
 
-    outer = Polygon(points_outer)
-    inner = Polygon(points_inner)
+    outer_polygon = Polygon(points_outer)
+    inner_polygon = Polygon(points_inner)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer - inner, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def polygon_hollow_section(
@@ -224,6 +254,7 @@ def polygon_hollow_section(
 
     Raises:
         ValueError: Number of sides in polygon must be greater than or equal to 3
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Regular hollow polygon section geometry
@@ -317,8 +348,13 @@ def polygon_hollow_section(
 
     outer_polygon = Polygon(outer_points)
     inner_polygon = Polygon(inner_points)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer_polygon - inner_polygon, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def i_section(
@@ -1001,9 +1037,8 @@ def angle_section(
             angle_section(d=150, b=100, t=8, r_r=12, r_t=5, n_r=16).plot_geometry()
     """
     if r_t > t:
-        raise ValueError(
-            "The radius of the toe (r_t) cannot be larger than the thickness (t)."
-        )
+        msg = "The radius of the toe (r_t) cannot be larger than the thickness (t)."
+        raise ValueError(msg)
 
     points: list[tuple[float, float]] = []
 
@@ -1081,6 +1116,10 @@ def cee_section(
     # calculate internal radius
     r_in = max(r_out - t, 0)
 
+    # initialise lip variables
+    r_out_l = 0.0
+    r_in_l = 0.0
+
     # construct the outer bottom left radius
     points += sp_utils.draw_radius(pt=(r_out, r_out), r=r_out, theta=np.pi, n=n_r)
 
@@ -1088,7 +1127,10 @@ def cee_section(
     if l > r_out:
         # construct the outer bottom right radius
         points += sp_utils.draw_radius(
-            pt=(b - r_out, r_out), r=r_out, theta=1.5 * np.pi, n=n_r
+            pt=(b - r_out, r_out),
+            r=r_out,
+            theta=1.5 * np.pi,
+            n=n_r,
         )
 
         # add next two points
@@ -1097,7 +1139,11 @@ def cee_section(
 
         # construct the inner bottom right radius
         points += sp_utils.draw_radius(
-            pt=(b - t - r_in, t + r_in), r=r_in, theta=0, n=n_r, ccw=False
+            pt=(b - t - r_in, t + r_in),
+            r=r_in,
+            theta=0,
+            n=n_r,
+            ccw=False,
         )
 
     # if the lip is shorter than the outer radius (curve only)
@@ -1106,10 +1152,17 @@ def cee_section(
         r_out_l = l
         r_in_l = max(l - t, 0)
         points += sp_utils.draw_radius(
-            pt=(b - r_out_l, r_out_l), r=r_out_l, theta=1.5 * np.pi, n=n_r
+            pt=(b - r_out_l, r_out_l),
+            r=r_out_l,
+            theta=1.5 * np.pi,
+            n=n_r,
         )
         points += sp_utils.draw_radius(
-            pt=(b - t - r_in_l, t + r_in_l), r=r_in_l, theta=0, n=n_r, ccw=False
+            pt=(b - t - r_in_l, t + r_in_l),
+            r=r_in_l,
+            theta=0,
+            n=n_r,
+            ccw=False,
         )
 
     # if the lip length is less than the section thickness (no lip)
@@ -1120,19 +1173,31 @@ def cee_section(
 
     # construct the inner bottom left radius
     points += sp_utils.draw_radius(
-        pt=(t + r_in, t + r_in), r=r_in, theta=1.5 * np.pi, n=n_r, ccw=False
+        pt=(t + r_in, t + r_in),
+        r=r_in,
+        theta=1.5 * np.pi,
+        n=n_r,
+        ccw=False,
     )
 
     # construct the inner top left radius
     points += sp_utils.draw_radius(
-        pt=(t + r_in, d - t - r_in), r=r_in, theta=np.pi, n=n_r, ccw=False
+        pt=(t + r_in, d - t - r_in),
+        r=r_in,
+        theta=np.pi,
+        n=n_r,
+        ccw=False,
     )
 
     # if the lip is longer than the outer radius (curve + straight section)
     if l > r_out:
         # construct the inner top right radius
         points += sp_utils.draw_radius(
-            pt=(b - t - r_in, d - t - r_in), r=r_in, theta=0.5 * np.pi, n=n_r, ccw=False
+            pt=(b - t - r_in, d - t - r_in),
+            r=r_in,
+            theta=0.5 * np.pi,
+            n=n_r,
+            ccw=False,
         )
 
         # add next two points
@@ -1141,7 +1206,10 @@ def cee_section(
 
         # construct the outer top right radius
         points += sp_utils.draw_radius(
-            pt=(b - r_out, d - r_out), r=r_out, theta=0, n=n_r
+            pt=(b - r_out, d - r_out),
+            r=r_out,
+            theta=0,
+            n=n_r,
         )
 
     # if the lip is shorter than the outer radius (curve only)
@@ -1155,7 +1223,10 @@ def cee_section(
             ccw=False,
         )
         points += sp_utils.draw_radius(
-            pt=(b - r_out_l, d - r_out_l), r=r_out_l, theta=0, n=n_r
+            pt=(b - r_out_l, d - r_out_l),
+            r=r_out_l,
+            theta=0,
+            n=n_r,
         )
 
     # if the lip length is less than the section thickness (no lip)
@@ -1166,7 +1237,10 @@ def cee_section(
 
     # construct the outer top left radius
     points += sp_utils.draw_radius(
-        pt=(r_out, d - r_out), r=r_out, theta=0.5 * np.pi, n=n_r
+        pt=(r_out, d - r_out),
+        r=r_out,
+        theta=0.5 * np.pi,
+        n=n_r,
     )
 
     polygon = Polygon(points)
@@ -1226,6 +1300,10 @@ def zed_section(
     # calculate internal radius
     r_in = max(r_out - t, 0)
 
+    # initialise lip variables
+    r_out_l = 0.0
+    r_in_l = 0.0
+
     # construct the outer bottom left radius
     points += sp_utils.draw_radius(pt=(r_out, r_out), r=r_out, theta=np.pi, n=n_r)
 
@@ -1233,7 +1311,10 @@ def zed_section(
     if l > r_out:
         # construct the outer bottom right radius
         points += sp_utils.draw_radius(
-            pt=(b_r - r_out, r_out), r=r_out, theta=1.5 * np.pi, n=n_r
+            pt=(b_r - r_out, r_out),
+            r=r_out,
+            theta=1.5 * np.pi,
+            n=n_r,
         )
 
         # add next two points
@@ -1242,7 +1323,11 @@ def zed_section(
 
         # construct the inner bottom right radius
         points += sp_utils.draw_radius(
-            pt=(b_r - t - r_in, t + r_in), r=r_in, theta=0, n=n_r, ccw=False
+            pt=(b_r - t - r_in, t + r_in),
+            r=r_in,
+            theta=0,
+            n=n_r,
+            ccw=False,
         )
 
     # if the lip is shorter than the outer radius (curve only)
@@ -1251,10 +1336,17 @@ def zed_section(
         r_out_l = l
         r_in_l = max(l - t, 0)
         points += sp_utils.draw_radius(
-            pt=(b_r - r_out_l, r_out_l), r=r_out_l, theta=1.5 * np.pi, n=n_r
+            pt=(b_r - r_out_l, r_out_l),
+            r=r_out_l,
+            theta=1.5 * np.pi,
+            n=n_r,
         )
         points += sp_utils.draw_radius(
-            pt=(b_r - t - r_in_l, t + r_in_l), r=r_in_l, theta=0, n=n_r, ccw=False
+            pt=(b_r - t - r_in_l, t + r_in_l),
+            r=r_in_l,
+            theta=0,
+            n=n_r,
+            ccw=False,
         )
 
     # if the lip length is less than the section thickness (no lip)
@@ -1265,7 +1357,11 @@ def zed_section(
 
     # construct the inner bottom left radius
     points += sp_utils.draw_radius(
-        pt=(t + r_in, t + r_in), r=r_in, theta=1.5 * np.pi, n=n_r, ccw=False
+        pt=(t + r_in, t + r_in),
+        r=r_in,
+        theta=1.5 * np.pi,
+        n=n_r,
+        ccw=False,
     )
 
     # construct the outer top right radius
@@ -1275,7 +1371,10 @@ def zed_section(
     if l > r_out:
         # construct the outer top left radius
         points += sp_utils.draw_radius(
-            pt=(t - b_l + r_out, d - r_out), r=r_out, theta=0.5 * np.pi, n=n_r
+            pt=(t - b_l + r_out, d - r_out),
+            r=r_out,
+            theta=0.5 * np.pi,
+            n=n_r,
         )
 
         # add the next two points
@@ -1284,14 +1383,21 @@ def zed_section(
 
         # construct the inner top left radius
         points += sp_utils.draw_radius(
-            pt=(2 * t - b_l + r_in, d - t - r_in), r=r_in, theta=np.pi, n=n_r, ccw=False
+            pt=(2 * t - b_l + r_in, d - t - r_in),
+            r=r_in,
+            theta=np.pi,
+            n=n_r,
+            ccw=False,
         )
 
     # if the lip is shorter than the outer radius (curve only)
     elif l > t and l <= r_out:
         # construct a smaller corner for top left if t < l < r_out
         points += sp_utils.draw_radius(
-            pt=(t - b_l + r_out_l, d - r_out_l), r=r_out_l, theta=0.5 * np.pi, n=n_r
+            pt=(t - b_l + r_out_l, d - r_out_l),
+            r=r_out_l,
+            theta=0.5 * np.pi,
+            n=n_r,
         )
         points += sp_utils.draw_radius(
             pt=(2 * t - b_l + r_in_l, d - t - r_in_l),
@@ -1309,7 +1415,11 @@ def zed_section(
 
     # construct the inner top right radius
     points += sp_utils.draw_radius(
-        pt=(-r_in, d - t - r_in), r=r_in, theta=0.5 * np.pi, n=n_r, ccw=False
+        pt=(-r_in, d - t - r_in),
+        r=r_in,
+        theta=0.5 * np.pi,
+        n=n_r,
+        ccw=False,
     )
 
     polygon = Polygon(points)
@@ -1340,6 +1450,9 @@ def box_girder_section(
         t_fb: Bottom flange thickness of the box girder section
         t_w: Web thickness of the box girder section
         material: Material to associate with this geometry
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Box girder section geometry
@@ -1392,8 +1505,13 @@ def box_girder_section(
 
     outer_polygon = Polygon(outer_points)
     inner_polygon = Polygon(inner_points)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer_polygon - inner_polygon, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def bulb_section(
@@ -1451,7 +1569,12 @@ def bulb_section(
         dc = r / np.sin(2 / 3 * np.pi / 2)
         ptb0 = (t * 0.5 + dc * np.cos(np.pi / 6), d - d_b - dc * np.cos(np.pi / 3))
         points += sp_utils.draw_radius(
-            pt=ptb0, r=r, theta=np.pi, n=n_r, ccw=False, phi=np.pi / 3
+            pt=ptb0,
+            r=r,
+            theta=np.pi,
+            n=n_r,
+            ccw=False,
+            phi=np.pi / 3,
         )
 
     # end of test of additional radius
@@ -1459,7 +1582,12 @@ def bulb_section(
 
     # build radius
     points += sp_utils.draw_radius(
-        pt=ptb, r=r, theta=-np.pi * 1 / 3, n=n_r, ccw=True, phi=np.pi / 3
+        pt=ptb,
+        r=r,
+        theta=-np.pi * 1 / 3,
+        n=n_r,
+        ccw=True,
+        phi=np.pi / 3,
     )
     points.pop()  # delete duplicate point
     points += sp_utils.draw_radius(pt=ptb, r=r, theta=0, n=n_r, ccw=True)

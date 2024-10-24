@@ -10,7 +10,6 @@ import sectionproperties.pre.library.steel_sections as steel_sections
 from sectionproperties.analysis.section import Section
 from sectionproperties.pre.geometry import Geometry
 
-
 r_tol = 1e-3
 
 
@@ -26,7 +25,12 @@ def test_rectangular_perimeter():
 def test_i_section():
     """Test perimeter of an i-section."""
     i_section = steel_sections.i_section(
-        d=308, b=305, t_f=15.4, t_w=9.9, r=16.5, n_r=16
+        d=308,
+        b=305,
+        t_f=15.4,
+        t_w=9.9,
+        r=16.5,
+        n_r=16,
     )
     i_section.create_mesh(mesh_sizes=[100])
     section = Section(geometry=i_section)
@@ -44,7 +48,12 @@ def test_i_section():
 def test_box_girder_perimeter():
     """Test perimeter of a box girder."""
     box_girder = steel_sections.box_girder_section(
-        d=400, b_t=700, b_b=100, t_ft=20, t_fb=20, t_w=12
+        d=400,
+        b_t=700,
+        b_b=100,
+        t_ft=20,
+        t_fb=20,
+        t_w=12,
     )
     box_girder.create_mesh(mesh_sizes=[100])
     section = Section(geometry=box_girder)
@@ -58,7 +67,9 @@ def test_custom_geometry_perimeter():
     facets = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 0)]
     control_points = [(5.0, 5.0)]
     custom = Geometry.from_points(
-        points=points, facets=facets, control_points=control_points
+        points=points,
+        facets=facets,
+        control_points=control_points,
     )
     custom.create_mesh(mesh_sizes=[100])
     section = Section(geometry=custom)
@@ -120,7 +131,12 @@ def test_compound_rectangular_isection_perimeter1():
 def test_compound_rectangular_isection_perimeter2():
     """Test perimeter of a compound i-section - part 2."""
     i_section = steel_sections.i_section(
-        d=308, b=305, t_f=15.4, t_w=9.9, r=16.5, n_r=16
+        d=308,
+        b=305,
+        t_f=15.4,
+        t_w=9.9,
+        r=16.5,
+        n_r=16,
     )
     rect1 = (
         sections.rectangular_section(d=330, b=16)

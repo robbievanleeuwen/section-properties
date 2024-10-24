@@ -143,4 +143,4 @@ def create_mesh(
     else:
         mesh = triangle.triangulate(tri, f"pq{min_angle:.1f}Aao2")
 
-    return mesh  # type: ignore
+    return mesh
