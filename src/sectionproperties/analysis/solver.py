@@ -14,8 +14,8 @@ from rich.progress import (
 )
 from rich.table import Column
 from rich.text import Text
-from scipy.sparse import csc_matrix, linalg
-from scipy.sparse.linalg import LinearOperator, spsolve
+from scipy.sparse import csc_matrix, linalg  # type: ignore
+from scipy.sparse.linalg import LinearOperator, spsolve  # type: ignore
 
 try:
     import pypardiso

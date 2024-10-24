@@ -5,14 +5,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from scipy.optimize import brentq
+from scipy.optimize import brentq  # type: ignore
 
 import sectionproperties.analysis.fea as fea
 import sectionproperties.pre.pre as pre
 
 if TYPE_CHECKING:
     from rich.progress import Progress
-    from scipy.optimize import RootResults
+    from scipy.optimize import RootResults  # type: ignore
 
     from sectionproperties.analysis.section import Section
     from sectionproperties.pre.geometry import CompoundGeometry, Geometry

@@ -2494,7 +2494,7 @@ def load_dxf(
         msg = f"The filepath does not exist: {dxf_filepath}"
         raise ValueError(msg)
 
-    my_dxf = c2s.dxf.DxfImporter(dxf_filepath)
+    my_dxf = c2s.dxf.DxfImporter(str(dxf_filepath))
     my_dxf.process(spline_delta=spline_delta, degrees_per_segment=degrees_per_segment)
     my_dxf.cleanup()
 

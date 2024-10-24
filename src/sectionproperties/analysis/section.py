@@ -20,7 +20,7 @@ from rich.live import Live
 from rich.panel import Panel
 from rich.progress import Progress, TaskID
 from rich.table import Table
-from scipy.sparse import coo_matrix, csc_matrix, linalg
+from scipy.sparse import coo_matrix, csc_matrix, linalg  # type: ignore
 from shapely import Point, Polygon
 from shapely.strtree import STRtree
 
