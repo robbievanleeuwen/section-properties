@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   pre-commit:
-    name: pre-commit ${{ env.DEFAULT_PYTHON_VERSION }} [ubuntu-latest]
+    name: pre-commit
     runs-on: ubuntu-latest
 
     steps:
@@ -37,7 +37,7 @@ jobs:
         run: uv run -p ${{ env.DEFAULT_PYTHON_VERSION }} pre-commit run --all-files --color always --show-diff-on-failure
 
   type-checking:
-    name: type-checking ${{ env.DEFAULT_PYTHON_VERSION }} [ubuntu-latest]
+    name: type-checking
     runs-on: ubuntu-latest
 
     steps:
@@ -112,7 +112,7 @@ jobs:
           path: ".coverage.*"
 
   docs-build:
-    name: docs-build ${{ env.DEFAULT_PYTHON_VERSION }} [ubuntu-latest]
+    name: docs-build
     runs-on: ubuntu-latest
 
     steps:
