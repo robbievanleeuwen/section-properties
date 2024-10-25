@@ -102,7 +102,7 @@ jobs:
         run: uv sync -p ${{ matrix.python }} --frozen --all-extras
 
       - name: Run pytest
-        run: uv run -p ${{ matrix.python }} coverage run --parallel-mode -m pytest -m 'not benchmark_suite'
+        run: uv run -p ${{ matrix.python }} coverage run --parallel-mode -m pytest -m 'not benchmark_suite' --junitxml=junit.xml -o junit_family=legacy
 
       - name: Upload coverage data
         uses: actions/upload-artifact@v4
@@ -110,6 +110,12 @@ jobs:
           name: coverage-data-${{ matrix.session }}-${{ matrix.os }}-${{ matrix.python }}
           include-hidden-files: true
           path: ".coverage.*"
+
+      - name: Upload test results to Codecov
+        if: matrix.session == 'tests-extended'
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   docs-build:
     name: docs-build
