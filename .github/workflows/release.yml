@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - master
-  # TODO: disable when confirmed working
-  pull_request:
-    types: [opened, reopened, synchronize]
 
 env:
   UV_VERSION: "0.4.26"
@@ -39,12 +36,12 @@ jobs:
         if: ${{ env.sha }}
         uses: salsify/action-detect-and-tag-new-version@v2
         with:
-          version-command: uvx hatch version
+          version-command: uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version
 
       - name: Bump version for dev release
         if: "! steps.check-version.outputs.tag"
         run: |
-          VERSION=$(uvx hatch version)
+          VERSION=$(uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version)
           uvx --from=toml-cli toml set --toml-path=pyproject.toml project.version $VERSION.dev.$(date +%s)
 
       - name: Build package
