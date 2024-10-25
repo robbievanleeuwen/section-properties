@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
-import numpy.typing as npt
 from rich.progress import (
     BarColumn,
     Progress,
@@ -14,8 +15,13 @@ from rich.progress import (
 )
 from rich.table import Column
 from rich.text import Text
-from scipy.sparse import csc_matrix, linalg  # type: ignore
-from scipy.sparse.linalg import LinearOperator, spsolve  # type: ignore
+from scipy.sparse.linalg import cgs, spsolve
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
+    from scipy.sparse import csc_matrix
+    from scipy.sparse.linalg import LinearOperator
+
 
 try:
     import pypardiso
@@ -28,7 +34,7 @@ except ImportError:
 def solve_cgs(
     k: csc_matrix,
     f: npt.NDArray[np.float64],
-    m: LinearOperator | None = None,
+    m: LinearOperator,
     tol: float = 1e-5,
 ) -> npt.NDArray[np.float64]:
     """Solves a linear system using the CGS iterative method.
@@ -45,7 +51,7 @@ def solve_cgs(
     Raises:
         RuntimeError: If the CGS iterative method does not converge
     """
-    u, info = linalg.cgs(A=k, b=f, rtol=tol, M=m)
+    u, info = cgs(A=k, b=f, rtol=tol, M=m)
 
     if info != 0:
         msg = "CGS iterative method did not converge."
@@ -57,7 +63,7 @@ def solve_cgs(
 def solve_cgs_lagrange(
     k_lg: csc_matrix,
     f: npt.NDArray[np.float64],
-    m: LinearOperator | None = None,
+    m: LinearOperator,
     tol: float = 1e-5,
 ) -> npt.NDArray[np.float64]:
     """Solves a linear system using the CGS iterative method (Lagrangian multiplier).
@@ -75,7 +81,7 @@ def solve_cgs_lagrange(
         RuntimeError: If the CGS iterative method does not converge or the error from
             the Lagrangian multiplier method exceeds the tolerance
     """
-    u, info = linalg.cgs(A=k_lg, b=np.append(f, 0), rtol=tol, M=m)
+    u, info = cgs(A=k_lg, b=np.append(f, 0), rtol=tol, M=m)
 
     if info != 0:
         msg = "CGS iterative method did not converge."

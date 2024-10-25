@@ -44,9 +44,8 @@ ignore = [
 
 [lint.per-file-ignores]
 "tests/*" = ["S101"]
-"__init__.py" = ["F401"]
-"__init__.pyi" = ["F401"]
-"typings/*" = ["N803"]
+"__init__.py*" = ["F401"]
+"typings/*" = ["N801", "N803"]
 
 [lint.pydocstyle]
 convention = "google"

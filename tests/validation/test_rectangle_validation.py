@@ -117,6 +117,34 @@ def test_rectangular_section_warping(rect_section):
     check.almost_equal(sec.section_props.beta_22_plus, 0, abs=zero_tol)
     check.almost_equal(sec.section_props.beta_22_minus, 0, abs=zero_tol)
 
+    # check cgs method
+    sec.calculate_warping_properties(solver_type="cgs")
+
+    x_se, y_se = sec.get_sc()
+    x11_se, y22_se = sec.get_sc_p()
+    x_st, y_st = sec.get_sc_t()
+
+    check.almost_equal(sec.section_props.j, 2.858521e06, rel=warp_tol)
+    check.almost_equal(sec.section_props.gamma, 3.175417e08, rel=warp_tol)
+    check.almost_equal(x_se, 50 / 2, rel=tol)
+    check.almost_equal(y_se, 100 / 2, rel=tol)
+    check.almost_equal(x11_se, 0, abs=zero_tol)
+    check.almost_equal(y22_se, 0, abs=zero_tol)
+    check.almost_equal(x_st, 50 / 2, rel=tol)
+    check.almost_equal(y_st, 100 / 2, rel=tol)
+    check.almost_equal(sec.section_props.a_sx, 4.166667e03, rel=warp_tol)
+    check.almost_equal(sec.section_props.a_sy, 4.166667e03, rel=warp_tol)
+    check.almost_equal(sec.section_props.a_s11, 4.166667e03, rel=warp_tol)
+    check.almost_equal(sec.section_props.a_s22, 4.166667e03, rel=warp_tol)
+    check.almost_equal(sec.section_props.beta_x_plus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_x_minus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_y_plus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_y_minus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_11_plus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_11_minus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_22_plus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_22_minus, 0, abs=zero_tol)
+
 
 def test_rectangular_section_plastic(rect_section):
     """Test rectangular section plastic properties.

@@ -20,7 +20,8 @@ from rich.live import Live
 from rich.panel import Panel
 from rich.progress import Progress, TaskID
 from rich.table import Table
-from scipy.sparse import coo_matrix, csc_matrix, linalg  # type: ignore
+from scipy.sparse import coo_matrix, csc_matrix
+from scipy.sparse.linalg import LinearOperator, spilu
 from shapely import Point, Polygon
 from shapely.strtree import STRtree
 
@@ -384,10 +385,10 @@ class Section:
             def ilu_decomp(
                 progress: Progress | None = None,
                 task: TaskID | None = None,
-            ) -> linalg.LinearOperator:
+            ) -> LinearOperator:
                 # ILU decomposition on Lagrangian stiffness matrix
-                k_lg_precond = linalg.LinearOperator(
-                    (self.num_nodes + 1, self.num_nodes + 1), linalg.spilu(k_lg).solve
+                k_lg_precond = LinearOperator(
+                    (self.num_nodes + 1, self.num_nodes + 1), spilu(k_lg).solve
                 )
 
                 if progress and task:
@@ -413,7 +414,7 @@ class Section:
 
             # solve for warping function
             def solve_warping() -> npt.NDArray[np.float64]:
-                if solver_type == "cgs":
+                if solver_type == "cgs" and k_lg_precond:
                     omega = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_torsion, m=k_lg_precond
                     )
@@ -964,10 +965,10 @@ class Section:
             def ilu_decomp(
                 progress: Progress | None = None,
                 task: TaskID | None = None,
-            ) -> linalg.LinearOperator:
+            ) -> LinearOperator:
                 # ILU decomposition on Lagrangian stiffness matrix
-                k_lg_precond = linalg.LinearOperator(
-                    (self.num_nodes + 1, self.num_nodes + 1), linalg.spilu(k_lg).solve
+                k_lg_precond = LinearOperator(
+                    (self.num_nodes + 1, self.num_nodes + 1), spilu(k_lg).solve
                 )
 
                 if progress and task:
@@ -993,7 +994,7 @@ class Section:
 
             # solve for warping function
             def solve_warping() -> npt.NDArray[np.float64]:
-                if solver_type == "cgs":
+                if solver_type == "cgs" and k_lg_precond:
                     omega = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_torsion, m=k_lg_precond
                     )

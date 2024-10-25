@@ -5,14 +5,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from scipy.optimize import brentq  # type: ignore
+from scipy.optimize import brentq
 
 import sectionproperties.analysis.fea as fea
 import sectionproperties.pre.pre as pre
 
 if TYPE_CHECKING:
     from rich.progress import Progress
-    from scipy.optimize import RootResults  # type: ignore
+    from scipy.optimize import RootResults
 
     from sectionproperties.analysis.section import Section
     from sectionproperties.pre.geometry import CompoundGeometry, Geometry
@@ -359,7 +359,7 @@ class PlasticSection:
             full_output=True,
             disp=False,
             xtol=1e-6,
-            rtol=1e-6,  # type: ignore
+            rtol=1e-6,
         )
         return float(d), r
 
