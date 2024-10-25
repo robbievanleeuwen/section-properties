@@ -12,21 +12,22 @@ import sectionproperties.pre.pre as pre
 def super_t_girder_section(
     girder_type: int,
     girder_subtype: int = 2,
-    w: float = 2100,
+    w: float = 2100.0,
     t_w: float | None = None,
-    t_f: float = 75,
+    t_f: float = 75.0,
     material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a super T girder section to AS5100.5.
 
     Args:
         girder_type: Type of super T (1 to 5)
-        girder_subtype: Era super T (1: pre-2001, 2: contemporary)
-        w: Overall width of top flange
+        girder_subtype: Era super T (1: pre-2001, 2: contemporary). Defaults to ``2``.
+        w: Overall width of top flange. Defaults to ``2100.0``.
         t_w: Web thickness of the Super-T section, if ``None`` defaults to those of
-            AS5100.5 Tb D3(B)
-        t_f: Thickness of top flange (VIC = 75 mm; NSW = 90 mm)
-        material: Material to associate with this geometry
+            AS5100.5 Tb D3(B). Defaults to ``None``.
+        t_f: Thickness of top flange (VIC = 75 mm; NSW = 90 mm). Defaults to ``75.0``.
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         ValueError: ``girder_type`` or ``girder_subtype`` are invalid
@@ -145,7 +146,8 @@ def i_girder_section(
 
     Args:
         girder_type: Type of I Girder (1 to 4)
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         ValueError: ``girder_type`` is invalid

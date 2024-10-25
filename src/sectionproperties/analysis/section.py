@@ -73,7 +73,8 @@ class Section:
         Args:
             geometry: Cross-section geometry object used to generate the mesh
             time_info: If set to True, a detailed description of the computation and the
-                time cost is printed to the terminal for every computation performed
+                time cost is printed to the terminal for every computation performed.
+                Defaults to ``False``.
 
         Raises:
             ValueError: If geometry does not contain a mesh
@@ -301,7 +302,8 @@ class Section:
 
         Args:
             solver_type: Solver used for solving systems of linear equations, either
-                using the ``"direct"`` method or ``"cgs"`` iterative method
+                using the ``"direct"`` method or ``"cgs"`` iterative method. Defaults to
+                ``"direct"``.
 
         Raises:
             RuntimeError: If the geometric properties have not been calculated prior to
@@ -811,7 +813,8 @@ class Section:
 
         Args:
             solver_type: Solver used for solving systems of linear equations, either
-                using the ``"direct"`` method or ``"cgs"`` iterative method
+                using the ``"direct"`` method or ``"cgs"`` iterative method. Defaults to
+                ``"direct"``.
 
         Returns:
             Cross-section properties to be used for a frame analysis (``area``, ``ixx``,
@@ -1095,7 +1098,7 @@ class Section:
 
         Args:
             verbose: If set to True, the number of iterations required for each plastic
-                axis is printed to the terminal.
+                axis is printed to the terminal. Defaults to ``False``.
 
         Raises:
             RuntimeError: If the geometric properties have not been calculated prior to
@@ -1185,14 +1188,14 @@ class Section:
         post-processing of the stress results.
 
         Args:
-            n: Axial force
-            vx: Shear force acting in the x-direction
-            vy: Shear force acting in the y-direction
-            mxx: Bending moment about the centroidal xx-axis
-            myy: Bending moment about the centroidal yy-axis
-            m11: Bending moment about the centroidal 11-axis
-            m22: Bending moment about the centroidal 22-axis
-            mzz: Torsion moment about the centroidal zz-axis
+            n: Axial force. Defaults to ``0.0``.
+            vx: Shear force acting in the x-direction. Defaults to ``0.0``.
+            vy: Shear force acting in the y-direction. Defaults to ``0.0``.
+            mxx: Bending moment about the centroidal xx-axis. Defaults to ``0.0``.
+            myy: Bending moment about the centroidal yy-axis. Defaults to ``0.0``.
+            m11: Bending moment about the centroidal 11-axis. Defaults to ``0.0``.
+            m22: Bending moment about the centroidal 22-axis. Defaults to ``0.0``.
+            mzz: Torsion moment about the centroidal zz-axis. Defaults to ``0.0``.
 
         Returns:
             Object for post-processing cross-section stresses
@@ -1475,11 +1478,13 @@ class Section:
         r"""Plots the finite element mesh.
 
         Args:
-            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`.
+                Defaults to ``0.5``.
             materials: If set to True shades the elements with the specified material
-                colors
-            mask: Mask array, of length ``num_nodes``, to mask out triangles
-            title: Plot title
+                colors. Defaults to ``True``.
+            mask: Mask array, of length ``num_nodes``, to mask out triangles. Defaults
+                to ``None``.
+            title: Plot title. Defaults to ``"Finite Element Mesh"``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Returns:
@@ -1594,8 +1599,9 @@ class Section:
         principal axis, if they have been calculated, on top of the finite element mesh.
 
         Args:
-            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
-            title: Plot title
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`.
+                Defaults to ``0.5``.
+            title: Plot title. Defaults to ``"Centroids"``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Returns:
@@ -1708,11 +1714,13 @@ class Section:
         r"""Plots the warping function over the mesh.
 
         Args:
-            title: Plot title
-            level: Number of contour levels
-            cmap: Colormap
-            with_lines: If set to True, contour lines are displayed
-            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
+            title: Plot title. Defaults to ``"Warping Function"``.
+            level: Number of contour levels. Defaults to ``20``.
+            cmap: Colormap. Defaults to ``"viridis"``.
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`.
+                Defaults to ``0.2``.
+            with_lines: If set to True, contour lines are displayed.  Defaults to
+                ``True``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -1783,7 +1791,7 @@ class Section:
 
         Args:
             fmt: Number formatting string, see
-                https://docs.python.org/3/library/string.html
+                https://docs.python.org/3/library/string.html. Defaults to ``"8.6e"``.
         """
         post.print_results(section=self, fmt=fmt)
 
@@ -1873,7 +1881,7 @@ class Section:
 
     def get_ea(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> float:
         """Returns the cross-section axial rigidity.
 
@@ -1885,7 +1893,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted area (axial rigidity)
@@ -1935,7 +1943,7 @@ class Section:
 
     def get_eq(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float]:
         """Returns the modulus-weighted cross-section first moments of area.
 
@@ -1947,7 +1955,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus-weighted first moments of area about the global axis (``e.qx``,
@@ -2007,7 +2015,7 @@ class Section:
 
     def get_eig(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float, float]:
         """Returns the modulus-weighted cross-section global second moments of area.
 
@@ -2019,7 +2027,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted second moments of area about the global axis (``e.ixx_g``,
@@ -2102,7 +2110,7 @@ class Section:
 
     def get_eic(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float, float]:
         """Returns the modulus-weighted cross-section centroidal second moments of area.
 
@@ -2114,7 +2122,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted second moments of area about the centroidal axis
@@ -2184,7 +2192,7 @@ class Section:
 
     def get_ez(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float, float, float]:
         """Returns the modulus-weighted cross-section centroidal elastic section moduli.
 
@@ -2196,7 +2204,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted elastic section moduli about the centroidal axis with
@@ -2273,7 +2281,7 @@ class Section:
 
     def get_eip(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float]:
         """Returns the modulus-weighted cross-section principal second moments of area.
 
@@ -2285,7 +2293,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted second moments of area about the principal axis
@@ -2362,7 +2370,7 @@ class Section:
 
     def get_ezp(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float, float, float]:
         """Returns the modulus-weighted cross-section principal elastic section moduli.
 
@@ -2374,7 +2382,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted elastic section moduli about the principal axis with
@@ -2523,7 +2531,7 @@ class Section:
 
     def get_ej(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> float:
         """Returns the modulus-weighted cross-section St Venant torsion constant.
 
@@ -2535,7 +2543,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted St. Venant torsion constant
@@ -2649,7 +2657,7 @@ class Section:
 
     def get_egamma(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> float:
         """Returns the modulus-weighted cross-section warping constant.
 
@@ -2661,7 +2669,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted warping constant
@@ -2711,7 +2719,7 @@ class Section:
 
     def get_eas(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float]:
         """Returns modulus-weighted the cross-section centroidal axis shear area.
 
@@ -2723,7 +2731,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted shear area for loading about the centroidal axis
@@ -2776,7 +2784,7 @@ class Section:
 
     def get_eas_p(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float]:
         """Returns the modulus-weighted cross-section princicpal axis shear area.
 
@@ -2788,7 +2796,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted shear area for loading about the princicpal bending axis
@@ -3118,17 +3126,18 @@ class Section:
         Args:
             pts: A list of points ``[(x, y), ..., ]``
             n: Axial force
-            mxx: Bending moment about the centroidal xx-axis
-            myy: Bending moment about the centroidal yy-axis
-            m11: Bending moment about the centroidal 11-axis
-            m22: Bending moment about the centroidal 22-axis
-            mzz: Torsion moment about the centroidal zz-axis
-            vx: Shear force acting in the x-direction
-            vy: Shear force acting in the y-direction
+            mxx: Bending moment about the centroidal xx-axis. Defaults to ``0.0``.
+            myy: Bending moment about the centroidal yy-axis. Defaults to ``0.0``.
+            m11: Bending moment about the centroidal 11-axis. Defaults to ``0.0``.
+            m22: Bending moment about the centroidal 22-axis. Defaults to ``0.0``.
+            mzz: Torsion moment about the centroidal zz-axis. Defaults to ``0.0``.
+            vx: Shear force acting in the x-direction. Defaults to ``0.0``.
+            vy: Shear force acting in the y-direction. Defaults to ``0.0``.
             agg_func: A function that aggregates the stresses if the point is shared by
                 several elements. If the point, ``pt``, is shared by several elements
                 (e.g. if it is a node or on an edge), the stresses are retrieved from
-                each element and combined according to this function.
+                each element and combined according to this function. Defaults to
+                ``np.average``.
 
         Raises:
             RuntimeError: If a warping analysis has not been carried out and a shear

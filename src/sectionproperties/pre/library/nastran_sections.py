@@ -23,7 +23,8 @@ def nastran_bar(
     Args:
         dim_1: Width (x) of bar
         dim_2: Depth (y) of bar
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         BAR section geometry
@@ -75,7 +76,8 @@ def nastran_box(
         dim_2: Depth (y) of box
         dim_3: Thickness of box in y direction
         dim_4: Thickness of box in x direction
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         RuntimeError: If the geometry generation fails
@@ -153,7 +155,8 @@ def nastran_box1(
         dim_4: Thickness of bottom wall
         dim_5: Thickness of left wall
         dim_6: Thickness of right wall
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         RuntimeError: If the geometry generation fails
@@ -226,7 +229,8 @@ def nastran_chan(
         dim_2: Depth (y) of the CHAN-section
         dim_3: Thickness of web (vertical portion)
         dim_4: Thickness of flanges (top/bottom portion)
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         CHAN section geometry
@@ -289,7 +293,8 @@ def nastran_chan1(
         dim_2: Thickness (x) of web
         dim_3: Spacing between channels (length of web)
         dim_4: Depth (y) of CHAN1-section
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         CHAN1 section geometry
@@ -352,7 +357,8 @@ def nastran_chan2(
         dim_2: Thickness of web
         dim_3: Depth (y) of CHAN2-section
         dim_4: Width (x) of CHAN2-section
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         CHAN2 section geometry
@@ -415,7 +421,8 @@ def nastran_cross(
         dim_2: Thickness of the vertical member
         dim_3: Depth (y) of the CROSS-section
         dim_4: Thickness of the horizontal members
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Cruciform section geometry
@@ -489,7 +496,8 @@ def nastran_fcross(
         dim_6: Thickness of flange attached to vertical web
         dim_7: Length of flange attached to horizontal web
         dim_8: Thickness of flange attached to horizontal web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Flanged cruciform section geometry
@@ -592,7 +600,8 @@ def nastran_dbox(
         dim_8: Thickness of bottom left wall
         dim_9: Thickness of top right wall
         dim_10: Thickness of bottom right wall
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         RuntimeError: If the geometry generation fails
@@ -686,7 +695,8 @@ def nastran_gbox(
         dim_4: Thickness of bottom flange
         dim_5: Thickness of webs
         dim_6: Spacing between webs
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         RuntimeError: If the geometry generation fails
@@ -769,7 +779,8 @@ def nastran_h(
         dim_2: Twice the thickness of the vertical flanges
         dim_3: Depth (y) of the H-section
         dim_4: Thickness of the middle web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         H section geometry
@@ -840,7 +851,8 @@ def nastran_hat(
         dim_2: Thickness of HAT-section
         dim_3: Width (x) of top most section
         dim_4: Width (x) of bottom sections
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         HAT section geometry
@@ -908,7 +920,8 @@ def nastran_hat1(
         dim_3: Width (x) of hat's top flange
         dim_4: Thickness of hat stiffener
         dim_5: Thicknesss of bottom plate
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         HAT1 section geometry
@@ -977,7 +990,8 @@ def nastran_hexa(
         dim_1: Spacing between bottom right point and right most point
         dim_2: Width (x) of hexagon
         dim_3: Depth (y) of hexagon
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         HEXA section geometry
@@ -1041,7 +1055,8 @@ def nastran_i(
         dim_4: Thickness of web
         dim_5: Thickness of bottom web
         dim_6: Thickness of top web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         I section geometry
@@ -1109,7 +1124,8 @@ def nastran_i1(
         dim_2: Thickness of web
         dim_3: Length of web (spacing between flanges)
         dim_4: Depth (y) of the I1-section
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         I1 section geometry
@@ -1176,7 +1192,8 @@ def nastran_l(
         dim_2: Depth (y) of the L-section
         dim_3: Thickness of flange (horizontal portion)
         dim_4: Thickness of web (vertical portion)
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         L section geometry
@@ -1232,7 +1249,8 @@ def nastran_rod(
     Args:
         dim_1: Radius of the circular rod section
         n: Number of points discretising the circle
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Circular rod section geometry
@@ -1292,7 +1310,8 @@ def nastran_tee(
         dim_2: Depth (y) of the T-section
         dim_3: Thickness of top flange
         dim_4: Thickness of web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         T section geometry
@@ -1369,7 +1388,8 @@ def nastran_tee1(
         dim_2: Length (x) of web
         dim_3: Thickness of right flange
         dim_4: Thickness of web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         T1 section geometry
@@ -1432,7 +1452,8 @@ def nastran_tee2(
         dim_2: Depth (y) of T2-section
         dim_3: Thickness of bottom flange
         dim_4: Thickness of web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         T2 section geometry
@@ -1493,7 +1514,8 @@ def nastran_tube(
         dim_1: Outer radius of the circular tube section
         dim_2: Inner radius of the circular tube section
         n: Number of points discretising the circle
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Circular tube section geometry
@@ -1563,7 +1585,8 @@ def nastran_tube2(
         dim_1: Outer radius of the circular tube section
         dim_2: Thickness of wall
         n: Number of points discretising the circle
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         TUBE2 section geometry
@@ -1636,7 +1659,8 @@ def nastran_zed(
         dim_2: Thickness of web
         dim_3: Spacing between horizontal members (length of web)
         dim_4: Depth (y) of Z-section
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Z section geometry

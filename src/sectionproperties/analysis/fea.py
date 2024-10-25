@@ -94,7 +94,11 @@ def _assemble_torsion(
 
 @njit(cache=True, nogil=True)
 def _shear_parameter(
-    nx: float, ny: float, ixx: float, iyy: float, ixy: float
+    nx: float,
+    ny: float,
+    ixx: float,
+    iyy: float,
+    ixy: float,
 ) -> tuple[float, float, float, float, float, float]:
     """Utility function for calculating the shear parameters.
 

@@ -50,13 +50,16 @@ def concrete_rectangular_section(
         n_bot: Number of bottom, equally spaced reinforcing bars
         c_bot: Clear cover to the bottom reinforcing bars
         dia_side: Diameter of the side reinforcing bars, used for calculating bar
-            placement
-        area_side: Area of the side reinforcing bars
-        n_side: Number of side, equally spaced reinforcing bars
-        c_side: Clear cover to the side reinforcing bars
-        n_circle: Number of points used to discretise the circular reinforcing bars
-        conc_mat: Material object to assign to the concrete area
-        steel_mat: Material object to assign to the steel area
+            placement. Defaults to ``None``.
+        area_side: Area of the side reinforcing bars. Defaults to ``None``.
+        n_side: Number of side, equally spaced reinforcing bars. Defaults to ``0``.
+        c_side: Clear cover to the side reinforcing bars. Defaults to ``0.0``.
+        n_circle: Number of points used to discretise the circular reinforcing bars.
+            Defaults to ``4``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         ValueError: Geometry generation failed
@@ -230,12 +233,16 @@ def concrete_column_section(
         n_x: Number of bars placed across the width of the section, minimum 2
         n_y: Number of bars placed across the depth of the section, minimum 2
         cover: Clear cover to the reinforcing bars
-        n_circle: Number of points used to discretise the circular reinforcing bars
+        n_circle: Number of points used to discretise the circular reinforcing bars.
+            Defaults to ``4``.
         filled:  When True, will populate the concrete section with an equally spaced
             2D array of reinforcing bars numbering 'n_x' by 'n_y'. When False, only the
-            bars around the perimeter of the array will be present.
-        conc_mat: Material object to assign to the concrete area
-        steel_mat: Material object to assign to the steel area
+            bars around the perimeter of the array will be present. Defaults to
+            ``False``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Reinforced concrete column section geometry
@@ -386,13 +393,16 @@ def concrete_tee_section(
         n_bot: Number of bottom, equally spaced reinforcing bars
         c_bot: Clear cover to the bottom reinforcing bars
         dia_side: Diameter of the side reinforcing bars, used for calculating bar
-            placement
-        area_side: Area of the side reinforcing bars
-        n_side: Number of side, equally spaced reinforcing bars
-        c_side: Clear cover to the side reinforcing bars
-        n_circle: Number of points used to discretise the circular reinforcing bars
-        conc_mat: Material object to assign to the concrete area
-        steel_mat: Material object to assign to the steel area
+            placement. Defaults to ``None``.
+        area_side: Area of the side reinforcing bars. Defaults to ``None``.
+        n_side: Number of side, equally spaced reinforcing bars. Defaults to ``0``.
+        c_side: Clear cover to the side reinforcing bars. Defaults to ``0.0``.
+        n_circle: Number of points used to discretise the circular reinforcing bars.
+            Defaults to ``4``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         ValueError: Geometry generation failed
@@ -574,9 +584,12 @@ def concrete_circular_section(
         area_bar: Area of the reinforcing bars
         n_bar: Number of steel reinforcing bars
         cover: Clear cover to the reinforcing bars
-        n_circle: Number of points discretising the steel reinforcing bars
-        conc_mat: Material object to assign to the concrete area
-        steel_mat: Material object to assign to the steel area
+        n_circle: Number of points discretising the steel reinforcing bars. Defaults to
+            ``4``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Reinforced concrete circular section geometry

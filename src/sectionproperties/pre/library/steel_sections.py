@@ -26,7 +26,8 @@ def circular_hollow_section(
         d: Outer diameter of the CHS
         t: Thickness of the CHS
         n: Number of points discretising the inner and outer circles
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         RuntimeError: If the geometry generation fails
@@ -93,7 +94,8 @@ def elliptical_hollow_section(
         d_y: Diameter of the ellipse in the y-dimension
         t: Thickness of the EHS
         n: Number of points discretising the inner and outer ellipses
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         RuntimeError: If the geometry generation fails
@@ -164,7 +166,8 @@ def rectangular_hollow_section(
         t: Thickness of the RHS
         r_out: Outer radius of the RHS
         n_r: Number of points discretising the inner and outer radii
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         RuntimeError: If the geometry generation fails
@@ -245,12 +248,13 @@ def polygon_hollow_section(
         t: Thickness of the polygon section wall
         n_sides: Number of sides of the polygon
         r_in: Inner radius of the polygon corners. By default, if not specified, a
-            polygon with no corner radii is generated.
+            polygon with no corner radii is generated. Defaults to ``0.0``.
         n_r: Number of points discretising the inner and outer radii, ignored if no
-            inner radii is specified
+            inner radii is specified. Defaults to ``1``.
         rot: Initial counterclockwise rotation in degrees. By default bottom face is
-            aligned with x axis.
-        material: Material to associate with this geometry
+            aligned with x axis. Defaults to ``0.0``.
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         ValueError: Number of sides in polygon must be greater than or equal to 3
@@ -379,7 +383,8 @@ def i_section(
         t_w: Web thickness of the I section
         r: Root radius of the I section
         n_r: Number of points discretising the root radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         I section geometry
@@ -461,7 +466,8 @@ def mono_i_section(
         t_w: Web thickness of the I section
         r: Root radius of the I section
         n_r: Number of points discretising the root radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Monosymmetric I section geometry
@@ -550,7 +556,8 @@ def tapered_flange_i_section(
         r_f: Flange radius of the tapered flange I section
         alpha: Flange angle of the tapered flange I section in degrees
         n_r: Number of points discretising the radii
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Tapered flange I section geometry
@@ -747,7 +754,8 @@ def channel_section(
         t_w: Web thickness of the PFC section
         r: Root radius of the PFC section
         n_r: Number of points discretising the root radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Parallel flange channel section geometry
@@ -818,7 +826,8 @@ def tapered_flange_channel(
         r_f: Flange radius of the tapered flange channel section
         alpha: Flange angle of the tapered flange channel section in degrees
         n_r: Number of points discretising the radii
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Tapered flange channel section geometry
@@ -950,7 +959,8 @@ def tee_section(
         t_w: Web thickness of the tee section
         r: Root radius of the tee section
         n_r: Number of points discretising the root radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Tee section geometry
@@ -1015,7 +1025,8 @@ def angle_section(
         r_r: Root radius of the angle section
         r_t: Toe radius of the angle section
         n_r: Number of points discretising the radii
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Angle section geometry
@@ -1093,7 +1104,8 @@ def cee_section(
         t: Thickness of the cee section
         r_out: Outer radius of the cee section
         n_r: Number of points discretising the outer radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Cee section geometry
@@ -1274,7 +1286,8 @@ def zed_section(
         t: Thickness of the zed section
         r_out: Outer radius of the zed section
         n_r: Number of points discretising the outer radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Zed section geometry
@@ -1449,7 +1462,8 @@ def box_girder_section(
         t_ft: Top flange thickness of the box girder section
         t_fb: Bottom flange thickness of the box girder section
         t_w: Web thickness of the box girder section
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         RuntimeError: If the geometry generation fails
@@ -1535,9 +1549,10 @@ def bulb_section(
         t: Web thickness
         r: Bulb radius
         d_b: Depth of the bulb (automatically calculated for standard sections, if
-            provided the section may have sharp edges)
+            provided the section may have sharp edges). Defaults to ``None``.
         n_r: Number of points discretising the radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Bulb section geometry

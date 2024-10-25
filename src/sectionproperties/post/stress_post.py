@@ -73,20 +73,24 @@ class StressPost:
 
         Args:
             stress: Type of stress to plot, see below for allowable values
-            title: Plot title, if None uses default plot title for selected stress
+            title: Plot title, if None uses default plot title for selected stress.
+                Defaults to ``None``.
             cmap: Matplotlib color map, see
                 https://matplotlib.org/stable/tutorials/colors/colormaps.html for more
-                detail
+                detail. Defaults to ``"coolwarm"``.
             stress_limits: Custom colorbar stress limits (`sig_min`, `sig_max`), values
-                outside these limits will appear as white
+                outside these limits will appear as white. Defaults to ``None``.
             normalize: If set to True, ``CenteredNorm`` is used to scale the colormap,
-                if set to False, the default linear scaling is used
+                if set to False, the default linear scaling is used. Defaults to
+                ``True``.
             fmt: Number formatting string, see
-                https://docs.python.org/3/library/string.html
-            colorbar_label: Colorbar label
-            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
+                https://docs.python.org/3/library/string.html. Defaults to
+                ``"{x:.4e}"``.
+            colorbar_label: Colorbar label. Defaults to ``"Stress"``.
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`.
+                Defaults to ``0.5``.
             material_list: If specified, only plots materials present in the list. If
-                set to `None`, plots all materials.
+                set to `None`, plots all materials. Defaults to ``None``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -385,16 +389,20 @@ class StressPost:
 
         Args:
             stress: Type of stress to plot, see below for allowable values
-            title: Plot title, if None uses default plot title for selected stress
+            title: Plot title, if None uses default plot title for selected stress.
+                Defaults to ``None``.
             cmap: Matplotlib color map, see
                 https://matplotlib.org/stable/tutorials/colors/colormaps.html for more
-                detail
+                detail. Defaults to ``"YlOrBr"``.
             normalize: If set to True, ``CenteredNorm`` is used to scale the colormap,
-                if set to False, the default linear scaling is used
+                if set to False, the default linear scaling is used. Defaults to
+                ``True``.
             fmt: Number formatting string, see
-                https://docs.python.org/3/library/string.html
-            colorbar_label: Colorbar label
-            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
+                https://docs.python.org/3/library/string.html. Defaults to
+                ``"{x:.4e}"``.
+            colorbar_label: Colorbar label. Defaults to ``"Stress"``.
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`.
+                Defaults to ``0.2``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -694,8 +702,8 @@ class StressPost:
         Args:
             x: x-coordinate of the point to draw Mohr's Circle
             y: y-coordinate of the point to draw Mohr's Circle
-            title: Plot title, if None uses default plot title "Mohr's Circles for 3D
-                Stress State at {pt}"
+            title: Plot title, if ``None`` uses default plot title "Mohr's Circles for
+                3D Stress State at {pt}". Defaults to ``None``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:

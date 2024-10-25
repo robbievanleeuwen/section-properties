@@ -335,18 +335,19 @@ def plotting_context(
     """Executes code required to set up a matplotlib figure.
 
     Args:
-        ax: Axes object on which to plot
+        ax: Axes object on which to plot. Defaults to ``None``.
         pause: If set to True, the figure pauses the script until the window is closed.
             If set to False, the script continues immediately after the window is
-            rendered.
-        title: Plot title
+            rendered. Defaults to ``True``.
+        title: Plot title. Defaults to ``""``.
         filename: Pass a non-empty string or path to save the image as. If this option
-            is used, the figure is closed after the file is saved.
+            is used, the figure is closed after the file is saved. Defaults to ``""``.
         render: If set to False, the image is not displayed. This may be useful if the
             figure or axes will be embedded or further edited before being displayed.
+            Defaults to ``True``.
         axis_index: If more than 1 axis is created by subplot, then this is the axis to
             plot on. This may be a tuple if a 2D array of plots is returned.  The
-            default value of None will select the top left plot.
+            default value of None will select the top left plot. Defaults to ``None``.
         kwargs: Passed to :func:`matplotlib.pyplot.subplots`
 
     Raises:

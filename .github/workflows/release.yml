@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - dev
 
 env:
   UV_VERSION: "0.4.26"
@@ -37,12 +36,12 @@ jobs:
         if: ${{ env.sha }}
         uses: salsify/action-detect-and-tag-new-version@v2
         with:
-          version-command: uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version
+          version-command: echo $(grep "^version =" pyproject.toml | sed 's/version = "\(.*\)"/\1/')
 
       - name: Bump version for dev release
         if: "! steps.check-version.outputs.tag"
         run: |
-          VERSION=$(uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version)
+          VERSION=$(grep "^version =" pyproject.toml | sed 's/version = "\(.*\)"/\1/')
           uvx --from=toml-cli toml set --toml-path=pyproject.toml project.version $VERSION.dev.$(date +%s)
 
       - name: Build package
@@ -61,7 +60,7 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+          repository-url: https://test.pypi.org/legacy/
 
       - name: Publish the release notes
         uses: release-drafter/release-drafter@v6

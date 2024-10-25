@@ -43,7 +43,7 @@ def solve_cgs(
         k: ``N x N`` matrix of the linear system
         f: ``N x 1`` right hand side of the linear system
         m: Preconditioner for the linear matrix approximating the inverse of ``k``
-        tol: Relative tolerance for the solver to achieve.
+        tol: Relative tolerance for the solver to achieve. Defaults to ``1e-5``.
 
     Returns:
         The solution vector to the linear system of equations
@@ -72,7 +72,7 @@ def solve_cgs_lagrange(
         k_lg: ``(N+1) x (N+1)`` Lagrangian multiplier matrix of the linear system
         f: ``N x 1`` right hand side of the linear system
         m: Preconditioner for the linear matrix approximating the inverse of ``k``
-        tol: Relative tolerance for the solver to achieve.
+        tol: Relative tolerance for the solver to achieve. Defaults to ``1e-5``.
 
     Returns:
         The solution vector to the linear system of equations

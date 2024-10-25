@@ -52,7 +52,7 @@ class Cell:
 
         Args:
             ele: The Tri6 element
-            omega: The warping function
+            omega: The warping function. Defaults to ``None``.
         """
         n, dn, self.area, _, _ = shape_function(
             ele.coords, (0.0, 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0)
@@ -142,11 +142,12 @@ def to_fibre_section(
 
     Args:
         obj: The geometry/section to be exported
-        main_section_tag: The tag of the main section
-        analysis_type: The type of analysis would be performed
-        material_mapping: A dictionary mapping material names to material tags
-        max_width: The maximum width of a line in the output
-        save_to: The path to save the output to
+        main_section_tag: The tag of the main section. Defaults to ``1``.
+        analysis_type: The type of analysis would be performed. Defaults to ``"3DOS"``.
+        material_mapping: A dictionary mapping material names to material tags. Defaults
+            to ``None``.
+        max_width: The maximum width of a line in the output. Defaults to ``160``.
+        save_to: The path to save the output to. Defaults to ``None``.
 
     Raises:
         TypeError: If `obj` is not a Geometry or Section

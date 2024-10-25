@@ -56,14 +56,15 @@ class Geometry:
 
         Args:
             geom: A Shapely Polygon object that defines the geometry
-            material: A material to associate with this geometry
+            material: A material to associate with this geometry. Defauls to
+                ``pre.DEFAULT_MATERIAL``.
             control_points: An ``(x, y)`` coordinate within the geometry that represents
                 a pre-assigned control point (aka, a region identification point) to be
                 used instead of the automatically assigned control point generated with
-                :meth:`shapely.Polygon.representative_point`.
+                :meth:`shapely.Polygon.representative_point`. Defaults to ``None``.
             tol: Number of decimal places to round the geometry vertices to. A lower
                 value may reduce accuracy of geometry but increases precision when
-                aligning geometries to each other.
+                aligning geometries to each other. Defaults to ``12``.
 
         Raises:
             ValueError: If ``geom`` is not valid, i.e. not a shapely object, or a
@@ -174,9 +175,10 @@ class Geometry:
                 :meth:`sectionproperties.pre.geometry.CompoundGeometry.from_points()`
             holes: A list of points (``x``, ``y``) that define interior regions as
                 being holes or voids. The point can be located anywhere within the hole
-                region. Only one point is required per hole region.
+                region. Only one point is required per hole region. Defaults to
+                ``None``.
             material: A :class:`~sectionproperties.pre.pre.Material` object that is to
-                be assigned.
+                be assigned. Defauls to ``pre.DEFAULT_MATERIAL``.
 
         Raises:
             ValueError: If there is not exactly one control point specified
@@ -271,7 +273,7 @@ class Geometry:
     def from_dxf(
         dxf_filepath: str | pathlib.Path,
         spline_delta: float = 0.1,
-        degrees_per_segment: float = 1,
+        degrees_per_segment: float = 1.0,
     ) -> Geometry | CompoundGeometry:
         """An interface for the creation of Geometry objects from CAD .dxf files.
 
@@ -279,9 +281,9 @@ class Geometry:
             dxf_filepath: A path-like object for the dxf file
             spline_delta: Splines are not supported in ``shapely``, so they are
                 approximated as polylines, this argument affects the spline sampling
-                rate
+                rate. Defaults to ``0.1``.
             degrees_per_segment: The number of degrees discretised as a single line
-                segment
+                segment. Defaults to ``1.0``.
 
         Returns:
             Geometry or CompoundGeometry object
@@ -453,7 +455,7 @@ class Geometry:
         Args:
             mesh_sizes: A float describing the maximum mesh element area to be used
                 within the Geometry-object finite-element mesh (may also be a list of
-                length 1).
+                length 1)
             min_angle: The meshing algorithm adds vertices to the mesh to ensure that no
                 angle smaller than the minimum angle (in degrees, rounded to 1 decimal
                 place). Note that small angles between input segments cannot be
@@ -462,8 +464,9 @@ class Geometry:
                 sufficient precision). The algorithm often doesn't terminate for angles
                 greater than 33 deg. Some meshes may require angles well below 20 deg to
                 avoid problems associated with insufficient floating-point precision.
+                Defaults to ``30.0``.
             coarse: If set to True, will create a coarse mesh (no area or quality
-                constraints)
+                constraints). Defaults to ``False``.
 
         Raises:
             ValueError: ``mesh_sizes`` is not valid
@@ -531,7 +534,7 @@ class Geometry:
                 side of ``other`` that ``self`` should be aligned to.
             inner: If True, align ``self`` to ``other`` in such a way that ``self`` is
                 aligned to the "inside" of ``other``. In other words, align ``self`` to
-                ``other`` on the specified edge so they overlap.
+                ``other`` on the specified edge so they overlap. Defaults to ``False``.
 
         Returns:
              Geometry object translated to alignment location
@@ -612,7 +615,7 @@ class Geometry:
 
         Args:
             align_to: Another Geometry to align to, an (``x``, ``y``) coordinate or
-                ``None``
+                ``None``. Defaults to ``None``.
 
         Raises:
             ValueError: ``align_to`` is not valid
@@ -671,8 +674,10 @@ class Geometry:
         """Returns a new Geometry object translated by (``x_offset``, ``y_offset``).
 
         Args:
-            x_offset: Distance in x-direction by which to shift the geometry.
-            y_offset: Distance in y-direction by which to shift the geometry.
+            x_offset: Distance in x-direction by which to shift the geometry. Defaults
+                to ``0.0``.
+            y_offset: Distance in y-direction by which to shift the geometry. Defaults
+                to ``0.0``.
 
         Returns:
             New Geometry object shifted by ``x_offset`` and ``y_offset``
@@ -720,8 +725,9 @@ class Geometry:
                 angle leads to a counter-clockwise rotation.
             rot_point: Point (``x``, ``y``) about which to rotate the section. If not
                 provided, will rotate about the "center" of the geometry's bounding box.
+                Defaults to ``"center"``.
             use_radians: Boolean to indicate whether ``angle`` is in degrees or radians.
-                If True, ``angle`` is interpreted as radians.
+                If True, ``angle`` is interpreted as radians. Defaults to ``False``.
 
         Returns:
             New Geometry object rotated by ``angle`` about ``rot_point``
@@ -767,10 +773,11 @@ class Geometry:
         """Mirrors the geometry about a point on either the x or y-axis.
 
         Args:
-            axis: Axis about which to mirror the geometry, ``"x"`` or ``"y"``
+            axis: Axis about which to mirror the geometry, ``"x"`` or ``"y"``. Defaults
+                to ``"x"``.
             mirror_point: Point about which to mirror the geometry (``x``, ``y``). If no
                 point is provided, mirrors the geometry about the center of the shape's
-                bounding box.
+                bounding box. Defaults to ``"center"``.
 
         Returns:
             New Geometry object mirrored on ``axis`` about ``mirror_point``
@@ -851,9 +858,9 @@ class Geometry:
             point_i: A tuple of (``x``, ``y``) coordinates to define a first point on
                 the line
             point_j: A tuple of (``x``, ``y``) coordinates to define a second point on
-                the line
+                the line. Defaults to ``None``.
             vector: A tuple or numpy array of (``x``, ``y``) components to define the
-                line direction
+                line direction. Defaults to ``None``.
 
         Raises:
             ValueError: Line definition is invalid
@@ -923,12 +930,12 @@ class Geometry:
 
         Args:
             amount: Distance to offset the section by. A negative value "erodes" the
-                section. A positive value "dilates" the section.
+                section. A positive value "dilates" the section. Defaults to ``0.0``.
             where: One of either ``"exterior"``, ``"interior"``, or ``"all"`` to specify
                 which edges of the geometry to offset. If geometry has no interiors,
-                then this parameter has no effect.
+                then this parameter has no effect. Defaults to ``"exterior"``.
             resolution: Number of segments used to approximate a quarter circle around a
-                point
+                point. Defaults to ``12``.
 
         Raises:
             ValueError: ``where`` is invalid
@@ -1075,14 +1082,18 @@ class Geometry:
         Args:
             point_idxs: An integer representing an index location or a list of integer
                 index locations.
-            dx: The number of units in the x-direction to shift the point(s) by
-            dy: The number of units in the y-direction to shift the point(s) by
+            dx: The number of units in the x-direction to shift the point(s) by.
+                Defaults to ``0.0``.
+            dy: The number of units in the y-direction to shift the point(s) by.
+                Defaults to ``0.0``.
             abs_x: Absolute x-coordinate in coordinate system to shift the point(s) to.
                 If ``abs_x`` is provided, ``dx`` is ignored. If providing a list to
                 ``point_idxs``, all points will be moved to this absolute location.
+                Defaults to ``None``.
             abs_y: Absolute y-coordinate in coordinate system to shift the point(s) to.
                 If ``abs_y`` is provided, ``dy`` is ignored. If providing a list to
                 ``point_idxs``, all points will be moved to this absolute location.
+                Defaults to ``None``.
 
         Returns:
             Geometry object with selected points translated to the new location
@@ -1154,10 +1165,10 @@ class Geometry:
         Args:
             labels: A tuple of str which indicate which labels to plot. Can be one or a
                 combination of ``"points"``, ``"facets"``, ``"control_points"``, or an
-                empty tuple to indicate no labels.
-            title: Plot title
-            cp: If set to True, plots the control points
-            legend: If set to True, plots the legend
+                empty tuple to indicate no labels. Defaults to ``("control_points")``.
+            title: Plot title. Defaults to ``"Cross-Section Geometry"``.
+            cp: If set to True, plots the control points. Defaults to ``True``.
+            legend: If set to True, plots the legend. Defaults to ``True``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context()`
 
         Returns:
@@ -1709,12 +1720,13 @@ class CompoundGeometry(Geometry):
                 that polygons are created by ``facets``.
             holes: A list of points (``x``, ``y``) that define interior regions as
                 being holes or voids. The point can be located anywhere within the hole
-                region. Only one point is required per hole region.
+                region. Only one point is required per hole region. Defaults to
+                ``None``.
             materials: A list of :class:`~sectionproperties.pre.pre.Material` objects
                 that are to be assigned, in order, to the regions defined by the given
                 ``control_points``. If not given, then the
                 :class:`~sectionproperties.pre.DEFAULT_MATERIAL` will be used for
-                each region.
+                each region. Defaults to ``None``.
 
         Raises:
             ValueError: If there are materials provided without control points
@@ -1971,8 +1983,9 @@ class CompoundGeometry(Geometry):
                 sufficient precision). The algorithm often doesn't terminate for angles
                 greater than 33 deg. Some meshes may require angles well below 20 deg to
                 avoid problems associated with insufficient floating-point precision.
+                Defaults to ``30.0``.
             coarse: If set to True, will create a coarse mesh (no area or quality
-                constraints)
+                constraints). Defaults to ``False``.
 
         Returns:
             ``CompoundGeometry`` object with mesh data stored in ``.mesh`` attribute.
@@ -2026,8 +2039,10 @@ class CompoundGeometry(Geometry):
         """Returns a CompoundGeometry object translated by (``x_offset``, ``y_offset``).
 
         Args:
-            x_offset: Distance in x-direction by which to shift the geometry.
-            y_offset: Distance in y-direction by which to shift the geometry.
+            x_offset: Distance in x-direction by which to shift the geometry. Defaults
+                to ``0.0``.
+            y_offset: Distance in y-direction by which to shift the geometry. Defaults
+                to ``0.0``.
 
         Returns:
             New Geometry object shifted by ``x_offset`` and ``y_offset``
@@ -2056,9 +2071,9 @@ class CompoundGeometry(Geometry):
                 positive angle leads to a counter-clockwise rotation.
             rot_point: Point (``x``, ``y``) about which to rotate the section. If not
                 provided, will rotate about the center of the compound geometry's
-                bounding box.
+                bounding box. Defaults to ``"center"``.
             use_radians: Boolean to indicate whether ``angle`` is in degrees or radians.
-                If True, ``angle`` is interpreted as radians.
+                If True, ``angle`` is interpreted as radians. Defaults to ``False``.
 
         Returns:
             CompoundGeometry object rotated by ``angle`` about ``rot_point``
@@ -2101,10 +2116,11 @@ class CompoundGeometry(Geometry):
         """Mirrors the CompoundGeometry object about a point on either the x or y-axis.
 
         Args:
-            axis: Axis about which to mirror the geometry, ``"x"`` or ``"y"``
+            axis: Axis about which to mirror the geometry, ``"x"`` or ``"y"``. Defaults
+                to ``"x"``.
             mirror_point: Point about which to mirror the geometry (``x``, ``y``). If no
                 point is provided, mirrors the geometry about the center of the shape's
-                bounding box.
+                bounding box. Defaults to ``"center"``.
 
         Returns:
             CompoundGeometry object mirrored on ``axis`` about ``mirror_point``
@@ -2156,7 +2172,7 @@ class CompoundGeometry(Geometry):
 
         Args:
             align_to: Another Geometry to align to, an (``x``, ``y``) coordinate, or
-                ``None``
+                ``None``. Defaults to ``None``.
 
         Raises:
             ValueError: ``align_to`` is not valid
@@ -2267,9 +2283,9 @@ class CompoundGeometry(Geometry):
             point_i: A tuple of (``x``, ``y``) coordinates to define a first point on
                 the line
             point_j: A tuple of (``x``, ``y``) coordinates to define a second point
-                on the line
+                on the line. Defaults to ``None``.
             vector: A tuple or numpy array of (``x``, ``y``) components to define the
-                line direction.
+                line direction. Defaults to ``None``.
 
         Returns:
             A tuple of lists containing Geometry objects that are bisected about
@@ -2301,12 +2317,12 @@ class CompoundGeometry(Geometry):
 
         Args:
             amount: Distance to offset the section by. A negative value "erodes" the
-                section. A positive value "dilates" the section.
+                section. A positive value "dilates" the section. Defaults to ``0.0``.
             where: One of either ``"exterior"``, ``"interior"``, or ``"all"`` to specify
                 which edges of the geometry to offset. If geometry has no interiors,
-                then this parameter has no effect.
+                then this parameter has no effect. Defaults to ``"exterior"``.
             resolution: Number of segments used to approximate a quarter circle around
-                a point
+                a point. Defaults to ``12``.
 
         Returns:
             CompoundGeometry object translated to new alignment
@@ -2520,9 +2536,9 @@ def create_facets(
     Args:
         points_list: List of coordinates
         connect_back: If True, then the last facet pair will be
-            ``[len(points_list), offset]``
+            ``[len(points_list), offset]``. Defaults to ``False``.
         offset: An integer representing the value that the facets should begin
-            incrementing from.
+            incrementing from. Defaults to ``0``.
 
     Returns:
         List of facets
@@ -2582,7 +2598,8 @@ def create_points_and_facets(
 
     Args:
         shape: Polygon to create points and facets from
-        tol: Number of decimal places to round the geometry vertices to
+        tol: Number of decimal places to round the geometry vertices to. Defaults to
+            ``12``,
 
     Returns:
         List of points (``x``, ``y``) and list of facets (``f1``, ``f2``)
@@ -2736,7 +2753,10 @@ def check_geometry_overlaps(
     return not math.isclose(union_area, sum_polygons)
 
 
-def compound_dilation(geoms: list[Geometry], offset: float) -> CompoundGeometry:
+def compound_dilation(
+    geoms: list[Geometry],
+    offset: float,
+) -> CompoundGeometry:
     """Returns a CompoundGeometry representing the input Geometries, dilated.
 
     Args:
@@ -2822,7 +2842,9 @@ def check_geometry_disjoint(
     return set(nodes_visited) != set(network.keys())
 
 
-def build_geometry_network(lop: list[Polygon]) -> dict[int, set[int]]:
+def build_geometry_network(
+    lop: list[Polygon],
+) -> dict[int, set[int]]:
     """Builds a geometry connectivity graph.
 
     Returns a graph describing the connectivity of each polygon to each other polygon in

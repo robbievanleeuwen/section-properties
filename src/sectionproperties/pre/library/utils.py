@@ -24,8 +24,8 @@ def draw_radius(
         r: Radius
         theta: Initial angle in radians
         n: Number of points
-        ccw: If True, counter-clockwise rotation
-        phi: Angle describing radius extent in radians
+        ccw: If True, counter-clockwise rotation. Defaults to ``True``.
+        phi: Angle describing radius extent in radians. Defaults to ``np.pi * 0.5``.
 
     Returns:
         List of points
