@@ -103,9 +103,6 @@ branch = true
 source = ["sectionproperties", "tests"]
 omit = ["*/benchmarks/*"]
 
-[tool.coverage.report]
-show_missing = true
-
 [tool.pytest.ini_options]
 markers = [
     "benchmark_suite: entire benchmark test suite (select with '-m benchmark_suite')",
