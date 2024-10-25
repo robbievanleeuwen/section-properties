@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - dev
 
 env:
   UV_VERSION: "0.4.26"
