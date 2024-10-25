@@ -107,7 +107,7 @@ jobs:
       - name: Upload coverage data
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-data-${{ matrix.os }}-${{ matrix.python }}
+          name: coverage-data-${{ matrix.sessions }}-${{ matrix.os }}-${{ matrix.python }}
           include-hidden-files: true
           path: ".coverage.*"
 
