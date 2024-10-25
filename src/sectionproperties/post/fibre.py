@@ -157,7 +157,7 @@ def to_fibre_section(
     """
     if isinstance(obj, Geometry | CompoundGeometry):
         geometry = obj
-    elif isinstance(obj, Section):
+    elif isinstance(obj, Section):  # pyright: ignore [reportUnnecessaryIsInstance]
         geometry = obj.geometry
     else:
         msg = f"Expected a Geometry or Section, got {type(obj).__name__}"

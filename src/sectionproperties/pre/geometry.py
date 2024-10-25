@@ -19,9 +19,9 @@ from shapely import (
     Point,
     Polygon,
     affinity,
-    box,
-    line_merge,
-    shared_paths,
+    box,  # pyright: ignore [reportUnknownVariableType]
+    line_merge,  # pyright: ignore [reportUnknownVariableType]
+    shared_paths,  # pyright: ignore [reportUnknownVariableType]
 )
 from shapely.ops import split, unary_union
 
@@ -48,7 +48,7 @@ class Geometry:
     def __init__(
         self,
         geom: Polygon,
-        material: pre.Material = pre.DEFAULT_MATERIAL,
+        material: pre.Material | None = pre.DEFAULT_MATERIAL,
         control_points: Point | tuple[float, float] | None = None,
         tol: int = 12,
     ) -> None:
@@ -73,7 +73,7 @@ class Geometry:
             msg = "Use CompoundGeometry(...) for a MultiPolygon object."
             raise ValueError(msg)
 
-        if not isinstance(geom, Polygon):
+        if not isinstance(geom, Polygon):  # pyright: ignore [reportUnnecessaryIsInstance]
             msg = f"Argument is not a valid shapely.Polygon object: {geom!r}"
             raise ValueError(msg)
 
@@ -692,12 +692,9 @@ class Geometry:
         new_ctrl_point: tuple[float, float] | None = None
 
         if self.assigned_control_point:
-            new_ctrl_point = cast(
-                tuple[float, float],
-                affinity.translate(
-                    self.assigned_control_point, x_offset, y_offset
-                ).coords[0],
-            )
+            new_ctrl_point = affinity.translate(
+                self.assigned_control_point, x_offset, y_offset
+            ).coords[0]
 
         return Geometry(
             geom=affinity.translate(self.geom, x_offset, y_offset),
@@ -748,19 +745,17 @@ class Geometry:
             else:
                 rotate_point = rot_point
 
-            new_ctrl_point = tuple(
-                affinity.rotate(
-                    self.assigned_control_point,
-                    angle,
-                    rotate_point,  # type: ignore
-                    use_radians,
-                ).coords[0]
-            )
+            new_ctrl_point = affinity.rotate(
+                self.assigned_control_point,
+                angle,
+                rotate_point,  # pyright: ignore [reportArgumentType]
+                use_radians,
+            ).coords[0]
 
         return Geometry(
-            geom=affinity.rotate(self.geom, angle, rot_point, use_radians),  # type: ignore
+            geom=affinity.rotate(self.geom, angle, rot_point, use_radians),  # pyright: ignore [reportArgumentType]
             material=self.material,
-            control_points=new_ctrl_point,  # type: ignore
+            control_points=new_ctrl_point,
             tol=self.tol,
         )
 
@@ -813,22 +808,19 @@ class Geometry:
             xfact=y_mirror,
             yfact=x_mirror,
             zfact=1.0,
-            origin=m_pt,  # type: ignore
+            origin=m_pt,  # pyright: ignore [reportArgumentType]
         )
 
         new_ctrl_point: tuple[float, float] | None = None
 
         if self.assigned_control_point:
-            new_ctrl_point = cast(
-                tuple[float, float],
-                affinity.scale(
-                    self.assigned_control_point,
-                    xfact=y_mirror,
-                    yfact=x_mirror,
-                    zfact=1.0,
-                    origin=mirror_point,  # type: ignore
-                ).coords[0],
-            )
+            new_ctrl_point = affinity.scale(
+                self.assigned_control_point,
+                xfact=y_mirror,
+                yfact=x_mirror,
+                zfact=1.0,
+                origin=mirror_point,  # pyright: ignore [reportArgumentType]
+            ).coords[0]
 
         return Geometry(
             geom=mirrored_geom,
@@ -1172,7 +1164,7 @@ class Geometry:
             Matplotlib axes object
         """
         # create plot and setup the plot
-        with post.plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (_, ax):
             if not ax:
                 msg = "Matplotlib axes not created."
                 raise RuntimeError(msg)
@@ -1180,7 +1172,7 @@ class Geometry:
             # plot the points and facets
             for i, f in enumerate(self.facets):
                 label = "Points & Facets" if i == 0 else None
-                ax.plot(
+                ax.plot(  # pyright: ignore
                     [self.points[f[0]][0], self.points[f[1]][0]],
                     [self.points[f[0]][1], self.points[f[1]][1]],
                     "ko-",
@@ -1192,25 +1184,25 @@ class Geometry:
             # plot the holes
             for i, h in enumerate(self.holes):
                 label = "Holes" if i == 0 else None
-                ax.plot(h[0], h[1], "rx", markersize=5, markeredgewidth=1, label=label)
+                ax.plot(h[0], h[1], "rx", markersize=5, markeredgewidth=1, label=label)  # pyright: ignore
 
             if cp:
                 # plot the control points
                 for i, cp_i in enumerate(self.control_points):
                     label = "Control Points" if i == 0 else None
-                    ax.plot(cp_i[0], cp_i[1], "bo", markersize=5, label=label)
+                    ax.plot(cp_i[0], cp_i[1], "bo", markersize=5, label=label)  # pyright: ignore
 
             # display the labels
             for label in labels:
                 # plot control_point labels
                 if label == "control_points":
                     for i, pt in enumerate(self.control_points):
-                        ax.annotate(str(i), xy=pt, color="b")
+                        ax.annotate(str(i), xy=pt, color="b")  # pyright: ignore
 
                 # plot point labels
                 if label == "points":
                     for i, pt in enumerate(self.points):
-                        ax.annotate(str(i), xy=pt, color="r")
+                        ax.annotate(str(i), xy=pt, color="r")  # pyright: ignore
 
                 # plot facet labels
                 if label == "facets":
@@ -1219,16 +1211,16 @@ class Geometry:
                         pt2 = self.points[fct[1]]
                         xy = ((pt1[0] + pt2[0]) / 2, (pt1[1] + pt2[1]) / 2)
 
-                        ax.annotate(str(i), xy=xy, color="b")
+                        ax.annotate(str(i), xy=xy, color="b")  # pyright: ignore
 
                 # plot hole labels
                 if label == "holes":
                     for i, pt in enumerate(self.holes):
-                        ax.annotate(str(i), xy=pt, color="r")
+                        ax.annotate(str(i), xy=pt, color="r")  # pyright: ignore
 
             # display the legend
             if legend:
-                ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+                ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))  # pyright: ignore
 
         return ax
 
@@ -1267,7 +1259,7 @@ class Geometry:
         Returns:
             Geometry centroid
         """
-        return cast(tuple[float, float], self.geom.centroid.coords[0])
+        return self.geom.centroid.coords[0]
 
     @property
     def recovery_points(self) -> list[tuple[float, float]] | list[Point]:
@@ -1344,7 +1336,7 @@ class Geometry:
                 or_poly,
                 GeometryCollection | LineString | Point | Polygon | MultiPolygon,
             ):
-                new_polygon = filter_non_polygons(or_poly)
+                new_polygon = filter_non_polygons(input_geom=or_poly)  # pyright: ignore [reportUnknownArgumentType]
             else:
                 msg = "Geometry generation failed."
                 raise RuntimeError(msg)
@@ -1404,7 +1396,7 @@ class Geometry:
                 xor_poly,
                 GeometryCollection | LineString | Point | Polygon | MultiPolygon,
             ):
-                new_polygon = filter_non_polygons(xor_poly)
+                new_polygon = filter_non_polygons(xor_poly)  # pyright: ignore [reportUnknownArgumentType]
             else:
                 msg = "Geometry generation failed."
                 raise RuntimeError(msg)
@@ -1460,7 +1452,7 @@ class Geometry:
                 (rect1 - rect2).plot_geometry()
         """
         if isinstance(self, CompoundGeometry):
-            subs_geom_acc = []
+            subs_geom_acc: list[Geometry | CompoundGeometry] = []
 
             for geom in self.geoms:
                 new_geom = geom - other
@@ -1477,7 +1469,7 @@ class Geometry:
                     sub_poly,
                     GeometryCollection | LineString | Point | Polygon | MultiPolygon,
                 ):
-                    new_polygon = filter_non_polygons(sub_poly)
+                    new_polygon = filter_non_polygons(sub_poly)  # pyright: ignore [reportUnknownArgumentType]
                 else:
                     msg = "Geometry generation failed."
                     raise RuntimeError(msg)
@@ -1492,7 +1484,7 @@ class Geometry:
                             Geometry(polygon, material) for polygon in new_polygon.geoms
                         ]
                     )
-                elif isinstance(new_polygon, Polygon):
+                elif isinstance(new_polygon, Polygon):  # pyright: ignore [reportUnnecessaryIsInstance]
                     if self.assigned_control_point and new_polygon.contains(
                         self.assigned_control_point
                     ):
@@ -1597,7 +1589,7 @@ class Geometry:
                 and_poly,
                 GeometryCollection | LineString | Point | Polygon | MultiPolygon,
             ):
-                new_polygon = filter_non_polygons(and_poly)
+                new_polygon = filter_non_polygons(and_poly)  # pyright: ignore [reportUnknownArgumentType]
             else:
                 msg = "Geometry generation failed."
                 raise RuntimeError(msg)
@@ -1648,14 +1640,14 @@ class CompoundGeometry(Geometry):
                 Geometry(poly, material=pre.DEFAULT_MATERIAL) for poly in geoms.geoms
             ]
             self.geom = geoms
-        elif isinstance(geoms, list):
-            processed_geoms = []
+        elif isinstance(geoms, list):  # pyright: ignore [reportUnnecessaryIsInstance]
+            processed_geoms: list[Geometry] = []
 
             for item in geoms:
                 if isinstance(item, CompoundGeometry):
                     # "Flatten" any CompoundGeometry objects in the 'geoms' list
                     processed_geoms += item.geoms
-                elif isinstance(item, Geometry):
+                elif isinstance(item, Geometry):  # pyright: ignore [reportUnnecessaryIsInstance]
                     processed_geoms.append(item)
 
             self.geoms = processed_geoms
@@ -1665,7 +1657,7 @@ class CompoundGeometry(Geometry):
         self.points = []
         self.facets = []
         self.holes = []
-        self.material = None  # type: ignore
+        self.material = None
         self.compile_geometry()
         self.tol = 12
         self.mesh: dict[str, Any] | None = None
@@ -1687,7 +1679,7 @@ class CompoundGeometry(Geometry):
         return str(self.geom._repr_svg_())
 
     @staticmethod
-    def from_points(  # type: ignore
+    def from_points(  # pyright: ignore [reportIncompatibleMethodOverride]
         points: list[tuple[float, float]],
         facets: list[tuple[int, int]],
         control_points: list[tuple[float, float]],
@@ -1798,7 +1790,7 @@ class CompoundGeometry(Geometry):
 
         # First, generate all invidual polygons from points and facets
         current_polygon_points = []
-        all_polygons = []
+        all_polygons: list[Polygon] = []
         prev_facet = None
 
         # initialise indices
@@ -1832,8 +1824,8 @@ class CompoundGeometry(Geometry):
             all_polygons.append(Polygon(current_polygon_points))
 
         # Then classify all of the collected polygons as either "exterior" or "interior"
-        exteriors = []
-        interiors = []
+        exteriors: list[Polygon] = []
+        interiors: list[Polygon] = []
 
         for polygon in all_polygons:
             hole_coord_in_polygon = [
@@ -1872,7 +1864,7 @@ class CompoundGeometry(Geometry):
             )
         else:
             # "Punch" all holes through each exterior geometry
-            punched_exterior_geometries = []
+            punched_exterior_geometries: list[Geometry] = []
 
             for idx, exterior in enumerate(exteriors):
                 punched_exterior = exterior
@@ -1890,6 +1882,10 @@ class CompoundGeometry(Geometry):
                         msg = "Control points given are not contained within the "
                         msg += f"geometry once holes are subtracted: {control_points}"
                         raise ValueError(msg) from e
+
+                if not isinstance(punched_exterior, Polygon):
+                    msg = "Geometry generation failed."
+                    raise RuntimeError(msg)
 
                 exterior_geometry = Geometry(
                     geom=punched_exterior,
@@ -2283,8 +2279,8 @@ class CompoundGeometry(Geometry):
             geometries to the ``"bottom"`` of the line (or to the ``"left"`` of the
             line, if vertical).
         """
-        top_geoms_acc = []
-        bottom_geoms_acc = []
+        top_geoms_acc: list[Geometry] = []
+        bottom_geoms_acc: list[Geometry] = []
 
         for geom in self.geoms:
             top_geoms, bottom_geoms = geom.split_section(
@@ -2351,7 +2347,7 @@ class CompoundGeometry(Geometry):
                 raise RuntimeError(msg)
 
             # Using the offset_geom as a "mask"
-            geoms_acc = []
+            geoms_acc: list[Geometry] = []
 
             for geom in self.geoms:
                 # Use symmetric intersection to find the region of the original
@@ -2430,10 +2426,10 @@ class CompoundGeometry(Geometry):
             for poly in unionized_poly.geoms:
                 for interior in poly.interiors:
                     rp: Point = Polygon(interior).representative_point()
-                    coords = cast(tuple[float, float], rp.coords[0])
+                    coords = rp.coords[0]
                     resultant_holes.append(coords)
 
-        elif isinstance(unionized_poly, Polygon):
+        elif isinstance(unionized_poly, Polygon):  # pyright: ignore [reportUnnecessaryIsInstance]
             if Geometry(unionized_poly).holes:
                 resultant_holes = Geometry(geom=unionized_poly).holes
             else:  # Holes have been destroyed through operations
@@ -2503,7 +2499,7 @@ def load_dxf(
 
     if isinstance(new_polygons, MultiPolygon):
         return CompoundGeometry(new_polygons)
-    elif isinstance(new_polygons, Polygon):
+    elif isinstance(new_polygons, Polygon):  # pyright: ignore [reportUnnecessaryIsInstance]
         return Geometry(new_polygons)
     else:
         msg = f"No shapely.Polygon objects found in file: {dxf_filepath}"
@@ -2608,7 +2604,7 @@ def create_points_and_facets(
     # Holes
     for idx, hole in enumerate(shape.interiors):
         break_count = master_count
-        int_points = []
+        int_points: list[tuple[float, float]] = []
 
         for coords in hole.coords[:-1]:  # The last point == first point (shapely)
             x, y = list(coords)
@@ -2648,7 +2644,9 @@ def buffer_polygon(
 
     if isinstance(buffered_polygon, GeometryCollection):
         remaining_polygons = [
-            item for item in buffered_polygon.geoms if isinstance(item, Polygon)
+            item
+            for item in buffered_polygon.geoms  # pyright: ignore [reportUnknownVariableType]
+            if isinstance(item, Polygon)
         ]
 
         if len(remaining_polygons) == 1:
@@ -2656,7 +2654,7 @@ def buffer_polygon(
         else:
             return MultiPolygon(remaining_polygons)
 
-    elif isinstance(buffered_polygon, MultiPolygon | Polygon):
+    elif isinstance(buffered_polygon, MultiPolygon | Polygon):  # pyright: ignore [reportUnnecessaryIsInstance]
         return buffered_polygon
     else:
         return Polygon()
@@ -2691,7 +2689,7 @@ def filter_non_polygons(
         elif len(acc) == 1:
             return acc[0]
         else:
-            return MultiPolygon(acc)  # type: ignore
+            return MultiPolygon(acc)  # pyright: ignore [reportArgumentType]
     else:
         return Polygon()
 
@@ -2753,7 +2751,7 @@ def compound_dilation(geoms: list[Geometry], offset: float) -> CompoundGeometry:
     """
     polys = [geom.geom for geom in geoms]
     geom_network = build_geometry_network(polys)
-    acc = []
+    acc: list[Geometry] = []
 
     for poly_idx, connectivity in geom_network.items():
         poly_orig = polys[poly_idx]
@@ -2761,7 +2759,7 @@ def compound_dilation(geoms: list[Geometry], offset: float) -> CompoundGeometry:
         connected_polys = [polys[idx].exterior for idx in connectivity]
         mucky_shared_paths = shared_paths(poly_orig_exterior, connected_polys)
         shared_path_geometries = MultiLineString(
-            extract_shared_paths(mucky_shared_paths)
+            extract_shared_paths(mucky_shared_paths)  # pyright: ignore [reportArgumentType]
         )
         source = line_merge(poly_orig_exterior - shared_path_geometries)
         buff = source.buffer(offset, cap_style="flat")
@@ -2853,24 +2851,32 @@ def build_geometry_network(lop: list[Polygon]) -> dict[int, set[int]]:
 
 
 def extract_shared_paths(
-    arr_of_geom_coll: npt.ArrayLike,
+    arr_of_geom_coll: list[GeometryCollection],
 ) -> list[LineString]:
     """Extracts a list of LineStrings exported by the shapely ``shared_paths`` method.
 
     Args:
         arr_of_geom_coll: An array of geometry collections
 
-    Returns:
-        List of LineStrings.
-    """
-    acc = []
+    Raises:
+        RuntimeError: If linestrings cannot be extracted
 
-    for geom_col in arr_of_geom_coll:  # type: ignore
-        for mls in geom_col.geoms:  # type: ignore
+    Returns:
+        List of LineStrings
+    """
+    acc: list[LineString] = []
+
+    for geom_coll in arr_of_geom_coll:
+        for mls in geom_coll.geoms:
             if mls.is_empty:
                 continue
 
             ls = line_merge(mls)
-            acc.append(ls)
+
+            if isinstance(ls, LineString):
+                acc.append(ls)
+            else:
+                msg = "Extract shared paths failed."
+                raise RuntimeError(msg)
 
     return acc

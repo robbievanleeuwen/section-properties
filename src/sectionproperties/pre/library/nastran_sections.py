@@ -1251,7 +1251,7 @@ def nastran_rod(
     """
     # loop through each point on the circle
     d = 2.0 * dim_1
-    points = []
+    points: list[tuple[float, float]] = []
 
     for i in range(n):
         # determine polar angle
@@ -1517,8 +1517,8 @@ def nastran_tube(
 
     d = 2.0 * dim_1
     t = dim_1 - dim_2
-    points_inner = []
-    points_outer = []
+    points_inner: list[tuple[float, float]] = []
+    points_outer: list[tuple[float, float]] = []
 
     # loop through each point of the CHS
     for i in range(n):
@@ -1588,8 +1588,8 @@ def nastran_tube2(
     d = 2.0 * dim_1
     t = dim_2
 
-    points_inner = []
-    points_outer = []
+    points_inner: list[tuple[float, float]] = []
+    points_outer: list[tuple[float, float]] = []
 
     # loop through each point of the section
     for i in range(n):

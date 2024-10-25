@@ -96,17 +96,17 @@ class Section:
             self.materials = [self.geometry.material]
 
         # extract mesh data
-        self._mesh_nodes = np.array(self.mesh["vertices"], dtype=float)
-        self._mesh_elements = np.array(self.mesh["triangles"], dtype=int)
+        self.mesh_nodes = np.array(self.mesh["vertices"], dtype=float)
+        self.mesh_elements = np.array(self.mesh["triangles"], dtype=int)
         self._mesh_attributes = np.array(
             self.mesh["triangle_attributes"].T[0], dtype=int
         )
 
         # swap mid-node order to retain node ordering consistency
-        self._mesh_elements[:, [3, 4, 5]] = self._mesh_elements[:, [5, 3, 4]]
+        self.mesh_elements[:, [3, 4, 5]] = self.mesh_elements[:, [5, 3, 4]]
 
         # save total number of nodes in mesh
-        self.num_nodes = len(self._mesh_nodes)
+        self.num_nodes = len(self.mesh_nodes)
 
         # initialise material_groups variable
         self.material_groups: list[MaterialGroup] = []
@@ -136,14 +136,14 @@ class Section:
         self.elements: list[fea.Tri6] = []
 
         # build the mesh one element at a time
-        for i, node_ids in enumerate(self._mesh_elements):
+        for i, node_ids in enumerate(self.mesh_elements):
             # create a list containing the vertex and mid-node coordinates
-            coords = self._mesh_nodes[node_ids, :].transpose()
+            coords = self.mesh_nodes[node_ids, :].transpose()
 
             # if materials are specified, get the material
             if self.materials:
                 # get attribute index of current element
-                att_el = self._mesh_attributes[i]
+                att_el: int = self._mesh_attributes[i]
 
                 # fetch the material
                 material = self.materials[att_el]
@@ -1522,24 +1522,24 @@ class Section:
                 Section(geometry=geom).plot_mesh()
         """
         # create plot and setup the plot
-        with post.plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (_, ax):
             if not ax:
                 msg = "Matplotlib axes not created."
                 raise RuntimeError(msg)
 
             # create mesh triangulation
             triang = tri.Triangulation(
-                self._mesh_nodes[:, 0],
-                self._mesh_nodes[:, 1],
-                self._mesh_elements[:, 0:3],
+                self.mesh_nodes[:, 0],
+                self.mesh_nodes[:, 1],
+                self.mesh_elements[:, 0:3],
                 mask=mask,
             )
 
             # if the material colors are to be displayed
             if materials and self.materials:
-                color_array = []
-                legend_labels = []
-                c = []  # Indices of elements for mapping colors
+                color_array: list[str] = []
+                legend_labels: list[mpatches.Patch] = []
+                c: list[int] = []  # Indices of elements for mapping colors
 
                 # create an array of finite element colors
                 for idx, element in enumerate(self.elements):
@@ -1559,21 +1559,21 @@ class Section:
                 cmap = ListedColormap(colors=color_array)  # custom colormap
 
                 # plot the mesh colors
-                ax.tripcolor(
+                ax.tripcolor(  # pyright: ignore
                     triang,
                     c,
                     cmap=cmap,
                 )
 
                 # display the legend
-                ax.legend(
+                ax.legend(  # pyright: ignore
                     loc="center left",
                     bbox_to_anchor=(1, 0.5),
                     handles=legend_labels,
                 )
 
             # plot the mesh
-            ax.triplot(
+            ax.triplot(  # pyright: ignore
                 triang,
                 lw=0.5,
                 color="black",
@@ -1623,7 +1623,7 @@ class Section:
                 section.plot_centroids()
         """
         # create plot and setup the plot
-        with post.plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (_, ax):
             if not ax:
                 msg = "Matplotlib axes not created."
                 raise RuntimeError(msg)
@@ -1634,7 +1634,7 @@ class Section:
             # if the elastic centroid has been calculated
             try:
                 cx, cy = self.get_c()
-                ax.scatter(
+                ax.scatter(  # pyright: ignore
                     x=cx,
                     y=cy,
                     edgecolors="r",
@@ -1649,14 +1649,14 @@ class Section:
             # if the shear centre has been calculated
             try:
                 x_s, y_s = self.get_sc()
-                ax.scatter(x=x_s, y=y_s, c="r", marker="+", s=100, label="Shear centre")
+                ax.scatter(x=x_s, y=y_s, c="r", marker="+", s=100, label="Shear centre")  # pyright: ignore
             except RuntimeError:
                 pass
 
             # if the global plastic centroid has been calculated
             try:
                 x_pc, y_pc = self.get_pc()
-                ax.scatter(
+                ax.scatter(  # pyright: ignore
                     x=x_pc,
                     y=y_pc,
                     c="r",
@@ -1670,7 +1670,7 @@ class Section:
             # if the principal plastic centroid has been calculated
             try:
                 x11_pc, y22_pc = self.get_pc_p()
-                ax.scatter(
+                ax.scatter(  # pyright: ignore
                     x11_pc,
                     y22_pc,
                     edgecolors="r",
@@ -1692,7 +1692,7 @@ class Section:
                 pass
 
             # display the legend
-            ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+            ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))  # pyright: ignore
 
         return ax
 
@@ -1726,27 +1726,27 @@ class Section:
             raise RuntimeError(msg)
 
         # create plot and setup the plot
-        with post.plotting_context(title=title, **kwargs) as (fig, ax):
+        with post.plotting_context(title=title, **kwargs) as (_, ax):
             if not ax:
                 msg = "Matplotlib axes not created."
                 raise RuntimeError(msg)
 
             # create triangulation
             triang = tri.Triangulation(
-                self._mesh_nodes[:, 0],
-                self._mesh_nodes[:, 1],
-                self._mesh_elements[:, 0:3],
+                self.mesh_nodes[:, 0],
+                self.mesh_nodes[:, 1],
+                self.mesh_elements[:, 0:3],
             )
 
             if with_lines:
-                ax.tricontour(
+                ax.tricontour(  # pyright: ignore
                     triang,
                     self.section_props.omega,
                     colors="k",
                     levels=level,
                 )
 
-            ax.tricontourf(
+            ax.tricontourf(  # pyright: ignore
                 triang,
                 self.section_props.omega,
                 cmap=cmap,
@@ -3215,16 +3215,19 @@ class Section:
             "nu": nu,
         }
 
-        stress_pts = []
+        stress_pts: list[tuple[float, float, float] | None] = []
 
         for pt in pts:
             query_geom = Point(pt)
-            tri_ids = self.mesh_search_tree.query(query_geom, predicate="intersects")
+            tri_ids: list[int] = self.mesh_search_tree.query(
+                query_geom, predicate="intersects"
+            ).tolist()
 
             if len(tri_ids) == 0:
                 sig = None
             elif len(tri_ids) == 1:
-                tri = self.elements[tri_ids[0]]
+                el_id = tri_ids[0]
+                tri = self.elements[el_id]
                 omega_el = omega[tri.node_ids]
                 psi_shear_el = psi_shear[tri.node_ids]
                 phi_shear_el = phi_shear[tri.node_ids]
@@ -3238,7 +3241,7 @@ class Section:
                     phi_shear=phi_shear_el,
                 )
             else:
-                sigs = []
+                sigs: list[tuple[float, float, float]] = []
 
                 for idx in tri_ids:
                     tri = self.elements[idx]

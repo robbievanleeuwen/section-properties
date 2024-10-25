@@ -325,7 +325,7 @@ def concrete_column_section(
         )
     else:
         xy = np.meshgrid(b_edge_bars_x, d_edge_bars_y)
-        all_bar_coords = np.append(xy[0].reshape(-1, 1), xy[1].reshape(-1, 1), axis=1)  # type: ignore
+        all_bar_coords = np.append(xy[0].reshape(-1, 1), xy[1].reshape(-1, 1), axis=1)
 
     for bar_coord in all_bar_coords:
         concrete_geometry = add_bar(
@@ -538,7 +538,7 @@ def concrete_tee_section(
 
             geom = (geom - bar_left - bar_right) + bar_left + bar_right
 
-    if isinstance(geom, geometry.CompoundGeometry):
+    if isinstance(geom, geometry.CompoundGeometry):  # pyright: ignore [reportUnnecessaryIsInstance]
         return geom
     else:
         msg = "Concrete section generation failed."

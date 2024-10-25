@@ -18,6 +18,9 @@ from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 import sectionproperties.post.post as post
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
+    from matplotlib.quiver import Quiver
+
     from sectionproperties.analysis.section import MaterialGroup, Section
     from sectionproperties.pre.pre import Material
 
@@ -282,8 +285,8 @@ class StressPost:
         }
 
         # populate stresses and plotted material groups
-        sigs = []
-        plotted_material_groups = []
+        sigs: list[npt.NDArray[np.float64]] = []
+        plotted_material_groups: list[MaterialGroup] = []
 
         for group in self.material_groups:
             # if we are limiting materials to plot, check material is in list
@@ -304,9 +307,9 @@ class StressPost:
 
             # create triangulation
             triang = tri.Triangulation(
-                self.section._mesh_nodes[:, 0],
-                self.section._mesh_nodes[:, 1],
-                self.section._mesh_elements[:, 0:3],
+                self.section.mesh_nodes[:, 0],
+                self.section.mesh_nodes[:, 1],
+                self.section.mesh_elements[:, 0:3],
             )
 
             # determine minimum and maximum stress values for the contour list
@@ -343,19 +346,19 @@ class StressPost:
 
                 # plot the filled contour
                 if ax:
-                    trictr = ax.tricontourf(triang, sig, v, cmap=colormap, norm=norm)
+                    trictr = ax.tricontourf(triang, sig, v, cmap=colormap, norm=norm)  # pyright: ignore
 
             # display the colorbar
-            divider = make_axes_locatable(axes=ax)
-            cax = divider.append_axes(position="right", size="5%", pad=0.1)
+            divider = make_axes_locatable(axes=ax)  # pyright: ignore
+            cax = divider.append_axes(position="right", size="5%", pad=0.1)  # pyright: ignore
 
             if trictr:
-                fig.colorbar(
+                fig.colorbar(  # pyright: ignore
                     mappable=trictr,
                     label=colorbar_label,
                     format=fmt,
                     ticks=ticks,
-                    cax=cax,
+                    cax=cax,  # pyright: ignore
                 )
 
             # plot the finite element mesh
@@ -449,8 +452,8 @@ class StressPost:
         }
 
         # populate stresses
-        sigxs = []
-        sigys = []
+        sigxs: list[npt.NDArray[np.float64]] = []
+        sigys: list[npt.NDArray[np.float64]] = []
 
         for group in self.material_groups:
             sigxs.append(getattr(group.stress_result, stress_dict[stress]["sigx"]))
@@ -466,7 +469,7 @@ class StressPost:
             colormap = mpl.colormaps.get_cmap(cmap=cmap)
 
             # initialise quiver plot list max scale
-            quiv_list = []
+            quiv_list: list[Quiver] = []
             max_scale = 0.0
 
             norm = None
@@ -487,9 +490,9 @@ class StressPost:
                 c = np.hypot(sigx, sigy)
 
                 if ax:
-                    quiv = ax.quiver(
-                        self.section._mesh_nodes[:, 0],
-                        self.section._mesh_nodes[:, 1],
+                    quiv = ax.quiver(  # pyright: ignore
+                        self.section.mesh_nodes[:, 0],
+                        self.section.mesh_nodes[:, 1],
                         sigx,
                         sigy,
                         c,
@@ -498,7 +501,7 @@ class StressPost:
                     )
 
                     # get the scale and store the max value
-                    quiv._init()  # type: ignore
+                    quiv._init()  # pyright: ignore
                     if not isinstance(quiv.scale, float):
                         msg = "Cannot set quiver scale."
                         raise RuntimeError(msg)
@@ -507,8 +510,8 @@ class StressPost:
                     quiv_list.append(quiv)
 
                 # update the colormap values
-                c_min = min(c_min, min(c))
-                c_max = max(c_max, max(c))
+                c_min: float = min(c_min, min(c))
+                c_max: float = max(c_max, max(c))
 
             # apply the scale
             for quiv_plot in quiv_list:
@@ -518,15 +521,19 @@ class StressPost:
             v1 = np.linspace(
                 start=c_min - 1e-12, stop=c_max + 1e-12, num=15, endpoint=True
             )
-            divider = make_axes_locatable(axes=ax)
-            cax = divider.append_axes(position="right", size="5%", pad=0.1)
+            divider = make_axes_locatable(axes=ax)  # pyright: ignore
+            cax = divider.append_axes(position="right", size="5%", pad=0.1)  # pyright: ignore
 
             if quiv is None:
                 msg = "Quiver plot failed."
                 raise RuntimeError(msg)
 
-            fig.colorbar(
-                mappable=quiv, label=colorbar_label, format=fmt, ticks=v1, cax=cax
+            fig.colorbar(  # pyright: ignore
+                mappable=quiv,
+                label=colorbar_label,
+                format=fmt,
+                ticks=v1,
+                cax=cax,  # pyright: ignore
             )
 
             # plot the finite element mesh
@@ -538,7 +545,7 @@ class StressPost:
             msg = "Plot failed."
             raise RuntimeError(msg)
 
-    def get_stress(self) -> list[dict[str, object]]:
+    def get_stress(self) -> list[dict[str, str | npt.NDArray[np.float64]]]:
         r"""Returns the stresses within each material.
 
         Returns:
@@ -639,7 +646,7 @@ class StressPost:
             actions
         """
         # generate list
-        stress = []
+        stress: list[dict[str, str | npt.NDArray[np.float64]]] = []
 
         for group in self.material_groups:
             stress.append(  # noqa: PERF401
@@ -739,8 +746,8 @@ class StressPost:
         """
         # get mesh data
         pt = x, y
-        nodes = self.section._mesh_nodes
-        ele = self.section._mesh_elements
+        nodes = self.section.mesh_nodes
+        ele = self.section.mesh_elements
         triang = tri.Triangulation(nodes[:, 0], nodes[:, 1], ele[:, 0:3])
 
         # find in which material group the point lies
@@ -772,9 +779,9 @@ class StressPost:
         tau_yz_interp = tri.LinearTriInterpolator(triang, tau_yz_v)
 
         # get the stresses at the point
-        sigma_zz = sigma_zz_interp(*pt).item()
-        tau_xz = tau_xz_interp(*pt).item()
-        tau_yz = tau_yz_interp(*pt).item()
+        sigma_zz = sigma_zz_interp(*pt).item()  # pyright: ignore
+        tau_xz = tau_xz_interp(*pt).item()  # pyright: ignore
+        tau_yz = tau_yz_interp(*pt).item()  # pyright: ignore
 
         # assemble the stress tensor
         sigma_xx = 0.0
@@ -795,7 +802,7 @@ class StressPost:
 
         # the tractions on each plane in cartesian coords wrt principal axes
         n_inv = np.linalg.inv(n)
-        tractions = []
+        tractions: list[tuple[Any, Any]] = []
 
         for col in range(3):
             ss = n_inv[:, col].T @ np.diag(s) @ n_inv[:, col]
@@ -850,21 +857,21 @@ class StressPost:
                 range(3), ["X", "Y", "Z"], ["r", "b", "k"], strict=False
             ):
                 if ax:
-                    ax.plot(*tractions[idx], f"{color}.", label=rf"{plane}-face")
+                    ax.plot(*tractions[idx], f"{color}.", label=rf"{plane}-face")  # pyright: ignore
 
             if ax:
                 ax.set_axisbelow(True)
-                ax.grid(which="both")
-                ax.legend(loc="center left", bbox_to_anchor=(1.0, 0.5))
+                ax.grid(which="both")  # pyright: ignore
+                ax.legend(loc="center left", bbox_to_anchor=(1.0, 0.5))  # pyright: ignore
 
                 ax.spines["top"].set_visible(False)
                 ax.spines["right"].set_visible(False)
 
-                ax.set_ylabel(r"Shear stress $\tau$ (MPa)")
-                ax.set_xlabel(r"Direct stress $\sigma$ (MPa)")
+                ax.set_ylabel(r"Shear stress $\tau$ (MPa)")  # pyright: ignore
+                ax.set_xlabel(r"Direct stress $\sigma$ (MPa)")  # pyright: ignore
 
-                ax.xaxis.set_tick_params(bottom=True, top=False, direction="inout")
-                ax.yaxis.set_tick_params(left=True, right=False, direction="inout")
+                ax.xaxis.set_tick_params(bottom=True, top=False, direction="inout")  # pyright: ignore
+                ax.yaxis.set_tick_params(left=True, right=False, direction="inout")  # pyright: ignore
 
             # the following is just to get the labels positioned outside the axes
             if ax:

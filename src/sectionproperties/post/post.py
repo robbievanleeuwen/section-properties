@@ -360,18 +360,18 @@ def plotting_context(
 
     if ax is None:
         if not render or pause:
-            plt.ioff()
+            plt.ioff()  # pyright: ignore
         else:
-            plt.ion()
+            plt.ion()  # pyright: ignore
 
         ax_supplied = False
-        fig, ax = plt.subplots(**kwargs)
+        fig, ax = plt.subplots(**kwargs)  # pyright: ignore
 
         try:
             if axis_index is None:
-                axis_index = (0,) * ax.ndim  # type: ignore
+                axis_index = (0,) * ax.ndim  # pyright: ignore
 
-            ax = ax[axis_index]  # type: ignore
+            ax = ax[axis_index]  # pyright: ignore
         except (AttributeError, TypeError):
             pass  # only 1 axis, not an array
         except IndexError as exc:
@@ -383,14 +383,14 @@ def plotting_context(
         ax_supplied = True
 
         if not render:
-            plt.ioff()
+            plt.ioff()  # pyright: ignore
 
-    yield fig, ax  # type: ignore
+    yield fig, ax  # pyright: ignore
 
     if ax is not None:
-        ax.set_title(title)
+        ax.set_title(title)  # pyright: ignore
         plt.tight_layout()
-        ax.set_aspect("equal", anchor="C")
+        ax.set_aspect("equal", anchor="C")  # pyright: ignore
 
     # if no axes was supplied, finish the plot and return the figure and axes
     if ax_supplied:
@@ -398,13 +398,13 @@ def plotting_context(
         return
 
     if filename:
-        fig.savefig(filename, dpi=fig.dpi)  # type: ignore
-        plt.close(fig)  # close the figure to free the memory
+        fig.savefig(filename, dpi=fig.dpi)  # pyright: ignore
+        plt.close(fig)  # pyright: ignore  # close the figure to free the memory
         return  # if the figure was to be saved, then don't show it also
 
     if render:
         if pause:
-            plt.show()
+            plt.show()  # pyright: ignore
         else:
             plt.draw()
             plt.pause(0.001)
@@ -531,8 +531,8 @@ def draw_principal_axis(
     )
 
     # plot the principal axis
-    ax.plot(x11[:, 0], x11[:, 1], "k--", alpha=0.5, label="11-axis")
-    ax.plot(y22[:, 0], y22[:, 1], "k-.", alpha=0.5, label="22-axis")
+    ax.plot(x11[:, 0], x11[:, 1], "k--", alpha=0.5, label="11-axis")  # pyright: ignore
+    ax.plot(y22[:, 0], y22[:, 1], "k-.", alpha=0.5, label="22-axis")  # pyright: ignore
 
 
 def print_results(

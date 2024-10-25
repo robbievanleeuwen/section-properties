@@ -1,6 +1,7 @@
 from collections.abc import Iterator
 
 import numpy as np
+import numpy.typing as npt
 from shapely.geometry import Polygon
 
 class RhImporter:
@@ -18,8 +19,8 @@ class RhImporter:
         self,
         refine_num: int = ...,
         tol: float = ...,
-        vec1: np.ndarray = ...,
-        vec2: np.ndarray = ...,
+        vec1: npt.NDArray[np.float64] = ...,
+        vec2: npt.NDArray[np.float64] = ...,
         plane_distance: float = ...,
         project: bool = ...,
         parallel: bool = ...,

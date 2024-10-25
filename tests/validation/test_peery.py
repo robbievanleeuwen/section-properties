@@ -280,7 +280,7 @@ def test_fb_c(peery_ex_7_2_1: Callable) -> None:
     perfect_result = -2384
     # The simplified textbook equation
     text_result = round(-494 * 1 + -315 * 6)
-    nodes = peery_ex_7_2_1.xsect._mesh_nodes
+    nodes = peery_ex_7_2_1.xsect.mesh_nodes
     assert len(nodes > 0)
     index, _ = get_node(nodes, c)
     _ = peery_ex_7_2_1.apply_load(v)
@@ -304,7 +304,7 @@ def test_fb_b(peery_ex_7_2_1: Callable) -> None:
     perfect_result = 580
     # The sipmlified textbook equation
     text_result = round(-494 * -5 + -315 * 6)
-    nodes = peery_ex_7_2_1.xsect._mesh_nodes
+    nodes = peery_ex_7_2_1.xsect.mesh_nodes
     index, _ = get_node(nodes, b)
     _ = peery_ex_7_2_1.apply_load(v)
     computed_result = peery_ex_7_2_1.stress.get_stress()[0]["sig_zz"][index]
@@ -327,7 +327,7 @@ def test_fb_a(peery_ex_7_2_1: Callable) -> None:
     perfect_result = 1210
     # The simplified textbook equation
     text_result = round(-494 * -5 + -315 * 4)
-    nodes = peery_ex_7_2_1.xsect._mesh_nodes
+    nodes = peery_ex_7_2_1.xsect.mesh_nodes
     index, _ = get_node(nodes, a)
     _ = peery_ex_7_2_1.apply_load(v)
     computed_result = peery_ex_7_2_1.stress.get_stress()[0]["sig_zz"][index]

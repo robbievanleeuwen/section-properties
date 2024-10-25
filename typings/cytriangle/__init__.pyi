@@ -1,4 +1,6 @@
+from typing import Any
+
 def triangulate(
-    input_dict: dict,
+    input_dict: dict[str, Any],
     flags: str,
-) -> dict: ...
+) -> dict[str, Any]: ...

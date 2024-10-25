@@ -25,11 +25,8 @@ try:
     from numba import njit
 except ImportError:
 
-    def njit(**options: Any) -> Callable[[Any], Any]:
+    def njit(cache: bool, nogil: bool) -> Callable[[Any], Any]:
         """Empty decorator if numba is not installed.
-
-        Args:
-            options: Optional keyword arguments for numba that are discarded.
 
         Returns:
             Empty njit decorator.
@@ -55,14 +52,14 @@ except ImportError:
                 Returns:
                     Wrapped function.
                 """
-                return func(*args, **kwargs)  # type: ignore
+                return func(*args, **kwargs)
 
             return wrapper
 
         return decorator
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@njit(cache=True, nogil=True)
 def _assemble_torsion(
     k_el: npt.NDArray[np.float64],
     f_el: npt.NDArray[np.float64],
@@ -95,7 +92,7 @@ def _assemble_torsion(
     return k_el, f_el, c_el
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@njit(cache=True, nogil=True)
 def _shear_parameter(
     nx: float, ny: float, ixx: float, iyy: float, ixy: float
 ) -> tuple[float, float, float, float, float, float]:
@@ -121,7 +118,7 @@ def _shear_parameter(
     return r, q, d1, d2, h1, h2
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@njit(cache=True, nogil=True)
 def _assemble_shear_load(
     f_psi: npt.NDArray[np.float64],
     f_phi: npt.NDArray[np.float64],
@@ -153,7 +150,7 @@ def _assemble_shear_load(
     Returns:
         Shear load vectors (``f_psi``, ``f_phi``)
     """
-    r, q, d1, d2, h1, h2 = _shear_parameter(nx, ny, ixx, iyy, ixy)
+    _, _, d1, d2, h1, h2 = _shear_parameter(nx, ny, ixx, iyy, ixy)
 
     f_psi += weight * (
         nu / 2 * b.transpose() @ np.array([d1, d2])
@@ -166,7 +163,7 @@ def _assemble_shear_load(
     return f_psi, f_phi
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@njit(cache=True, nogil=True)
 def _assemble_shear_coefficients(
     kappa_x: float,
     kappa_y: float,
@@ -203,7 +200,7 @@ def _assemble_shear_coefficients(
         Shear deformation coefficients (``kappa_x``, ``kappa_y``, ``kappa_xy``)
 
     """
-    r, q, d1, d2, h1, h2 = _shear_parameter(nx, ny, ixx, iyy, ixy)
+    _, _, d1, d2, h1, h2 = _shear_parameter(nx, ny, ixx, iyy, ixy)
 
     b_psi_d = b @ psi_shear - nu / 2 * np.array([d1, d2])  # 2x1
     b_phi_h = b @ phi_shear - nu / 2 * np.array([h1, h2])  # 2x1
@@ -648,7 +645,7 @@ class Tri6:
             nx_11, ny_22 = principal_coordinate(phi=phi, x=nx, y=ny)
 
             # determine shear parameters
-            r, q, d1, d2, h1, h2 = _shear_parameter(nx, ny, ixx, iyy, ixy)
+            _, _, d1, d2, h1, h2 = _shear_parameter(nx, ny, ixx, iyy, ixy)
 
             # calculate element stresses
             sig_zz_mxx_gp[i] = self.material.elastic_modulus * (
@@ -987,7 +984,7 @@ tmp_array = np.array([[0, 1, 0], [0, 0, 1]], dtype=np.double)
 
 
 @cache
-@njit(cache=True, nogil=True)  # type: ignore
+@njit(cache=True, nogil=True)
 def __shape_function_cached(
     coords: tuple[float, ...],
     gauss_point: tuple[float, float, float],
@@ -1067,11 +1064,11 @@ def shape_function(
         direction ``B(i,j)`` (``[2 x 6]``), the determinant of the Jacobian
         matrix ``j``, the global cooridnates of the Gauss point (``x``, ``y``)
     """
-    return __shape_function_cached(tuple(coords.ravel()), tuple(gauss_point[1:]))  # type: ignore
+    return __shape_function_cached(tuple(coords.ravel()), tuple(gauss_point[1:]))
 
 
 @cache
-@njit(cache=True, nogil=True)  # type: ignore
+@njit(cache=True, nogil=True)
 def shape_function_only(p: tuple[float, float, float]) -> npt.NDArray[np.float64]:
     """The values of the ``Tri6`` shape function at a point ``p``.
 
@@ -1149,7 +1146,7 @@ h_inv = np.array(
 )
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@njit(cache=True, nogil=True)
 def extrapolate_to_nodes(w: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """Extrapolates results at six Gauss points to the six nodes of a ``Tri6`` element.
 
@@ -1162,7 +1159,7 @@ def extrapolate_to_nodes(w: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     return h_inv @ w
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@njit(cache=True, nogil=True)
 def principal_coordinate(
     phi: float,
     x: float,
@@ -1185,7 +1182,7 @@ def principal_coordinate(
     return x * cos_phi + y * sin_phi, y * cos_phi - x * sin_phi
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@njit(cache=True, nogil=True)
 def global_coordinate(
     phi: float,
     x11: float,
@@ -1208,7 +1205,7 @@ def global_coordinate(
     return x11 * cos_phi - y22 * sin_phi, x11 * sin_phi + y22 * cos_phi
 
 
-@njit(cache=True, nogil=True)  # type: ignore
+@njit(cache=True, nogil=True)
 def point_above_line(
     u: npt.NDArray[np.float64],
     px: float,

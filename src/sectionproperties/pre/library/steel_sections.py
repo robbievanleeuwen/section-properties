@@ -46,8 +46,8 @@ def circular_hollow_section(
 
             circular_hollow_section(d=48, t=3.2, n=64).plot_geometry()
     """
-    points_inner = []
-    points_outer = []
+    points_inner: list[tuple[float, float]] = []
+    points_outer: list[tuple[float, float]] = []
 
     # loop through each point of the CHS
     for i in range(n):
@@ -114,8 +114,8 @@ def elliptical_hollow_section(
 
             elliptical_hollow_section(d_x=50, d_y=25, t=2, n=64).plot_geometry()
     """
-    points_inner = []
-    points_outer = []
+    points_inner: list[tuple[float, float]] = []
+    points_outer: list[tuple[float, float]] = []
 
     # loop through each point of the EHS
     for i in range(n):
@@ -185,8 +185,8 @@ def rectangular_hollow_section(
 
             rectangular_hollow_section(d=100, b=50, t=6, r_out=9, n_r=8).plot_geometry()
     """
-    points_inner = []
-    points_outer = []
+    points_inner: list[tuple[float, float]] = []
+    points_outer: list[tuple[float, float]] = []
 
     # calculate internal radius
     r_in = max(r_out - t, 0)

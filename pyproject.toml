@@ -92,10 +92,7 @@ venv = ".venv"
 pythonVersion = "3.10"
 include = ["src"]
 exclude = ["**/__init__.py"]
-# strict = ["src"]
-reportMissingTypeStubs = true
-# reportUnknownParameterType = true
-# reportUntypedFunctionDecorator = true
+strict = ["src"]
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]

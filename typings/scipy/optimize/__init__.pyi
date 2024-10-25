@@ -1,10 +1,11 @@
 from collections.abc import Callable
+from typing import Any
 
 def brentq(
-    f: Callable,
+    f: Callable[[float, Any, Any, Any], float],
     a: float,
     b: float,
-    args: tuple = ...,
+    args: tuple[Any, ...] = ...,
     xtol: float = ...,
     rtol: float = ...,
     maxiter: int = ...,

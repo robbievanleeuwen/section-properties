@@ -77,7 +77,7 @@ def circular_section(
             circular_section(d=50, n=64).plot_geometry()
     """
     x_off, y_off = (0, 0)
-    points = []
+    points: list[tuple[float, float]] = []
 
     # loop through each point on the circle
     for i in range(n):
@@ -166,7 +166,7 @@ def elliptical_section(
 
             elliptical_section(d_x=50, d_y=25, n=40).plot_geometry()
     """
-    points = []
+    points: list[tuple[float, float]] = []
 
     # loop through each point on the ellipse
     for i in range(n):
