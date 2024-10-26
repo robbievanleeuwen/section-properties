@@ -83,7 +83,7 @@ def small_hole(small_square: Geometry) -> Geometry:
     small_sq = small_square
 
     return primitive_sections.rectangular_section(d=40, b=30).align_center(
-        align_to=small_sq
+        align_to=small_sq,
     )
 
 
@@ -116,7 +116,9 @@ def i_section_geom() -> Geometry:
 
 @pytest.fixture
 def composite_geom(
-    big_square: Geometry, small_square_with_hole: Geometry, i_section_geom: Geometry
+    big_square: Geometry,
+    small_square_with_hole: Geometry,
+    i_section_geom: Geometry,
 ) -> Geometry:
     """Generates a composite geometry object.
 
@@ -135,10 +137,12 @@ def composite_geom(
     composite = (
         big_sq
         + small_sq_w_hole.align_to(other=big_sq, on="top", inner=True).align_to(
-            other=big_sq, on="top"
+            other=big_sq,
+            on="top",
         )
         + i_sec.align_to(other=big_sq, on="bottom", inner=True).align_to(
-            other=big_sq, on="right"
+            other=big_sq,
+            on="right",
         )
     )
 
@@ -180,7 +184,9 @@ def steel_material() -> Material:
 
 
 def test_material_persistence(
-    big_square: Geometry, small_square: Geometry, steel_material: Material
+    big_square: Geometry,
+    small_square: Geometry,
+    steel_material: Material,
 ):
     """Tests material persistence.
 
@@ -345,7 +351,10 @@ def test_compound_geometry_from_points():
     )
     materials = [mat1, mat2]
     new_geom = sp_geom.CompoundGeometry.from_points(
-        points=points, facets=facets, control_points=control_points, materials=materials
+        points=points,
+        facets=facets,
+        control_points=control_points,
+        materials=materials,
     )
     poly = "MULTIPOLYGON (((-0.05 -2, 0.05 -2, 0.05 -0.05, 1 -0.05, 1 0.05, -0.05 0.05,"
     poly += " -0.05 -2)), ((-1 -2, 1 -2, 1 -2.1, -1 -2.1, -1 -2)))"
@@ -523,7 +532,10 @@ def test_geometry_from_3dm_encode():
 def test_shift_points():
     """Tests the shift_points() method."""
     assymetrical_chan = nastran_sections.nastran_chan(
-        dim_1=75, dim_2=200, dim_3=8, dim_4=16
+        dim_1=75,
+        dim_2=200,
+        dim_3=8,
+        dim_4=16,
     ).shift_points(point_idxs=1, dy=-10)
     assert (
         assymetrical_chan.geom.wkt
@@ -534,7 +546,10 @@ def test_shift_points():
 def test_mirror_section():
     """Tests the mirror_section() method."""
     assymetrical_chan = nastran_sections.nastran_chan(
-        dim_1=75, dim_2=200, dim_3=8, dim_4=16
+        dim_1=75,
+        dim_2=200,
+        dim_3=8,
+        dim_4=16,
     ).shift_points(point_idxs=1, dy=-10)
     assert (
         assymetrical_chan.mirror_section(axis="x").geom.wkt
@@ -589,21 +604,22 @@ def test_check_geometry_overlaps():
     big_sq = primitive_sections.rectangular_section(d=300, b=250)
     small_sq = primitive_sections.rectangular_section(d=100, b=75)
     small_hole = primitive_sections.rectangular_section(d=40, b=30).align_center(
-        align_to=small_sq
+        align_to=small_sq,
     )
 
     rect = primitive_sections.rectangular_section(d=50, b=50)
     circ = primitive_sections.circular_section(d=50, n=32).shift_section(
-        x_offset=125, y_offset=25
+        x_offset=125,
+        y_offset=25,
     )
 
     assert sp_geom.check_geometry_overlaps(lop=[small_sq.geom, small_hole.geom])
     assert sp_geom.check_geometry_overlaps(lop=[small_sq.geom, small_sq.geom])
     assert not sp_geom.check_geometry_overlaps(
-        lop=[big_sq.geom, small_sq.shift_section(x_offset=270).geom]
+        lop=[big_sq.geom, small_sq.shift_section(x_offset=270).geom],
     )
     assert sp_geom.check_geometry_overlaps(
-        lop=[big_sq.geom, small_sq.shift_section(x_offset=200, y_offset=150).geom]
+        lop=[big_sq.geom, small_sq.shift_section(x_offset=200, y_offset=150).geom],
     )
 
     assert not sp_geom.check_geometry_overlaps(lop=[rect.geom, circ.geom])
@@ -613,23 +629,24 @@ def test_check_geometry_disjoint():
     """Tests the geometry disjoint checker."""
     rect = primitive_sections.rectangular_section(d=50, b=50)
     circ = primitive_sections.circular_section(d=50, n=32).shift_section(
-        x_offset=125, y_offset=25
+        x_offset=125,
+        y_offset=25,
     )
 
     rect2 = primitive_sections.rectangular_section(d=50, b=50).shift_section(
-        x_offset=50
+        x_offset=50,
     )
     assert not sp_geom.check_geometry_disjoint(lop=[rect.geom, rect2.geom])
 
     rect3 = primitive_sections.rectangular_section(d=25, b=25).shift_section(
-        y_offset=50
+        y_offset=50,
     )
     assert not sp_geom.check_geometry_disjoint(lop=[rect.geom, rect2.geom, rect3.geom])
 
     assert sp_geom.check_geometry_disjoint(lop=[rect.geom, circ.geom])
 
     rect2 = primitive_sections.rectangular_section(d=50, b=50).shift_section(
-        x_offset=50
+        x_offset=50,
     )
     assert not sp_geom.check_geometry_disjoint(lop=[rect.geom, rect2.geom])
 
@@ -638,7 +655,8 @@ def test_warping_disjoint_warning():
     """Tests that the warning occurs when analysing (warping) a disjoint geometry."""
     rect = primitive_sections.rectangular_section(d=50, b=50)
     circ = primitive_sections.circular_section(d=50, n=32).shift_section(
-        x_offset=125, y_offset=25
+        x_offset=125,
+        y_offset=25,
     )
     geom = (rect + circ).create_mesh(mesh_sizes=[0])
 
@@ -746,7 +764,8 @@ def test_align_centre_value_error(unit_square):
 def test_rotate_control_point():
     """Tests the align_centre() ValueError."""
     geom = Geometry(
-        Polygon([(0, 0), (1, 0), (1, 1), (0, 1)]), control_points=(0.25, 0.25)
+        Polygon([(0, 0), (1, 0), (1, 1), (0, 1)]),
+        control_points=(0.25, 0.25),
     )
     geom = geom.rotate_section(angle=180, rot_point=(0, 0))
 
@@ -754,7 +773,8 @@ def test_rotate_control_point():
     check.almost_equal(geom.control_points[0][1], -0.25)
 
     geom = Geometry(
-        Polygon([(0, 0), (1, 0), (1, 1), (0, 1)]), control_points=(0.25, 0.25)
+        Polygon([(0, 0), (1, 0), (1, 1), (0, 1)]),
+        control_points=(0.25, 0.25),
     )
     geom = geom.rotate_section(angle=180, rot_point="center")
 
@@ -821,8 +841,8 @@ def test_union(unit_square):
                 (0.5, 1.5),
                 (0.5, 1),
                 (0, 1),
-            ]
-        )
+            ],
+        ),
     )
 
 
@@ -891,7 +911,7 @@ def test_compound_rotate(unit_square_compound):
     geom_rot = geom.rotate_section(180, (0, 0))
 
     assert geom_rot.geoms[0].geom.equals(
-        Polygon([(0, 0), (-0.5, 0), (-0.5, -1), (0, -1)])
+        Polygon([(0, 0), (-0.5, 0), (-0.5, -1), (0, -1)]),
     )
 
 
@@ -901,7 +921,7 @@ def test_compound_mirror(unit_square_compound):
     geom_mir = geom.mirror_section("y", (0, 0))
 
     assert geom_mir.geoms[0].geom.equals(
-        Polygon([(0, 0), (-0.5, 0), (-0.5, 1), (0, 1)])
+        Polygon([(0, 0), (-0.5, 0), (-0.5, 1), (0, 1)]),
     )
 
 
@@ -913,13 +933,13 @@ def test_compound_align_center(unit_square_compound):
     geom_shift = geom.align_center(geom_orig)
 
     assert geom_shift.geoms[0].geom.equals(
-        Polygon([(1, 1), (1.5, 1), (1.5, 2), (1, 2)])
+        Polygon([(1, 1), (1.5, 1), (1.5, 2), (1, 2)]),
     )
 
     geom = unit_square_compound
     geom_shift = geom.align_center((1.5, 1.5))
     assert geom_shift.geoms[0].geom.equals(
-        Polygon([(1, 1), (1.5, 1), (1.5, 2), (1, 2)])
+        Polygon([(1, 1), (1.5, 1), (1.5, 2), (1, 2)]),
     )
 
     with pytest.raises(ValueError, match="align_to must be either a Geometry object"):

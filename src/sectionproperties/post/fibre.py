@@ -6,14 +6,16 @@ It can be used in `suanPan <https://github.com/TLCFEM/suanPan>`_ to perform furt
 from __future__ import annotations
 
 from abc import abstractmethod
-
-import numpy as np
-import numpy.typing as npt
+from typing import TYPE_CHECKING
 
 import sectionproperties.analysis.solver as solver
 from sectionproperties.analysis.fea import Tri6, shape_function
 from sectionproperties.analysis.section import Section
 from sectionproperties.pre.geometry import CompoundGeometry, Geometry
+
+if TYPE_CHECKING:
+    import numpy as np
+    import numpy.typing as npt
 
 
 class Cell:
@@ -50,7 +52,7 @@ class Cell:
 
         Args:
             ele: The Tri6 element
-            omega: The warping function
+            omega: The warping function. Defaults to ``None``.
         """
         n, dn, self.area, _, _ = shape_function(
             ele.coords, (0.0, 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0)
@@ -140,11 +142,12 @@ def to_fibre_section(
 
     Args:
         obj: The geometry/section to be exported
-        main_section_tag: The tag of the main section
-        analysis_type: The type of analysis would be performed
-        material_mapping: A dictionary mapping material names to material tags
-        max_width: The maximum width of a line in the output
-        save_to: The path to save the output to
+        main_section_tag: The tag of the main section. Defaults to ``1``.
+        analysis_type: The type of analysis would be performed. Defaults to ``"3DOS"``.
+        material_mapping: A dictionary mapping material names to material tags. Defaults
+            to ``None``.
+        max_width: The maximum width of a line in the output. Defaults to ``160``.
+        save_to: The path to save the output to. Defaults to ``None``.
 
     Raises:
         TypeError: If `obj` is not a Geometry or Section
@@ -153,12 +156,13 @@ def to_fibre_section(
     Returns:
         str: The exported commands
     """
-    if isinstance(obj, (Geometry, CompoundGeometry)):
+    if isinstance(obj, Geometry | CompoundGeometry):
         geometry = obj
-    elif isinstance(obj, Section):
+    elif isinstance(obj, Section):  # pyright: ignore [reportUnnecessaryIsInstance]
         geometry = obj.geometry
     else:
-        raise TypeError(f"Expected a Geometry or Section, got {type(obj).__name__}")
+        msg = f"Expected a Geometry or Section, got {type(obj).__name__}"
+        raise TypeError(msg)
 
     analysis_type = analysis_type.upper()
 
@@ -173,7 +177,8 @@ def to_fibre_section(
         cell_class = Cell3DOS
         fibre_class = "Fibre3DOS"
     else:
-        raise ValueError("Invalid analysis type, expected 2D, 3D or 3DOS")
+        msg = "Invalid analysis type, expected 2D, 3D or 3DOS"
+        raise ValueError(msg)
 
     section = Section(geometry)
 

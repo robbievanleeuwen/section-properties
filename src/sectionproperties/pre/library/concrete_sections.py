@@ -50,13 +50,16 @@ def concrete_rectangular_section(
         n_bot: Number of bottom, equally spaced reinforcing bars
         c_bot: Clear cover to the bottom reinforcing bars
         dia_side: Diameter of the side reinforcing bars, used for calculating bar
-            placement
-        area_side: Area of the side reinforcing bars
-        n_side: Number of side, equally spaced reinforcing bars
-        c_side: Clear cover to the side reinforcing bars
-        n_circle: Number of points used to discretise the circular reinforcing bars
-        conc_mat: Material object to assign to the concrete area
-        steel_mat: Material object to assign to the steel area
+            placement. Defaults to ``None``.
+        area_side: Area of the side reinforcing bars. Defaults to ``None``.
+        n_side: Number of side, equally spaced reinforcing bars. Defaults to ``0``.
+        c_side: Clear cover to the side reinforcing bars. Defaults to ``0.0``.
+        n_circle: Number of points used to discretise the circular reinforcing bars.
+            Defaults to ``4``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         ValueError: Geometry generation failed
@@ -197,7 +200,8 @@ def concrete_rectangular_section(
     if isinstance(geom, geometry.CompoundGeometry):
         return geom
     else:
-        raise ValueError("Concrete section generation failed.")
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
 
 
 def concrete_column_section(
@@ -229,12 +233,16 @@ def concrete_column_section(
         n_x: Number of bars placed across the width of the section, minimum 2
         n_y: Number of bars placed across the depth of the section, minimum 2
         cover: Clear cover to the reinforcing bars
-        n_circle: Number of points used to discretise the circular reinforcing bars
+        n_circle: Number of points used to discretise the circular reinforcing bars.
+            Defaults to ``4``.
         filled:  When True, will populate the concrete section with an equally spaced
             2D array of reinforcing bars numbering 'n_x' by 'n_y'. When False, only the
-            bars around the perimeter of the array will be present.
-        conc_mat: Material object to assign to the concrete area
-        steel_mat: Material object to assign to the steel area
+            bars around the perimeter of the array will be present. Defaults to
+            ``False``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Reinforced concrete column section geometry
@@ -309,10 +317,10 @@ def concrete_column_section(
         d_edge_bars_x1 = [bar_x_min] * n_y
         d_edge_bars_x2 = [bar_x_max] * n_y
 
-        b_edge_bars_top = list(zip(b_edge_bars_x, b_edge_bars_y2))
-        b_edge_bars_bottom = list(zip(b_edge_bars_x, b_edge_bars_y1))
-        d_edge_bars_right = list(zip(d_edge_bars_x2, d_edge_bars_y))
-        d_edge_bars_left = list(zip(d_edge_bars_x1, d_edge_bars_y))
+        b_edge_bars_top = list(zip(b_edge_bars_x, b_edge_bars_y2, strict=False))
+        b_edge_bars_bottom = list(zip(b_edge_bars_x, b_edge_bars_y1, strict=False))
+        d_edge_bars_right = list(zip(d_edge_bars_x2, d_edge_bars_y, strict=False))
+        d_edge_bars_left = list(zip(d_edge_bars_x1, d_edge_bars_y, strict=False))
 
         all_bar_coords = list(
             set(
@@ -324,7 +332,7 @@ def concrete_column_section(
         )
     else:
         xy = np.meshgrid(b_edge_bars_x, d_edge_bars_y)
-        all_bar_coords = np.append(xy[0].reshape(-1, 1), xy[1].reshape(-1, 1), axis=1)  # type: ignore
+        all_bar_coords = np.append(xy[0].reshape(-1, 1), xy[1].reshape(-1, 1), axis=1)
 
     for bar_coord in all_bar_coords:
         concrete_geometry = add_bar(
@@ -339,7 +347,8 @@ def concrete_column_section(
     if isinstance(concrete_geometry, geometry.CompoundGeometry):
         return concrete_geometry
     else:
-        raise ValueError("Concrete section generation failed.")
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
 
 
 def concrete_tee_section(
@@ -384,13 +393,16 @@ def concrete_tee_section(
         n_bot: Number of bottom, equally spaced reinforcing bars
         c_bot: Clear cover to the bottom reinforcing bars
         dia_side: Diameter of the side reinforcing bars, used for calculating bar
-            placement
-        area_side: Area of the side reinforcing bars
-        n_side: Number of side, equally spaced reinforcing bars
-        c_side: Clear cover to the side reinforcing bars
-        n_circle: Number of points used to discretise the circular reinforcing bars
-        conc_mat: Material object to assign to the concrete area
-        steel_mat: Material object to assign to the steel area
+            placement. Defaults to ``None``.
+        area_side: Area of the side reinforcing bars. Defaults to ``None``.
+        n_side: Number of side, equally spaced reinforcing bars. Defaults to ``0``.
+        c_side: Clear cover to the side reinforcing bars. Defaults to ``0.0``.
+        n_circle: Number of points used to discretise the circular reinforcing bars.
+            Defaults to ``4``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         ValueError: Geometry generation failed
@@ -536,10 +548,11 @@ def concrete_tee_section(
 
             geom = (geom - bar_left - bar_right) + bar_left + bar_right
 
-    if isinstance(geom, geometry.CompoundGeometry):
+    if isinstance(geom, geometry.CompoundGeometry):  # pyright: ignore [reportUnnecessaryIsInstance]
         return geom
     else:
-        raise ValueError("Concrete section generation failed.")
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
 
 
 def concrete_circular_section(
@@ -571,9 +584,12 @@ def concrete_circular_section(
         area_bar: Area of the reinforcing bars
         n_bar: Number of steel reinforcing bars
         cover: Clear cover to the reinforcing bars
-        n_circle: Number of points discretising the steel reinforcing bars
-        conc_mat: Material object to assign to the concrete area
-        steel_mat: Material object to assign to the steel area
+        n_circle: Number of points discretising the steel reinforcing bars. Defaults to
+            ``4``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Reinforced concrete circular section geometry
@@ -629,7 +645,8 @@ def concrete_circular_section(
             Section(geometry=geom).plot_mesh()
     """
     if n_bar < 2:
-        raise ValueError("Please provide 2 or more steel reinforcing bars.")
+        msg = "Please provide 2 or more steel reinforcing bars."
+        raise ValueError(msg)
 
     # create circular geometry
     geom = primitive_sections.circular_section_by_area(
@@ -654,7 +671,8 @@ def concrete_circular_section(
     if isinstance(geom, geometry.CompoundGeometry):
         return geom
     else:
-        raise ValueError("Concrete section generation failed.")
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
 
 
 def add_bar(

@@ -11,7 +11,6 @@ import sectionproperties.pre.library.steel_sections as steel_sections
 from sectionproperties.analysis.section import Section
 from sectionproperties.pre.geometry import Geometry, check_geometry_overlaps
 
-
 r_tol = 1e-3
 
 
@@ -158,7 +157,14 @@ def test_compound_rectangular_isection_offset_corrode():
     section_test.calculate_geometric_properties()
 
     ub_corroded = steel_sections.mono_i_section(
-        d=298, b_t=146, b_b=146, t_ft=8, t_fb=6, t_w=4, r=14, n_r=16
+        d=298,
+        b_t=146,
+        b_b=146,
+        t_ft=8,
+        t_fb=6,
+        t_w=4,
+        r=14,
+        n_r=16,
     )
     plate_corroded1 = (
         sections.rectangular_section(b=146, d=2)

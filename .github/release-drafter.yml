@@ -35,6 +35,8 @@ categories:
       - "build"
 
 category-template: "### $TITLE"
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
 
 version-resolver:
   major:
@@ -48,24 +50,10 @@ version-resolver:
       - "patch"
   default: patch
 
-exclude-contributors:
-  - "robbievanleeuwen"
-
 # Custom text at start of release
 header: >
 
-  This release contains several important bug fixes and dependency updates.
-
-  Python 3.9 support is dropped ahead of the upcoming 3.13 release. Python 3.13 support
-  will be added once all the core upstream dependencies support 3.13.
-
-  A bug in the `CompoundGeometry` offset dilation algorithm was fixed by @connorferster,
-  a live stream of this fix can be watched [here](https://www.youtube.com/live/hSfsojAAJjc?si=Zuwn7Mr6zXS1wHFF).
-
-  Most importantly a critical bug in the plastic moment calculation was found and fixed,
-  see issue 460. Note that this bug affected plastic moment calculations for composite
-  sections only, the plastic centroid calculation and geometric-only analyses were
-  unaffected.
+  Insert header here...
 
 template: |
 

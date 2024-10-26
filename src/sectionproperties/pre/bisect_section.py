@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
-import numpy as np
-import numpy.typing as npt
+from typing import TYPE_CHECKING
+
 from shapely import GeometryCollection, LineString, Polygon
+
+if TYPE_CHECKING:
+    import numpy as np
+    import numpy.typing as npt
 
 
 def create_line_segment(
@@ -66,13 +70,20 @@ def group_top_and_bottom_polys(
         polys: Collection of polygons to sort
         line: Line about which polygons have been split
 
+    Raises:
+        RuntimeError: If the split operation does not generate polygons
+
     Returns:
         List of polygons above and below the line
     """
-    top_acc = []
-    bot_acc = []
+    top_acc: list[Polygon] = []
+    bot_acc: list[Polygon] = []
 
     for poly in polys.geoms:
+        if not isinstance(poly, Polygon):
+            msg = "Geometry split error."
+            raise RuntimeError(msg)
+
         m, b = line_mx_plus_b(line)
         px, py = poly.representative_point().coords[0]
 

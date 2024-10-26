@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import contextlib
-from collections.abc import Generator
 from dataclasses import asdict, dataclass
 from typing import TYPE_CHECKING, Any
 
@@ -15,8 +14,9 @@ from rich.table import Table
 
 import sectionproperties.analysis.fea as fea
 
-
 if TYPE_CHECKING:
+    from collections.abc import Generator
+
     import matplotlib.axes
     import matplotlib.figure
 
@@ -224,7 +224,8 @@ class SectionProperties:
             self.cx = self.qy / self.ea
             self.cy = self.qx / self.ea
         else:
-            raise RuntimeError("Calculate geometric properties first.")
+            msg = "Calculate geometric properties first."
+            raise RuntimeError(msg)
 
     def calculate_centroidal_properties(
         self,
@@ -277,12 +278,17 @@ class SectionProperties:
             else:
                 self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
 
-            # initialise min, max variables
-            x1, y2 = fea.principal_coordinate(
-                phi=self.phi,
-                x=nodes[0][0] - self.cx,
-                y=nodes[0][1] - self.cy,
-            )
+            # initialise min, max variables TODO: check for `if xxx:` where xxx is float
+            if self.phi is not None:
+                x1, y2 = fea.principal_coordinate(
+                    phi=self.phi,
+                    x=nodes[0][0] - self.cx,
+                    y=nodes[0][1] - self.cy,
+                )
+            else:
+                msg = "Arctan error."
+                raise RuntimeError(msg)
+
             x1max = x1
             x1min = x1
             y2max = y2
@@ -312,7 +318,8 @@ class SectionProperties:
             self.r11_c = (self.i11_c / self.ea) ** 0.5
             self.r22_c = (self.i22_c / self.ea) ** 0.5
         else:
-            raise RuntimeError("Calculate geometric properties first.")
+            msg = "Calculate geometric properties first."
+            raise RuntimeError(msg)
 
 
 @contextlib.contextmanager
@@ -328,18 +335,19 @@ def plotting_context(
     """Executes code required to set up a matplotlib figure.
 
     Args:
-        ax: Axes object on which to plot
+        ax: Axes object on which to plot. Defaults to ``None``.
         pause: If set to True, the figure pauses the script until the window is closed.
             If set to False, the script continues immediately after the window is
-            rendered.
-        title: Plot title
+            rendered. Defaults to ``True``.
+        title: Plot title. Defaults to ``""``.
         filename: Pass a non-empty string or path to save the image as. If this option
-            is used, the figure is closed after the file is saved.
+            is used, the figure is closed after the file is saved. Defaults to ``""``.
         render: If set to False, the image is not displayed. This may be useful if the
             figure or axes will be embedded or further edited before being displayed.
+            Defaults to ``True``.
         axis_index: If more than 1 axis is created by subplot, then this is the axis to
             plot on. This may be a tuple if a 2D array of plots is returned.  The
-            default value of None will select the top left plot.
+            default value of None will select the top left plot. Defaults to ``None``.
         kwargs: Passed to :func:`matplotlib.pyplot.subplots`
 
     Raises:
@@ -353,18 +361,18 @@ def plotting_context(
 
     if ax is None:
         if not render or pause:
-            plt.ioff()
+            plt.ioff()  # pyright: ignore
         else:
-            plt.ion()
+            plt.ion()  # pyright: ignore
 
         ax_supplied = False
-        fig, ax = plt.subplots(**kwargs)
+        fig, ax = plt.subplots(**kwargs)  # pyright: ignore
 
         try:
             if axis_index is None:
-                axis_index = (0,) * ax.ndim  # type: ignore
+                axis_index = (0,) * ax.ndim  # pyright: ignore
 
-            ax = ax[axis_index]  # type: ignore
+            ax = ax[axis_index]  # pyright: ignore
         except (AttributeError, TypeError):
             pass  # only 1 axis, not an array
         except IndexError as exc:
@@ -376,14 +384,14 @@ def plotting_context(
         ax_supplied = True
 
         if not render:
-            plt.ioff()
+            plt.ioff()  # pyright: ignore
 
-    yield fig, ax
+    yield fig, ax  # pyright: ignore
 
     if ax is not None:
-        ax.set_title(title)
+        ax.set_title(title)  # pyright: ignore
         plt.tight_layout()
-        ax.set_aspect("equal", anchor="C")
+        ax.set_aspect("equal", anchor="C")  # pyright: ignore
 
     # if no axes was supplied, finish the plot and return the figure and axes
     if ax_supplied:
@@ -391,13 +399,13 @@ def plotting_context(
         return
 
     if filename:
-        fig.savefig(filename, dpi=fig.dpi)
-        plt.close(fig)  # close the figure to free the memory
+        fig.savefig(filename, dpi=fig.dpi)  # pyright: ignore
+        plt.close(fig)  # pyright: ignore  # close the figure to free the memory
         return  # if the figure was to be saved, then don't show it also
 
     if render:
         if pause:
-            plt.show()
+            plt.show()  # pyright: ignore
         else:
             plt.draw()
             plt.pause(0.001)
@@ -524,8 +532,8 @@ def draw_principal_axis(
     )
 
     # plot the principal axis
-    ax.plot(x11[:, 0], x11[:, 1], "k--", alpha=0.5, label="11-axis")
-    ax.plot(y22[:, 0], y22[:, 1], "k-.", alpha=0.5, label="22-axis")
+    ax.plot(x11[:, 0], x11[:, 1], "k--", alpha=0.5, label="11-axis")  # pyright: ignore
+    ax.plot(y22[:, 0], y22[:, 1], "k-.", alpha=0.5, label="22-axis")  # pyright: ignore
 
 
 def print_results(
@@ -548,14 +556,14 @@ def print_results(
     try:
         area = section.get_area()
         table.add_row("area", f"{area:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section perimeter
     try:
         perimeter = section.get_perimeter()
         table.add_row("perimeter", f"{perimeter:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section mass (only if composite)
@@ -563,7 +571,7 @@ def print_results(
         try:
             mass = section.get_mass()
             table.add_row("mass", f"{mass:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section ea (only if composite)
@@ -571,7 +579,7 @@ def print_results(
         try:
             ea = section.get_ea()
             table.add_row("e.a", f"{ea:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section q
@@ -580,14 +588,14 @@ def print_results(
             qx, qy = section.get_q()
             table.add_row("qx", f"{qx:>{fmt}}")
             table.add_row("qy", f"{qy:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
             eqx, eqy = section.get_eq()
             table.add_row("e.qx", f"{eqx:>{fmt}}")
             table.add_row("e.qy", f"{eqy:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section ig
@@ -597,7 +605,7 @@ def print_results(
             table.add_row("ixx_g", f"{ixx_g:>{fmt}}")
             table.add_row("iyy_g", f"{iyy_g:>{fmt}}")
             table.add_row("ixy_g", f"{ixy_g:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
@@ -605,7 +613,7 @@ def print_results(
             table.add_row("e.ixx_g", f"{eixx_g:>{fmt}}")
             table.add_row("e.iyy_g", f"{eiyy_g:>{fmt}}")
             table.add_row("e.ixy_g", f"{eixy_g:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section centroid
@@ -613,7 +621,7 @@ def print_results(
         cx, cy = section.get_c()
         table.add_row("cx", f"{cx:>{fmt}}")
         table.add_row("cy", f"{cy:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section ic
@@ -623,7 +631,7 @@ def print_results(
             table.add_row("ixx_c", f"{ixx_c:>{fmt}}")
             table.add_row("iyy_c", f"{iyy_c:>{fmt}}")
             table.add_row("ixy_c", f"{ixy_c:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
@@ -631,7 +639,7 @@ def print_results(
             table.add_row("e.ixx_c", f"{eixx_c:>{fmt}}")
             table.add_row("e.iyy_c", f"{eiyy_c:>{fmt}}")
             table.add_row("e.ixy_c", f"{eixy_c:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section z
@@ -642,7 +650,7 @@ def print_results(
             table.add_row("zxx-", f"{zxx_minus:>{fmt}}")
             table.add_row("zyy+", f"{zyy_plus:>{fmt}}")
             table.add_row("zyy-", f"{zyy_minus:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
@@ -651,7 +659,7 @@ def print_results(
             table.add_row("e.zxx-", f"{ezxx_minus:>{fmt}}")
             table.add_row("e.zyy+", f"{ezyy_plus:>{fmt}}")
             table.add_row("e.zyy-", f"{ezyy_minus:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section rc
@@ -659,7 +667,7 @@ def print_results(
         rx, ry = section.get_rc()
         table.add_row("rx", f"{rx:>{fmt}}")
         table.add_row("ry", f"{ry:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section ip
@@ -668,21 +676,21 @@ def print_results(
             i11_c, i22_c = section.get_ip()
             table.add_row("i11_c", f"{i11_c:>{fmt}}")
             table.add_row("i22_c", f"{i22_c:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
             ei11_c, ei22_c = section.get_eip()
             table.add_row("e.i11_c", f"{ei11_c:>{fmt}}")
             table.add_row("e.i22_c", f"{ei22_c:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section phi
     try:
         phi = section.get_phi()
         table.add_row("phi", f"{phi:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section zp
@@ -693,7 +701,7 @@ def print_results(
             table.add_row("z11-", f"{z11_minus:>{fmt}}")
             table.add_row("z22+", f"{z22_plus:>{fmt}}")
             table.add_row("z22-", f"{z22_minus:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
@@ -702,7 +710,7 @@ def print_results(
             table.add_row("e.z11-", f"{ez11_minus:>{fmt}}")
             table.add_row("e.z22+", f"{ez22_plus:>{fmt}}")
             table.add_row("e.z22-", f"{ez22_minus:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section rp
@@ -710,7 +718,7 @@ def print_results(
         r11, r22 = section.get_rp()
         table.add_row("r11", f"{r11:>{fmt}}")
         table.add_row("r22", f"{r22:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print effective material properties
@@ -722,7 +730,7 @@ def print_results(
             table.add_row("e_eff", f"{e_eff:>{fmt}}")
             table.add_row("g_eff", f"{g_eff:>{fmt}}")
             table.add_row("nu_eff", f"{nu_eff:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section j
@@ -730,13 +738,13 @@ def print_results(
         try:
             j = section.get_j()
             table.add_row("j", f"{j:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
             ej = section.get_ej()
             table.add_row("e.j", f"{ej:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section sc
@@ -744,7 +752,7 @@ def print_results(
         x_se, y_se = section.get_sc()
         table.add_row("x_se", f"{x_se:>{fmt}}")
         table.add_row("y_se", f"{y_se:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section sc_p
@@ -752,7 +760,7 @@ def print_results(
         x1_se, y2_se = section.get_sc_p()
         table.add_row("x1_se", f"{x1_se:>{fmt}}")
         table.add_row("y2_se", f"{y2_se:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section sc_t
@@ -760,7 +768,7 @@ def print_results(
         x_st, y_st = section.get_sc_t()
         table.add_row("x_st", f"{x_st:>{fmt}}")
         table.add_row("y_st", f"{y_st:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section gamma
@@ -768,13 +776,13 @@ def print_results(
         try:
             gamma = section.get_gamma()
             table.add_row("gamma", f"{gamma:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
             egamma = section.get_egamma()
             table.add_row("e.gamma", f"{egamma:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section as
@@ -783,14 +791,14 @@ def print_results(
             a_sx, a_sy = section.get_as()
             table.add_row("a_sx", f"{a_sx:>{fmt}}")
             table.add_row("a_sy", f"{a_sy:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
             ea_sx, ea_sy = section.get_eas()
             table.add_row("e.a_sx", f"{ea_sx:>{fmt}}")
             table.add_row("e.a_sy", f"{ea_sy:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section as_p
@@ -799,14 +807,14 @@ def print_results(
             a_s11, a_s22 = section.get_as_p()
             table.add_row("a_s11", f"{a_s11:>{fmt}}")
             table.add_row("a_s22", f"{a_s22:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
             ea_s11, ea_s22 = section.get_eas_p()
             table.add_row("e.a_s11", f"{ea_s11:>{fmt}}")
             table.add_row("e.a_s22", f"{ea_s22:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section beta
@@ -816,7 +824,7 @@ def print_results(
         table.add_row("beta_x-", f"{beta_x_minus:>{fmt}}")
         table.add_row("beta_y+", f"{beta_y_plus:>{fmt}}")
         table.add_row("beta_y-", f"{beta_y_minus:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section beta_p
@@ -826,7 +834,7 @@ def print_results(
         table.add_row("beta_11-", f"{beta_11_minus:>{fmt}}")
         table.add_row("beta_22+", f"{beta_22_plus:>{fmt}}")
         table.add_row("beta_22-", f"{beta_22_minus:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section pc
@@ -834,7 +842,7 @@ def print_results(
         x_pc, y_pc = section.get_pc()
         table.add_row("x_pc", f"{x_pc:>{fmt}}")
         table.add_row("y_pc", f"{y_pc:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section pc_p
@@ -842,7 +850,7 @@ def print_results(
         x11_pc, y22_pc = section.get_pc_p()
         table.add_row("x11_pc", f"{x11_pc:>{fmt}}")
         table.add_row("y22_pc", f"{y22_pc:>{fmt}}")
-    except AssertionError:
+    except RuntimeError:
         pass
 
     # print cross-section s/mp
@@ -851,7 +859,7 @@ def print_results(
             sxx, syy = section.get_s()
             table.add_row("sxx", f"{sxx:>{fmt}}")
             table.add_row("syy", f"{syy:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
@@ -859,7 +867,7 @@ def print_results(
             table.add_row("mp_xx", f"{mp_xx:>{fmt}}")
             table.add_row("mp_yy", f"{mp_yy:>{fmt}}")
 
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section sp/mp_p
@@ -868,14 +876,14 @@ def print_results(
             s11, s22 = section.get_sp()
             table.add_row("s11", f"{s11:>{fmt}}")
             table.add_row("s22", f"{s22:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
     else:
         try:
             mp_11, mp_22 = section.get_mp_p()
             table.add_row("mp_11", f"{mp_11:>{fmt}}")
             table.add_row("mp_22", f"{mp_22:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section sf
@@ -886,7 +894,7 @@ def print_results(
             table.add_row("sf_xx-", f"{sf_xx_minus:>{fmt}}")
             table.add_row("sf_yy+", f"{sf_yy_plus:>{fmt}}")
             table.add_row("sf_yy-", f"{sf_yy_minus:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     # print cross-section sf_p
@@ -897,7 +905,7 @@ def print_results(
             table.add_row("sf_11-", f"{sf_11_minus:>{fmt}}")
             table.add_row("sf_22+", f"{sf_22_plus:>{fmt}}")
             table.add_row("sf_22-", f"{sf_22_minus:>{fmt}}")
-        except AssertionError:
+        except RuntimeError:
             pass
 
     console = Console()

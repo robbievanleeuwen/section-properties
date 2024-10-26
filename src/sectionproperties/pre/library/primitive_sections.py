@@ -23,7 +23,8 @@ def rectangular_section(
     Args:
         d: Depth (``y``) of the rectangle
         b: Width (``x``) of the rectangle
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Rectangular section geometry
@@ -59,7 +60,8 @@ def circular_section(
     Args:
         d: Diameter of the circle
         n: Number of points discretising the circle
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Circular section geometry
@@ -77,7 +79,7 @@ def circular_section(
             circular_section(d=50, n=64).plot_geometry()
     """
     x_off, y_off = (0, 0)
-    points = []
+    points: list[tuple[float, float]] = []
 
     # loop through each point on the circle
     for i in range(n):
@@ -109,7 +111,8 @@ def circular_section_by_area(
     Args:
         area: Area of the circle
         n: Number of points discretising the circle
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Circular section geometry
@@ -149,7 +152,8 @@ def elliptical_section(
         d_x: Diameter of the ellipse in the x-dimension
         d_y: Diameter of the ellipse in the y-dimension
         n: Number of points discretising the ellipse
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Elliptical section geometry
@@ -166,7 +170,7 @@ def elliptical_section(
 
             elliptical_section(d_x=50, d_y=25, n=40).plot_geometry()
     """
-    points = []
+    points: list[tuple[float, float]] = []
 
     # loop through each point on the ellipse
     for i in range(n):
@@ -197,7 +201,8 @@ def triangular_section(
     Args:
         b: Base length of triangle
         h: Height of triangle
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Triangular section geometry
@@ -232,7 +237,8 @@ def triangular_radius_section(
     Args:
         b: Base length of triangle
         n_r: Number of points discretising the radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Triangular section geometry
@@ -278,7 +284,8 @@ def cruciform_section(
         t: Thickness of the cruciform section
         r: Root radius of the cruciform section
         n_r: Number of points discretising the root radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Cruciform section geometry
