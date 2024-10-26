@@ -60,18 +60,8 @@ pardiso = [
     "pypardiso~=0.4.6; platform_system == 'Windows' or platform_system == 'Linux'"
 ]
 
-[tool.uv]
-dev-dependencies = [
-    # linting & code formatting
-    "ruff==0.7.1",
-    # type checking
-    "pyright==1.1.386",
-    # testing
-    "pytest==8.3.3",
-    "pytest-benchmark[histogram]==4.0.0",
-    "pytest-check==2.4.1",
-    "coverage[toml]==7.6.4",
-    # docs
+[dependency-groups]
+docs = [
     "furo==2024.8.6",
     "sphinx==8.1.3",
     "notebook==7.2.2",
@@ -81,9 +71,21 @@ dev-dependencies = [
     "nbconvert==7.16.4",
     "sphinx-copybutton==0.5.2",
     "sphinxext-opengraph==0.9.1",
-    # pre-commit
-    "pre-commit==4.0.1",
 ]
+test = [
+    "pytest==8.3.3",
+    "pytest-benchmark[histogram]==4.0.0",
+    "pytest-check==2.4.1",
+    "coverage[toml]==7.6.4",
+]
+lint = [
+    "pre-commit==4.0.1",
+    "ruff==0.7.1",
+    "pyright==1.1.386",
+]
+
+[tool.uv]
+default-groups = ["docs", "test", "lint"]
 
 [tool.pyright]
 venvPath = "."

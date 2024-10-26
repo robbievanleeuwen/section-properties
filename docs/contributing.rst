@@ -63,14 +63,6 @@ Installation instructions for other methods and Windows can be found
 
    uv sync
 
-If you have other versions of python installed on your machine you may need to add the
-``-p`` flag to ensure the correct version of python is used:
-
-.. code:: shell
-
-   uv sync -p 3.12
-   uv run -p 3.12 example.py
-
 Specific extras (e.g. ``numba``) can be installed with the ``--extra`` flag or all
 extras with the ``--all-extras`` flag:
 

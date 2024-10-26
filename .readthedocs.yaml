@@ -9,5 +9,5 @@ build:
     - asdf install uv latest
     - asdf global uv latest
     - uv python install 3.12
-    - uv sync -p 3.12 --frozen --extra rhino --extra dxf
-    - uv run -p 3.12 -m sphinx -T -b html -d docs/_build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html
+    - uv sync -p 3.12 --frozen --extra rhino --extra dxf --no-group test --no-group lint
+    - uv run -p 3.12 --no-sync -m sphinx -T -b html -d docs/_build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html
