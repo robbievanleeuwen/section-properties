@@ -706,14 +706,27 @@ wheels = [
 ]
 
 [[package]]
-name = "intel-openmp"
-version = "2024.2.1"
+name = "intel-cmplr-lib-ur"
+version = "2025.0.0"
 source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "umf" },
+]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ed/a6/92e7356c981fcfefa4fbd132791d28656ec02ff62124d283b10219999d5d/intel_openmp-2024.2.1-py2.py3-none-manylinux1_i686.whl", hash = "sha256:ba6de86c394331719c795e743bcff3bbc10c3a16a0d3622d90819593de4c7e34", size = 3848711 },
-    { url = "https://files.pythonhosted.org/packages/78/2d/64570ae938a8ee2337ed8ba28ae1d85d3555ee6e5faadabea9e8b43a900d/intel_openmp-2024.2.1-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:21892ea07a9c6e164707d2b44e6f396f9f2ab6cc7e108755011fad59b596182a", size = 29565156 },
-    { url = "https://files.pythonhosted.org/packages/c6/02/e5c7e10a4bedeec4eb0f61fa8fe951e2febf6ba9ae08f806ada5f2f35ada/intel_openmp-2024.2.1-py2.py3-none-win32.whl", hash = "sha256:3dbed102d8a79f091fc3364ff4b6268e1b2904d80a58926987fc6006171c18cd", size = 928744 },
-    { url = "https://files.pythonhosted.org/packages/c8/6c/9334569937fd3c6ec93f9fe3da268db38f5113673d568854fa18a20f36ec/intel_openmp-2024.2.1-py2.py3-none-win_amd64.whl", hash = "sha256:b1fb47eefc6cbc2358216684dd87bd2315464e6d29ac84f9313819fe1528d969", size = 3602212 },
+    { url = "https://files.pythonhosted.org/packages/41/6b/6fa8a01f373179bb449b10b785fb19748640fb7cde28a70fdb820ef05362/intel_cmplr_lib_ur-2025.0.0-py2.py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:eb3bf736ee31099b41b5d9d06a6ce8d8fa7a326ca0b7dfe4765422d2d8618047", size = 18565214 },
+    { url = "https://files.pythonhosted.org/packages/57/76/4a721537b548243523fc82913fac9f8ac824c26aadfa41838141f46df5d9/intel_cmplr_lib_ur-2025.0.0-py2.py3-none-win_amd64.whl", hash = "sha256:ef30aa10917dafea3e65804c1e66f2a7efc0181a2acdc11ff2f45a1fc5f49dd8", size = 1148182 },
+]
+
+[[package]]
+name = "intel-openmp"
+version = "2025.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "intel-cmplr-lib-ur" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/27/13/b69500c0597f1c50732a7e96fbc3cb72c3f1a70ea83a8568ba20978fcc0a/intel_openmp-2025.0.0-py2.py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:3fcaf73862136a36cc191be539d67bbc5aa20aceadb53a1179ff74ee286e4600", size = 30066563 },
+    { url = "https://files.pythonhosted.org/packages/41/2d/ef41ac92c26dcddd4e9dbd5ef84cd229e14cb6274657e07099ee279d65ba/intel_openmp-2025.0.0-py2.py3-none-win_amd64.whl", hash = "sha256:3c5c3ab2778134af00a61cb4af5a1ca6d060b6aecae793c3c787fe99b964e5e1", size = 3707198 },
 ]
 
 [[package]]
@@ -1239,17 +1252,15 @@ wheels = [
 
 [[package]]
 name = "mkl"
-version = "2024.2.2"
+version = "2025.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "intel-openmp" },
     { name = "tbb" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f5/a3/eca31ce232dfa6605279dc168a911615a560b169b519bbb4a90d172e84ad/mkl-2024.2.2-py2.py3-none-manylinux1_i686.whl", hash = "sha256:747fffa9b4e95a95eef3153592783f80f27720240aa1f722826d2cba7347fab8", size = 110012115 },
-    { url = "https://files.pythonhosted.org/packages/b8/78/8e11186efdf608fee944196abd078bedd89db9460ec3370c9b260db3a231/mkl-2024.2.2-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:915e81274ac20964e60156ed940e0eeb29dab0c282b915ad2e231db0021b980d", size = 195506888 },
-    { url = "https://files.pythonhosted.org/packages/e5/ca/76021feedd622eb2fb8f9e3349e4e1132c01556f06679dc2499b8853956e/mkl-2024.2.2-py2.py3-none-win32.whl", hash = "sha256:fed046122c87b41f16bfe59606e0c1aacefa5bf52e03746abd2c0075d28f5beb", size = 86107078 },
-    { url = "https://files.pythonhosted.org/packages/10/00/49b12dfda989a03e0139d1ce630bd8c388bb708db42e1cfe86c5db66e745/mkl-2024.2.2-py2.py3-none-win_amd64.whl", hash = "sha256:63a286f8a39bfa3bf8846be304a39fbe6a58615755888d54e18b63fa37ca1d04", size = 161672182 },
+    { url = "https://files.pythonhosted.org/packages/e3/d1/fb513525de46d6a9fd9ee9c4208a6a85db9babd135d75bf47e27452aa55a/mkl-2025.0.0-py2.py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:a5f71f52ce568df8557fa420bb84282ace7b85d6fa2ee9d374c27867705823ce", size = 184712570 },
+    { url = "https://files.pythonhosted.org/packages/40/26/541945cfe3775b351a3bbbd65a7f4023a1812cdc3070c13613a4d7e3c3ed/mkl-2025.0.0-py2.py3-none-win_amd64.whl", hash = "sha256:8843aed72205b90a5738c623918421ff353fd173b469536ff57977a0d9596c48", size = 149903304 },
 ]
 
 [[package]]
@@ -2113,7 +2124,7 @@ wheels = [
 
 [[package]]
 name = "sectionproperties"
-version = "3.4.0"
+version = "3.5.0"
 source = { editable = "." }
 dependencies = [
     { name = "cytriangle" },
@@ -2421,13 +2432,23 @@ wheels = [
 
 [[package]]
 name = "tbb"
-version = "2021.13.1"
+version = "2022.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tcmlib" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/93/4b/2e29f4266be5a66f21fc2dadcde48f9acea86119d6fb1bb2d2a451222ff7/tbb-2022.0.0-py2.py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:15a15a4e3ea4c3f3198bdb3c55fac75c589e15ed2ad0bbb080900d355c5b017e", size = 5833508 },
+    { url = "https://files.pythonhosted.org/packages/30/02/7b9c333141784aca2370cd3c826efa98eaf9848674f2752961ac6d5f1abf/tbb-2022.0.0-py3-none-win_amd64.whl", hash = "sha256:6a0bae732599ec5c082f46e4aaf14bdbef1621e8cd0c6fcf64d50d347c2ebda4", size = 298708 },
+]
+
+[[package]]
+name = "tcmlib"
+version = "1.2.0"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/79/62/52e55f0045efa6b10a69edb306c9bfdf4ec7d59cf88906f4fd104482fbfa/tbb-2021.13.1-py2.py3-none-manylinux1_i686.whl", hash = "sha256:bb5bdea0c0e9e6ad0739e7a8796c2635ce9eccca86dd48c426cd8027ac70fb1d", size = 5205093 },
-    { url = "https://files.pythonhosted.org/packages/cc/67/b4dc53ce8de52cc9c3d75ffd93477b802659db093f97c8b6d63c917e5616/tbb-2021.13.1-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:d916359dc685579d09e4b344241550afc1cc034f7f5ec7234c258b6680912d70", size = 5386608 },
-    { url = "https://files.pythonhosted.org/packages/fb/8a/5062b00c378c051e26507e5eca8d3b5c91ed63f8a2139f6f0f422be84b02/tbb-2021.13.1-py3-none-win32.whl", hash = "sha256:00f5e5a70051650ddd0ab6247c0549521968339ec21002e475cd23b1cbf46d66", size = 248994 },
-    { url = "https://files.pythonhosted.org/packages/9b/24/84ce997e8ae6296168a74d0d9c4dde572d90fb23fd7c0b219c30ff71e00e/tbb-2021.13.1-py3-none-win_amd64.whl", hash = "sha256:cbf024b2463fdab3ebe3fa6ff453026358e6b903839c80d647e08ad6d0796ee9", size = 286908 },
+    { url = "https://files.pythonhosted.org/packages/4d/6e/e9544e6ddb3640e92d9937689e9e33018503ddbc069eeb2e6a7581870591/tcmlib-1.2.0-py2.py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:dee9a0665ffa0a74f0ec72844ef7d82e9178ebf6980a76ac65906303d5ed4d03", size = 4160997 },
+    { url = "https://files.pythonhosted.org/packages/5b/c8/c2a7bb169e21521a5bc82d955b30a064e266ab72485ac2dc33cd6ad153ea/tcmlib-1.2.0-py2.py3-none-win_amd64.whl", hash = "sha256:f751e005fd815ed0efeb87d4523f6a0938c5671e59ac935614f42d8ebb6489c9", size = 338379 },
 ]
 
 [[package]]
@@ -2508,6 +2529,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/df/db/f35a00659bc03fec321ba8bce9420de607a1d37f8342eee1863174c69557/typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8", size = 85321 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/26/9f/ad63fc0248c5379346306f8668cda6e2e2e9c95e01216d2b8ffd9ff037d0/typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d", size = 37438 },
+]
+
+[[package]]
+name = "umf"
+version = "0.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tcmlib" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5a/42/ebb1d9a0c3053447d6d8bcd562e8d3ec1ab1fb69b223caf55d27297a5e34/umf-0.9.0-py2.py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:c7732591d23e57cdcaed5bf0ffbf48d87fdf7784b9151773f1a4e9ee566616b6", size = 161500 },
+    { url = "https://files.pythonhosted.org/packages/bf/aa/02acef2e5a684311860402eecbc3c21c699286e170042035302708688ad1/umf-0.9.0-py2.py3-none-win_amd64.whl", hash = "sha256:a784d630cc5423f9a25c7d2954939b3fbd8bd959d28b83ae1b9c2eb6bb71f2a6", size = 72204 },
 ]
 
 [[package]]
