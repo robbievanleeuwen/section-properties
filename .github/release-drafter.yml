@@ -35,6 +35,8 @@ categories:
       - "build"
 
 category-template: "### $TITLE"
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
 
 version-resolver:
   major:
@@ -51,7 +53,7 @@ version-resolver:
 # Custom text at start of release
 header: >
 
-  xxx ?Add contributors?
+  Insert header here...
 
 template: |
 

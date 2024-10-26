@@ -9,20 +9,22 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/sectionproperties)][python version]
 [![License](https://img.shields.io/pypi/l/sectionproperties)][license]
 [![Read the documentation at https://sectionproperties.readthedocs.io/](https://img.shields.io/readthedocs/sectionproperties/stable.svg?label=Read%20the%20Docs)][read the docs]
-[![Tests](https://github.com/robbievanleeuwen/section-properties/actions/workflows/tests.yml/badge.svg?branch=master)][tests]
-[![Codecov](https://codecov.io/gh/robbievanleeuwen/section-properties/branch/master/graph/badge.svg)][codecov]
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)][uv]
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)][ruff]
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][pre-commit]
-[![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
+[![Tests](https://github.com/robbievanleeuwen/section-properties/actions/workflows/ci.yml/badge.svg?branch=master)][tests]
+[![Codecov](https://codecov.io/gh/robbievanleeuwen/section-properties/branch/master/graph/badge.svg)][codecov]
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.06105/status.svg)][joss]
 
 [pypi_]: https://pypi.org/project/sectionproperties/
 [status]: https://pypi.org/project/sectionproperties/
 [python version]: https://pypi.org/project/sectionproperties
 [read the docs]: https://sectionproperties.readthedocs.io/
-[tests]: https://github.com/robbievanleeuwen/section-properties/actions?workflow=Tests
-[codecov]: https://app.codecov.io/gh/robbievanleeuwen/section-properties
+[uv]: https://github.com/astral-sh/uv
+[ruff]: https://github.com/astral-sh/ruff
 [pre-commit]: https://github.com/pre-commit/pre-commit
-[black]: https://github.com/psf/black
+[tests]: https://github.com/robbievanleeuwen/section-properties/actions/workflows/ci.yml
+[codecov]: https://app.codecov.io/gh/robbievanleeuwen/section-properties
 [joss]: https://doi.org/10.21105/joss.06105
 
 `sectionproperties` is a python package for the analysis of arbitrary cross-sections
@@ -75,14 +77,7 @@ that relevant engineering theories have been correctly implemented, it remains t
 user's responsibility to confirm and accept the output. Refer to the
 [license](LICENSE.md) for clarification of the conditions of use.
 
-## Credits
-
-This project was generated from [@cjolowicz]'s [Hypermodern Python Cookiecutter]
-template.
-
-[@cjolowicz]: https://github.com/cjolowicz
 [pypi]: https://pypi.org/
-[hypermodern python cookiecutter]: https://github.com/cjolowicz/cookiecutter-hypermodern-python
 [pip]: https://pip.pypa.io/
 [license]: https://github.com/robbievanleeuwen/section-properties/blob/master/LICENSE
 [contributor guide]: https://github.com/robbievanleeuwen/section-properties/blob/master/CONTRIBUTING.md

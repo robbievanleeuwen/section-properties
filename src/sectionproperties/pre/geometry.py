@@ -56,7 +56,7 @@ class Geometry:
 
         Args:
             geom: A Shapely Polygon object that defines the geometry
-            material: A material to associate with this geometry. Defauls to
+            material: A material to associate with this geometry. Defaults to
                 ``pre.DEFAULT_MATERIAL``.
             control_points: An ``(x, y)`` coordinate within the geometry that represents
                 a pre-assigned control point (aka, a region identification point) to be
@@ -178,7 +178,7 @@ class Geometry:
                 region. Only one point is required per hole region. Defaults to
                 ``None``.
             material: A :class:`~sectionproperties.pre.pre.Material` object that is to
-                be assigned. Defauls to ``pre.DEFAULT_MATERIAL``.
+                be assigned. Defaults to ``pre.DEFAULT_MATERIAL``.
 
         Raises:
             ValueError: If there is not exactly one control point specified

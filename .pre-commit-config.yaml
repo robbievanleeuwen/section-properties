@@ -6,7 +6,6 @@ repos:
     - id: check-toml
     - id: end-of-file-fixer
     - id: trailing-whitespace
-    - id: requirements-txt-fixer
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.7.0
     hooks:
