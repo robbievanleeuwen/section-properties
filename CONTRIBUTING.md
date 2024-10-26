@@ -45,20 +45,13 @@ Installation instructions for other methods and Windows can be found [here](http
 `uv` can then be used to install the latest compatible version of python:
 
 ```shell
- uv python install 3.12
+uv python install 3.12
 ```
 
 `sectionproperties` and it's development dependencies can be installed with:
 
 ```shell
 uv sync
-```
-
-If you have other versions of python installed on your machine you may need to add the `-p` flag to ensure the correct version of python is used:
-
-```shell
-uv sync -p 3.12
-uv run -p 3.12 example.py
 ```
 
 Specific extras (e.g. `numba`) can be installed with the `--extra` flag or all extras with the `--all-extras` flag:
