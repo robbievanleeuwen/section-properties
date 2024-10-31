@@ -8,7 +8,7 @@ on:
     types: [opened, reopened, synchronize]
 
 env:
-  UV_VERSION: "0.4.27"
+  UV_VERSION: "0.4.29"
   DEFAULT_PYTHON_VERSION: "3.12"
 
 concurrency:
