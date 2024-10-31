@@ -1184,7 +1184,8 @@ class Section:
         Note:
             If materials are specified, the values calculated for the plastic section
             moduli are displayed as plastic moments (i.e :math:`M_p = f_y S`) and the
-            shape factors are not calculated.
+            shape factors are calculated as the ratio between the plastic moment and the
+            yield moment.
 
         Warning:
             The geometric properties must be calculated prior to the calculation of the
@@ -1197,7 +1198,7 @@ class Section:
 
           - Plastic centroids (centroidal and principal axes)
           - Plastic section moduli (centroidal and principal axes)
-          - Shape factors, non-composite only (centroidal and principal axes)
+          - Shape factors (centroidal and principal axes)
         """
         # check that a geometric analysis has been performed
         if self.section_props.cx is None:
@@ -3167,22 +3168,25 @@ class Section:
     def get_sf(self) -> tuple[float, float, float, float]:
         """Returns the cross-section centroidal axis shape factors.
 
-        This is a geometric only property, as such this can only be returned if material
-        properties have *not* been applied to the cross-section.
+        For a geometric-only analysis, the shape factor is defined as the ratio between
+        the plastic section modulus and the elastic section modulus. For a composite
+        analysis the shape factors is defined as the ratio between the plastic moment
+        and the yield moment.
+
+        .. note::
+            For composite analyses, the ``plus`` values will always equal the ``minus``
+            values as the yield moment occurs when the first fibre reaches its yield
+            strength. For geometric-only analyses, the elastic section moduli is
+            calculated with respect to the top and bottom fibres (i.e. ``plus`` and
+            ``minus``).
 
         Returns:
             Centroidal axis shape factors with respect to the top and bottom fibres
             (``sf_xx_plus``, ``sf_xx_minus``, ``sf_yy_plus``, ``sf_yy_minus``)
 
         Raises:
-            RuntimeError: If material properties have been applied
             RuntimeError: If a plastic analysis has not been performed
         """
-        if self.is_composite():
-            msg = "Attempting to get a geometric only property for a composite analysis"
-            msg += " (material properties have been applied)."
-            raise RuntimeError(msg)
-
         if (
             self.section_props.sf_xx_plus is None
             or self.section_props.sf_xx_minus is None
@@ -3202,22 +3206,25 @@ class Section:
     def get_sf_p(self) -> tuple[float, float, float, float]:
         """Returns the cross-section principal axis shape factors.
 
-        This is a geometric only property, as such this can only be returned if material
-        properties have *not* been applied to the cross-section.
+        For a geometric-only analysis, the shape factor is defined as the ratio between
+        the plastic section modulus and the elastic section modulus. For a composite
+        analysis the shape factors is defined as the ratio between the plastic moment
+        and the yield moment.
+
+        .. note::
+            For composite analyses, the ``plus`` values will always equal the ``minus``
+            values as the yield moment occurs when the first fibre reaches its yield
+            strength. For geometric-only analyses, the elastic section moduli is
+            calculated with respect to the top and bottom fibres (i.e. ``plus`` and
+            ``minus``).
 
         Returns:
             Principal bending axis shape factors with respect to the top and bottom
             fibres (``sf_11_plus``, ``sf_11_minus``, ``sf_22_plus``, ``sf_22_minus``)
 
         Raises:
-            RuntimeError: If material properties have been applied
             RuntimeError: If a plastic analysis has not been performed
         """
-        if self.is_composite():
-            msg = "Attempting to get a geometric only property for a composite analysis"
-            msg += " (material properties have been applied)."
-            raise RuntimeError(msg)
-
         if (
             self.section_props.sf_11_plus is None
             or self.section_props.sf_11_minus is None
