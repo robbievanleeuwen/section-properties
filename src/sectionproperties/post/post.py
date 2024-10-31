@@ -72,6 +72,10 @@ class SectionProperties:
             negative extreme value of the 11-axis
         r11_c: Radius of gyration about the principal 11-axis.
         r22_c: Radius of gyration about the principal 22-axis.
+        my_xx: Yield moment about the x-axis
+        my_yy: Yield moment about the y-axis
+        my_11: Yield moment about the 11-axis
+        my_22: Yield moment about the 22-axis
         j: Torsion constant
         omega: Warping function
         psi_shear: Psi shear function
@@ -165,6 +169,10 @@ class SectionProperties:
     r11_c: float | None = None
     r22_c: float | None = None
     j: float | None = None
+    my_xx: float | None = None
+    my_yy: float | None = None
+    my_11: float | None = None
+    my_22: float | None = None
     omega: npt.NDArray[np.float64] | None = None
     psi_shear: npt.NDArray[np.float64] | None = None
     phi_shear: npt.NDArray[np.float64] | None = None
@@ -278,7 +286,7 @@ class SectionProperties:
             else:
                 self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
 
-            # initialise min, max variables TODO: check for `if xxx:` where xxx is float
+            # initialise min, max variables
             if self.phi is not None:
                 x1, y2 = fea.principal_coordinate(
                     phi=self.phi,

@@ -202,6 +202,7 @@ class Section:
           - Centroidal section moduli
           - Radii of gyration
           - Principal axis properties
+          - Yield moments (composite only)
         """
 
         def calculate_geom(progress: Progress | None = None) -> None:
@@ -259,10 +260,20 @@ class Section:
             )
             self.section_props.e_eff = self.section_props.ea / self.section_props.area
             self.section_props.g_eff = self.section_props.ga / self.section_props.area
+
+            # calculate derived properties
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(
                 node_list=self.mesh["vertices"]
             )
+
+            # calculate yield moments
+            self.section_props.my_xx = 0.0
+            self.section_props.my_yy = 0.0
+            self.section_props.my_11 = 0.0
+            self.section_props.my_22 = 0.0
+
+            # TODO: calculate yield moments
 
             if progress and task is not None:
                 msg = "[bold green]:white_check_mark: Geometric analysis complete"
@@ -1120,7 +1131,7 @@ class Section:
 
           - Plastic centroids (centroidal and principal axes)
           - Plastic section moduli (centroidal and principal axes)
-          - Shape factors, non-composite only (centroidal and principal axe)
+          - Shape factors, non-composite only (centroidal and principal axes)
         """
         # check that a geometric analysis has been performed
         if self.section_props.cx is None:
@@ -2240,6 +2251,32 @@ class Section:
             self.section_props.zyy_minus / e_ref,
         )
 
+    def get_my(self) -> tuple[float, float]:
+        """Returns the yield moment for bending about the centroidal axis.
+
+        This is a composite only property, as such this can only be returned if material
+        properties have been applied to the cross-section.
+
+        Returns:
+            Yield moment for bending about the centroidal ``x`` and ``y`` axes
+            (``my_xx``, ``my_yy``)
+
+        Raises:
+            RuntimeError: If material properties have *not* been applied
+            RuntimeError: If a geometric analysis has not been performed
+        """
+        if not self.is_composite():
+            msg = "Attempting to get a composite only property for a geometric analysis"
+            msg += " (material properties have not been applied). Consider using"
+            msg += " get_z()."
+            raise RuntimeError(msg)
+
+        if self.section_props.my_xx is None or self.section_props.my_yy is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
+
+        return (self.section_props.my_xx, self.section_props.my_yy)
+
     def get_rc(self) -> tuple[float, float]:
         """Returns the cross-section centroidal radii of gyration.
 
@@ -2417,6 +2454,32 @@ class Section:
             self.section_props.z22_plus / e_ref,
             self.section_props.z22_minus / e_ref,
         )
+
+    def get_my_p(self) -> tuple[float, float]:
+        """Returns the yield moment for bending about the principal axis.
+
+        This is a composite only property, as such this can only be returned if material
+        properties have been applied to the cross-section.
+
+        Returns:
+            Yield moment for bending about the principal ``11`` and ``22`` axes
+            (``my_11``, ``my_22``)
+
+        Raises:
+            RuntimeError: If material properties have *not* been applied
+            RuntimeError: If a geometric analysis has not been performed
+        """
+        if not self.is_composite():
+            msg = "Attempting to get a composite only property for a geometric analysis"
+            msg += " (material properties have not been applied). Consider using"
+            msg += " get_zp()."
+            raise RuntimeError(msg)
+
+        if self.section_props.my_11 is None or self.section_props.my_22 is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
+
+        return (self.section_props.my_11, self.section_props.my_22)
 
     def get_rp(self) -> tuple[float, float]:
         """Returns the cross-section principal radii of gyration.

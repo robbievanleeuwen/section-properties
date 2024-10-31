@@ -420,6 +420,11 @@ extreme (min. and max.) coordinates of the cross-section in the x and y-directio
   Z_{yy}^+ = \frac{I_{\overline{yy}}}{x_{max} - x_c} \\
   Z_{yy}^- = \frac{I_{\overline{yy}}}{x_c - x_{min}} \\
 
+Yield Moments
+~~~~~~~~~~~~~
+
+TODO
+
 .. _label-theory-plastic-section-moduli:
 
 Plastic Section Moduli
