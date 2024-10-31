@@ -273,7 +273,73 @@ class Section:
             self.section_props.my_11 = 0.0
             self.section_props.my_22 = 0.0
 
-            # TODO: calculate yield moments
+            # calculate yield moments:
+            # 1) loop through each material group and through each element in the group
+            # 2) for each point, calculate the bending stress from a unit bending moment
+            # in each direction (mxx, myy, m11, m22)
+            # 3) from this, calculate the yield index for each point
+            # 4) get the largest yield index and scale the bending moment such that the
+            # yield index is 1
+
+            # initialise the yield indexes
+            yield_index = {
+                "mxx": 0.0,
+                "myy": 0.0,
+                "m11": 0.0,
+                "m22": 0.0,
+            }
+
+            # get useful section properties
+            cx = self.section_props.cx
+            cy = self.section_props.cy
+            phi = self.section_props.phi
+            ixx = self.section_props.ixx_c
+            iyy = self.section_props.iyy_c
+            ixy = self.section_props.ixy_c
+            i11 = self.section_props.i11_c
+            i22 = self.section_props.i22_c
+
+            if ixx is None or iyy is None or ixy is None or i11 is None or i22 is None:
+                msg = "Section properties failed to save."
+                raise RuntimeError(msg)
+
+            # loop through each material group
+            for group in self.material_groups:
+                em = group.material.elastic_modulus
+                fy = group.material.yield_strength
+
+                # loop through each element in the material group
+                for el in group.elements:
+                    # loop through each node in the element
+                    for coord in el.coords.transpose():
+                        # calculate coordinates wrt centroidal & principal axes
+                        x = coord[0] - cx
+                        y = coord[1] - cy
+                        x11, y22 = fea.principal_coordinate(phi=phi, x=x, y=y)
+
+                        # calculate bending stresses due to unit moments
+                        sig_mxx = em * (
+                            -ixy / (ixx * iyy - ixy**2) * x
+                            + iyy / (ixx * iyy - ixy**2) * y
+                        )
+                        sig_myy = em * (
+                            -ixx / (ixx * iyy - ixy**2) * x
+                            + ixy / (ixx * iyy - ixy**2) * y
+                        )
+                        sig_m11 = em / i11 * y22
+                        sig_m22 = -em / i22 * x11
+
+                        # update yield indexes
+                        yield_index["mxx"] = max(yield_index["mxx"], abs(sig_mxx / fy))
+                        yield_index["myy"] = max(yield_index["myy"], abs(sig_myy / fy))
+                        yield_index["m11"] = max(yield_index["m11"], abs(sig_m11 / fy))
+                        yield_index["m22"] = max(yield_index["m22"], abs(sig_m22 / fy))
+
+            # calculate yield moments
+            self.section_props.my_xx = 1.0 / yield_index["mxx"]
+            self.section_props.my_yy = 1.0 / yield_index["myy"]
+            self.section_props.my_11 = 1.0 / yield_index["m11"]
+            self.section_props.my_22 = 1.0 / yield_index["m22"]
 
             if progress and task is not None:
                 msg = "[bold green]:white_check_mark: Geometric analysis complete"

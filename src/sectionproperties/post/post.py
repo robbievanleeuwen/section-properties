@@ -670,6 +670,15 @@ def print_results(
         except RuntimeError:
             pass
 
+    # print cross-section my
+    if is_composite:
+        try:
+            my_xx, my_yy = section.get_my()
+            table.add_row("my_xx", f"{my_xx:>{fmt}}")
+            table.add_row("my_yy-", f"{my_yy:>{fmt}}")
+        except RuntimeError:
+            pass
+
     # print cross-section rc
     try:
         rx, ry = section.get_rc()
@@ -718,6 +727,15 @@ def print_results(
             table.add_row("e.z11-", f"{ez11_minus:>{fmt}}")
             table.add_row("e.z22+", f"{ez22_plus:>{fmt}}")
             table.add_row("e.z22-", f"{ez22_minus:>{fmt}}")
+        except RuntimeError:
+            pass
+
+    # print cross-section my_p
+    if is_composite:
+        try:
+            my_11, my_22 = section.get_my_p()
+            table.add_row("my_11", f"{my_11:>{fmt}}")
+            table.add_row("my_22-", f"{my_22:>{fmt}}")
         except RuntimeError:
             pass
 
