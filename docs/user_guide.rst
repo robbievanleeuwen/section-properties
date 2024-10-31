@@ -52,7 +52,7 @@ Cross-Section Analysis
 
   * ☑ Second moments of area
   * ☑ Elastic section moduli
-  * ☐ Yield moment
+  * ☑ Yield moment
   * ☑ Radii of gyration
   * ☑ Plastic centroid
   * ☑ Plastic section moduli
@@ -62,7 +62,7 @@ Cross-Section Analysis
 
   * ☑ Second moments of area
   * ☑ Elastic section moduli
-  * ☐ Yield moment
+  * ☑ Yield moment
   * ☑ Radii of gyration
   * ☑ Plastic centroid
   * ☑ Plastic section moduli
