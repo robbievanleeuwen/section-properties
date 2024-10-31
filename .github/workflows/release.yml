@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  UV_VERSION: "0.4.27"
+  UV_VERSION: "0.4.29"
   DEFAULT_PYTHON_VERSION: "3.12"
 
 jobs:
