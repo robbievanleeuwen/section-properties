@@ -81,7 +81,7 @@ test = [
 lint = [
     "pre-commit==4.0.1",
     "ruff==0.7.1",
-    "pyright==1.1.386",
+    "pyright==1.1.387",
 ]
 
 [tool.uv]
