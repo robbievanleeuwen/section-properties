@@ -675,7 +675,7 @@ def print_results(
         try:
             my_xx, my_yy = section.get_my()
             table.add_row("my_xx", f"{my_xx:>{fmt}}")
-            table.add_row("my_yy-", f"{my_yy:>{fmt}}")
+            table.add_row("my_yy", f"{my_yy:>{fmt}}")
         except RuntimeError:
             pass
 
@@ -735,7 +735,7 @@ def print_results(
         try:
             my_11, my_22 = section.get_my_p()
             table.add_row("my_11", f"{my_11:>{fmt}}")
-            table.add_row("my_22-", f"{my_22:>{fmt}}")
+            table.add_row("my_22", f"{my_22:>{fmt}}")
         except RuntimeError:
             pass
 
@@ -913,26 +913,24 @@ def print_results(
             pass
 
     # print cross-section sf
-    if not is_composite:
-        try:
-            sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus = section.get_sf()
-            table.add_row("sf_xx+", f"{sf_xx_plus:>{fmt}}")
-            table.add_row("sf_xx-", f"{sf_xx_minus:>{fmt}}")
-            table.add_row("sf_yy+", f"{sf_yy_plus:>{fmt}}")
-            table.add_row("sf_yy-", f"{sf_yy_minus:>{fmt}}")
-        except RuntimeError:
-            pass
+    try:
+        sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus = section.get_sf()
+        table.add_row("sf_xx+", f"{sf_xx_plus:>{fmt}}")
+        table.add_row("sf_xx-", f"{sf_xx_minus:>{fmt}}")
+        table.add_row("sf_yy+", f"{sf_yy_plus:>{fmt}}")
+        table.add_row("sf_yy-", f"{sf_yy_minus:>{fmt}}")
+    except RuntimeError:
+        pass
 
     # print cross-section sf_p
-    if not is_composite:
-        try:
-            sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus = section.get_sf_p()
-            table.add_row("sf_11+", f"{sf_11_plus:>{fmt}}")
-            table.add_row("sf_11-", f"{sf_11_minus:>{fmt}}")
-            table.add_row("sf_22+", f"{sf_22_plus:>{fmt}}")
-            table.add_row("sf_22-", f"{sf_22_minus:>{fmt}}")
-        except RuntimeError:
-            pass
+    try:
+        sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus = section.get_sf_p()
+        table.add_row("sf_11+", f"{sf_11_plus:>{fmt}}")
+        table.add_row("sf_11-", f"{sf_11_minus:>{fmt}}")
+        table.add_row("sf_22+", f"{sf_22_plus:>{fmt}}")
+        table.add_row("sf_22-", f"{sf_22_minus:>{fmt}}")
+    except RuntimeError:
+        pass
 
     console = Console()
     console.print(table)

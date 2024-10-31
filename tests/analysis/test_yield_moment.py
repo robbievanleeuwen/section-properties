@@ -70,6 +70,15 @@ def test_rectangle():
     assert check_yield_index(stress, "sig_zz_m11") == pytest.approx(1.0)
     assert check_yield_index(stress, "sig_zz_m22") == pytest.approx(1.0)
 
+    # check shape factors
+    sec.calculate_plastic_properties()
+    sf_xx, _, sf_yy, _ = sec.get_sf()
+    sf_11, _, sf_22, _ = sec.get_sf_p()
+    assert sf_xx == pytest.approx(1.5)
+    assert sf_yy == pytest.approx(1.5)
+    assert sf_11 == pytest.approx(1.5)
+    assert sf_22 == pytest.approx(1.5)
+
 
 def test_rectangle_rotated():
     """Test the yield moment of a simple rotated rectangle."""
@@ -91,6 +100,12 @@ def test_rectangle_rotated():
     stress = sec.calculate_stress(m11=my_11, m22=my_22)
     assert check_yield_index(stress, "sig_zz_m11") == pytest.approx(1.0)
     assert check_yield_index(stress, "sig_zz_m22") == pytest.approx(1.0)
+
+    # check shape factors
+    sec.calculate_plastic_properties()
+    sf_11, _, sf_22, _ = sec.get_sf_p()
+    assert sf_11 == pytest.approx(1.5)
+    assert sf_22 == pytest.approx(1.5)
 
 
 def test_isection():
@@ -118,6 +133,22 @@ def test_isection():
     assert check_yield_index(stress, "sig_zz_myy") == pytest.approx(1.0)
     assert check_yield_index(stress, "sig_zz_m11") == pytest.approx(1.0)
     assert check_yield_index(stress, "sig_zz_m22") == pytest.approx(1.0)
+
+    # check that shape factors with a geometric-only analysis match the composite
+    sec.calculate_plastic_properties()
+    sf_xx_c, _, sf_yy_c, _ = sec.get_sf()
+
+    geom = i_section(d=200, b=100, t_f=10, t_w=5, r=12, n_r=8)
+    geom.create_mesh(mesh_sizes=0, coarse=True)
+    sec = Section(geometry=geom)
+    sec.calculate_geometric_properties()
+    sec.calculate_plastic_properties()
+
+    sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus = sec.get_sf()
+    assert sf_xx_c == pytest.approx(sf_xx_plus)
+    assert sf_xx_c == pytest.approx(sf_xx_minus)
+    assert sf_yy_c == pytest.approx(sf_yy_plus)
+    assert sf_yy_c == pytest.approx(sf_yy_minus)
 
 
 def test_rectangle_composite():

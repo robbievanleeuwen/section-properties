@@ -136,6 +136,8 @@ Plastic Analysis
     ~sectionproperties.analysis.section.Section.get_pc_p
     ~sectionproperties.analysis.section.Section.get_mp
     ~sectionproperties.analysis.section.Section.get_mp_p
+    ~sectionproperties.analysis.section.Section.get_sf
+    ~sectionproperties.analysis.section.Section.get_sf_p
 
 .. _label-material-affects-results:
 
