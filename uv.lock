@@ -1707,15 +1707,15 @@ wheels = [
 
 [[package]]
 name = "pyright"
-version = "1.1.386"
+version = "1.1.387"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "nodeenv" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/92/50/1a57054b5585fa72a93a6244c1b4b5639f8f7a1cc60b2e807cc67da8f0bc/pyright-1.1.386.tar.gz", hash = "sha256:8e9975e34948ba5f8e07792a9c9d2bdceb2c6c0b61742b068d2229ca2bc4a9d9", size = 21949 }
+sdist = { url = "https://files.pythonhosted.org/packages/c2/32/e7187478d3105d6d7edc9b754d56472ee06557c25cc404911288fee1796a/pyright-1.1.387.tar.gz", hash = "sha256:577de60224f7fe36505d5b181231e3a395d427b7873be0bbcaa962a29ea93a60", size = 21939 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cc/68/47fd6b3ffa27c99d7e0c866c618f07784b8806712059049daa492ca7e526/pyright-1.1.386-py3-none-any.whl", hash = "sha256:7071ac495593b2258ccdbbf495f1a5c0e5f27951f6b429bed4e8b296eb5cd21d", size = 18577 },
+    { url = "https://files.pythonhosted.org/packages/a0/18/c497df36641b0572f5bd59ae147b08ccaa6b8086397d50e1af97cc2ddcf6/pyright-1.1.387-py3-none-any.whl", hash = "sha256:6a1f495a261a72e12ad17e20d1ae3df4511223c773b19407cfa006229b1b08a5", size = 18577 },
 ]
 
 [[package]]
@@ -2151,7 +2151,7 @@ rhino = [
     { name = "rhino3dm" },
 ]
 
-[package.dependency-groups]
+[package.dev-dependencies]
 docs = [
     { name = "furo" },
     { name = "ipykernel" },
@@ -2191,7 +2191,7 @@ requires-dist = [
     { name = "shapely", specifier = "~=2.0.6" },
 ]
 
-[package.metadata.dependency-groups]
+[package.metadata.requires-dev]
 docs = [
     { name = "furo", specifier = "==2024.8.6" },
     { name = "ipykernel", specifier = "==6.29.5" },
@@ -2205,7 +2205,7 @@ docs = [
 ]
 lint = [
     { name = "pre-commit", specifier = "==4.0.1" },
-    { name = "pyright", specifier = "==1.1.386" },
+    { name = "pyright", specifier = "==1.1.387" },
     { name = "ruff", specifier = "==0.7.1" },
 ]
 test = [
