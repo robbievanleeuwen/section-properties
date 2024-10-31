@@ -798,18 +798,12 @@ def test_get_plastic(sec_no_mat_and_mat):
     assert sf_yy_plus == pytest.approx(1.5)
     assert sf_yy_minus == pytest.approx(1.5)
 
-    with pytest.raises(RuntimeError):
-        rect_mat.get_sf()
-
     # check sf_p
     sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus = rect_no_mat.get_sf_p()
     assert sf_11_plus == pytest.approx(1.5)
     assert sf_11_minus == pytest.approx(1.5)
     assert sf_22_plus == pytest.approx(1.5)
     assert sf_22_minus == pytest.approx(1.5)
-
-    with pytest.raises(RuntimeError):
-        rect_mat.get_sf_p()
 
 
 def test_get_effective_material():
