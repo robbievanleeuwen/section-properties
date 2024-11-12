@@ -725,45 +725,50 @@ def rectangular_wall(
         Reinforced concrete rectangular wall section geometry
 
     Example:
-        :include-source: True
-        :caption: Reinforced concrete rectangular wall section geometry
+        The following example creates a 1000 mm long x 180 mm thick rectangular concrete
+        wall, reinforced with a single layer of N12-200 with 30 mm cover. A coarse
+        finite element mesh is generated to show the different material regions:
 
-        from sectionproperties.pre import Material
-        from sectionproperties.pre.library import rectangular_wall
-        from sectionproperties.analysis import Section
+        .. plot::
+            :include-source: True
+            :caption: Reinforced concrete rectangular wall section geometry
 
-        concrete = Material(
-            name="Concrete",
-            elastic_modulus=30.1e3,
-            poissons_ratio=0.2,
-            yield_strength=32,
-            density=2.4e-6,
-            color="lightgrey",
-        )
-        steel = Material(
-            name="Steel",
-            elastic_modulus=200e3,
-            poissons_ratio=0.3,
-            yield_strength=500,
-            density=7.85e-6,
-            color="grey",
-        )
+            from sectionproperties.pre import Material
+            from sectionproperties.pre.library import rectangular_wall
+            from sectionproperties.analysis import Section
 
-        geom = rectangular_wall(
-            d=1000,
-            b=180,
-            dia_bar=12,
-            area_bar=110,
-            spacing=200,
-            cover=30,
-            double=False,
-            n_circle=16
-            conc_mat=concrete,
-            steel_mat=steel,
-        )
+            concrete = Material(
+                name="Concrete",
+                elastic_modulus=30.1e3,
+                poissons_ratio=0.2,
+                yield_strength=32,
+                density=2.4e-6,
+                color="lightgrey",
+            )
+            steel = Material(
+                name="Steel",
+                elastic_modulus=200e3,
+                poissons_ratio=0.3,
+                yield_strength=500,
+                density=7.85e-6,
+                color="grey",
+            )
 
-        geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
-        Section(geometry=geom).plot_mesh()
+            geom = rectangular_wall(
+                d=1000,
+                b=180,
+                dia_bar=12,
+                area_bar=110,
+                spacing=200,
+                cover=30,
+                double=False,
+                n_circle=12,
+                conc_mat=concrete,
+                steel_mat=steel,
+            )
+
+            geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
+            Section(geometry=geom).plot_mesh()
     """
     # create rectangular concrete geometry
     geom = primitive_sections.rectangular_section(d=d, b=t, material=conc_mat)
@@ -851,45 +856,53 @@ def cee_wall(
         Reinforced concrete cee-shaped wall section geometry
 
     Example:
-        :include-source: True
-        :caption: Reinforced concrete cee-shaped wall section geometry
+        The following example creates a 2000 mm deep x 1500 mm deep cee-shaped concrete
+        wall, with a 200 mm thick flange and 150 mm thick web. The wall is reinforced
+        with a double layer of N16-150 with 30 mm cover. A coarse finite element mesh is
+        generated to show the different material regions:
 
-        from sectionproperties.pre import Material
-        from sectionproperties.pre.library import cee_wall
-        from sectionproperties.analysis import Section
+        .. plot::
+            :include-source: True
+            :caption: Reinforced concrete cee-shaped wall section geometry
 
-        concrete = Material(
-            name="Concrete",
-            elastic_modulus=30.1e3,
-            poissons_ratio=0.2,
-            yield_strength=32,
-            density=2.4e-6,
-            color="lightgrey",
-        )
-        steel = Material(
-            name="Steel",
-            elastic_modulus=200e3,
-            poissons_ratio=0.3,
-            yield_strength=500,
-            density=7.85e-6,
-            color="grey",
-        )
+            from sectionproperties.pre import Material
+            from sectionproperties.pre.library import cee_wall
+            from sectionproperties.analysis import Section
 
-        geom = cee_wall(
-            d=2000,
-            b=1500,
-            dia_bar=16,
-            area_bar=200,
-            spacing=150,
-            cover=30,
-            double=True,
-            n_circle=16
-            conc_mat=concrete,
-            steel_mat=steel,
-        )
+            concrete = Material(
+                name="Concrete",
+                elastic_modulus=30.1e3,
+                poissons_ratio=0.2,
+                yield_strength=32,
+                density=2.4e-6,
+                color="lightgrey",
+            )
+            steel = Material(
+                name="Steel",
+                elastic_modulus=200e3,
+                poissons_ratio=0.3,
+                yield_strength=500,
+                density=7.85e-6,
+                color="grey",
+            )
 
-        geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
-        Section(geometry=geom).plot_mesh()
+            geom = cee_wall(
+                d=2000,
+                b=1500,
+                t_f=200,
+                t_w=150,
+                dia_bar=16,
+                area_bar=200,
+                spacing=150,
+                cover=30,
+                double=True,
+                n_circle=12,
+                conc_mat=concrete,
+                steel_mat=steel,
+            )
+
+            geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
+            Section(geometry=geom).plot_mesh()
     """
     # create cee concrete geometry
     geom_outer = primitive_sections.rectangular_section(d=d, b=b, material=conc_mat)

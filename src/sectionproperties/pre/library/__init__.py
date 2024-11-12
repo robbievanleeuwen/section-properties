@@ -6,10 +6,12 @@ from sectionproperties.pre.library.bridge_sections import (
 )
 from sectionproperties.pre.library.concrete_sections import (
     add_bar,
+    cee_wall,
     concrete_circular_section,
     concrete_column_section,
     concrete_rectangular_section,
     concrete_tee_section,
+    rectangular_wall,
 )
 from sectionproperties.pre.library.nastran_sections import (
     nastran_bar,

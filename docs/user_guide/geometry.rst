@@ -307,6 +307,8 @@ Concrete Sections
     ~sectionproperties.pre.library.concrete_sections.concrete_column_section
     ~sectionproperties.pre.library.concrete_sections.concrete_tee_section
     ~sectionproperties.pre.library.concrete_sections.concrete_circular_section
+    ~sectionproperties.pre.library.concrete_sections.rectangular_wall
+    ~sectionproperties.pre.library.concrete_sections.cee_wall
 
 .. _label-bridge-library:
 
