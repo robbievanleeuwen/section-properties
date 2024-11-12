@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from math import ceil
+
 import numpy as np
 
 import sectionproperties.pre.geometry as geometry
@@ -673,6 +675,394 @@ def concrete_circular_section(
     else:
         msg = "Concrete section generation failed."
         raise ValueError(msg)
+
+
+def rectangular_wall(
+    d: float,
+    t: float,
+    dia_bar: float,
+    area_bar: float,
+    spacing: float,
+    cover: float,
+    double: bool = True,
+    n_circle: int = 4,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
+) -> geometry.CompoundGeometry:
+    """Constructs a reinforced concrete rectangular wall section.
+
+    Constructs a reinforced concrete rectangular wall section of depth ``d`` and
+    thickness ``t``. The wall reinforcement has a maximum spacing of ``spacing`` and is
+    doubly reinforced if ``double`` is set to ``True``, or singly reinforced if it is
+    set to ``False``.
+
+    .. note::
+        As the reinforcing bars are described by discretised circles, the area of each
+        bar is required to ensure that the correct reinforcing area is provided.
+
+    Args:
+        d: Concrete wall depth
+        t: Concrete wall thickness
+        dia_bar: Diameter of the reinforcing bars, used for calculating bar placement
+        area_bar: Area of the reinforcing bars
+        spacing: Maximum spacing of the reinforcement bars, the calculated spacing is
+            equal to ``ceil(extent / spacing) + 1``
+        cover: Clear cover to the reinforcing bars
+        double: If set to ``True``, provides two layers of reinforcement to the wall. If
+            set to ``False``, provides a single central layer of reinforcement to the
+            wall. Defaults to ``True``.
+        n_circle: Number of points used to discretise the circular reinforcing bars.
+            Defaults to ``4``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        ValueError: Geometry generation failed
+
+    Returns:
+        Reinforced concrete rectangular wall section geometry
+
+    Example:
+        :include-source: True
+        :caption: Reinforced concrete rectangular wall section geometry
+
+        from sectionproperties.pre import Material
+        from sectionproperties.pre.library import rectangular_wall
+        from sectionproperties.analysis import Section
+
+        concrete = Material(
+            name="Concrete",
+            elastic_modulus=30.1e3,
+            poissons_ratio=0.2,
+            yield_strength=32,
+            density=2.4e-6,
+            color="lightgrey",
+        )
+        steel = Material(
+            name="Steel",
+            elastic_modulus=200e3,
+            poissons_ratio=0.3,
+            yield_strength=500,
+            density=7.85e-6,
+            color="grey",
+        )
+
+        geom = rectangular_wall(
+            d=1000,
+            b=180,
+            dia_bar=12,
+            area_bar=110,
+            spacing=200,
+            cover=30,
+            double=False,
+            n_circle=16
+            conc_mat=concrete,
+            steel_mat=steel,
+        )
+
+        geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
+        Section(geometry=geom).plot_mesh()
+    """
+    # create rectangular concrete geometry
+    geom = primitive_sections.rectangular_section(d=d, b=t, material=conc_mat)
+
+    # calculate number of bars along length of wall
+    y_length = d - 2.0 * cover - dia_bar
+    n_y = ceil(y_length / spacing) + 1
+
+    # calculate y-position of bars
+    start = cover + 0.5 * dia_bar
+    stop = d - cover - 0.5 * dia_bar
+    y_i = np.linspace(start=start, stop=stop, num=n_y)
+
+    # calculate x-position of bars
+    x_i = [cover + 0.5 * dia_bar, t - cover - 0.5 * dia_bar] if double else [0.5 * t]
+
+    # add bars
+    for y in y_i:
+        for x in x_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=y,
+                n=n_circle,
+            )
+
+    if isinstance(geom, geometry.CompoundGeometry):
+        return geom
+    else:
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
+
+
+def cee_wall(
+    d: float,
+    b: float,
+    t_f: float,
+    t_w: float,
+    dia_bar: float,
+    area_bar: float,
+    spacing: float,
+    cover: float,
+    double: bool = True,
+    n_circle: int = 4,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
+) -> geometry.CompoundGeometry:
+    """Constructs a reinforced concrete cee-shaped wall section.
+
+    Constructs a reinforced concrete cee-shaped wall section of depth ``d``, width
+    ``b``, flange thickness ``t_f`` and web thickness ``t_w``. The wall reinforcement
+    has a maximum spacing of ``spacing`` and is doubly reinforced if ``double`` is set
+    to ``True``, or singly reinforced if it is set to ``False``.
+
+    .. note::
+        As the reinforcing bars are described by discretised circles, the area of each
+        bar is required to ensure that the correct reinforcing area is provided.
+
+    Args:
+        d: Concrete wall depth
+        b: Concrete wall width
+        t_f: Concrete wall flange thickness
+        t_w: Concrete wall web thickness
+        dia_bar: Diameter of the reinforcing bars, used for calculating bar placement
+        area_bar: Area of the reinforcing bars
+        spacing: Maximum spacing of the reinforcement bars, the calculated spacing is
+            equal to ``ceil(extent / spacing) + 1``
+        cover: Clear cover to the reinforcing bars
+        double: If set to ``True``, provides two layers of reinforcement to the wall. If
+            set to ``False``, provides a single central layer of reinforcement to the
+            wall. Defaults to ``True``.
+        n_circle: Number of points used to discretise the circular reinforcing bars.
+            Defaults to ``4``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        ValueError: Geometry generation failed
+
+    Returns:
+        Reinforced concrete cee-shaped wall section geometry
+
+    Example:
+        :include-source: True
+        :caption: Reinforced concrete cee-shaped wall section geometry
+
+        from sectionproperties.pre import Material
+        from sectionproperties.pre.library import cee_wall
+        from sectionproperties.analysis import Section
+
+        concrete = Material(
+            name="Concrete",
+            elastic_modulus=30.1e3,
+            poissons_ratio=0.2,
+            yield_strength=32,
+            density=2.4e-6,
+            color="lightgrey",
+        )
+        steel = Material(
+            name="Steel",
+            elastic_modulus=200e3,
+            poissons_ratio=0.3,
+            yield_strength=500,
+            density=7.85e-6,
+            color="grey",
+        )
+
+        geom = cee_wall(
+            d=2000,
+            b=1500,
+            dia_bar=16,
+            area_bar=200,
+            spacing=150,
+            cover=30,
+            double=True,
+            n_circle=16
+            conc_mat=concrete,
+            steel_mat=steel,
+        )
+
+        geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
+        Section(geometry=geom).plot_mesh()
+    """
+    # create cee concrete geometry
+    geom_outer = primitive_sections.rectangular_section(d=d, b=b, material=conc_mat)
+    geom_inner = (
+        primitive_sections.rectangular_section(
+            d=d - 2 * t_f, b=b - t_w, material=conc_mat
+        )
+        .align_center(align_to=geom_outer)
+        .align_to(other=geom_outer, on="right", inner=True)
+    )
+    geom = geom_outer - geom_inner
+
+    # calculate reinforcement positions
+    # singly reinforced
+    if not double:
+        # calculate number of bars along length of wall
+        x_length = b - cover - 0.5 * dia_bar - 0.5 * t_w
+        n_x = ceil(x_length / spacing) + 1
+        y_length = d - 2.0 * t_f
+        n_y = ceil(y_length / spacing) + 1
+
+        # calculate position of bars
+        x_i = np.linspace(start=0.5 * t_w, stop=b - cover - 0.5 * dia_bar, num=n_x)
+        y_i = np.linspace(start=0.5 * t_f, stop=d - 0.5 * t_f, num=n_y)
+
+        # add bottom bars
+        for x in x_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=0.5 * t_f,
+                n=n_circle,
+            )
+
+        # add top bars
+        for x in x_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=d - 0.5 * t_f,
+                n=n_circle,
+            )
+
+        # add web bars
+        for y in y_i[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=0.5 * t_w,
+                y=y,
+                n=n_circle,
+            )
+    # doubly reinforced
+    else:
+        # bottom/top outer bars
+        x_length = b - 2.0 * cover - dia_bar
+        n_x = ceil(x_length / spacing) + 1
+        x_i = np.linspace(
+            start=cover + 0.5 * dia_bar, stop=b - cover - 0.5 * dia_bar, num=n_x
+        )
+
+        # add bottom outer bars
+        for x in x_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=cover + 0.5 * dia_bar,
+                n=n_circle,
+            )
+
+        # add top outer bars
+        for x in x_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=d - cover - 0.5 * dia_bar,
+                n=n_circle,
+            )
+
+        # web outer bars
+        y_length = d - 2 * cover - dia_bar
+        n_y = ceil(y_length / spacing) + 1
+        y_i = np.linspace(
+            start=cover + 0.5 * dia_bar, stop=d - cover - 0.5 * dia_bar, num=n_y
+        )
+
+        # add web outer bars
+        for y in y_i[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=cover + 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+        # bottom/top inner bars
+        x_length = b - t_w
+        n_x = ceil(x_length / spacing) + 1
+        x_i = np.linspace(
+            start=t_w - cover - 0.5 * dia_bar, stop=b - cover - 0.5 * dia_bar, num=n_x
+        )
+
+        # add bottom inner bars
+        for x in x_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=t_f - cover - 0.5 * dia_bar,
+                n=n_circle,
+            )
+
+        # add top inner bars
+        for x in x_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=d - t_f + cover + 0.5 * dia_bar,
+                n=n_circle,
+            )
+
+        # web inner bars
+        y_length = d - 2 * t_f + 2 * cover + dia_bar
+        n_y = ceil(y_length / spacing) + 1
+        y_i = np.linspace(
+            start=t_f - cover - 0.5 * dia_bar,
+            stop=d - t_f + cover + 0.5 * dia_bar,
+            num=n_y,
+        )
+
+        # add web inner bars
+        for y in y_i[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=t_w - cover - 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+    if isinstance(geom, geometry.CompoundGeometry):
+        return geom
+    else:
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
+
+
+# def tee_wall() -> geometry.CompoundGeometry:
+
+# def single_lift_core() -> geometry.CompoundGeometry:
+
+# def double_lift_core_a() -> geometry.CompoundGeometry:
+
+# def double_lift_core_b() -> geometry.CompoundGeometry:
+
+# def stairwell_a() -> geometry.CompoundGeometry:
+
+# def stairwell_b() -> geometry.CompoundGeometry:
 
 
 def add_bar(
