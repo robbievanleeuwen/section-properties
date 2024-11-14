@@ -754,6 +754,24 @@ wheels = [
 ]
 
 [[package]]
+name = "ipympl"
+version = "0.9.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "ipython" },
+    { name = "ipython-genutils" },
+    { name = "ipywidgets" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pillow" },
+    { name = "traitlets" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/36/64/05a5051f1fe457331f3d4353ad28e2e2ec4c98caaee0a087f0108ab9a40c/ipympl-0.9.4.tar.gz", hash = "sha256:cfb53c5b4fcbcee6d18f095eecfc6c6c474303d5b744e72cc66e7a2804708907", size = 58552737 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d8/50/d6f4e7eb0e7d198b431d8259bc9a6035f879d4df487448b196cdf1e84155/ipympl-0.9.4-py3-none-any.whl", hash = "sha256:5b0c08c6f4f6ea655ba58239363457c10fb921557f5038c1a46db4457d6d6b0e", size = 516304 },
+]
+
+[[package]]
 name = "ipython"
 version = "8.29.0"
 source = { registry = "https://pypi.org/simple" }
@@ -773,6 +791,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/85/e0/a3f36dde97e12121106807d80485423ae4c5b27ce60d40d4ab0bab18a9db/ipython-8.29.0.tar.gz", hash = "sha256:40b60e15b22591450eef73e40a027cf77bd652e757523eebc5bd7c7c498290eb", size = 5497513 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c5/a5/c15ed187f1b3fac445bb42a2dedd8dec1eee1718b35129242049a13a962f/ipython-8.29.0-py3-none-any.whl", hash = "sha256:0188a1bd83267192123ccea7f4a8ed0a78910535dbaa3f37671dca76ebd429c8", size = 819911 },
+]
+
+[[package]]
+name = "ipython-genutils"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e8/69/fbeffffc05236398ebfcfb512b6d2511c622871dca1746361006da310399/ipython_genutils-0.2.0.tar.gz", hash = "sha256:eb2e116e75ecef9d4d228fdc66af54269afa26ab4463042e33785b887c628ba8", size = 22208 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fa/bc/9bd3b5c2b4774d5f33b2d544f1460be9df7df2fe42f352135381c347c69a/ipython_genutils-0.2.0-py2.py3-none-any.whl", hash = "sha256:72dd37233799e619666c9f639a9da83c34013a73e8bbc79a7a6348d93c61fab8", size = 26343 },
 ]
 
 [[package]]
@@ -2125,7 +2152,7 @@ wheels = [
 
 [[package]]
 name = "sectionproperties"
-version = "3.5.0"
+version = "3.6.0"
 source = { editable = "." }
 dependencies = [
     { name = "cytriangle" },
@@ -2153,6 +2180,9 @@ rhino = [
 ]
 
 [package.dev-dependencies]
+dev = [
+    { name = "ipympl" },
+]
 docs = [
     { name = "furo" },
     { name = "ipykernel" },
@@ -2193,6 +2223,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
+dev = [{ name = "ipympl", specifier = ">=0.9.4" }]
 docs = [
     { name = "furo", specifier = "==2024.8.6" },
     { name = "ipykernel", specifier = "==6.29.5" },

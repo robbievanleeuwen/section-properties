@@ -83,6 +83,9 @@ lint = [
     "ruff==0.7.1",
     "pyright==1.1.387",
 ]
+dev = [
+    "ipympl==0.9.4",
+]
 
 [tool.uv]
 default-groups = ["docs", "test", "lint"]
