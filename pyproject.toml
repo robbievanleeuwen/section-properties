@@ -54,7 +54,7 @@ rhino = [
     "rhino-shapley-interop~=0.0.4",
 ]
 dxf = [
-    "cad-to-shapely~=0.3.1",
+    "cad-to-shapely~=0.3.2",
 ]
 pardiso = [
     "pypardiso~=0.4.6; platform_system == 'Windows' or platform_system == 'Linux'"

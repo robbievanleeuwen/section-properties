@@ -149,7 +149,7 @@ wheels = [
 
 [[package]]
 name = "cad-to-shapely"
-version = "0.3.1"
+version = "0.3.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ezdxf" },
@@ -157,9 +157,9 @@ dependencies = [
     { name = "numpy" },
     { name = "shapely" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c8/90/9b81553073d497d8de555a837c6817a3d3ba9e4ac16be560b8336ba39467/cad_to_shapely-0.3.1.tar.gz", hash = "sha256:0003fd6ffe0e4766aad87882d51099fe4126768dddda3e55cc993f1c0a2845fb", size = 241634 }
+sdist = { url = "https://files.pythonhosted.org/packages/42/0c/6d24d791056830ce6602f2553899d650bf75941726c69b36e2b4cb4a5442/cad_to_shapely-0.3.2.tar.gz", hash = "sha256:29e2fff9e806c3a6d333fea2c361e730562d1ddd004c9ca0045aaa7ec7411dda", size = 273133 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/dc/da62ba51fbccaa9aa7b4582f2686bf9fd0642eab2c59a0b127ba201534a3/cad_to_shapely-0.3.1-py3-none-any.whl", hash = "sha256:4f606b6f6ae48bdd37444406d6202a30b400245d502b9ac3806305025594b7a1", size = 11660 },
+    { url = "https://files.pythonhosted.org/packages/15/5d/3e84daa6cb4e95bb38c46908c009368d7a526626249ffecb2fa60f96db58/cad_to_shapely-0.3.2-py3-none-any.whl", hash = "sha256:501d2bb916d151e59b1c46d1c2519bec826e1bb60e774a84aa8ceaf4ced19017", size = 12402 },
 ]
 
 [[package]]
@@ -2157,7 +2157,7 @@ rhino = [
     { name = "rhino3dm" },
 ]
 
-[package.dependency-groups]
+[package.dev-dependencies]
 docs = [
     { name = "furo" },
     { name = "ipykernel" },
@@ -2183,7 +2183,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cad-to-shapely", marker = "extra == 'dxf'", specifier = "~=0.3.1" },
+    { name = "cad-to-shapely", marker = "extra == 'dxf'", specifier = "~=0.3.2" },
     { name = "cytriangle", specifier = "~=1.0.3" },
     { name = "matplotlib", specifier = "~=3.9.2" },
     { name = "more-itertools", specifier = "~=10.5.0" },
@@ -2197,7 +2197,7 @@ requires-dist = [
     { name = "shapely", specifier = "~=2.0.6" },
 ]
 
-[package.metadata.dependency-groups]
+[package.metadata.requires-dev]
 docs = [
     { name = "furo", specifier = "==2024.8.6" },
     { name = "ipykernel", specifier = "==6.29.5" },
