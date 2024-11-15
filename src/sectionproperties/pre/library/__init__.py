@@ -15,6 +15,7 @@ from sectionproperties.pre.library.concrete_sections import (
     double_lift_core_b,
     rectangular_wall,
     single_lift_core,
+    stairwell,
     tee_wall,
 )
 from sectionproperties.pre.library.nastran_sections import (

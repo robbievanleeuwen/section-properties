@@ -313,6 +313,7 @@ Concrete Sections
     ~sectionproperties.pre.library.concrete_sections.single_lift_core
     ~sectionproperties.pre.library.concrete_sections.double_lift_core_a
     ~sectionproperties.pre.library.concrete_sections.double_lift_core_b
+    ~sectionproperties.pre.library.concrete_sections.stairwell
 
 .. _label-bridge-library:
 
