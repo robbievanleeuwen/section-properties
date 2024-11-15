@@ -6,9 +6,9 @@ from math import ceil
 
 import numpy as np
 
-import sectionproperties.pre.geometry as geometry
 import sectionproperties.pre.library.primitive_sections as primitive_sections
 import sectionproperties.pre.pre as pre
+from sectionproperties.pre.geometry import CompoundGeometry, Geometry
 
 
 def concrete_rectangular_section(
@@ -29,7 +29,7 @@ def concrete_rectangular_section(
     n_circle: int = 4,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Constructs a reinforced concrete rectangular section.
 
     Constructs a reinforced concrete rectangular section of depth ``d`` and width ``b``.
@@ -199,7 +199,7 @@ def concrete_rectangular_section(
 
             geom = (geom - bar_left - bar_right) + bar_left + bar_right
 
-    if isinstance(geom, geometry.CompoundGeometry):
+    if isinstance(geom, CompoundGeometry):
         return geom
     else:
         msg = "Concrete section generation failed."
@@ -218,7 +218,7 @@ def concrete_column_section(
     filled: bool = False,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Constructs a reinforced concrete column section.
 
     Constructs a reinforced concrete column section of depth ``d`` and width ``b``.
@@ -346,7 +346,7 @@ def concrete_column_section(
             n=n_circle,
         )
 
-    if isinstance(concrete_geometry, geometry.CompoundGeometry):
+    if isinstance(concrete_geometry, CompoundGeometry):
         return concrete_geometry
     else:
         msg = "Concrete section generation failed."
@@ -373,7 +373,7 @@ def concrete_tee_section(
     n_circle: int = 4,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Constructs a reinforced concrete tee section.
 
     Constructs a concrete tee section of depth ``d``, width ``b``, flange depth ``d_f``
@@ -550,7 +550,7 @@ def concrete_tee_section(
 
             geom = (geom - bar_left - bar_right) + bar_left + bar_right
 
-    if isinstance(geom, geometry.CompoundGeometry):  # pyright: ignore [reportUnnecessaryIsInstance]
+    if isinstance(geom, CompoundGeometry):  # pyright: ignore [reportUnnecessaryIsInstance]
         return geom
     else:
         msg = "Concrete section generation failed."
@@ -568,7 +568,7 @@ def concrete_circular_section(
     n_circle: int = 4,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Constructs a reinforced concrete circular section.
 
     Constructs a reinforced concrete circular section of diameter ``d``.
@@ -670,7 +670,7 @@ def concrete_circular_section(
         )
         geom = (geom - bar) + bar
 
-    if isinstance(geom, geometry.CompoundGeometry):
+    if isinstance(geom, CompoundGeometry):
         return geom
     else:
         msg = "Concrete section generation failed."
@@ -688,7 +688,7 @@ def rectangular_wall(
     n_circle: int = 4,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Constructs a reinforced concrete rectangular wall section.
 
     Constructs a reinforced concrete rectangular wall section of depth ``d`` and
@@ -773,6 +773,10 @@ def rectangular_wall(
     # create rectangular concrete geometry
     geom = primitive_sections.rectangular_section(d=d, b=t, material=conc_mat)
 
+    # positions of bars to add
+    xs: list[float] = []
+    ys: list[float] = []
+
     # calculate number of bars along length of wall
     y_length = d - 2.0 * cover - dia_bar
     n_y = ceil(y_length / spacing) + 1
@@ -788,20 +792,12 @@ def rectangular_wall(
     # add bars
     for y in y_i:
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(y)
 
-    if isinstance(geom, geometry.CompoundGeometry):
-        return geom
-    else:
-        msg = "Concrete section generation failed."
-        raise ValueError(msg)
+    return add_bars(
+        geometry=geom, area=area_bar, material=steel_mat, x=xs, y=ys, n=n_circle
+    )
 
 
 def cee_wall(
@@ -817,7 +813,7 @@ def cee_wall(
     n_circle: int = 4,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Constructs a reinforced concrete cee-shaped wall section.
 
     Constructs a reinforced concrete cee-shaped wall section of depth ``d``, width
@@ -915,13 +911,17 @@ def cee_wall(
     )
     geom = geom_outer - geom_inner
 
+    # positions of bars to add
+    xs: list[float] = []
+    ys: list[float] = []
+
     # calculate reinforcement positions
     # singly reinforced
     if not double:
         # calculate number of bars along length of wall
         x_length = b - cover - 0.5 * dia_bar - 0.5 * t_w
         n_x = ceil(x_length / spacing) + 1
-        y_length = d - 2.0 * t_f
+        y_length = d - t_f
         n_y = ceil(y_length / spacing) + 1
 
         # calculate position of bars
@@ -930,36 +930,18 @@ def cee_wall(
 
         # add bottom bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=0.5 * t_f,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(0.5 * t_f)
 
         # add top bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=d - 0.5 * t_f,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(d - 0.5 * t_f)
 
         # add web bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=0.5 * t_w,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(0.5 * t_w)
+            ys.append(y)
     # doubly reinforced
     else:
         # bottom/top outer bars
@@ -971,25 +953,13 @@ def cee_wall(
 
         # add bottom outer bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=cover + 0.5 * dia_bar,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(cover + 0.5 * dia_bar)
 
         # add top outer bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=d - cover - 0.5 * dia_bar,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(d - cover - 0.5 * dia_bar)
 
         # web outer bars
         y_length = d - 2 * cover - dia_bar
@@ -1000,14 +970,8 @@ def cee_wall(
 
         # add web outer bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=cover + 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(cover + 0.5 * dia_bar)
+            ys.append(y)
 
         # bottom/top inner bars
         x_length = b - t_w
@@ -1018,25 +982,13 @@ def cee_wall(
 
         # add bottom inner bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=t_f - cover - 0.5 * dia_bar,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(t_f - cover - 0.5 * dia_bar)
 
         # add top inner bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=d - t_f + cover + 0.5 * dia_bar,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(d - t_f + cover + 0.5 * dia_bar)
 
         # web inner bars
         y_length = d - 2 * t_f + 2 * cover + dia_bar
@@ -1049,20 +1001,12 @@ def cee_wall(
 
         # add web inner bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=t_w - cover - 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(t_w - cover - 0.5 * dia_bar)
+            ys.append(y)
 
-    if isinstance(geom, geometry.CompoundGeometry):
-        return geom
-    else:
-        msg = "Concrete section generation failed."
-        raise ValueError(msg)
+    return add_bars(
+        geometry=geom, area=area_bar, material=steel_mat, x=xs, y=ys, n=n_circle
+    )
 
 
 def tee_wall(
@@ -1078,7 +1022,7 @@ def tee_wall(
     n_circle: int = 4,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Constructs a reinforced concrete tee-shaped wall section.
 
     Constructs a reinforced concrete tee-shaped wall section of depth ``d``, width
@@ -1175,6 +1119,10 @@ def tee_wall(
     )
     geom = geom_outer - geom_inner_left - geom_inner_right
 
+    # positions of bars to add
+    xs: list[float] = []
+    ys: list[float] = []
+
     # calculate reinforcement positions
     # singly reinforced
     if not double:
@@ -1192,25 +1140,13 @@ def tee_wall(
 
         # add top bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=d - 0.5 * t_f,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(d - 0.5 * t_f)
 
         # add web bars
         for y in y_i[:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=0.5 * b,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(0.5 * b)
+            ys.append(y)
     # doubly reinforced
     else:
         # top outer bars
@@ -1222,14 +1158,8 @@ def tee_wall(
 
         # add top outer bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=d - cover - 0.5 * dia_bar,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(d - cover - 0.5 * dia_bar)
 
         # top inner bars
         x_length = 0.5 * (b - t_w)
@@ -1248,14 +1178,8 @@ def tee_wall(
 
         # add top inner bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=d - t_f + cover + 0.5 * dia_bar,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(d - t_f + cover + 0.5 * dia_bar)
 
         # web bars
         y_length = d - t_f
@@ -1271,20 +1195,12 @@ def tee_wall(
         # add web bars
         for y in y_i[:-1]:
             for x in x_i:
-                geom = add_bar(
-                    geometry=geom,
-                    area=area_bar,
-                    material=steel_mat,
-                    x=x,
-                    y=y,
-                    n=n_circle,
-                )
+                xs.append(x)
+                ys.append(y)
 
-    if isinstance(geom, geometry.CompoundGeometry):
-        return geom
-    else:
-        msg = "Concrete section generation failed."
-        raise ValueError(msg)
+    return add_bars(
+        geometry=geom, area=area_bar, material=steel_mat, x=xs, y=ys, n=n_circle
+    )
 
 
 def single_lift_core(
@@ -1301,7 +1217,7 @@ def single_lift_core(
     n_circle: int = 4,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Constructs a reinforced concrete single lift core section.
 
     Constructs a reinforced concrete single lift core section of depth ``d``, width
@@ -1404,6 +1320,10 @@ def single_lift_core(
     )
     geom = geom_outer - geom_inner - geom_door
 
+    # positions of bars to add
+    xs: list[float] = []
+    ys: list[float] = []
+
     # calculate reinforcement positions
     # singly reinforced
     if not double:
@@ -1429,58 +1349,28 @@ def single_lift_core(
 
         # add bot bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=0.5 * t1,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(0.5 * t1)
 
         # add top bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=d - 0.5 * t1,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(d - 0.5 * t1)
 
         # add left bars
         for y in y_i_l[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(0.5 * t2)
+            ys.append(y)
 
         # add right bot bars
         for y in y_i_r_b[1:]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - 0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - 0.5 * t2)
+            ys.append(y)
 
         # add right top bars
         for y in y_i_r_t[:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - 0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - 0.5 * t2)
+            ys.append(y)
     # doubly reinforced
     else:
         # top/bot outer bars
@@ -1494,14 +1384,8 @@ def single_lift_core(
         # add top/bot outer bars
         for x in x_i:
             for y in y_i:
-                geom = add_bar(
-                    geometry=geom,
-                    area=area_bar,
-                    material=steel_mat,
-                    x=x,
-                    y=y,
-                    n=n_circle,
-                )
+                xs.append(x)
+                ys.append(y)
 
         # top/bot inner bars
         x_length = b - 2 * t2 + 2 * cover + dia_bar
@@ -1516,14 +1400,8 @@ def single_lift_core(
         # add top/bot inner bars
         for x in x_i:
             for y in y_i:
-                geom = add_bar(
-                    geometry=geom,
-                    area=area_bar,
-                    material=steel_mat,
-                    x=x,
-                    y=y,
-                    n=n_circle,
-                )
+                xs.append(x)
+                ys.append(y)
 
         # left outer bars
         y_length = d - 2 * cover - dia_bar
@@ -1534,14 +1412,8 @@ def single_lift_core(
 
         # add left outer bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=cover + 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(cover + 0.5 * dia_bar)
+            ys.append(y)
 
         # left inner bars
         y_length = d - 2 * t1 + 2 * cover + dia_bar
@@ -1554,14 +1426,8 @@ def single_lift_core(
 
         # add left inner bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=t2 - cover - 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(t2 - cover - 0.5 * dia_bar)
+            ys.append(y)
 
         # right outer bars
         y_length = 0.5 * (d - a) - 2 * cover - dia_bar
@@ -1580,14 +1446,8 @@ def single_lift_core(
 
         # add right outer bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - cover - 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - cover - 0.5 * dia_bar)
+            ys.append(y)
 
         # right inner bars
         y_length = 0.5 * (d - a) - t1
@@ -1606,20 +1466,12 @@ def single_lift_core(
 
         # add right inner bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - t2 + cover + 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - t2 + cover + 0.5 * dia_bar)
+            ys.append(y)
 
-    if isinstance(geom, geometry.CompoundGeometry):
-        return geom
-    else:
-        msg = "Concrete section generation failed."
-        raise ValueError(msg)
+    return add_bars(
+        geometry=geom, area=area_bar, material=steel_mat, x=xs, y=ys, n=n_circle
+    )
 
 
 def double_lift_core_a(
@@ -1637,7 +1489,7 @@ def double_lift_core_a(
     n_circle: int = 4,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Constructs a reinforced concrete double lift core (type A) section.
 
     Constructs a reinforced concrete double lift core (type A) section of depth ``d``,
@@ -1749,6 +1601,10 @@ def double_lift_core_a(
     geom_door_b = geom_door.shift_section(x_offset=b - t2, y_offset=t1 + nib)
     geom = geom_outer - geom_inner - geom_door_t - geom_door_b
 
+    # positions of bars to add
+    xs: list[float] = []
+    ys: list[float] = []
+
     # calculate reinforcement positions
     # singly reinforced
     if not double:
@@ -1779,69 +1635,33 @@ def double_lift_core_a(
 
         # add bot bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=0.5 * t1,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(0.5 * t1)
 
         # add top bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=d - 0.5 * t1,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(d - 0.5 * t1)
 
         # add left bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(0.5 * t2)
+            ys.append(y)
 
         # add nib bot bars
         for y in y_nib_b[1:]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - 0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - 0.5 * t2)
+            ys.append(y)
 
         # add nib top bars
         for y in y_nib_t[:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - 0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - 0.5 * t2)
+            ys.append(y)
 
         # add pier bars
         for y in y_pier:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - 0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - 0.5 * t2)
+            ys.append(y)
     # doubly reinforced
     else:
         # top/bot outer bars
@@ -1855,14 +1675,8 @@ def double_lift_core_a(
         # add top/bot outer bars
         for x in x_i:
             for y in y_i:
-                geom = add_bar(
-                    geometry=geom,
-                    area=area_bar,
-                    material=steel_mat,
-                    x=x,
-                    y=y,
-                    n=n_circle,
-                )
+                xs.append(x)
+                ys.append(y)
 
         # top/bot inner bars
         x_length = b - 2 * t2 + 2 * cover + dia_bar
@@ -1877,14 +1691,8 @@ def double_lift_core_a(
         # add top/bot inner bars
         for x in x_i:
             for y in y_i:
-                geom = add_bar(
-                    geometry=geom,
-                    area=area_bar,
-                    material=steel_mat,
-                    x=x,
-                    y=y,
-                    n=n_circle,
-                )
+                xs.append(x)
+                ys.append(y)
 
         # left outer bars
         y_length = d - 2 * cover - dia_bar
@@ -1895,14 +1703,8 @@ def double_lift_core_a(
 
         # add left outer bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=cover + 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(cover + 0.5 * dia_bar)
+            ys.append(y)
 
         # left inner bars
         y_length = d - 2 * t1 + 2 * cover + dia_bar
@@ -1915,14 +1717,8 @@ def double_lift_core_a(
 
         # add left inner bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=t2 - cover - 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(t2 - cover - 0.5 * dia_bar)
+            ys.append(y)
 
         # nib outer bars
         y_nib = nib + t1 - 2 * cover - dia_bar
@@ -1941,14 +1737,8 @@ def double_lift_core_a(
 
         # add nib outer bars
         for y in y_nib[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - cover - 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - cover - 0.5 * dia_bar)
+            ys.append(y)
 
         # nib inner bars
         y_nib = nib
@@ -1967,14 +1757,8 @@ def double_lift_core_a(
 
         # add nib outer bars
         for y in y_nib[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - t2 + cover + 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - t2 + cover + 0.5 * dia_bar)
+            ys.append(y)
 
         # pier bars
         y_pier = a2 - 2 * cover - dia_bar
@@ -1989,20 +1773,12 @@ def double_lift_core_a(
         # add pier bars
         for y in y_pier:
             for x in x_pier:
-                geom = add_bar(
-                    geometry=geom,
-                    area=area_bar,
-                    material=steel_mat,
-                    x=x,
-                    y=y,
-                    n=n_circle,
-                )
+                xs.append(x)
+                ys.append(y)
 
-    if isinstance(geom, geometry.CompoundGeometry):
-        return geom
-    else:
-        msg = "Concrete section generation failed."
-        raise ValueError(msg)
+    return add_bars(
+        geometry=geom, area=area_bar, material=steel_mat, x=xs, y=ys, n=n_circle
+    )
 
 
 def double_lift_core_b(
@@ -2020,7 +1796,7 @@ def double_lift_core_b(
     n_circle: int = 4,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Constructs a reinforced concrete double lift core (type B) section.
 
     Constructs a reinforced concrete double lift core (type B) section of depth ``d``,
@@ -2139,6 +1915,10 @@ def double_lift_core_b(
         - geom_door.shift_section(x_offset=b - t2, y_offset=t1 + nib)
     )
 
+    # positions of bars to add
+    xs: list[float] = []
+    ys: list[float] = []
+
     # calculate reinforcement positions
     # singly reinforced
     if not double:
@@ -2169,80 +1949,38 @@ def double_lift_core_b(
 
         # add bot bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=0.5 * t1,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(0.5 * t1)
 
         # add mid bars
         for x in x_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=0.5 * d,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(0.5 * d)
 
         # add top bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=d - 0.5 * t1,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(d - 0.5 * t1)
 
         # add left bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(0.5 * t2)
+            ys.append(y)
 
         # add nib bot bars
         for y in y_nib_b[1:]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - 0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - 0.5 * t2)
+            ys.append(y)
 
         # add nib top bars
         for y in y_nib_t[:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - 0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - 0.5 * t2)
+            ys.append(y)
 
         # add pier bars
         for y in y_pier:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - 0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - 0.5 * t2)
+            ys.append(y)
     # doubly reinforced
     else:
         # top/bot outer bars
@@ -2256,14 +1994,8 @@ def double_lift_core_b(
         # add top/bot outer bars
         for x in x_i:
             for y in y_i:
-                geom = add_bar(
-                    geometry=geom,
-                    area=area_bar,
-                    material=steel_mat,
-                    x=x,
-                    y=y,
-                    n=n_circle,
-                )
+                xs.append(x)
+                ys.append(y)
 
         # top/bot/central inner bars
         x_length = b - 2 * t2 + 2 * cover + dia_bar
@@ -2283,14 +2015,8 @@ def double_lift_core_b(
         # add top/bot inner bars
         for x in x_i:
             for y in y_i:
-                geom = add_bar(
-                    geometry=geom,
-                    area=area_bar,
-                    material=steel_mat,
-                    x=x,
-                    y=y,
-                    n=n_circle,
-                )
+                xs.append(x)
+                ys.append(y)
 
         # left outer bars
         y_length = d - 2 * cover - dia_bar
@@ -2301,14 +2027,8 @@ def double_lift_core_b(
 
         # add left outer bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=cover + 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(cover + 0.5 * dia_bar)
+            ys.append(y)
 
         # left inner bars
         y_length = 0.5 * (d - 2 * t1 - t3) + 2 * cover + dia_bar
@@ -2327,14 +2047,8 @@ def double_lift_core_b(
 
         # add left inner bars
         for y in y_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=t2 - cover - 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(t2 - cover - 0.5 * dia_bar)
+            ys.append(y)
 
         # nib outer bars
         y_nib = nib + t1 - 2 * cover - dia_bar
@@ -2353,14 +2067,8 @@ def double_lift_core_b(
 
         # add nib outer bars
         for y in y_nib[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - cover - 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - cover - 0.5 * dia_bar)
+            ys.append(y)
 
         # nib inner bars
         y_nib = nib
@@ -2379,14 +2087,8 @@ def double_lift_core_b(
 
         # add nib outer bars
         for y in y_nib[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - t2 + cover + 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - t2 + cover + 0.5 * dia_bar)
+            ys.append(y)
 
         # outer pier bars
         y_pier = a2 - 2 * cover - dia_bar
@@ -2399,14 +2101,8 @@ def double_lift_core_b(
 
         # add outer pier bars
         for y in y_pier:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - cover - 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - cover - 0.5 * dia_bar)
+            ys.append(y)
 
         # inner pier bars
         y_pier = nib - 2 * cover - dia_bar
@@ -2425,20 +2121,12 @@ def double_lift_core_b(
 
         # add outer pier bars
         for y in y_pier:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - t2 + cover + 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - t2 + cover + 0.5 * dia_bar)
+            ys.append(y)
 
-    if isinstance(geom, geometry.CompoundGeometry):
-        return geom
-    else:
-        msg = "Concrete section generation failed."
-        raise ValueError(msg)
+    return add_bars(
+        geometry=geom, area=area_bar, material=steel_mat, x=xs, y=ys, n=n_circle
+    )
 
 
 def stairwell(
@@ -2455,7 +2143,7 @@ def stairwell(
     n_circle: int = 4,
     conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
     steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Constructs a reinforced concrete stairwell section.
 
     Constructs a reinforced concrete stairwell section of depth ``d``, width ``b``,
@@ -2556,6 +2244,10 @@ def stairwell(
     ).shift_section(x_offset=b - t2, y_offset=d - t1 - a)
     geom = geom_outer - geom_inner - geom_door
 
+    # positions of bars to add
+    xs: list[float] = []
+    ys: list[float] = []
+
     # calculate reinforcement positions
     # singly reinforced
     if not double:
@@ -2576,47 +2268,23 @@ def stairwell(
 
         # add bot bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=0.5 * t1,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(0.5 * t1)
 
         # add top bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=d - 0.5 * t1,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(d - 0.5 * t1)
 
         # add left bars
         for y in y_i_l[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(0.5 * t2)
+            ys.append(y)
 
         # add right bars
         for y in y_i_r[1:]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - 0.5 * t2,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - 0.5 * t2)
+            ys.append(y)
     # doubly reinforced
     else:
         # top/bot outer bars
@@ -2630,14 +2298,8 @@ def stairwell(
         # add top/bot outer bars
         for x in x_i:
             for y in y_i:
-                geom = add_bar(
-                    geometry=geom,
-                    area=area_bar,
-                    material=steel_mat,
-                    x=x,
-                    y=y,
-                    n=n_circle,
-                )
+                xs.append(x)
+                ys.append(y)
 
         # top inner bars
         x_length = b - t2
@@ -2650,14 +2312,8 @@ def stairwell(
 
         # add top inner bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=d - t1 + cover + 0.5 * dia_bar,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(d - t1 + cover + 0.5 * dia_bar)
 
         # bot inner bars
         x_length = b - 2 * t2 + 2 * cover + dia_bar
@@ -2670,14 +2326,8 @@ def stairwell(
 
         # add bot inner bars
         for x in x_i:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=x,
-                y=t1 - cover - 0.5 * dia_bar,
-                n=n_circle,
-            )
+            xs.append(x)
+            ys.append(t1 - cover - 0.5 * dia_bar)
 
         # left outer bars
         y_length = d - 2 * cover - dia_bar
@@ -2688,14 +2338,8 @@ def stairwell(
 
         # add left outer bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=cover + 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(cover + 0.5 * dia_bar)
+            ys.append(y)
 
         # left inner bars
         y_length = d - 2 * t1 + 2 * cover + dia_bar
@@ -2708,14 +2352,8 @@ def stairwell(
 
         # add left inner bars
         for y in y_i[1:-1]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=t2 - cover - 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(t2 - cover - 0.5 * dia_bar)
+            ys.append(y)
 
         # right inner bars
         y_length = d - 2 * t1 - a
@@ -2728,14 +2366,8 @@ def stairwell(
 
         # add right inner bars
         for y in y_i[1:]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - t2 + cover + 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - t2 + cover + 0.5 * dia_bar)
+            ys.append(y)
 
         # right outer bars
         y_length = d - t1 - a - cover - 0.5 * dia_bar
@@ -2748,34 +2380,26 @@ def stairwell(
 
         # add right outer bars
         for y in y_i[1:]:
-            geom = add_bar(
-                geometry=geom,
-                area=area_bar,
-                material=steel_mat,
-                x=b - cover - 0.5 * dia_bar,
-                y=y,
-                n=n_circle,
-            )
+            xs.append(b - cover - 0.5 * dia_bar)
+            ys.append(y)
 
-    if isinstance(geom, geometry.CompoundGeometry):
-        return geom
-    else:
-        msg = "Concrete section generation failed."
-        raise ValueError(msg)
+    return add_bars(
+        geometry=geom, area=area_bar, material=steel_mat, x=xs, y=ys, n=n_circle
+    )
 
 
 def add_bar(
-    geometry: geometry.Geometry | geometry.CompoundGeometry,
+    geometry: Geometry | CompoundGeometry,
     area: float,
     material: pre.Material,
     x: float,
     y: float,
     n: int,
-) -> geometry.CompoundGeometry:
+) -> CompoundGeometry:
     """Adds a reinforcing bar to a ``sectionproperties`` geometry.
 
     First removes the geometry through a subtraction operation, then adds the geometry
-    on top of the newly created hole. This method avoids the doubling up of geometry.
+    on top of the newly created hole. This method avoids the doubling up of
 
     Args:
         geometry: Reinforced concrete geometry to which the new bar will be added
@@ -2795,3 +2419,39 @@ def add_bar(
     ).shift_section(x_offset=x, y_offset=y)
 
     return (geometry - bar) + bar
+
+
+def add_bars(
+    geometry: Geometry | CompoundGeometry,
+    area: float,
+    material: pre.Material,
+    x: list[float],
+    y: list[float],
+    n: int,
+) -> CompoundGeometry:
+    """Adds a list of reinforcing bars to a ``sectionproperties`` geometry.
+
+    First removes the geometry through a subtraction operation, then adds the geometry
+    on top of the newly created hole. This method avoids the doubling up of
+
+    Args:
+        geometry: Reinforced concrete geometry to which the new bars will be added
+        area: Bar cross-sectional area
+        material: Material object for the bars
+        x: x-positions of the bars
+        y: y-positions of the bars
+        n: Number of points to discretise the bar circle
+
+    Returns:
+        Geometry object with added bars
+    """
+    bars = CompoundGeometry(
+        geoms=[
+            primitive_sections.circular_section_by_area(
+                area=area, n=n, material=material
+            ).shift_section(x_offset=x_i, y_offset=y_i)
+            for x_i, y_i in zip(x, y, strict=False)
+        ]
+    )
+
+    return (geometry - bars) + bars
