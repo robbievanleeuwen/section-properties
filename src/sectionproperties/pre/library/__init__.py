@@ -11,7 +11,11 @@ from sectionproperties.pre.library.concrete_sections import (
     concrete_column_section,
     concrete_rectangular_section,
     concrete_tee_section,
+    double_lift_core_a,
+    double_lift_core_b,
     rectangular_wall,
+    single_lift_core,
+    tee_wall,
 )
 from sectionproperties.pre.library.nastran_sections import (
     nastran_bar,

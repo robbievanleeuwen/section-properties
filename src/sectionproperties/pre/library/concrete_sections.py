@@ -756,7 +756,7 @@ def rectangular_wall(
 
             geom = rectangular_wall(
                 d=1000,
-                b=180,
+                t=180,
                 dia_bar=12,
                 area_bar=110,
                 spacing=200,
@@ -1622,9 +1622,824 @@ def single_lift_core(
         raise ValueError(msg)
 
 
-# def double_lift_core_a() -> geometry.CompoundGeometry:
+def double_lift_core_a(
+    d: float,
+    b: float,
+    t1: float,
+    t2: float,
+    a1: float,
+    a2: float,
+    dia_bar: float,
+    area_bar: float,
+    spacing: float,
+    cover: float,
+    double: bool = True,
+    n_circle: int = 4,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
+) -> geometry.CompoundGeometry:
+    """Constructs a reinforced concrete double lift core (type A) section.
 
-# def double_lift_core_b() -> geometry.CompoundGeometry:
+    Constructs a reinforced concrete double lift core (type A) section of depth ``d``,
+    width ``b``, top/bottom thickness ``t1``, left/right thickness ``t2``, door opening
+    width ``a1`` and door pier weidth ``a2``. The wall reinforcement has a maximum
+    spacing of ``spacing`` and is doubly reinforced if ``double`` is set to ``True``, or
+    singly reinforced if it is set to ``False``.
+
+    Type A refers to the fact that there is no wall dividing the two lift cores.
+
+    .. note::
+        As the reinforcing bars are described by discretised circles, the area of each
+        bar is required to ensure that the correct reinforcing area is provided.
+
+    Args:
+        d: Concrete wall depth
+        b: Concrete wall width
+        t1: Top/bottom concrete wall thickness
+        t2: Left/right concrete wall thickness
+        a1: Door opening width
+        a2: Door pier width
+        dia_bar: Diameter of the reinforcing bars, used for calculating bar placement
+        area_bar: Area of the reinforcing bars
+        spacing: Maximum spacing of the reinforcement bars, the calculated spacing is
+            equal to ``ceil(extent / spacing) + 1``
+        cover: Clear cover to the reinforcing bars
+        double: If set to ``True``, provides two layers of reinforcement to the wall. If
+            set to ``False``, provides a single central layer of reinforcement to the
+            wall. Defaults to ``True``.
+        n_circle: Number of points used to discretise the circular reinforcing bars.
+            Defaults to ``4``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        ValueError: Geometry generation failed
+        ValueError: If the lift door opening geometry is invalid
+
+    Returns:
+        Reinforced concrete double lift core (type A) section geometry
+
+    Example:
+        The following example creates a 3200 mm deep x 1800 mm wide concrete double lift
+        core (type A) concrete section, with top/bottom walls 200 mm thick, left/right
+        walls 150 mm thick, a door opening of 900 mm and a dor pier width of 600 mm. The
+        wall is reinforced with a double layer of N16-200 with 30 mm cover. A coarse
+        finite element mesh is generated to show the different material regions:
+
+        .. plot::
+            :include-source: True
+            :caption: Reinforced concrete double lift core (type A) section geometry
+
+            from sectionproperties.pre import Material
+            from sectionproperties.pre.library import double_lift_core_a
+            from sectionproperties.analysis import Section
+
+            concrete = Material(
+                name="Concrete",
+                elastic_modulus=30.1e3,
+                poissons_ratio=0.2,
+                yield_strength=32,
+                density=2.4e-6,
+                color="lightgrey",
+            )
+            steel = Material(
+                name="Steel",
+                elastic_modulus=200e3,
+                poissons_ratio=0.3,
+                yield_strength=500,
+                density=7.85e-6,
+                color="grey",
+            )
+
+            geom = double_lift_core_a(
+                d=3200,
+                b=1800,
+                t1=200,
+                t2=150,
+                a1=900,
+                a2=600,
+                dia_bar=16,
+                area_bar=200,
+                spacing=200,
+                cover=30,
+                double=True,
+                n_circle=12,
+                conc_mat=concrete,
+                steel_mat=steel,
+            )
+
+            geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
+            Section(geometry=geom).plot_mesh()
+    """
+    # check geometry
+    if 2 * a1 + a2 > d - 2 * t1:
+        msg = "(2 * a1 + a2) is larger than the lift opening."
+        raise ValueError(msg)
+
+    # create lift core geometry
+    geom_outer = primitive_sections.rectangular_section(d=d, b=b, material=conc_mat)
+    geom_inner = primitive_sections.rectangular_section(
+        d=d - 2 * t1, b=b - 2 * t2, material=conc_mat
+    ).align_center(align_to=geom_outer)
+    geom_door = primitive_sections.rectangular_section(d=a1, b=t2, material=conc_mat)
+    nib = 0.5 * (d - 2 * a1 - a2 - 2 * t1)
+    geom_door_t = geom_door.shift_section(x_offset=b - t2, y_offset=d - t1 - nib - a1)
+    geom_door_b = geom_door.shift_section(x_offset=b - t2, y_offset=t1 + nib)
+    geom = geom_outer - geom_inner - geom_door_t - geom_door_b
+
+    # calculate reinforcement positions
+    # singly reinforced
+    if not double:
+        # calculate number of bars along length of wall
+        x_length = b - t2
+        n_x = ceil(x_length / spacing) + 1
+        y_length = d - t1
+        y_nib = nib + 0.5 * t1
+        y_pier = a2 - 2 * cover - dia_bar
+        n_y = ceil(y_length / spacing) + 1
+        n_nib = ceil(y_nib / spacing) + 1
+        n_pier = ceil(y_pier / spacing) + 1
+
+        # calculate position of bars
+        x_i = np.linspace(start=0.5 * t2, stop=b - 0.5 * t2, num=n_x)
+        y_i = np.linspace(start=0.5 * t1, stop=d - 0.5 * t1, num=n_y)
+        y_nib_b = np.linspace(
+            start=0.5 * t1, stop=t1 + nib - cover - 0.5 * dia_bar, num=n_nib
+        )
+        y_nib_t = np.linspace(
+            start=d - t1 - nib + cover + 0.5 * dia_bar, stop=d - 0.5 * t1, num=n_nib
+        )
+        y_pier = np.linspace(
+            start=0.5 * (d - a2) + cover + 0.5 * dia_bar,
+            stop=0.5 * (d + a2) - cover - 0.5 * dia_bar,
+            num=n_pier,
+        )
+
+        # add bot bars
+        for x in x_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=0.5 * t1,
+                n=n_circle,
+            )
+
+        # add top bars
+        for x in x_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=d - 0.5 * t1,
+                n=n_circle,
+            )
+
+        # add left bars
+        for y in y_i[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=0.5 * t2,
+                y=y,
+                n=n_circle,
+            )
+
+        # add nib bot bars
+        for y in y_nib_b[1:]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - 0.5 * t2,
+                y=y,
+                n=n_circle,
+            )
+
+        # add nib top bars
+        for y in y_nib_t[:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - 0.5 * t2,
+                y=y,
+                n=n_circle,
+            )
+
+        # add pier bars
+        for y in y_pier:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - 0.5 * t2,
+                y=y,
+                n=n_circle,
+            )
+    # doubly reinforced
+    else:
+        # top/bot outer bars
+        x_length = b - 2 * cover - dia_bar
+        n_x = ceil(x_length / spacing) + 1
+        x_i = np.linspace(
+            start=cover + 0.5 * dia_bar, stop=b - cover - 0.5 * dia_bar, num=n_x
+        )
+        y_i = [cover + 0.5 * dia_bar, d - cover - 0.5 * dia_bar]
+
+        # add top/bot outer bars
+        for x in x_i:
+            for y in y_i:
+                geom = add_bar(
+                    geometry=geom,
+                    area=area_bar,
+                    material=steel_mat,
+                    x=x,
+                    y=y,
+                    n=n_circle,
+                )
+
+        # top/bot inner bars
+        x_length = b - 2 * t2 + 2 * cover + dia_bar
+        n_x = ceil(x_length / spacing) + 1
+        x_i = np.linspace(
+            start=t2 - cover - 0.5 * dia_bar,
+            stop=b - t2 + cover + 0.5 * dia_bar,
+            num=n_x,
+        )
+        y_i = [t1 - cover - 0.5 * dia_bar, d - t1 + cover + 0.5 * dia_bar]
+
+        # add top/bot inner bars
+        for x in x_i:
+            for y in y_i:
+                geom = add_bar(
+                    geometry=geom,
+                    area=area_bar,
+                    material=steel_mat,
+                    x=x,
+                    y=y,
+                    n=n_circle,
+                )
+
+        # left outer bars
+        y_length = d - 2 * cover - dia_bar
+        n_y = ceil(y_length / spacing) + 1
+        y_i = np.linspace(
+            start=cover + 0.5 * dia_bar, stop=d - cover - 0.5 * dia_bar, num=n_y
+        )
+
+        # add left outer bars
+        for y in y_i[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=cover + 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+        # left inner bars
+        y_length = d - 2 * t1 + 2 * cover + dia_bar
+        n_y = ceil(y_length / spacing) + 1
+        y_i = np.linspace(
+            start=t1 - cover - 0.5 * dia_bar,
+            stop=d - t1 + cover + 0.5 * dia_bar,
+            num=n_y,
+        )
+
+        # add left inner bars
+        for y in y_i[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=t2 - cover - 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+        # nib outer bars
+        y_nib = nib + t1 - 2 * cover - dia_bar
+        n_nib = ceil(y_nib / spacing) + 1
+        y_nib_b = np.linspace(
+            start=cover + 0.5 * dia_bar,
+            stop=t1 + nib - cover - 0.5 * dia_bar,
+            num=n_nib,
+        )
+        y_nib_t = np.linspace(
+            start=d - t1 - nib + cover + 0.5 * dia_bar,
+            stop=d - cover - 0.5 * dia_bar,
+            num=n_nib,
+        )
+        y_nib = y_nib_b.tolist() + y_nib_t.tolist()
+
+        # add nib outer bars
+        for y in y_nib[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - cover - 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+        # nib inner bars
+        y_nib = nib
+        n_nib = ceil(y_nib / spacing) + 1
+        y_nib_b = np.linspace(
+            start=t1 - cover - 0.5 * dia_bar,
+            stop=t1 + nib - cover - 0.5 * dia_bar,
+            num=n_nib,
+        )
+        y_nib_t = np.linspace(
+            start=d - t1 - nib + cover + 0.5 * dia_bar,
+            stop=d - t1 + cover + 0.5 * dia_bar,
+            num=n_nib,
+        )
+        y_nib = y_nib_b.tolist() + y_nib_t.tolist()
+
+        # add nib outer bars
+        for y in y_nib[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - t2 + cover + 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+        # pier bars
+        y_pier = a2 - 2 * cover - dia_bar
+        n_pier = ceil(y_pier / spacing) + 1
+        y_pier = np.linspace(
+            start=0.5 * (d - a2) + cover + 0.5 * dia_bar,
+            stop=0.5 * (d + a2) - cover - 0.5 * dia_bar,
+            num=n_pier,
+        )
+        x_pier = [b - t2 + cover + 0.5 * dia_bar, b - cover - 0.5 * dia_bar]
+
+        # add pier bars
+        for y in y_pier:
+            for x in x_pier:
+                geom = add_bar(
+                    geometry=geom,
+                    area=area_bar,
+                    material=steel_mat,
+                    x=x,
+                    y=y,
+                    n=n_circle,
+                )
+
+    if isinstance(geom, geometry.CompoundGeometry):
+        return geom
+    else:
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
+
+
+def double_lift_core_b(
+    d: float,
+    b: float,
+    t1: float,
+    t2: float,
+    t3: float,
+    a: float,
+    dia_bar: float,
+    area_bar: float,
+    spacing: float,
+    cover: float,
+    double: bool = True,
+    n_circle: int = 4,
+    conc_mat: pre.Material = pre.DEFAULT_MATERIAL,
+    steel_mat: pre.Material = pre.DEFAULT_MATERIAL,
+) -> geometry.CompoundGeometry:
+    """Constructs a reinforced concrete double lift core (type B) section.
+
+    Constructs a reinforced concrete double lift core (type B) section of depth ``d``,
+    width ``b``, top/bottom thickness ``t1``, left/right thickness ``t2``, central wall
+    thickness ``t3`` and door opening width ``a``. The wall reinforcement has a maximum
+    spacing of ``spacing`` and is doubly reinforced if ``double`` is set to ``True``, or
+    singly reinforced if it is set to ``False``.
+
+    Type B refers to the fact that there is a central wall dividing the two lift cores.
+
+    .. note::
+        As the reinforcing bars are described by discretised circles, the area of each
+        bar is required to ensure that the correct reinforcing area is provided.
+
+    Args:
+        d: Concrete wall depth
+        b: Concrete wall width
+        t1: Top/bottom concrete wall thickness
+        t2: Left/right concrete wall thickness
+        t3: Central concrete wall thickness
+        a: Door opening width
+        dia_bar: Diameter of the reinforcing bars, used for calculating bar placement
+        area_bar: Area of the reinforcing bars
+        spacing: Maximum spacing of the reinforcement bars, the calculated spacing is
+            equal to ``ceil(extent / spacing) + 1``
+        cover: Clear cover to the reinforcing bars
+        double: If set to ``True``, provides two layers of reinforcement to the wall. If
+            set to ``False``, provides a single central layer of reinforcement to the
+            wall. Defaults to ``True``.
+        n_circle: Number of points used to discretise the circular reinforcing bars.
+            Defaults to ``4``.
+        conc_mat: Material object to assign to the concrete area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+        steel_mat: Material object to assign to the steel area. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        ValueError: Geometry generation failed
+        ValueError: If the lift door opening geometry is invalid
+
+    Returns:
+        Reinforced concrete double lift core (type B) section geometry
+
+    Example:
+        The following example creates a 6000 mm deep x 3000 mm wide concrete double lift
+        core (type B) concrete section, with top/bottom walls 250 mm thick, left/right
+        walls 220 mm thick, central wall 180 mm thick and a door opening of 1500 mm. The
+        wall is reinforced with a single layer of N24-300 with 50 mm cover. A coarse
+        finite element mesh is generated to show the different material regions:
+
+        .. plot::
+            :include-source: True
+            :caption: Reinforced concrete double lift core (type B) section geometry
+
+            from sectionproperties.pre import Material
+            from sectionproperties.pre.library import double_lift_core_b
+            from sectionproperties.analysis import Section
+
+            concrete = Material(
+                name="Concrete",
+                elastic_modulus=30.1e3,
+                poissons_ratio=0.2,
+                yield_strength=32,
+                density=2.4e-6,
+                color="lightgrey",
+            )
+            steel = Material(
+                name="Steel",
+                elastic_modulus=200e3,
+                poissons_ratio=0.3,
+                yield_strength=500,
+                density=7.85e-6,
+                color="grey",
+            )
+
+            geom = double_lift_core_b(
+                d=6000,
+                b=3000,
+                t1=250,
+                t2=220,
+                t3=180,
+                a=1500,
+                dia_bar=24,
+                area_bar=450,
+                spacing=300,
+                cover=50,
+                double=True,
+                n_circle=12,
+                conc_mat=concrete,
+                steel_mat=steel,
+            )
+
+            geom.create_mesh(mesh_sizes=[0])  # a size of zero creates a coarse mesh
+            Section(geometry=geom).plot_mesh()
+    """
+    # check geometry
+    if a > 0.5 * (d - 2 * t1 - t3):
+        msg = "a is larger than a single lift opening."
+        raise ValueError(msg)
+
+    # calculate nib and a2
+    nib = 0.25 * (d - 2 * t1 - 2 * a - t3)
+    a2 = 2 * nib + t3
+
+    # create lift core geometry
+    geom_outer = primitive_sections.rectangular_section(d=d, b=b, material=conc_mat)
+    geom_inner = primitive_sections.rectangular_section(
+        d=0.5 * (d - 2 * t1 - t3), b=b - 2 * t2, material=conc_mat
+    )
+    geom_door = primitive_sections.rectangular_section(d=a, b=t2, material=conc_mat)
+    geom = (
+        geom_outer
+        - geom_inner.shift_section(x_offset=t2, y_offset=t1)
+        - geom_inner.shift_section(x_offset=t2, y_offset=0.5 * (d + t3))
+        - geom_door.shift_section(x_offset=b - t2, y_offset=d - t1 - nib - a)
+        - geom_door.shift_section(x_offset=b - t2, y_offset=t1 + nib)
+    )
+
+    # calculate reinforcement positions
+    # singly reinforced
+    if not double:
+        # calculate number of bars along length of wall
+        x_length = b - t2
+        n_x = ceil(x_length / spacing) + 1
+        y_length = d - t1
+        y_nib = nib + 0.5 * t1
+        y_pier = a2 - 2 * cover - dia_bar
+        n_y = ceil(y_length / spacing) + 1
+        n_nib = ceil(y_nib / spacing) + 1
+        n_pier = ceil(y_pier / spacing) + 1
+
+        # calculate position of bars
+        x_i = np.linspace(start=0.5 * t2, stop=b - 0.5 * t2, num=n_x)
+        y_i = np.linspace(start=0.5 * t1, stop=d - 0.5 * t1, num=n_y)
+        y_nib_b = np.linspace(
+            start=0.5 * t1, stop=t1 + nib - cover - 0.5 * dia_bar, num=n_nib
+        )
+        y_nib_t = np.linspace(
+            start=d - t1 - nib + cover + 0.5 * dia_bar, stop=d - 0.5 * t1, num=n_nib
+        )
+        y_pier = np.linspace(
+            start=0.5 * (d - a2) + cover + 0.5 * dia_bar,
+            stop=0.5 * (d + a2) - cover - 0.5 * dia_bar,
+            num=n_pier,
+        )
+
+        # add bot bars
+        for x in x_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=0.5 * t1,
+                n=n_circle,
+            )
+
+        # add mid bars
+        for x in x_i[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=0.5 * d,
+                n=n_circle,
+            )
+
+        # add top bars
+        for x in x_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=x,
+                y=d - 0.5 * t1,
+                n=n_circle,
+            )
+
+        # add left bars
+        for y in y_i[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=0.5 * t2,
+                y=y,
+                n=n_circle,
+            )
+
+        # add nib bot bars
+        for y in y_nib_b[1:]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - 0.5 * t2,
+                y=y,
+                n=n_circle,
+            )
+
+        # add nib top bars
+        for y in y_nib_t[:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - 0.5 * t2,
+                y=y,
+                n=n_circle,
+            )
+
+        # add pier bars
+        for y in y_pier:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - 0.5 * t2,
+                y=y,
+                n=n_circle,
+            )
+    # doubly reinforced
+    else:
+        # top/bot outer bars
+        x_length = b - 2 * cover - dia_bar
+        n_x = ceil(x_length / spacing) + 1
+        x_i = np.linspace(
+            start=cover + 0.5 * dia_bar, stop=b - cover - 0.5 * dia_bar, num=n_x
+        )
+        y_i = [cover + 0.5 * dia_bar, d - cover - 0.5 * dia_bar]
+
+        # add top/bot outer bars
+        for x in x_i:
+            for y in y_i:
+                geom = add_bar(
+                    geometry=geom,
+                    area=area_bar,
+                    material=steel_mat,
+                    x=x,
+                    y=y,
+                    n=n_circle,
+                )
+
+        # top/bot/central inner bars
+        x_length = b - 2 * t2 + 2 * cover + dia_bar
+        n_x = ceil(x_length / spacing) + 1
+        x_i = np.linspace(
+            start=t2 - cover - 0.5 * dia_bar,
+            stop=b - t2 + cover + 0.5 * dia_bar,
+            num=n_x,
+        )
+        y_i = [
+            t1 - cover - 0.5 * dia_bar,
+            0.5 * (d - t3) + cover + 0.5 * dia_bar,
+            0.5 * (d + t3) - cover - 0.5 * dia_bar,
+            d - t1 + cover + 0.5 * dia_bar,
+        ]
+
+        # add top/bot inner bars
+        for x in x_i:
+            for y in y_i:
+                geom = add_bar(
+                    geometry=geom,
+                    area=area_bar,
+                    material=steel_mat,
+                    x=x,
+                    y=y,
+                    n=n_circle,
+                )
+
+        # left outer bars
+        y_length = d - 2 * cover - dia_bar
+        n_y = ceil(y_length / spacing) + 1
+        y_i = np.linspace(
+            start=cover + 0.5 * dia_bar, stop=d - cover - 0.5 * dia_bar, num=n_y
+        )
+
+        # add left outer bars
+        for y in y_i[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=cover + 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+        # left inner bars
+        y_length = 0.5 * (d - 2 * t1 - t3) + 2 * cover + dia_bar
+        n_y = ceil(y_length / spacing) + 1
+        y_i_b = np.linspace(
+            start=t1 - cover - 0.5 * dia_bar,
+            stop=0.5 * (d - t3) + cover + 0.5 * dia_bar,
+            num=n_y,
+        )
+        y_i_t = np.linspace(
+            start=0.5 * (d + t3) - cover - 0.5 * dia_bar,
+            stop=d - t1 + cover + 0.5 * dia_bar,
+            num=n_y,
+        )
+        y_i = y_i_b[1:-1].tolist() + y_i_t[1:-1].tolist()
+
+        # add left inner bars
+        for y in y_i:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=t2 - cover - 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+        # nib outer bars
+        y_nib = nib + t1 - 2 * cover - dia_bar
+        n_nib = ceil(y_nib / spacing) + 1
+        y_nib_b = np.linspace(
+            start=cover + 0.5 * dia_bar,
+            stop=t1 + nib - cover - 0.5 * dia_bar,
+            num=n_nib,
+        )
+        y_nib_t = np.linspace(
+            start=d - t1 - nib + cover + 0.5 * dia_bar,
+            stop=d - cover - 0.5 * dia_bar,
+            num=n_nib,
+        )
+        y_nib = y_nib_b.tolist() + y_nib_t.tolist()
+
+        # add nib outer bars
+        for y in y_nib[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - cover - 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+        # nib inner bars
+        y_nib = nib
+        n_nib = ceil(y_nib / spacing) + 1
+        y_nib_b = np.linspace(
+            start=t1 - cover - 0.5 * dia_bar,
+            stop=t1 + nib - cover - 0.5 * dia_bar,
+            num=n_nib,
+        )
+        y_nib_t = np.linspace(
+            start=d - t1 - nib + cover + 0.5 * dia_bar,
+            stop=d - t1 + cover + 0.5 * dia_bar,
+            num=n_nib,
+        )
+        y_nib = y_nib_b.tolist() + y_nib_t.tolist()
+
+        # add nib outer bars
+        for y in y_nib[1:-1]:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - t2 + cover + 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+        # outer pier bars
+        y_pier = a2 - 2 * cover - dia_bar
+        n_pier = ceil(y_pier / spacing) + 1
+        y_pier = np.linspace(
+            start=0.5 * (d - a2) + cover + 0.5 * dia_bar,
+            stop=0.5 * (d + a2) - cover - 0.5 * dia_bar,
+            num=n_pier,
+        )
+
+        # add outer pier bars
+        for y in y_pier:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - cover - 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+        # inner pier bars
+        y_pier = nib - 2 * cover - dia_bar
+        n_pier = ceil(y_pier / spacing) + 1
+        y_pier_b = np.linspace(
+            start=0.5 * (d - a2) + cover + 0.5 * dia_bar,
+            stop=0.5 * d - cover - 0.5 * dia_bar,
+            num=n_pier,
+        )
+        y_pier_t = np.linspace(
+            start=0.5 * d + cover + 0.5 * dia_bar,
+            stop=0.5 * (d + a2) - cover - 0.5 * dia_bar,
+            num=n_pier,
+        )
+        y_pier = y_pier_b[:-1].tolist() + y_pier_t[1:].tolist()
+
+        # add outer pier bars
+        for y in y_pier:
+            geom = add_bar(
+                geometry=geom,
+                area=area_bar,
+                material=steel_mat,
+                x=b - t2 + cover + 0.5 * dia_bar,
+                y=y,
+                n=n_circle,
+            )
+
+    if isinstance(geom, geometry.CompoundGeometry):
+        return geom
+    else:
+        msg = "Concrete section generation failed."
+        raise ValueError(msg)
+
 
 # def stairwell_a() -> geometry.CompoundGeometry:
 
