@@ -8,7 +8,7 @@ on:
     types: [opened, reopened, synchronize]
 
 env:
-  UV_VERSION: "0.4.29"
+  UV_VERSION: "0.5.2"
   DEFAULT_PYTHON_VERSION: "3.12"
 
 concurrency:
@@ -57,7 +57,7 @@ jobs:
         run: uv python install ${{ env.DEFAULT_PYTHON_VERSION }}
 
       - name: Install dependencies
-        run: uv sync -p ${{ env.DEFAULT_PYTHON_VERSION }} --frozen --all-extras --no-group test --no-group docs
+        run: uv sync -p ${{ env.DEFAULT_PYTHON_VERSION }} --frozen --all-extras  --no-group dev --no-group docs  --no-group test
 
       - name: Run pyright
         run: uv run -p ${{ env.DEFAULT_PYTHON_VERSION }} --no-sync pyright
@@ -98,11 +98,11 @@ jobs:
 
       - name: Install test dependencies
         if: matrix.session != 'tests-extended'
-        run: uv sync -p ${{ matrix.python }} --frozen --extra rhino --extra dxf --no-group docs --no-group lint
+        run: uv sync -p ${{ matrix.python }} --frozen --extra rhino --extra dxf --no-group dev --no-group docs --no-group lint
 
       - name: Install extended test dependencies
         if: matrix.session == 'tests-extended'
-        run: uv sync -p ${{ matrix.python }} --frozen --all-extras --no-group docs --no-group lint
+        run: uv sync -p ${{ matrix.python }} --frozen --all-extras --no-group dev --no-group docs --no-group lint
 
       - name: Run pytest
         run: uv run -p ${{ matrix.python }} --no-sync coverage run --parallel-mode -m pytest -m 'not benchmark_suite' --junitxml=junit.xml -o junit_family=legacy
@@ -138,7 +138,7 @@ jobs:
         run: uv python install ${{ env.DEFAULT_PYTHON_VERSION }}
 
       - name: Install dependencies
-        run: uv sync -p ${{ env.DEFAULT_PYTHON_VERSION }} --frozen --extra rhino --extra dxf --no-group test --no-group lint
+        run: uv sync -p ${{ env.DEFAULT_PYTHON_VERSION }} --frozen --extra rhino --extra dxf --no-group dev --no-group lint --no-group test
 
       - name: Install pandoc
         uses: pandoc/actions/setup@v1

@@ -61,6 +61,11 @@ pardiso = [
 ]
 
 [dependency-groups]
+dev = [
+    "ipympl==0.9.4",
+    "notebook==7.2.2",
+    "sphinx-autobuild==2024.10.03",
+]
 docs = [
     "furo==2024.8.6",
     "sphinx==8.1.3",
@@ -71,25 +76,20 @@ docs = [
     "sphinx-copybutton==0.5.2",
     "sphinxext-opengraph==0.9.1",
 ]
+lint = [
+    "pre-commit==4.0.1",
+    "ruff==0.7.1",
+    "pyright==1.1.387",
+]
 test = [
     "pytest==8.3.3",
     "pytest-benchmark[histogram]==5.1.0",
     "pytest-check==2.4.1",
     "coverage[toml]==7.6.4",
 ]
-lint = [
-    "pre-commit==4.0.1",
-    "ruff==0.7.1",
-    "pyright==1.1.387",
-]
-dev = [
-    "ipympl==0.9.4",
-    "notebook==7.2.2",
-    "sphinx-autobuild==2024.10.03",
-]
 
 [tool.uv]
-default-groups = ["docs", "test", "lint", "dev"]
+default-groups = ["dev", "docs", "lint", "test"]
 
 [tool.pyright]
 venvPath = "."
