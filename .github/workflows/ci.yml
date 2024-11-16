@@ -189,6 +189,6 @@ jobs:
         run: uv run -p ${{ env.DEFAULT_PYTHON_VERSION }} --no-sync coverage xml -i
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
