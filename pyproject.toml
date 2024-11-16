@@ -79,7 +79,7 @@ test = [
 ]
 lint = [
     "pre-commit==4.0.1",
-    "ruff==0.7.1",
+    "ruff==0.7.4",
     "pyright==1.1.387",
 ]
 dev = [
