@@ -53,10 +53,10 @@ version-resolver:
 # Custom text at start of release
 header: >
 
-  This release introduces the calculation of the yield moment when material properties
-  are applied to the section. The yield moment is calculated as part of the geometric
-  analysis with `calculate_geometric_properties()` and can be retrieved with the
-  `get_my()` or `get_my_p()` methods.
+  This release adds several reinforced concrete wall and core geometries to the built-in
+  section library. Check out the updated concrete sections library
+  [here](https://sectionproperties.readthedocs.io/en/stable/user_guide/geometry.html#concrete-sections)!
+  This release also provides support for NumPy v2!
 
 template: |
 
