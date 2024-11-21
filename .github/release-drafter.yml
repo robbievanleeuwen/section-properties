@@ -53,10 +53,8 @@ version-resolver:
 # Custom text at start of release
 header: >
 
-  This release adds several reinforced concrete wall and core geometries to the built-in
-  section library. Check out the updated concrete sections library
-  [here](https://sectionproperties.readthedocs.io/en/stable/user_guide/geometry.html#concrete-sections)!
-  This release also provides support for NumPy v2!
+  This release adds an optional `r_in` argument to the rectangular hollow section
+  function in the steel sections library.
 
 template: |
 
