@@ -53,8 +53,7 @@ version-resolver:
 # Custom text at start of release
 header: >
 
-  This release adds an optional `r_in` argument to the rectangular hollow section
-  function in the steel sections library.
+  This release bumps several dependencies.
 
 template: |
 
