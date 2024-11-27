@@ -9,8 +9,10 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: actions/first-interaction@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-message: "Thanks for opening your first issue in ``sectionproperties`` :raised_hands: Pull requests are always welcome :wink:"
-          pr-message: "Thank you for your contribution to ``sectionproperties`` :pray: We will be reviewing your PR shortly :monocle_face:"
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: 'Thanks for opening your first issue in ``sectionproperties``
+          :raised_hands: Pull requests are always welcome :wink:'
+        pr-message: 'Thank you for your contribution to ``sectionproperties`` :pray:
+          We will be reviewing your PR shortly :monocle_face:'
