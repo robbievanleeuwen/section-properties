@@ -2044,6 +2044,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/19/71/39c7c0d87f8d4e6c020a393182060eaefeeae6c01dab6a84ec346f2567df/rich-13.9.4-py3-none-any.whl", hash = "sha256:6049d5e6ec054bf2779ab3358186963bac2ea89175919d699e378b99738c2a90", size = 242424 },
 ]
 
+[package.optional-dependencies]
+jupyter = [
+    { name = "ipywidgets" },
+]
+
 [[package]]
 name = "rpds-py"
 version = "0.20.0"
@@ -2147,7 +2152,7 @@ dependencies = [
     { name = "matplotlib" },
     { name = "more-itertools" },
     { name = "numpy" },
-    { name = "rich" },
+    { name = "rich", extra = ["jupyter"] },
     { name = "scipy" },
     { name = "shapely" },
 ]
@@ -2205,7 +2210,7 @@ requires-dist = [
     { name = "pypardiso", marker = "(platform_system == 'Linux' and extra == 'pardiso') or (platform_system == 'Windows' and extra == 'pardiso')", specifier = "~=0.4.6" },
     { name = "rhino-shapley-interop", marker = "extra == 'rhino'", specifier = "~=0.0.4" },
     { name = "rhino3dm", marker = "extra == 'rhino'", specifier = "~=8.9.0" },
-    { name = "rich", specifier = "~=13.9.4" },
+    { name = "rich", extras = ["jupyter"], specifier = "~=13.9.4" },
     { name = "scipy", specifier = "~=1.14.1" },
     { name = "shapely", specifier = "~=2.0.6" },
 ]

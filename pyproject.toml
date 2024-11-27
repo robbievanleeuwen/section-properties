@@ -34,7 +34,7 @@ dependencies = [
     "matplotlib~=3.9.2",
     "shapely~=2.0.6",
     "cytriangle~=1.0.3",
-    "rich~=13.9.4",
+    "rich[jupyter]~=13.9.4",
     "more-itertools~=10.5.0",
 ]
 
