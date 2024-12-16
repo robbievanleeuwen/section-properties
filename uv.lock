@@ -2201,18 +2201,18 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cad-to-shapely", marker = "extra == 'dxf'", specifier = "~=0.3.2" },
-    { name = "cytriangle", specifier = "~=1.0.3" },
-    { name = "matplotlib", specifier = "~=3.9.2" },
-    { name = "more-itertools", specifier = "~=10.5.0" },
-    { name = "numba", marker = "extra == 'numba'", specifier = "~=0.60.0" },
+    { name = "cad-to-shapely", marker = "extra == 'dxf'", specifier = ">=0.3.2" },
+    { name = "cytriangle", specifier = ">=1.0.3" },
+    { name = "matplotlib", specifier = ">=3.9.2" },
+    { name = "more-itertools", specifier = ">=10.5.0" },
+    { name = "numba", marker = "extra == 'numba'", specifier = ">=0.60.0" },
     { name = "numpy", specifier = ">=1.26.4" },
-    { name = "pypardiso", marker = "(platform_system == 'Linux' and extra == 'pardiso') or (platform_system == 'Windows' and extra == 'pardiso')", specifier = "~=0.4.6" },
-    { name = "rhino-shapley-interop", marker = "extra == 'rhino'", specifier = "~=0.0.4" },
-    { name = "rhino3dm", marker = "extra == 'rhino'", specifier = "~=8.9.0" },
-    { name = "rich", extras = ["jupyter"], specifier = "~=13.9.4" },
-    { name = "scipy", specifier = "~=1.14.1" },
-    { name = "shapely", specifier = "~=2.0.6" },
+    { name = "pypardiso", marker = "(platform_system == 'Linux' and extra == 'pardiso') or (platform_system == 'Windows' and extra == 'pardiso')", specifier = ">=0.4.6" },
+    { name = "rhino-shapley-interop", marker = "extra == 'rhino'", specifier = ">=0.0.4" },
+    { name = "rhino3dm", marker = "extra == 'rhino'", specifier = ">=8.9.0" },
+    { name = "rich", extras = ["jupyter"], specifier = ">=13.9.4" },
+    { name = "scipy", specifier = ">=1.14.1" },
+    { name = "shapely", specifier = ">=2.0.6" },
 ]
 
 [package.metadata.requires-dev]

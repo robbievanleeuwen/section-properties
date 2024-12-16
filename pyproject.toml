@@ -30,12 +30,12 @@ classifiers = [
 requires-python = ">=3.10,<3.13"
 dependencies = [
     "numpy>=1.26.4",
-    "scipy~=1.14.1",
-    "matplotlib~=3.9.2",
-    "shapely~=2.0.6",
-    "cytriangle~=1.0.3",
-    "rich[jupyter]~=13.9.4",
-    "more-itertools~=10.5.0",
+    "scipy>=1.14.1",
+    "matplotlib>=3.9.2",
+    "shapely>=2.0.6",
+    "cytriangle>=1.0.3",
+    "rich[jupyter]>=13.9.4",
+    "more-itertools>=10.5.0",
 ]
 
 [project.urls]
@@ -47,17 +47,17 @@ Changelog = "https://github.com/robbievanleeuwen/section-properties/releases"
 
 [project.optional-dependencies]
 numba = [
-    "numba~=0.60.0",
+    "numba>=0.60.0",
 ]
 rhino = [
-    "rhino3dm~=8.9.0",
-    "rhino-shapley-interop~=0.0.4",
+    "rhino3dm>=8.9.0",
+    "rhino-shapley-interop>=0.0.4",
 ]
 dxf = [
-    "cad-to-shapely~=0.3.2",
+    "cad-to-shapely>=0.3.2",
 ]
 pardiso = [
-    "pypardiso~=0.4.6; platform_system == 'Windows' or platform_system == 'Linux'"
+    "pypardiso>=0.4.6; platform_system == 'Windows' or platform_system == 'Linux'"
 ]
 
 [dependency-groups]
