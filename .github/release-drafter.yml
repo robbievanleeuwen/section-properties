@@ -53,7 +53,7 @@ version-resolver:
 # Custom text at start of release
 header: >
 
-  This release bumps several dependencies.
+  This release loosens strict dependency versions.
 
 template: |
 
