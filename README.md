@@ -75,7 +75,7 @@ Alternatively you can get support on the
 the collaboration of many contributors. Although efforts have been made to ensure the
 that relevant engineering theories have been correctly implemented, it remains the
 user's responsibility to confirm and accept the output. Refer to the
-[license](LICENSE.md) for clarification of the conditions of use.
+[license][license] for clarification of the conditions of use.
 
 [pypi]: https://pypi.org/
 [pip]: https://pip.pypa.io/
