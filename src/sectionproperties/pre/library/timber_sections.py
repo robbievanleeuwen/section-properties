@@ -9,10 +9,8 @@ import sectionproperties.pre.pre as pre
 
 def clt_rectangular_section(
     d: list[float],
-    lay_orient: list[int],
-    b: float,
-    timb_mat0: pre.Material = pre.DEFAULT_MATERIAL,
-    timb_mat90: pre.Material = pre.DEFAULT_MATERIAL,
+    lay_orient: list[pre.Material],
+    b: float
 ) -> geometry.CompoundGeometry:
     """Constructs a timber rectangular section.
 
@@ -22,12 +20,8 @@ def clt_rectangular_section(
 
     Args:
         d: Timber layer section thickness
-        lay_orient: List of layer orientation
+        lay_orient: A list of materials for each layer defined by the user.
         b: Timber section width
-        timb_mat0: Material object to assign to the timber area
-                   parallel-to-grain
-        timb_mat90: Material object to assign to the timber area,
-                    perpendicular-to-grain
 
     Raises:
         ValueError: Geometry generation failed
@@ -44,10 +38,7 @@ def clt_rectangular_section(
         di = float(d[idx])
         layer = lay_orient[idx]
 
-        if layer is int(0):
-            timb_mat = timb_mat0
-        else:
-            timb_mat = timb_mat90
+        timb_mat = layer
 
         # create rectangular timber geometry
         layer = primitive_sections.rectangular_section(d=di, b=b,
