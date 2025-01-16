@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import warnings
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import matplotlib.patches as mpatches
 import matplotlib.tri as tri
@@ -20,7 +20,8 @@ from rich.live import Live
 from rich.panel import Panel
 from rich.progress import Progress, TaskID
 from rich.table import Table
-from scipy.sparse import coo_matrix, csc_matrix, linalg
+from scipy.sparse import coo_matrix, csc_matrix
+from scipy.sparse.linalg import LinearOperator, spilu
 from shapely import Point, Polygon
 from shapely.strtree import STRtree
 
@@ -32,8 +33,9 @@ import sectionproperties.post.stress_post as sp_stress_post
 import sectionproperties.pre.geometry as sp_geom
 import sectionproperties.pre.pre as pre
 
-
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     import matplotlib.axes
 
 
@@ -71,20 +73,19 @@ class Section:
         Args:
             geometry: Cross-section geometry object used to generate the mesh
             time_info: If set to True, a detailed description of the computation and the
-                time cost is printed to the terminal for every computation performed
+                time cost is printed to the terminal for every computation performed.
+                Defaults to ``False``.
 
         Raises:
             ValueError: If geometry does not contain a mesh
-            AssertionError: If the number of materials does not equal the number of
-                regions
+            ValueError: If the number of materials does not equal the number of regions
         """
         if not hasattr(geometry, "mesh") or not geometry.mesh:
-            raise ValueError(
-                "Selected Geometry or CompoundGeometry "
-                "object does not contain a mesh.\n"
-                "Try running {geometry}.create_mesh() before adding to "
-                "a Section object for analysis."
-            )
+            msg = "Selected Geometry or CompoundGeometry object does not contain a "
+            msg += f"mesh.\nTry running {geometry}.create_mesh() before adding to a "
+            msg += "Section object for analysis."
+            raise ValueError(msg)
+
         self.geometry = geometry
         self.time_info = time_info
         self.mesh = geometry.mesh
@@ -96,25 +97,26 @@ class Section:
             self.materials = [self.geometry.material]
 
         # extract mesh data
-        self._mesh_nodes = np.array(self.mesh["vertices"], dtype=float)
-        self._mesh_elements = np.array(self.mesh["triangles"], dtype=int)
+        self.mesh_nodes = np.array(self.mesh["vertices"], dtype=float)
+        self.mesh_elements = np.array(self.mesh["triangles"], dtype=int)
         self._mesh_attributes = np.array(
             self.mesh["triangle_attributes"].T[0], dtype=int
         )
 
         # swap mid-node order to retain node ordering consistency
-        self._mesh_elements[:, [3, 4, 5]] = self._mesh_elements[:, [5, 3, 4]]
+        self.mesh_elements[:, [3, 4, 5]] = self.mesh_elements[:, [5, 3, 4]]
 
         # save total number of nodes in mesh
-        self.num_nodes = len(self._mesh_nodes)
+        self.num_nodes = len(self.mesh_nodes)
 
         # initialise material_groups variable
         self.material_groups: list[MaterialGroup] = []
 
         # check that the right number of material properties are specified
-        msg = f"Number of materials ({len(self.materials)}), "
-        msg += f"should match the number of regions ({max(self._mesh_attributes) + 1})."
-        assert len(self.materials) == max(self._mesh_attributes) + 1, msg
+        if len(self.materials) != max(self._mesh_attributes) + 1:
+            msg = f"Number of materials ({len(self.materials)}), should match the "
+            msg += f"number of regions ({max(self._mesh_attributes) + 1})."
+            raise ValueError(msg)
 
         # add a MaterialGroup object to the material_groups list for each uniquely
         # encountered material
@@ -135,14 +137,14 @@ class Section:
         self.elements: list[fea.Tri6] = []
 
         # build the mesh one element at a time
-        for i, node_ids in enumerate(self._mesh_elements):
+        for i, node_ids in enumerate(self.mesh_elements):
             # create a list containing the vertex and mid-node coordinates
-            coords = self._mesh_nodes[node_ids, :].transpose()
+            coords = self.mesh_nodes[node_ids, :].transpose()
 
             # if materials are specified, get the material
             if self.materials:
                 # get attribute index of current element
-                att_el = self._mesh_attributes[i]
+                att_el: int = self._mesh_attributes[i]
 
                 # fetch the material
                 material = self.materials[att_el]
@@ -300,7 +302,8 @@ class Section:
 
         Args:
             solver_type: Solver used for solving systems of linear equations, either
-                using the ``"direct"`` method or ``"cgs"`` iterative method
+                using the ``"direct"`` method or ``"cgs"`` iterative method. Defaults to
+                ``"direct"``.
 
         Raises:
             RuntimeError: If the geometric properties have not been calculated prior to
@@ -344,7 +347,7 @@ class Section:
                 msg += "ensure there is connectivity between all regions.\n Please see "
                 msg += "https://sectionproperties.rtfd.io/en/stable/user_guide/"
                 msg += "analysis.html#warping-analysis for more information."
-                warnings.warn(msg)
+                warnings.warn(msg, stacklevel=1)
 
         # create a new Section with the origin shifted to the centroid for calculation
         # of the warping properties such that the Lagrangian multiplier approach can be
@@ -384,10 +387,10 @@ class Section:
             def ilu_decomp(
                 progress: Progress | None = None,
                 task: TaskID | None = None,
-            ) -> linalg.LinearOperator:
+            ) -> LinearOperator:
                 # ILU decomposition on Lagrangian stiffness matrix
-                k_lg_precond = linalg.LinearOperator(
-                    (self.num_nodes + 1, self.num_nodes + 1), linalg.spilu(k_lg).solve
+                k_lg_precond = LinearOperator(
+                    (self.num_nodes + 1, self.num_nodes + 1), spilu(k_lg).solve
                 )
 
                 if progress and task:
@@ -408,6 +411,8 @@ class Section:
                     progress.update(task_id=task, description=msg)
                 else:
                     k_lg_precond = ilu_decomp()
+            else:
+                k_lg_precond = None
 
             # solve for warping function
             def solve_warping() -> npt.NDArray[np.float64]:
@@ -418,7 +423,8 @@ class Section:
                 elif solver_type == "direct":
                     omega = solver.solve_direct_lagrange(k_lg=k_lg, f=f_torsion)
                 else:
-                    raise ValueError("solver_type must be 'cgs' or 'direct'.")
+                    msg = "solver_type must be 'cgs' or 'direct'."
+                    raise ValueError(msg)
 
                 return omega
 
@@ -449,10 +455,7 @@ class Section:
             self.section_props.j = ixx_c + iyy_c - omega.dot(f_torsion)
 
             # assemble shear function load vectors
-            if self.is_composite():
-                nu_eff = self.get_nu_eff()
-            else:
-                nu_eff = 0.0
+            nu_eff = self.get_nu_eff() if self.is_composite() else 0.0
 
             def assemble_shear_load(
                 progress: Progress | None = None,
@@ -628,10 +631,7 @@ class Section:
             self.section_props.y_st = y_st
 
             # calculate warping constant
-            if self.is_composite():
-                ea = self.get_ea()
-            else:
-                ea = self.get_area()
+            ea = self.get_ea() if self.is_composite() else self.get_area()
 
             self.section_props.gamma = (
                 i_omega - q_omega**2 / ea - y_se * i_xomega + x_se * i_yomega
@@ -813,7 +813,8 @@ class Section:
 
         Args:
             solver_type: Solver used for solving systems of linear equations, either
-                using the ``"direct"`` method or ``"cgs"`` iterative method
+                using the ``"direct"`` method or ``"cgs"`` iterative method. Defaults to
+                ``"direct"``.
 
         Returns:
             Cross-section properties to be used for a frame analysis (``area``, ``ixx``,
@@ -967,10 +968,10 @@ class Section:
             def ilu_decomp(
                 progress: Progress | None = None,
                 task: TaskID | None = None,
-            ) -> linalg.LinearOperator:
+            ) -> LinearOperator:
                 # ILU decomposition on Lagrangian stiffness matrix
-                k_lg_precond = linalg.LinearOperator(
-                    (self.num_nodes + 1, self.num_nodes + 1), linalg.spilu(k_lg).solve
+                k_lg_precond = LinearOperator(
+                    (self.num_nodes + 1, self.num_nodes + 1), spilu(k_lg).solve
                 )
 
                 if progress and task:
@@ -991,6 +992,8 @@ class Section:
                     progress.update(task_id=task, description=msg)
                 else:
                     k_lg_precond = ilu_decomp()
+            else:
+                k_lg_precond = None
 
             # solve for warping function
             def solve_warping() -> npt.NDArray[np.float64]:
@@ -1001,7 +1004,8 @@ class Section:
                 elif solver_type == "direct":
                     omega = solver.solve_direct_lagrange(k_lg=k_lg, f=f_torsion)
                 else:
-                    raise ValueError("solver_type must be 'cgs' or 'direct'.")
+                    msg = "solver_type must be 'cgs' or 'direct'."
+                    raise ValueError(msg)
 
                 return omega
 
@@ -1062,12 +1066,16 @@ class Section:
             warping_analysis()
 
         # check all properties were calculated
-        assert self.section_props.area is not None
-        assert self.section_props.ixx_c is not None
-        assert self.section_props.iyy_c is not None
-        assert self.section_props.ixy_c is not None
-        assert self.section_props.j is not None
-        assert self.section_props.phi is not None
+        if (
+            self.section_props.area is None
+            or self.section_props.ixx_c is None
+            or self.section_props.iyy_c is None
+            or self.section_props.ixy_c is None
+            or self.section_props.j is None
+            or self.section_props.phi is None
+        ):
+            msg = "Frame analysis failed."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.area,
@@ -1090,7 +1098,7 @@ class Section:
 
         Args:
             verbose: If set to True, the number of iterations required for each plastic
-                axis is printed to the terminal.
+                axis is printed to the terminal. Defaults to ``False``.
 
         Raises:
             RuntimeError: If the geometric properties have not been calculated prior to
@@ -1133,7 +1141,7 @@ class Section:
                 msg += " region.\nPlease see "
                 msg += "https://sectionproperties.rtfd.io/en/stable/examples/geometry/"
                 msg += "advanced_geometry.html for more information."
-                warnings.warn(msg)
+                warnings.warn(msg, stacklevel=1)
 
         def calc_plastic(progress: Progress | None = None) -> None:
             plastic_section = sp_plastic.PlasticSection(geometry=self.geometry)
@@ -1180,14 +1188,14 @@ class Section:
         post-processing of the stress results.
 
         Args:
-            n: Axial force
-            vx: Shear force acting in the x-direction
-            vy: Shear force acting in the y-direction
-            mxx: Bending moment about the centroidal xx-axis
-            myy: Bending moment about the centroidal yy-axis
-            m11: Bending moment about the centroidal 11-axis
-            m22: Bending moment about the centroidal 22-axis
-            mzz: Torsion moment about the centroidal zz-axis
+            n: Axial force. Defaults to ``0.0``.
+            vx: Shear force acting in the x-direction. Defaults to ``0.0``.
+            vy: Shear force acting in the y-direction. Defaults to ``0.0``.
+            mxx: Bending moment about the centroidal xx-axis. Defaults to ``0.0``.
+            myy: Bending moment about the centroidal yy-axis. Defaults to ``0.0``.
+            m11: Bending moment about the centroidal 11-axis. Defaults to ``0.0``.
+            m22: Bending moment about the centroidal 22-axis. Defaults to ``0.0``.
+            mzz: Torsion moment about the centroidal zz-axis. Defaults to ``0.0``.
 
         Returns:
             Object for post-processing cross-section stresses
@@ -1259,10 +1267,14 @@ class Section:
                 psi_shear = self.section_props.psi_shear
                 phi_shear = self.section_props.phi_shear
 
-                assert delta_s is not None
-                assert omega is not None
-                assert psi_shear is not None
-                assert phi_shear is not None
+                if (
+                    delta_s is None
+                    or omega is None
+                    or psi_shear is None
+                    or phi_shear is None
+                ):
+                    msg = "Warping analysis failed."
+                    raise RuntimeError(msg)
             else:
                 j = 0.0
                 nu = 0.0
@@ -1466,11 +1478,13 @@ class Section:
         r"""Plots the finite element mesh.
 
         Args:
-            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`.
+                Defaults to ``0.5``.
             materials: If set to True shades the elements with the specified material
-                colors
-            mask: Mask array, of length ``num_nodes``, to mask out triangles
-            title: Plot title
+                colors. Defaults to ``True``.
+            mask: Mask array, of length ``num_nodes``, to mask out triangles. Defaults
+                to ``None``.
+            title: Plot title. Defaults to ``"Finite Element Mesh"``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Returns:
@@ -1513,22 +1527,24 @@ class Section:
                 Section(geometry=geom).plot_mesh()
         """
         # create plot and setup the plot
-        with post.plotting_context(title=title, **kwargs) as (fig, ax):
-            assert ax
+        with post.plotting_context(title=title, **kwargs) as (_, ax):
+            if not ax:
+                msg = "Matplotlib axes not created."
+                raise RuntimeError(msg)
 
             # create mesh triangulation
             triang = tri.Triangulation(
-                self._mesh_nodes[:, 0],
-                self._mesh_nodes[:, 1],
-                self._mesh_elements[:, 0:3],
+                self.mesh_nodes[:, 0],
+                self.mesh_nodes[:, 1],
+                self.mesh_elements[:, 0:3],
                 mask=mask,
             )
 
             # if the material colors are to be displayed
             if materials and self.materials:
-                color_array = []
-                legend_labels = []
-                c = []  # Indices of elements for mapping colors
+                color_array: list[str] = []
+                legend_labels: list[mpatches.Patch] = []
+                c: list[int] = []  # Indices of elements for mapping colors
 
                 # create an array of finite element colors
                 for idx, element in enumerate(self.elements):
@@ -1548,21 +1564,21 @@ class Section:
                 cmap = ListedColormap(colors=color_array)  # custom colormap
 
                 # plot the mesh colors
-                ax.tripcolor(
+                ax.tripcolor(  # pyright: ignore
                     triang,
                     c,
                     cmap=cmap,
                 )
 
                 # display the legend
-                ax.legend(
+                ax.legend(  # pyright: ignore
                     loc="center left",
                     bbox_to_anchor=(1, 0.5),
                     handles=legend_labels,
                 )
 
             # plot the mesh
-            ax.triplot(
+            ax.triplot(  # pyright: ignore
                 triang,
                 lw=0.5,
                 color="black",
@@ -1583,8 +1599,9 @@ class Section:
         principal axis, if they have been calculated, on top of the finite element mesh.
 
         Args:
-            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
-            title: Plot title
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`.
+                Defaults to ``0.5``.
+            title: Plot title. Defaults to ``"Centroids"``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Returns:
@@ -1612,8 +1629,10 @@ class Section:
                 section.plot_centroids()
         """
         # create plot and setup the plot
-        with post.plotting_context(title=title, **kwargs) as (fig, ax):
-            assert ax
+        with post.plotting_context(title=title, **kwargs) as (_, ax):
+            if not ax:
+                msg = "Matplotlib axes not created."
+                raise RuntimeError(msg)
 
             # plot the finite element mesh
             self.plot_mesh(alpha=alpha, **dict(kwargs, ax=ax))
@@ -1621,7 +1640,7 @@ class Section:
             # if the elastic centroid has been calculated
             try:
                 cx, cy = self.get_c()
-                ax.scatter(
+                ax.scatter(  # pyright: ignore
                     x=cx,
                     y=cy,
                     edgecolors="r",
@@ -1630,20 +1649,20 @@ class Section:
                     s=100,
                     label="Elastic centroid",
                 )
-            except AssertionError:
+            except RuntimeError:
                 pass
 
             # if the shear centre has been calculated
             try:
                 x_s, y_s = self.get_sc()
-                ax.scatter(x=x_s, y=y_s, c="r", marker="+", s=100, label="Shear centre")
-            except AssertionError:
+                ax.scatter(x=x_s, y=y_s, c="r", marker="+", s=100, label="Shear centre")  # pyright: ignore
+            except RuntimeError:
                 pass
 
             # if the global plastic centroid has been calculated
             try:
                 x_pc, y_pc = self.get_pc()
-                ax.scatter(
+                ax.scatter(  # pyright: ignore
                     x=x_pc,
                     y=y_pc,
                     c="r",
@@ -1651,13 +1670,13 @@ class Section:
                     s=100,
                     label="Global plastic centroid",
                 )
-            except AssertionError:
+            except RuntimeError:
                 pass
 
             # if the principal plastic centroid has been calculated
             try:
                 x11_pc, y22_pc = self.get_pc_p()
-                ax.scatter(
+                ax.scatter(  # pyright: ignore
                     x11_pc,
                     y22_pc,
                     edgecolors="r",
@@ -1666,7 +1685,7 @@ class Section:
                     s=100,
                     label="Principal plastic centroid",
                 )
-            except AssertionError:
+            except RuntimeError:
                 pass
 
             # if the principal axis has been calculated
@@ -1675,11 +1694,11 @@ class Section:
                 cx, cy = self.get_c()
 
                 post.draw_principal_axis(ax=ax, phi=phi * np.pi / 180, cx=cx, cy=cy)
-            except AssertionError:
+            except RuntimeError:
                 pass
 
             # display the legend
-            ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+            ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))  # pyright: ignore
 
         return ax
 
@@ -1695,11 +1714,13 @@ class Section:
         r"""Plots the warping function over the mesh.
 
         Args:
-            title: Plot title
-            level: Number of contour levels
-            cmap: Colormap
-            with_lines: If set to True, contour lines are displayed
-            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
+            title: Plot title. Defaults to ``"Warping Function"``.
+            level: Number of contour levels. Defaults to ``20``.
+            cmap: Colormap. Defaults to ``"viridis"``.
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`.
+                Defaults to ``0.2``.
+            with_lines: If set to True, contour lines are displayed.  Defaults to
+                ``True``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -1709,30 +1730,31 @@ class Section:
             Matplotlib axes object
         """
         if self.section_props.omega is None:
-            raise RuntimeError(
-                "Perform a warping analysis before plotting the warping function."
-            )
+            msg = "Perform a warping analysis before plotting the warping function."
+            raise RuntimeError(msg)
 
         # create plot and setup the plot
-        with post.plotting_context(title=title, **kwargs) as (fig, ax):
-            assert ax
+        with post.plotting_context(title=title, **kwargs) as (_, ax):
+            if not ax:
+                msg = "Matplotlib axes not created."
+                raise RuntimeError(msg)
 
             # create triangulation
             triang = tri.Triangulation(
-                self._mesh_nodes[:, 0],
-                self._mesh_nodes[:, 1],
-                self._mesh_elements[:, 0:3],
+                self.mesh_nodes[:, 0],
+                self.mesh_nodes[:, 1],
+                self.mesh_elements[:, 0:3],
             )
 
             if with_lines:
-                ax.tricontour(
+                ax.tricontour(  # pyright: ignore
                     triang,
                     self.section_props.omega,
                     colors="k",
                     levels=level,
                 )
 
-            ax.tricontourf(
+            ax.tricontourf(  # pyright: ignore
                 triang,
                 self.section_props.omega,
                 cmap=cmap,
@@ -1769,7 +1791,7 @@ class Section:
 
         Args:
             fmt: Number formatting string, see
-                https://docs.python.org/3/library/string.html
+                https://docs.python.org/3/library/string.html. Defaults to ``"8.6e"``.
         """
         post.print_results(section=self, fmt=fmt)
 
@@ -1809,12 +1831,11 @@ class Section:
             Cross-section area
 
         Raises:
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
-        try:
-            assert self.section_props.area is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.area is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.area
 
@@ -1825,12 +1846,11 @@ class Section:
             Cross-section perimeter
 
         Raises:
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
-        try:
-            assert self.section_props.perimeter is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.perimeter is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.perimeter
 
@@ -1845,7 +1865,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -1853,16 +1873,15 @@ class Section:
             msg += " get_area()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.mass is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.mass is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.mass
 
     def get_ea(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> float:
         """Returns the cross-section axial rigidity.
 
@@ -1874,14 +1893,14 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted area (axial rigidity)
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -1892,10 +1911,9 @@ class Section:
         # obtain e_ref (reference elastic modulus)
         e_ref = self.get_e_ref(e_ref=e_ref)
 
-        try:
-            assert self.section_props.ea is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.ea is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.ea / e_ref
 
@@ -1910,24 +1928,22 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
             msg += " (material properties have been applied). Consider using get_eq()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.qx is not None
-            assert self.section_props.qy is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.qx is None or self.section_props.qy is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.qx, self.section_props.qy
 
     def get_eq(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float]:
         """Returns the modulus-weighted cross-section first moments of area.
 
@@ -1939,7 +1955,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus-weighted first moments of area about the global axis (``e.qx``,
@@ -1947,7 +1963,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -1958,11 +1974,9 @@ class Section:
         # calculate e_ref (transformed elastic modulus)
         e_ref = self.get_e_ref(e_ref=e_ref)
 
-        try:
-            assert self.section_props.qx is not None
-            assert self.section_props.qy is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.qx is None or self.section_props.qy is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.qx / e_ref, self.section_props.qy / e_ref
 
@@ -1978,19 +1992,20 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
             msg += " (material properties have been applied). Consider using get_eig()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.ixx_g is not None
-            assert self.section_props.ixy_g is not None
-            assert self.section_props.iyy_g is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if (
+            self.section_props.ixx_g is None
+            or self.section_props.ixy_g is None
+            or self.section_props.iyy_g is None
+        ):
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.ixx_g,
@@ -2000,7 +2015,7 @@ class Section:
 
     def get_eig(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float, float]:
         """Returns the modulus-weighted cross-section global second moments of area.
 
@@ -2012,7 +2027,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted second moments of area about the global axis (``e.ixx_g``,
@@ -2020,7 +2035,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -2031,12 +2046,13 @@ class Section:
         # calculate e_ref (transformed elastic modulus)
         e_ref = self.get_e_ref(e_ref=e_ref)
 
-        try:
-            assert self.section_props.ixx_g is not None
-            assert self.section_props.ixy_g is not None
-            assert self.section_props.iyy_g is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if (
+            self.section_props.ixx_g is None
+            or self.section_props.ixy_g is None
+            or self.section_props.iyy_g is None
+        ):
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.ixx_g / e_ref,
@@ -2051,13 +2067,11 @@ class Section:
             Elastic centroid (``cx``, ``cy``)
 
         Raises:
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
-        try:
-            assert self.section_props.cx is not None
-            assert self.section_props.cy is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.cx is None or self.section_props.cy is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.cx, self.section_props.cy
 
@@ -2073,19 +2087,20 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
             msg += " (material properties have been applied). Consider using get_eic()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.ixx_c is not None
-            assert self.section_props.ixy_c is not None
-            assert self.section_props.iyy_c is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if (
+            self.section_props.ixx_c is None
+            or self.section_props.ixy_c is None
+            or self.section_props.iyy_c is None
+        ):
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.ixx_c,
@@ -2095,7 +2110,7 @@ class Section:
 
     def get_eic(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float, float]:
         """Returns the modulus-weighted cross-section centroidal second moments of area.
 
@@ -2107,7 +2122,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted second moments of area about the centroidal axis
@@ -2115,7 +2130,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -2126,12 +2141,13 @@ class Section:
         # calculate e_ref (transformed elastic modulus)
         e_ref = self.get_e_ref(e_ref=e_ref)
 
-        try:
-            assert self.section_props.ixx_c is not None
-            assert self.section_props.ixy_c is not None
-            assert self.section_props.iyy_c is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if (
+            self.section_props.ixx_c is None
+            or self.section_props.ixy_c is None
+            or self.section_props.iyy_c is None
+        ):
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.ixx_c / e_ref,
@@ -2151,20 +2167,21 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
             msg += " (material properties have been applied). Consider using get_ez()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.zxx_plus is not None
-            assert self.section_props.zxx_minus is not None
-            assert self.section_props.zyy_plus is not None
-            assert self.section_props.zyy_minus is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if (
+            self.section_props.zxx_plus is None
+            or self.section_props.zxx_minus is None
+            or self.section_props.zyy_plus is None
+            or self.section_props.zyy_minus is None
+        ):
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.zxx_plus,
@@ -2175,7 +2192,7 @@ class Section:
 
     def get_ez(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float, float, float]:
         """Returns the modulus-weighted cross-section centroidal elastic section moduli.
 
@@ -2187,7 +2204,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted elastic section moduli about the centroidal axis with
@@ -2196,7 +2213,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -2207,13 +2224,14 @@ class Section:
         # calculate e_ref (transformed elastic modulus)
         e_ref = self.get_e_ref(e_ref=e_ref)
 
-        try:
-            assert self.section_props.zxx_plus is not None
-            assert self.section_props.zxx_minus is not None
-            assert self.section_props.zyy_plus is not None
-            assert self.section_props.zyy_minus is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if (
+            self.section_props.zxx_plus is None
+            or self.section_props.zxx_minus is None
+            or self.section_props.zyy_plus is None
+            or self.section_props.zyy_minus is None
+        ):
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.zxx_plus / e_ref,
@@ -2229,13 +2247,11 @@ class Section:
             Radii of gyration about the centroidal axis (``rx``, ``ry``)
 
         Raises:
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
-        try:
-            assert self.section_props.rx_c is not None
-            assert self.section_props.ry_c is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.rx_c is None or self.section_props.ry_c is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.rx_c, self.section_props.ry_c
 
@@ -2250,24 +2266,22 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
             msg += " (material properties have been applied). Consider using get_eip()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.i11_c is not None
-            assert self.section_props.i22_c is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.i11_c is None or self.section_props.i22_c is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.i11_c, self.section_props.i22_c
 
     def get_eip(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float]:
         """Returns the modulus-weighted cross-section principal second moments of area.
 
@@ -2279,7 +2293,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted second moments of area about the principal axis
@@ -2287,7 +2301,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -2298,11 +2312,9 @@ class Section:
         # calculate e_ref (transformed elastic modulus)
         e_ref = self.get_e_ref(e_ref=e_ref)
 
-        try:
-            assert self.section_props.i11_c is not None
-            assert self.section_props.i22_c is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.i11_c is None or self.section_props.i22_c is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.i11_c / e_ref, self.section_props.i22_c / e_ref
 
@@ -2313,12 +2325,11 @@ class Section:
             Principal bending axis angle
 
         Raises:
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
-        try:
-            assert self.section_props.phi is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.phi is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.phi
 
@@ -2334,20 +2345,21 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
             msg += " (material properties have been applied). Consider using get_ezp()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.z11_plus is not None
-            assert self.section_props.z11_minus is not None
-            assert self.section_props.z22_plus is not None
-            assert self.section_props.z22_minus is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if (
+            self.section_props.z11_plus is None
+            or self.section_props.z11_minus is None
+            or self.section_props.z22_plus is None
+            or self.section_props.z22_minus is None
+        ):
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.z11_plus,
@@ -2358,7 +2370,7 @@ class Section:
 
     def get_ezp(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float, float, float]:
         """Returns the modulus-weighted cross-section principal elastic section moduli.
 
@@ -2370,7 +2382,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted elastic section moduli about the principal axis with
@@ -2379,7 +2391,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -2390,13 +2402,14 @@ class Section:
         # calculate e_ref (transformed elastic modulus)
         e_ref = self.get_e_ref(e_ref=e_ref)
 
-        try:
-            assert self.section_props.z11_plus is not None
-            assert self.section_props.z11_minus is not None
-            assert self.section_props.z22_plus is not None
-            assert self.section_props.z22_minus is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if (
+            self.section_props.z11_plus is None
+            or self.section_props.z11_minus is None
+            or self.section_props.z22_plus is None
+            or self.section_props.z22_minus is None
+        ):
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.z11_plus / e_ref,
@@ -2412,13 +2425,11 @@ class Section:
             Radii of gyration about the principal axis (``r11``, ``r22``)
 
         Raises:
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
-        try:
-            assert self.section_props.r11_c is not None
-            assert self.section_props.r22_c is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.r11_c is None or self.section_props.r22_c is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.r11_c, self.section_props.r22_c
 
@@ -2433,17 +2444,16 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
             msg += " (material properties have not been applied)."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.nu_eff is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.nu_eff is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.nu_eff
 
@@ -2458,17 +2468,16 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
             msg += " (material properties have not been applied)."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.e_eff is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.e_eff is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.e_eff
 
@@ -2483,17 +2492,16 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a geometric analysis has not been performed
+            RuntimeError: If a geometric analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
             msg += " (material properties have not been applied)."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.g_eff is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a geometric analysis.") from e
+        if self.section_props.g_eff is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.g_eff
 
@@ -2508,23 +2516,22 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
             msg += " (material properties have been applied). Consider using get_ej()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.j is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if self.section_props.j is None:
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.j
 
     def get_ej(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> float:
         """Returns the modulus-weighted cross-section St Venant torsion constant.
 
@@ -2536,14 +2543,14 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted St. Venant torsion constant
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -2554,10 +2561,9 @@ class Section:
         # calculate e_ref (transformed elastic modulus)
         e_ref = self.get_e_ref(e_ref=e_ref)
 
-        try:
-            assert self.section_props.j is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if self.section_props.j is None:
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.j / e_ref
 
@@ -2568,15 +2574,16 @@ class Section:
             Centroidal axis shear centre (elasticity approach) (``x_se``, ``y_se``)
 
         Raises:
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
-        try:
-            assert self.section_props.x_se is not None
-            assert self.section_props.y_se is not None
-            assert self.section_props.cx is not None
-            assert self.section_props.cy is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if (
+            self.section_props.x_se is None
+            or self.section_props.y_se is None
+            or self.section_props.cx is None
+            or self.section_props.cy is None
+        ):
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         # add centroid location to move section back to original location
         x_se = self.section_props.x_se + self.section_props.cx
@@ -2591,14 +2598,11 @@ class Section:
             Principal axis shear centre (elasticity approach) (``x11_se``, ``y22_se``)
 
         Raises:
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
-        try:
-            assert self.section_props.x11_se is not None
-            assert self.section_props.y22_se is not None
-
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if self.section_props.x11_se is None or self.section_props.y22_se is None:
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.x11_se, self.section_props.y22_se
 
@@ -2609,15 +2613,16 @@ class Section:
             Centroidal axis shear centre (Trefftz's method) (``x_st``, ``y_st``)
 
         Raises:
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
-        try:
-            assert self.section_props.x_st is not None
-            assert self.section_props.y_st is not None
-            assert self.section_props.cx is not None
-            assert self.section_props.cy is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if (
+            self.section_props.x_st is None
+            or self.section_props.y_st is None
+            or self.section_props.cx is None
+            or self.section_props.cy is None
+        ):
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         # add centroid location to move section back to original location
         x_st = self.section_props.x_st + self.section_props.cx
@@ -2636,7 +2641,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
@@ -2644,16 +2649,15 @@ class Section:
             msg += " get_egamma()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.gamma is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if self.section_props.gamma is None:
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.gamma
 
     def get_egamma(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> float:
         """Returns the modulus-weighted cross-section warping constant.
 
@@ -2665,14 +2669,14 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted warping constant
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -2683,10 +2687,9 @@ class Section:
         # calculate e_ref (transformed elastic modulus)
         e_ref = self.get_e_ref(e_ref=e_ref)
 
-        try:
-            assert self.section_props.gamma is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if self.section_props.gamma is None:
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.gamma / e_ref
 
@@ -2701,24 +2704,22 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
             msg += " (material properties have been applied). Consider using get_eas()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.a_sx is not None
-            assert self.section_props.a_sy is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if self.section_props.a_sx is None or self.section_props.a_sy is None:
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.a_sx, self.section_props.a_sy
 
     def get_eas(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float]:
         """Returns modulus-weighted the cross-section centroidal axis shear area.
 
@@ -2730,7 +2731,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted shear area for loading about the centroidal axis
@@ -2738,7 +2739,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -2749,11 +2750,9 @@ class Section:
         # calculate e_ref (transformed elastic modulus)
         e_ref = self.get_e_ref(e_ref=e_ref)
 
-        try:
-            assert self.section_props.a_sx is not None
-            assert self.section_props.a_sy is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if self.section_props.a_sx is None or self.section_props.a_sy is None:
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.a_sx / e_ref, self.section_props.a_sy / e_ref
 
@@ -2769,7 +2768,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
@@ -2777,17 +2776,15 @@ class Section:
             msg += " get_eas_p()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.a_s11 is not None
-            assert self.section_props.a_s22 is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if self.section_props.a_s11 is None or self.section_props.a_s22 is None:
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.a_s11, self.section_props.a_s22
 
     def get_eas_p(
         self,
-        e_ref: float | pre.Material = 1,
+        e_ref: float | pre.Material = 1.0,
     ) -> tuple[float, float]:
         """Returns the modulus-weighted cross-section princicpal axis shear area.
 
@@ -2799,7 +2796,7 @@ class Section:
 
         Args:
             e_ref: Reference elastic modulus or material property by which to transform
-                the results
+                the results. Defaults to ``1.0``.
 
         Returns:
             Modulus weighted shear area for loading about the princicpal bending axis
@@ -2807,7 +2804,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -2818,11 +2815,9 @@ class Section:
         # calculate e_ref (transformed elastic modulus)
         e_ref = self.get_e_ref(e_ref=e_ref)
 
-        try:
-            assert self.section_props.a_s11 is not None
-            assert self.section_props.a_s22 is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if self.section_props.a_s11 is None or self.section_props.a_s22 is None:
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.a_s11 / e_ref, self.section_props.a_s22 / e_ref
 
@@ -2838,15 +2833,16 @@ class Section:
             ``minus`` value relates to the bottom flange in compression.
 
         Raises:
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
-        try:
-            assert self.section_props.beta_x_plus is not None
-            assert self.section_props.beta_x_minus is not None
-            assert self.section_props.beta_y_plus is not None
-            assert self.section_props.beta_y_minus is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if (
+            self.section_props.beta_x_plus is None
+            or self.section_props.beta_x_minus is None
+            or self.section_props.beta_y_plus is None
+            or self.section_props.beta_y_minus is None
+        ):
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.beta_x_plus,
@@ -2867,15 +2863,16 @@ class Section:
             ``minus`` value relates to the bottom flange in compression.
 
         Raises:
-            AssertionError: If a warping analysis has not been performed
+            RuntimeError: If a warping analysis has not been performed
         """
-        try:
-            assert self.section_props.beta_11_plus is not None
-            assert self.section_props.beta_11_minus is not None
-            assert self.section_props.beta_22_plus is not None
-            assert self.section_props.beta_22_minus is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a warping analysis.") from e
+        if (
+            self.section_props.beta_11_plus is None
+            or self.section_props.beta_11_minus is None
+            or self.section_props.beta_22_plus is None
+            or self.section_props.beta_22_minus is None
+        ):
+            msg = "Conduct a warping analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.beta_11_plus,
@@ -2891,15 +2888,16 @@ class Section:
             Centroidal axis plastic centroid (``x_pc``, ``y_pc``)
 
         Raises:
-            AssertionError: If a plastic analysis has not been performed
+            RuntimeError: If a plastic analysis has not been performed
         """
-        try:
-            assert self.section_props.x_pc is not None
-            assert self.section_props.y_pc is not None
-            assert self.section_props.cx is not None
-            assert self.section_props.cy is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a plastic analysis.") from e
+        if (
+            self.section_props.x_pc is None
+            or self.section_props.y_pc is None
+            or self.section_props.cx is None
+            or self.section_props.cy is None
+        ):
+            msg = "Conduct a plastic analysis."
+            raise RuntimeError(msg)
 
         # add centroid location to move section back to original location
         x_pc = self.section_props.x_pc + self.section_props.cx
@@ -2914,16 +2912,17 @@ class Section:
             Principal bending axis plastic centroid (``x11_pc``, ``y22_pc``)
 
         Raises:
-            AssertionError: If a plastic analysis has not been performed
+            RuntimeError: If a plastic analysis has not been performed
         """
-        try:
-            assert self.section_props.phi is not None
-            assert self.section_props.x11_pc is not None
-            assert self.section_props.y22_pc is not None
-            assert self.section_props.cx is not None
-            assert self.section_props.cy is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a plastic analysis.") from e
+        if (
+            self.section_props.phi is None
+            or self.section_props.x11_pc is None
+            or self.section_props.y22_pc is None
+            or self.section_props.cx is None
+            or self.section_props.cy is None
+        ):
+            msg = "Conduct a plastic analysis."
+            raise RuntimeError(msg)
 
         # determine the position of the plastic centroid in the global axis
         x_pc, y_pc = fea.global_coordinate(
@@ -2946,18 +2945,16 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a plastic analysis has not been performed
+            RuntimeError: If a plastic analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
             msg += " (material properties have been applied). Consider using get_mp()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.sxx is not None
-            assert self.section_props.syy is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a plastic analysis.") from e
+        if self.section_props.sxx is None or self.section_props.syy is None:
+            msg = "Conduct a plastic analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.sxx, self.section_props.syy
 
@@ -2973,7 +2970,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a plastic analysis has not been performed
+            RuntimeError: If a plastic analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -2981,11 +2978,9 @@ class Section:
             msg += " get_s()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.sxx is not None
-            assert self.section_props.syy is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a plastic analysis.") from e
+        if self.section_props.sxx is None or self.section_props.syy is None:
+            msg = "Conduct a plastic analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.sxx, self.section_props.syy
 
@@ -3000,7 +2995,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a plastic analysis has not been performed
+            RuntimeError: If a plastic analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
@@ -3008,11 +3003,9 @@ class Section:
             msg += " get_mp_p()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.s11 is not None
-            assert self.section_props.s22 is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a plastic analysis.") from e
+        if self.section_props.s11 is None or self.section_props.s22 is None:
+            msg = "Conduct a plastic analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.s11, self.section_props.s22
 
@@ -3028,7 +3021,7 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have *not* been applied
-            AssertionError: If a plastic analysis has not been performed
+            RuntimeError: If a plastic analysis has not been performed
         """
         if not self.is_composite():
             msg = "Attempting to get a composite only property for a geometric analysis"
@@ -3036,11 +3029,9 @@ class Section:
             msg += " get_sp()."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.s11 is not None
-            assert self.section_props.s22 is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a plastic analysis.") from e
+        if self.section_props.s11 is None or self.section_props.s22 is None:
+            msg = "Conduct a plastic analysis."
+            raise RuntimeError(msg)
 
         return self.section_props.s11, self.section_props.s22
 
@@ -3056,20 +3047,21 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a plastic analysis has not been performed
+            RuntimeError: If a plastic analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
             msg += " (material properties have been applied)."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.sf_xx_plus is not None
-            assert self.section_props.sf_xx_minus is not None
-            assert self.section_props.sf_yy_plus is not None
-            assert self.section_props.sf_yy_minus is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a plastic analysis.") from e
+        if (
+            self.section_props.sf_xx_plus is None
+            or self.section_props.sf_xx_minus is None
+            or self.section_props.sf_yy_plus is None
+            or self.section_props.sf_yy_minus is None
+        ):
+            msg = "Conduct a plastic analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.sf_xx_plus,
@@ -3090,20 +3082,21 @@ class Section:
 
         Raises:
             RuntimeError: If material properties have been applied
-            AssertionError: If a plastic analysis has not been performed
+            RuntimeError: If a plastic analysis has not been performed
         """
         if self.is_composite():
             msg = "Attempting to get a geometric only property for a composite analysis"
             msg += " (material properties have been applied)."
             raise RuntimeError(msg)
 
-        try:
-            assert self.section_props.sf_11_plus is not None
-            assert self.section_props.sf_11_minus is not None
-            assert self.section_props.sf_22_plus is not None
-            assert self.section_props.sf_22_minus is not None
-        except AssertionError as e:
-            raise AssertionError("Conduct a plastic analysis.") from e
+        if (
+            self.section_props.sf_11_plus is None
+            or self.section_props.sf_11_minus is None
+            or self.section_props.sf_22_plus is None
+            or self.section_props.sf_22_minus is None
+        ):
+            msg = "Conduct a plastic analysis."
+            raise RuntimeError(msg)
 
         return (
             self.section_props.sf_11_plus,
@@ -3133,17 +3126,18 @@ class Section:
         Args:
             pts: A list of points ``[(x, y), ..., ]``
             n: Axial force
-            mxx: Bending moment about the centroidal xx-axis
-            myy: Bending moment about the centroidal yy-axis
-            m11: Bending moment about the centroidal 11-axis
-            m22: Bending moment about the centroidal 22-axis
-            mzz: Torsion moment about the centroidal zz-axis
-            vx: Shear force acting in the x-direction
-            vy: Shear force acting in the y-direction
+            mxx: Bending moment about the centroidal xx-axis. Defaults to ``0.0``.
+            myy: Bending moment about the centroidal yy-axis. Defaults to ``0.0``.
+            m11: Bending moment about the centroidal 11-axis. Defaults to ``0.0``.
+            m22: Bending moment about the centroidal 22-axis. Defaults to ``0.0``.
+            mzz: Torsion moment about the centroidal zz-axis. Defaults to ``0.0``.
+            vx: Shear force acting in the x-direction. Defaults to ``0.0``.
+            vy: Shear force acting in the y-direction. Defaults to ``0.0``.
             agg_func: A function that aggregates the stresses if the point is shared by
                 several elements. If the point, ``pt``, is shared by several elements
                 (e.g. if it is a node or on an edge), the stresses are retrieved from
-                each element and combined according to this function.
+                each element and combined according to this function. Defaults to
+                ``np.average``.
 
         Raises:
             RuntimeError: If a warping analysis has not been carried out and a shear
@@ -3199,10 +3193,14 @@ class Section:
             psi_shear = self.section_props.psi_shear
             phi_shear = self.section_props.phi_shear
 
-            assert delta_s is not None
-            assert omega is not None
-            assert psi_shear is not None
-            assert phi_shear is not None
+            if (
+                delta_s is None
+                or omega is None
+                or psi_shear is None
+                or phi_shear is None
+            ):
+                msg = "Warping analysis failed."
+                raise RuntimeError(msg)
         else:
             j = 0.0
             nu = 0.0
@@ -3226,18 +3224,19 @@ class Section:
             "nu": nu,
         }
 
-        stress_pts = []
+        stress_pts: list[tuple[float, float, float] | None] = []
 
         for pt in pts:
             query_geom = Point(pt)
             tri_ids: list[int] = self.mesh_search_tree.query(
                 query_geom, predicate="intersects"
-            )
+            ).tolist()
 
             if len(tri_ids) == 0:
                 sig = None
             elif len(tri_ids) == 1:
-                tri = self.elements[tri_ids[0]]
+                el_id = tri_ids[0]
+                tri = self.elements[el_id]
                 omega_el = omega[tri.node_ids]
                 psi_shear_el = psi_shear[tri.node_ids]
                 phi_shear_el = phi_shear[tri.node_ids]
@@ -3251,7 +3250,7 @@ class Section:
                     phi_shear=phi_shear_el,
                 )
             else:
-                sigs = []
+                sigs: list[tuple[float, float, float]] = []
 
                 for idx in tri_ids:
                     tri = self.elements[idx]

@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
-import pathlib
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from rhino_shapely_interop.importers import RhImporter
-from shapely import Polygon
+
+if TYPE_CHECKING:
+    import pathlib
+
+    from shapely import Polygon
 
 
 def load_3dm(
@@ -54,11 +57,9 @@ def load_3dm(
     list_polygons = list(rhi.get_planer_brep(**kwargs))
 
     if len(list_polygons) == 0:
-        raise RuntimeError(
-            f"No shapely.Polygon objects found. "
-            f"Consider adjusting the keyword arguments. "
-            f"File name: {r3dm_filepath}."
-        )
+        msg = "No shapely.Polygon objects found. Consider adjusting the keyword "
+        msg += f"arguments. File name: {r3dm_filepath}."
+        raise RuntimeError(msg)
 
     return list_polygons
 
@@ -108,6 +109,7 @@ def load_brep_encoding(
     geom = list(rhi.get_planer_brep(**kwargs))
 
     if len(geom) == 0:
-        raise RuntimeError("No shapely.Polygon objects found for encoded object.")
+        msg = "No shapely.Polygon objects found for encoded object."
+        raise RuntimeError(msg)
 
     return geom

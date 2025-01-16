@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
-import numpy.typing as npt
 from rich.progress import (
     BarColumn,
     Progress,
@@ -14,8 +15,12 @@ from rich.progress import (
 )
 from rich.table import Column
 from rich.text import Text
-from scipy.sparse import csc_matrix, linalg
-from scipy.sparse.linalg import LinearOperator, spsolve
+from scipy.sparse.linalg import cgs, spsolve
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
+    from scipy.sparse import csc_matrix
+    from scipy.sparse.linalg import LinearOperator
 
 
 try:
@@ -29,7 +34,7 @@ except ImportError:
 def solve_cgs(
     k: csc_matrix,
     f: npt.NDArray[np.float64],
-    m: LinearOperator | None = None,
+    m: LinearOperator,
     tol: float = 1e-5,
 ) -> npt.NDArray[np.float64]:
     """Solves a linear system using the CGS iterative method.
@@ -38,7 +43,7 @@ def solve_cgs(
         k: ``N x N`` matrix of the linear system
         f: ``N x 1`` right hand side of the linear system
         m: Preconditioner for the linear matrix approximating the inverse of ``k``
-        tol: Relative tolerance for the solver to achieve.
+        tol: Relative tolerance for the solver to achieve. Defaults to ``1e-5``.
 
     Returns:
         The solution vector to the linear system of equations
@@ -46,18 +51,19 @@ def solve_cgs(
     Raises:
         RuntimeError: If the CGS iterative method does not converge
     """
-    u, info = linalg.cgs(A=k, b=f, rtol=tol, M=m)
+    u, info = cgs(A=k, b=f, rtol=tol, M=m)
 
     if info != 0:
-        raise RuntimeError("CGS iterative method did not converge.")
+        msg = "CGS iterative method did not converge."
+        raise RuntimeError(msg)
 
-    return u  # type: ignore
+    return u
 
 
 def solve_cgs_lagrange(
     k_lg: csc_matrix,
     f: npt.NDArray[np.float64],
-    m: LinearOperator | None = None,
+    m: LinearOperator,
     tol: float = 1e-5,
 ) -> npt.NDArray[np.float64]:
     """Solves a linear system using the CGS iterative method (Lagrangian multiplier).
@@ -66,7 +72,7 @@ def solve_cgs_lagrange(
         k_lg: ``(N+1) x (N+1)`` Lagrangian multiplier matrix of the linear system
         f: ``N x 1`` right hand side of the linear system
         m: Preconditioner for the linear matrix approximating the inverse of ``k``
-        tol: Relative tolerance for the solver to achieve.
+        tol: Relative tolerance for the solver to achieve. Defaults to ``1e-5``.
 
     Returns:
         The solution vector to the linear system of equations
@@ -75,18 +81,20 @@ def solve_cgs_lagrange(
         RuntimeError: If the CGS iterative method does not converge or the error from
             the Lagrangian multiplier method exceeds the tolerance
     """
-    u, info = linalg.cgs(A=k_lg, b=np.append(f, 0), rtol=tol, M=m)
+    u, info = cgs(A=k_lg, b=np.append(f, 0), rtol=tol, M=m)
 
     if info != 0:
-        raise RuntimeError("CGS iterative method did not converge.")
+        msg = "CGS iterative method did not converge."
+        raise RuntimeError(msg)
 
     # compute error
     err = u[-1] / max(np.absolute(u))
 
     if err > tol:
-        raise RuntimeError("Lagrangian multiplier method error exceeds tolerance.")
+        msg = "Lagrangian multiplier method error exceeds tolerance."
+        raise RuntimeError(msg)
 
-    return u[:-1]  # type: ignore
+    return u[:-1]
 
 
 def solve_direct(
@@ -102,7 +110,7 @@ def solve_direct(
     Returns:
         The solution vector to the linear system of equations
     """
-    return sp_solve(A=k, b=f)  # type: ignore
+    return sp_solve(A=k, b=f)
 
 
 def solve_direct_lagrange(
@@ -130,13 +138,12 @@ def solve_direct_lagrange(
     rel_error = multiplier / max(np.absolute(u))
 
     if rel_error > 1e-7 and multiplier > 10.0 * np.finfo(float).eps:
-        raise RuntimeError(
-            "Lagrangian multiplier method error exceeds the prescribed tolerance, "
-            "consider refining your mesh. If this error is unexpected raise an issue "
-            "at https://github.com/robbievanleeuwen/section-properties/issues."
-        )
+        msg = "Lagrangian multiplier method error exceeds the prescribed tolerance, "
+        msg += "consider refining your mesh. If this error is unexpected raise an "
+        msg += "issue at https://github.com/robbievanleeuwen/section-properties/issues."
+        raise RuntimeError(msg)
 
-    return u[:-1]  # type: ignore
+    return u[:-1]
 
 
 class CustomTimeElapsedColumn(ProgressColumn):

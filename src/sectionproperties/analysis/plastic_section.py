@@ -10,7 +10,6 @@ from scipy.optimize import brentq
 import sectionproperties.analysis.fea as fea
 import sectionproperties.pre.pre as pre
 
-
 if TYPE_CHECKING:
     from rich.progress import Progress
     from scipy.optimize import RootResults
@@ -95,7 +94,7 @@ class PlasticSection:
         section.section_props.sxx = 0.0
 
         # loop through each geometry force & y-centroid
-        for f, c in zip(self._f_list, self._cy_list):
+        for f, c in zip(self._f_list, self._cy_list, strict=False):
             # calculate distance from y-centroid to plastic centroid
             d_y = abs(c - y_pc)
             section.section_props.sxx += f * d_y
@@ -121,7 +120,7 @@ class PlasticSection:
         section.section_props.syy = 0.0
 
         # loop through each geometry force & x-centroid
-        for f, c in zip(self._f_list, self._cx_list):
+        for f, c in zip(self._f_list, self._cx_list, strict=False):
             # calculate distance from x-centroid to plastic centroid
             d_x = abs(c - x_pc)
             section.section_props.syy += f * d_x
@@ -137,7 +136,8 @@ class PlasticSection:
         if section.section_props.phi is not None:
             angle = section.section_props.phi * np.pi / 180
         else:
-            raise RuntimeError("Run a geometric analysis prior to a plastic analysis.")
+            msg = "Run a geometric analysis prior to a plastic analysis."
+            raise RuntimeError(msg)
 
         # unit vectors in the axis directions
         ux = (np.cos(angle), np.sin(angle))
@@ -161,7 +161,7 @@ class PlasticSection:
         section.section_props.s11 = 0.0
 
         # loop through each geometry force & xy-centroid
-        for f, cx, cy in zip(self._f_list, self._cx_list, self._cy_list):
+        for f, cx, cy in zip(self._f_list, self._cx_list, self._cy_list, strict=False):
             # convert centroid to principal coordinates
             cen = fea.principal_coordinate(phi=section.section_props.phi, x=cx, y=cy)
 
@@ -190,7 +190,7 @@ class PlasticSection:
         section.section_props.s22 = 0.0
 
         # loop through each geometry force & xy-centroid
-        for f, cx, cy in zip(self._f_list, self._cx_list, self._cy_list):
+        for f, cx, cy in zip(self._f_list, self._cx_list, self._cy_list, strict=False):
             # convert centroid to principal coordinates
             cen = fea.principal_coordinate(phi=section.section_props.phi, x=cx, y=cy)
 
@@ -349,10 +349,7 @@ class PlasticSection:
             ``d``, and the ``scipy`` results object ``r`` - (``d``, ``r``)
         """
         # calculate vector perpendicular to u
-        if axis == 1:
-            u_p = np.array([-u[1], u[0]])
-        else:
-            u_p = np.array([u[1], -u[0]])
+        u_p = np.array([-u[1], u[0]]) if axis == 1 else np.array([u[1], -u[0]])
 
         d, r = brentq(
             f=self.evaluate_force_eq,

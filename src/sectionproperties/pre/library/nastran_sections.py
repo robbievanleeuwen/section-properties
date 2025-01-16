@@ -23,7 +23,8 @@ def nastran_bar(
     Args:
         dim_1: Width (x) of bar
         dim_2: Depth (y) of bar
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         BAR section geometry
@@ -75,7 +76,11 @@ def nastran_box(
         dim_2: Depth (y) of box
         dim_3: Thickness of box in y direction
         dim_4: Thickness of box in x direction
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         BOX section geometry
@@ -93,8 +98,9 @@ def nastran_box(
             nastran_box(dim_1=4.0, dim_2=3.0, dim_3=0.375, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert 2.0 * dim_4 < dim_1, "Invalid geometry specified."
-    assert 2.0 * dim_3 < dim_2, "Invalid geometry specified."
+    if not 2.0 * dim_4 < dim_1 or not 2.0 * dim_3 < dim_2:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     points_outer = [
         (-0.5 * dim_1, -0.5 * dim_2),
@@ -111,16 +117,21 @@ def nastran_box(
 
     inner_box = Polygon(points_inner)
     outer_box = Polygon(points_outer)
+    poly_sub = outer_box - inner_box
 
     c = (0.5 * dim_1, 0.5 * dim_2)
     d = (0.5 * dim_1, -0.5 * dim_2)
     e = (-0.5 * dim_1, -0.5 * dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_2)
 
-    geom = geometry.Geometry(geom=outer_box - inner_box, material=material)
-    geom.recovery_points = [c, d, e, f]
+    if isinstance(poly_sub, Polygon):
+        geom = geometry.Geometry(geom=poly_sub, material=material)
+        geom.recovery_points = [c, d, e, f]
 
-    return geom
+        return geom
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def nastran_box1(
@@ -144,7 +155,11 @@ def nastran_box1(
         dim_4: Thickness of bottom wall
         dim_5: Thickness of left wall
         dim_6: Thickness of right wall
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         BOX1 section geometry
@@ -164,8 +179,9 @@ def nastran_box1(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_5 + dim_6 < dim_1, "Invalid geometry specified."
-    assert dim_3 + dim_4 < dim_2, "Invalid geometry specified."
+    if not dim_5 + dim_6 < dim_1 or not dim_3 + dim_4 < dim_2:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     exterior_points = [
         (0.0, 0.0),
@@ -179,18 +195,21 @@ def nastran_box1(
         (dim_1 - dim_5, dim_2 - dim_3),
         (dim_6, dim_2 - dim_3),
     ]
-
-    geom = geometry.Geometry(
-        geom=Polygon(exterior_points) - Polygon(interior_points), material=material
-    )
+    poly_sub = Polygon(exterior_points) - Polygon(interior_points)
 
     c = (0.5 * dim_1, 0.5 * dim_2)
     d = (0.5 * dim_1, -0.5 * dim_2)
     e = (-0.5 * dim_1, -0.5 * dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_2)
-    geom.recovery_points = [c, d, e, f]
 
-    return geom
+    if isinstance(poly_sub, Polygon):
+        geom = geometry.Geometry(geom=poly_sub, material=material)
+        geom.recovery_points = [c, d, e, f]
+
+        return geom
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def nastran_chan(
@@ -210,7 +229,8 @@ def nastran_chan(
         dim_2: Depth (y) of the CHAN-section
         dim_3: Thickness of web (vertical portion)
         dim_4: Thickness of flanges (top/bottom portion)
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         CHAN section geometry
@@ -228,8 +248,9 @@ def nastran_chan(
             nastran_chan(dim_1=2.0, dim_2=4.0, dim_3=0.25, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert 2.0 * dim_4 < dim_2, "Invalid geometry specified."
-    assert dim_3 < dim_1, "Invalid geometry specified."
+    if not 2.0 * dim_4 < dim_2 or not dim_3 < dim_1:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points
     points = [
@@ -272,7 +293,8 @@ def nastran_chan1(
         dim_2: Thickness (x) of web
         dim_3: Spacing between channels (length of web)
         dim_4: Depth (y) of CHAN1-section
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         CHAN1 section geometry
@@ -290,7 +312,9 @@ def nastran_chan1(
             nastran_chan1(dim_1=0.75, dim_2=1.0, dim_3=3.5, dim_4=4.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_4 > dim_3, "Invalid geometry specified."
+    if not dim_4 > dim_3:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     tf = 0.5 * (dim_4 - dim_3)
@@ -333,7 +357,8 @@ def nastran_chan2(
         dim_2: Thickness of web
         dim_3: Depth (y) of CHAN2-section
         dim_4: Width (x) of CHAN2-section
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         CHAN2 section geometry
@@ -351,8 +376,9 @@ def nastran_chan2(
             nastran_chan2(dim_1=0.375, dim_2=0.5, dim_3=2.0, dim_4=4.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_4 > 2.0 * dim_1, "Invalid geometry specified."
-    assert dim_3 > dim_2, "Invalid geometry specified."
+    if not dim_4 > 2.0 * dim_1 or not dim_3 > dim_2:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     points = [
@@ -395,7 +421,8 @@ def nastran_cross(
         dim_2: Thickness of the vertical member
         dim_3: Depth (y) of the CROSS-section
         dim_4: Thickness of the horizontal members
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Cruciform section geometry
@@ -412,7 +439,9 @@ def nastran_cross(
             nastran_cross(dim_1=1.5, dim_2=0.375, dim_3=3.0, dim_4=0.25).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_4 < dim_3, "Invalid geometry specified."
+    if not dim_4 < dim_3:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     d = 0.5 * (dim_3 - dim_4)
@@ -467,7 +496,8 @@ def nastran_fcross(
         dim_6: Thickness of flange attached to vertical web
         dim_7: Length of flange attached to horizontal web
         dim_8: Thickness of flange attached to horizontal web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Flanged cruciform section geometry
@@ -487,12 +517,16 @@ def nastran_fcross(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_5 > dim_3, "Invalid geometry specified."
-    assert dim_7 > dim_4, "Invalid geometry specified."
-    assert dim_7 < dim_1, "Invalid geometry specified."
-    assert dim_5 < dim_2, "Invalid geometry specified."
-    assert dim_8 < (0.5 * dim_2 - 0.5 * dim_3), "Invalid geometry specified."
-    assert dim_6 < (0.5 * dim_1 - 0.5 * dim_4), "Invalid geometry specified."
+    if (
+        not dim_5 > dim_3
+        or not dim_7 > dim_4
+        or not dim_7 < dim_1
+        or not dim_5 < dim_2
+        or not dim_8 < (0.5 * dim_2 - 0.5 * dim_3)
+        or not dim_6 < (0.5 * dim_1 - 0.5 * dim_4)
+    ):
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     points = [
@@ -566,7 +600,11 @@ def nastran_dbox(
         dim_8: Thickness of bottom left wall
         dim_9: Thickness of top right wall
         dim_10: Thickness of bottom right wall
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         DBOX section geometry
@@ -587,10 +625,14 @@ def nastran_dbox(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert (dim_4 + dim_5 + dim_6) < dim_1, "Invalid geometry specified."
-    assert (dim_4 + 0.5 * dim_5) < dim_3, "Invalid geometry specified."
-    assert (dim_7 + dim_8) < dim_2, "Invalid geometry specified."
-    assert (dim_9 + dim_10) < dim_2, "Invalid geometry specified."
+    if (
+        not (dim_4 + dim_5 + dim_6) < dim_1
+        or not (dim_4 + 0.5 * dim_5) < dim_3
+        or not (dim_7 + dim_8) < dim_2
+        or not (dim_9 + dim_10) < dim_2
+    ):
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     exterior_points = [
@@ -611,19 +653,25 @@ def nastran_dbox(
         (dim_1 - dim_6, dim_2 - dim_9),
         (dim_3 + dim_5 / 2.0, dim_2 - dim_9),
     ]
-    geom = geometry.Geometry(
-        geom=Polygon(exterior_points)
+    poly_sub = (
+        Polygon(exterior_points)
         - Polygon(interior_points_1)
-        - Polygon(interior_points_2),
-        material=material,
+        - Polygon(interior_points_2)
     )
+
     c = (0.5 * dim_1, 0.5 * dim_2)
     d = (0.5 * dim_1, -0.5 * dim_2)
     e = (-0.5 * dim_1, -0.5 * dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_2)
-    geom.recovery_points = [c, d, e, f]
 
-    return geom
+    if isinstance(poly_sub, Polygon):
+        geom = geometry.Geometry(geom=poly_sub, material=material)
+        geom.recovery_points = [c, d, e, f]
+
+        return geom
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def nastran_gbox(
@@ -647,7 +695,11 @@ def nastran_gbox(
         dim_4: Thickness of bottom flange
         dim_5: Thickness of webs
         dim_6: Spacing between webs
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         GBOX section geometry
@@ -667,8 +719,9 @@ def nastran_gbox(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert (dim_3 + dim_4) < dim_2, "Invalid geometry specified."
-    assert (2.0 * dim_5 + dim_6) < dim_1, "Invalid geometry specified."
+    if not (dim_3 + dim_4) < dim_2 or not (2.0 * dim_5 + dim_6) < dim_1:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     d = 0.5 * (dim_1 - dim_6 - 2.0 * dim_5)
@@ -692,17 +745,21 @@ def nastran_gbox(
         (d + dim_5 + dim_6, dim_2 - dim_3),
         (d + dim_5, dim_2 - dim_3),
     ]
-    geom = geometry.Geometry(
-        geom=Polygon(exterior_points) - Polygon(interior_points), material=material
-    )
+    poly_sub = Polygon(exterior_points) - Polygon(interior_points)
 
     c = (0.5 * dim_1, 0.5 * dim_2)
     d_r = (0.5 * dim_1, -0.5 * dim_2)
     e = (-0.5 * dim_1, -0.5 * dim_2)
     f = (-0.5 * dim_1, 0.5 * dim_2)
-    geom.recovery_points = [c, d_r, e, f]
 
-    return geom
+    if isinstance(poly_sub, Polygon):
+        geom = geometry.Geometry(geom=poly_sub, material=material)
+        geom.recovery_points = [c, d_r, e, f]
+
+        return geom
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def nastran_h(
@@ -722,7 +779,8 @@ def nastran_h(
         dim_2: Twice the thickness of the vertical flanges
         dim_3: Depth (y) of the H-section
         dim_4: Thickness of the middle web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         H section geometry
@@ -742,7 +800,9 @@ def nastran_h(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_4 < dim_3, "Invalid geometry specified."
+    if not dim_4 < dim_3:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     d1 = 0.5 * (dim_3 - dim_4)
     d2 = 0.5 * dim_2
@@ -791,7 +851,8 @@ def nastran_hat(
         dim_2: Thickness of HAT-section
         dim_3: Width (x) of top most section
         dim_4: Width (x) of bottom sections
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         HAT section geometry
@@ -809,7 +870,9 @@ def nastran_hat(
             nastran_hat(dim_1=1.25, dim_2=0.25, dim_3=1.5, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert 2.0 * dim_2 < dim_1, "Invalid geometry specified."
+    if not 2.0 * dim_2 < dim_1:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     points = [
@@ -857,7 +920,8 @@ def nastran_hat1(
         dim_3: Width (x) of hat's top flange
         dim_4: Thickness of hat stiffener
         dim_5: Thicknesss of bottom plate
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         HAT1 section geometry
@@ -877,12 +941,15 @@ def nastran_hat1(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert (2.0 * dim_4 + dim_5) < dim_2, "Invalid geometry specified."
-    assert dim_3 < dim_1, "Invalid geometry specified."
+    if not (2.0 * dim_4 + dim_5) < dim_2 or not dim_3 < dim_1:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # create bottom rectangular plate
     bottom_plate = nastran_bar(
-        dim_1=dim_1, dim_2=dim_5, material=material
+        dim_1=dim_1,
+        dim_2=dim_5,
+        material=material,
     ).shift_section(y_offset=dim_5 / 2)
 
     # create the hat stiffener
@@ -923,7 +990,8 @@ def nastran_hexa(
         dim_1: Spacing between bottom right point and right most point
         dim_2: Width (x) of hexagon
         dim_3: Depth (y) of hexagon
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         HEXA section geometry
@@ -941,7 +1009,9 @@ def nastran_hexa(
             nastran_hexa(dim_1=0.5, dim_2=2.0, dim_3=1.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_2 > dim_1, "Invalid geometry specified."
+    if not dim_2 > dim_1:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     points = [
@@ -985,7 +1055,8 @@ def nastran_i(
         dim_4: Thickness of web
         dim_5: Thickness of bottom web
         dim_6: Thickness of top web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         I section geometry
@@ -1004,9 +1075,9 @@ def nastran_i(
             ).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert (dim_5 + dim_6) < dim_1, "Invalid geometry specified."
-    assert dim_4 < dim_3, "Invalid geometry specified."
-    assert dim_4 < dim_2, "Invalid geometry specified."
+    if not (dim_5 + dim_6) < dim_1 or not dim_4 < dim_3 or not dim_4 < dim_2:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     db = 0.5 * (dim_2 - dim_4)
@@ -1053,7 +1124,8 @@ def nastran_i1(
         dim_2: Thickness of web
         dim_3: Length of web (spacing between flanges)
         dim_4: Depth (y) of the I1-section
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         I1 section geometry
@@ -1071,7 +1143,9 @@ def nastran_i1(
             nastran_i1(dim_1=1.0, dim_2=0.75, dim_3=4.0, dim_4=5.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_4 > dim_3, "Invalid geometry specified."
+    if not dim_4 > dim_3:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     t = 0.5 * (dim_4 - dim_3)
@@ -1118,7 +1192,8 @@ def nastran_l(
         dim_2: Depth (y) of the L-section
         dim_3: Thickness of flange (horizontal portion)
         dim_4: Thickness of web (vertical portion)
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         L section geometry
@@ -1136,8 +1211,9 @@ def nastran_l(
             nastran_l(dim_1=3.0, dim_2=6.0, dim_3=0.375, dim_4=0.625).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_4 < dim_1, "Invalid geometry specified."
-    assert dim_3 < dim_2, "Invalid geometry specified."
+    if not dim_4 < dim_1 or not dim_3 < dim_2:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     points = [
@@ -1173,7 +1249,8 @@ def nastran_rod(
     Args:
         dim_1: Radius of the circular rod section
         n: Number of points discretising the circle
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Circular rod section geometry
@@ -1192,7 +1269,7 @@ def nastran_rod(
     """
     # loop through each point on the circle
     d = 2.0 * dim_1
-    points = []
+    points: list[tuple[float, float]] = []
 
     for i in range(n):
         # determine polar angle
@@ -1233,7 +1310,8 @@ def nastran_tee(
         dim_2: Depth (y) of the T-section
         dim_3: Thickness of top flange
         dim_4: Thickness of web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         T section geometry
@@ -1251,8 +1329,9 @@ def nastran_tee(
             nastran_tee(dim_1=3.0, dim_2=4.0, dim_3=0.375, dim_4=0.25).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_4 < dim_1, "Invalid geometry specified."
-    assert dim_3 < dim_2, "Invalid geometry specified."
+    if not dim_4 < dim_1 or not dim_3 < dim_2:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     d = dim_2
     b = dim_1
@@ -1309,7 +1388,8 @@ def nastran_tee1(
         dim_2: Length (x) of web
         dim_3: Thickness of right flange
         dim_4: Thickness of web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         T1 section geometry
@@ -1327,7 +1407,9 @@ def nastran_tee1(
             nastran_tee1(dim_1=3.0, dim_2=3.5, dim_3=0.375, dim_4=0.25).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_4 < dim_1, "Invalid geometry specified."
+    if not dim_4 < dim_1:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     d1 = (dim_1 - dim_4) / 2.0
@@ -1370,7 +1452,8 @@ def nastran_tee2(
         dim_2: Depth (y) of T2-section
         dim_3: Thickness of bottom flange
         dim_4: Thickness of web
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         T2 section geometry
@@ -1388,8 +1471,9 @@ def nastran_tee2(
             nastran_tee2(dim_1=3.0, dim_2=4.0, dim_3=0.375, dim_4=0.5).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_4 < dim_1, "Invalid geometry specified."
-    assert dim_3 < dim_2, "Invalid geometry specified."
+    if not dim_4 < dim_1 or not dim_3 < dim_2:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     d1 = 0.5 * (dim_1 - dim_4)
@@ -1430,7 +1514,8 @@ def nastran_tube(
         dim_1: Outer radius of the circular tube section
         dim_2: Inner radius of the circular tube section
         n: Number of points discretising the circle
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Circular tube section geometry
@@ -1448,12 +1533,14 @@ def nastran_tube(
             nastran_tube(dim_1=3.0, dim_2=2.5, n=37).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_2 < dim_1, "Invalid geometry specified."
+    if not dim_2 < dim_1:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     d = 2.0 * dim_1
     t = dim_1 - dim_2
-    points_inner = []
-    points_outer = []
+    points_inner: list[tuple[float, float]] = []
+    points_outer: list[tuple[float, float]] = []
 
     # loop through each point of the CHS
     for i in range(n):
@@ -1498,7 +1585,8 @@ def nastran_tube2(
         dim_1: Outer radius of the circular tube section
         dim_2: Thickness of wall
         n: Number of points discretising the circle
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         TUBE2 section geometry
@@ -1516,13 +1604,15 @@ def nastran_tube2(
             nastran_tube2(dim_1=3.0, dim_2=0.5, n=37).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_2 < dim_1, "Invalid geometry specified."
+    if not dim_2 < dim_1:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     d = 2.0 * dim_1
     t = dim_2
 
-    points_inner = []
-    points_outer = []
+    points_inner: list[tuple[float, float]] = []
+    points_outer: list[tuple[float, float]] = []
 
     # loop through each point of the section
     for i in range(n):
@@ -1569,7 +1659,8 @@ def nastran_zed(
         dim_2: Thickness of web
         dim_3: Spacing between horizontal members (length of web)
         dim_4: Depth (y) of Z-section
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Z section geometry
@@ -1587,7 +1678,9 @@ def nastran_zed(
             nastran_zed(dim_1=1.125, dim_2=0.5, dim_3=3.5, dim_4=4.0).plot_geometry()
     """
     # Ensure dimensions are physically relevant
-    assert dim_4 > dim_3, "Invalid geometry specified."
+    if not dim_4 > dim_3:
+        msg = "Invalid geometry specified."
+        raise ValueError(msg)
 
     # construct the points and facets
     t = 0.5 * (dim_4 - dim_3)

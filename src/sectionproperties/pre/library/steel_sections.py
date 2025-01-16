@@ -26,7 +26,11 @@ def circular_hollow_section(
         d: Outer diameter of the CHS
         t: Thickness of the CHS
         n: Number of points discretising the inner and outer circles
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Circular hollow section geometry
@@ -43,8 +47,8 @@ def circular_hollow_section(
 
             circular_hollow_section(d=48, t=3.2, n=64).plot_geometry()
     """
-    points_inner = []
-    points_outer = []
+    points_inner: list[tuple[float, float]] = []
+    points_outer: list[tuple[float, float]] = []
 
     # loop through each point of the CHS
     for i in range(n):
@@ -63,8 +67,13 @@ def circular_hollow_section(
 
     inner_circle = Polygon(points_inner)
     outer_circle = Polygon(points_outer)
+    poly_sub = outer_circle - inner_circle
 
-    return geometry.Geometry(geom=outer_circle - inner_circle, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def elliptical_hollow_section(
@@ -85,7 +94,11 @@ def elliptical_hollow_section(
         d_y: Diameter of the ellipse in the y-dimension
         t: Thickness of the EHS
         n: Number of points discretising the inner and outer ellipses
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Elliptical hollow section geometry
@@ -103,8 +116,8 @@ def elliptical_hollow_section(
 
             elliptical_hollow_section(d_x=50, d_y=25, t=2, n=64).plot_geometry()
     """
-    points_inner = []
-    points_outer = []
+    points_inner: list[tuple[float, float]] = []
+    points_outer: list[tuple[float, float]] = []
 
     # loop through each point of the EHS
     for i in range(n):
@@ -121,10 +134,15 @@ def elliptical_hollow_section(
         points_outer.append((x_outer, y_outer))
         points_inner.append((x_inner, y_inner))
 
-    outer = Polygon(points_outer)
-    inner = Polygon(points_inner)
+    outer_polygon = Polygon(points_outer)
+    inner_polygon = Polygon(points_inner)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer - inner, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def rectangular_hollow_section(
@@ -148,7 +166,11 @@ def rectangular_hollow_section(
         t: Thickness of the RHS
         r_out: Outer radius of the RHS
         n_r: Number of points discretising the inner and outer radii
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Rectangular hollow section geometry
@@ -166,8 +188,8 @@ def rectangular_hollow_section(
 
             rectangular_hollow_section(d=100, b=50, t=6, r_out=9, n_r=8).plot_geometry()
     """
-    points_inner = []
-    points_outer = []
+    points_inner: list[tuple[float, float]] = []
+    points_outer: list[tuple[float, float]] = []
 
     # calculate internal radius
     r_in = max(r_out - t, 0)
@@ -180,17 +202,28 @@ def rectangular_hollow_section(
 
     points_inner += sp_utils.draw_radius((t + r_in, t + r_in), r_in, np.pi, n_r)
     points_inner += sp_utils.draw_radius(
-        (b - t - r_in, t + r_in), r_in, 1.5 * np.pi, n_r
+        (b - t - r_in, t + r_in),
+        r_in,
+        1.5 * np.pi,
+        n_r,
     )
     points_inner += sp_utils.draw_radius((b - t - r_in, d - t - r_in), r_in, 0, n_r)
     points_inner += sp_utils.draw_radius(
-        (t + r_in, d - t - r_in), r_in, 0.5 * np.pi, n_r
+        (t + r_in, d - t - r_in),
+        r_in,
+        0.5 * np.pi,
+        n_r,
     )
 
-    outer = Polygon(points_outer)
-    inner = Polygon(points_inner)
+    outer_polygon = Polygon(points_outer)
+    inner_polygon = Polygon(points_inner)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer - inner, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def polygon_hollow_section(
@@ -215,15 +248,17 @@ def polygon_hollow_section(
         t: Thickness of the polygon section wall
         n_sides: Number of sides of the polygon
         r_in: Inner radius of the polygon corners. By default, if not specified, a
-            polygon with no corner radii is generated.
+            polygon with no corner radii is generated. Defaults to ``0.0``.
         n_r: Number of points discretising the inner and outer radii, ignored if no
-            inner radii is specified
+            inner radii is specified. Defaults to ``1``.
         rot: Initial counterclockwise rotation in degrees. By default bottom face is
-            aligned with x axis.
-        material: Material to associate with this geometry
+            aligned with x axis. Defaults to ``0.0``.
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Raises:
         ValueError: Number of sides in polygon must be greater than or equal to 3
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Regular hollow polygon section geometry
@@ -317,8 +352,13 @@ def polygon_hollow_section(
 
     outer_polygon = Polygon(outer_points)
     inner_polygon = Polygon(inner_points)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer_polygon - inner_polygon, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def i_section(
@@ -343,7 +383,8 @@ def i_section(
         t_w: Web thickness of the I section
         r: Root radius of the I section
         n_r: Number of points discretising the root radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         I section geometry
@@ -425,7 +466,8 @@ def mono_i_section(
         t_w: Web thickness of the I section
         r: Root radius of the I section
         n_r: Number of points discretising the root radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Monosymmetric I section geometry
@@ -514,7 +556,8 @@ def tapered_flange_i_section(
         r_f: Flange radius of the tapered flange I section
         alpha: Flange angle of the tapered flange I section in degrees
         n_r: Number of points discretising the radii
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Tapered flange I section geometry
@@ -711,7 +754,8 @@ def channel_section(
         t_w: Web thickness of the PFC section
         r: Root radius of the PFC section
         n_r: Number of points discretising the root radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Parallel flange channel section geometry
@@ -782,7 +826,8 @@ def tapered_flange_channel(
         r_f: Flange radius of the tapered flange channel section
         alpha: Flange angle of the tapered flange channel section in degrees
         n_r: Number of points discretising the radii
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Tapered flange channel section geometry
@@ -914,7 +959,8 @@ def tee_section(
         t_w: Web thickness of the tee section
         r: Root radius of the tee section
         n_r: Number of points discretising the root radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Tee section geometry
@@ -979,7 +1025,8 @@ def angle_section(
         r_r: Root radius of the angle section
         r_t: Toe radius of the angle section
         n_r: Number of points discretising the radii
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Angle section geometry
@@ -1001,9 +1048,8 @@ def angle_section(
             angle_section(d=150, b=100, t=8, r_r=12, r_t=5, n_r=16).plot_geometry()
     """
     if r_t > t:
-        raise ValueError(
-            "The radius of the toe (r_t) cannot be larger than the thickness (t)."
-        )
+        msg = "The radius of the toe (r_t) cannot be larger than the thickness (t)."
+        raise ValueError(msg)
 
     points: list[tuple[float, float]] = []
 
@@ -1058,7 +1104,8 @@ def cee_section(
         t: Thickness of the cee section
         r_out: Outer radius of the cee section
         n_r: Number of points discretising the outer radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Cee section geometry
@@ -1081,6 +1128,10 @@ def cee_section(
     # calculate internal radius
     r_in = max(r_out - t, 0)
 
+    # initialise lip variables
+    r_out_l = 0.0
+    r_in_l = 0.0
+
     # construct the outer bottom left radius
     points += sp_utils.draw_radius(pt=(r_out, r_out), r=r_out, theta=np.pi, n=n_r)
 
@@ -1088,7 +1139,10 @@ def cee_section(
     if l > r_out:
         # construct the outer bottom right radius
         points += sp_utils.draw_radius(
-            pt=(b - r_out, r_out), r=r_out, theta=1.5 * np.pi, n=n_r
+            pt=(b - r_out, r_out),
+            r=r_out,
+            theta=1.5 * np.pi,
+            n=n_r,
         )
 
         # add next two points
@@ -1097,7 +1151,11 @@ def cee_section(
 
         # construct the inner bottom right radius
         points += sp_utils.draw_radius(
-            pt=(b - t - r_in, t + r_in), r=r_in, theta=0, n=n_r, ccw=False
+            pt=(b - t - r_in, t + r_in),
+            r=r_in,
+            theta=0,
+            n=n_r,
+            ccw=False,
         )
 
     # if the lip is shorter than the outer radius (curve only)
@@ -1106,10 +1164,17 @@ def cee_section(
         r_out_l = l
         r_in_l = max(l - t, 0)
         points += sp_utils.draw_radius(
-            pt=(b - r_out_l, r_out_l), r=r_out_l, theta=1.5 * np.pi, n=n_r
+            pt=(b - r_out_l, r_out_l),
+            r=r_out_l,
+            theta=1.5 * np.pi,
+            n=n_r,
         )
         points += sp_utils.draw_radius(
-            pt=(b - t - r_in_l, t + r_in_l), r=r_in_l, theta=0, n=n_r, ccw=False
+            pt=(b - t - r_in_l, t + r_in_l),
+            r=r_in_l,
+            theta=0,
+            n=n_r,
+            ccw=False,
         )
 
     # if the lip length is less than the section thickness (no lip)
@@ -1120,19 +1185,31 @@ def cee_section(
 
     # construct the inner bottom left radius
     points += sp_utils.draw_radius(
-        pt=(t + r_in, t + r_in), r=r_in, theta=1.5 * np.pi, n=n_r, ccw=False
+        pt=(t + r_in, t + r_in),
+        r=r_in,
+        theta=1.5 * np.pi,
+        n=n_r,
+        ccw=False,
     )
 
     # construct the inner top left radius
     points += sp_utils.draw_radius(
-        pt=(t + r_in, d - t - r_in), r=r_in, theta=np.pi, n=n_r, ccw=False
+        pt=(t + r_in, d - t - r_in),
+        r=r_in,
+        theta=np.pi,
+        n=n_r,
+        ccw=False,
     )
 
     # if the lip is longer than the outer radius (curve + straight section)
     if l > r_out:
         # construct the inner top right radius
         points += sp_utils.draw_radius(
-            pt=(b - t - r_in, d - t - r_in), r=r_in, theta=0.5 * np.pi, n=n_r, ccw=False
+            pt=(b - t - r_in, d - t - r_in),
+            r=r_in,
+            theta=0.5 * np.pi,
+            n=n_r,
+            ccw=False,
         )
 
         # add next two points
@@ -1141,7 +1218,10 @@ def cee_section(
 
         # construct the outer top right radius
         points += sp_utils.draw_radius(
-            pt=(b - r_out, d - r_out), r=r_out, theta=0, n=n_r
+            pt=(b - r_out, d - r_out),
+            r=r_out,
+            theta=0,
+            n=n_r,
         )
 
     # if the lip is shorter than the outer radius (curve only)
@@ -1155,7 +1235,10 @@ def cee_section(
             ccw=False,
         )
         points += sp_utils.draw_radius(
-            pt=(b - r_out_l, d - r_out_l), r=r_out_l, theta=0, n=n_r
+            pt=(b - r_out_l, d - r_out_l),
+            r=r_out_l,
+            theta=0,
+            n=n_r,
         )
 
     # if the lip length is less than the section thickness (no lip)
@@ -1166,7 +1249,10 @@ def cee_section(
 
     # construct the outer top left radius
     points += sp_utils.draw_radius(
-        pt=(r_out, d - r_out), r=r_out, theta=0.5 * np.pi, n=n_r
+        pt=(r_out, d - r_out),
+        r=r_out,
+        theta=0.5 * np.pi,
+        n=n_r,
     )
 
     polygon = Polygon(points)
@@ -1200,7 +1286,8 @@ def zed_section(
         t: Thickness of the zed section
         r_out: Outer radius of the zed section
         n_r: Number of points discretising the outer radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Zed section geometry
@@ -1226,6 +1313,10 @@ def zed_section(
     # calculate internal radius
     r_in = max(r_out - t, 0)
 
+    # initialise lip variables
+    r_out_l = 0.0
+    r_in_l = 0.0
+
     # construct the outer bottom left radius
     points += sp_utils.draw_radius(pt=(r_out, r_out), r=r_out, theta=np.pi, n=n_r)
 
@@ -1233,7 +1324,10 @@ def zed_section(
     if l > r_out:
         # construct the outer bottom right radius
         points += sp_utils.draw_radius(
-            pt=(b_r - r_out, r_out), r=r_out, theta=1.5 * np.pi, n=n_r
+            pt=(b_r - r_out, r_out),
+            r=r_out,
+            theta=1.5 * np.pi,
+            n=n_r,
         )
 
         # add next two points
@@ -1242,7 +1336,11 @@ def zed_section(
 
         # construct the inner bottom right radius
         points += sp_utils.draw_radius(
-            pt=(b_r - t - r_in, t + r_in), r=r_in, theta=0, n=n_r, ccw=False
+            pt=(b_r - t - r_in, t + r_in),
+            r=r_in,
+            theta=0,
+            n=n_r,
+            ccw=False,
         )
 
     # if the lip is shorter than the outer radius (curve only)
@@ -1251,10 +1349,17 @@ def zed_section(
         r_out_l = l
         r_in_l = max(l - t, 0)
         points += sp_utils.draw_radius(
-            pt=(b_r - r_out_l, r_out_l), r=r_out_l, theta=1.5 * np.pi, n=n_r
+            pt=(b_r - r_out_l, r_out_l),
+            r=r_out_l,
+            theta=1.5 * np.pi,
+            n=n_r,
         )
         points += sp_utils.draw_radius(
-            pt=(b_r - t - r_in_l, t + r_in_l), r=r_in_l, theta=0, n=n_r, ccw=False
+            pt=(b_r - t - r_in_l, t + r_in_l),
+            r=r_in_l,
+            theta=0,
+            n=n_r,
+            ccw=False,
         )
 
     # if the lip length is less than the section thickness (no lip)
@@ -1265,7 +1370,11 @@ def zed_section(
 
     # construct the inner bottom left radius
     points += sp_utils.draw_radius(
-        pt=(t + r_in, t + r_in), r=r_in, theta=1.5 * np.pi, n=n_r, ccw=False
+        pt=(t + r_in, t + r_in),
+        r=r_in,
+        theta=1.5 * np.pi,
+        n=n_r,
+        ccw=False,
     )
 
     # construct the outer top right radius
@@ -1275,7 +1384,10 @@ def zed_section(
     if l > r_out:
         # construct the outer top left radius
         points += sp_utils.draw_radius(
-            pt=(t - b_l + r_out, d - r_out), r=r_out, theta=0.5 * np.pi, n=n_r
+            pt=(t - b_l + r_out, d - r_out),
+            r=r_out,
+            theta=0.5 * np.pi,
+            n=n_r,
         )
 
         # add the next two points
@@ -1284,14 +1396,21 @@ def zed_section(
 
         # construct the inner top left radius
         points += sp_utils.draw_radius(
-            pt=(2 * t - b_l + r_in, d - t - r_in), r=r_in, theta=np.pi, n=n_r, ccw=False
+            pt=(2 * t - b_l + r_in, d - t - r_in),
+            r=r_in,
+            theta=np.pi,
+            n=n_r,
+            ccw=False,
         )
 
     # if the lip is shorter than the outer radius (curve only)
     elif l > t and l <= r_out:
         # construct a smaller corner for top left if t < l < r_out
         points += sp_utils.draw_radius(
-            pt=(t - b_l + r_out_l, d - r_out_l), r=r_out_l, theta=0.5 * np.pi, n=n_r
+            pt=(t - b_l + r_out_l, d - r_out_l),
+            r=r_out_l,
+            theta=0.5 * np.pi,
+            n=n_r,
         )
         points += sp_utils.draw_radius(
             pt=(2 * t - b_l + r_in_l, d - t - r_in_l),
@@ -1309,7 +1428,11 @@ def zed_section(
 
     # construct the inner top right radius
     points += sp_utils.draw_radius(
-        pt=(-r_in, d - t - r_in), r=r_in, theta=0.5 * np.pi, n=n_r, ccw=False
+        pt=(-r_in, d - t - r_in),
+        r=r_in,
+        theta=0.5 * np.pi,
+        n=n_r,
+        ccw=False,
     )
 
     polygon = Polygon(points)
@@ -1339,7 +1462,11 @@ def box_girder_section(
         t_ft: Top flange thickness of the box girder section
         t_fb: Bottom flange thickness of the box girder section
         t_w: Web thickness of the box girder section
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
+
+    Raises:
+        RuntimeError: If the geometry generation fails
 
     Returns:
         Box girder section geometry
@@ -1392,8 +1519,13 @@ def box_girder_section(
 
     outer_polygon = Polygon(outer_points)
     inner_polygon = Polygon(inner_points)
+    poly_sub = outer_polygon - inner_polygon
 
-    return geometry.Geometry(geom=outer_polygon - inner_polygon, material=material)
+    if isinstance(poly_sub, Polygon):
+        return geometry.Geometry(geom=poly_sub, material=material)
+
+    msg = "Geometry generation failed."
+    raise RuntimeError(msg)
 
 
 def bulb_section(
@@ -1417,9 +1549,10 @@ def bulb_section(
         t: Web thickness
         r: Bulb radius
         d_b: Depth of the bulb (automatically calculated for standard sections, if
-            provided the section may have sharp edges)
+            provided the section may have sharp edges). Defaults to ``None``.
         n_r: Number of points discretising the radius
-        material: Material to associate with this geometry
+        material: Material to associate with this geometry. Defaults to
+            ``pre.DEFAULT_MATERIAL``.
 
     Returns:
         Bulb section geometry
@@ -1451,7 +1584,12 @@ def bulb_section(
         dc = r / np.sin(2 / 3 * np.pi / 2)
         ptb0 = (t * 0.5 + dc * np.cos(np.pi / 6), d - d_b - dc * np.cos(np.pi / 3))
         points += sp_utils.draw_radius(
-            pt=ptb0, r=r, theta=np.pi, n=n_r, ccw=False, phi=np.pi / 3
+            pt=ptb0,
+            r=r,
+            theta=np.pi,
+            n=n_r,
+            ccw=False,
+            phi=np.pi / 3,
         )
 
     # end of test of additional radius
@@ -1459,7 +1597,12 @@ def bulb_section(
 
     # build radius
     points += sp_utils.draw_radius(
-        pt=ptb, r=r, theta=-np.pi * 1 / 3, n=n_r, ccw=True, phi=np.pi / 3
+        pt=ptb,
+        r=r,
+        theta=-np.pi * 1 / 3,
+        n=n_r,
+        ccw=True,
+        phi=np.pi / 3,
     )
     points.pop()  # delete duplicate point
     points += sp_utils.draw_radius(pt=ptb, r=r, theta=0, n=n_r, ccw=True)

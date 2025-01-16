@@ -16,8 +16,6 @@ efficiently generate a conforming triangular mesh.
 are used to aid finite element computations, while
 `matplotlib <https://github.com/matplotlib/matplotlib>`_ and
 `rich <https://github.com/Textualize/rich>`_ are used for post-processing.
-Finally, `click <https://github.com/pallets/click>`_ is used to power the
-``sectionproperties`` CLI.
 
 ``sectionproperties`` and all of its dependencies can be installed through the python
 package index:
@@ -43,12 +41,13 @@ Installing ``PARDISO`` Solver
 -----------------------------
 
 The default sparse solver used in ``scipy`` is ``SuperLU``.
-It performs okay for small matrices but appears to be very slow for larger matrices.
-The ``PARDISO`` solver is a much faster alternative
+It performs okay for small matrices but appears to be slower for larger matrices. The
+``PARDISO`` solver is a much faster alternative
 (see `pypardiso <https://github.com/haasad/PyPardisoProject>`_), but it requires the
-installation of the ``MKL`` library, which takes a lot of disk space.
+installation of the ``MKL`` library, which takes a lot of disk space. Note that this
+library is only available for Linux and Windows systems.
 
-If you do not have a disk space constraint, you can use the ``PARDISO`` solver by:
+If you do not have a disk space constraint, you can install the ``PARDISO`` solver with:
 
 .. code-block:: shell
 

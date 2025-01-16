@@ -8,7 +8,6 @@ import pytest_check as check
 from sectionproperties.analysis import Section
 from sectionproperties.pre.library import rectangular_section
 
-
 # constants
 tol = 1e-6
 warp_tol = 1e-4
@@ -55,10 +54,14 @@ def test_rectangular_section_geometric(rect_section):
     check.almost_equal(sec.section_props.zyy_plus, 100 * 50**2 / 6, rel=tol)
     check.almost_equal(sec.section_props.zyy_minus, 100 * 50**2 / 6, rel=tol)
     check.almost_equal(
-        sec.section_props.rx_c, (50 * 100**3 / 12 / 100 / 50) ** 0.5, rel=tol
+        sec.section_props.rx_c,
+        (50 * 100**3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
     )
     check.almost_equal(
-        sec.section_props.ry_c, (100 * 50**3 / 12 / 100 / 50) ** 0.5, rel=tol
+        sec.section_props.ry_c,
+        (100 * 50**3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
     )
     check.almost_equal(sec.section_props.i11_c, (50 * 100**3 / 12), rel=tol)
     check.almost_equal(sec.section_props.i22_c, (100 * 50**3 / 12), rel=tol)
@@ -68,10 +71,14 @@ def test_rectangular_section_geometric(rect_section):
     check.almost_equal(sec.section_props.z22_plus, 100 * 50**2 / 6, rel=tol)
     check.almost_equal(sec.section_props.z22_minus, 100 * 50**2 / 6, rel=tol)
     check.almost_equal(
-        sec.section_props.r11_c, (50 * 100**3 / 12 / 100 / 50) ** 0.5, rel=tol
+        sec.section_props.r11_c,
+        (50 * 100**3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
     )
     check.almost_equal(
-        sec.section_props.r22_c, (100 * 50**3 / 12 / 100 / 50) ** 0.5, rel=tol
+        sec.section_props.r22_c,
+        (100 * 50**3 / 12 / 100 / 50) ** 0.5,
+        rel=tol,
     )
 
 
@@ -84,6 +91,34 @@ def test_rectangular_section_warping(rect_section):
     """
     sec = rect_section
     sec.calculate_warping_properties()
+
+    x_se, y_se = sec.get_sc()
+    x11_se, y22_se = sec.get_sc_p()
+    x_st, y_st = sec.get_sc_t()
+
+    check.almost_equal(sec.section_props.j, 2.858521e06, rel=warp_tol)
+    check.almost_equal(sec.section_props.gamma, 3.175417e08, rel=warp_tol)
+    check.almost_equal(x_se, 50 / 2, rel=tol)
+    check.almost_equal(y_se, 100 / 2, rel=tol)
+    check.almost_equal(x11_se, 0, abs=zero_tol)
+    check.almost_equal(y22_se, 0, abs=zero_tol)
+    check.almost_equal(x_st, 50 / 2, rel=tol)
+    check.almost_equal(y_st, 100 / 2, rel=tol)
+    check.almost_equal(sec.section_props.a_sx, 4.166667e03, rel=warp_tol)
+    check.almost_equal(sec.section_props.a_sy, 4.166667e03, rel=warp_tol)
+    check.almost_equal(sec.section_props.a_s11, 4.166667e03, rel=warp_tol)
+    check.almost_equal(sec.section_props.a_s22, 4.166667e03, rel=warp_tol)
+    check.almost_equal(sec.section_props.beta_x_plus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_x_minus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_y_plus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_y_minus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_11_plus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_11_minus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_22_plus, 0, abs=zero_tol)
+    check.almost_equal(sec.section_props.beta_22_minus, 0, abs=zero_tol)
+
+    # check cgs method
+    sec.calculate_warping_properties(solver_type="cgs")
 
     x_se, y_se = sec.get_sc()
     x11_se, y22_se = sec.get_sc_p()

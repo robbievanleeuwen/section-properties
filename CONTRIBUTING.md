@@ -1,8 +1,6 @@
 # Contributor Guide
 
-Thank you for your interest in improving this project.
-This project is open-source under the [MIT license] and
-welcomes contributions in the form of bug reports, feature requests, and pull requests.
+Thank you for your interest in improving this project. This project is open-source under the [MIT license] and welcomes contributions in the form of bug reports, feature requests, and pull requests.
 
 Here is a list of important resources for contributors:
 
@@ -28,118 +26,112 @@ When filing an issue, make sure to answer these questions:
 - What did you expect to see?
 - What did you see instead?
 
-The best way to get your bug fixed is to provide a test case,
-and/or steps to reproduce the issue.
+The best way to get your bug fixed is to provide a test case, and/or steps to reproduce the issue.
 
 ## How to request a feature
 
-Features that improve `sectionproperties` can be suggested on the [Issue Tracker].
-It's a good idea to first submit the proposal as a feature request prior to submitting
-a pull request as this allows for the best coordination of efforts by preventing the
-duplication of work, and allows for feedback on your ideas.
+Features that improve `sectionproperties` can be suggested on the [Issue Tracker]. It's a good idea to first submit the proposal as a feature request prior to submitting a pull request as this allows for the best coordination of efforts by preventing the duplication of work, and allows for feedback on your ideas.
 
 ## How to set up your development environment
 
-You need Python 3.10, 3.11 or 3.12, and the following tools:
-
-- [Poetry]
-- [Nox]
-- [nox-poetry]
-
-Recommended dependency installation method:
-
-1. Install [pipx](https://pypa.github.io/pipx/installation/):
+`sectionproperties` uses `uv` for python project management. `uv` can be installed on using the standalone installer:
 
 ```shell
-python3 -m pip install --user pipx
-python3 -m pipx ensurepath
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-2. Install [Poetry]:
+Installation instructions for other methods and Windows can be found [here](https://docs.astral.sh/uv/getting-started/installation/).
+
+`uv` can then be used to install the latest compatible version of python:
 
 ```shell
-pipx install poetry
-poetry --version
+uv python install 3.12
 ```
 
-3. Install [Nox] and [nox-poetry]:
+`sectionproperties` and it's development dependencies can be installed with:
 
 ```shell
-pipx install nox
-pipx inject nox nox-poetry
+uv sync
 ```
 
-4. If you do not have `pandoc` installed, it will be required to build the docs. The
-   [installation method](https://pandoc.org/installing.html) depends on what OS you are
-   running.
-
-Now that you have all the dependencies up and running, you can install
-`sectionproperties` with development requirements:
+Specific extras (e.g. `numba`) can be installed with the `--extra` flag or all extras with the `--all-extras` flag:
 
 ```shell
-git clone https://github.com/robbievanleeuwen/section-properties.git
-cd section-properties
-poetry install
+uv sync --extra numba
+uv sync --all-extras
 ```
 
-Install with the `rhino` and `cad` extras:
+If you want to build the documentation locally, you will need to install `pandoc`. The [installation method](https://pandoc.org/installing.html) depends on what OS you are running.
+
+To run a script using the development virtual environment, you can run:
 
 ```shell
-poetry install --extras "dxf rhino"
+uv run example.py
 ```
 
-You can now run an interactive Python session, or the command-line interface:
-
-```shell
-poetry run python
-poetry run sectionproperties
-```
-
-[poetry]: https://python-poetry.org/
-[nox]: https://nox.thea.codes/
-[nox-poetry]: https://nox-poetry.readthedocs.io/
+Refer to the `uv` [documentation](https://docs.astral.sh/uv/) for more information relating to using `uv` for project management.
 
 ## How to test the project
 
-Run the full test suite:
+### Pre-commit
+
+[Pre-commit](https://pre-commit.com/) ensures code quality and consistency by running the `ruff` linter and formatter, stripping out execution cells in jupyter notebooks, and running several pre-commit hooks.
+
+These can be run against all files in the project with:
 
 ```shell
-nox
+uv run pre-commit run --all-files
 ```
 
-List the available Nox sessions:
+However, the best way to ensure code quality is by installing the git pre-commit hook:
 
 ```shell
-nox --list-sessions
+uv run pre-commit install
 ```
 
-You can also run a specific Nox session. For example, invoke the unit test suite like
-this:
+This will run `pre-commit` against all changed files when attempting to `git commit`. You will need to fix the offending files prior to being able to commit a change unless you run `git commit --no-verify`.
+
+### Type Checking
+
+`sectionproperties` uses `pyright` to ensure strict type-checking where possible. `pyright` can be run on all files with:
 
 ```shell
-nox --session=tests
+uv run pyright
 ```
 
-Unit tests are located in the _tests_ directory, and are written using the [pytest]
-testing framework.
+### Tests
 
-### Benchmarks
-
-If the code you are modifying may affect the performance of `sectionproperties`, it is
-recommended that you run the benchmarking tests to verify the performance before and
-after your changes. There are three different benchmarking suites: `geometry`, `meshing`
-and `analysis`. These can be run like this:
+The `sectionproperties` tests are located in the `tests/` directory and are written using the [pytest] testing framework. The test suite can be run with:
 
 ```shell
-poetry run pytest -m benchmark_geom
-poetry run pytest -m benchmark_mesh
-poetry run pytest -m benchmark_analysis
+uv run pytest -m 'not benchmark_suite'
 ```
 
-Note that a plot of the results can be generated by adding the `--benchmark-histogram`
-option to the above commands.
+#### Benchmarks
+
+If the code you are modifying may affect the performance of `sectionproperties`, it is recommended that you run the benchmarking tests to verify the performance before and after your changes. There are three different benchmarking suites: `geometry`, `meshing` and `analysis`. These can be run like this:
+
+```shell
+uv run pytest -m benchmark_geom
+uv run pytest -m benchmark_mesh
+uv run pytest -m benchmark_analysis
+```
+
+Note that a plot of the results can be generated by adding the `--benchmark-histogram` option to the above commands.
 
 [pytest]: https://pytest.readthedocs.io/
+
+### Documentation
+
+You can build the documentation locally with:
+
+```shell
+uv run sphinx-build docs docs/_build
+```
+
+Make sure that you have a recent version of `pandoc` installed so that the example notebooks can be generated.
+
+Note that all pull requests also build the documentation on Read the Docs, so building the documentation locally is not required.
 
 ## How to submit changes
 
@@ -147,19 +139,11 @@ Open a [pull request] to submit changes to this project.
 
 Your pull request needs to meet the following guidelines for acceptance:
 
-- The Nox test suite must pass without errors and warnings.
+- The test suite, pre-commit and pyright checks must pass without errors and warnings.
 - Include unit tests. This project aims for a high code coverage.
 - If your changes add functionality, update the documentation accordingly.
 
-To run linting and code formatting checks before committing your change, you can install
-pre-commit as a Git hook by running the following command:
-
-```shell
-nox --session=pre-commit -- install
-```
-
-It is recommended to open an issue before starting work on anything.
-This will allow a chance to talk it over with the owners and validate your approach.
+It is recommended to open an issue before starting work on anything. This will allow a chance to talk it over with the owners and validate your approach.
 
 [pull request]: https://github.com/robbievanleeuwen/section-properties/pulls
 [code of conduct]: CODE_OF_CONDUCT.md

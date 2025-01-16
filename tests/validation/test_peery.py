@@ -19,7 +19,7 @@ BibTeX Entry for reference:
 
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING
 
 import pytest
 import pytest_check as check
@@ -27,8 +27,10 @@ import pytest_check as check
 from sectionproperties.analysis.section import Section
 from sectionproperties.pre.library import nastran_sections
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
-# Classes
+
 class ZSection:
     """Class for a Z shaped section.
 
@@ -60,7 +62,10 @@ class ZSection:
         """
         # Setup the analysis, and calculate properties
         base_geom = nastran_sections.nastran_zed(
-            dim_1=dim1, dim_2=dim2, dim_3=dim3, dim_4=dim4
+            dim_1=dim1,
+            dim_2=dim2,
+            dim_3=dim3,
+            dim_4=dim4,
         )
         self.geom = base_geom.shift_section(*shift)
         self.geom = self.geom.create_mesh(mesh_sizes=[m])
@@ -88,7 +93,6 @@ class ZSection:
         self.stress = self.xsect.calculate_stress(mxx=v[0], myy=v[1])
 
 
-# Utility
 def get_node(
     nodes: list[tuple[float, float]],
     coord: tuple[float, float],
@@ -114,10 +118,10 @@ def get_node(
         else:
             continue
 
-    raise RuntimeError(f"No node found with coordinates: {coord}")
+    msg = f"No node found with coordinates: {coord}"
+    raise RuntimeError(msg)
 
 
-# Fixtures
 @pytest.fixture
 def peery_ex_6_2_1() -> Section:
     """Ex 6.2.1.
@@ -130,7 +134,12 @@ def peery_ex_6_2_1() -> Section:
         Section object
     """
     geom = nastran_sections.nastran_i(
-        dim_1=6, dim_2=3, dim_3=3, dim_4=1, dim_5=1, dim_6=1
+        dim_1=6,
+        dim_2=3,
+        dim_3=3,
+        dim_4=1,
+        dim_5=1,
+        dim_6=1,
     )
     geom = geom.shift_section(0, -3)
     geom = geom.create_mesh([0.25])
@@ -153,7 +162,6 @@ def peery_ex_7_2_1() -> ZSection:
     return ZSection(dim1=4, dim2=2, dim3=8, dim4=12, shift=(-5, -6), m=0.25)
 
 
-# Tests
 def test_symmetric_ixx(peery_ex_6_2_1: Callable) -> None:
     """Tests Example 6.2.1 ixx.
 
@@ -272,7 +280,7 @@ def test_fb_c(peery_ex_7_2_1: Callable) -> None:
     perfect_result = -2384
     # The simplified textbook equation
     text_result = round(-494 * 1 + -315 * 6)
-    nodes = peery_ex_7_2_1.xsect._mesh_nodes
+    nodes = peery_ex_7_2_1.xsect.mesh_nodes
     assert len(nodes > 0)
     index, _ = get_node(nodes, c)
     _ = peery_ex_7_2_1.apply_load(v)
@@ -296,7 +304,7 @@ def test_fb_b(peery_ex_7_2_1: Callable) -> None:
     perfect_result = 580
     # The sipmlified textbook equation
     text_result = round(-494 * -5 + -315 * 6)
-    nodes = peery_ex_7_2_1.xsect._mesh_nodes
+    nodes = peery_ex_7_2_1.xsect.mesh_nodes
     index, _ = get_node(nodes, b)
     _ = peery_ex_7_2_1.apply_load(v)
     computed_result = peery_ex_7_2_1.stress.get_stress()[0]["sig_zz"][index]
@@ -319,7 +327,7 @@ def test_fb_a(peery_ex_7_2_1: Callable) -> None:
     perfect_result = 1210
     # The simplified textbook equation
     text_result = round(-494 * -5 + -315 * 4)
-    nodes = peery_ex_7_2_1.xsect._mesh_nodes
+    nodes = peery_ex_7_2_1.xsect.mesh_nodes
     index, _ = get_node(nodes, a)
     _ = peery_ex_7_2_1.apply_load(v)
     computed_result = peery_ex_7_2_1.stress.get_stress()[0]["sig_zz"][index]

@@ -6,7 +6,8 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
-import matplotlib
+import matplotlib as mpl
+import matplotlib.axes
 import matplotlib.tri as tri
 import numpy as np
 import numpy.typing as npt
@@ -16,9 +17,9 @@ from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
 import sectionproperties.post.post as post
 
-
 if TYPE_CHECKING:
-    import matplotlib.axes
+    import numpy.typing as npt
+    from matplotlib.quiver import Quiver
 
     from sectionproperties.analysis.section import MaterialGroup, Section
     from sectionproperties.pre.pre import Material
@@ -72,20 +73,24 @@ class StressPost:
 
         Args:
             stress: Type of stress to plot, see below for allowable values
-            title: Plot title, if None uses default plot title for selected stress
+            title: Plot title, if None uses default plot title for selected stress.
+                Defaults to ``None``.
             cmap: Matplotlib color map, see
                 https://matplotlib.org/stable/tutorials/colors/colormaps.html for more
-                detail
+                detail. Defaults to ``"coolwarm"``.
             stress_limits: Custom colorbar stress limits (`sig_min`, `sig_max`), values
-                outside these limits will appear as white
+                outside these limits will appear as white. Defaults to ``None``.
             normalize: If set to True, ``CenteredNorm`` is used to scale the colormap,
-                if set to False, the default linear scaling is used
+                if set to False, the default linear scaling is used. Defaults to
+                ``True``.
             fmt: Number formatting string, see
-                https://docs.python.org/3/library/string.html
-            colorbar_label: Colorbar label
-            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
+                https://docs.python.org/3/library/string.html. Defaults to
+                ``"{x:.4e}"``.
+            colorbar_label: Colorbar label. Defaults to ``"Stress"``.
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`.
+                Defaults to ``0.5``.
             material_list: If specified, only plots materials present in the list. If
-                set to `None`, plots all materials.
+                set to `None`, plots all materials. Defaults to ``None``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -284,8 +289,8 @@ class StressPost:
         }
 
         # populate stresses and plotted material groups
-        sigs = []
-        plotted_material_groups = []
+        sigs: list[npt.NDArray[np.float64]] = []
+        plotted_material_groups: list[MaterialGroup] = []
 
         for group in self.material_groups:
             # if we are limiting materials to plot, check material is in list
@@ -302,13 +307,13 @@ class StressPost:
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # set up the colormap
-            colormap = matplotlib.colormaps.get_cmap(cmap=cmap)
+            colormap = mpl.colormaps.get_cmap(cmap=cmap)
 
             # create triangulation
             triang = tri.Triangulation(
-                self.section._mesh_nodes[:, 0],
-                self.section._mesh_nodes[:, 1],
-                self.section._mesh_elements[:, 0:3],
+                self.section.mesh_nodes[:, 0],
+                self.section.mesh_nodes[:, 1],
+                self.section.mesh_elements[:, 0:3],
             )
 
             # determine minimum and maximum stress values for the contour list
@@ -333,7 +338,7 @@ class StressPost:
                 norm = CenteredNorm()
 
             # plot the filled contour, looping through the plotted material groups
-            for group, sig in zip(plotted_material_groups, sigs):
+            for group, sig in zip(plotted_material_groups, sigs, strict=False):
                 # if we are limiting materials to plot, check material is in list
                 if material_list and group.material not in material_list:
                     continue
@@ -345,19 +350,19 @@ class StressPost:
 
                 # plot the filled contour
                 if ax:
-                    trictr = ax.tricontourf(triang, sig, v, cmap=colormap, norm=norm)
+                    trictr = ax.tricontourf(triang, sig, v, cmap=colormap, norm=norm)  # pyright: ignore
 
             # display the colorbar
-            divider = make_axes_locatable(axes=ax)
-            cax = divider.append_axes(position="right", size="5%", pad=0.1)
+            divider = make_axes_locatable(axes=ax)  # pyright: ignore
+            cax = divider.append_axes(position="right", size="5%", pad=0.1)  # pyright: ignore
 
             if trictr:
-                fig.colorbar(
+                fig.colorbar(  # pyright: ignore
                     mappable=trictr,
                     label=colorbar_label,
                     format=fmt,
                     ticks=ticks,
-                    cax=cax,
+                    cax=cax,  # pyright: ignore
                 )
 
             # plot the finite element mesh
@@ -366,7 +371,8 @@ class StressPost:
         if ax:
             return ax
         else:
-            raise RuntimeError("Plot failed.")
+            msg = "Plot failed."
+            raise RuntimeError(msg)
 
     def plot_stress_vector(
         self,
@@ -383,16 +389,20 @@ class StressPost:
 
         Args:
             stress: Type of stress to plot, see below for allowable values
-            title: Plot title, if None uses default plot title for selected stress
+            title: Plot title, if None uses default plot title for selected stress.
+                Defaults to ``None``.
             cmap: Matplotlib color map, see
                 https://matplotlib.org/stable/tutorials/colors/colormaps.html for more
-                detail
+                detail. Defaults to ``"YlOrBr"``.
             normalize: If set to True, ``CenteredNorm`` is used to scale the colormap,
-                if set to False, the default linear scaling is used
+                if set to False, the default linear scaling is used. Defaults to
+                ``True``.
             fmt: Number formatting string, see
-                https://docs.python.org/3/library/string.html
-            colorbar_label: Colorbar label
-            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`
+                https://docs.python.org/3/library/string.html. Defaults to
+                ``"{x:.4e}"``.
+            colorbar_label: Colorbar label. Defaults to ``"Stress"``.
+            alpha: Transparency of the mesh outlines: :math:`0 \leq \alpha \leq 1`.
+                Defaults to ``0.2``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -450,8 +460,8 @@ class StressPost:
         }
 
         # populate stresses
-        sigxs = []
-        sigys = []
+        sigxs: list[npt.NDArray[np.float64]] = []
+        sigys: list[npt.NDArray[np.float64]] = []
 
         for group in self.material_groups:
             sigxs.append(getattr(group.stress_result, stress_dict[stress]["sigx"]))
@@ -464,10 +474,10 @@ class StressPost:
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (fig, ax):
             # set up the colormap
-            colormap = matplotlib.colormaps.get_cmap(cmap=cmap)
+            colormap = mpl.colormaps.get_cmap(cmap=cmap)
 
             # initialise quiver plot list max scale
-            quiv_list = []
+            quiv_list: list[Quiver] = []
             max_scale = 0.0
 
             norm = None
@@ -488,9 +498,9 @@ class StressPost:
                 c = np.hypot(sigx, sigy)
 
                 if ax:
-                    quiv = ax.quiver(
-                        self.section._mesh_nodes[:, 0],
-                        self.section._mesh_nodes[:, 1],
+                    quiv = ax.quiver(  # pyright: ignore
+                        self.section.mesh_nodes[:, 0],
+                        self.section.mesh_nodes[:, 1],
                         sigx,
                         sigy,
                         c,
@@ -499,14 +509,17 @@ class StressPost:
                     )
 
                     # get the scale and store the max value
-                    quiv._init()  # type: ignore
-                    assert isinstance(quiv.scale, float)
+                    quiv._init()  # pyright: ignore
+                    if not isinstance(quiv.scale, float):
+                        msg = "Cannot set quiver scale."
+                        raise RuntimeError(msg)
+
                     max_scale = max(max_scale, quiv.scale)
                     quiv_list.append(quiv)
 
                 # update the colormap values
-                c_min = min(c_min, min(c))
-                c_max = max(c_max, max(c))
+                c_min: float = min(c_min, min(c))
+                c_max: float = max(c_max, max(c))
 
             # apply the scale
             for quiv_plot in quiv_list:
@@ -516,12 +529,19 @@ class StressPost:
             v1 = np.linspace(
                 start=c_min - 1e-12, stop=c_max + 1e-12, num=15, endpoint=True
             )
-            divider = make_axes_locatable(axes=ax)
-            cax = divider.append_axes(position="right", size="5%", pad=0.1)
+            divider = make_axes_locatable(axes=ax)  # pyright: ignore
+            cax = divider.append_axes(position="right", size="5%", pad=0.1)  # pyright: ignore
 
-            assert quiv is not None
-            fig.colorbar(
-                mappable=quiv, label=colorbar_label, format=fmt, ticks=v1, cax=cax
+            if quiv is None:
+                msg = "Quiver plot failed."
+                raise RuntimeError(msg)
+
+            fig.colorbar(  # pyright: ignore
+                mappable=quiv,
+                label=colorbar_label,
+                format=fmt,
+                ticks=v1,
+                cax=cax,  # pyright: ignore
             )
 
             # plot the finite element mesh
@@ -530,9 +550,10 @@ class StressPost:
         if ax:
             return ax
         else:
-            raise RuntimeError("Plot failed.")
+            msg = "Plot failed."
+            raise RuntimeError(msg)
 
-    def get_stress(self) -> list[dict[str, object]]:
+    def get_stress(self) -> list[dict[str, str | npt.NDArray[np.float64]]]:
         r"""Returns the stresses within each material.
 
         Returns:
@@ -633,10 +654,10 @@ class StressPost:
             actions
         """
         # generate list
-        stress = []
+        stress: list[dict[str, str | npt.NDArray[np.float64]]] = []
 
         for group in self.material_groups:
-            stress.append(
+            stress.append(  # noqa: PERF401
                 {
                     "material": group.material.name,
                     "sig_zz_n": group.stress_result.sig_zz_n,
@@ -681,8 +702,8 @@ class StressPost:
         Args:
             x: x-coordinate of the point to draw Mohr's Circle
             y: y-coordinate of the point to draw Mohr's Circle
-            title: Plot title, if None uses default plot title "Mohr's Circles for 3D
-                Stress State at {pt}"
+            title: Plot title, if ``None`` uses default plot title "Mohr's Circles for
+                3D Stress State at {pt}". Defaults to ``None``.
             kwargs: Passed to :func:`~sectionproperties.post.post.plotting_context`
 
         Raises:
@@ -733,8 +754,8 @@ class StressPost:
         """
         # get mesh data
         pt = x, y
-        nodes = self.section._mesh_nodes
-        ele = self.section._mesh_elements
+        nodes = self.section.mesh_nodes
+        ele = self.section.mesh_elements
         triang = tri.Triangulation(nodes[:, 0], nodes[:, 1], ele[:, 0:3])
 
         # find in which material group the point lies
@@ -752,7 +773,8 @@ class StressPost:
             triang.set_mask(None)
 
         if pt_group is None:
-            raise ValueError(f"Point {(*pt,)} is not within mesh")
+            msg = f"Point {(*pt,)} is not within mesh"
+            raise ValueError(msg)
 
         # assesmble the stress results from the relevant material group
         sigma_zz_v = pt_group.stress_result.sig_zz
@@ -765,9 +787,9 @@ class StressPost:
         tau_yz_interp = tri.LinearTriInterpolator(triang, tau_yz_v)
 
         # get the stresses at the point
-        sigma_zz = sigma_zz_interp(*pt).item()
-        tau_xz = tau_xz_interp(*pt).item()
-        tau_yz = tau_yz_interp(*pt).item()
+        sigma_zz = sigma_zz_interp(*pt).item()  # pyright: ignore
+        tau_xz = tau_xz_interp(*pt).item()  # pyright: ignore
+        tau_yz = tau_yz_interp(*pt).item()  # pyright: ignore
 
         # assemble the stress tensor
         sigma_xx = 0.0
@@ -788,7 +810,7 @@ class StressPost:
 
         # the tractions on each plane in cartesian coords wrt principal axes
         n_inv = np.linalg.inv(n)
-        tractions = []
+        tractions: list[tuple[Any, Any]] = []
 
         for col in range(3):
             ss = n_inv[:, col].T @ np.diag(s) @ n_inv[:, col]
@@ -813,7 +835,10 @@ class StressPost:
 
         # create plot and setup the plot
         with post.plotting_context(title=title, **kwargs) as (_, ax):
-            assert ax is not None
+            if ax is None:
+                msg = "Matplotlib axes not created."
+                raise RuntimeError(msg)
+
             plot_circle(
                 ax,
                 (0.5 * (sigma_2 + sigma_3), 0),
@@ -836,23 +861,25 @@ class StressPost:
                 r"C3: ($\sigma_{11}$, $\sigma_{22}$)",
             )
 
-            for idx, plane, color in zip(range(3), ["X", "Y", "Z"], ["r", "b", "k"]):
+            for idx, plane, color in zip(
+                range(3), ["X", "Y", "Z"], ["r", "b", "k"], strict=False
+            ):
                 if ax:
-                    ax.plot(*tractions[idx], f"{color}.", label=rf"{plane}-face")
+                    ax.plot(*tractions[idx], f"{color}.", label=rf"{plane}-face")  # pyright: ignore
 
             if ax:
                 ax.set_axisbelow(True)
-                ax.grid(which="both")
-                ax.legend(loc="center left", bbox_to_anchor=(1.0, 0.5))
+                ax.grid(which="both")  # pyright: ignore
+                ax.legend(loc="center left", bbox_to_anchor=(1.0, 0.5))  # pyright: ignore
 
                 ax.spines["top"].set_visible(False)
                 ax.spines["right"].set_visible(False)
 
-                ax.set_ylabel(r"Shear stress $\tau$ (MPa)")
-                ax.set_xlabel(r"Direct stress $\sigma$ (MPa)")
+                ax.set_ylabel(r"Shear stress $\tau$ (MPa)")  # pyright: ignore
+                ax.set_xlabel(r"Direct stress $\sigma$ (MPa)")  # pyright: ignore
 
-                ax.xaxis.set_tick_params(bottom=True, top=False, direction="inout")
-                ax.yaxis.set_tick_params(left=True, right=False, direction="inout")
+                ax.xaxis.set_tick_params(bottom=True, top=False, direction="inout")  # pyright: ignore
+                ax.yaxis.set_tick_params(left=True, right=False, direction="inout")  # pyright: ignore
 
             # the following is just to get the labels positioned outside the axes
             if ax:
@@ -865,13 +892,14 @@ class StressPost:
                 ax.spines["left"].set_position(position=("data", 0.0))
 
                 # Now set the coords
-                ax.xaxis.set_label_coords(*x_lbl_pos)
-                ax.yaxis.set_label_coords(*y_lbl_pos)
+                ax.xaxis.set_label_coords(x=x_lbl_pos[0], y=x_lbl_pos[1])
+                ax.yaxis.set_label_coords(x=y_lbl_pos[0], y=y_lbl_pos[1])
 
         if ax:
             return ax
         else:
-            raise RuntimeError("Plot failed.")
+            msg = "Plot failed."
+            raise RuntimeError(msg)
 
 
 @dataclass

@@ -8,7 +8,6 @@ import pytest_check as check
 from sectionproperties.analysis import Section
 from sectionproperties.pre.library import angle_section
 
-
 # constants
 tol = 1e-6
 warp_tol = 1e-4

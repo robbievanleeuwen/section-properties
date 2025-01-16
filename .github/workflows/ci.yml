@@ -1,0 +1,194 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+env:
+  UV_VERSION: "0.4.27"
+  DEFAULT_PYTHON_VERSION: "3.12"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-commit:
+    name: pre-commit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Install uv version ${{ env.UV_VERSION }}
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Install python ${{ env.DEFAULT_PYTHON_VERSION }} using uv
+        run: uv python install ${{ env.DEFAULT_PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync -p ${{ env.DEFAULT_PYTHON_VERSION }} --frozen --only-group lint
+
+      - name: Run pre-commit
+        run: uv run -p ${{ env.DEFAULT_PYTHON_VERSION }} --no-sync pre-commit run --all-files --color always --show-diff-on-failure
+
+  type-checking:
+    name: type-checking
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Install uv version ${{ env.UV_VERSION }}
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Install python ${{ env.DEFAULT_PYTHON_VERSION }} using uv
+        run: uv python install ${{ env.DEFAULT_PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync -p ${{ env.DEFAULT_PYTHON_VERSION }} --frozen --all-extras --no-group test --no-group docs
+
+      - name: Run pyright
+        run: uv run -p ${{ env.DEFAULT_PYTHON_VERSION }} --no-sync pyright
+
+  tests:
+    name: ${{ matrix.session }} ${{ matrix.python }} [${{ matrix.os }}]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { python: "3.12", os: "ubuntu-latest", session: "tests" }
+          - { python: "3.11", os: "ubuntu-latest", session: "tests" }
+          - { python: "3.10", os: "ubuntu-latest", session: "tests" }
+          - { python: "3.12", os: "windows-latest", session: "tests" }
+          - { python: "3.11", os: "windows-latest", session: "tests" }
+          - { python: "3.10", os: "windows-latest", session: "tests" }
+          - { python: "3.12", os: "macos-latest", session: "tests" }
+          - { python: "3.11", os: "macos-latest", session: "tests" }
+          - { python: "3.10", os: "macos-latest", session: "tests" }
+          - { python: "3.12", os: "macos-13", session: "tests" }
+          - { python: "3.11", os: "macos-13", session: "tests" }
+          - { python: "3.10", os: "macos-13", session: "tests" }
+          - { python: "3.12", os: "ubuntu-latest", session: "tests-extended" }
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Install uv version ${{ env.UV_VERSION }}
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Install python ${{ matrix.python }} using uv
+        run: uv python install ${{ matrix.python }}
+
+      - name: Install test dependencies
+        if: matrix.session != 'tests-extended'
+        run: uv sync -p ${{ matrix.python }} --frozen --extra rhino --extra dxf --no-group docs --no-group lint
+
+      - name: Install extended test dependencies
+        if: matrix.session == 'tests-extended'
+        run: uv sync -p ${{ matrix.python }} --frozen --all-extras --no-group docs --no-group lint
+
+      - name: Run pytest
+        run: uv run -p ${{ matrix.python }} --no-sync coverage run --parallel-mode -m pytest -m 'not benchmark_suite' --junitxml=junit.xml -o junit_family=legacy
+
+      - name: Upload coverage data
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data-${{ matrix.session }}-${{ matrix.os }}-${{ matrix.python }}
+          include-hidden-files: true
+          path: ".coverage.*"
+
+      - name: Upload test results to Codecov
+        if: matrix.session == 'tests-extended'
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  docs-build:
+    name: docs-build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Install uv version ${{ env.UV_VERSION }}
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Install python ${{ env.DEFAULT_PYTHON_VERSION }} using uv
+        run: uv python install ${{ env.DEFAULT_PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync -p ${{ env.DEFAULT_PYTHON_VERSION }} --frozen --extra rhino --extra dxf --no-group test --no-group lint
+
+      - name: Install pandoc
+        uses: pandoc/actions/setup@v1
+
+      - name: Build docs
+        run: uv run -p ${{ env.DEFAULT_PYTHON_VERSION }} --no-sync sphinx-build --color docs docs/_build
+
+      - name: Upload docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: docs/_build
+
+  coverage:
+    name: coverage
+    runs-on: ubuntu-latest
+    needs: tests
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Install uv version ${{ env.UV_VERSION }}
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Install python ${{ env.DEFAULT_PYTHON_VERSION }} using uv
+        run: uv python install ${{ env.DEFAULT_PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync -p ${{ env.DEFAULT_PYTHON_VERSION }} --frozen --only-group test
+
+      - name: Download coverage data
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-data-*
+          merge-multiple: true
+
+      - name: Combine coverage data
+        run: uv run -p ${{ env.DEFAULT_PYTHON_VERSION }} --no-sync coverage combine
+
+      - name: Display coverage report
+        run: uv run -p ${{ env.DEFAULT_PYTHON_VERSION }} --no-sync coverage report -i
+
+      - name: Create coverage report
+        run: uv run -p ${{ env.DEFAULT_PYTHON_VERSION }} --no-sync coverage xml -i
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

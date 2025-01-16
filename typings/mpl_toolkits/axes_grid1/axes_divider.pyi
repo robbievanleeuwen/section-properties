@@ -1,0 +1,3 @@
+import matplotlib.axes
+
+def make_axes_locatable(axes: matplotlib.axes.Axes) -> None: ...
