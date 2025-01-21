@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-import numpy as np
 import pytest
 import pytest_check as check
 
 import sectionproperties.pre.library.timber_sections as ts
-import sectionproperties.pre.library.primitive_sections as ps
 import sectionproperties.pre.pre as pre
-
 
 r_tol = 1e-6
 
@@ -22,7 +19,6 @@ def get_materials() -> tuple[pre.Material, pre.Material]:
     Returns:
         Material objects
     """
-
     timb_mat0 = pre.Material(
         name="Timber E0",
         elastic_modulus=9.5e3,
@@ -53,7 +49,7 @@ def test_timber_clt_rectangular_section(get_materials):
         lay_orient=[0, 90, 0],
         b=1000,
         timb_mat0=timber0,
-        timb_mat90=timber90
+        timb_mat90=timber90,
     )
 
     # check geometry is created correctly

@@ -8,9 +8,7 @@ import sectionproperties.pre.pre as pre
 
 
 def clt_rectangular_section(
-    d: list[float],
-    lay_orient: list[pre.Material],
-    b: float
+    d: list[float], lay_orient: list[pre.Material], b: float
 ) -> geometry.CompoundGeometry:
     """Constructs a timber rectangular section.
 
@@ -32,8 +30,7 @@ def clt_rectangular_section(
     Example:
         The following example creates a 120mm CLT cross-section.
     """
-
-    layer_geom = list()
+    layer_geom = []
     for idx in range(len(d)):
         di = float(d[idx])
         layer = lay_orient[idx]
@@ -41,8 +38,7 @@ def clt_rectangular_section(
         timb_mat = layer
 
         # create rectangular timber geometry
-        layer = primitive_sections.rectangular_section(d=di, b=b,
-                                                       material=timb_mat)
+        layer = primitive_sections.rectangular_section(d=di, b=b, material=timb_mat)
         offset = -d[idx] * (idx + 1)
         layer = layer.shift_section(y_offset=offset)
 
@@ -54,4 +50,5 @@ def clt_rectangular_section(
     if isinstance(geom, geometry.CompoundGeometry):
         return geom
     else:
-        raise ValueError("Timber section generation failed.")
+        msg = "Timber section generation failed."
+        raise ValueError(msg)
