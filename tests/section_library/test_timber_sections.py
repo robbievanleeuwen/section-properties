@@ -45,11 +45,7 @@ def test_timber_clt_rectangular_section(get_materials):
     timber0, timber90 = get_materials
 
     rect = ts.clt_rectangular_section(
-        d=[40, 40, 40],
-        lay_orient=[0, 90, 0],
-        b=1000,
-        timb_mat0=timber0,
-        timb_mat90=timber90,
+        d=[40, 40, 40], lay_orient=[timber0, timber90, timber0], b=1000
     )
 
     # check geometry is created correctly
