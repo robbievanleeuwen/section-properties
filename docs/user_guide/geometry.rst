@@ -310,6 +310,14 @@ Concrete Sections
 
 .. _label-bridge-library:
 
+Timber Section
+""""""""""""""
+
+.. autosummary::
+    :nosignatures:
+
+    ~sectionproperties.pre.library.timber_sections.clt_rectangular_section
+
 Bridge Sections
 """""""""""""""
 
