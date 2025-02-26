@@ -202,6 +202,7 @@ class Section:
           - Centroidal section moduli
           - Radii of gyration
           - Principal axis properties
+          - Yield moments (composite only)
         """
 
         def calculate_geom(progress: Progress | None = None) -> None:
@@ -259,10 +260,86 @@ class Section:
             )
             self.section_props.e_eff = self.section_props.ea / self.section_props.area
             self.section_props.g_eff = self.section_props.ga / self.section_props.area
+
+            # calculate derived properties
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_centroidal_properties(
                 node_list=self.mesh["vertices"]
             )
+
+            # calculate yield moments
+            self.section_props.my_xx = 0.0
+            self.section_props.my_yy = 0.0
+            self.section_props.my_11 = 0.0
+            self.section_props.my_22 = 0.0
+
+            # calculate yield moments:
+            # 1) loop through each material group and through each element in the group
+            # 2) for each point, calculate the bending stress from a unit bending moment
+            # in each direction (mxx, myy, m11, m22)
+            # 3) from this, calculate the yield index for each point
+            # 4) get the largest yield index and scale the bending moment such that the
+            # yield index is 1
+
+            # initialise the yield indexes
+            yield_index = {
+                "mxx": 0.0,
+                "myy": 0.0,
+                "m11": 0.0,
+                "m22": 0.0,
+            }
+
+            # get useful section properties
+            cx = self.section_props.cx
+            cy = self.section_props.cy
+            phi = self.section_props.phi
+            ixx = self.section_props.ixx_c
+            iyy = self.section_props.iyy_c
+            ixy = self.section_props.ixy_c
+            i11 = self.section_props.i11_c
+            i22 = self.section_props.i22_c
+
+            if ixx is None or iyy is None or ixy is None or i11 is None or i22 is None:
+                msg = "Section properties failed to save."
+                raise RuntimeError(msg)
+
+            # loop through each material group
+            for group in self.material_groups:
+                em = group.material.elastic_modulus
+                fy = group.material.yield_strength
+
+                # loop through each element in the material group
+                for el in group.elements:
+                    # loop through each node in the element
+                    for coord in el.coords.transpose():
+                        # calculate coordinates wrt centroidal & principal axes
+                        x = coord[0] - cx
+                        y = coord[1] - cy
+                        x11, y22 = fea.principal_coordinate(phi=phi, x=x, y=y)
+
+                        # calculate bending stresses due to unit moments
+                        sig_mxx = em * (
+                            -ixy / (ixx * iyy - ixy**2) * x
+                            + iyy / (ixx * iyy - ixy**2) * y
+                        )
+                        sig_myy = em * (
+                            -ixx / (ixx * iyy - ixy**2) * x
+                            + ixy / (ixx * iyy - ixy**2) * y
+                        )
+                        sig_m11 = em / i11 * y22
+                        sig_m22 = -em / i22 * x11
+
+                        # update yield indexes
+                        yield_index["mxx"] = max(yield_index["mxx"], abs(sig_mxx / fy))
+                        yield_index["myy"] = max(yield_index["myy"], abs(sig_myy / fy))
+                        yield_index["m11"] = max(yield_index["m11"], abs(sig_m11 / fy))
+                        yield_index["m22"] = max(yield_index["m22"], abs(sig_m22 / fy))
+
+            # calculate yield moments
+            self.section_props.my_xx = 1.0 / yield_index["mxx"]
+            self.section_props.my_yy = 1.0 / yield_index["myy"]
+            self.section_props.my_11 = 1.0 / yield_index["m11"]
+            self.section_props.my_22 = 1.0 / yield_index["m22"]
 
             if progress and task is not None:
                 msg = "[bold green]:white_check_mark: Geometric analysis complete"
@@ -1107,7 +1184,8 @@ class Section:
         Note:
             If materials are specified, the values calculated for the plastic section
             moduli are displayed as plastic moments (i.e :math:`M_p = f_y S`) and the
-            shape factors are not calculated.
+            shape factors are calculated as the ratio between the plastic moment and the
+            yield moment.
 
         Warning:
             The geometric properties must be calculated prior to the calculation of the
@@ -1120,7 +1198,7 @@ class Section:
 
           - Plastic centroids (centroidal and principal axes)
           - Plastic section moduli (centroidal and principal axes)
-          - Shape factors, non-composite only (centroidal and principal axe)
+          - Shape factors (centroidal and principal axes)
         """
         # check that a geometric analysis has been performed
         if self.section_props.cx is None:
@@ -2240,6 +2318,32 @@ class Section:
             self.section_props.zyy_minus / e_ref,
         )
 
+    def get_my(self) -> tuple[float, float]:
+        """Returns the yield moment for bending about the centroidal axis.
+
+        This is a composite only property, as such this can only be returned if material
+        properties have been applied to the cross-section.
+
+        Returns:
+            Yield moment for bending about the centroidal ``x`` and ``y`` axes
+            (``my_xx``, ``my_yy``)
+
+        Raises:
+            RuntimeError: If material properties have *not* been applied
+            RuntimeError: If a geometric analysis has not been performed
+        """
+        if not self.is_composite():
+            msg = "Attempting to get a composite only property for a geometric analysis"
+            msg += " (material properties have not been applied). Consider using"
+            msg += " get_z()."
+            raise RuntimeError(msg)
+
+        if self.section_props.my_xx is None or self.section_props.my_yy is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
+
+        return (self.section_props.my_xx, self.section_props.my_yy)
+
     def get_rc(self) -> tuple[float, float]:
         """Returns the cross-section centroidal radii of gyration.
 
@@ -2417,6 +2521,32 @@ class Section:
             self.section_props.z22_plus / e_ref,
             self.section_props.z22_minus / e_ref,
         )
+
+    def get_my_p(self) -> tuple[float, float]:
+        """Returns the yield moment for bending about the principal axis.
+
+        This is a composite only property, as such this can only be returned if material
+        properties have been applied to the cross-section.
+
+        Returns:
+            Yield moment for bending about the principal ``11`` and ``22`` axes
+            (``my_11``, ``my_22``)
+
+        Raises:
+            RuntimeError: If material properties have *not* been applied
+            RuntimeError: If a geometric analysis has not been performed
+        """
+        if not self.is_composite():
+            msg = "Attempting to get a composite only property for a geometric analysis"
+            msg += " (material properties have not been applied). Consider using"
+            msg += " get_zp()."
+            raise RuntimeError(msg)
+
+        if self.section_props.my_11 is None or self.section_props.my_22 is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
+
+        return (self.section_props.my_11, self.section_props.my_22)
 
     def get_rp(self) -> tuple[float, float]:
         """Returns the cross-section principal radii of gyration.
@@ -3038,22 +3168,25 @@ class Section:
     def get_sf(self) -> tuple[float, float, float, float]:
         """Returns the cross-section centroidal axis shape factors.
 
-        This is a geometric only property, as such this can only be returned if material
-        properties have *not* been applied to the cross-section.
+        For a geometric-only analysis, the shape factor is defined as the ratio between
+        the plastic section modulus and the elastic section modulus. For a composite
+        analysis the shape factors is defined as the ratio between the plastic moment
+        and the yield moment.
+
+        .. note::
+            For composite analyses, the ``plus`` values will always equal the ``minus``
+            values as the yield moment occurs when the first fibre reaches its yield
+            strength. For geometric-only analyses, the elastic section moduli is
+            calculated with respect to the top and bottom fibres (i.e. ``plus`` and
+            ``minus``).
 
         Returns:
             Centroidal axis shape factors with respect to the top and bottom fibres
             (``sf_xx_plus``, ``sf_xx_minus``, ``sf_yy_plus``, ``sf_yy_minus``)
 
         Raises:
-            RuntimeError: If material properties have been applied
             RuntimeError: If a plastic analysis has not been performed
         """
-        if self.is_composite():
-            msg = "Attempting to get a geometric only property for a composite analysis"
-            msg += " (material properties have been applied)."
-            raise RuntimeError(msg)
-
         if (
             self.section_props.sf_xx_plus is None
             or self.section_props.sf_xx_minus is None
@@ -3073,22 +3206,25 @@ class Section:
     def get_sf_p(self) -> tuple[float, float, float, float]:
         """Returns the cross-section principal axis shape factors.
 
-        This is a geometric only property, as such this can only be returned if material
-        properties have *not* been applied to the cross-section.
+        For a geometric-only analysis, the shape factor is defined as the ratio between
+        the plastic section modulus and the elastic section modulus. For a composite
+        analysis the shape factors is defined as the ratio between the plastic moment
+        and the yield moment.
+
+        .. note::
+            For composite analyses, the ``plus`` values will always equal the ``minus``
+            values as the yield moment occurs when the first fibre reaches its yield
+            strength. For geometric-only analyses, the elastic section moduli is
+            calculated with respect to the top and bottom fibres (i.e. ``plus`` and
+            ``minus``).
 
         Returns:
             Principal bending axis shape factors with respect to the top and bottom
             fibres (``sf_11_plus``, ``sf_11_minus``, ``sf_22_plus``, ``sf_22_minus``)
 
         Raises:
-            RuntimeError: If material properties have been applied
             RuntimeError: If a plastic analysis has not been performed
         """
-        if self.is_composite():
-            msg = "Attempting to get a geometric only property for a composite analysis"
-            msg += " (material properties have been applied)."
-            raise RuntimeError(msg)
-
         if (
             self.section_props.sf_11_plus is None
             or self.section_props.sf_11_minus is None

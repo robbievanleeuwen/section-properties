@@ -204,46 +204,51 @@ class PlasticSection:
         if progress and task is not None:
             progress.update(task_id=task, advance=1)
 
-        # if there are no materials specified, calculate shape factors
+        # calculate shape factors
+        props = section.section_props
+
+        if (
+            props.sxx is None
+            or props.syy is None
+            or props.s11 is None
+            or props.s22 is None
+        ):
+            msg = "Property save failed."
+            raise RuntimeError(msg)
+
+        # for a geometric only analysis sf = s / z
         if list(set(section.materials)) == [pre.DEFAULT_MATERIAL]:
             if (
-                section.section_props.zxx_plus
-                and section.section_props.zxx_minus
-                and section.section_props.zyy_plus
-                and section.section_props.zyy_minus
+                props.zxx_plus
+                and props.zxx_minus
+                and props.zyy_plus
+                and props.zyy_minus
             ):
-                section.section_props.sf_xx_plus = (
-                    section.section_props.sxx / section.section_props.zxx_plus
-                )
-                section.section_props.sf_xx_minus = (
-                    section.section_props.sxx / section.section_props.zxx_minus
-                )
-                section.section_props.sf_yy_plus = (
-                    section.section_props.syy / section.section_props.zyy_plus
-                )
-                section.section_props.sf_yy_minus = (
-                    section.section_props.syy / section.section_props.zyy_minus
-                )
+                props.sf_xx_plus = props.sxx / props.zxx_plus
+                props.sf_xx_minus = props.sxx / props.zxx_minus
+                props.sf_yy_plus = props.syy / props.zyy_plus
+                props.sf_yy_minus = props.syy / props.zyy_minus
             if (
-                section.section_props.s11
-                and section.section_props.s22
-                and section.section_props.z11_plus
-                and section.section_props.z11_minus
-                and section.section_props.z22_plus
-                and section.section_props.z22_minus
+                props.z11_plus
+                and props.z11_minus
+                and props.z22_plus
+                and props.z22_minus
             ):
-                section.section_props.sf_11_plus = (
-                    section.section_props.s11 / section.section_props.z11_plus
-                )
-                section.section_props.sf_11_minus = (
-                    section.section_props.s11 / section.section_props.z11_minus
-                )
-                section.section_props.sf_22_plus = (
-                    section.section_props.s22 / section.section_props.z22_plus
-                )
-                section.section_props.sf_22_minus = (
-                    section.section_props.s22 / section.section_props.z22_minus
-                )
+                props.sf_11_plus = props.s11 / props.z11_plus
+                props.sf_11_minus = props.s11 / props.z11_minus
+                props.sf_22_plus = props.s22 / props.z22_plus
+                props.sf_22_minus = props.s22 / props.z22_minus
+        else:
+            if props.my_xx and props.my_yy:
+                props.sf_xx_plus = props.sxx / props.my_xx
+                props.sf_xx_minus = props.sf_xx_plus
+                props.sf_yy_plus = props.syy / props.my_yy
+                props.sf_yy_minus = props.sf_yy_plus
+            if props.my_11 and props.my_22:
+                props.sf_11_plus = props.s11 / props.my_11
+                props.sf_11_minus = props.sf_11_plus
+                props.sf_22_plus = props.s22 / props.my_22
+                props.sf_22_minus = props.sf_22_plus
 
         if progress and task is not None:
             progress.update(

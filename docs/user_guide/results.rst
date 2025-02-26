@@ -99,10 +99,12 @@ Geometric Analysis
     ~sectionproperties.analysis.section.Section.get_c
     ~sectionproperties.analysis.section.Section.get_eic
     ~sectionproperties.analysis.section.Section.get_ez
+    ~sectionproperties.analysis.section.Section.get_my
     ~sectionproperties.analysis.section.Section.get_rc
     ~sectionproperties.analysis.section.Section.get_eip
     ~sectionproperties.analysis.section.Section.get_phi
     ~sectionproperties.analysis.section.Section.get_ezp
+    ~sectionproperties.analysis.section.Section.get_my_p
     ~sectionproperties.analysis.section.Section.get_rp
     ~sectionproperties.analysis.section.Section.get_nu_eff
     ~sectionproperties.analysis.section.Section.get_e_eff
@@ -134,6 +136,8 @@ Plastic Analysis
     ~sectionproperties.analysis.section.Section.get_pc_p
     ~sectionproperties.analysis.section.Section.get_mp
     ~sectionproperties.analysis.section.Section.get_mp_p
+    ~sectionproperties.analysis.section.Section.get_sf
+    ~sectionproperties.analysis.section.Section.get_sf_p
 
 .. _label-material-affects-results:
 

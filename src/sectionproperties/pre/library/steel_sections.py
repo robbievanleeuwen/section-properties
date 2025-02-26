@@ -151,14 +151,19 @@ def rectangular_hollow_section(
     t: float,
     r_out: float,
     n_r: int,
+    r_in: float | None = None,
     material: pre.Material = pre.DEFAULT_MATERIAL,
 ) -> geometry.Geometry:
     """Constructs a rectangular hollow section (RHS).
 
     Constructs a rectangular hollow section (RHS) centered at ``(b/2, d/2)``, with depth
-    ``d``, width ``b``, thickness ``t`` and outer radius ``r_out``, using ``n_r`` points
-    to construct the inner and outer radii. If the outer radius is less than the
-    thickness of the RHS, the inner radius is set to zero.
+    ``d``, width ``b``, thickness ``t``, outer radius ``r_out`` and inner radius
+    ``r_in``, using ``n_r`` points to construct the inner and outer radii.
+
+    If the inner radius is not specified, it defaults to the difference between the
+    outer radius and the thickness of the section, i.e. ``r_in = r_out - t``. In this
+    case, if the outer radius is less than the thickness of the RHS, the inner radius is
+    set to zero.
 
     Args:
         d: Depth of the RHS
@@ -166,6 +171,8 @@ def rectangular_hollow_section(
         t: Thickness of the RHS
         r_out: Outer radius of the RHS
         n_r: Number of points discretising the inner and outer radii
+        r_in: Inner radius of the RHS. Defaults to ``None``, which implies
+            ``r_in = max(r_out - t, 0)``.
         material: Material to associate with this geometry. Defaults to
             ``pre.DEFAULT_MATERIAL``.
 
@@ -192,7 +199,8 @@ def rectangular_hollow_section(
     points_outer: list[tuple[float, float]] = []
 
     # calculate internal radius
-    r_in = max(r_out - t, 0)
+    if r_in is None:
+        r_in = max(r_out - t, 0)
 
     # construct the outer radius points
     points_outer += sp_utils.draw_radius((r_out, r_out), r_out, np.pi, n_r)

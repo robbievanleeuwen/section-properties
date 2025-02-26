@@ -72,6 +72,10 @@ class SectionProperties:
             negative extreme value of the 11-axis
         r11_c: Radius of gyration about the principal 11-axis.
         r22_c: Radius of gyration about the principal 22-axis.
+        my_xx: Yield moment about the x-axis
+        my_yy: Yield moment about the y-axis
+        my_11: Yield moment about the 11-axis
+        my_22: Yield moment about the 22-axis
         j: Torsion constant
         omega: Warping function
         psi_shear: Psi shear function
@@ -165,6 +169,10 @@ class SectionProperties:
     r11_c: float | None = None
     r22_c: float | None = None
     j: float | None = None
+    my_xx: float | None = None
+    my_yy: float | None = None
+    my_11: float | None = None
+    my_22: float | None = None
     omega: npt.NDArray[np.float64] | None = None
     psi_shear: npt.NDArray[np.float64] | None = None
     phi_shear: npt.NDArray[np.float64] | None = None
@@ -278,7 +286,7 @@ class SectionProperties:
             else:
                 self.phi = np.arctan2(self.ixx_c - self.i11_c, self.ixy_c) * 180 / np.pi
 
-            # initialise min, max variables TODO: check for `if xxx:` where xxx is float
+            # initialise min, max variables
             if self.phi is not None:
                 x1, y2 = fea.principal_coordinate(
                     phi=self.phi,
@@ -662,6 +670,15 @@ def print_results(
         except RuntimeError:
             pass
 
+    # print cross-section my
+    if is_composite:
+        try:
+            my_xx, my_yy = section.get_my()
+            table.add_row("my_xx", f"{my_xx:>{fmt}}")
+            table.add_row("my_yy", f"{my_yy:>{fmt}}")
+        except RuntimeError:
+            pass
+
     # print cross-section rc
     try:
         rx, ry = section.get_rc()
@@ -710,6 +727,15 @@ def print_results(
             table.add_row("e.z11-", f"{ez11_minus:>{fmt}}")
             table.add_row("e.z22+", f"{ez22_plus:>{fmt}}")
             table.add_row("e.z22-", f"{ez22_minus:>{fmt}}")
+        except RuntimeError:
+            pass
+
+    # print cross-section my_p
+    if is_composite:
+        try:
+            my_11, my_22 = section.get_my_p()
+            table.add_row("my_11", f"{my_11:>{fmt}}")
+            table.add_row("my_22", f"{my_22:>{fmt}}")
         except RuntimeError:
             pass
 
@@ -887,26 +913,24 @@ def print_results(
             pass
 
     # print cross-section sf
-    if not is_composite:
-        try:
-            sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus = section.get_sf()
-            table.add_row("sf_xx+", f"{sf_xx_plus:>{fmt}}")
-            table.add_row("sf_xx-", f"{sf_xx_minus:>{fmt}}")
-            table.add_row("sf_yy+", f"{sf_yy_plus:>{fmt}}")
-            table.add_row("sf_yy-", f"{sf_yy_minus:>{fmt}}")
-        except RuntimeError:
-            pass
+    try:
+        sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus = section.get_sf()
+        table.add_row("sf_xx+", f"{sf_xx_plus:>{fmt}}")
+        table.add_row("sf_xx-", f"{sf_xx_minus:>{fmt}}")
+        table.add_row("sf_yy+", f"{sf_yy_plus:>{fmt}}")
+        table.add_row("sf_yy-", f"{sf_yy_minus:>{fmt}}")
+    except RuntimeError:
+        pass
 
     # print cross-section sf_p
-    if not is_composite:
-        try:
-            sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus = section.get_sf_p()
-            table.add_row("sf_11+", f"{sf_11_plus:>{fmt}}")
-            table.add_row("sf_11-", f"{sf_11_minus:>{fmt}}")
-            table.add_row("sf_22+", f"{sf_22_plus:>{fmt}}")
-            table.add_row("sf_22-", f"{sf_22_minus:>{fmt}}")
-        except RuntimeError:
-            pass
+    try:
+        sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus = section.get_sf_p()
+        table.add_row("sf_11+", f"{sf_11_plus:>{fmt}}")
+        table.add_row("sf_11-", f"{sf_11_minus:>{fmt}}")
+        table.add_row("sf_22+", f"{sf_22_plus:>{fmt}}")
+        table.add_row("sf_22-", f"{sf_22_minus:>{fmt}}")
+    except RuntimeError:
+        pass
 
     console = Console()
     console.print(table)

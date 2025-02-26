@@ -3,11 +3,11 @@ name: Release
 on:
   push:
     branches:
-      - master
+    - master
 
 env:
-  UV_VERSION: "0.4.27"
-  DEFAULT_PYTHON_VERSION: "3.12"
+  UV_VERSION: 0.5.2
+  DEFAULT_PYTHON_VERSION: '3.12'
 
 jobs:
   release:
@@ -18,52 +18,53 @@ jobs:
       contents: write
 
     steps:
-      - name: Check out the repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+    - name: Check out the repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
 
-      - name: Install uv version ${{ env.UV_VERSION }}
-        uses: astral-sh/setup-uv@v3
-        with:
-          version: ${{ env.UV_VERSION }}
+    - name: Install uv version ${{ env.UV_VERSION }}
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: ${{ env.UV_VERSION }}
 
-      - name: Install python ${{ env.DEFAULT_PYTHON_VERSION }} using uv
-        run: uv python install ${{ env.DEFAULT_PYTHON_VERSION }}
+    - name: Install python ${{ env.DEFAULT_PYTHON_VERSION }} using uv
+      run: uv python install ${{ env.DEFAULT_PYTHON_VERSION }}
 
-      - name: Get previous commit SHA
-        run: echo "sha=$(git rev-parse --verify --quiet HEAD^)" >> $GITHUB_ENV
+    - name: Get previous commit SHA
+      run: echo "sha=$(git rev-parse --verify --quiet HEAD^)" >> $GITHUB_ENV
 
-      - name: Detect and tag new version
-        id: check-version
-        if: ${{ env.sha }}
-        uses: salsify/action-detect-and-tag-new-version@v2
-        with:
-          version-command: echo $(grep "^version =" pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+    - name: Detect and tag new version
+      id: check-version
+      if: ${{ env.sha }}
+      uses: salsify/action-detect-and-tag-new-version@v2
+      with:
+        version-command: echo $(grep "^version =" pyproject.toml | sed 's/version
+          = "\(.*\)"/\1/')
 
-      - name: Bump version for dev release
-        if: "! steps.check-version.outputs.tag"
-        run: |
-          VERSION=$(grep "^version =" pyproject.toml | sed 's/version = "\(.*\)"/\1/')
-          uvx --from=toml-cli toml set --toml-path=pyproject.toml project.version $VERSION.dev.$(date +%s)
+    - name: Bump version for dev release
+      if: '! steps.check-version.outputs.tag'
+      run: |
+        VERSION=$(grep "^version =" pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+        uvx --from=toml-cli toml set --toml-path=pyproject.toml project.version $VERSION.dev.$(date +%s)
 
-      - name: Build package
-        run: uv build
+    - name: Build package
+      run: uv build
 
-      - name: Publish package on PyPI
-        if: steps.check-version.outputs.tag
-        uses: pypa/gh-action-pypi-publish@release/v1
+    - name: Publish package on PyPI
+      if: steps.check-version.outputs.tag
+      uses: pypa/gh-action-pypi-publish@release/v1
 
-      - name: Publish package on TestPyPI
-        if: "! steps.check-version.outputs.tag"
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
+    - name: Publish package on TestPyPI
+      if: '! steps.check-version.outputs.tag'
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
 
-      - name: Publish the release notes
-        uses: release-drafter/release-drafter@v6
-        with:
-          publish: ${{ steps.check-version.outputs.tag != '' }}
-          tag: ${{ steps.check-version.outputs.tag }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish the release notes
+      uses: release-drafter/release-drafter@v6
+      with:
+        publish: ${{ steps.check-version.outputs.tag != '' }}
+        tag: ${{ steps.check-version.outputs.tag }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

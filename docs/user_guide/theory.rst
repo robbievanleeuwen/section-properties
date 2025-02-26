@@ -420,6 +420,20 @@ extreme (min. and max.) coordinates of the cross-section in the x and y-directio
   Z_{yy}^+ = \frac{I_{\overline{yy}}}{x_{max} - x_c} \\
   Z_{yy}^- = \frac{I_{\overline{yy}}}{x_c - x_{min}} \\
 
+Yield Moments
+~~~~~~~~~~~~~
+
+The yield moment is defined as the lowest bending moment that causes any point within
+cross-section to reach the yield strength. Note that this implementation is purely
+linear-elastic i.e. uses the linear-elastic modulus and bi-directional yield strength
+only.
+
+``sectionproperties`` applies a unit bending moment, about each axis separately, and
+determines the yield index for each point within the mesh. The yield index is defined as
+the stress divided by the material yield strength. Through this method, a critical yield
+index is determined (i.e. point which will yield first under bending) and the yield
+moment calculated as the inverse of the critical yield index.
+
 .. _label-theory-plastic-section-moduli:
 
 Plastic Section Moduli

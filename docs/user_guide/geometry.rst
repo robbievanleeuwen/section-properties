@@ -307,6 +307,13 @@ Concrete Sections
     ~sectionproperties.pre.library.concrete_sections.concrete_column_section
     ~sectionproperties.pre.library.concrete_sections.concrete_tee_section
     ~sectionproperties.pre.library.concrete_sections.concrete_circular_section
+    ~sectionproperties.pre.library.concrete_sections.rectangular_wall
+    ~sectionproperties.pre.library.concrete_sections.cee_wall
+    ~sectionproperties.pre.library.concrete_sections.tee_wall
+    ~sectionproperties.pre.library.concrete_sections.single_lift_core
+    ~sectionproperties.pre.library.concrete_sections.double_lift_core_a
+    ~sectionproperties.pre.library.concrete_sections.double_lift_core_b
+    ~sectionproperties.pre.library.concrete_sections.stairwell
 
 .. _label-bridge-library:
 

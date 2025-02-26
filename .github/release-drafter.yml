@@ -53,7 +53,7 @@ version-resolver:
 # Custom text at start of release
 header: >
 
-  Insert header here...
+  This release loosens strict dependency versions.
 
 template: |
 
