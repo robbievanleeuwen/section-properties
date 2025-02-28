@@ -2511,7 +2511,7 @@ def load_dxf(
     my_dxf.cleanup()
 
     polygons = my_dxf.polygons
-    new_polygons = c2s.utils.find_holes(polygons)
+    new_polygons = c2s.utils.filter_polygons(polygons)
 
     if isinstance(new_polygons, MultiPolygon):
         return CompoundGeometry(new_polygons)
