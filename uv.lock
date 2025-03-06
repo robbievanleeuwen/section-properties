@@ -1646,6 +1646,7 @@ version = "2.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ce/d7/32de906d890e3ccdad421b6db2a67ff94ebecb1f933e5f1038b69f007c30/pytest_check-2.5.0.tar.gz", hash = "sha256:3a6be8431c7720287958436d97a6b823eed5ae5ceb7da5572a0e4a9462feaf88", size = 26844 }
 wheels = [
