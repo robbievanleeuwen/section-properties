@@ -24,7 +24,7 @@ jobs:
         fetch-depth: 2
 
     - name: Install uv version ${{ env.UV_VERSION }}
-      uses: astral-sh/setup-uv@v3
+      uses: astral-sh/setup-uv@v5
       with:
         version: ${{ env.UV_VERSION }}
 
