@@ -84,7 +84,7 @@ test = [
     "pytest==8.3.3",
     "pytest-benchmark[histogram]==5.1.0",
     "pytest-check==2.4.1",
-    "coverage[toml]==7.6.8",
+    "coverage[toml]==7.6.12",
 ]
 
 [tool.uv]
