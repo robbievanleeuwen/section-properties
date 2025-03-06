@@ -1797,14 +1797,15 @@ histogram = [
 
 [[package]]
 name = "pytest-check"
-version = "2.4.1"
+version = "2.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/15/d3/178a723f0420cf4e06fb6ddf43fc1ec68c1d0d4ea3db1ecf8f6df21b345f/pytest_check-2.4.1.tar.gz", hash = "sha256:5224efcef059bf7f0cda253f8d0f62704b4819ff48c93f51c675aea6a014f650", size = 28933 }
+sdist = { url = "https://files.pythonhosted.org/packages/ce/d7/32de906d890e3ccdad421b6db2a67ff94ebecb1f933e5f1038b69f007c30/pytest_check-2.5.0.tar.gz", hash = "sha256:3a6be8431c7720287958436d97a6b823eed5ae5ceb7da5572a0e4a9462feaf88", size = 26844 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c0/25/465756acbb66db47ad40e0be6b457d8644c7b9f882b2ff7f5e92dde07915/pytest_check-2.4.1-py3-none-any.whl", hash = "sha256:74f38938183880d9921aeb85662437d2b13e1e053e1bed7d186d54613d3068c7", size = 13789 },
+    { url = "https://files.pythonhosted.org/packages/27/32/0a60070d720f15823348d0faf431c5851d299ec7d969a62ef0e75f5543bc/pytest_check-2.5.0-py3-none-any.whl", hash = "sha256:5c90dfe92e5e5870b34c1ed7a648aef5c2dfb2273acfba77f35ca648219a33f3", size = 15967 },
 ]
 
 [[package]]
@@ -2235,7 +2236,7 @@ test = [
     { name = "coverage", extras = ["toml"], specifier = "==7.6.8" },
     { name = "pytest", specifier = "==8.3.5" },
     { name = "pytest-benchmark", extras = ["histogram"], specifier = "==5.1.0" },
-    { name = "pytest-check", specifier = "==2.4.1" },
+    { name = "pytest-check", specifier = "==2.5.0" },
 ]
 
 [[package]]
