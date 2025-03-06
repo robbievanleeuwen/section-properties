@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.10, <3.13"
 
 [[package]]
@@ -285,7 +286,7 @@ name = "click"
 version = "8.1.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/96/d3/f04c7bfcf5c1862a2a5b845c6b2b360488cf47af55dfa79c98f6a6bf98b5/click-8.1.7.tar.gz", hash = "sha256:ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de", size = 336121 }
 wheels = [
@@ -746,7 +747,7 @@ name = "ipykernel"
 version = "6.29.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "appnope", marker = "platform_system == 'Darwin'" },
+    { name = "appnope", marker = "sys_platform == 'darwin'" },
     { name = "comm" },
     { name = "debugpy" },
     { name = "ipython" },
@@ -767,20 +768,19 @@ wheels = [
 
 [[package]]
 name = "ipympl"
-version = "0.9.4"
+version = "0.9.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ipython" },
-    { name = "ipython-genutils" },
     { name = "ipywidgets" },
     { name = "matplotlib" },
     { name = "numpy" },
     { name = "pillow" },
     { name = "traitlets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/36/64/05a5051f1fe457331f3d4353ad28e2e2ec4c98caaee0a087f0108ab9a40c/ipympl-0.9.4.tar.gz", hash = "sha256:cfb53c5b4fcbcee6d18f095eecfc6c6c474303d5b744e72cc66e7a2804708907", size = 58552737 }
+sdist = { url = "https://files.pythonhosted.org/packages/39/1b/acd3d481869d614a7acbb831bd9304411eae47b05d7607db989613028788/ipympl-0.9.7.tar.gz", hash = "sha256:3e505a56b6e9a7bfc4d40c1a861a0547adb16820eb67ec79131335dd0a5084f0", size = 58547447 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d8/50/d6f4e7eb0e7d198b431d8259bc9a6035f879d4df487448b196cdf1e84155/ipympl-0.9.4-py3-none-any.whl", hash = "sha256:5b0c08c6f4f6ea655ba58239363457c10fb921557f5038c1a46db4457d6d6b0e", size = 516304 },
+    { url = "https://files.pythonhosted.org/packages/86/6b/21c62f1b2b5e18c6553f7364487dfdf7eb7952b1000a1b7863c1f97819e9/ipympl-0.9.7-py3-none-any.whl", hash = "sha256:3698ee7eaa0b047a7603517d7aa1b71b32118a5f51754cab45ec5d994f67208f", size = 515702 },
 ]
 
 [[package]]
@@ -803,15 +803,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/85/e0/a3f36dde97e12121106807d80485423ae4c5b27ce60d40d4ab0bab18a9db/ipython-8.29.0.tar.gz", hash = "sha256:40b60e15b22591450eef73e40a027cf77bd652e757523eebc5bd7c7c498290eb", size = 5497513 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c5/a5/c15ed187f1b3fac445bb42a2dedd8dec1eee1718b35129242049a13a962f/ipython-8.29.0-py3-none-any.whl", hash = "sha256:0188a1bd83267192123ccea7f4a8ed0a78910535dbaa3f37671dca76ebd429c8", size = 819911 },
-]
-
-[[package]]
-name = "ipython-genutils"
-version = "0.2.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e8/69/fbeffffc05236398ebfcfb512b6d2511c622871dca1746361006da310399/ipython_genutils-0.2.0.tar.gz", hash = "sha256:eb2e116e75ecef9d4d228fdc66af54269afa26ab4463042e33785b887c628ba8", size = 22208 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/fa/bc/9bd3b5c2b4774d5f33b2d544f1460be9df7df2fe42f352135381c347c69a/ipython_genutils-0.2.0-py2.py3-none-any.whl", hash = "sha256:72dd37233799e619666c9f639a9da83c34013a73e8bbc79a7a6348d93c61fab8", size = 26343 },
 ]
 
 [[package]]
@@ -2165,7 +2156,7 @@ numba = [
     { name = "numba" },
 ]
 pardiso = [
-    { name = "pypardiso", marker = "platform_system == 'Linux' or platform_system == 'Windows'" },
+    { name = "pypardiso", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
 ]
 rhino = [
     { name = "rhino-shapley-interop" },
@@ -2207,17 +2198,18 @@ requires-dist = [
     { name = "more-itertools", specifier = ">=10.5.0" },
     { name = "numba", marker = "extra == 'numba'", specifier = ">=0.60.0" },
     { name = "numpy", specifier = ">=1.26.4" },
-    { name = "pypardiso", marker = "(platform_system == 'Linux' and extra == 'pardiso') or (platform_system == 'Windows' and extra == 'pardiso')", specifier = ">=0.4.6" },
+    { name = "pypardiso", marker = "(sys_platform == 'linux' and extra == 'pardiso') or (sys_platform == 'win32' and extra == 'pardiso')", specifier = ">=0.4.6" },
     { name = "rhino-shapley-interop", marker = "extra == 'rhino'", specifier = ">=0.0.4" },
     { name = "rhino3dm", marker = "extra == 'rhino'", specifier = ">=8.9.0" },
     { name = "rich", extras = ["jupyter"], specifier = ">=13.9.4" },
     { name = "scipy", specifier = ">=1.14.1" },
     { name = "shapely", specifier = ">=2.0.6" },
 ]
+provides-extras = ["numba", "rhino", "dxf", "pardiso"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "ipympl", specifier = "==0.9.4" },
+    { name = "ipympl", specifier = "==0.9.7" },
     { name = "notebook", specifier = "==7.2.2" },
     { name = "sphinx-autobuild", specifier = "==2024.10.3" },
 ]
