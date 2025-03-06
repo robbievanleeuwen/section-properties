@@ -72,7 +72,7 @@ docs = [
     "ipykernel==6.29.5",
     "ipython==8.29.0",
     "nbsphinx==0.9.5",
-    "nbconvert==7.16.4",
+    "nbconvert==7.16.6",
     "sphinx-copybutton==0.5.2",
     "sphinxext-opengraph==0.9.1",
 ]
