@@ -53,7 +53,7 @@ version-resolver:
 # Custom text at start of release
 header: >
 
-  This release loosens strict dependency versions.
+  This release adds support for python 3.13 and drops support for python 3.10!
 
 template: |
 
