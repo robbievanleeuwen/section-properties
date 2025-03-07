@@ -4,7 +4,7 @@ Installation
 ============
 
 These instructions will get you a copy of ``sectionproperties`` up and running on your
-machine. You will need a working copy of python 3.11 or 3.12 to get started.
+machine. You will need a working copy of python 3.11, 3.12 or 3.13 to get started.
 
 Installing ``sectionproperties``
 --------------------------------
