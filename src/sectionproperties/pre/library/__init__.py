@@ -70,3 +70,4 @@ from sectionproperties.pre.library.steel_sections import (
     tee_section,
     zed_section,
 )
+from sectionproperties.pre.library.timber_sections import clt_rectangular_section
