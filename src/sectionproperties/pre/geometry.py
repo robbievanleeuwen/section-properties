@@ -2510,16 +2510,21 @@ def load_dxf(
     my_dxf.process(spline_delta=spline_delta, degrees_per_segment=degrees_per_segment)
     my_dxf.cleanup()
 
-    polygons = my_dxf.polygons
-    new_polygons = c2s.utils.filter_polygons(polygons)
-
-    if isinstance(new_polygons, MultiPolygon):
-        return CompoundGeometry(new_polygons)
-    elif isinstance(new_polygons, Polygon):  # pyright: ignore [reportUnnecessaryIsInstance]
-        return Geometry(new_polygons)
-    else:
+    # ensure list length > 0
+    if len(new_polygons) == 0:
         msg = f"No shapely.Polygon objects found in file: {dxf_filepath}"
         raise RuntimeError(msg)
+
+    # ensure only Polygons are generated
+    for poly in new_polygons:
+        if not isinstance(poly, Polygon):  # pyright: ignore [reportUnnecessaryIsInstance]
+            msg = f"Not all objects found in file: {dxf_filepath} are Polygons"
+            raise RuntimeError(msg)
+
+    if len(new_polygons) == 1:
+        return Geometry(new_polygons[0])
+    else:
+        return CompoundGeometry(MultiPolygon(new_polygons))
 
 
 def create_facets(
