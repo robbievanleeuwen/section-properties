@@ -1,2 +1,2 @@
 from .dxf import DxfImporter
-from .utils import find_holes
+from .utils import filter_polygons, find_holes
