@@ -428,13 +428,13 @@ class Geometry:
         )
 
         if not self.assigned_control_point:
-            self.control_points = list(self.geom.representative_point().coords)
+            self.control_points = list(self.geom.representative_point().coords)  # pyright: ignore [reportAttributeAccessIssue]
         else:
-            self.control_points = list(self.assigned_control_point.coords)
+            self.control_points = list(self.assigned_control_point.coords)  # pyright: ignore [reportAttributeAccessIssue]
 
         for hole in self.geom.interiors:
             hole_polygon = Polygon(hole)
-            self.holes += tuple(hole_polygon.representative_point().coords)
+            self.holes += tuple(hole_polygon.representative_point().coords)  # pyright: ignore [reportOperatorIssue]
 
     def compile_geometry(self) -> None:
         """Alias for ``create_facets_and_control_points()``.
@@ -697,9 +697,10 @@ class Geometry:
         new_ctrl_point: tuple[float, float] | None = None
 
         if self.assigned_control_point:
-            new_ctrl_point = affinity.translate(
+            new_ctrl_point_geom = affinity.translate(
                 self.assigned_control_point, x_offset, y_offset
-            ).coords[0]
+            )
+            new_ctrl_point = new_ctrl_point_geom.x, new_ctrl_point_geom.y
 
         return Geometry(
             geom=affinity.translate(self.geom, x_offset, y_offset),
@@ -751,12 +752,13 @@ class Geometry:
             else:
                 rotate_point = rot_point
 
-            new_ctrl_point = affinity.rotate(
+            new_ctrl_point_geom = affinity.rotate(
                 self.assigned_control_point,
                 angle,
                 rotate_point,  # pyright: ignore [reportArgumentType]
                 use_radians,
-            ).coords[0]
+            )
+            new_ctrl_point = new_ctrl_point_geom.x, new_ctrl_point_geom.y
 
         return Geometry(
             geom=affinity.rotate(self.geom, angle, rot_point, use_radians),  # pyright: ignore [reportArgumentType]
@@ -821,13 +823,14 @@ class Geometry:
         new_ctrl_point: tuple[float, float] | None = None
 
         if self.assigned_control_point:
-            new_ctrl_point = affinity.scale(
+            new_ctrl_point_geom = affinity.scale(
                 self.assigned_control_point,
                 xfact=y_mirror,
                 yfact=x_mirror,
                 zfact=1.0,
                 origin=mirror_point,  # pyright: ignore [reportArgumentType]
-            ).coords[0]
+            )
+            new_ctrl_point = new_ctrl_point_geom.x, new_ctrl_point_geom.y
 
         return Geometry(
             geom=mirrored_geom,
@@ -1270,7 +1273,7 @@ class Geometry:
         Returns:
             Geometry centroid
         """
-        return self.geom.centroid.coords[0]
+        return self.geom.centroid.x, self.geom.centroid.y
 
     @property
     def recovery_points(self) -> list[tuple[float, float]] | list[Point]:
@@ -2443,7 +2446,7 @@ class CompoundGeometry(Geometry):
                 for interior in poly.interiors:
                     rp: Point = Polygon(interior).representative_point()
                     coords = rp.coords[0]
-                    resultant_holes.append(coords)
+                    resultant_holes.append(coords)  # pyright: ignore [reportArgumentType]
 
         elif isinstance(unionized_poly, Polygon):  # pyright: ignore [reportUnnecessaryIsInstance]
             if Geometry(unionized_poly).holes:
