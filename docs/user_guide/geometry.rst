@@ -315,7 +315,7 @@ Concrete Sections
     ~sectionproperties.pre.library.concrete_sections.double_lift_core_b
     ~sectionproperties.pre.library.concrete_sections.stairwell
 
-.. _label-bridge-library:
+.. _label-timber-library:
 
 Timber Section
 """"""""""""""
@@ -324,6 +324,8 @@ Timber Section
     :nosignatures:
 
     ~sectionproperties.pre.library.timber_sections.clt_rectangular_section
+
+.. _label-bridge-library:
 
 Bridge Sections
 """""""""""""""
