@@ -18,7 +18,8 @@ def clt_rectangular_section(
 
     Args:
         d: Timber layer section thickness
-        lay_orient: A list of materials for each layer defined by the user.
+        lay_orient: A list of materials for each layer from top to bottom
+                    defined by the user.
         b: Timber section width
 
     Raises:
@@ -30,7 +31,7 @@ def clt_rectangular_section(
     Example:
         The following example creates a 120mm CLT cross-section.
     """
-    layer_geom = []
+    layer_geom: list[geometry.Geometry] = []
     for idx in range(len(d)):
         di = float(d[idx])
         layer = lay_orient[idx]
@@ -45,10 +46,4 @@ def clt_rectangular_section(
         layer_geom.append(layer)
 
     # create compound geometry
-    geom = geometry.CompoundGeometry(geoms=layer_geom)
-
-    if isinstance(geom, geometry.CompoundGeometry):
-        return geom
-    else:
-        msg = "Timber section generation failed."
-        raise ValueError(msg)
+    return geometry.CompoundGeometry(geoms=layer_geom)
