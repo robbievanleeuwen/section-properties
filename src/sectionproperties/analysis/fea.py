@@ -992,7 +992,7 @@ tmp_array = np.array([[0, 1, 0], [0, 0, 1]], dtype=np.double)
 def __shape_function_cached(
     coords: tuple[float, ...],
     gauss_point: tuple[float, float, float],
-) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], float, float, float]:
+) -> tuple[npt.NDArray[np.double], npt.NDArray[np.float64], float, float, float]:
     """The cached version.
 
     Args:

@@ -2668,7 +2668,7 @@ def buffer_polygon(
     Returns:
         Buffered polygon
     """
-    buffered_polygon = polygon.buffer(distance=amount, resolution=resolution)
+    buffered_polygon = polygon.buffer(distance=amount, quad_segs=resolution)
 
     if isinstance(buffered_polygon, GeometryCollection):
         remaining_polygons = [
