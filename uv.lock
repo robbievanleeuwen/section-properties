@@ -1831,14 +1831,14 @@ histogram = [
 
 [[package]]
 name = "pytest-check"
-version = "2.5.0"
+version = "2.5.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ce/d7/32de906d890e3ccdad421b6db2a67ff94ebecb1f933e5f1038b69f007c30/pytest_check-2.5.0.tar.gz", hash = "sha256:3a6be8431c7720287958436d97a6b823eed5ae5ceb7da5572a0e4a9462feaf88", size = 26844, upload_time = "2025-02-13T02:13:16.701Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7b/f8/58aa6cf0af7bc261c4606c28582258e76cec398a7d8bdc2e82de51039f84/pytest_check-2.5.3.tar.gz", hash = "sha256:2357d7df77c395d30c0c4957724fdfce1a75ea8bc9eb2308c0ffe56f62ac70ca", size = 27422, upload_time = "2025-04-04T01:44:43.188Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/27/32/0a60070d720f15823348d0faf431c5851d299ec7d969a62ef0e75f5543bc/pytest_check-2.5.0-py3-none-any.whl", hash = "sha256:5c90dfe92e5e5870b34c1ed7a648aef5c2dfb2273acfba77f35ca648219a33f3", size = 15967, upload_time = "2025-02-13T02:13:15.529Z" },
+    { url = "https://files.pythonhosted.org/packages/7a/29/d3fbd683c50aeb93d79377c904179c82f01f9f656299deb89328ab85b0a2/pytest_check-2.5.3-py3-none-any.whl", hash = "sha256:354685dfa63e714a20aa62b61c4d30d5acfa30891319df9046f59af653c3b9ba", size = 15998, upload_time = "2025-04-04T01:44:41.951Z" },
 ]
 
 [[package]]
@@ -2293,7 +2293,7 @@ test = [
     { name = "coverage", extras = ["toml"], specifier = "==7.6.12" },
     { name = "pytest", specifier = "==8.3.5" },
     { name = "pytest-benchmark", extras = ["histogram"], specifier = "==5.1.0" },
-    { name = "pytest-check", specifier = "==2.5.0" },
+    { name = "pytest-check", specifier = "==2.5.3" },
 ]
 
 [[package]]
