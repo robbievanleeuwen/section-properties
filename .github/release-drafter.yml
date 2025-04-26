@@ -53,7 +53,7 @@ version-resolver:
 # Custom text at start of release
 header: >
 
-  This release adds support for python 3.13 and drops support for python 3.10!
+  This release adds a rectangular CLT geometry to the section library and updates several dependencies!
 
 template: |
 
