@@ -63,7 +63,7 @@ pardiso = [
 [dependency-groups]
 dev = [
     "ipympl==0.9.7",
-    "notebook==7.3.2",
+    "notebook==7.4.1",
     "sphinx-autobuild==2024.10.03",
 ]
 docs = [
