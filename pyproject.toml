@@ -50,7 +50,7 @@ numba = [
     "numba>=0.60.0",
 ]
 rhino = [
-    "rhino3dm==8.17.0b0",
+    "rhino3dm==8.17.0",
     "rhino-shapley-interop>=0.0.4",
 ]
 dxf = [
