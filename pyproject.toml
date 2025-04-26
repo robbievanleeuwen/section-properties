@@ -78,7 +78,7 @@ docs = [
 ]
 lint = [
     "pre-commit==4.2.0",
-    "pyright==1.1.396",
+    "pyright==1.1.400",
 ]
 test = [
     "pytest==8.3.5",
