@@ -539,7 +539,7 @@ def test_shift_points():
     ).shift_points(point_idxs=1, dy=-10)
     assert (
         assymetrical_chan.geom.wkt
-        == "POLYGON ((0 0, 75 -10, 75 16, 8 16, 8 184, 75 184, 75 200, 0 200, 0 0))"
+        == "POLYGON ((0 200, 75 200, 75 184, 8 184, 8 16, 75 16, 75 -10, 0 0, 0 200))"
     )
 
 
@@ -553,18 +553,19 @@ def test_mirror_section():
     ).shift_points(point_idxs=1, dy=-10)
     assert (
         assymetrical_chan.mirror_section(axis="x").geom.wkt
-        == "POLYGON ((0 190, 75 200, 75 174, 8 174, 8 6, 75 6, 75 -10, 0 -10, 0 190))"
+        == "POLYGON ((0 -10, 75 -10, 75 6, 8 6, 8 174, 75 174, 75 200, 0 190, 0 -10))"
     )
     assert (
         assymetrical_chan.mirror_section(axis="y").geom.wkt
-        == "POLYGON ((75 0, 0 -10, 0 16, 67 16, 67 184, 0 184, 0 200, 75 200, 75 0))"
+        == "POLYGON ((75 200, 0 200, 0 184, 67 184, 67 16, 0 16, 0 -10, 75 0, 75 200))"
     )
-    p = "POLYGON ((100 0, 25 -10, 25 16, 92 16, 92 184, 25 184, 25 200, 100 200, "
-    p += "100 0))"
+    p = "POLYGON ((100 200, 25 200, 25 184, 92 184, 92 16, 25 16, 25 -10, 100 0, "
+    p += "100 200))"
+
     assert (
         assymetrical_chan.mirror_section(axis="y", mirror_point=(50, 50)).geom.wkt == p
     )
-    p = "POLYGON ((0 100, 75 110, 75 84, 8 84, 8 -84, 75 -84, 75 -100, 0 -100, 0 100))"
+    p = "POLYGON ((0 -100, 75 -100, 75 -84, 8 -84, 8 84, 75 84, 75 110, 0 100, 0 -100))"
     assert (
         assymetrical_chan.mirror_section(axis="x", mirror_point=(50, 50)).geom.wkt == p
     )
