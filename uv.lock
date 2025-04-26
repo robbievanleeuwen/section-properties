@@ -1783,15 +1783,15 @@ wheels = [
 
 [[package]]
 name = "pyright"
-version = "1.1.396"
+version = "1.1.400"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "nodeenv" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bd/73/f20cb1dea1bdc1774e7f860fb69dc0718c7d8dea854a345faec845eb086a/pyright-1.1.396.tar.gz", hash = "sha256:142901f5908f5a0895be3d3befcc18bedcdb8cc1798deecaec86ef7233a29b03", size = 3814400, upload_time = "2025-03-02T02:12:16.732Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/cb/c306618a02d0ee8aed5fb8d0fe0ecfed0dbf075f71468f03a30b5f4e1fe0/pyright-1.1.400.tar.gz", hash = "sha256:b8a3ba40481aa47ba08ffb3228e821d22f7d391f83609211335858bf05686bdb", size = 3846546, upload_time = "2025-04-24T12:55:18.907Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/80/be/ecb7cfb42d242b7ee764b52e6ff4782beeec00e3b943a3ec832b281f9da6/pyright-1.1.396-py3-none-any.whl", hash = "sha256:c635e473095b9138c471abccca22b9fedbe63858e0b40d4fc4b67da041891844", size = 5689355, upload_time = "2025-03-02T02:12:14.044Z" },
+    { url = "https://files.pythonhosted.org/packages/c8/a5/5d285e4932cf149c90e3c425610c5efaea005475d5f96f1bfdb452956c62/pyright-1.1.400-py3-none-any.whl", hash = "sha256:c80d04f98b5a4358ad3a35e241dbf2a408eee33a40779df365644f8054d2517e", size = 5563460, upload_time = "2025-04-24T12:55:17.002Z" },
 ]
 
 [[package]]
@@ -2287,7 +2287,7 @@ docs = [
 ]
 lint = [
     { name = "pre-commit", specifier = "==4.2.0" },
-    { name = "pyright", specifier = "==1.1.396" },
+    { name = "pyright", specifier = "==1.1.400" },
 ]
 test = [
     { name = "coverage", extras = ["toml"], specifier = "==7.6.12" },

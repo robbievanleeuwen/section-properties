@@ -3416,6 +3416,16 @@ class Section:
         return stress_pts
 
 
+def tri6_list() -> list[fea.Tri6]:
+    """Helper function -> creates an empty list of ``Tri6`` elements."""
+    return []
+
+
+def int_list() -> list[int]:
+    """Helper function -> creates an empty list of ``int``s."""
+    return []
+
+
 @dataclass
 class MaterialGroup:
     """Class for storing elements of different materials.
@@ -3439,8 +3449,8 @@ class MaterialGroup:
     num_nodes: int
     material: pre.Material
     stress_result: sp_stress_post.StressResult = field(init=False)
-    elements: list[fea.Tri6] = field(init=False, default_factory=list)
-    el_ids: list[int] = field(init=False, default_factory=list)
+    elements: list[fea.Tri6] = field(init=False, default_factory=tri6_list)
+    el_ids: list[int] = field(init=False, default_factory=int_list)
 
     def __post_init__(self) -> None:
         """Allocates the stress_result parameter."""
