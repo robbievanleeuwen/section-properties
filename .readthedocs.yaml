@@ -12,7 +12,7 @@ build:
       - asdf global uv latest
       - uv python install 3.13
     create_environment:
-      - uv venv
+      - uv venv -p 3.13
     install:
       - uv sync -p 3.13 --frozen --extra rhino --extra dxf --no-group dev --no-group lint --no-group test
     build:
