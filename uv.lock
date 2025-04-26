@@ -1031,7 +1031,7 @@ wheels = [
 
 [[package]]
 name = "jupyterlab"
-version = "4.3.5"
+version = "4.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "async-lru" },
@@ -1048,9 +1048,9 @@ dependencies = [
     { name = "tornado" },
     { name = "traitlets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/19/17/6f3d73c3e54b71bbaf03edcc4a54b0aa6328e0a134755f297ea87d425711/jupyterlab-4.3.5.tar.gz", hash = "sha256:c779bf72ced007d7d29d5bcef128e7fdda96ea69299e19b04a43635a7d641f9d", size = 21800023, upload_time = "2025-01-29T19:27:11.432Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f6/55/3ef7e6bfe988d7df3d453cc27912846d50590c90790848594f7228c89569/jupyterlab-4.4.1.tar.gz", hash = "sha256:c75c4f33056fbd84f0b31eb44622a00c7a5f981b85adfeb198a83721f0465808", size = 23028447, upload_time = "2025-04-22T18:22:33.423Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/73/6f/94d4c879b3e2b7b9bca1913ea6fbbef180f8b1ed065b46ade40d651ec54d/jupyterlab-4.3.5-py3-none-any.whl", hash = "sha256:571bbdee20e4c5321ab5195bc41cf92a75a5cff886be5e57ce78dfa37a5e9fdb", size = 11666944, upload_time = "2025-01-29T19:27:04.992Z" },
+    { url = "https://files.pythonhosted.org/packages/29/82/c8784597c5a03426c1ef20c48aff37e8cfe050ab5ca87f0d51069f02b362/jupyterlab-4.4.1-py3-none-any.whl", hash = "sha256:989bca3f9cf2d04b2022e7e657e2df6d4aca808b364810d31c4865edd968a5f7", size = 12292928, upload_time = "2025-04-22T18:22:25.831Z" },
 ]
 
 [[package]]
@@ -1425,7 +1425,7 @@ wheels = [
 
 [[package]]
 name = "notebook"
-version = "7.3.2"
+version = "7.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jupyter-server" },
@@ -1434,9 +1434,9 @@ dependencies = [
     { name = "notebook-shim" },
     { name = "tornado" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ea/04/ac488379d5afef43402b3fb4be2857db1a09804fecf98b9b714c741b225b/notebook-7.3.2.tar.gz", hash = "sha256:705e83a1785f45b383bf3ee13cb76680b92d24f56fb0c7d2136fe1d850cd3ca8", size = 12781804, upload_time = "2024-12-21T08:40:20.857Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/91/89/1b4636280f01ec948c007e700e24921135b9b76221148a405fd5287c3c17/notebook-7.4.1.tar.gz", hash = "sha256:96894962b230013ea0c0a466e4e642c5aace25ba8c86686175b69990ef628ff9", size = 13881349, upload_time = "2025-04-23T06:40:29.147Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/22/9b/76e50ee18f183ea5fe1784a9eeaa50f2c71802e4740d6e959592b0993298/notebook-7.3.2-py3-none-any.whl", hash = "sha256:e5f85fc59b69d3618d73cf27544418193ff8e8058d5bf61d315ce4f473556288", size = 13163630, upload_time = "2024-12-21T08:40:14.762Z" },
+    { url = "https://files.pythonhosted.org/packages/41/c5/47248ed90d263e4c16f9f6b06f094105ce33f384cf135eab5a6452230d46/notebook-7.4.1-py3-none-any.whl", hash = "sha256:498f12cf567d95b20e780d62d52564ee4310248b3175e996b667b5808028e5d3", size = 14282763, upload_time = "2025-04-23T06:40:25.41Z" },
 ]
 
 [[package]]
@@ -2273,7 +2273,7 @@ provides-extras = ["numba", "rhino", "dxf", "pardiso"]
 [package.metadata.requires-dev]
 dev = [
     { name = "ipympl", specifier = "==0.9.7" },
-    { name = "notebook", specifier = "==7.3.2" },
+    { name = "notebook", specifier = "==7.4.1" },
     { name = "sphinx-autobuild", specifier = "==2024.10.3" },
 ]
 docs = [
