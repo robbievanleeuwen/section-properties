@@ -2580,7 +2580,7 @@ def create_exterior_points(
         List of exterior points
     """
     return cast(
-        list[tuple[float, float]], [tuple(coord) for coord in shape.exterior.coords]
+        "list[tuple[float, float]]", [tuple(coord) for coord in shape.exterior.coords]
     )
 
 
@@ -2598,7 +2598,7 @@ def create_interior_points(
     Returns:
         List of interior points
     """
-    return cast(list[tuple[float, float]], [tuple(coord) for coord in lr.coords])
+    return cast("list[tuple[float, float]]", [tuple(coord) for coord in lr.coords])
 
 
 def create_points_and_facets(
