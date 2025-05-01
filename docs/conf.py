@@ -3,7 +3,7 @@
 # project information
 project = "sectionproperties"
 author = "Robbie van Leeuwen"
-copyright = "2024, Robbie van Leeuwen"  # noqa: A001
+copyright = "2025, Robbie van Leeuwen"  # noqa: A001
 
 # sphinx config
 templates_path = ["_templates"]
