@@ -8,8 +8,8 @@ on:
     types: [opened, reopened, synchronize]
 
 env:
-  UV_VERSION: 0.6.17
-  DEFAULT_PYTHON_VERSION: '3.13'
+  UV_VERSION: 0.9.14
+  DEFAULT_PYTHON_VERSION: '3.14'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -71,19 +71,23 @@ jobs:
       fail-fast: false
       matrix:
         include:
+        - {python: '3.14', os: ubuntu-latest, session: tests}
         - {python: '3.13', os: ubuntu-latest, session: tests}
         - {python: '3.12', os: ubuntu-latest, session: tests}
         - {python: '3.11', os: ubuntu-latest, session: tests}
+        - {python: '3.14', os: windows-latest, session: tests}
         - {python: '3.13', os: windows-latest, session: tests}
         - {python: '3.12', os: windows-latest, session: tests}
         - {python: '3.11', os: windows-latest, session: tests}
-        - {python: '3.13', os: macos-latest, session: tests}
+        - {python: '3.14', os: windows-latest, session: tests}
+        - {python: '3.13', os: windows-latest, session: tests}
         - {python: '3.12', os: macos-latest, session: tests}
         - {python: '3.11', os: macos-latest, session: tests}
+        - {python: '3.14', os: macos-13, session: tests}
         - {python: '3.13', os: macos-13, session: tests}
         - {python: '3.12', os: macos-13, session: tests}
         - {python: '3.11', os: macos-13, session: tests}
-        - {python: '3.13', os: ubuntu-latest, session: tests-extended}
+        - {python: '3.14', os: ubuntu-latest, session: tests-extended}
 
     steps:
     - name: Check out the repo
@@ -115,8 +119,7 @@ jobs:
     - name: Upload coverage data
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-data-${{ matrix.session }}-${{ matrix.os }}-${{ matrix.python
-          }}
+        name: coverage-data-${{ matrix.session }}-${{ matrix.os }}-${{ matrix.python}}
         include-hidden-files: true
         path: .coverage.*
 

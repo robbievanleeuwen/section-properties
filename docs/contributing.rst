@@ -55,7 +55,7 @@ Installation instructions for other methods and Windows can be found
 
 .. code:: shell
 
-   uv python install 3.13
+   uv python install 3.14
 
 ``sectionproperties`` and it's development dependencies can be installed with:
 
