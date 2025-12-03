@@ -79,8 +79,8 @@ jobs:
         - {python: '3.13', os: windows-latest, session: tests}
         - {python: '3.12', os: windows-latest, session: tests}
         - {python: '3.11', os: windows-latest, session: tests}
-        - {python: '3.14', os: windows-latest, session: tests}
-        - {python: '3.13', os: windows-latest, session: tests}
+        - {python: '3.14', os: macos-latest, session: tests}
+        - {python: '3.13', os: macos-latest, session: tests}
         - {python: '3.12', os: macos-latest, session: tests}
         - {python: '3.11', os: macos-latest, session: tests}
         - {python: '3.14', os: macos-13, session: tests}
