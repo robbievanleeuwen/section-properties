@@ -299,7 +299,14 @@ class Section:
             i11 = self.section_props.i11_c
             i22 = self.section_props.i22_c
 
-            if ixx is None or iyy is None or ixy is None or i11 is None or i22 is None or phi is None:
+            if (
+                ixx is None
+                or iyy is None
+                or ixy is None
+                or i11 is None
+                or i22 is None
+                or phi is None
+            ):
                 msg = "Section properties failed to save."
                 raise RuntimeError(msg)
 
