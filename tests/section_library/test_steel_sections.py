@@ -17,7 +17,7 @@ def test_angle_section_toe_thickness():
     sec = Section(geom)
 
     # check for no additional warnings
-    with pytest.warns() as record:
+    with pytest.warns() as record:  # noqa: PT031
         warnings.warn("user", UserWarning, stacklevel=1)
         sec.calculate_geometric_properties()
         sec.calculate_warping_properties()

@@ -24,10 +24,10 @@ def test_get_without_analysis():
     geom.create_mesh(mesh_sizes=0, coarse=True)
     sec = Section(geometry=geom)
 
-    with pytest.raises(RuntimeError, match="Conduct a geometric analysis."):
+    with pytest.raises(RuntimeError, match="Conduct a geometric analysis"):
         sec.get_my()
 
-    with pytest.raises(RuntimeError, match="Conduct a geometric analysis."):
+    with pytest.raises(RuntimeError, match="Conduct a geometric analysis"):
         sec.get_my_p()
 
 

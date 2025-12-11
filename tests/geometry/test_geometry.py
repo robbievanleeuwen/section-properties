@@ -471,7 +471,7 @@ def test_multi_nested_compound_geometry_from_points():
     nested_compound.create_mesh([25, 30, 35])
     nested_compound_sec = Section(nested_compound)
     nested_compound_sec.calculate_geometric_properties()
-    with pytest.warns(UserWarning):
+    with pytest.warns(UserWarning, match="overlapping regions"):
         nested_compound_sec.calculate_plastic_properties()
 
 
@@ -668,7 +668,7 @@ def test_warping_disjoint_warning():
 
     sec = Section(geometry=geom)
     sec.calculate_geometric_properties()
-    with pytest.warns(UserWarning):
+    with pytest.warns(UserWarning, match="disjoint regions"):
         sec.calculate_warping_properties()
 
 
@@ -704,7 +704,7 @@ def test_geom_obj_value_error():
     with pytest.raises(ValueError, match="Use CompoundGeometry"):
         Geometry(geom=multi_poly)
 
-    with pytest.raises(ValueError, match="Argument is not a valid shapely.Polygon"):
+    with pytest.raises(ValueError, match="Argument is not a valid shapely"):
         Geometry(geom=pts)
 
 
