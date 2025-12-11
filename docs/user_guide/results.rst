@@ -7,9 +7,17 @@ Displaying the Results
 A list of cross-section properties that have been calculated by the performed analyses
 can be printed to the terminal using the
 :meth:`~sectionproperties.analysis.section.Section.display_results` method that belongs
-to every  :class:`~sectionproperties.analysis.section.Section` object.
+to every :class:`~sectionproperties.analysis.section.Section` object.
 
 ..  automethod:: sectionproperties.analysis.section.Section.display_results
+    :noindex:
+
+If a composite analysis has been performed, the transformed properties can be printed to
+the terminal using the
+:meth:`~sectionproperties.analysis.section.Section.display_transformed_results` method
+that belongs to every :class:`~sectionproperties.analysis.section.Section` object.
+
+..  automethod:: sectionproperties.analysis.section.Section.display_transformed_results
     :noindex:
 
 Retrieving Section Properties

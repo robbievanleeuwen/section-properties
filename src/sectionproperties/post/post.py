@@ -13,6 +13,7 @@ from rich.console import Console
 from rich.table import Table
 
 import sectionproperties.analysis.fea as fea
+import sectionproperties.pre.pre as pre
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -911,6 +912,301 @@ def print_results(
             table.add_row("mp_22", f"{mp_22:>{fmt}}")
         except RuntimeError:
             pass
+
+    # print cross-section sf
+    try:
+        sf_xx_plus, sf_xx_minus, sf_yy_plus, sf_yy_minus = section.get_sf()
+        table.add_row("sf_xx+", f"{sf_xx_plus:>{fmt}}")
+        table.add_row("sf_xx-", f"{sf_xx_minus:>{fmt}}")
+        table.add_row("sf_yy+", f"{sf_yy_plus:>{fmt}}")
+        table.add_row("sf_yy-", f"{sf_yy_minus:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section sf_p
+    try:
+        sf_11_plus, sf_11_minus, sf_22_plus, sf_22_minus = section.get_sf_p()
+        table.add_row("sf_11+", f"{sf_11_plus:>{fmt}}")
+        table.add_row("sf_11-", f"{sf_11_minus:>{fmt}}")
+        table.add_row("sf_22+", f"{sf_22_plus:>{fmt}}")
+        table.add_row("sf_22-", f"{sf_22_minus:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    console = Console()
+    console.print(table)
+    print("")
+
+
+def print_transformed_results(
+    section: Section,
+    e_ref: float | pre.Material,
+    fmt: str,
+) -> None:
+    """Prints the results that have been calculated to the terminal.
+
+    Args:
+        section: Section object
+        e_ref: Reference elastic modulus or material property by which to transform
+            the results.
+        fmt: Number formatting string
+    """
+    # assign reference elastic modulus
+    er = e_ref.elastic_modulus if isinstance(e_ref, pre.Material) else e_ref
+
+    table = Table(title="Transformed Section Properties")
+    table.add_column("Property", justify="left", style="cyan", no_wrap=True)
+    table.add_column("Value", justify="right", style="green")
+
+    # print geometric area
+    try:
+        area = section.get_area()
+        table.add_row("geom area", f"{area:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section perimeter
+    try:
+        perimeter = section.get_perimeter()
+        table.add_row("perimeter", f"{perimeter:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section mass
+    try:
+        mass = section.get_mass()
+        table.add_row("mass", f"{mass:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print e_ref
+    table.add_row("e_ref", f"{er:>{fmt}}")
+
+    # print cross-section ea/e_ref
+    try:
+        ea = section.get_ea() / er
+        table.add_row("a", f"{ea:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section eq/e_ref
+    try:
+        eqx, eqy = section.get_eq()
+        table.add_row("qx", f"{eqx / er:>{fmt}}")
+        table.add_row("qy", f"{eqy / er:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section ig/e_ref
+    try:
+        eixx_g, eiyy_g, eixy_g = section.get_eig()
+        table.add_row("ixx_g", f"{eixx_g / er:>{fmt}}")
+        table.add_row("iyy_g", f"{eiyy_g / er:>{fmt}}")
+        table.add_row("ixy_g", f"{eixy_g / er:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section centroid
+    try:
+        cx, cy = section.get_c()
+        table.add_row("cx", f"{cx:>{fmt}}")
+        table.add_row("cy", f"{cy:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section ic/e_ref
+    try:
+        eixx_c, eiyy_c, eixy_c = section.get_eic()
+        table.add_row("ixx_c", f"{eixx_c / er:>{fmt}}")
+        table.add_row("iyy_c", f"{eiyy_c / er:>{fmt}}")
+        table.add_row("ixy_c", f"{eixy_c / er:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section z/e_ref
+    try:
+        ezxx_plus, ezxx_minus, ezyy_plus, ezyy_minus = section.get_ez()
+        table.add_row("zxx+", f"{ezxx_plus / er:>{fmt}}")
+        table.add_row("zxx-", f"{ezxx_minus / er:>{fmt}}")
+        table.add_row("zyy+", f"{ezyy_plus / er:>{fmt}}")
+        table.add_row("zyy-", f"{ezyy_minus / er:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section my
+    try:
+        my_xx, my_yy = section.get_my()
+        table.add_row("my_xx", f"{my_xx:>{fmt}}")
+        table.add_row("my_yy", f"{my_yy:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section rc
+    try:
+        rx, ry = section.get_rc()
+        table.add_row("rx", f"{rx:>{fmt}}")
+        table.add_row("ry", f"{ry:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section ip/e_ref
+    try:
+        ei11_c, ei22_c = section.get_eip()
+        table.add_row("i11_c", f"{ei11_c / er:>{fmt}}")
+        table.add_row("i22_c", f"{ei22_c / er:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section phi
+    try:
+        phi = section.get_phi()
+        table.add_row("phi", f"{phi:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section zp/e_ref
+    try:
+        ez11_plus, ez11_minus, ez22_plus, ez22_minus = section.get_ezp()
+        table.add_row("z11+", f"{ez11_plus / er:>{fmt}}")
+        table.add_row("z11-", f"{ez11_minus / er:>{fmt}}")
+        table.add_row("z22+", f"{ez22_plus / er:>{fmt}}")
+        table.add_row("z22-", f"{ez22_minus / er:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section my_p
+    try:
+        my_11, my_22 = section.get_my_p()
+        table.add_row("my_11", f"{my_11:>{fmt}}")
+        table.add_row("my_22", f"{my_22:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section rp
+    try:
+        r11, r22 = section.get_rp()
+        table.add_row("r11", f"{r11:>{fmt}}")
+        table.add_row("r22", f"{r22:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print effective material properties
+    try:
+        e_eff = section.get_e_eff()
+        g_eff = section.get_g_eff()
+        nu_eff = section.get_nu_eff()
+        table.add_row("e_eff", f"{e_eff:>{fmt}}")
+        table.add_row("g_eff", f"{g_eff:>{fmt}}")
+        table.add_row("nu_eff", f"{nu_eff:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section j/e_ref
+    try:
+        ej = section.get_ej()
+        table.add_row("j", f"{ej / er:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section sc
+    try:
+        x_se, y_se = section.get_sc()
+        table.add_row("x_se", f"{x_se:>{fmt}}")
+        table.add_row("y_se", f"{y_se:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section sc_p
+    try:
+        x1_se, y2_se = section.get_sc_p()
+        table.add_row("x1_se", f"{x1_se:>{fmt}}")
+        table.add_row("y2_se", f"{y2_se:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section sc_t
+    try:
+        x_st, y_st = section.get_sc_t()
+        table.add_row("x_st", f"{x_st:>{fmt}}")
+        table.add_row("y_st", f"{y_st:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section gamma/e_ref
+    try:
+        egamma = section.get_egamma()
+        table.add_row("gamma", f"{egamma / er:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section as/e_ref
+    try:
+        ea_sx, ea_sy = section.get_eas()
+        table.add_row("a_sx", f"{ea_sx / er:>{fmt}}")
+        table.add_row("a_sy", f"{ea_sy / er:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section as_p/e_ref
+    try:
+        ea_s11, ea_s22 = section.get_eas_p()
+        table.add_row("a_s11", f"{ea_s11 / er:>{fmt}}")
+        table.add_row("a_s22", f"{ea_s22 / er:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section beta
+    try:
+        beta_x_plus, beta_x_minus, beta_y_plus, beta_y_minus = section.get_beta()
+        table.add_row("beta_x+", f"{beta_x_plus:>{fmt}}")
+        table.add_row("beta_x-", f"{beta_x_minus:>{fmt}}")
+        table.add_row("beta_y+", f"{beta_y_plus:>{fmt}}")
+        table.add_row("beta_y-", f"{beta_y_minus:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section beta_p
+    try:
+        beta_11_plus, beta_11_minus, beta_22_plus, beta_22_minus = section.get_beta_p()
+        table.add_row("beta_11+", f"{beta_11_plus:>{fmt}}")
+        table.add_row("beta_11-", f"{beta_11_minus:>{fmt}}")
+        table.add_row("beta_22+", f"{beta_22_plus:>{fmt}}")
+        table.add_row("beta_22-", f"{beta_22_minus:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section pc
+    try:
+        x_pc, y_pc = section.get_pc()
+        table.add_row("x_pc", f"{x_pc:>{fmt}}")
+        table.add_row("y_pc", f"{y_pc:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section pc_p
+    try:
+        x11_pc, y22_pc = section.get_pc_p()
+        table.add_row("x11_pc", f"{x11_pc:>{fmt}}")
+        table.add_row("y22_pc", f"{y22_pc:>{fmt}}")
+    except RuntimeError:
+        pass
+
+    # print cross-section s/mp
+    try:
+        mp_xx, mp_yy = section.get_mp()
+        table.add_row("mp_xx", f"{mp_xx:>{fmt}}")
+        table.add_row("mp_yy", f"{mp_yy:>{fmt}}")
+
+    except RuntimeError:
+        pass
+
+    # print cross-section sp/mp_p
+    try:
+        mp_11, mp_22 = section.get_mp_p()
+        table.add_row("mp_11", f"{mp_11:>{fmt}}")
+        table.add_row("mp_22", f"{mp_22:>{fmt}}")
+    except RuntimeError:
+        pass
 
     # print cross-section sf
     try:
