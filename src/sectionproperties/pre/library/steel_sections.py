@@ -153,17 +153,20 @@ def rectangular_hollow_section(
     n_r: int,
     r_in: float | None = None,
     material: pre.Material = pre.DEFAULT_MATERIAL,
+    t_w: float | None = None,
 ) -> geometry.Geometry:
     """Constructs a rectangular hollow section (RHS).
 
     Constructs a rectangular hollow section (RHS) centered at ``(b/2, d/2)``, with depth
     ``d``, width ``b``, thickness ``t``, outer radius ``r_out`` and inner radius
-    ``r_in``, using ``n_r`` points to construct the inner and outer radii.
+    ``r_in``, using ``n_r`` points to construct the inner and outer radii. Optionally,
+    for an RHS with non-uniform thickness, assigning ``t_w`` sets the web thickness,
+    with the flange thickness taken as ``t``.
 
     If the inner radius is not specified, it defaults to the difference between the
-    outer radius and the thickness of the section, i.e. ``r_in = r_out - t``. In this
-    case, if the outer radius is less than the thickness of the RHS, the inner radius is
-    set to zero.
+    outer radius and the thickness of the thickest part of the section, i.e.
+    ``r_in = r_out - max(t, t_w)``. In this case, if the outer radius is less than the
+    thickness of the RHS, the inner radius is set to zero.
 
     Args:
         d: Depth of the RHS
@@ -172,9 +175,11 @@ def rectangular_hollow_section(
         r_out: Outer radius of the RHS
         n_r: Number of points discretising the inner and outer radii
         r_in: Inner radius of the RHS. Defaults to ``None``, which implies
-            ``r_in = max(r_out - t, 0)``.
+            ``r_in = max(r_out - max(t, t_w), 0)``.
         material: Material to associate with this geometry. Defaults to
             ``pre.DEFAULT_MATERIAL``.
+        t_w: Thickness of the RHS web. Defaults to ``None``, which implies the web
+            thickness is equal to the flange thickness, ``t_w = t``.
 
     Raises:
         RuntimeError: If the geometry generation fails
@@ -198,9 +203,14 @@ def rectangular_hollow_section(
     points_inner: list[tuple[float, float]] = []
     points_outer: list[tuple[float, float]] = []
 
+    # set web thickness
+    if t_w is None:
+        t_w = t
+
     # calculate internal radius
     if r_in is None:
-        r_in = max(r_out - t, 0)
+        t_max = max(t, t_w)
+        r_in = max(r_out - t_max, 0)
 
     # construct the outer radius points
     points_outer += sp_utils.draw_radius((r_out, r_out), r_out, np.pi, n_r)
@@ -208,16 +218,16 @@ def rectangular_hollow_section(
     points_outer += sp_utils.draw_radius((b - r_out, d - r_out), r_out, 0, n_r)
     points_outer += sp_utils.draw_radius((r_out, d - r_out), r_out, 0.5 * np.pi, n_r)
 
-    points_inner += sp_utils.draw_radius((t + r_in, t + r_in), r_in, np.pi, n_r)
+    points_inner += sp_utils.draw_radius((t_w + r_in, t + r_in), r_in, np.pi, n_r)
     points_inner += sp_utils.draw_radius(
-        (b - t - r_in, t + r_in),
+        (b - t_w - r_in, t + r_in),
         r_in,
         1.5 * np.pi,
         n_r,
     )
-    points_inner += sp_utils.draw_radius((b - t - r_in, d - t - r_in), r_in, 0, n_r)
+    points_inner += sp_utils.draw_radius((b - t_w - r_in, d - t - r_in), r_in, 0, n_r)
     points_inner += sp_utils.draw_radius(
-        (t + r_in, d - t - r_in),
+        (t_w + r_in, d - t - r_in),
         r_in,
         0.5 * np.pi,
         n_r,
