@@ -52,7 +52,7 @@ numba = [
 ]
 rhino = [
     "rhino3dm>=8.17.0; python_version < '3.14'",
-    "rhino-shapley-interop",
+    "rhino-shapley-interop; python_version < '3.14'",
 ]
 dxf = [
     "cad-to-shapely",
