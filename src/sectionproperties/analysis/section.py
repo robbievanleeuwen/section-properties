@@ -1873,6 +1873,36 @@ class Section:
         """
         post.print_results(section=self, fmt=fmt)
 
+    def display_transformed_results(
+        self,
+        e_ref: float | pre.Material,
+        fmt: str = "8.6e",
+    ) -> None:
+        """Prints the transformed results that have been calculated to the terminal.
+
+        All results that are scaled by the elastic modulus in ``display_results()``
+        (e.g. ``e.ixx_c``) are divided by ``e_ref``.
+
+        This is a composite only method, as such this can only be called if material
+        properties have been applied to the cross-section.
+
+        Args:
+            e_ref: Reference elastic modulus or material property by which to transform
+                the results.
+            fmt: Number formatting string, see
+                https://docs.python.org/3/library/string.html. Defaults to ``"8.6e"``.
+
+        Raises:
+            RuntimeError: If material properties have *not* been applied
+        """
+        if not self.is_composite():
+            msg = "Attempting to call a composite only method for a geometric analysis"
+            msg += " (material properties have not been applied). Consider using"
+            msg += " display_results()."
+            raise RuntimeError(msg)
+
+        post.print_transformed_results(section=self, e_ref=e_ref, fmt=fmt)
+
     def is_composite(self) -> bool:
         """Returns whether or not a composite section is being analysed.
 
