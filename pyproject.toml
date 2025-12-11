@@ -51,8 +51,8 @@ numba = [
     "numba>=0.60.0",
 ]
 rhino = [
-    "rhino3dm>=8.17.0",
-    "rhino-shapley-interop>=0.0.4",
+    "rhino3dm>=8.17.0; python_version < '3.14'",
+    "rhino-shapley-interop>=0.0.4; python_version < '3.14'",
 ]
 dxf = [
     "cad-to-shapely>=0.3.2",
@@ -66,6 +66,7 @@ dev = [
     "ipympl==0.9.7",
     "notebook==7.4.1",
     "sphinx-autobuild==2024.10.03",
+    "pyqt6==6.10.1",
 ]
 docs = [
     "furo==2024.8.6",
