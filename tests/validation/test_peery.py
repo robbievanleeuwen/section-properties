@@ -279,7 +279,7 @@ def test_fb_c(peery_ex_7_2_1: Callable) -> None:
     # but -2384 is the answer computed from his values.
     perfect_result = -2384
     # The simplified textbook equation
-    text_result = round(-494 * 1 + -315 * 6)
+    text_result = -494 * 1 + -315 * 6
     nodes = peery_ex_7_2_1.xsect.mesh_nodes
     assert len(nodes > 0)
     index, _ = get_node(nodes, c)
@@ -303,7 +303,7 @@ def test_fb_b(peery_ex_7_2_1: Callable) -> None:
     # The answer in the example
     perfect_result = 580
     # The sipmlified textbook equation
-    text_result = round(-494 * -5 + -315 * 6)
+    text_result = -494 * -5 + -315 * 6
     nodes = peery_ex_7_2_1.xsect.mesh_nodes
     index, _ = get_node(nodes, b)
     _ = peery_ex_7_2_1.apply_load(v)
@@ -326,7 +326,7 @@ def test_fb_a(peery_ex_7_2_1: Callable) -> None:
     # The answer in the example
     perfect_result = 1210
     # The simplified textbook equation
-    text_result = round(-494 * -5 + -315 * 4)
+    text_result = -494 * -5 + -315 * 4
     nodes = peery_ex_7_2_1.xsect.mesh_nodes
     index, _ = get_node(nodes, a)
     _ = peery_ex_7_2_1.apply_load(v)

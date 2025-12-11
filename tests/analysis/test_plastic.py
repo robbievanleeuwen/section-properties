@@ -119,7 +119,7 @@ def test_plastic_centroid():
     nested_sec.calculate_plastic_properties()
     overlay_sec.calculate_geometric_properties()
 
-    with pytest.warns(UserWarning):
+    with pytest.warns(UserWarning, match="overlapping regions"):
         overlay_sec.calculate_plastic_properties()
 
     # section
