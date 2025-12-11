@@ -2450,9 +2450,9 @@ name = "rhino-shapley-interop"
 version = "0.0.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "numpy" },
-    { name = "rhino3dm" },
-    { name = "shapely" },
+    { name = "numpy", marker = "python_full_version < '3.14'" },
+    { name = "rhino3dm", marker = "python_full_version < '3.14'" },
+    { name = "shapely", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/7c/5a/f217048676f89fdf3fc13064a283ef130e9d428aacc3449e018d03eed4c7/rhino_shapley_interop-0.0.4.tar.gz", hash = "sha256:798bd04fff8100d0d352f5d8460a19a2db3e0e31be76d0dfc9aa52b0ec6483e3", size = 10151, upload-time = "2022-02-11T19:41:01.916Z" }
 wheels = [
@@ -2693,7 +2693,7 @@ wheels = [
 
 [[package]]
 name = "sectionproperties"
-version = "3.9.0"
+version = "3.10.0"
 source = { editable = "." }
 dependencies = [
     { name = "cytriangle" },

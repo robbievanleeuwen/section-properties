@@ -53,7 +53,7 @@ version-resolver:
 # Custom text at start of release
 header: >
 
-  This release adds a rectangular CLT geometry to the section library and updates several dependencies!
+  This update introduces compatibility with Python 3.14, adds optional web thickness specification for RHS geometries, and includes a new method for displaying transformed results.
 
 template: |
 
