@@ -61,7 +61,8 @@ included by default in the base installation.
 `cad-to-shapely <https://github.com/aegis1980/cad-to-shapely>`_ is used to import
 ``.dxf`` files, while
 `rhino-shapely-interop <https://github.com/normanrichardson/rhino_shapely_interop>`_ is
-used to import ``.3dm`` files.
+used to import ``.3dm`` files. Note that the ``rhino`` dependencies are not yet
+supported for python 3.14 and so can only be installed for 3.13 and lower.
 
 To install ``sectionproperties`` with the above functionality, use the ``dxf`` and/or
 ``rhino`` options:

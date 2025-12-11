@@ -9,7 +9,7 @@ on:
 
 env:
   UV_VERSION: 0.9.14
-  DEFAULT_PYTHON_VERSION: '3.14'
+  DEFAULT_PYTHON_VERSION: '3.13'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -83,11 +83,11 @@ jobs:
         - {python: '3.13', os: macos-latest, session: tests}
         - {python: '3.12', os: macos-latest, session: tests}
         - {python: '3.11', os: macos-latest, session: tests}
-        - {python: '3.14', os: macos-13, session: tests}
-        - {python: '3.13', os: macos-13, session: tests}
-        - {python: '3.12', os: macos-13, session: tests}
-        - {python: '3.11', os: macos-13, session: tests}
-        - {python: '3.14', os: ubuntu-latest, session: tests-extended}
+        - {python: '3.14', os: macos-15-intel, session: tests}
+        - {python: '3.13', os: macos-15-intel, session: tests}
+        - {python: '3.12', os: macos-15-intel, session: tests}
+        - {python: '3.11', os: macos-15-intel, session: tests}
+        - {python: '3.13', os: ubuntu-latest, session: tests-extended}
 
     steps:
     - name: Check out the repo
