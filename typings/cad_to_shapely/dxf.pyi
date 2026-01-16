@@ -18,8 +18,6 @@ class DxfImporter:
         zip_length: float = ...,
         retry_with_zip: bool = ...,
     ) -> str: ...
-<<<<<<< Updated upstream
-=======
     def polygonize(
         self,
         simplify: bool = ...,
@@ -27,4 +25,3 @@ class DxfImporter:
         zip_length: float = ...,
         retry_with_zip: bool = ...,
     ) -> tuple: ...
->>>>>>> Stashed changes
