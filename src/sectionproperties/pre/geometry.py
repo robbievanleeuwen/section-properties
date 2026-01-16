@@ -2511,7 +2511,7 @@ def load_dxf(
 
     my_dxf = c2s.dxf.DxfImporter(str(dxf_filepath))
     my_dxf.process(spline_delta=spline_delta, degrees_per_segment=degrees_per_segment)
-    my_dxf.cleanup()
+    my_dxf.polygonize()
 
     polygons = my_dxf.polygons
     new_polygons = c2s.utils.filter_polygons(polygons)
