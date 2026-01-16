@@ -1,4 +1,5 @@
 from shapely import Polygon
+from shapely.geometry.collection import GeometryCollection
 
 class DxfImporter:
     polygons: list[Polygon]
@@ -20,8 +21,10 @@ class DxfImporter:
     ) -> str: ...
     def polygonize(
         self,
-        simplify: bool = ...,
-        force_zip: bool = ...,
-        zip_length: float = ...,
-        retry_with_zip: bool = ...,
-    ) -> tuple: ...
+        simplify: bool = True,
+        force_zip: bool = False,
+        zip_length: float = 0.000001,
+        retry_with_zip: bool = True,
+    ) -> tuple[
+        GeometryCollection, GeometryCollection, GeometryCollection, GeometryCollection
+    ]: ...
