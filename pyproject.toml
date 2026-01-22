@@ -34,7 +34,7 @@ dependencies = [
     "scipy",
     "matplotlib",
     "shapely",
-    "cytriangle",
+    "cytriangle < 3",
     "rich[jupyter]",
     "more-itertools",
 ]

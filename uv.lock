@@ -562,24 +562,25 @@ wheels = [
 
 [[package]]
 name = "cytriangle"
-version = "3.0.1"
+version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/b1/fc/71ad0b689d8637f76626f2f5bb648cbd2c0643a9a0e93df7b4b58b856958/cytriangle-2.0.0.tar.gz", hash = "sha256:1464b08dae29741430e56f5b018faf17bf7c01863d27d136d19a200092fe3f00", size = 336399, upload-time = "2025-02-12T19:11:39.328Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/25/b2/faffdebdfc71d5dc7a2decb85070c79be9258f98d0d91c77be8b931072ed/cytriangle-3.0.1-cp311-cp311-macosx_15_0_arm64.whl", hash = "sha256:c18923b709b2731f1f096e1f42806313068118987e8a10e2ad0cb86394d87752", size = 688287, upload-time = "2025-12-29T22:05:48.119Z" },
-    { url = "https://files.pythonhosted.org/packages/cf/2e/46e3b911fda2a05739d5b682fa157ef2bd4906f2013aafb36714c5bd667e/cytriangle-3.0.1-cp311-cp311-manylinux_2_39_x86_64.whl", hash = "sha256:1593bd03a1ac3dcff45e62c2088b902fa7480c2d650d9695a77b34f17e78f29b", size = 1378459, upload-time = "2025-12-29T22:05:49.839Z" },
-    { url = "https://files.pythonhosted.org/packages/fe/98/a2d6cce140d3dc97a8dc86cac7e67afbb8386013fbcf7ad8c10697f7fa0d/cytriangle-3.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:00675e11d3f4acb8f68e3583c4605dd81745986e3be8abd2f9a21ddced0abef9", size = 355654, upload-time = "2025-12-29T22:05:51.563Z" },
-    { url = "https://files.pythonhosted.org/packages/b1/ee/3b266d01a7e1b5dc6ef7559c86a0ab4369cdd51e0e8cc503c4e5fee4628c/cytriangle-3.0.1-cp312-cp312-macosx_15_0_arm64.whl", hash = "sha256:c44bd1280916f2e084c0df6a7c9e400ce8794e5f3b2b07079b6a48745bcebf7b", size = 688349, upload-time = "2025-12-29T22:05:53.074Z" },
-    { url = "https://files.pythonhosted.org/packages/8d/f7/b4780800df1eb5cdbf3244457e6d00b99d3b99d3f1c64f4707f16718f471/cytriangle-3.0.1-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:0c5a7a77d2d60ae3e8c782402173c319a854d5c0e479b32acf72254a795ed6e7", size = 1358918, upload-time = "2025-12-29T22:05:54.327Z" },
-    { url = "https://files.pythonhosted.org/packages/0e/0a/98d9901c202aa82aebc13ae4008b727c320ceb2446e990d5509509d1ac71/cytriangle-3.0.1-cp312-cp312-win_amd64.whl", hash = "sha256:15b063a6d0e453990d7488d5f3882e811e0ba74afbb7c7cd51aa2706b39b96e4", size = 355434, upload-time = "2025-12-29T22:05:55.567Z" },
-    { url = "https://files.pythonhosted.org/packages/9b/14/da4d4d658ee46818b3ae43cce1e6717484b1fa0427fb604c7e843020c068/cytriangle-3.0.1-cp313-cp313-macosx_15_0_arm64.whl", hash = "sha256:ab767a9f3828ae29ef0a17c4e64596e4eb93aca49dc06c6ba1a2ace39695247f", size = 686083, upload-time = "2025-12-29T22:05:56.779Z" },
-    { url = "https://files.pythonhosted.org/packages/76/f9/9daf5008f7bc5bf2b45fdc8018e986e245655e773e44ed9347d3c680716e/cytriangle-3.0.1-cp313-cp313-manylinux_2_39_x86_64.whl", hash = "sha256:ef2fbae785990f04c67d72e66e20d4a0296ff196b2fa1cfd9f83074808748f50", size = 1346489, upload-time = "2025-12-29T22:05:58.286Z" },
-    { url = "https://files.pythonhosted.org/packages/1c/f8/8b04e605b55ddba78fe1a727b2831b7af679df8d2d0b7d4a876e3f590f4c/cytriangle-3.0.1-cp313-cp313-win_amd64.whl", hash = "sha256:bf9bbc4a2611b493a8dd38df7b574ff2b9461600f72a1db56deccfb8512f6b16", size = 354731, upload-time = "2025-12-29T22:05:59.953Z" },
-    { url = "https://files.pythonhosted.org/packages/3d/4b/23d81fe5c3430c8bb0f04bcc847445271cf37eb53e4fe5476a814307c595/cytriangle-3.0.1-cp314-cp314-macosx_15_0_arm64.whl", hash = "sha256:e917b8798643b0c8bde5111ca2676db2de2d5313f531a537afc1b3cc966a7451", size = 691200, upload-time = "2025-12-29T22:06:01.115Z" },
-    { url = "https://files.pythonhosted.org/packages/a2/85/cfe6698ca5f712ef981828d34900c6241af7b79ecfbcb0add7f723261e4d/cytriangle-3.0.1-cp314-cp314-manylinux_2_39_x86_64.whl", hash = "sha256:9d491bd86d5509f4316b0b0f96c314377887d47841d703ea49bcef5bf67718c7", size = 1343833, upload-time = "2025-12-29T22:06:02.581Z" },
-    { url = "https://files.pythonhosted.org/packages/36/88/498db3c2aa17e9fb6376c607dae508960f9ea939b97b484007b42f446f36/cytriangle-3.0.1-cp314-cp314-win_amd64.whl", hash = "sha256:7366f3838ced5e9bee476cb862f38c75a2835b1163282c5368d8dd8ef3710901", size = 360761, upload-time = "2025-12-29T22:06:04.18Z" },
+    { url = "https://files.pythonhosted.org/packages/13/c8/16573c1e2c395c4945c6c2ab1a69b4da4529737fa8b40c896d78f5193e67/cytriangle-2.0.0-cp311-cp311-macosx_13_0_x86_64.whl", hash = "sha256:105fb84b8ff2c9ca3765418b1af190c72c5f4ea6cefac9d4e1faf86508bfa9fe", size = 677194, upload-time = "2025-02-12T19:11:15.622Z" },
+    { url = "https://files.pythonhosted.org/packages/81/f9/05d030c4d21815a3d0215ae6efd8250c595a5ef9da9034919e53f8f02e31/cytriangle-2.0.0-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:10a93a23e9959c1f191df136cf755798a29d8a2ed608ce6c320d1a756aa2337d", size = 676632, upload-time = "2025-02-12T19:11:23.548Z" },
+    { url = "https://files.pythonhosted.org/packages/83/1f/c446277c5fdc63486f7ff82f21a542204c7caf4cc3b9d4cddce2a9f8354a/cytriangle-2.0.0-cp311-cp311-manylinux_2_39_x86_64.whl", hash = "sha256:8542a28082e2734263a25743df0be457f5ecb1ea9f95c5ea447b94464bcd872a", size = 1411534, upload-time = "2025-02-12T19:11:30.34Z" },
+    { url = "https://files.pythonhosted.org/packages/dc/c5/aca66a0349ca0fbdc82fc36cb3ef2e8f75e93b019a606955a297f91fe25f/cytriangle-2.0.0-cp311-cp311-win_amd64.whl", hash = "sha256:c23793d1ef2c5d0c385ded5e518bcc772ac359d64bdc2c325d894c828862b9d6", size = 343785, upload-time = "2025-02-12T19:11:35.557Z" },
+    { url = "https://files.pythonhosted.org/packages/66/b0/5b76359b91e86531a96371774b2c8a8c72442833be81917333ef77cbd81c/cytriangle-2.0.0-cp312-cp312-macosx_13_0_x86_64.whl", hash = "sha256:e5fda8667bab06073f2d44c50884ed4b28b21a9bf4d9d0ba3a045d6bd338dc2a", size = 678821, upload-time = "2025-02-12T19:11:17.374Z" },
+    { url = "https://files.pythonhosted.org/packages/09/af/4f6ebc74f8e9beced09b352f1c2c4ed8495227138aa98cd95cb564364963/cytriangle-2.0.0-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:72469c4c453e77d2bce4fa90ae954636f4ac3fb37663e1ceebcf6ea6cf0edbf9", size = 678394, upload-time = "2025-02-12T19:11:25.247Z" },
+    { url = "https://files.pythonhosted.org/packages/0c/63/b2749c2b00789e999e07a6c1adbaab6ffc8ac871d4e5ce33f5750097425d/cytriangle-2.0.0-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:1ded172cf321aee8d399b9aad8c04bf9d025663836c469964d137a1ee40c8b17", size = 1376175, upload-time = "2025-02-12T19:11:31.858Z" },
+    { url = "https://files.pythonhosted.org/packages/49/55/5e4297e7e242573eeeebf7117c0f9063883a9022bac015875f049b40d506/cytriangle-2.0.0-cp312-cp312-win_amd64.whl", hash = "sha256:c4fb9f27b5b499810a4178dfc40aefb346b4b042adea2a7743708ab1b61fe4f9", size = 342149, upload-time = "2025-02-12T19:11:36.747Z" },
+    { url = "https://files.pythonhosted.org/packages/8b/3c/9535f885ff175f29003c7acc3d303fb6bd9810ea40e85e2bc17eaf398021/cytriangle-2.0.0-cp313-cp313-macosx_13_0_x86_64.whl", hash = "sha256:07d71da109fa51f7f0ef0905320d6093183fa25d857f3231c7a37a9091978b43", size = 673881, upload-time = "2025-02-12T19:11:19.553Z" },
+    { url = "https://files.pythonhosted.org/packages/7e/bc/a93ee02c4d022853dafccfe5a65c4c2b597e8f88f85b6bbdbae2f663bd99/cytriangle-2.0.0-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:9517c25ad700c31481b7afbb1f4c3ab30de029fa0d67333dba75e69588dd978f", size = 673417, upload-time = "2025-02-12T19:11:26.483Z" },
+    { url = "https://files.pythonhosted.org/packages/97/09/b79b89a1dd6147e97f823b3b35fefa00a68c6571d4e46a632f8f3a74f321/cytriangle-2.0.0-cp313-cp313-manylinux_2_39_x86_64.whl", hash = "sha256:a12254af013a855bd205786774326bb1db59b6003959810cbbc35f479994fe05", size = 1374572, upload-time = "2025-02-12T19:11:33.067Z" },
+    { url = "https://files.pythonhosted.org/packages/5b/ff/4b5d34592a8aa83d0f182ce0d3f69cb9e1d29831f90c6318a98639fd2d63/cytriangle-2.0.0-cp313-cp313-win_amd64.whl", hash = "sha256:012eed662dab2c5c131794643bba2e9a25f8772360a376edc312b10b7c12bc08", size = 341283, upload-time = "2025-02-12T19:11:38.211Z" },
 ]
 
 [[package]]
@@ -2451,9 +2452,9 @@ name = "rhino-shapley-interop"
 version = "0.0.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "numpy" },
-    { name = "rhino3dm" },
-    { name = "shapely" },
+    { name = "numpy", marker = "python_full_version < '3.14'" },
+    { name = "rhino3dm", marker = "python_full_version < '3.14'" },
+    { name = "shapely", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/7c/5a/f217048676f89fdf3fc13064a283ef130e9d428aacc3449e018d03eed4c7/rhino_shapley_interop-0.0.4.tar.gz", hash = "sha256:798bd04fff8100d0d352f5d8460a19a2db3e0e31be76d0dfc9aa52b0ec6483e3", size = 10151, upload-time = "2022-02-11T19:41:01.916Z" }
 wheels = [
@@ -2764,7 +2765,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "cad-to-shapely", marker = "extra == 'dxf'" },
-    { name = "cytriangle" },
+    { name = "cytriangle", specifier = "<3" },
     { name = "matplotlib" },
     { name = "more-itertools" },
     { name = "numba", marker = "extra == 'numba'" },
