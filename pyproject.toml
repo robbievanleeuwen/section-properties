@@ -1,6 +1,6 @@
 [project]
 name = "sectionproperties"
-version = "3.10.1"
+version = "3.10.2"
 description = "A python package for the analysis of arbitrary cross-sections using the finite element method."
 readme = "README.md"
 license = {file = "LICENSE"}
