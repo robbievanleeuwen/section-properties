@@ -53,7 +53,7 @@ version-resolver:
 # Custom text at start of release
 header: >
 
-  This patch improves `.dxf` imports, many thanks to @stecknal.
+  This patch re-enables support for `cytriangle` v3.
 
 template: |
 
