@@ -49,6 +49,38 @@ Features
 
 See the complete list of ``sectionproperties`` features :ref:`here<label-features>`.
 
+Quick Start
+-----------
+
+Analyse a rectangular cross-section and retrieve some key properties:
+
+.. code:: python
+
+   from sectionproperties.pre.library import rectangular_section
+   from sectionproperties.analysis import Section
+
+   # create a 50 x 100 rectangle and mesh it
+   geom = rectangular_section(d=100, b=50)
+   geom.create_mesh(mesh_sizes=[5])
+
+   # run a geometric analysis
+   sec = Section(geometry=geom)
+   sec.calculate_geometric_properties()
+
+   # get some results
+   area = sec.get_area()
+   ixx_c, iyy_c, ixy_c = sec.get_ic()
+   print(f"Area = {area:.0f} mm²")
+   print(f"Ixx = {ixx_c:.0f} mm⁴, Iyy = {iyy_c:.0f} mm⁴")
+
+.. code:: text
+
+   Area = 5000 mm²
+   Ixx = 4166667 mm⁴, Iyy = 1041667 mm⁴
+
+See the :doc:`examples <examples>` for more detailed walkthroughs including composite
+sections, warping analysis, and stress calculations.
+
 Contributing
 ------------
 
