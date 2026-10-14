@@ -110,6 +110,20 @@ def test_no_analysis(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_mat.get_q()
 
+    # check qm
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_qm()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_qm()
+
+    # check cm
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_cm()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_cm()
+
     # check eq
     with pytest.raises(RuntimeError):
         rect_no_mat.get_eq()
@@ -372,6 +386,20 @@ def test_get_geometric_only(sec_no_mat_and_mat):
     rcx, rcy = rect_mat.get_rc()
     assert rcx == pytest.approx(np.sqrt(1 / 12.0))
     assert rcy == pytest.approx(np.sqrt(1 / 12.0))
+
+    # check mass properties
+    qx_m, qy_m = rect_no_mat.get_qm()
+    assert qx_m == pytest.approx(0.5)
+    assert qy_m == pytest.approx(0.5)
+    x_cm, y_cm = rect_no_mat.get_cm()
+    assert x_cm == pytest.approx(0.5)
+    assert y_cm == pytest.approx(0.5)
+    qx_m, qy_m = rect_mat.get_qm()
+    assert qx_m == pytest.approx(1.0)
+    assert qy_m == pytest.approx(1.0)
+    x_cm, y_cm = rect_mat.get_cm()
+    assert x_cm == pytest.approx(0.5)
+    assert y_cm == pytest.approx(0.5)
 
     # check ip
     i11, i22 = rect_no_mat.get_ip()
@@ -804,6 +832,50 @@ def test_get_plastic(sec_no_mat_and_mat):
     assert sf_11_minus == pytest.approx(1.5)
     assert sf_22_plus == pytest.approx(1.5)
     assert sf_22_minus == pytest.approx(1.5)
+
+
+def test_get_mass_properties():
+    """Check mass properties for a composite section with differing densities."""
+    mat1 = Material(
+        name="test1",
+        elastic_modulus=1,
+        poissons_ratio=0,
+        yield_strength=1,
+        density=1,
+        color="w",
+    )
+    mat2 = Material(
+        name="test2",
+        elastic_modulus=10,
+        poissons_ratio=0,
+        yield_strength=1,
+        density=3,
+        color="w",
+    )
+    geom1 = rectangular_section(d=1, b=1, material=mat1)
+    geom2 = rectangular_section(d=1, b=1, material=mat2).shift_section(x_offset=2)
+    geom = geom1 + geom2
+    geom.create_mesh(mesh_sizes=[0])
+    sec = Section(geom)
+    sec.calculate_geometric_properties()
+
+    # check mass
+    assert sec.get_mass() == pytest.approx(4.0)
+
+    # check qm
+    qx_m, qy_m = sec.get_qm()
+    assert qx_m == pytest.approx(2.0)
+    assert qy_m == pytest.approx(8.0)
+
+    # check cm
+    x_cm, y_cm = sec.get_cm()
+    assert x_cm == pytest.approx(2.0)
+    assert y_cm == pytest.approx(0.5)
+
+    # Elastic centroid should be different in x but equal in y
+    cx, cy = sec.get_c()
+    assert cx > x_cm
+    assert cy == y_cm
 
 
 def test_get_effective_material():
