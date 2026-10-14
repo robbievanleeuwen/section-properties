@@ -195,7 +195,7 @@ class Section:
           - Area weighted material properties (composite only) :math:`E_{eff}`,
             :math:`G_{eff}`, :math:`{\nu}_{eff}`
           - Modulus weighted area (axial rigidity)
-          - First moments of area
+          - First moments of area (E-weighed and rho-weighted)
           - Second moments of area about the global axis
           - Second moments of area about the centroidal axis
           - Elastic centroid
@@ -214,6 +214,8 @@ class Section:
             self.section_props.ga = 0.0
             self.section_props.qx = 0.0
             self.section_props.qy = 0.0
+            self.section_props.qx_m = 0.0
+            self.section_props.qy_m = 0.0
             self.section_props.ixx_g = 0.0
             self.section_props.iyy_g = 0.0
             self.section_props.ixy_g = 0.0
@@ -248,6 +250,8 @@ class Section:
                 self.section_props.ga += area * g
                 self.section_props.qx += qx * e
                 self.section_props.qy += qy * e
+                self.section_props.qx_m += qx * rho
+                self.section_props.qy_m += qy * rho
                 self.section_props.ixx_g += ixx_g * e
                 self.section_props.iyy_g += iyy_g * e
                 self.section_props.ixy_g += ixy_g * e
@@ -263,6 +267,7 @@ class Section:
 
             # calculate derived properties
             self.section_props.calculate_elastic_centroid()
+            self.section_props.calculate_mass_centroid()
             self.section_props.calculate_centroidal_properties(
                 node_list=self.mesh["vertices"]
             )
@@ -2182,6 +2187,37 @@ class Section:
             raise RuntimeError(msg)
 
         return self.section_props.cx, self.section_props.cy
+
+    def get_qm(self) -> tuple[float, float]:
+        """Returns the density-weighted cross-section mass first moments of area.
+
+        Returns:
+            Mass first moments of area (``qx_m``, ``qy_m``), relative to the
+            global coordinates origin.
+
+        Raises:
+            RuntimeError: If a geometric analysis has not been performed
+        """
+        if self.section_props.qx_m is None or self.section_props.qy_m is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
+
+        return self.section_props.qx_m, self.section_props.qy_m
+
+    def get_cm(self) -> tuple[float, float]:
+        """Returns the cross-section mass centroid (center of mass).
+
+        Returns:
+            Mass centroid (``cx_m``, ``cy_m``)
+
+        Raises:
+            RuntimeError: If a geometric analysis has not been performed
+        """
+        if self.section_props.x_cm is None or self.section_props.y_cm is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
+
+        return self.section_props.x_cm, self.section_props.y_cm
 
     def get_ic(self) -> tuple[float, float, float]:
         """Returns the cross-section centroidal second moments of area.
