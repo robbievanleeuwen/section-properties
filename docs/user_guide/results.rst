@@ -43,8 +43,10 @@ Geometric Analysis
     ~sectionproperties.analysis.section.Section.get_area
     ~sectionproperties.analysis.section.Section.get_perimeter
     ~sectionproperties.analysis.section.Section.get_q
+    ~sectionproperties.analysis.section.Section.get_qm
     ~sectionproperties.analysis.section.Section.get_ig
     ~sectionproperties.analysis.section.Section.get_c
+    ~sectionproperties.analysis.section.Section.get_cm
     ~sectionproperties.analysis.section.Section.get_ic
     ~sectionproperties.analysis.section.Section.get_z
     ~sectionproperties.analysis.section.Section.get_rc
@@ -101,10 +103,12 @@ Geometric Analysis
     ~sectionproperties.analysis.section.Section.get_area
     ~sectionproperties.analysis.section.Section.get_perimeter
     ~sectionproperties.analysis.section.Section.get_mass
+    ~sectionproperties.analysis.section.Section.get_qm
     ~sectionproperties.analysis.section.Section.get_ea
     ~sectionproperties.analysis.section.Section.get_eq
     ~sectionproperties.analysis.section.Section.get_eig
     ~sectionproperties.analysis.section.Section.get_c
+    ~sectionproperties.analysis.section.Section.get_cm
     ~sectionproperties.analysis.section.Section.get_eic
     ~sectionproperties.analysis.section.Section.get_ez
     ~sectionproperties.analysis.section.Section.get_my
