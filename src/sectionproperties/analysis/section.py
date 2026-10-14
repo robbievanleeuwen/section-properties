@@ -2189,7 +2189,22 @@ class Section:
         return self.section_props.cx, self.section_props.cy
 
     def get_qm(self) -> tuple[float, float]:
-        """Returns the density-weighted cross-section mass first moments of area.
+        r"""Returns the density-weighted cross-section mass first moments of area.
+
+        For a geometric section without a material, the result is identical to
+        the first moment of area with dimensions :math:`\textbf{[Length]}^3`:
+
+        .. math::
+            Q_x &= \int_A y \, dA \\
+            Q_y &= \int_A x \, dA \\
+
+        For a composite section, the result has dimensions
+        :math:`\textbf{[Length]}^{2} \cdot \textbf{[Mass]}` as the area integral
+        is multiplied by the material densities :
+
+        .. math::
+            Q_{m,x} &= \int_A \rho y \, dA \\
+            Q_{m,y} &= \int_A \rho x \, dA \\
 
         Returns:
             Mass first moments of area (``qx_m``, ``qy_m``), relative to the
