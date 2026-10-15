@@ -47,6 +47,9 @@ class SectionProperties:
         ixx_g: Second moment of area about the global x-axis
         iyy_g: Second moment of area about the global y-axis
         ixy_g: Second moment of area about the global xy-axis
+        i_m_xx: Second moment of mass about the global x-axis
+        i_m_yy: Second moment of mass about the global y-axis
+        i_m_xy: Second moment of mass about the global xy-axis
         cx: X coordinate of the elastic centroid
         cy: Y coordinate of the elastic centroid
         x_cm: X coordinate of the mass centroid
@@ -155,6 +158,9 @@ class SectionProperties:
     ixx_g: float | None = None
     iyy_g: float | None = None
     ixy_g: float | None = None
+    i_m_xx: float | None = None  # Mass second moments about the x-axis
+    i_m_yy: float | None = None  # Mass second moments about the y-axis
+    i_m_xy: float | None = None  # Mass second moments about the xy-axis
     cx: float | None = None  # Elastic centroid x
     cy: float | None = None  # Elastic centroid y
     x_cm: float | None = None  # Mass centroid x

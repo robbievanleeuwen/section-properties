@@ -386,6 +386,14 @@ shape functions are quartic:
   I_{yy} &= \sum_e \sum_{i=1}^6 w_i (\textbf{N}_i \textbf{x}_e)^2 J_e \\
   I_{xy} &= \sum_e \sum_{i=1}^6 w_i \textbf{N} \textbf{y}_e \textbf{N} \textbf{x}_e J_e \\
 
+The density weighted second moments of area (second moments of mass) are obtained by
+multiplying the second moment of area of each element by its density :math:`\rho_e`:
+
+.. math::
+  I_{xx,m} &= \sum_e \rho_e \sum_{i=1}^6 w_i (\textbf{N}_i \textbf{y}_e)^2 J_e \\
+  I_{yy,m} &= \sum_e \rho_e \sum_{i=1}^6 w_i (\textbf{N}_i \textbf{x}_e)^2 J_e \\
+  I_{xy,m} &= \sum_e \rho_e \sum_{i=1}^6 w_i \textbf{N}_i \textbf{y}_e \textbf{N}_i \textbf{x}_e J_e \\
+
 The above equations list the second moments of area about the global coordinate system
 axis, which is chosen arbitrarily by the user. These properties can be found about the
 centroidal axis of the cross-section by using the parallel axis theorem:

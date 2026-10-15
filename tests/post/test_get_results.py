@@ -145,6 +145,13 @@ def test_no_analysis(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_mat.get_eig()
 
+    # check im
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_im()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_im()
+
     # check c
     with pytest.raises(RuntimeError):
         rect_no_mat.get_c()
@@ -400,6 +407,15 @@ def test_get_geometric_only(sec_no_mat_and_mat):
     x_cm, y_cm = rect_mat.get_cm()
     assert x_cm == pytest.approx(0.5)
     assert y_cm == pytest.approx(0.5)
+
+    # check im
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_im()
+
+    im_xx, im_yy, im_xy = rect_mat.get_im()
+    assert im_xx == pytest.approx(2 / 3.0)
+    assert im_yy == pytest.approx(2 / 3.0)
+    assert im_xy == pytest.approx(0.5)
 
     # check ip
     i11, i22 = rect_no_mat.get_ip()
@@ -871,6 +887,15 @@ def test_get_mass_properties():
     x_cm, y_cm = sec.get_cm()
     assert x_cm == pytest.approx(2.0)
     assert y_cm == pytest.approx(0.5)
+
+    # check im
+    # im_xx = 1 * (1 / 3) + 3 * (1 / 3)
+    # im_yy = 1 * (1 / 3) + 3 * ((3**3 - 2**3) / 3)
+    # im_xy = 1 * (1 / 4) + 3 * (5 / 4)
+    im_xx, im_yy, im_xy = sec.get_im()
+    assert im_xx == pytest.approx(4 / 3.0)
+    assert im_yy == pytest.approx(58 / 3.0)
+    assert im_xy == pytest.approx(4.0)
 
     # Elastic centroid should be different in x but equal in y
     cx, cy = sec.get_c()
