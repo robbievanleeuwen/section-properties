@@ -259,36 +259,27 @@ class SectionProperties:
     def calculate_mass_centroid(self) -> None:
         """Calculates and stores the mass centroid.
 
-        Raises:
-            RuntimeError: If geometric properties have not already been calculated
-        """
-        if self.qx_m is not None and self.qy_m is not None and self.mass is not None:
-            self.x_cm = self.qy_m / self.mass
-            self.y_cm = self.qx_m / self.mass
-        else:
-            msg = "Calculate geometric properties first."
-            raise RuntimeError(msg)
-
-    def calculate_mass_centroidal_properties(self) -> None:
-        """Calculates and stores the second moments of mass about the mass centroid.
-
-        The second moments of mass about the mass centroid are calculated using the
+        Also calculates the second moments of mass about the mass centroid using the
         parallel axis theorem.
 
         Raises:
             RuntimeError: If geometric properties have not already been calculated
         """
         if (
-            self.i_m_xx is not None
-            and self.i_m_yy is not None
-            and self.i_m_xy is not None
-            and self.qx_m is not None
+            self.qx_m is not None
             and self.qy_m is not None
             and self.mass is not None
+            and self.i_m_xx is not None
+            and self.i_m_yy is not None
+            and self.i_m_xy is not None
         ):
-            self.i_m_xx_c = self.i_m_xx - self.qx_m**2 / self.mass
-            self.i_m_yy_c = self.i_m_yy - self.qy_m**2 / self.mass
-            self.i_m_xy_c = self.i_m_xy - self.qx_m * self.qy_m / self.mass
+            self.x_cm = self.qy_m / self.mass
+            self.y_cm = self.qx_m / self.mass
+
+            # calculate second moments of mass about the mass centroid
+            self.i_m_xx_c = self.i_m_xx - self.y_cm**2 * self.mass
+            self.i_m_yy_c = self.i_m_yy - self.x_cm**2 * self.mass
+            self.i_m_xy_c = self.i_m_xy - self.x_cm * self.y_cm * self.mass
         else:
             msg = "Calculate geometric properties first."
             raise RuntimeError(msg)

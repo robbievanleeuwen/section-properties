@@ -276,7 +276,6 @@ class Section:
             # calculate derived properties
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_mass_centroid()
-            self.section_props.calculate_mass_centroidal_properties()
             self.section_props.calculate_centroidal_properties(
                 node_list=self.mesh["vertices"]
             )
@@ -2235,7 +2234,7 @@ class Section:
         properties have been applied to the cross-section.
 
         The returned values have dimensionality :math:`\textrm{[Length]}^2 \cdot
-        \textrm{[Mass]} \cdot \textrm{[Length]}^-1` or, equivalently,
+        \textrm{[Mass]} \cdot \textrm{[Length]}^{-1}` or, equivalently,
         :math:`\textrm{[Length]} \cdot \textrm{[Mass]}`.
 
         Returns:
@@ -2272,8 +2271,11 @@ class Section:
         This is a composite only property, as such this can only be returned if material
         properties have been applied to the cross-section.
 
+        .. note:: This returns the moments about the mass centroid (center of mass,
+          as returned by :meth:`get_cm`), not the elastic centroid.
+
         The returned values have dimensionality :math:`\textrm{[Length]}^2 \cdot
-        \textrm{[Mass]} \cdot \textrm{[Length]}^-1` or, equivalently,
+        \textrm{[Mass]} \cdot \textrm{[Length]}^{-1}` or, equivalently,
         :math:`\textrm{[Length]} \cdot \textrm{[Mass]}`.
 
         Returns:
