@@ -107,7 +107,8 @@ Geometric Analysis
     ~sectionproperties.analysis.section.Section.get_ea
     ~sectionproperties.analysis.section.Section.get_eq
     ~sectionproperties.analysis.section.Section.get_eig
-    ~sectionproperties.analysis.section.Section.get_im
+    ~sectionproperties.analysis.section.Section.get_im_g
+    ~sectionproperties.analysis.section.Section.get_im_cm
     ~sectionproperties.analysis.section.Section.get_c
     ~sectionproperties.analysis.section.Section.get_cm
     ~sectionproperties.analysis.section.Section.get_eic

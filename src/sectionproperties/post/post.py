@@ -50,6 +50,9 @@ class SectionProperties:
         i_m_xx: Second moment of mass about the global x-axis
         i_m_yy: Second moment of mass about the global y-axis
         i_m_xy: Second moment of mass about the global xy-axis
+        i_m_xx_c: Second moment of mass about the centroidal x-axis
+        i_m_yy_c: Second moment of mass about the centroidal y-axis
+        i_m_xy_c: Second moment of mass about the centroidal xy-axis
         cx: X coordinate of the elastic centroid
         cy: Y coordinate of the elastic centroid
         x_cm: X coordinate of the mass centroid
@@ -161,6 +164,9 @@ class SectionProperties:
     i_m_xx: float | None = None  # Mass second moments about the x-axis
     i_m_yy: float | None = None  # Mass second moments about the y-axis
     i_m_xy: float | None = None  # Mass second moments about the xy-axis
+    i_m_xx_c: float | None = None  # Mass second moments about the mass centroid x-axis
+    i_m_yy_c: float | None = None  # Mass second moments about the mass centroid y-axis
+    i_m_xy_c: float | None = None  # Mass second moments about the mass centroid xy-axis
     cx: float | None = None  # Elastic centroid x
     cy: float | None = None  # Elastic centroid y
     x_cm: float | None = None  # Mass centroid x
@@ -259,6 +265,30 @@ class SectionProperties:
         if self.qx_m is not None and self.qy_m is not None and self.mass is not None:
             self.x_cm = self.qy_m / self.mass
             self.y_cm = self.qx_m / self.mass
+        else:
+            msg = "Calculate geometric properties first."
+            raise RuntimeError(msg)
+
+    def calculate_mass_centroidal_properties(self) -> None:
+        """Calculates and stores the second moments of mass about the mass centroid.
+
+        The second moments of mass about the mass centroid are calculated using the
+        parallel axis theorem.
+
+        Raises:
+            RuntimeError: If geometric properties have not already been calculated
+        """
+        if (
+            self.i_m_xx is not None
+            and self.i_m_yy is not None
+            and self.i_m_xy is not None
+            and self.qx_m is not None
+            and self.qy_m is not None
+            and self.mass is not None
+        ):
+            self.i_m_xx_c = self.i_m_xx - self.qx_m**2 / self.mass
+            self.i_m_yy_c = self.i_m_yy - self.qy_m**2 / self.mass
+            self.i_m_xy_c = self.i_m_xy - self.qx_m * self.qy_m / self.mass
         else:
             msg = "Calculate geometric properties first."
             raise RuntimeError(msg)

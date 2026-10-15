@@ -199,6 +199,7 @@ class Section:
           - Second moments of area about the global axis
           - Second moments of area about the centroidal axis
           - Second moments of mass about the global axis
+          - Second moments of mass about the centroidal axis
           - Elastic centroid
           - Centroidal section moduli
           - Radii of gyration
@@ -275,6 +276,7 @@ class Section:
             # calculate derived properties
             self.section_props.calculate_elastic_centroid()
             self.section_props.calculate_mass_centroid()
+            self.section_props.calculate_mass_centroidal_properties()
             self.section_props.calculate_centroidal_properties(
                 node_list=self.mesh["vertices"]
             )
@@ -2226,7 +2228,7 @@ class Section:
 
         return self.section_props.qx_m, self.section_props.qy_m
 
-    def get_im(self) -> tuple[float, float, float]:
+    def get_im_g(self) -> tuple[float, float, float]:
         r"""Returns the cross-section global second moments of mass.
 
         This is a composite only property, as such this can only be returned if material
@@ -2237,8 +2239,8 @@ class Section:
         :math:`\textrm{[Length]} \cdot \textrm{[Mass]}`.
 
         Returns:
-            Second moments of mass about the global axis (``im_xx``, ``im_yy``,
-            ``im_xy``)
+            Second moments of mass about the global axis (``i_m_xx``, ``i_m_yy``,
+            ``i_m_xy``)
 
         Raises:
             RuntimeError: If material properties have *not* been applied
@@ -2262,6 +2264,44 @@ class Section:
             self.section_props.i_m_xx,
             self.section_props.i_m_yy,
             self.section_props.i_m_xy,
+        )
+
+    def get_im_cm(self) -> tuple[float, float, float]:
+        r"""Returns the cross-section second moments of mass about the mass centroid.
+
+        This is a composite only property, as such this can only be returned if material
+        properties have been applied to the cross-section.
+
+        The returned values have dimensionality :math:`\textrm{[Length]}^2 \cdot
+        \textrm{[Mass]} \cdot \textrm{[Length]}^-1` or, equivalently,
+        :math:`\textrm{[Length]} \cdot \textrm{[Mass]}`.
+
+        Returns:
+            Second moments of mass about the mass centroidal axis (``i_m_xx_c``,
+            ``i_m_yy_c``, ``i_m_xy_c``)
+
+        Raises:
+            RuntimeError: If material properties have *not* been applied
+            RuntimeError: If a geometric analysis has not been performed
+        """
+        if not self.is_composite():
+            msg = "Attempting to get a composite only property for a geometric analysis"
+            msg += " (material properties have not been applied). Consider using"
+            msg += " get_ic()."
+            raise RuntimeError(msg)
+
+        if (
+            self.section_props.i_m_xx_c is None
+            or self.section_props.i_m_yy_c is None
+            or self.section_props.i_m_xy_c is None
+        ):
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
+
+        return (
+            self.section_props.i_m_xx_c,
+            self.section_props.i_m_yy_c,
+            self.section_props.i_m_xy_c,
         )
 
     def get_cm(self) -> tuple[float, float]:

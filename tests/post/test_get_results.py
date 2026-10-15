@@ -145,12 +145,19 @@ def test_no_analysis(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_mat.get_eig()
 
-    # check im
+    # check im_g
     with pytest.raises(RuntimeError):
-        rect_no_mat.get_im()
+        rect_no_mat.get_im_g()
 
     with pytest.raises(RuntimeError):
-        rect_mat.get_im()
+        rect_mat.get_im_g()
+
+    # check im_cm
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_im_cm()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_im_cm()
 
     # check c
     with pytest.raises(RuntimeError):
@@ -408,14 +415,23 @@ def test_get_geometric_only(sec_no_mat_and_mat):
     assert x_cm == pytest.approx(0.5)
     assert y_cm == pytest.approx(0.5)
 
-    # check im
+    # check im_g
     with pytest.raises(RuntimeError):
-        rect_no_mat.get_im()
+        rect_no_mat.get_im_g()
 
-    im_xx, im_yy, im_xy = rect_mat.get_im()
+    im_xx, im_yy, im_xy = rect_mat.get_im_g()
     assert im_xx == pytest.approx(2 / 3.0)
     assert im_yy == pytest.approx(2 / 3.0)
     assert im_xy == pytest.approx(0.5)
+
+    # check im_cm
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_im_cm()
+
+    im_xx_c, im_yy_c, im_xy_c = rect_mat.get_im_cm()
+    assert im_xx_c == pytest.approx(2 / 12.0)
+    assert im_yy_c == pytest.approx(2 / 12.0)
+    assert im_xy_c == pytest.approx(0.0)
 
     # check ip
     i11, i22 = rect_no_mat.get_ip()
@@ -888,14 +904,23 @@ def test_get_mass_properties():
     assert x_cm == pytest.approx(2.0)
     assert y_cm == pytest.approx(0.5)
 
-    # check im
+    # check im_g
     # im_xx = 1 * (1 / 3) + 3 * (1 / 3)
     # im_yy = 1 * (1 / 3) + 3 * ((3**3 - 2**3) / 3)
     # im_xy = 1 * (1 / 4) + 3 * (5 / 4)
-    im_xx, im_yy, im_xy = sec.get_im()
+    im_xx, im_yy, im_xy = sec.get_im_g()
     assert im_xx == pytest.approx(4 / 3.0)
     assert im_yy == pytest.approx(58 / 3.0)
     assert im_xy == pytest.approx(4.0)
+
+    # check im_cm (mass centroid is located at (2.0, 0.5))
+    # im_xx_c = 1 * (1 / 12) + 3 * (1 / 12) = 4 / 12
+    # im_yy_c = 1 * ((2**3 - 1**3) / 3) + 3 * (1 / 3) = 10 / 3
+    # im_xy_c = 1 * (-3 / 2 * 0) + 3 * (1 / 2 * 0) = 0
+    im_xx_c, im_yy_c, im_xy_c = sec.get_im_cm()
+    assert im_xx_c == pytest.approx(4 / 12.0)
+    assert im_yy_c == pytest.approx(10 / 3.0)
+    assert im_xy_c == pytest.approx(0.0)
 
     # Elastic centroid should be different in x but equal in y
     cx, cy = sec.get_c()
