@@ -2196,37 +2196,6 @@ class Section:
 
         return self.section_props.cx, self.section_props.cy
 
-    def get_qm(self) -> tuple[float, float]:
-        r"""Returns the density-weighted cross-section mass first moments of area.
-
-        For a geometric section without a material, the result is identical to
-        the first moment of area with dimensions :math:`\textbf{[Length]}^3`:
-
-        .. math::
-            Q_x &= \int_A y \, dA \\
-            Q_y &= \int_A x \, dA \\
-
-        For a composite section, the result has dimensions
-        :math:`\textbf{[Length]}^{2} \cdot \textbf{[Mass]}` as the area integral
-        is multiplied by the material densities :
-
-        .. math::
-            Q_{m,x} &= \int_A \rho y \, dA \\
-            Q_{m,y} &= \int_A \rho x \, dA \\
-
-        Returns:
-            Mass first moments of area (``qx_m``, ``qy_m``), relative to the
-            global coordinates origin.
-
-        Raises:
-            RuntimeError: If a geometric analysis has not been performed
-        """
-        if self.section_props.qx_m is None or self.section_props.qy_m is None:
-            msg = "Conduct a geometric analysis."
-            raise RuntimeError(msg)
-
-        return self.section_props.qx_m, self.section_props.qy_m
-
     def get_im_g(self) -> tuple[float, float, float]:
         r"""Returns the cross-section global second moments of mass.
 

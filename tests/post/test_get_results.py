@@ -110,13 +110,6 @@ def test_no_analysis(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_mat.get_q()
 
-    # check qm
-    with pytest.raises(RuntimeError):
-        rect_no_mat.get_qm()
-
-    with pytest.raises(RuntimeError):
-        rect_mat.get_qm()
-
     # check cm
     with pytest.raises(RuntimeError):
         rect_no_mat.get_cm()
@@ -402,15 +395,13 @@ def test_get_geometric_only(sec_no_mat_and_mat):
     assert rcy == pytest.approx(np.sqrt(1 / 12.0))
 
     # check mass properties
-    qx_m, qy_m = rect_no_mat.get_qm()
-    assert qx_m == pytest.approx(0.5)
-    assert qy_m == pytest.approx(0.5)
+    assert rect_no_mat.section_props.qx_m == pytest.approx(0.5)
+    assert rect_no_mat.section_props.qy_m == pytest.approx(0.5)
     x_cm, y_cm = rect_no_mat.get_cm()
     assert x_cm == pytest.approx(0.5)
     assert y_cm == pytest.approx(0.5)
-    qx_m, qy_m = rect_mat.get_qm()
-    assert qx_m == pytest.approx(1.0)
-    assert qy_m == pytest.approx(1.0)
+    assert rect_mat.section_props.qx_m == pytest.approx(1.0)
+    assert rect_mat.section_props.qy_m == pytest.approx(1.0)
     x_cm, y_cm = rect_mat.get_cm()
     assert x_cm == pytest.approx(0.5)
     assert y_cm == pytest.approx(0.5)
@@ -895,9 +886,8 @@ def test_get_mass_properties():
     assert sec.get_mass() == pytest.approx(4.0)
 
     # check qm
-    qx_m, qy_m = sec.get_qm()
-    assert qx_m == pytest.approx(2.0)
-    assert qy_m == pytest.approx(8.0)
+    assert sec.section_props.qx_m == pytest.approx(2.0)
+    assert sec.section_props.qy_m == pytest.approx(8.0)
 
     # check cm
     x_cm, y_cm = sec.get_cm()
