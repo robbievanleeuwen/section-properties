@@ -48,6 +48,14 @@ def test_elastic_centroid_error(example_section):
         sec.section_props.calculate_elastic_centroid()
 
 
+def test_mass_centroid_error(example_section):
+    """Test the ValueError when calculating mass centroids."""
+    sec = example_section
+
+    with pytest.raises(RuntimeError, match="Calculate geometric properties first"):
+        sec.section_props.calculate_mass_centroid()
+
+
 def test_centroidal_properties_error(example_section):
     """Test the ValueError when calculating centroidal_properties."""
     sec = example_section

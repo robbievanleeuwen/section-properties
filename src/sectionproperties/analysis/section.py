@@ -195,9 +195,11 @@ class Section:
           - Area weighted material properties (composite only) :math:`E_{eff}`,
             :math:`G_{eff}`, :math:`{\nu}_{eff}`
           - Modulus weighted area (axial rigidity)
-          - First moments of area
+          - First moments of area (E-weighed and rho-weighted)
           - Second moments of area about the global axis
           - Second moments of area about the centroidal axis
+          - Second moments of mass about the global axis
+          - Second moments of mass about the centroidal axis
           - Elastic centroid
           - Centroidal section moduli
           - Radii of gyration
@@ -214,9 +216,14 @@ class Section:
             self.section_props.ga = 0.0
             self.section_props.qx = 0.0
             self.section_props.qy = 0.0
+            self.section_props.qx_m = 0.0
+            self.section_props.qy_m = 0.0
             self.section_props.ixx_g = 0.0
             self.section_props.iyy_g = 0.0
             self.section_props.ixy_g = 0.0
+            self.section_props.i_m_xx = 0.0
+            self.section_props.i_m_yy = 0.0
+            self.section_props.i_m_xy = 0.0
 
             # calculate perimeter
             self.section_props.perimeter = self.geometry.calculate_perimeter()
@@ -248,9 +255,14 @@ class Section:
                 self.section_props.ga += area * g
                 self.section_props.qx += qx * e
                 self.section_props.qy += qy * e
+                self.section_props.qx_m += qx * rho
+                self.section_props.qy_m += qy * rho
                 self.section_props.ixx_g += ixx_g * e
                 self.section_props.iyy_g += iyy_g * e
                 self.section_props.ixy_g += ixy_g * e
+                self.section_props.i_m_xx += ixx_g * rho
+                self.section_props.i_m_yy += iyy_g * rho
+                self.section_props.i_m_xy += ixy_g * rho
 
                 if progress and task is not None:
                     progress.update(task_id=task, advance=1)
@@ -263,6 +275,7 @@ class Section:
 
             # calculate derived properties
             self.section_props.calculate_elastic_centroid()
+            self.section_props.calculate_mass_centroid()
             self.section_props.calculate_centroidal_properties(
                 node_list=self.mesh["vertices"]
             )
@@ -2182,6 +2195,100 @@ class Section:
             raise RuntimeError(msg)
 
         return self.section_props.cx, self.section_props.cy
+
+    def get_im_g(self) -> tuple[float, float, float]:
+        r"""Returns the cross-section global second moments of mass.
+
+        This is a composite only property, as such this can only be returned if material
+        properties have been applied to the cross-section.
+
+        The returned values have dimensionality :math:`\textrm{[Length]}^2 \cdot
+        \textrm{[Mass]} \cdot \textrm{[Length]}^{-1}` or, equivalently,
+        :math:`\textrm{[Length]} \cdot \textrm{[Mass]}`.
+
+        Returns:
+            Second moments of mass about the global axis (``i_m_xx``, ``i_m_yy``,
+            ``i_m_xy``)
+
+        Raises:
+            RuntimeError: If material properties have *not* been applied
+            RuntimeError: If a geometric analysis has not been performed
+        """
+        if not self.is_composite():
+            msg = "Attempting to get a composite only property for a geometric analysis"
+            msg += " (material properties have not been applied). Consider using"
+            msg += " get_ig()."
+            raise RuntimeError(msg)
+
+        if (
+            self.section_props.i_m_xx is None
+            or self.section_props.i_m_yy is None
+            or self.section_props.i_m_xy is None
+        ):
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
+
+        return (
+            self.section_props.i_m_xx,
+            self.section_props.i_m_yy,
+            self.section_props.i_m_xy,
+        )
+
+    def get_im_cm(self) -> tuple[float, float, float]:
+        r"""Returns the cross-section second moments of mass about the mass centroid.
+
+        This is a composite only property, as such this can only be returned if material
+        properties have been applied to the cross-section.
+
+        .. note:: This returns the moments about the mass centroid (center of mass,
+          as returned by :meth:`get_cm`), not the elastic centroid.
+
+        The returned values have dimensionality :math:`\textrm{[Length]}^2 \cdot
+        \textrm{[Mass]} \cdot \textrm{[Length]}^{-1}` or, equivalently,
+        :math:`\textrm{[Length]} \cdot \textrm{[Mass]}`.
+
+        Returns:
+            Second moments of mass about the mass centroidal axis (``i_m_xx_c``,
+            ``i_m_yy_c``, ``i_m_xy_c``)
+
+        Raises:
+            RuntimeError: If material properties have *not* been applied
+            RuntimeError: If a geometric analysis has not been performed
+        """
+        if not self.is_composite():
+            msg = "Attempting to get a composite only property for a geometric analysis"
+            msg += " (material properties have not been applied). Consider using"
+            msg += " get_ic()."
+            raise RuntimeError(msg)
+
+        if (
+            self.section_props.i_m_xx_c is None
+            or self.section_props.i_m_yy_c is None
+            or self.section_props.i_m_xy_c is None
+        ):
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
+
+        return (
+            self.section_props.i_m_xx_c,
+            self.section_props.i_m_yy_c,
+            self.section_props.i_m_xy_c,
+        )
+
+    def get_cm(self) -> tuple[float, float]:
+        """Returns the cross-section mass centroid (center of mass).
+
+        Returns:
+            Mass centroid (``cx_m``, ``cy_m``)
+
+        Raises:
+            RuntimeError: If a geometric analysis has not been performed
+        """
+        if self.section_props.x_cm is None or self.section_props.y_cm is None:
+            msg = "Conduct a geometric analysis."
+            raise RuntimeError(msg)
+
+        return self.section_props.x_cm, self.section_props.y_cm
 
     def get_ic(self) -> tuple[float, float, float]:
         """Returns the cross-section centroidal second moments of area.

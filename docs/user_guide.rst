@@ -46,7 +46,9 @@ Cross-Section Analysis
   * ☑ Mass
   * ☑ First moments of area
   * ☑ Second moments of area
+  * ☑ Second moments of mass
   * ☑ Elastic centroid
+  * ☑ Mass centroid
 
 * ☑ Centroidal axis geometric section properties
 

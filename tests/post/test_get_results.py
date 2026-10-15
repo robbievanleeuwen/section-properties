@@ -110,6 +110,13 @@ def test_no_analysis(sec_no_mat_and_mat):
     with pytest.raises(RuntimeError):
         rect_mat.get_q()
 
+    # check cm
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_cm()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_cm()
+
     # check eq
     with pytest.raises(RuntimeError):
         rect_no_mat.get_eq()
@@ -130,6 +137,20 @@ def test_no_analysis(sec_no_mat_and_mat):
 
     with pytest.raises(RuntimeError):
         rect_mat.get_eig()
+
+    # check im_g
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_im_g()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_im_g()
+
+    # check im_cm
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_im_cm()
+
+    with pytest.raises(RuntimeError):
+        rect_mat.get_im_cm()
 
     # check c
     with pytest.raises(RuntimeError):
@@ -372,6 +393,36 @@ def test_get_geometric_only(sec_no_mat_and_mat):
     rcx, rcy = rect_mat.get_rc()
     assert rcx == pytest.approx(np.sqrt(1 / 12.0))
     assert rcy == pytest.approx(np.sqrt(1 / 12.0))
+
+    # check mass properties
+    assert rect_no_mat.section_props.qx_m == pytest.approx(0.5)
+    assert rect_no_mat.section_props.qy_m == pytest.approx(0.5)
+    x_cm, y_cm = rect_no_mat.get_cm()
+    assert x_cm == pytest.approx(0.5)
+    assert y_cm == pytest.approx(0.5)
+    assert rect_mat.section_props.qx_m == pytest.approx(1.0)
+    assert rect_mat.section_props.qy_m == pytest.approx(1.0)
+    x_cm, y_cm = rect_mat.get_cm()
+    assert x_cm == pytest.approx(0.5)
+    assert y_cm == pytest.approx(0.5)
+
+    # check im_g
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_im_g()
+
+    im_xx, im_yy, im_xy = rect_mat.get_im_g()
+    assert im_xx == pytest.approx(2 / 3.0)
+    assert im_yy == pytest.approx(2 / 3.0)
+    assert im_xy == pytest.approx(0.5)
+
+    # check im_cm
+    with pytest.raises(RuntimeError):
+        rect_no_mat.get_im_cm()
+
+    im_xx_c, im_yy_c, im_xy_c = rect_mat.get_im_cm()
+    assert im_xx_c == pytest.approx(2 / 12.0)
+    assert im_yy_c == pytest.approx(2 / 12.0)
+    assert im_xy_c == pytest.approx(0.0)
 
     # check ip
     i11, i22 = rect_no_mat.get_ip()
@@ -804,6 +855,67 @@ def test_get_plastic(sec_no_mat_and_mat):
     assert sf_11_minus == pytest.approx(1.5)
     assert sf_22_plus == pytest.approx(1.5)
     assert sf_22_minus == pytest.approx(1.5)
+
+
+def test_get_mass_properties():
+    """Check mass properties for a composite section with differing densities."""
+    mat1 = Material(
+        name="test1",
+        elastic_modulus=1,
+        poissons_ratio=0,
+        yield_strength=1,
+        density=1,
+        color="w",
+    )
+    mat2 = Material(
+        name="test2",
+        elastic_modulus=10,
+        poissons_ratio=0,
+        yield_strength=1,
+        density=3,
+        color="w",
+    )
+    geom1 = rectangular_section(d=1, b=1, material=mat1)
+    geom2 = rectangular_section(d=1, b=1, material=mat2).shift_section(x_offset=2)
+    geom = geom1 + geom2
+    geom.create_mesh(mesh_sizes=[0])
+    sec = Section(geom)
+    sec.calculate_geometric_properties()
+
+    # check mass
+    assert sec.get_mass() == pytest.approx(4.0)
+
+    # check qm
+    assert sec.section_props.qx_m == pytest.approx(2.0)
+    assert sec.section_props.qy_m == pytest.approx(8.0)
+
+    # check cm
+    x_cm, y_cm = sec.get_cm()
+    assert x_cm == pytest.approx(2.0)
+    assert y_cm == pytest.approx(0.5)
+
+    # check im_g
+    # im_xx = 1 * (1 / 3) + 3 * (1 / 3)
+    # im_yy = 1 * (1 / 3) + 3 * ((3**3 - 2**3) / 3)
+    # im_xy = 1 * (1 / 4) + 3 * (5 / 4)
+    im_xx, im_yy, im_xy = sec.get_im_g()
+    assert im_xx == pytest.approx(4 / 3.0)
+    assert im_yy == pytest.approx(58 / 3.0)
+    assert im_xy == pytest.approx(4.0)
+
+    # check im_cm (mass centroid is located at (2.0, 0.5))
+    # im_xx_c = 1 * (1 / 12) + 3 * (1 / 12) = 4 / 12
+    # im_yy_c = 1 * ((2**3 - 1**3) / 3) + 3 * (1 / 3) = 10 / 3
+    # im_xy_c = 1 * (-3 / 2 * 0) + 3 * (1 / 2 * 0) = 0
+    im_xx_c, im_yy_c, im_xy_c = sec.get_im_cm()
+    assert im_xx_c == pytest.approx(4 / 12.0)
+    assert im_yy_c == pytest.approx(10 / 3.0)
+    assert im_xy_c == pytest.approx(0.0)
+
+    # Elastic centroid should be different in x but equal in y
+    cx, cy = sec.get_c()
+    assert cx > x_cm
+    assert cy == y_cm
 
 
 def test_get_effective_material():

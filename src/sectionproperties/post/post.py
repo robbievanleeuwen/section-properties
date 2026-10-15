@@ -40,13 +40,23 @@ class SectionProperties:
         nu_eff: Effective Poisson's ratio
         e_eff: Effective elastic modulus
         g_eff: Effective shear modulus
-        qx: First moment of area about the x-axis
-        qy: First moment of area about the y-axis
+        qx: First moment of area about the x-axis (Young's modulus weighted)
+        qy: First moment of area about the y-axis (Young's modulus weighted)
+        qx_m: First moment of area about the global x-axis (density-weighted)
+        qy_m: First moment of area about the global y-axis (density-weighted)
         ixx_g: Second moment of area about the global x-axis
         iyy_g: Second moment of area about the global y-axis
         ixy_g: Second moment of area about the global xy-axis
+        i_m_xx: Second moment of mass about the global x-axis
+        i_m_yy: Second moment of mass about the global y-axis
+        i_m_xy: Second moment of mass about the global xy-axis
+        i_m_xx_c: Second moment of mass about the centroidal x-axis
+        i_m_yy_c: Second moment of mass about the centroidal y-axis
+        i_m_xy_c: Second moment of mass about the centroidal xy-axis
         cx: X coordinate of the elastic centroid
         cy: Y coordinate of the elastic centroid
+        x_cm: X coordinate of the mass centroid
+        y_cm: Y coordinate of the mass centroid
         ixx_c: Second moment of area about the centroidal x-axis
         iyy_c: Second moment of area about the centroidal y-axis
         ixy_c: Second moment of area about the centroidal xy-axis
@@ -146,11 +156,21 @@ class SectionProperties:
     g_eff: float | None = None
     qx: float | None = None
     qy: float | None = None
+    qx_m: float | None = None  # Mass first moments about the x-axis
+    qy_m: float | None = None  # Mass first moments about the y-axis
     ixx_g: float | None = None
     iyy_g: float | None = None
     ixy_g: float | None = None
-    cx: float | None = None
-    cy: float | None = None
+    i_m_xx: float | None = None  # Mass second moments about the x-axis
+    i_m_yy: float | None = None  # Mass second moments about the y-axis
+    i_m_xy: float | None = None  # Mass second moments about the xy-axis
+    i_m_xx_c: float | None = None  # Mass second moments about the mass centroid x-axis
+    i_m_yy_c: float | None = None  # Mass second moments about the mass centroid y-axis
+    i_m_xy_c: float | None = None  # Mass second moments about the mass centroid xy-axis
+    cx: float | None = None  # Elastic centroid x
+    cy: float | None = None  # Elastic centroid y
+    x_cm: float | None = None  # Mass centroid x
+    y_cm: float | None = None  # Mass centroid y
     ixx_c: float | None = None
     iyy_c: float | None = None
     ixy_c: float | None = None
@@ -232,6 +252,34 @@ class SectionProperties:
         if self.qx is not None and self.qy is not None and self.ea is not None:
             self.cx = self.qy / self.ea
             self.cy = self.qx / self.ea
+        else:
+            msg = "Calculate geometric properties first."
+            raise RuntimeError(msg)
+
+    def calculate_mass_centroid(self) -> None:
+        """Calculates and stores the mass centroid.
+
+        Also calculates the second moments of mass about the mass centroid using the
+        parallel axis theorem.
+
+        Raises:
+            RuntimeError: If geometric properties have not already been calculated
+        """
+        if (
+            self.qx_m is not None
+            and self.qy_m is not None
+            and self.mass is not None
+            and self.i_m_xx is not None
+            and self.i_m_yy is not None
+            and self.i_m_xy is not None
+        ):
+            self.x_cm = self.qy_m / self.mass
+            self.y_cm = self.qx_m / self.mass
+
+            # calculate second moments of mass about the mass centroid
+            self.i_m_xx_c = self.i_m_xx - self.y_cm**2 * self.mass
+            self.i_m_yy_c = self.i_m_yy - self.x_cm**2 * self.mass
+            self.i_m_xy_c = self.i_m_xy - self.x_cm * self.y_cm * self.mass
         else:
             msg = "Calculate geometric properties first."
             raise RuntimeError(msg)
