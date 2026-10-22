@@ -2728,10 +2728,11 @@ class Section:
         return self.section_props.j / e_ref
 
     def get_sc(self) -> tuple[float, float]:
-        """Returns the cross-section centroidal shear centre (elasticity).
+        """Returns the cross-section shear centre (elasticity).
 
         Returns:
-            Centroidal axis shear centre (elasticity approach) (``x_se``, ``y_se``)
+            Location of the shear centre (``x_se``, ``y_se``) (elasticity
+            approach) expressed in the global coordinate axes.
 
         Raises:
             RuntimeError: If a warping analysis has not been performed
@@ -2755,7 +2756,9 @@ class Section:
         """Returns the cross-section principal shear centre (elasticity).
 
         Returns:
-            Principal axis shear centre (elasticity approach) (``x11_se``, ``y22_se``)
+            Principal axis shear centre (elasticity approach) (``x11_se``,
+            ``y22_se``), expressed in the principal axes of the section and
+            relative to the elastic centroid location.
 
         Raises:
             RuntimeError: If a warping analysis has not been performed
@@ -2767,10 +2770,11 @@ class Section:
         return self.section_props.x11_se, self.section_props.y22_se
 
     def get_sc_t(self) -> tuple[float, float]:
-        """Returns the cross-section centroidal shear centre (Trefftz's method).
+        """Returns the cross-section shear centre (Trefftz's method).
 
         Returns:
-            Centroidal axis shear centre (Trefftz's method) (``x_st``, ``y_st``)
+            Location of the shear centre (``x_st``, ``y_st``) (Trefftz's method)
+            expressed in the global coordinate axes.
 
         Raises:
             RuntimeError: If a warping analysis has not been performed
