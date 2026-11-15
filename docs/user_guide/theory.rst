@@ -325,6 +325,22 @@ and :math:`\lambda` may be thought of as a force acting to enforce the constrain
 should be relatively small when compared to the values in the force vector and can be
 omitted from the solution vector.
 
+The iterative solver (``solver_type="cgs"``) solves this system as written. The direct
+solver (``solver_type="direct"``, the default) obtains the same solution without the
+extra row and column, whose dense entries make the factorisation of the modified matrix
+expensive. Because :math:`\textbf{K}` is singular only up to a constant on each connected
+region of the mesh, fixing one degree of freedom per region leaves a sparse, symmetric
+positive definite system. The solution of that system is shifted by the constant that
+satisfies :math:`\textbf{C} \textbf{u} = 0`:
+
+.. math::
+  \textbf{u} = \tilde{\textbf{u}} - \frac{\textbf{C} \tilde{\textbf{u}}}{\textbf{C}
+  \textbf{1}} \textbf{1}
+
+where :math:`\tilde{\textbf{u}}` is the solution with the fixed degree of freedom. The
+torsion and both shear problems share :math:`\textbf{K}`, so it is factorised once and
+reused for all three, see :class:`~sectionproperties.analysis.solver.WarpingSolver`.
+
 Calculation of Cross-Section Properties
 ---------------------------------------
 
