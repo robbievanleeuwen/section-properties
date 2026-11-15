@@ -15,11 +15,12 @@ from rich.progress import (
 )
 from rich.table import Column
 from rich.text import Text
-from scipy.sparse.linalg import cgs, spsolve
+from scipy.sparse import coo_matrix, csc_matrix
+from scipy.sparse.csgraph import connected_components
+from scipy.sparse.linalg import cgs, splu, spsolve
 
 if TYPE_CHECKING:
     import numpy.typing as npt
-    from scipy.sparse import csc_matrix
     from scipy.sparse.linalg import LinearOperator
 
 
@@ -29,6 +30,8 @@ try:
     sp_solve = pypardiso.spsolve
 except ImportError:
     sp_solve = spsolve
+
+HAS_PARDISO = sp_solve is not spsolve
 
 
 def solve_cgs(
@@ -144,6 +147,163 @@ def solve_direct_lagrange(
         raise RuntimeError(msg)
 
     return u[:-1]
+
+
+def lagrangian_matrix(
+    row: npt.NDArray[np.int_],
+    col: npt.NDArray[np.int_],
+    data: npt.NDArray[np.float64],
+    c: npt.NDArray[np.float64],
+) -> csc_matrix:
+    """Builds the Lagrangian multiplier matrix of the warping system.
+
+    Appends the constraint vector ``c`` as an extra row and column to the stiffness
+    matrix given by its COO entries.
+
+    Args:
+        row: Row indices of the stiffness matrix entries (COO format)
+        col: Column indices of the stiffness matrix entries (COO format)
+        data: Values of the stiffness matrix entries (COO format), duplicate entries
+            are summed
+        c: ``N`` constraint vector, the modulus weighted nodal areas
+
+    Returns:
+        ``(N+1) x (N+1)`` Lagrangian multiplier matrix in CSC format
+    """
+    n_size = len(c)
+    nodes = np.arange(n_size)
+    lagrange = np.full(n_size, n_size)
+
+    k_lg = coo_matrix(
+        (
+            np.concatenate((data, c, c)),
+            (
+                np.concatenate((row, nodes, lagrange)),
+                np.concatenate((col, lagrange, nodes)),
+            ),
+        ),
+        shape=(n_size + 1, n_size + 1),
+        dtype=float,
+    )
+
+    return csc_matrix(k_lg, dtype=float)
+
+
+class WarpingSolver:
+    r"""Direct solver for the warping system :math:`Ku = f`, with :math:`c \cdot u = 0`.
+
+    The warping stiffness matrix ``k`` is singular: adding a constant to a warping or
+    shear function leaves the equations unchanged. :func:`solve_direct_lagrange`
+    removes that freedom with a Lagrangian multiplier, which appends a fully dense row
+    and column to an otherwise very sparse matrix. Eliminating that row during the
+    factorisation produces a large amount of fill-in.
+
+    This solver fixes a single degree of freedom instead, which leaves a sparse,
+    symmetric positive definite system, and shifts every solution by the constant that
+    satisfies the constraint. The solution is the same, and the matrix is factorised
+    once on construction and reused for every right hand side passed to
+    :meth:`solve`.
+
+    The null space of ``k`` contains a constant for every connected region of the
+    mesh, so one degree of freedom is fixed per region. A mesh with more than one region
+    is not valid for a warping analysis, but the analysis still runs, as it does with
+    the Lagrangian multiplier.
+    """
+
+    def __init__(
+        self,
+        row: npt.NDArray[np.int_],
+        col: npt.NDArray[np.int_],
+        data: npt.NDArray[np.float64],
+        c: npt.NDArray[np.float64],
+    ) -> None:
+        """Inits and factorises the WarpingSolver.
+
+        Args:
+            row: Row indices of the stiffness matrix entries (COO format)
+            col: Column indices of the stiffness matrix entries (COO format)
+            data: Values of the stiffness matrix entries (COO format), duplicate entries
+                are summed
+            c: ``N`` constraint vector, the modulus weighted nodal areas
+        """
+        n_size = len(c)
+        self.c = c
+
+        k = csc_matrix(
+            coo_matrix((data, (row, col)), shape=(n_size, n_size), dtype=float),
+            dtype=float,
+        )
+
+        # fix the best conditioned degree of freedom of every connected region
+        on_diagonal = row == col
+        diagonal = np.bincount(
+            row[on_diagonal], weights=data[on_diagonal], minlength=n_size
+        )
+        n_regions, region = connected_components(csgraph=k, directed=False)
+        self.pinned = np.array(
+            [
+                int(np.flatnonzero(region == idx)[np.argmax(diagonal[region == idx])])
+                for idx in range(n_regions)
+            ]
+        )
+
+        # replace the equations of the fixed degrees of freedom with u[dof] = 0
+        is_pinned = np.zeros(n_size, dtype=bool)
+        is_pinned[self.pinned] = True
+        keep = ~(is_pinned[row] | is_pinned[col])
+
+        k_pinned = csc_matrix(
+            coo_matrix(
+                (
+                    np.concatenate((data[keep], np.ones(n_regions))),
+                    (
+                        np.concatenate((row[keep], self.pinned)),
+                        np.concatenate((col[keep], self.pinned)),
+                    ),
+                ),
+                shape=(n_size, n_size),
+                dtype=float,
+            ),
+            dtype=float,
+        )
+
+        # PARDISO keeps the factorisation of the last matrix it was given, SuperLU is
+        # told the matrix is symmetric positive definite: symmetric ordering and no
+        # partial pivoting
+        self.k_pinned = k_pinned
+        self.lu = (
+            None
+            if HAS_PARDISO
+            else splu(
+                k_pinned,
+                permc_spec="MMD_AT_PLUS_A",
+                diag_pivot_thresh=0.0,
+                options={"SymmetricMode": True},
+            )
+        )
+
+    def solve(
+        self,
+        f: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.float64]:
+        """Solves the warping system for one or more right hand sides.
+
+        Args:
+            f: ``N`` right hand side of the linear system, or ``N x M`` right hand
+                sides solved together
+
+        Returns:
+            The solution, of the same shape as ``f``, that satisfies the constraint
+        """
+        rhs = np.array(f, dtype=float)
+        rhs[self.pinned, ...] = 0.0
+
+        if self.lu is None:
+            u = np.asarray(sp_solve(A=self.k_pinned, b=rhs), dtype=float)
+        else:
+            u = np.asarray(self.lu.solve(rhs), dtype=float)
+
+        return u - (self.c @ u) / float(self.c.sum())
 
 
 class CustomTimeElapsedColumn(ProgressColumn):

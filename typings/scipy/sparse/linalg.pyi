@@ -29,6 +29,12 @@ def cgs(
     callback: Callable[[Any], Any] = ...,
 ) -> tuple[npt.NDArray[np.float64], int]: ...
 def spilu(A: csc_matrix | coo_matrix) -> SuperLU: ...
+def splu(
+    A: csc_matrix,
+    permc_spec: str = ...,
+    diag_pivot_thresh: float = ...,
+    options: dict[str, Any] = ...,
+) -> SuperLU: ...
 
 class SuperLU:
     def solve(
