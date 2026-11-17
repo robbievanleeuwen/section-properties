@@ -19,7 +19,6 @@ from rich.console import Console
 from rich.live import Live
 from rich.panel import Panel
 from rich.table import Table
-from scipy.sparse import coo_matrix, csc_matrix
 from scipy.sparse.linalg import LinearOperator, spilu
 from shapely import Point, Polygon
 from shapely.strtree import STRtree
@@ -37,6 +36,7 @@ if TYPE_CHECKING:
 
     import matplotlib.axes
     from rich.progress import Progress, TaskID
+    from scipy.sparse import csc_matrix
 
 
 class Section:
@@ -449,8 +449,10 @@ class Section:
                     description=msg,
                     total=len(warping_section.elements),
                 )
-                k_lg, f_torsion = warping_section.assemble_torsion(
-                    progress=progress, task=task
+                row, col, data, f_torsion, c_torsion = (
+                    warping_section.assemble_torsion_entries(
+                        progress=progress, task=task
+                    )
                 )
 
                 msg = f"[green]:white_check_mark: {self.num_nodes}x{self.num_nodes} "
@@ -458,10 +460,22 @@ class Section:
                 progress.update(task_id=task, description=msg)
                 progress.update(cast("TaskID", 0), advance=1)
             else:
-                k_lg, f_torsion = warping_section.assemble_torsion()
+                row, col, data, f_torsion, c_torsion = (
+                    warping_section.assemble_torsion_entries()
+                )
+
+            # the iterative solver works on the Lagrangian multiplier matrix, the direct
+            # solver fixes a degree of freedom instead, see solver.WarpingSolver
+            k_lg = (
+                solver.lagrangian_matrix(row=row, col=col, data=data, c=c_torsion)
+                if solver_type == "cgs"
+                else None
+            )
+            warping_solver: solver.WarpingSolver | None = None
 
             # ILU decomposition of stiffness matrices
             def ilu_decomp(
+                k_lg: csc_matrix,
                 progress: Progress | None = None,
                 task: TaskID | None = None,
             ) -> LinearOperator:
@@ -476,29 +490,35 @@ class Section:
                 return k_lg_precond
 
             # if the cgs method is used, perform ILU decomposition
-            if solver_type == "cgs":
+            if k_lg is not None:
                 if progress:
                     task = progress.add_task(
                         description="[red]Performing ILU decomposition",
                         total=2,
                     )
-                    k_lg_precond = ilu_decomp(progress=progress, task=task)
+                    k_lg_precond = ilu_decomp(k_lg=k_lg, progress=progress, task=task)
 
                     msg = "[green]:white_check_mark: ILU decomposition complete"
                     progress.update(task_id=task, description=msg)
                 else:
-                    k_lg_precond = ilu_decomp()
+                    k_lg_precond = ilu_decomp(k_lg=k_lg)
             else:
                 k_lg_precond = None
 
             # solve for warping function
             def solve_warping() -> npt.NDArray[np.float64]:
-                if solver_type == "cgs" and k_lg_precond:
+                nonlocal warping_solver
+
+                if solver_type == "cgs" and k_lg is not None and k_lg_precond:
                     omega = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_torsion, m=k_lg_precond
                     )
                 elif solver_type == "direct":
-                    omega = solver.solve_direct_lagrange(k_lg=k_lg, f=f_torsion)
+                    # factorises the stiffness matrix, reused for the shear functions
+                    warping_solver = solver.WarpingSolver(
+                        row=row, col=col, data=data, c=c_torsion
+                    )
+                    omega = warping_solver.solve(f=f_torsion)
                 else:
                     msg = "solver_type must be 'cgs' or 'direct'."
                     raise ValueError(msg)
@@ -574,7 +594,7 @@ class Section:
                 progress: Progress | None = None,
                 task: TaskID | None = None,
             ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-                if solver_type == "cgs" and k_lg_precond:
+                if solver_type == "cgs" and k_lg is not None and k_lg_precond:
                     psi_shear = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_psi, m=k_lg_precond
                     )
@@ -589,12 +609,13 @@ class Section:
                     if progress and task:
                         progress.update(task_id=task, advance=1)
                 else:
-                    psi_shear = solver.solve_direct_lagrange(k_lg=k_lg, f=f_psi)
+                    direct_solver = cast("solver.WarpingSolver", warping_solver)
+                    psi_shear = direct_solver.solve(f=f_psi)
 
                     if progress and task:
                         progress.update(task_id=task, advance=1)
 
-                    phi_shear = solver.solve_direct_lagrange(k_lg=k_lg, f=f_phi)
+                    phi_shear = direct_solver.solve(f=f_phi)
 
                     if progress and task:
                         progress.update(task_id=task, advance=1)
@@ -1030,8 +1051,10 @@ class Section:
                     description=msg,
                     total=len(warping_section.elements),
                 )
-                k_lg, f_torsion = warping_section.assemble_torsion(
-                    progress=progress, task=task
+                row, col, data, f_torsion, c_torsion = (
+                    warping_section.assemble_torsion_entries(
+                        progress=progress, task=task
+                    )
                 )
 
                 msg = f"[green]:white_check_mark: {self.num_nodes}x{self.num_nodes} "
@@ -1039,10 +1062,22 @@ class Section:
                 progress.update(task_id=task, description=msg)
                 progress.update(cast("TaskID", 0), advance=1)
             else:
-                k_lg, f_torsion = warping_section.assemble_torsion()
+                row, col, data, f_torsion, c_torsion = (
+                    warping_section.assemble_torsion_entries()
+                )
+
+            # the iterative solver works on the Lagrangian multiplier matrix, the direct
+            # solver fixes a degree of freedom instead, see solver.WarpingSolver
+            k_lg = (
+                solver.lagrangian_matrix(row=row, col=col, data=data, c=c_torsion)
+                if solver_type == "cgs"
+                else None
+            )
+            warping_solver: solver.WarpingSolver | None = None
 
             # ILU decomposition of stiffness matrices
             def ilu_decomp(
+                k_lg: csc_matrix,
                 progress: Progress | None = None,
                 task: TaskID | None = None,
             ) -> LinearOperator:
@@ -1057,29 +1092,35 @@ class Section:
                 return k_lg_precond
 
             # if the cgs method is used, perform ILU decomposition
-            if solver_type == "cgs":
+            if k_lg is not None:
                 if progress:
                     task = progress.add_task(
                         description="[red]Performing ILU decomposition",
                         total=2,
                     )
-                    k_lg_precond = ilu_decomp(progress=progress, task=task)
+                    k_lg_precond = ilu_decomp(k_lg=k_lg, progress=progress, task=task)
 
                     msg = "[green]:white_check_mark: ILU decomposition complete"
                     progress.update(task_id=task, description=msg)
                 else:
-                    k_lg_precond = ilu_decomp()
+                    k_lg_precond = ilu_decomp(k_lg=k_lg)
             else:
                 k_lg_precond = None
 
             # solve for warping function
             def solve_warping() -> npt.NDArray[np.float64]:
-                if solver_type == "cgs" and k_lg_precond:
+                nonlocal warping_solver
+
+                if solver_type == "cgs" and k_lg is not None and k_lg_precond:
                     omega = solver.solve_cgs_lagrange(
                         k_lg=k_lg, f=f_torsion, m=k_lg_precond
                     )
                 elif solver_type == "direct":
-                    omega = solver.solve_direct_lagrange(k_lg=k_lg, f=f_torsion)
+                    # factorises the stiffness matrix, reused for the shear functions
+                    warping_solver = solver.WarpingSolver(
+                        row=row, col=col, data=data, c=c_torsion
+                    )
+                    omega = warping_solver.solve(f=f_torsion)
                 else:
                     msg = "solver_type must be 'cgs' or 'direct'."
                     raise ValueError(msg)
@@ -1500,10 +1541,45 @@ class Section:
             Lagrangian multiplier stiffness matrix and torsion load vector (``k_lg``,
             ``f_torsion``)
         """
+        row, col, data, f_torsion, c_torsion = self.assemble_torsion_entries(
+            progress=progress, task=task
+        )
+
+        return solver.lagrangian_matrix(
+            row=row, col=col, data=data, c=c_torsion
+        ), f_torsion
+
+    def assemble_torsion_entries(
+        self,
+        progress: Progress | None = None,
+        task: TaskID | None = None,
+    ) -> tuple[
+        npt.NDArray[np.int_],
+        npt.NDArray[np.int_],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+    ]:
+        """Assembles the entries of the warping stiffness matrix.
+
+        Assembles the warping stiffness matrix in COO format, without the Lagrangian
+        multiplier, together with the torsion load vector (``f_torsion``) and the
+        constraint vector (``c_torsion``) that removes the constant from the warping
+        function. Duplicate entries are not summed.
+
+        Args:
+            progress: Rich progress object
+            task: Rich task object
+
+        Returns:
+            Row indices, column indices and values of the stiffness matrix entries, the
+            torsion load vector and the constraint vector (``row``, ``col``, ``data``,
+            ``f_torsion``, ``c_torsion``)
+        """
         # initialise variables
         n_size = self.num_nodes  # size of matrix
-        row: list[float] = []  # list holding row indices
-        col: list[float] = []  # list holding column indices
+        row: list[int] = []  # list holding row indices
+        col: list[int] = []  # list holding column indices
         data: list[float] = []  # list holding stiffness matrix entries
         f_torsion = np.zeros(n_size)  # force vector array
         c_torsion = np.zeros(n_size)  # constraint vector array
@@ -1528,22 +1604,13 @@ class Section:
             if progress and task:
                 progress.update(task_id=task, advance=1)
 
-        # construct Lagrangian multiplier matrix:
-        # column vector
-        row.extend(range(n_size))
-        col.extend([n_size] * n_size)
-        data.extend(c_torsion)
-
-        # row vector
-        row.extend([n_size] * n_size)
-        col.extend(range(n_size))
-        data.extend(c_torsion)
-
-        k_lg = coo_matrix(
-            (data, (row, col)), shape=(n_size + 1, n_size + 1), dtype=float
+        return (
+            np.array(row, dtype=int),
+            np.array(col, dtype=int),
+            np.array(data, dtype=float),
+            f_torsion,
+            c_torsion,
         )
-
-        return csc_matrix(k_lg, dtype=float), f_torsion
 
     def plot_mesh(
         self,

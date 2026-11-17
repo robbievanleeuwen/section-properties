@@ -183,8 +183,9 @@ def to_fibre_section(
     section = Section(geometry)
 
     if cell_class is Cell3DOS:
-        stiffness, force = section.assemble_torsion()
-        omega = solver.solve_direct_lagrange(stiffness, force)
+        row, col, data, force, constraint = section.assemble_torsion_entries()
+        warping_solver = solver.WarpingSolver(row=row, col=col, data=data, c=constraint)
+        omega = warping_solver.solve(f=force)
     else:
         omega = None
 
